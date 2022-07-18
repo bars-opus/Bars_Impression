@@ -1,0 +1,169 @@
+import 'package:bars/utilities/exports.dart';
+
+class AuthService {
+  static final _auth = FirebaseAuth.instance;
+  static final _firestore = FirebaseFirestore.instance;
+
+  static signUpUser(
+      BuildContext context, String name, String email, String password) async {
+    try {
+      Flushbar(
+        maxWidth: MediaQuery.of(context).size.width,
+        backgroundColor: Color(0xFF1a1a1a),
+        margin: EdgeInsets.all(8),
+        showProgressIndicator: true,
+        progressIndicatorBackgroundColor: Color(0xFF1a1a1a),
+        progressIndicatorValueColor: AlwaysStoppedAnimation(Colors.blue),
+        flushbarPosition: FlushbarPosition.TOP,
+        boxShadows: [
+          BoxShadow(
+            color: Colors.black,
+            offset: Offset(0.0, 2.0),
+            blurRadius: 3.0,
+          )
+        ],
+        titleText: Text(
+          'Signing Up',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        messageText: Text(
+          "Please wait...",
+          style: TextStyle(color: Colors.white),
+        ),
+        duration: Duration(seconds: 3),
+      )..show(context);
+
+      UserCredential authResult = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      User? signedInHandler = authResult.user;
+
+      if (signedInHandler != null) {
+        _firestore.collection('/users').doc(signedInHandler.uid).set({
+          'name': name,
+          'email': email,
+          'timestamp': Timestamp.fromDate(DateTime.now()),
+          'verified': '',
+          'profileImageUrl!': '',
+          'bio': '',
+          'favouritePunchline': '',
+          'favouriteArtist': '',
+          'favouriteSong': '',
+          'favouriteAlbum': '',
+          'company': '',
+          'country': '',
+          'city': '',
+          'continent': '',
+          'skills': '',
+          'performances': '',
+          'collaborations': '',
+          'awards': '',
+          'management': '',
+          'contacts': '',
+          'profileHandle!': '',
+          'report': '',
+          'score': 0,
+          'reportConfirmed': '',
+          'website': '',
+          'otherSites1': '',
+          'otherSites2': '',
+          'mail': '',
+          'privateAccount': false,
+          'androidNotificationToken': '',
+          'hideUploads': false,
+          'disableAdvice': false,
+          'disableChat': false,
+          'enableBookingOnChat': false,
+          'hideAdvice': false,
+          'noBooking': false,
+          'professionalPicture1': '',
+          'professionalPicture2': '',
+          'professionalPicture3': '',
+        });
+        Provider.of<UserData>(context, listen: false).currentUserId =
+            signedInHandler.uid;
+        followersRef
+            .doc(signedInHandler.uid)
+            .collection('userFollowers')
+            .doc(signedInHandler.uid)
+            .set({});
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => TipScreen()),
+            (Route<dynamic> route) => false);
+        return Flushbar(
+          maxWidth: MediaQuery.of(context).size.width,
+          backgroundColor: Colors.white,
+          margin: EdgeInsets.all(8),
+          flushbarPosition: FlushbarPosition.TOP,
+          flushbarStyle: FlushbarStyle.FLOATING,
+          titleText: Text(
+            'Sign Up successful',
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          icon: Icon(
+            MdiIcons.checkCircleOutline,
+            size: 30.0,
+            color: Colors.blue,
+          ),
+          messageText: RichText(
+            textScaleFactor: MediaQuery.of(context).textScaleFactor,
+            text: TextSpan(children: [
+              TextSpan(
+                  text:
+                      "We have put together some tips to help you understand certain features of Bars Impression and to use this platform effectively. ",
+                  style: TextStyle(fontSize: 14, color: Colors.black)),
+            ]),
+          ),
+          isDismissible: false,
+          leftBarIndicatorColor: Colors.blue,
+        )..show(context);
+      }
+    } catch (e) {
+      String error = e.toString();
+      String result = error.contains(']')
+          ? error.substring(error.lastIndexOf(']') + 1)
+          : error;
+      Flushbar(
+        maxWidth: MediaQuery.of(context).size.width,
+        margin: EdgeInsets.all(8),
+        flushbarPosition: FlushbarPosition.TOP,
+        flushbarStyle: FlushbarStyle.FLOATING,
+        boxShadows: [
+          BoxShadow(
+            color: Colors.black,
+            offset: Offset(0.0, 2.0),
+            blurRadius: 3.0,
+          )
+        ],
+        titleText: Text(
+          'Sign Up Failed',
+          style: TextStyle(color: Colors.white),
+        ),
+        messageText: Container(
+            child: Text(
+          result.toString(),
+          style: TextStyle(color: Colors.white),
+        )),
+        icon: Icon(Icons.error_outline, size: 28.0, color: Colors.blue),
+        mainButton: OutlinedButton(
+          style: OutlinedButton.styleFrom(
+            primary: Colors.transparent,
+            side: BorderSide(width: 1.0, color: Colors.transparent),
+          ),
+          onPressed: () => Navigator.pop(context),
+          child: Text("Ok",
+              style: TextStyle(
+                color: Colors.blue,
+              )),
+        ),
+        leftBarIndicatorColor: Colors.blue,
+      )..show(context);
+      print(e.toString());
+    }
+  }
+}

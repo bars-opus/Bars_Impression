@@ -1,0 +1,267 @@
+import 'package:bars/utilities/exports.dart';
+import 'package:intl/intl.dart';
+
+class EventProfileView extends StatefulWidget {
+  final String currentUserId;
+  final Event event;
+  final AccountHolder author;
+  final AccountHolder user;
+  final bool allEvents;
+  final String exploreLocation;
+  final int feed;
+
+  EventProfileView(
+      {required this.currentUserId,
+      required this.allEvents,
+      required this.exploreLocation,
+      required this.feed,
+      required this.user,
+      required this.event,
+      required this.author});
+
+  @override
+  _EventProfileViewState createState() => _EventProfileViewState();
+}
+
+class _EventProfileViewState extends State<EventProfileView> {
+  int _askCount = 0;
+
+  void initState() {
+    super.initState();
+    _setUpAsks();
+  }
+
+  _setUpAsks() async {
+    DatabaseService.numAsks(widget.event.id).listen((askCount) {
+      if (mounted) {
+        setState(() {
+          _askCount = askCount;
+        });
+      }
+    });
+  }
+
+  Future<void> _generatePalette(
+    context,
+  ) async {
+    PaletteGenerator _paletteGenerator =
+        await PaletteGenerator.fromImageProvider(
+      CachedNetworkImageProvider(widget.event.imageUrl),
+      size: Size(1110, 150),
+      maximumColorCount: 20,
+    );
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (_) => AllEvenEnlargedProfile(
+                currentUserId: widget.currentUserId,
+                event: widget.event,
+                author: widget.author,
+                exploreLocation: widget.exploreLocation,
+                feed: widget.feed,
+                user: widget.user,
+                askCount: _askCount,
+                palette: _paletteGenerator)));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    return FocusedMenuHolder(
+        menuWidth: width,
+        menuOffset: 10,
+        blurBackgroundColor:
+            ConfigBloc().darkModeOn ? Colors.grey[900] : Colors.white10,
+        openWithTap: false,
+        onPressed: () {},
+        menuItems: [
+          FocusedMenuItem(
+            title: Text(
+              'Enlarge Event',
+              overflow: TextOverflow.ellipsis,
+              textScaleFactor: MediaQuery.of(context).textScaleFactor,
+            ),
+            onPressed: () {
+              _generatePalette(context);
+              // Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (_) => AllEvenEnlargedProfile(
+              //               currentUserId: widget.currentUserId,
+              //               event: widget.event,
+              //               author: widget.author,
+              //               exploreLocation: widget.exploreLocation,
+              //               feed: widget.feed,
+              //               user: widget.user,
+              //               askCount: _askCount,
+              //               palette: widget.palette,
+              //             )));
+            },
+          ),
+          widget.event.authorId == widget.currentUserId
+              ? FocusedMenuItem(
+                  title: Text(
+                    'Edit event',
+                    overflow: TextOverflow.ellipsis,
+                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  ),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => EditEvent(
+                          event: widget.event,
+                          currentUserId: widget.currentUserId),
+                    ),
+                  ),
+                )
+              : FocusedMenuItem(
+                  title: Text(
+                    "Go to ${widget.author.userName}'s profile",
+                    overflow: TextOverflow.ellipsis,
+                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  ),
+                  onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => ProfileScreen(
+                                user: widget.user,
+                                currentUserId: widget.currentUserId,
+                                userId: widget.event.authorId,
+                              ))),
+                ),
+        ],
+        child: GestureDetector(
+            onTap: () {
+              _generatePalette(context);
+            },
+            // => Navigator.push(
+            // context,
+            // MaterialPageRoute(
+            //     builder: (_) => AllEvenEnlargedProfile(
+            //           palette: widget.palette,
+            //           askCount: _askCount,
+            //           currentUserId: widget.currentUserId,
+            //           event: widget.event,
+            //           author: widget.author,
+            //           exploreLocation: widget.exploreLocation,
+            //           feed: widget.feed,
+            //           user: widget.user,
+            //         ))),
+            child: MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                  textScaleFactor:
+                      MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
+              child: Stack(
+                children: [
+                  EventViewWidget(
+                    currentUserId: widget.currentUserId,
+                    author: widget.author,
+                    titleHero: 'title1  ${widget.event.id.toString()}',
+                    event: widget.event,
+                    onPressedEventEnlarged: () {
+                      _generatePalette(context);
+                    },
+                    // => Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (_)
+                    //         => AllEvenEnlarged(
+                    //               exploreLocation: widget.exploreLocation,
+                    //               feed: widget.feed,
+                    //               askCount: _askCount,
+                    //               currentUserId: widget.currentUserId,
+                    //               event: widget.event,
+                    //               author: widget.author,
+                    //               user: widget.user,
+                    //             ))),
+                    imageHero: 'image1 ${widget.event.id.toString()}',
+                    askCount: NumberFormat.compact().format(_askCount),
+                  ),
+                  Positioned(
+                    top: 1,
+                    right: 10,
+                    child: GestureDetector(
+                      onTap: () {
+                        _generatePalette(context);
+                      },
+                      // => Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: (_) => AllEvenEnlargedProfile(
+                      //               palette: widget.palette,
+                      //               currentUserId: widget.currentUserId,
+                      //               event: widget.event,
+                      //               author: widget.author,
+                      //               exploreLocation: widget.exploreLocation,
+                      //               feed: widget.feed,
+                      //               user: widget.user,
+                      //               askCount: 0,
+                      //             ))),
+                      child: Hero(
+                        tag: 'typeProfile' + widget.event.id.toString(),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: Container(
+                            width: 35.0,
+                            child: OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                primary: Colors.blue,
+                                side: BorderSide(
+                                  width: 1.0,
+                                  color: widget.event.report.isNotEmpty
+                                      ? Colors.grey
+                                      : Colors.blue,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                              ),
+                              child: Text(
+                                widget.event.type.startsWith('F')
+                                    ? 'FE'
+                                    : widget.event.type.startsWith('Al')
+                                        ? 'AL'
+                                        : widget.event.type.startsWith('Aw')
+                                            ? 'AW'
+                                            : widget.event.type.startsWith('O')
+                                                ? 'OT'
+                                                : widget.event.type
+                                                        .startsWith('T')
+                                                    ? 'TO'
+                                                    : '',
+                                style: TextStyle(
+                                  color: widget.event.report.isNotEmpty
+                                      ? Colors.grey
+                                      : Colors.blue,
+                                  fontSize: width > 800 ? 16 : 10,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              onPressed: () {
+                                _generatePalette(context);
+                              },
+                              //  => Navigator.push(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //         builder: (_) => AllEvenEnlargedProfile(
+                              //               palette: widget.palette,
+                              //               askCount: _askCount,
+                              //               currentUserId: widget.currentUserId,
+                              //               event: widget.event,
+                              //               exploreLocation:
+                              //                   widget.exploreLocation,
+                              //               feed: widget.feed,
+                              //               user: widget.user,
+                              //               author: widget.author,
+                              //             ))),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )));
+  }
+}
