@@ -112,7 +112,7 @@ class _ProfessionalProfileState extends State<ProfessionalProfile> {
 
   @override
   Widget build(BuildContext context) {
-    String currentUserId = Provider.of<UserData>(context).currentUserId;
+    String currentUserId = Provider.of<UserData>(context).currentUserId!;
     int _point = _possitiveRatedCount - _negativeRatedCount;
     int _total = _possitiveRatedCount + _negativeRatedCount;
 
@@ -168,7 +168,7 @@ class _ProfessionalProfileState extends State<ProfessionalProfile> {
                     builder: (_) => ProfileScreen(
                           user: null,
                           currentUserId:
-                              Provider.of<UserData>(context).currentUserId,
+                              Provider.of<UserData>(context).currentUserId!,
                           userId: widget.userId,
                         ))),
           ),

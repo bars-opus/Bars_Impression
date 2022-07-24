@@ -23,7 +23,7 @@ class _OtherEventsLiveCityState extends State<OtherEventsLiveCity>
   int limit = 10;
   bool _hasNext = true;
   bool _isFetchingEvent = false;
- late ScrollController _hideButtonController;
+  late ScrollController _hideButtonController;
 
   @override
   void initState() {
@@ -98,7 +98,7 @@ class _OtherEventsLiveCityState extends State<OtherEventsLiveCity>
       feed: 3,
       currentUserId: widget.currentUserId,
       event: event,
-      author: author,      user: widget.user,
+      author: author, user: widget.user,
 
       // eventList: _events,
     );
@@ -143,7 +143,7 @@ class _OtherEventsLiveCityState extends State<OtherEventsLiveCity>
     super.build(context);
     return Scaffold(
         backgroundColor:
-            ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+            ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
         body: _events.length > 0
             ? RefreshIndicator(
                 backgroundColor: Colors.white,
@@ -155,7 +155,9 @@ class _OtherEventsLiveCityState extends State<OtherEventsLiveCity>
                     child: _buildUser()))
             : _events.length == 0
                 ? Center(
-                    child: SizedBox.shrink(),
+                    child: NoUsersDicovered(
+                      title: 'Other events\n in ${widget.liveCity}',
+                    ),
                   )
                 : Center(
                     child: EventSchimmer(),

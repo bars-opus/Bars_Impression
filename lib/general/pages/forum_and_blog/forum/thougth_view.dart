@@ -41,7 +41,7 @@ class _ThoughtViewState extends State<ThoughtView> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final String currentUserId = Provider.of<UserData>(context).currentUserId;
+    final String currentUserId = Provider.of<UserData>(context).currentUserId!;
     return FutureBuilder(
       future: DatabaseService.getUserWithId(widget.thought.authorId),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -89,7 +89,7 @@ class _ThoughtViewState extends State<ThoughtView> {
                               builder: (_) => ProfileScreen(
                                     currentUserId:
                                         Provider.of<UserData>(context)
-                                            .currentUserId,
+                                            .currentUserId!,
                                     userId: author.id!,
                                     user: widget.author,
                                   )))
@@ -99,7 +99,7 @@ class _ThoughtViewState extends State<ThoughtView> {
                               builder: (_) => ProfileProfessionalProfile(
                                     currentUserId:
                                         Provider.of<UserData>(context)
-                                            .currentUserId,
+                                            .currentUserId!,
                                     user: author,
                                     userId: author.id!,
                                   ))),
@@ -236,7 +236,7 @@ class _ThoughtViewState extends State<ThoughtView> {
                           MaterialPageRoute(
                               builder: (_) => ProfileScreen(
                                   currentUserId: Provider.of<UserData>(context)
-                                      .currentUserId,
+                                      .currentUserId!,
                                   userId: author.id!,
                                   user: widget.author))),
                     ),

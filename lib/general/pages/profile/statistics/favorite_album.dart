@@ -105,7 +105,7 @@ class _FavoritAlbumState extends State<FavoritAlbum> {
             MaterialPageRoute(
                 builder: (_) => ProfileScreen(
                       currentUserId:
-                          Provider.of<UserData>(context).currentUserId,
+                          Provider.of<UserData>(context).currentUserId!,
                       userId: user.id!,
                       user: widget.user,
                     ))),

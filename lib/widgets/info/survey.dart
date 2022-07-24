@@ -48,7 +48,7 @@ class _FeatureSurveyState extends State<FeatureSurvey> {
             ? 'All of the above'
             : _overRallSatisfaction,
         suggesttion: _suggestion,
-        authorId: Provider.of<UserData>(context, listen: false).currentUserId,
+        authorId: Provider.of<UserData>(context, listen: false).currentUserId!,
         timestamp: Timestamp.fromDate(DateTime.now()),
         id: '',
       );

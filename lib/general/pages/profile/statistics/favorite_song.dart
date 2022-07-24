@@ -103,7 +103,7 @@ class _FavoriteSongState extends State<FavoriteSong> {
             MaterialPageRoute(
                 builder: (_) => ProfileScreen(
                       currentUserId:
-                          Provider.of<UserData>(context).currentUserId,
+                          Provider.of<UserData>(context).currentUserId!,
                       userId: user.id!,
                       user: widget.user,
                     ))),

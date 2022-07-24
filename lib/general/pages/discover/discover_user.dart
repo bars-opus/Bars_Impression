@@ -240,216 +240,224 @@ class _locationTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId;
+        Provider.of<UserData>(context, listen: false).currentUserId!;
     final AccountHolder user =
         Provider.of<UserData>(context, listen: false).user!;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-      child: FadeAnimation(
-        1,
-        Container(
-          height: 35,
-          child: ListView(
-              shrinkWrap: true,
-              scrollDirection: Axis.horizontal,
-              children: <Widget>[
-                Container(
-                  child: Row(
-                    children: [
-                      Row(
-                        children: [
-                          OutlinedButton(
+    // ignore: unnecessary_null_comparison
+    return user == null
+        ? SizedBox.shrink()
+        : Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: FadeAnimation(
+              1,
+              Container(
+                height: 35,
+                child: ListView(
+                    shrinkWrap: true,
+                    scrollDirection: Axis.horizontal,
+                    children: <Widget>[
+                      Container(
+                        child: Row(
+                          children: [
+                            Row(
+                              children: [
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    primary: Colors.blue,
+                                    side: BorderSide(
+                                        width: 1.0, color: Colors.grey),
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(Icons.search),
+                                        iconSize: 25.0,
+                                        color: ConfigBloc().darkModeOn
+                                            ? Colors.white
+                                            : Colors.black,
+                                        onPressed: () => Navigator.pushNamed(
+                                            context, StoreSearch.id),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(5.0),
+                                        child: Text(
+                                          'Search',
+                                          style: TextStyle(
+                                            color: ConfigBloc().darkModeOn
+                                                ? Colors.white
+                                                : Colors.black,
+                                            fontSize: 12.0,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  onPressed: () => Navigator.pushNamed(
+                                      context, StoreSearch.id),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            primary: Colors.blue,
+                            side: BorderSide(width: 1.0, color: Colors.grey),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Text(
+                              ' In Live Location',
+                              style: TextStyle(
+                                color: ConfigBloc().darkModeOn
+                                    ? Colors.white
+                                    : Colors.black,
+                                fontSize: 12.0,
+                              ),
+                            ),
+                          ),
+                          onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => FetchingLocation(
+                                    currentUserId: currentUserId,
+                                    user: user,
+                                    type: 'Users',
+                                  ),
+                                ),
+                              )),
+                      const SizedBox(width: 20),
+                      OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          primary: Colors.blue,
+                          side: BorderSide(width: 1.0, color: Colors.grey),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Text(
+                            user.city!.isEmpty
+                                ? 'in Your City'
+                                : 'In ' + user.city!,
+                            style: TextStyle(
+                              color: ConfigBloc().darkModeOn
+                                  ? Colors.white
+                                  : Colors.black,
+                              fontSize: 12.0,
+                            ),
+                          ),
+                        ),
+                        onPressed: () => user.city!.isEmpty
+                            ? Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => NoCity(
+                                    currentUserId: currentUserId,
+                                    user: user,
+                                  ),
+                                ),
+                              )
+                            : Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => UsersLocation(
+                                    locationType: 'City',
+                                    currentUserId: currentUserId,
+                                    user: user,
+                                  ),
+                                ),
+                              ),
+                      ),
+                      const SizedBox(width: 20),
+                      Container(
+                        child: OutlinedButton(
                             style: OutlinedButton.styleFrom(
                               primary: Colors.blue,
                               side: BorderSide(width: 1.0, color: Colors.grey),
                             ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.search),
-                                  iconSize: 25.0,
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Text(
+                                user.country!.isEmpty
+                                    ? 'In Your Country'
+                                    : 'In ' + user.country!,
+                                style: TextStyle(
                                   color: ConfigBloc().darkModeOn
                                       ? Colors.white
                                       : Colors.black,
-                                  onPressed: () => Navigator.pushNamed(
-                                      context, StoreSearch.id),
+                                  fontSize: 12.0,
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(5.0),
-                                  child: Text(
-                                    'Search',
-                                    style: TextStyle(
-                                      color: ConfigBloc().darkModeOn
-                                          ? Colors.white
-                                          : Colors.black,
-                                      fontSize: 12.0,
+                              ),
+                            ),
+                            onPressed: () => user.country!.isEmpty
+                                ? Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => NoCity(
+                                        currentUserId: currentUserId,
+                                        user: user,
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              ],
+                                  )
+                                : Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => UsersLocation(
+                                        locationType: 'Country',
+                                        currentUserId: currentUserId,
+                                        user: user,
+                                      ),
+                                    ),
+                                  )),
+                      ),
+                      const SizedBox(width: 20),
+                      Container(
+                        child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              primary: Colors.blue,
+                              side: BorderSide(width: 1.0, color: Colors.grey),
                             ),
-                            onPressed: () =>
-                                Navigator.pushNamed(context, StoreSearch.id),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 20),
-                OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      primary: Colors.blue,
-                      side: BorderSide(width: 1.0, color: Colors.grey),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Text(
-                        ' In Live Location',
-                        style: TextStyle(
-                          color: ConfigBloc().darkModeOn
-                              ? Colors.white
-                              : Colors.black,
-                          fontSize: 12.0,
-                        ),
-                      ),
-                    ),
-                    onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => UserLive(
-                              currentUserId: currentUserId,
-                              user: user,
-                            ),
-                          ),
-                        )),
-                const SizedBox(width: 20),
-                OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    primary: Colors.blue,
-                    side: BorderSide(width: 1.0, color: Colors.grey),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: Text(
-                      user.city!.isEmpty ? 'in Your City' : 'In ' + user.city!,
-                      style: TextStyle(
-                        color: ConfigBloc().darkModeOn
-                            ? Colors.white
-                            : Colors.black,
-                        fontSize: 12.0,
-                      ),
-                    ),
-                  ),
-                  onPressed: () => user.city!.isEmpty
-                      ? Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => NoCity(
-                              currentUserId: currentUserId,
-                              user: user,
-                            ),
-                          ),
-                        )
-                      : Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => UsersLocation(
-                              locationType: 'City',
-                              currentUserId: currentUserId,
-                              user: user,
-                            ),
-                          ),
-                        ),
-                ),
-                const SizedBox(width: 20),
-                Container(
-                  child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        primary: Colors.blue,
-                        side: BorderSide(width: 1.0, color: Colors.grey),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Text(
-                          user.country!.isEmpty
-                              ? 'In Your Country'
-                              : 'In ' + user.country!,
-                          style: TextStyle(
-                            color: ConfigBloc().darkModeOn
-                                ? Colors.white
-                                : Colors.black,
-                            fontSize: 12.0,
-                          ),
-                        ),
-                      ),
-                      onPressed: () => user.country!.isEmpty
-                          ? Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => NoCity(
-                                  currentUserId: currentUserId,
-                                  user: user,
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Text(
+                                user.continent!.isEmpty
+                                    ? 'In Your Continent'
+                                    : 'In ' + user.continent!,
+                                style: TextStyle(
+                                  color: ConfigBloc().darkModeOn
+                                      ? Colors.white
+                                      : Colors.black,
+                                  fontSize: 12.0,
                                 ),
                               ),
-                            )
-                          : Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => UsersLocation(
-                                  locationType: 'Country',
-                                  currentUserId: currentUserId,
-                                  user: user,
-                                ),
-                              ),
-                            )),
-                ),
-                const SizedBox(width: 20),
-                Container(
-                  child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        primary: Colors.blue,
-                        side: BorderSide(width: 1.0, color: Colors.grey),
+                            ),
+                            onPressed: () => user.continent!.isEmpty
+                                ? Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => NoCity(
+                                        currentUserId: currentUserId,
+                                        user: user,
+                                      ),
+                                    ),
+                                  )
+                                : Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => UsersLocation(
+                                        locationType: 'Continent',
+                                        currentUserId: currentUserId,
+                                        user: user,
+                                      ),
+                                    ),
+                                  )),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Text(
-                          user.continent!.isEmpty
-                              ? 'In Your Continent'
-                              : 'In ' + user.continent!,
-                          style: TextStyle(
-                            color: ConfigBloc().darkModeOn
-                                ? Colors.white
-                                : Colors.black,
-                            fontSize: 12.0,
-                          ),
-                        ),
-                      ),
-                      onPressed: () => user.continent!.isEmpty
-                          ? Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => NoCity(
-                                  currentUserId: currentUserId,
-                                  user: user,
-                                ),
-                              ),
-                            )
-                          : Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => UsersLocation(
-                                  locationType: 'Continent',
-                                  currentUserId: currentUserId,
-                                  user: user,
-                                ),
-                              ),
-                            )),
-                ),
-              ]),
-        ),
-      ),
-    );
+                    ]),
+              ),
+            ),
+          );
   }
 }

@@ -256,8 +256,10 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
                     padding: const EdgeInsets.only(top: 20),
                     child: _buildUser()))
             : _events.length == 0
-                ? Center(
-                    child: SizedBox.shrink(),
+                ?Center(
+                    child: NoUsersDicovered(
+                      title: 'Festivals',
+                    ),
                   )
                 : Center(
                     child: EventSchimmer(),

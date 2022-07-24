@@ -85,7 +85,7 @@ class _EventCompletedState extends State<EventCompleted> {
         ? 600.0
         : MediaQuery.of(context).size.width;
     String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId;
+        Provider.of<UserData>(context, listen: false).currentUserId!;
     DatabaseService.deleteEvent(
         currentUserId: currentUserId, event: widget.event, photoId: '');
     FirebaseStorage.instance

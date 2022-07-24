@@ -7,7 +7,8 @@ class UpdateApp {
   final bool? updateIsAvailable;
   final bool? displayMiniUpdate;
   final bool? displayFullUpdate;
-  final int? updateVersion;
+  final int? updateVersionIos;
+  final int? updateVersionAndroid;
 
   UpdateApp({
     required this.id,
@@ -15,7 +16,8 @@ class UpdateApp {
     required this.updateNote,
     required this.displayFullUpdate,
     required this.displayMiniUpdate,
-    required this.updateVersion,
+    required this.updateVersionIos,
+    required this.updateVersionAndroid,
     required this.timeStamp,
   });
 
@@ -26,7 +28,8 @@ class UpdateApp {
       updateIsAvailable: doc['updateIsAvailable'] ?? false,
       displayFullUpdate: doc['displayFullUpdate'] ?? false,
       displayMiniUpdate: doc['displayMiniUpdate'] ?? false,
-      updateVersion: doc['updateVersion'] ?? 0,
+      updateVersionIos: doc['updateVersionIos'] ?? 0,
+      updateVersionAndroid: doc['updateVersionAndroid'] ?? 0,
       timeStamp: doc['timeStamp'],
     );
   }

@@ -162,9 +162,12 @@ class _EventsFeedState extends State<EventsFeed>
             child: SizedBox(
               child: _feedCount.isNegative
                   ? const SizedBox.shrink()
-                  : _display(
-                      user: user,
-                    ),
+                  // ignore: unnecessary_null_comparison
+                  : user == null
+                      ? SizedBox.shrink()
+                      : _display(
+                          user: user,
+                        ),
             ),
           ),
         ),
@@ -172,43 +175,50 @@ class _EventsFeedState extends State<EventsFeed>
       body: Container(
         color: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
         child: SafeArea(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Expanded(
-                child: _events.length > 0
-                    ? RefreshIndicator(
-                        backgroundColor: Colors.white,
-                        onRefresh: () async {
-                          _setupEventFeed();
-                        },
-                        child: _buildEventBuilder(user))
-                    : _feedCount.isNegative
-                        ? RefreshIndicator(
-                            backgroundColor: Colors.white,
-                            onRefresh: () => _setupEventFeed(),
-                            child: SingleChildScrollView(
-                                child: NoFeed(
-                              title: "Set up your event feed. ",
-                              subTitle:
-                                  'Your event feed contains events by people you follow. You can set up your feed by exploring events and following people by tapping on the button below. You can also discover people based on account types you are interested in by tapping on the discover icon on the bottom navigation bar.',
-                              buttonText: 'Explore Events',
-                              onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => EventPage(
-                                    currentUserId: widget.currentUserId,
-                                    user: user,
-                                  ),
-                                ),
-                              ),
-                            )),
-                          )
-                        : Center(child: EventSchimmer()),
-              )
-            ],
-          ),
+          // ignore: unnecessary_null_comparison
+          child: user == null
+              ? NoContents(
+                  icon: (Icons.error),
+                  title: 'Sorry',
+                  subTitle: 'We run into a prblem please refresh your app',
+                )
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      child: _events.length > 0
+                          ? RefreshIndicator(
+                              backgroundColor: Colors.white,
+                              onRefresh: () async {
+                                _setupEventFeed();
+                              },
+                              child: _buildEventBuilder(user))
+                          : _feedCount.isNegative
+                              ? RefreshIndicator(
+                                  backgroundColor: Colors.white,
+                                  onRefresh: () => _setupEventFeed(),
+                                  child: SingleChildScrollView(
+                                      child: NoFeed(
+                                    title: "Set up your event feed. ",
+                                    subTitle:
+                                        'Your event feed contains events by people you follow. You can set up your feed by exploring events and following people by tapping on the button below. You can also discover people based on account types you are interested in by tapping on the discover icon on the bottom navigation bar.',
+                                    buttonText: 'Explore Events',
+                                    onPressed: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => EventPage(
+                                          currentUserId: widget.currentUserId,
+                                          user: user,
+                                        ),
+                                      ),
+                                    ),
+                                  )),
+                                )
+                              : Center(child: EventSchimmer()),
+                    )
+                  ],
+                ),
         ),
       ),
     );
@@ -225,7 +235,7 @@ class _display extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId;
+        Provider.of<UserData>(context, listen: false).currentUserId!;
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(
           textScaleFactor:

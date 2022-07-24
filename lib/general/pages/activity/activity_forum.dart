@@ -132,7 +132,7 @@ class _ActivityForumScreenState extends State<ActivityForumScreen>
               _isLoading = true;
             });
             String currentUserId =
-                Provider.of<UserData>(context, listen: false).currentUserId;
+                Provider.of<UserData>(context, listen: false).currentUserId!;
             Forum forum = await DatabaseService.getUserForum(
               currentUserId,
               activityForum.forumId,

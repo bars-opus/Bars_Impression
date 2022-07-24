@@ -98,7 +98,7 @@ class _AllArtistPostsState extends State<AllArtistPosts> {
 
   _setUpArtistPuchCount() async {
     final String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId;
+        Provider.of<UserData>(context, listen: false).currentUserId!;
 
     DatabaseService.numArtistPunch(currentUserId, widget.artist)
         .listen((artistPunch) {
@@ -124,7 +124,7 @@ class _AllArtistPostsState extends State<AllArtistPosts> {
             MaterialPageRoute(
                 builder: (_) => ProfileScreen(
                       currentUserId:
-                          Provider.of<UserData>(context).currentUserId,
+                          Provider.of<UserData>(context).currentUserId!,
                       userId: user.id!,
                       user: null,
                     )));

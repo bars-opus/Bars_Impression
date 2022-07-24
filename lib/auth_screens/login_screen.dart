@@ -11,14 +11,15 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen>
     with SingleTickerProviderStateMixin {
- late Animation animation,
+  late Animation animation,
       delayedAnimation,
       muchDelayedAnimation,
       muchMoreDelayedAnimation;
- late AnimationController animationController;
+  late AnimationController animationController;
 
   final formKey = GlobalKey<FormState>();
- late String _email, _password;
+  String _email = '';
+  String _password = '';
   bool _isLoading = false;
   bool _isHidden = true;
 
@@ -102,12 +103,12 @@ class _LoginScreenState extends State<LoginScreen>
         password: Provider.of<UserData>(context, listen: false).post2,
       );
       // Navigator.pushReplacementNamed(context, WelcomeUsers.id);
+
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => DiscoverUser(
-            currentUserId:
-                Provider.of<UserData>(context, listen: false).currentUserId,
+            currentUserId: FirebaseAuth.instance.currentUser!.uid,
             isWelcome: true,
           ),
         ),

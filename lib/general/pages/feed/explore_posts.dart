@@ -367,7 +367,7 @@ class _ExplorePostsState extends State<ExplorePosts> {
                 MaterialPageRoute(
                     builder: (_) => ProfileScreen(
                           currentUserId:
-                              Provider.of<UserData>(context).currentUserId,
+                              Provider.of<UserData>(context).currentUserId!,
                           userId: accountHolder.id!,
                           user: null,
                         )))),

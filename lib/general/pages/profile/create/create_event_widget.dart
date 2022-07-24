@@ -71,6 +71,9 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
   TextEditingController? _controller;
   int index = 0;
   int showDatePicker = 0;
+  // late DateTime _date;
+  // late DateTime _toDaysDate;
+  // int _different = 0;
   int showTimePicker = 0;
   bool _isLoading = false;
   bool _isVirtual = false;
@@ -92,6 +95,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
 
   @override
   void initState() {
+    // _countDown();
     _type = widget.type;
     selectedValue = _type.isEmpty ? values.last : _type;
     _pageController = PageController(
@@ -113,6 +117,18 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
       Provider.of<UserData>(context, listen: false).setPost10(widget.country);
     });
   }
+
+  // _countDown() async {
+  //   DateTime date = DateTime.parse(widget.date);
+  //   final toDayDate = DateTime.now();
+  //   // var different = date.difference(toDayDate).inDays;
+
+  //   setState(() {
+  //     // _different = different;
+  //     _date = date;
+  //     _toDaysDate = toDayDate;
+  //   });
+  // }
 
   _handleImage() async {
     final file = await PickCropImage.pickedMedia(cropImage: _cropImage);
@@ -204,7 +220,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
         ? 600.0
         : MediaQuery.of(context).size.width;
     String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId;
+        Provider.of<UserData>(context, listen: false).currentUserId!;
     DatabaseService.deleteEvent(
         currentUserId: currentUserId, event: widget.event!, photoId: '');
     FirebaseStorage.instance
@@ -302,7 +318,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
         guess: widget.guess,
         host: Provider.of<UserData>(context, listen: false).post4!,
         artist: widget.artist,
-        authorId: Provider.of<UserData>(context, listen: false).currentUserId,
+        authorId: Provider.of<UserData>(context, listen: false).currentUserId!,
         timestamp: widget.event!.timestamp,
         previousEvent: widget.previousEvent,
         triller: widget.triller,
@@ -405,24 +421,26 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
     setState(() {
       _isLoading = true;
     });
-    List<Location> locations = await locationFromAddress(
-        Provider.of<UserData>(context, listen: false).post5);
-    List<Placemark> placemarks = await placemarkFromCoordinates(
-        locations[0].latitude, locations[0].longitude);
-    placemarks[0].toString();
-    setState(() {
-      index = 0;
-      Provider.of<UserData>(context, listen: false).setPost9(
-          placemarks[0].locality! == null ? '' : placemarks[0].locality!);
-      Provider.of<UserData>(context, listen: false).setPost10(
-          placemarks[0].country! == null ? '' : placemarks[0].country!);
-    });
-
+    try {
+      List<Location> locations = await locationFromAddress(
+          Provider.of<UserData>(context, listen: false).post5);
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+          locations[0].latitude, locations[0].longitude);
+      placemarks[0].toString();
+      String s = Provider.of<UserData>(context, listen: false).post5;
+      var pos = s.lastIndexOf('.');
+      String result = (pos != -1) ? s.substring(0, pos) : s;
+      setState(() {
+        index = 0;
+        Provider.of<UserData>(context, listen: false).setPost10(
+            placemarks[0].country! == null ? result : placemarks[0].country!);
+      });
+    } catch (e) {}
+    Provider.of<UserData>(context, listen: false).addressSearchResults = [];
     setState(() {
       _isLoading = false;
-
-      animateToPage();
     });
+    animateToPage();
   }
 
   _submitCreate() async {
@@ -434,6 +452,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
       final double width = Responsive.isDesktop(context)
           ? 600.0
           : MediaQuery.of(context).size.width;
+      FocusScope.of(context).unfocus();
       Flushbar(
         maxWidth: MediaQuery.of(context).size.width,
         backgroundColor: Color(0xFF1a1a1a),
@@ -468,9 +487,12 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
 
       String? imageUrl = await StorageService.uploadEvent(
           Provider.of<UserData>(context, listen: false).postImage!);
+
       Event event = Event(
         imageUrl: imageUrl,
-        type: Provider.of<UserData>(context, listen: false).post6,
+        type: Provider.of<UserData>(context, listen: false).post6.isEmpty
+            ? "Others"
+            : Provider.of<UserData>(context, listen: false).post6,
         title: Provider.of<UserData>(context, listen: false).post1,
         rate: Provider.of<UserData>(context, listen: false).post3,
         venue: widget.isVirtual || _isVirtual
@@ -484,7 +506,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
         guess: widget.guess,
         host: Provider.of<UserData>(context, listen: false).post4!,
         artist: widget.artist,
-        authorId: Provider.of<UserData>(context, listen: false).currentUserId,
+        authorId: Provider.of<UserData>(context, listen: false).currentUserId!,
         timestamp: Timestamp.fromDate(DateTime.now()),
         previousEvent: widget.previousEvent,
         triller: widget.triller,
@@ -635,7 +657,8 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
             onChanged: (value) => setState(
               () {
                 _type = (this.selectedValue = value!);
-                Provider.of<UserData>(context, listen: false).setPost6(_type);
+                Provider.of<UserData>(context, listen: false)
+                    .setPost6(this.selectedValue = value);
               },
             ),
           );
@@ -686,12 +709,8 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                   ),
                 ),
                 onPressed: () {
-                  if (widget.type.isEmpty) {
-                    widget.type = "Others";
-                    Provider.of<UserData>(context, listen: false)
-                        .setPost6('Others');
-                  }
-
+                  Provider.of<UserData>(context, listen: false)
+                      .setPost6('Others');
                   animateToPage();
                 }),
           ),
@@ -736,31 +755,8 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
             ),
           ),
           SizedBox(height: 70),
-          AnimatedContainer(
-            duration: Duration(milliseconds: 300),
-            height: minTime.isBefore(dayTime) ? 0.0 : null,
-            curve: Curves.bounceInOut,
-            child: Container(
-              width: 200,
-              child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    primary: Colors.blue,
-                    side: BorderSide(
-                      width: 1.0,
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
-                  child: Text(
-                    'Pick Time',
-                    style: TextStyle(
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                    ),
-                  ),
+          widget.isEditting
+              ? AlwaysWhiteButton(
                   onPressed: () {
                     Provider.of<UserData>(context, listen: false)
                         .setPost7(dayTime.toString());
@@ -771,9 +767,48 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                     print(
                       widget.time,
                     );
-                  }),
-            ),
-          ),
+                  },
+                  buttonText: widget.isEditting ? 'Next' : "Continue")
+              : AnimatedContainer(
+                  duration: Duration(milliseconds: 300),
+                  height: minTime.isBefore(dayTime) ? 0.0 : null,
+                  curve: Curves.bounceInOut,
+                  child: Container(
+                    width: 200,
+                    child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          primary: Colors.blue,
+                          side: BorderSide(
+                            width: 1.0,
+                            color: ConfigBloc().darkModeOn
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
+                        child: Text(
+                          'Pick Time',
+                          style: TextStyle(
+                            color: ConfigBloc().darkModeOn
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        ),
+                        onPressed: () {
+                          Provider.of<UserData>(context, listen: false)
+                              .setPost7(dayTime.toString());
+                          setState(() {
+                            widget.time = dayTime.toString();
+                          });
+                          animateToPage();
+                          print(
+                            widget.time,
+                          );
+                        }),
+                  ),
+                ),
         ],
       );
 
@@ -807,7 +842,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
               padding: const EdgeInsets.all(30.0),
               child: CupertinoDatePicker(
                 minimumYear: 2021,
-                maximumYear: 2022,
+                maximumYear: 2023,
                 minimumDate: minDateTime,
                 initialDateTime: widget.date.isEmpty
                     ? minDateTime
@@ -821,36 +856,8 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
             ),
           ),
           SizedBox(height: 70),
-          AnimatedContainer(
-            duration: Duration(milliseconds: 300),
-            height:
-                minDateTime.add(Duration(days: 1)).isAtSameMomentAs(dateTime) ||
-                        minDateTime.isAfter(dateTime) ||
-                        minDateTime.add(Duration(days: 1)).isAfter(dateTime)
-                    ? 0.0
-                    : null,
-            curve: Curves.bounceInOut,
-            child: Container(
-              width: 200,
-              child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    primary: Colors.blue,
-                    side: BorderSide(
-                      width: 1.0,
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
-                  child: Text(
-                    'Pick Date',
-                    style: TextStyle(
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                    ),
-                  ),
+          widget.isEditting
+              ? AlwaysWhiteButton(
                   onPressed: () {
                     Provider.of<UserData>(context, listen: false)
                         .setPost8(dateTime.toString());
@@ -858,9 +865,51 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                       widget.date = dateTime.toString();
                     });
                     animateToPage();
-                  }),
-            ),
-          ),
+                  },
+                  buttonText: widget.isEditting ? 'Next' : "Continue")
+              : AnimatedContainer(
+                  duration: Duration(milliseconds: 300),
+                  height: minDateTime
+                              .add(Duration(days: 1))
+                              .isAtSameMomentAs(dateTime) ||
+                          minDateTime.isAfter(dateTime) ||
+                          minDateTime.add(Duration(days: 1)).isAfter(dateTime)
+                      ? 0.0
+                      : null,
+                  curve: Curves.bounceInOut,
+                  child: Container(
+                    width: 200,
+                    child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          primary: Colors.blue,
+                          side: BorderSide(
+                            width: 1.0,
+                            color: ConfigBloc().darkModeOn
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
+                        child: Text(
+                          'Pick Date',
+                          style: TextStyle(
+                            color: ConfigBloc().darkModeOn
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        ),
+                        onPressed: () {
+                          Provider.of<UserData>(context, listen: false)
+                              .setPost8(dateTime.toString());
+                          setState(() {
+                            widget.date = dateTime.toString();
+                          });
+                          animateToPage();
+                        }),
+                  ),
+                ),
         ],
       );
 
@@ -980,6 +1029,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
     Provider.of<UserData>(context, listen: false).setPost8('');
     Provider.of<UserData>(context, listen: false).setPost9('');
     Provider.of<UserData>(context, listen: false).setPost10('');
+    Provider.of<UserData>(context, listen: false).addressSearchResults = [];
   }
 
   _pop() {
@@ -1036,7 +1086,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
             key: _formKey,
             child: PageView(
               controller: _pageController,
-              physics: NeverScrollableScrollPhysics(),
+              physics: AlwaysScrollableScrollPhysics(),
               onPageChanged: (int index) {
                 setState(() {
                   _indexx = index;
@@ -1252,26 +1302,23 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                           fontWeight: FontWeight.bold),
                                     ),
                                   )
-                                : DirectionWidget(
-                                    fontSize: null,
-                                    text: widget.isVirtual || _isVirtual
-                                        ? 'Enter the host link of the event. It will help other users virtually join the event if they are interested. '
-                                        : 'Enter the address venue of the event. Make sure you select the correct address from the list suggested below. It will help other users navigate to the venue if they are interested. ',
-                                  ),
-                            _isfetchingAddress
-                                ? Padding(
-                                    padding: const EdgeInsets.only(
-                                        bottom: 10.0, top: 20),
-                                    child: SizedBox(
-                                      height: 2.0,
-                                      child: LinearProgressIndicator(
-                                        backgroundColor: Colors.transparent,
-                                        valueColor:
-                                            AlwaysStoppedAnimation(Colors.grey),
+                                : _isfetchingAddress
+                                    ? SizedBox.shrink()
+                                    : DirectionWidget(
+                                        fontSize: null,
+                                        text: widget.isVirtual || _isVirtual
+                                            ? 'Enter the host link of the event. It will help other users virtually join the event if they are interested. '
+                                            : 'Enter the address venue of the event. Make sure you select the correct address from the list suggested below. It will help other users navigate to the venue if they are interested. ',
                                       ),
-                                    ),
-                                  )
-                                : SizedBox.shrink(),
+                            Text(
+                              Provider.of<UserData>(context, listen: false)
+                                  .post10
+                                  .toString(),
+                              style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                            ),
                             SizedBox(height: 10),
                             widget.isVirtual || _isVirtual
                                 ? ContentField(
@@ -1359,67 +1406,94 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                 child: SingleChildScrollView(
                                   child: widget.isVirtual || _isVirtual
                                       ? SizedBox.shrink()
-                                      : Container(
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .width -
-                                              100,
-                                          width: double.infinity,
-                                          decoration: BoxDecoration(
-                                            color: Colors.transparent,
-                                            shape: BoxShape.rectangle,
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          child: ListView.builder(
-                                            itemCount: Provider.of<UserData>(
-                                                    context,
-                                                    listen: false)
-                                                .addressSearchResults!
-                                                .length,
-                                            itemBuilder: (context, index) {
-                                              return ListTile(
-                                                  title: Text(
-                                                    Provider.of<UserData>(
-                                                            context,
-                                                            listen: false)
-                                                        .addressSearchResults![
-                                                            index]
-                                                        .description,
-                                                    style: TextStyle(
-                                                      color: ConfigBloc()
-                                                              .darkModeOn
-                                                          ? Colors.white
-                                                          : Colors.black,
+                                      : Column(
+                                          children: [
+                                            _isfetchingAddress
+                                                ? Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            bottom: 5.0,
+                                                            top: 10),
+                                                    child: SizedBox(
+                                                      height: 2.0,
+                                                      child:
+                                                          LinearProgressIndicator(
+                                                        backgroundColor:
+                                                            Colors.transparent,
+                                                        valueColor:
+                                                            AlwaysStoppedAnimation(
+                                                                Colors.grey),
+                                                      ),
                                                     ),
-                                                  ),
-                                                  onTap: () {
+                                                  )
+                                                : SizedBox.shrink(),
+                                            Container(
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .width -
+                                                  100,
+                                              width: double.infinity,
+                                              decoration: BoxDecoration(
+                                                color: Colors.transparent,
+                                                shape: BoxShape.rectangle,
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              child: ListView.builder(
+                                                itemCount:
                                                     Provider.of<UserData>(
                                                             context,
                                                             listen: false)
-                                                        .setPost5(Provider.of<
-                                                                    UserData>(
+                                                        .addressSearchResults!
+                                                        .length,
+                                                itemBuilder: (context, index) {
+                                                  return ListTile(
+                                                      title: Text(
+                                                        Provider.of<UserData>(
                                                                 context,
                                                                 listen: false)
                                                             .addressSearchResults![
                                                                 index]
-                                                            .description);
-                                                    setState(() {
-                                                      _isfetchingAddress =
-                                                          false;
+                                                            .description,
+                                                        style: TextStyle(
+                                                          color: ConfigBloc()
+                                                                  .darkModeOn
+                                                              ? Colors.white
+                                                              : Colors.black,
+                                                        ),
+                                                      ),
+                                                      onTap: () {
+                                                        Provider.of<UserData>(
+                                                                context,
+                                                                listen: false)
+                                                            .setPost5(Provider.of<
+                                                                        UserData>(
+                                                                    context,
+                                                                    listen:
+                                                                        false)
+                                                                .addressSearchResults![
+                                                                    index]
+                                                                .description);
+                                                        setState(() {
+                                                          _isfetchingAddress =
+                                                              false;
 
-                                                      widget.venue = Provider
-                                                              .of<UserData>(
-                                                                  context,
-                                                                  listen: false)
-                                                          .addressSearchResults![
-                                                              index]
-                                                          .description;
-                                                    });
-                                                    _reverseGeocoding();
-                                                  });
-                                            },
-                                          ),
+                                                          widget
+                                                              .venue = Provider
+                                                                  .of<UserData>(
+                                                                      context,
+                                                                      listen:
+                                                                          false)
+                                                              .addressSearchResults![
+                                                                  index]
+                                                              .description;
+                                                        });
+                                                        _reverseGeocoding();
+                                                      });
+                                                },
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                 ),
                               ),
@@ -1502,7 +1576,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                           ContentField(
                             labelText: 'Rate',
                             hintText:
-                                "currency - amount: example (Ghc: 00) or Free   ",
+                                "currency - amount: example (\$: 00.0) or Free   ",
                             initialValue:
                                 Provider.of<UserData>(context, listen: false)
                                     .post3
@@ -1528,6 +1602,26 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                 ? "The host cannot be empty"
                                 : null,
                           ),
+                          Provider.of<UserData>(context, listen: false)
+                                  .post10
+                                  .isEmpty
+                              ? ContentField(
+                                  labelText: 'Country',
+                                  hintText: "Country of event",
+                                  initialValue: Provider.of<UserData>(context,
+                                          listen: false)
+                                      .post4
+                                      .toString(),
+                                  onSavedText: (input) => Provider.of<UserData>(
+                                          context,
+                                          listen: false)
+                                      .setPost4(input),
+                                  onValidateText: (input) =>
+                                      input.trim().length < 1
+                                          ? "Enter the country of event"
+                                          : null,
+                                )
+                              : SizedBox.shrink(),
                           SizedBox(height: 70),
                           AlwaysWhiteButton(
                               onPressed: _validate,

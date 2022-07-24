@@ -33,7 +33,7 @@ class _CreateForumState extends State<CreateForum> {
         subTitle: _subTitle,
         report: '',
         reportConfirmed: '',
-        authorId: Provider.of<UserData>(context, listen: false).currentUserId,
+        authorId: Provider.of<UserData>(context, listen: false).currentUserId!,
         timestamp: Timestamp.fromDate(DateTime.now()),
         id: '',
       );

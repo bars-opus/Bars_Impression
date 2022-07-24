@@ -141,7 +141,7 @@ class _EditCommentsState extends State<EditComments> {
       Comment comment = Comment(
         id: widget.comment.id,
         content: _content,
-        authorId: Provider.of<UserData>(context).currentUserId,
+        authorId: Provider.of<UserData>(context, listen: false).currentUserId!,
         timestamp: widget.comment.timestamp,
         report: '',
         reportConfirmed: '',
@@ -150,7 +150,7 @@ class _EditCommentsState extends State<EditComments> {
       try {
         Navigator.pop(context);
         DatabaseService.editComments(comment, widget.post);
-        Navigator.pop(context);
+
         final double width = MediaQuery.of(context).size.width;
         Flushbar(
           margin: EdgeInsets.all(8),

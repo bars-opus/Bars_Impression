@@ -37,9 +37,11 @@ class _ProfileRatingState extends State<ProfileRating> {
       currentUserId: widget.currentUserId,
       userId: widget.user.id!,
     );
-    setState(() {
-      _isRatingUserPossitively = isRattingUserPossitively;
-    });
+    if (mounted) {
+      setState(() {
+        _isRatingUserPossitively = isRattingUserPossitively;
+      });
+    }
   }
 
   _setUpIsNegativelyRating() async {
@@ -47,45 +49,55 @@ class _ProfileRatingState extends State<ProfileRating> {
       currentUserId: widget.currentUserId,
       userId: widget.user.id!,
     );
-    setState(() {
-      _isRatingUserNegatively = isRattingUserNegatively;
-    });
+    if (mounted) {
+      setState(() {
+        _isRatingUserNegatively = isRattingUserNegatively;
+      });
+    }
   }
 
   _setUpPossitiveRated() async {
     int userPossitiveRatedCount = await DatabaseService.numPosstiveRated(
       widget.user.id!,
     );
-    setState(() {
-      _possitiveRatedCount = userPossitiveRatedCount;
-    });
+    if (mounted) {
+      setState(() {
+        _possitiveRatedCount = userPossitiveRatedCount;
+      });
+    }
   }
 
   _setUpNegativeRated() async {
     int userNegativeRatedCount = await DatabaseService.numNegativeRated(
       widget.user.id!,
     );
-    setState(() {
-      _negativeRatedCount = userNegativeRatedCount;
-    });
+    if (mounted) {
+      setState(() {
+        _negativeRatedCount = userNegativeRatedCount;
+      });
+    }
   }
 
   _setUpPossitiveRating() async {
     int userPossitiveRatingCount = await DatabaseService.numPossitiveRating(
       widget.user.id!,
     );
-    setState(() {
-      _possitiveRatingCount = userPossitiveRatingCount;
-    });
+    if (mounted) {
+      setState(() {
+        _possitiveRatingCount = userPossitiveRatingCount;
+      });
+    }
   }
 
   _setUpNegativeRating() async {
     int userNegativeRatingCount = await DatabaseService.numNegativeRating(
       widget.user.id!,
     );
-    setState(() {
-      _negativeRatingCount = userNegativeRatingCount;
-    });
+    if (mounted) {
+      setState(() {
+        _negativeRatingCount = userNegativeRatingCount;
+      });
+    }
   }
 
   _unPossitivelyRateUser() {
@@ -93,10 +105,12 @@ class _ProfileRatingState extends State<ProfileRating> {
       currentUserId: widget.currentUserId,
       userId: widget.user.id!,
     );
-    setState(() {
-      _isRatingUserPossitively = false;
-      _possitiveRatedCount--;
-    });
+    if (mounted) {
+      setState(() {
+        _isRatingUserPossitively = false;
+        _possitiveRatedCount--;
+      });
+    }
   }
 
   _unNegativelyRateUser() {
@@ -104,10 +118,12 @@ class _ProfileRatingState extends State<ProfileRating> {
       currentUserId: widget.currentUserId,
       userId: widget.user.id!,
     );
-    setState(() {
-      _isRatingUserNegatively = false;
-      _negativeRatedCount--;
-    });
+    if (mounted) {
+      setState(() {
+        _isRatingUserNegatively = false;
+        _negativeRatedCount--;
+      });
+    }
   }
 
   _possitivelyRateUser() {
@@ -115,10 +131,12 @@ class _ProfileRatingState extends State<ProfileRating> {
       currentUserId: widget.currentUserId,
       userId: widget.user.id!,
     );
-    setState(() {
-      _isRatingUserPossitively = true;
-      _possitiveRatedCount++;
-    });
+    if (mounted) {
+      setState(() {
+        _isRatingUserPossitively = true;
+        _possitiveRatedCount++;
+      });
+    }
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(
         'Rating ' + widget.user.userName! + ' + 1',
@@ -132,10 +150,12 @@ class _ProfileRatingState extends State<ProfileRating> {
       currentUserId: widget.currentUserId,
       userId: widget.user.id!,
     );
-    setState(() {
-      _isRatingUserNegatively = true;
-      _negativeRatedCount++;
-    });
+    if (mounted) {
+      setState(() {
+        _isRatingUserNegatively = true;
+        _negativeRatedCount++;
+      });
+    }
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(
         'Rating ' + widget.user.userName! + ' - 1',
@@ -145,7 +165,7 @@ class _ProfileRatingState extends State<ProfileRating> {
   }
 
   _buildHowYouRateForYou(AccountHolder user) {
-    String currentUserId = Provider.of<UserData>(context).currentUserId;
+    String currentUserId = Provider.of<UserData>(context).currentUserId!;
     final width = Responsive.isDesktop(context)
         ? 600.0
         : MediaQuery.of(context).size.width;
@@ -269,7 +289,7 @@ class _ProfileRatingState extends State<ProfileRating> {
 
   @override
   Widget build(BuildContext context) {
-    String currentUserId = Provider.of<UserData>(context).currentUserId;
+    String currentUserId = Provider.of<UserData>(context).currentUserId!;
     int _point = _possitiveRatedCount - _negativeRatedCount;
     int _total = _possitiveRatedCount + _negativeRatedCount;
 
@@ -370,8 +390,9 @@ class _ProfileRatingState extends State<ProfileRating> {
                                 widget.user.profileHandle!.isEmpty
                             ? SizedBox.shrink()
                             : RichText(
-                                textScaleFactor:
-                                   MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5),
+                                textScaleFactor: MediaQuery.of(context)
+                                    .textScaleFactor
+                                    .clamp(0.5, 1.5),
                                 text: TextSpan(children: [
                                   TextSpan(
                                       text:

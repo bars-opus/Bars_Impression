@@ -129,7 +129,7 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
 
   _buildThought(Thought thought, AccountHolder author) {
     final width = MediaQuery.of(context).size.width;
-    final String currentUserId = Provider.of<UserData>(context).currentUserId;
+    final String currentUserId = Provider.of<UserData>(context).currentUserId!;
     return FutureBuilder(
       future: DatabaseService.getUserWithId(thought.authorId),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -179,7 +179,7 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                               builder: (_) => ProfileScreen(
                                     currentUserId:
                                         Provider.of<UserData>(context)
-                                            .currentUserId,
+                                            .currentUserId!,
                                     userId: author.id!,
                                     user: widget.author,
                                   )))
@@ -189,7 +189,7 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                               builder: (_) => ProfileProfessionalProfile(
                                     currentUserId:
                                         Provider.of<UserData>(context)
-                                            .currentUserId,
+                                            .currentUserId!,
                                     user: author,
                                     userId: author.id!,
                                   ))),
@@ -403,7 +403,7 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                                     builder: (_) => ProfileScreen(
                                           currentUserId:
                                               Provider.of<UserData>(context)
-                                                  .currentUserId,
+                                                  .currentUserId!,
                                           userId: author.id!,
                                           user: widget.author,
                                         ))),
@@ -479,7 +479,7 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
   }
 
   _buildThoughtTF() {
-    final currentUserId = Provider.of<UserData>(context).currentUserId;
+    final currentUserId = Provider.of<UserData>(context).currentUserId!;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 20.0),
       child: AnimatedContainer(

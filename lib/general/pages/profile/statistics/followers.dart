@@ -110,7 +110,7 @@ class _FollowersState extends State<Followers>
               MaterialPageRoute(
                   builder: (_) => ProfileScreen(
                         currentUserId:
-                            Provider.of<UserData>(context).currentUserId,
+                            Provider.of<UserData>(context).currentUserId!,
                         userId: user.id!, user: null,
                       )));
         });

@@ -49,9 +49,11 @@ class EventSchimmerSkeleton extends StatelessWidget {
                   child: Container(
                     width: width / 1.5,
                     height: MediaQuery.of(context).size.width / 2,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
+                    child: ListView(
+                      physics: NeverScrollableScrollPhysics(),
+                      scrollDirection: Axis.vertical,
+                      // crossAxisAlignment: CrossAxisAlignment.start,
+                      // mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
                         Material(
                             color: Colors.transparent,

@@ -77,7 +77,7 @@ class _AsksScreenState extends State<AsksScreen> {
 
   _buildAsk(Ask ask, AccountHolder author) {
     final width = MediaQuery.of(context).size.width;
-    final String currentUserId = Provider.of<UserData>(context).currentUserId;
+    final String currentUserId = Provider.of<UserData>(context).currentUserId!;
     return FutureBuilder(
       future: DatabaseService.getUserWithId(ask.authorId),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -125,7 +125,7 @@ class _AsksScreenState extends State<AsksScreen> {
                               builder: (_) => ProfileScreen(
                                     currentUserId:
                                         Provider.of<UserData>(context)
-                                            .currentUserId,
+                                            .currentUserId!,
                                     userId: author.id!,
                                     user: widget.author,
                                   )))
@@ -135,7 +135,7 @@ class _AsksScreenState extends State<AsksScreen> {
                               builder: (_) => ProfileProfessionalProfile(
                                     currentUserId:
                                         Provider.of<UserData>(context)
-                                            .currentUserId,
+                                            .currentUserId!,
                                     user: author,
                                     userId: author.id!,
                                   ))),
@@ -262,7 +262,7 @@ class _AsksScreenState extends State<AsksScreen> {
                             .post9
                             .isNotEmpty) {
                           DatabaseService.askAboutEvent(
-                            currentUserId: currentUserId,
+                            currentUserId: currentUserId!,
                             event: widget.event,
                             reportConfirmed: '',
                             ask: _askController.text,

@@ -256,7 +256,9 @@ class _AwardEventsLocationState extends State<AwardEventsLocation>
                     child: _buildUser()))
             : _events.length == 0
                 ? Center(
-                    child: SizedBox.shrink(),
+                    child: NoUsersDicovered(
+                      title: 'Awards',
+                    ),
                   )
                 : Center(
                     child: EventSchimmer(),

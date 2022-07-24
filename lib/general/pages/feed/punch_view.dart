@@ -49,7 +49,7 @@ class _PunchViewState extends State<PunchView> {
                     MaterialPageRoute(
                         builder: (_) => ProfileScreen(
                               currentUserId:
-                                  Provider.of<UserData>(context).currentUserId,
+                                  Provider.of<UserData>(context).currentUserId!,
                               userId: widget.author.id!,
                               user: widget.author,
                             )))),
@@ -119,7 +119,7 @@ class _PunchViewState extends State<PunchView> {
                               builder: (_) => ProfileProfessionalProfile(
                                     currentUserId:
                                         Provider.of<UserData>(context)
-                                            .currentUserId,
+                                            .currentUserId!,
                                     user: widget.author,
                                     userId: widget.author.id!,
                                   ))),
@@ -171,7 +171,7 @@ class _PunchViewState extends State<PunchView> {
                                     builder: (_) => ProfileScreen(
                                           currentUserId:
                                               Provider.of<UserData>(context)
-                                                  .currentUserId,
+                                                  .currentUserId!,
                                           userId: widget.author.id!,
                                           user: null,
                                         ))),

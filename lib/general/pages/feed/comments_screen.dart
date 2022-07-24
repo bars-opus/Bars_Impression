@@ -84,7 +84,7 @@ class _CommentsScreenState extends State<CommentsScreen>
 
   _buildComment(Comment comment, AccountHolder author) {
     final width = MediaQuery.of(context).size.width;
-    final String currentUserId = Provider.of<UserData>(context).currentUserId;
+    final String currentUserId = Provider.of<UserData>(context).currentUserId!;
     return FutureBuilder(
       future: DatabaseService.getUserWithId(comment.authorId),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -132,7 +132,7 @@ class _CommentsScreenState extends State<CommentsScreen>
                               builder: (_) => ProfileScreen(
                                     currentUserId:
                                         Provider.of<UserData>(context)
-                                            .currentUserId,
+                                            .currentUserId!,
                                     userId: author.id!,
                                     user: null,
                                   )))
@@ -142,7 +142,7 @@ class _CommentsScreenState extends State<CommentsScreen>
                               builder: (_) => ProfileProfessionalProfile(
                                     currentUserId:
                                         Provider.of<UserData>(context)
-                                            .currentUserId,
+                                            .currentUserId!,
                                     user: author,
                                     userId: author.id!,
                                   ))),
@@ -279,7 +279,7 @@ class _CommentsScreenState extends State<CommentsScreen>
                             .post9
                             .isNotEmpty) {
                           DatabaseService.commentOnPost(
-                            currentUserId: currentUserId,
+                            currentUserId: currentUserId!,
                             post: widget.post,
                             comment: _commentController.text,
                             reportConfirmed: '',

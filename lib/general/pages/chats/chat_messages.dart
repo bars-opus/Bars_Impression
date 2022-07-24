@@ -113,10 +113,55 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   _deleteMessage(
     ChatMessage message,
   ) {
+    final double width = Responsive.isDesktop(
+      context,
+    )
+        ? 600.0
+        : MediaQuery.of(context).size.width;
     DatabaseService.deleteMessage(
         currentUserId: widget.currentUserId,
         userId: widget.user.id!,
         message: message);
+    message.imageUrl.isEmpty
+        ? () {}
+        : FirebaseStorage.instance
+            .refFromURL(message.imageUrl)
+            .delete()
+            .catchError(
+              (e) => Flushbar(
+                margin: EdgeInsets.all(8),
+                boxShadows: [
+                  BoxShadow(
+                    color: Colors.black,
+                    offset: Offset(0.0, 2.0),
+                    blurRadius: 3.0,
+                  )
+                ],
+                flushbarPosition: FlushbarPosition.TOP,
+                flushbarStyle: FlushbarStyle.FLOATING,
+                titleText: Text(
+                  'Sorry',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: width > 800 ? 22 : 14,
+                  ),
+                ),
+                messageText: Text(
+                  e.toString(),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: width > 800 ? 20 : 12,
+                  ),
+                ),
+                icon: Icon(
+                  Icons.info_outline,
+                  size: 28.0,
+                  color: Colors.blue,
+                ),
+                duration: Duration(seconds: 3),
+                leftBarIndicatorColor: Colors.blue,
+              )..show(context),
+            );
   }
 
   _unLikeMessage(
@@ -264,7 +309,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     ChatMessage message,
   ) {
     final width = MediaQuery.of(context).size.width;
-    final String currentUserId = Provider.of<UserData>(context).currentUserId;
+    final String currentUserId = Provider.of<UserData>(context).currentUserId!;
     return FocusedMenuHolder(
       menuWidth: width,
       menuOffset: 1,
@@ -357,13 +402,18 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
               curve: Curves.easeInOutBack,
               offset: -140.0,
               child: Container(
-                decoration:
-                    BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                decoration: BoxDecoration(
+                    color: currentUserId == message.authorId
+                        ? Colors.white
+                        : Colors.grey,
+                    shape: BoxShape.circle),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Icon(
                     Icons.reply,
-                    color: Colors.grey,
+                    color: currentUserId == message.authorId
+                        ? Colors.grey
+                        : Colors.white,
                   ),
                 ),
               ),
@@ -848,17 +898,13 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                                         listen: false)
                                                     .messageCount <
                                                 1
-                                            ? () {
-                                                _submitMessageFirstMessage();
-                                              }
-                                            : () {
-                                                Provider.of<UserData>(context,
-                                                                listen: false)
-                                                            .postImage !=
-                                                        null
-                                                    ? _submitMessageWithImage()
-                                                    : _submitMessageWithoutImage();
-                                              };
+                                            ? _submitMessageFirstMessage()
+                                            : Provider.of<UserData>(context,
+                                                            listen: false)
+                                                        .postImage !=
+                                                    null
+                                                ? _submitMessageWithImage()
+                                                : _submitMessageWithoutImage();
                                       })),
                             ],
                           ),
@@ -883,7 +929,8 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
         messageInitiator: currentUser.userName!,
         restrictChat: false,
         imageUrl: '',
-        chat: widget.chat!,
+        MediaType: '',
+        // chat: widget.chat!,
         replyingAuthor: '',
         replyingMessage: '',
         reportConfirmed: '',
@@ -909,33 +956,32 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     String imageUrl = await StorageService.uploadMessageImage(
         Provider.of<UserData>(context, listen: false).postImage!);
     HapticFeedback.mediumImpact();
-    if (Provider.of<UserData>(context, listen: false).post9.isNotEmpty) {
-      DatabaseService.chatMessage(
-        currentUserId: widget.currentUserId,
-        userId: widget.user.id!,
-        imageUrl: imageUrl,
-        chat: widget.chat!,
-        replyingAuthor: Provider.of<UserData>(context, listen: false).post7 ==
-                widget.currentUserId
-            ? 'Me'
-            : widget.user.userName!,
-        replyingMessage: Provider.of<UserData>(context, listen: false).post8,
-        reportConfirmed: '',
-        liked: '',
-        message: _adviceControler.text,
-      );
-      _adviceControler.clear();
-      Provider.of<UserData>(context, listen: false).setPost9('');
-      setState(() {
-        _isAdvicingUser = false;
-        _isreplying = false;
-        imageUrl = '';
-        _isLoading = false;
-      });
-      Provider.of<UserData>(context, listen: false).setPostImage(null);
-      Provider.of<UserData>(context, listen: false).setPost8('');
-      Provider.of<UserData>(context, listen: false).setPost7('');
-    }
+    DatabaseService.chatMessage(
+      currentUserId: widget.currentUserId,
+      userId: widget.user.id!,
+      imageUrl: imageUrl,
+      MediaType: 'Image',
+      replyingAuthor: Provider.of<UserData>(context, listen: false).post7 ==
+              widget.currentUserId
+          ? 'Me'
+          : widget.user.userName!,
+      replyingMessage: Provider.of<UserData>(context, listen: false).post8,
+      reportConfirmed: '',
+      liked: '',
+      message: _adviceControler.text.isEmpty ? "Image" : _adviceControler.text,
+    );
+    _adviceControler.clear();
+    Provider.of<UserData>(context, listen: false).setPost9('');
+    setState(() {
+      _isAdvicingUser = false;
+      _isreplying = false;
+      imageUrl = '';
+      _isLoading = false;
+    });
+    Provider.of<UserData>(context, listen: false).setPostImage(null);
+    Provider.of<UserData>(context, listen: false).setPost8('');
+    Provider.of<UserData>(context, listen: false).setPost7('');
+    // }
   }
 
   _submitMessageWithoutImage() async {
@@ -945,7 +991,8 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
         currentUserId: widget.currentUserId,
         userId: widget.user.id!,
         imageUrl: '',
-        chat: widget.chat!,
+        MediaType: '',
+        // chat: widget.chat!,
         replyingAuthor: Provider.of<UserData>(context, listen: false).post7 ==
                 widget.currentUserId
             ? 'Me'
@@ -1152,39 +1199,41 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                     ),
                                   ),
                                 ),
-                                AnimatedContainer(
-                                  duration: Duration(milliseconds: 500),
-                                  height: _isBlockedUser ||
-                                          widget.user.disableChat! ||
-                                          _restrictChat ||
-                                          Provider.of<UserData>(context,
-                                                  listen: false)
-                                              .user!
-                                              .disableChat!
-                                      ? 60
-                                      : 0.0,
-                                  child: ListTile(
-                                    leading: IconButton(
-                                      icon: Icon(Icons.error_outline),
-                                      iconSize: 25.0,
-                                      color: widget.chat!.restrictChat
-                                          ? Colors.red
-                                          : Colors.transparent,
-                                      onPressed: () => () {},
-                                    ),
-                                    title: Text(
-                                        widget.user.disableChat!
-                                            ? 'Disabled chat'
-                                            : _restrictChat
-                                                ? 'Restricted chat'
-                                                : '',
-                                        style: TextStyle(
-                                          fontSize: 12.0,
-                                          color: Colors.red,
-                                        )),
-                                    onTap: () => () {},
-                                  ),
-                                )
+                                widget.chat == null
+                                    ? SizedBox.shrink()
+                                    : AnimatedContainer(
+                                        duration: Duration(milliseconds: 500),
+                                        height: _isBlockedUser ||
+                                                widget.user.disableChat! ||
+                                                _restrictChat ||
+                                                Provider.of<UserData>(context,
+                                                        listen: false)
+                                                    .user!
+                                                    .disableChat!
+                                            ? 60
+                                            : 0.0,
+                                        child: ListTile(
+                                          leading: IconButton(
+                                            icon: Icon(Icons.error_outline),
+                                            iconSize: 25.0,
+                                            color: widget.chat!.restrictChat
+                                                ? Colors.red
+                                                : Colors.transparent,
+                                            onPressed: () => () {},
+                                          ),
+                                          title: Text(
+                                              widget.user.disableChat!
+                                                  ? 'Disabled chat'
+                                                  : _restrictChat
+                                                      ? 'Restricted chat'
+                                                      : '',
+                                              style: TextStyle(
+                                                fontSize: 12.0,
+                                                color: Colors.red,
+                                              )),
+                                          onTap: () => () {},
+                                        ),
+                                      )
                               ],
                             ),
                             widget.user.disableChat!

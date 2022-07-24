@@ -33,7 +33,7 @@ class _SuggestionBoxState extends State<SuggestionBox> {
 
       Suggestion suggestion = Suggestion(
         suggesttion: _suggestion,
-        authorId: Provider.of<UserData>(context, listen: false).currentUserId,
+        authorId: Provider.of<UserData>(context, listen: false).currentUserId!,
         timestamp: Timestamp.fromDate(DateTime.now()),
         id: '',
       );

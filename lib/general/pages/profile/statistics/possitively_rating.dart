@@ -85,7 +85,7 @@ class _PossitiveRatingState extends State<PossitiveRating> {
               MaterialPageRoute(
                   builder: (_) => ProfileScreen(
                         currentUserId:
-                            Provider.of<UserData>(context).currentUserId,
+                            Provider.of<UserData>(context).currentUserId!,
                         userId: user.id!,
                         user: user,
                       )));

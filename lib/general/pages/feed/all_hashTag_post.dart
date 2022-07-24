@@ -88,7 +88,7 @@ class _AllHashTagPostState extends State<AllHashTagPost> {
 
   _setUpArtistPuchCount() async {
     final String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId;
+        Provider.of<UserData>(context, listen: false).currentUserId!;
     DatabaseService.numHashTagPunch(currentUserId, widget.hashTag)
         .listen((hashTagPunch) {
       if (mounted) {

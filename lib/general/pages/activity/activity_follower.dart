@@ -181,7 +181,7 @@ class _ActivityFollowerScreenState extends State<ActivityFollowerScreen>
                         MaterialPageRoute(
                             builder: (_) => ProfileScreen(
                                   currentUserId: Provider.of<UserData>(context)
-                                      .currentUserId,
+                                      .currentUserId!,
                                   userId: activity.fromUserId,
                                   user: null,
                                 )));

@@ -30,7 +30,7 @@ class Authorview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String currentUserId = Provider.of<UserData>(context).currentUserId;
+    String currentUserId = Provider.of<UserData>(context).currentUserId!;
 
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(

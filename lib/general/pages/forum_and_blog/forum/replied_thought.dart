@@ -104,7 +104,7 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
   }
 
   _buildComment(ReplyThought replyThought, AccountHolder author) {
-    final String currentUserId = Provider.of<UserData>(context).currentUserId;
+    final String currentUserId = Provider.of<UserData>(context).currentUserId!;
     return Padding(
       padding: const EdgeInsets.only(left: 30.0),
       child: FutureBuilder(
@@ -199,7 +199,7 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
                 MaterialPageRoute(
                     builder: (_) => ProfileScreen(
                           currentUserId:
-                              Provider.of<UserData>(context).currentUserId,
+                              Provider.of<UserData>(context).currentUserId!,
                           userId: author.id!,
                           user: widget.author,
                         ))),
@@ -281,7 +281,7 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
                             HapticFeedback.mediumImpact();
                             DatabaseService.replyThought(
                               count: _count,
-                              currentUserId: currentUserId,
+                              currentUserId: currentUserId!,
                               forum: widget.forum,
                               replyThought: _replythoughtController.text,
                               thoughtId: widget.thought.id,
@@ -418,7 +418,7 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
                                                         currentUserId: Provider
                                                                 .of<UserData>(
                                                                     context)
-                                                            .currentUserId,
+                                                            .currentUserId!,
                                                         userId:
                                                             widget.author.id!,
                                                         user: widget.author,

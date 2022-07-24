@@ -8,6 +8,7 @@ class Chat {
   final String firstMessage;
   final String toUserId;
   final String seen;
+  final String MediaType;
   final bool restrictChat;
   final Timestamp newMessageTimestamp;
   final Timestamp timestamp;
@@ -19,6 +20,7 @@ class Chat {
     required this.firstMessage,
     required this.seen,
     required this.fromUserId,
+    required this.MediaType,
     required this.restrictChat,
     required this.newMessageTimestamp,
     required this.toUserId,
@@ -31,6 +33,7 @@ class Chat {
       lastMessage: doc['lastMessage'] ?? '',
       seen: doc['seen'] ?? '',
       fromUserId: doc['fromUserId'] ?? '',
+      MediaType: doc['MediaType'] ?? '',
       messageInitiator: doc['messageInitiator'] ?? '',
       firstMessage: doc['firstMessage'] ?? '',
       restrictChat: doc['restrictChat'] ?? false,

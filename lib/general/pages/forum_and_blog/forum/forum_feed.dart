@@ -223,7 +223,7 @@ class _display extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId;
+        Provider.of<UserData>(context, listen: false).currentUserId!;
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(
           textScaleFactor:

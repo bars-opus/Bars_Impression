@@ -138,7 +138,7 @@ class _EditForumState extends State<EditForum> {
         id: widget.forum.id,
         title: _title,
         subTitle: _subTitle,
-        authorId: Provider.of<UserData>(context, listen: false).currentUserId,
+        authorId: Provider.of<UserData>(context, listen: false).currentUserId!,
         timestamp: widget.forum.timestamp,
         report: '',
         reportConfirmed: '',

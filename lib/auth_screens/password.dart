@@ -1,5 +1,6 @@
 import 'package:bars/services/auth_reset_password.dart';
 import 'package:bars/utilities/exports.dart';
+import 'package:email_validator/email_validator.dart';
 
 class Password extends StatefulWidget {
   static final id = 'Passsword_screeen';
@@ -10,13 +11,13 @@ class Password extends StatefulWidget {
 
 class _PasswordState extends State<Password>
     with SingleTickerProviderStateMixin {
- late Animation animation,
+  late Animation animation,
       delayedAnimation,
       muchDelayedAnimation,
       muchMoreDelayedAnimation;
   late AnimationController animationController;
 
-  final formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   late String _email;
 
   @override
@@ -45,8 +46,8 @@ class _PasswordState extends State<Password>
   }
 
   _submit() {
-    if (formKey.currentState!.validate()) {
-      formKey.currentState!.save();
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
 
       AuthPassWord.resetPassword(context, _email);
     }
@@ -90,7 +91,7 @@ class _PasswordState extends State<Password>
                                     ))),
                           ),
                           Form(
-                            key: formKey,
+                            key: _formKey,
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
@@ -125,8 +126,10 @@ class _PasswordState extends State<Password>
                                               new UnderlineInputBorder(
                                                   borderSide: new BorderSide(
                                                       color: Colors.grey))),
-                                      validator: (input) => input!.contains('@')
-                                          ? 'Please enter a valid email'
+                                      validator: (email) => email != null &&
+                                              !EmailValidator.validate(
+                                                  email.trim())
+                                          ? 'Please enter your email'
                                           : null,
                                       onSaved: (input) => _email = input!,
                                     ),

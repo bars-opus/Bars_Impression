@@ -152,7 +152,7 @@ class _EventsAllLiveCityState extends State<EventsAllLiveCity>
     super.build(context);
     return Scaffold(
         backgroundColor:
-            ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+            ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
         body: _events.length > 0
             ? RefreshIndicator(
                 backgroundColor: Colors.white,
@@ -164,7 +164,9 @@ class _EventsAllLiveCityState extends State<EventsAllLiveCity>
                     child: _buildUser()))
             : _events.length == 0
                 ? Center(
-                    child: SizedBox.shrink(),
+                    child: NoUsersDicovered(
+                      title: 'Events\n in ${widget.liveCity}',
+                    ),
                   )
                 : Center(
                     child: EventSchimmer(),

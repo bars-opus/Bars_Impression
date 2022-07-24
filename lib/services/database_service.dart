@@ -205,7 +205,8 @@ class DatabaseService {
   static void firstChatMessage(
       {required String currentUserId,
       required String userId,
-      required Chat chat,
+      // required Chat chat,
+      required String MediaType,
       required String replyingMessage,
       required String replyingAuthor,
       required String imageUrl,
@@ -239,6 +240,7 @@ class DatabaseService {
         'messageInitiator': messageInitiator,
         'restrictChat': restrictChat,
         'firstMessage': message,
+        'MediaType': MediaType,
         'timestamp': Timestamp.fromDate(DateTime.now()),
         'seen': 'seen',
         'fromUserId': currentUserId,
@@ -271,6 +273,7 @@ class DatabaseService {
         'messageInitiator': messageInitiator,
         'restrictChat': restrictChat,
         'firstMessage': message,
+        'MediaType': MediaType,
         'timestamp': Timestamp.fromDate(DateTime.now()),
         'seen': ' ',
         'fromUserId': currentUserId,
@@ -285,11 +288,12 @@ class DatabaseService {
   static void chatMessage(
       {required String currentUserId,
       required String userId,
-      required Chat chat,
+      // required Chat chat,
       required String replyingMessage,
       required String replyingAuthor,
       required String imageUrl,
       required String message,
+      required String MediaType,
       required String liked,
       required String reportConfirmed}) {
     String messageId = Uuid().v4();
@@ -315,6 +319,7 @@ class DatabaseService {
       usersRef.doc(currentUserId).collection('chats').doc(userId).update({
         'lastMessage': message,
         'seen': 'seen',
+        'MediaType': MediaType,
         'newMessageTimestamp': Timestamp.fromDate(DateTime.now()),
       });
     });
@@ -340,6 +345,7 @@ class DatabaseService {
     }).then((value) {
       usersRef.doc(userId).collection('chats').doc(currentUserId).update({
         'lastMessage': message,
+        'MediaType': MediaType,
         'seen': ' ',
         'newMessageTimestamp': Timestamp.fromDate(DateTime.now()),
       });
@@ -1118,7 +1124,8 @@ class DatabaseService {
         updateIsAvailable: null,
         timeStamp: null,
         updateNote: '',
-        updateVersion: null);
+        updateVersionAndroid: null,
+        updateVersionIos: null);
   }
 
   static Future<AccountHolder> getUserWithId(String userId) async {

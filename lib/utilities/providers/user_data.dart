@@ -3,7 +3,7 @@ import 'package:bars/services/places_service.dart';
 import 'package:bars/utilities/exports.dart';
 
 class UserData extends ChangeNotifier {
-  late String currentUserId;
+  String? currentUserId;
   late String _navigationBar;
   late String _post1;
   late String _post2;

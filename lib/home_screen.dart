@@ -12,7 +12,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentTab = 0;
-  int _updateAppVersion = 5;
+  int _updateAppVersion = Platform.isIOS ? 4 : 3;
   late PageController _pageController;
   String notificationMsg = '';
 
@@ -27,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _setUpUser() async {
     final String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId;
+        Provider.of<UserData>(context, listen: false).currentUserId!;
     AccountHolder profileUser =
         await DatabaseService.getUserWithId(currentUserId);
     if (mounted) {
@@ -39,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _configureNotification() async {
     final String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId;
+        Provider.of<UserData>(context, listen: false).currentUserId!;
     FirebaseMessaging.instance.getToken().then((token) => {
           usersRef
               .doc(currentUserId)
@@ -156,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final String currentUserId = Provider.of<UserData>(context).currentUserId;
+    final String currentUserId = Provider.of<UserData>(context).currentUserId!;
     final double width = Responsive.isDesktop(
       context,
     )
@@ -173,6 +173,9 @@ class _HomeScreenState extends State<HomeScreen> {
               return PostSchimmerSkeleton();
             }
             UpdateApp _updateApp = snapshot.data;
+            int? version = Platform.isIOS
+                ? _updateApp.updateVersionIos
+                : _updateApp.updateVersionAndroid;
             return NestedScrollView(
                 headerSliverBuilder: (context, innerBoxScrolled) => [],
                 body: Responsive.isDesktop(context)
@@ -466,8 +469,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       )
                     :
                     // _updateApp == null
+
                     //     ?
-                    _updateAppVersion < _updateApp.updateVersion! &&
+                    _updateAppVersion < version! &&
                             _updateApp.displayFullUpdate!
                         ? UpdateAppInfo(
                             updateNote: _updateApp.updateNote!,
@@ -526,8 +530,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       bottom: 7,
                                       child: UpdateInfoMini(
                                         updateNote: _updateApp.updateNote!,
-                                        showinfo: _updateAppVersion <
-                                                _updateApp.updateVersion!
+                                        showinfo: _updateAppVersion < version
                                             ? true
                                             : false,
                                         displayMiniUpdate:

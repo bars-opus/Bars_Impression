@@ -29,6 +29,7 @@ class _ArtistsLiveState extends State<ArtistsLive>
   @override
   void initState() {
     super.initState();
+    
     _setupUsers();
     _hideButtonController = ScrollController();
   }

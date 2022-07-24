@@ -43,7 +43,7 @@ class ExploreForumsMinWidget extends StatelessWidget {
                             thoughtCount: thougthCount,
                             author: author,
                             currentUserId:
-                                Provider.of<UserData>(context).currentUserId,
+                                Provider.of<UserData>(context).currentUserId!,
                           ))),
               child: Container(
                   color: ConfigBloc().darkModeOn

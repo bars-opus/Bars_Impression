@@ -16,7 +16,6 @@ class CreatePostWidget extends StatefulWidget {
   String imageUrl;
   String musicLink;
   final bool isEditting;
-  // final AccountHolder? user;
   final Post? post;
 
   CreatePostWidget(
@@ -28,7 +27,6 @@ class CreatePostWidget extends StatefulWidget {
       required this.punch,
       required this.musicLink,
       required this.isEditting,
-      // required this.user,
       required this.post});
 
   @override
@@ -54,6 +52,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
   void initState() {
     _hashTag = widget.hashTag;
     selectedValue = _hashTag.isEmpty ? values.last : _hashTag;
+
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((_) {
       Provider.of<UserData>(context, listen: false).setPost1(widget.artist);
@@ -159,7 +158,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
         ? 600.0
         : MediaQuery.of(context).size.width;
     String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId;
+        Provider.of<UserData>(context, listen: false).currentUserId!;
     DatabaseService.deletePunch(
         currentUserId: currentUserId, post: widget.post!);
     FirebaseStorage.instance
@@ -250,7 +249,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
         musicLink: Provider.of<UserData>(context, listen: false).post2,
         likeCount: 0,
         disLikeCount: 0,
-        authorId: Provider.of<UserData>(context, listen: false).currentUserId,
+        authorId: Provider.of<UserData>(context, listen: false).currentUserId!,
         timestamp: widget.post!.timestamp,
         report: '',
         reportConfirmed: '',
@@ -397,7 +396,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
         report: '',
         likeCount: 0,
         disLikeCount: 0,
-        authorId: Provider.of<UserData>(context, listen: false).currentUserId,
+        authorId: Provider.of<UserData>(context, listen: false).currentUserId!,
         timestamp: Timestamp.fromDate(DateTime.now()),
         id: '',
       );
@@ -406,6 +405,8 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
         final double width = Responsive.isDesktop(context)
             ? 600.0
             : MediaQuery.of(context).size.width;
+        final AccountHolder user =
+            Provider.of<UserData>(context, listen: false).user!;
         Navigator.pop(context);
         Flushbar(
           margin: EdgeInsets.all(8),
@@ -419,7 +420,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
           flushbarPosition: FlushbarPosition.TOP,
           flushbarStyle: FlushbarStyle.FLOATING,
           titleText: Text(
-            "user!.name",
+            user.userName!,
             style: TextStyle(
               color: Colors.white,
               fontSize: width > 800 ? 22 : 14,

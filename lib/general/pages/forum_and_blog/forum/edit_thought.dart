@@ -97,6 +97,7 @@ class _EditThoughtState extends State<EditThought> {
         currentUserId: widget.currentUserId,
         thought: widget.thought,
         forum: widget.forum);
+    Navigator.pop(context);
     final double width = MediaQuery.of(context).size.width;
     Flushbar(
       margin: EdgeInsets.all(8),
@@ -145,8 +146,11 @@ class _EditThoughtState extends State<EditThought> {
       Thought thought = Thought(
         id: widget.thought.id,
         content: _content,
-        authorId: Provider.of<UserData>(context).currentUserId,
-        timestamp: widget.thought.timestamp, count: null, report: '', reportConfirmed: '',
+        authorId: Provider.of<UserData>(context, listen: false).currentUserId!,
+        timestamp: widget.thought.timestamp,
+        count: null,
+        report: '',
+        reportConfirmed: '',
       );
 
       try {

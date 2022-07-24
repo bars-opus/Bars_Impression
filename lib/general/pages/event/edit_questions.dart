@@ -26,12 +26,12 @@ class _EditQuestionState extends State<EditQuestion> {
     _content = widget.ask.content;
   }
 
-  _showSelectImageDialog(ask) {
+  _showSelectImageDialog(Ask ask) {
     return Platform.isIOS
         ? _iosBottomSheet(ask)
         : _androidDialog(
-            ask,
             context,
+            ask,
           );
   }
 
@@ -143,7 +143,7 @@ class _EditQuestionState extends State<EditQuestion> {
       Ask ask = Ask(
         id: widget.ask.id,
         content: _content,
-        authorId: Provider.of<UserData>(context).currentUserId,
+        authorId: Provider.of<UserData>(context, listen: false).currentUserId!,
         timestamp: widget.ask.timestamp,
         report: '',
         reportConfirmed: '',

@@ -461,33 +461,33 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                         ),
                                       ),
                                 Divider(color: Colors.grey),
-                                GestureDetector(
-                                  onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => ProfileVerification(
-                                          user: widget.user,
-                                        ),
-                                      )),
-                                  child: IntroInfo(
-                                    title: 'Request Verification',
-                                    onPressed: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => ProfileVerification(
-                                            user: widget.user,
-                                          ),
-                                        )),
-                                    subTitle:
-                                        "Share Bars Impression with others",
-                                    icon: Icon(
-                                      MdiIcons.checkboxMarkedCircle,
-                                      size: 20,
-                                      color: Colors.blue,
-                                    ),
-                                  ),
-                                ),
-                                Divider(color: Colors.grey),
+                                // GestureDetector(
+                                //   onTap: () => Navigator.push(
+                                //       context,
+                                //       MaterialPageRoute(
+                                //         builder: (_) => ProfileVerification(
+                                //           user: widget.user,
+                                //         ),
+                                //       )),
+                                //   child: IntroInfo(
+                                //     title: 'Request Verification',
+                                //     onPressed: () => Navigator.push(
+                                //         context,
+                                //         MaterialPageRoute(
+                                //           builder: (_) => ProfileVerification(
+                                //             user: widget.user,
+                                //           ),
+                                //         )),
+                                //     subTitle:
+                                //         "Share Bars Impression with others",
+                                //     icon: Icon(
+                                //       MdiIcons.checkboxMarkedCircle,
+                                //       size: 20,
+                                //       color: Colors.blue,
+                                //     ),
+                                //   ),
+                                // ),
+                                // Divider(color: Colors.grey),
                                 Align(
                                   alignment: Alignment.center,
                                   child: Padding(

@@ -7,7 +7,6 @@ class AllEvenEnlargedProfile extends StatefulWidget {
   final AccountHolder user;
   final int? askCount;
   final int feed;
-  final PaletteGenerator palette;
 
   final String exploreLocation;
 
@@ -18,7 +17,6 @@ class AllEvenEnlargedProfile extends StatefulWidget {
       required this.exploreLocation,
       required this.feed,
       required this.event,
-      required this.palette,
       required this.author});
 
   @override
@@ -124,11 +122,11 @@ class _AllEvenEnlargedProfileState extends State<AllEvenEnlargedProfile> {
                             event: widget.event,
                             author: widget.author,
                             ask: null,
-                            currentUserId: widget.currentUserId, 
+                            currentUserId: widget.currentUserId,
                           )),
                 ),
                 event: widget.event,
-            ),
+              ),
               Positioned(
                 top: 55,
                 right: 20,

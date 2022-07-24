@@ -4,7 +4,7 @@ class NoFeed extends StatelessWidget {
   final String title;
   final String subTitle;
   final String buttonText;
-  final Function onPressed;
+  final VoidCallback onPressed;
 
   NoFeed(
       {required this.title,
@@ -74,7 +74,7 @@ class NoFeed extends StatelessWidget {
                       primary: Colors.blue,
                       side: BorderSide(width: 1.0, color: Colors.blue),
                     ),
-                    onPressed: () => onPressed,
+                    onPressed: onPressed,
                     child: Text(
                       buttonText,
                       style: TextStyle(

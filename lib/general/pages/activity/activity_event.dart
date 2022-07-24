@@ -134,7 +134,7 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
               _isLoading = true;
             });
             String currentUserId =
-                Provider.of<UserData>(context, listen: false).currentUserId;
+                Provider.of<UserData>(context, listen: false).currentUserId!;
             Event event = await DatabaseService.getUserEvent(
               currentUserId,
               activityEvent.eventId,

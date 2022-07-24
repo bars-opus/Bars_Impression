@@ -936,7 +936,7 @@ class _ExploreEventState extends State<ExploreEvent> {
                                       author: widget.author,
                                       currentUserId:
                                           Provider.of<UserData>(context)
-                                              .currentUserId,
+                                              .currentUserId!,
                                       askCount: 0,
                                     ),
                                   ),
@@ -998,30 +998,6 @@ class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
     });
   }
 
-  Future<void> _generatePalette(
-    context,
-  ) async {
-    PaletteGenerator _paletteGenerator =
-        await PaletteGenerator.fromImageProvider(
-      CachedNetworkImageProvider(widget.event.imageUrl),
-      size: Size(1110, 150),
-      maximumColorCount: 20,
-    );
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (_) => AllEvenEnlargedProfile(
-                  currentUserId: widget.currentUserId,
-                  event: widget.event,
-                  author: widget.author,
-                  user: widget.user,
-                  feed: widget.feed,
-                  exploreLocation: widget.exploreLocation,
-                  askCount: 0,
-                  palette:_paletteGenerator,
-                )));
-  }
-
   @override
   Widget build(BuildContext context) {
     final List<String> datePartition =
@@ -1034,20 +1010,18 @@ class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
       child: Scaffold(
           backgroundColor: Colors.transparent,
           body: GestureDetector(
-            onTap: () {_generatePalette(context);},
-            // => Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //         builder: (_) => AllEvenEnlargedProfile(
-            //               currentUserId: widget.currentUserId,
-            //               event: widget.event,
-            //               author: widget.author,
-            //               user: widget.user,
-            //               feed: widget.feed,
-            //               exploreLocation: widget.exploreLocation,
-            //               askCount: 0,
-            //               palette: widget.palette,
-            //             ))),
+            onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => AllEvenEnlargedProfile(
+                          currentUserId: widget.currentUserId,
+                          event: widget.event,
+                          author: widget.author,
+                          user: widget.user,
+                          feed: widget.feed,
+                          exploreLocation: widget.exploreLocation,
+                          askCount: 0,
+                        ))),
             child: Center(
               child: Stack(alignment: FractionalOffset.bottomCenter, children: <
                   Widget>[
@@ -1065,20 +1039,18 @@ class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
                         ),
                       ),
                       child: GestureDetector(
-                        onTap: () {_generatePalette(context);},
-                        // => Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //         builder: (_) => AllEvenEnlargedProfile(
-                        //               currentUserId: widget.currentUserId,
-                        //               event: widget.event,
-                        //               author: widget.author,
-                        //               user: widget.user,
-                        //               exploreLocation: widget.exploreLocation,
-                        //               feed: widget.feed,
-                        //               askCount: null,
-                        //               palette: widget.palette,
-                        //             ))),
+                        onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => AllEvenEnlargedProfile(
+                                      currentUserId: widget.currentUserId,
+                                      event: widget.event,
+                                      author: widget.author,
+                                      user: widget.user,
+                                      exploreLocation: widget.exploreLocation,
+                                      feed: widget.feed,
+                                      askCount: null,
+                                    ))),
                         child: Padding(
                           padding: const EdgeInsets.only(
                               left: 8.0, right: 8, top: 8),

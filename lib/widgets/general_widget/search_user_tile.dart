@@ -136,6 +136,7 @@ class SearchUserTile extends StatelessWidget {
                 ),
               ],
             ),
+            overflow: TextOverflow.ellipsis,
           ),
           SizedBox(
             height: 20.0,

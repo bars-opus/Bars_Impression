@@ -254,7 +254,7 @@ class _ExpandAllCityUsersState extends State<ExpandAllCityUsers> {
                                         user: user,
                                         currentUserId:
                                             Provider.of<UserData>(context)
-                                                .currentUserId,
+                                                .currentUserId!,
                                         userId: widget.user.id!,
                                         userList: _userList,
                                       ),
@@ -406,7 +406,7 @@ class _UserExpandedWidgetState extends State<UserExpandedWidget> {
           context,
           MaterialPageRoute(
               builder: (_) => ProfileProfessionalProfile(
-                    currentUserId: Provider.of<UserData>(context).currentUserId,
+                    currentUserId: Provider.of<UserData>(context).currentUserId!,
                     user: widget.user,
                     userId: widget.user.id!,
                   ))),

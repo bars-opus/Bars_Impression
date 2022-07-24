@@ -256,7 +256,9 @@ class _AlbumLaunchesLocationState extends State<AlbumLaunchesLocation>
                     child: _buildUser()))
             : _events.length == 0
                 ? Center(
-                    child: SizedBox.shrink(),
+                    child: NoUsersDicovered(
+                      title: 'Album launches',
+                    ),
                   )
                 : Center(
                     child: EventSchimmer(),

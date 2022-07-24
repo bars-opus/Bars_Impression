@@ -396,7 +396,7 @@ class _PunchWidgetState extends State<PunchWidget> {
                                         builder: (_) => ProfileScreen(
                                               currentUserId:
                                                   Provider.of<UserData>(context)
-                                                      .currentUserId,
+                                                      .currentUserId!,
                                               userId: widget.author.id!,
                                               user: widget.author,
                                             )))),
@@ -787,7 +787,7 @@ class _PunchWidgetState extends State<PunchWidget> {
                   ),
                 ),
                 Text(
-                  ' ${widget.post.punch} '.toLowerCase(),
+                  ' ${widget.post.caption} '.toLowerCase(),
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey,

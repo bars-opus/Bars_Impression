@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 
 class EventProfileView extends StatefulWidget {
@@ -25,10 +26,22 @@ class EventProfileView extends StatefulWidget {
 
 class _EventProfileViewState extends State<EventProfileView> {
   int _askCount = 0;
+  late DateTime _date;
+  late DateTime _toDaysDate;
 
   void initState() {
     super.initState();
     _setUpAsks();
+    _countDown();
+  }
+
+  _countDown() async {
+    DateTime date = DateTime.parse(widget.event.date);
+    final toDayDate = DateTime.now();
+    setState(() {
+      _date = date;
+      _toDaysDate = toDayDate;
+    });
   }
 
   _setUpAsks() async {
@@ -39,29 +52,6 @@ class _EventProfileViewState extends State<EventProfileView> {
         });
       }
     });
-  }
-
-  Future<void> _generatePalette(
-    context,
-  ) async {
-    PaletteGenerator _paletteGenerator =
-        await PaletteGenerator.fromImageProvider(
-      CachedNetworkImageProvider(widget.event.imageUrl),
-      size: Size(1110, 150),
-      maximumColorCount: 20,
-    );
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (_) => AllEvenEnlargedProfile(
-                currentUserId: widget.currentUserId,
-                event: widget.event,
-                author: widget.author,
-                exploreLocation: widget.exploreLocation,
-                feed: widget.feed,
-                user: widget.user,
-                askCount: _askCount,
-                palette: _paletteGenerator)));
   }
 
   @override
@@ -82,20 +72,18 @@ class _EventProfileViewState extends State<EventProfileView> {
               textScaleFactor: MediaQuery.of(context).textScaleFactor,
             ),
             onPressed: () {
-              _generatePalette(context);
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (_) => AllEvenEnlargedProfile(
-              //               currentUserId: widget.currentUserId,
-              //               event: widget.event,
-              //               author: widget.author,
-              //               exploreLocation: widget.exploreLocation,
-              //               feed: widget.feed,
-              //               user: widget.user,
-              //               askCount: _askCount,
-              //               palette: widget.palette,
-              //             )));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => AllEvenEnlargedProfile(
+                            currentUserId: widget.currentUserId,
+                            event: widget.event,
+                            author: widget.author,
+                            exploreLocation: widget.exploreLocation,
+                            feed: widget.feed,
+                            user: widget.user,
+                            askCount: _askCount,
+                          )));
             },
           ),
           widget.event.authorId == widget.currentUserId
@@ -105,14 +93,24 @@ class _EventProfileViewState extends State<EventProfileView> {
                     overflow: TextOverflow.ellipsis,
                     textScaleFactor: MediaQuery.of(context).textScaleFactor,
                   ),
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => EditEvent(
-                          event: widget.event,
-                          currentUserId: widget.currentUserId),
-                    ),
-                  ),
+                  onPressed: () => _toDaysDate.isAfter(_date)
+                      ? Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => EventCompleted(
+                                date: DateFormat.yMMMMEEEEd().format(_date),
+                                event: widget.event,
+                                currentUserId: widget.currentUserId),
+                          ),
+                        )
+                      : Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => EditEvent(
+                                event: widget.event,
+                                currentUserId: widget.currentUserId),
+                          ),
+                        ),
                 )
               : FocusedMenuItem(
                   title: Text(
@@ -130,138 +128,172 @@ class _EventProfileViewState extends State<EventProfileView> {
                               ))),
                 ),
         ],
-        child: GestureDetector(
-            onTap: () {
-              _generatePalette(context);
-            },
-            // => Navigator.push(
-            // context,
-            // MaterialPageRoute(
-            //     builder: (_) => AllEvenEnlargedProfile(
-            //           palette: widget.palette,
-            //           askCount: _askCount,
-            //           currentUserId: widget.currentUserId,
-            //           event: widget.event,
-            //           author: widget.author,
-            //           exploreLocation: widget.exploreLocation,
-            //           feed: widget.feed,
-            //           user: widget.user,
-            //         ))),
-            child: MediaQuery(
-              data: MediaQuery.of(context).copyWith(
-                  textScaleFactor:
-                      MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
-              child: Stack(
-                children: [
-                  EventViewWidget(
-                    currentUserId: widget.currentUserId,
-                    author: widget.author,
-                    titleHero: 'title1  ${widget.event.id.toString()}',
-                    event: widget.event,
-                    onPressedEventEnlarged: () {
-                      _generatePalette(context);
-                    },
-                    // => Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (_)
-                    //         => AllEvenEnlarged(
-                    //               exploreLocation: widget.exploreLocation,
-                    //               feed: widget.feed,
-                    //               askCount: _askCount,
-                    //               currentUserId: widget.currentUserId,
-                    //               event: widget.event,
-                    //               author: widget.author,
-                    //               user: widget.user,
-                    //             ))),
-                    imageHero: 'image1 ${widget.event.id.toString()}',
-                    askCount: NumberFormat.compact().format(_askCount),
-                  ),
-                  Positioned(
-                    top: 1,
-                    right: 10,
-                    child: GestureDetector(
-                      onTap: () {
-                        _generatePalette(context);
-                      },
-                      // => Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (_) => AllEvenEnlargedProfile(
-                      //               palette: widget.palette,
-                      //               currentUserId: widget.currentUserId,
-                      //               event: widget.event,
-                      //               author: widget.author,
-                      //               exploreLocation: widget.exploreLocation,
-                      //               feed: widget.feed,
-                      //               user: widget.user,
-                      //               askCount: 0,
-                      //             ))),
-                      child: Hero(
-                        tag: 'typeProfile' + widget.event.id.toString(),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: Container(
-                            width: 35.0,
-                            child: OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                primary: Colors.blue,
-                                side: BorderSide(
-                                  width: 1.0,
-                                  color: widget.event.report.isNotEmpty
-                                      ? Colors.grey
-                                      : Colors.blue,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30.0),
-                                ),
+        child: Slidable(
+          startActionPane: ActionPane(
+            motion: const DrawerMotion(),
+            children: [
+              SlidableAction(
+                onPressed: (_) {
+                  widget.currentUserId == widget.author.id!
+                      ? _toDaysDate.isAfter(_date)
+                          ? Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => EventCompleted(
+                                    date: DateFormat.yMMMMEEEEd().format(_date),
+                                    event: widget.event,
+                                    currentUserId: widget.currentUserId),
                               ),
-                              child: Text(
-                                widget.event.type.startsWith('F')
-                                    ? 'FE'
-                                    : widget.event.type.startsWith('Al')
-                                        ? 'AL'
-                                        : widget.event.type.startsWith('Aw')
-                                            ? 'AW'
-                                            : widget.event.type.startsWith('O')
-                                                ? 'OT'
-                                                : widget.event.type
-                                                        .startsWith('T')
-                                                    ? 'TO'
-                                                    : '',
-                                style: TextStyle(
-                                  color: widget.event.report.isNotEmpty
-                                      ? Colors.grey
-                                      : Colors.blue,
-                                  fontSize: width > 800 ? 16 : 10,
-                                ),
-                                textAlign: TextAlign.center,
+                            )
+                          : Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => EditEvent(
+                                    event: widget.event,
+                                    currentUserId: widget.currentUserId),
                               ),
-                              onPressed: () {
-                                _generatePalette(context);
-                              },
-                              //  => Navigator.push(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //         builder: (_) => AllEvenEnlargedProfile(
-                              //               palette: widget.palette,
-                              //               askCount: _askCount,
-                              //               currentUserId: widget.currentUserId,
-                              //               event: widget.event,
-                              //               exploreLocation:
-                              //                   widget.exploreLocation,
-                              //               feed: widget.feed,
-                              //               user: widget.user,
-                              //               author: widget.author,
-                              //             ))),
+                            )
+                      : Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => ProfileScreen(
+                                    user: widget.user,
+                                    currentUserId: widget.currentUserId,
+                                    userId: widget.event.authorId,
+                                  )));
+                },
+                backgroundColor: ConfigBloc().darkModeOn
+                    ? Color(0xFF1f2022)
+                    : Color(0xFFf2f2f2),
+                foregroundColor: Colors.grey,
+                icon: widget.currentUserId == widget.author.id!
+                    ? Icons.edit
+                    : Icons.account_circle,
+                label: widget.currentUserId == widget.author.id!
+                    ? 'Edit event'
+                    : 'Profile page ',
+              ),
+            ],
+          ),
+          child: GestureDetector(
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => AllEvenEnlargedProfile(
+                            askCount: _askCount,
+                            currentUserId: widget.currentUserId,
+                            event: widget.event,
+                            author: widget.author,
+                            exploreLocation: widget.exploreLocation,
+                            feed: widget.feed,
+                            user: widget.user,
+                          ))),
+              child: MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                    textScaleFactor:
+                        MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
+                child: Stack(
+                  children: [
+                    EventViewWidget(
+                      currentUserId: widget.currentUserId,
+                      author: widget.author,
+                      titleHero: 'title1  ${widget.event.id.toString()}',
+                      event: widget.event,
+                      onPressedEventEnlarged: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => AllEvenEnlarged(
+                                    exploreLocation: widget.exploreLocation,
+                                    feed: widget.feed,
+                                    askCount: _askCount,
+                                    currentUserId: widget.currentUserId,
+                                    event: widget.event,
+                                    author: widget.author,
+                                    user: widget.user,
+                                  ))),
+                      imageHero: 'image1 ${widget.event.id.toString()}',
+                      askCount: NumberFormat.compact().format(_askCount),
+                    ),
+                    Positioned(
+                      top: 1,
+                      right: 10,
+                      child: GestureDetector(
+                        onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => AllEvenEnlargedProfile(
+                                      currentUserId: widget.currentUserId,
+                                      event: widget.event,
+                                      author: widget.author,
+                                      exploreLocation: widget.exploreLocation,
+                                      feed: widget.feed,
+                                      user: widget.user,
+                                      askCount: 0,
+                                    ))),
+                        child: Hero(
+                          tag: 'typeProfile' + widget.event.id.toString(),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Container(
+                              width: 35.0,
+                              child: OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  primary: Colors.blue,
+                                  side: BorderSide(
+                                    width: 1.0,
+                                    color: widget.event.report.isNotEmpty
+                                        ? Colors.grey
+                                        : Colors.blue,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30.0),
+                                  ),
+                                ),
+                                child: Text(
+                                  widget.event.type.startsWith('F')
+                                      ? 'FE'
+                                      : widget.event.type.startsWith('Al')
+                                          ? 'AL'
+                                          : widget.event.type.startsWith('Aw')
+                                              ? 'AW'
+                                              : widget.event.type
+                                                      .startsWith('O')
+                                                  ? 'OT'
+                                                  : widget.event.type
+                                                          .startsWith('T')
+                                                      ? 'TO'
+                                                      : '',
+                                  style: TextStyle(
+                                    color: widget.event.report.isNotEmpty
+                                        ? Colors.grey
+                                        : Colors.blue,
+                                    fontSize: width > 800 ? 16 : 10,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                onPressed: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute( 
+                                        builder: (_) => AllEvenEnlargedProfile(
+                                              askCount: _askCount,
+                                              currentUserId:
+                                                  widget.currentUserId,
+                                              event: widget.event,
+                                              exploreLocation:
+                                                  widget.exploreLocation,
+                                              feed: widget.feed,
+                                              user: widget.user,
+                                              author: widget.author,
+                                            ))),
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            )));
+                  ],
+                ),
+              )),
+        ));
   }
 }

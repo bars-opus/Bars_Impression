@@ -18,6 +18,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController? _controller;
   int _index = 0;
+  String? _city = '';
   String _country = '';
   String _continent = '';
   String selectedValue = '';
@@ -70,7 +71,9 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
   _submit2() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-
+      _city = Provider.of<UserData>(context, listen: false)
+          .post4
+          ?.replaceAll(', ${_country}', '');
       _getCurrentLocation();
       try {
         usersRef
@@ -79,7 +82,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
         )
             .update({
           'country': _country,
-          'city': Provider.of<UserData>(context, listen: false).post4,
+          'city': _city,
         });
       } catch (e) {
         final double width = Responsive.isDesktop(context)
@@ -197,8 +200,6 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
     placemarks[0].toString();
     setState(() {
       _index = 0;
-      Provider.of<UserData>(context, listen: false).setPost4(
-          placemarks[0].locality == null ? '' : placemarks[0].locality!);
       _country = (placemarks[0].country == null ? '' : placemarks[0].country)!;
     });
 
@@ -207,10 +208,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
       _isLoading = false;
     });
     animateToBack();
-    print(_country);
-    print(
-      Provider.of<UserData>(context, listen: false).post4,
-    );
+  
   }
 
   static const values = <String>[
@@ -269,18 +267,6 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _isfetchingCity
-              ? Padding(
-                  padding: const EdgeInsets.only(bottom: 30.0),
-                  child: SizedBox(
-                    height: 2.0,
-                    child: LinearProgressIndicator(
-                      backgroundColor: Colors.transparent,
-                      valueColor: AlwaysStoppedAnimation(Colors.grey),
-                    ),
-                  ),
-                )
-              : SizedBox.shrink(),
           Container(
             width: MediaQuery.of(context).size.width,
             child: Text(
@@ -292,7 +278,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          SizedBox(height: 40),
+          _isfetchingCity ? SizedBox(height: 10) : SizedBox(height: 40),
           Padding(
             padding:
                 const EdgeInsets.only(left: 10.0, bottom: 10.0, right: 10.0),
@@ -331,41 +317,22 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
               validator: (input) =>
                   input!.trim().length < 1 ? 'Choose city of residence' : null,
             ),
-
-            //  TextFormField(
-            //   initialValue: widget.user.city,
-            //   controller: _controller,
-            //   keyboardType: TextInputType.multiline,
-            //   maxLines: null,
-            //   textCapitalization: TextCapitalization.sentences,
-            //   style: TextStyle(
-            //     fontSize: 12.0,
-            //     color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-            //   ),
-            //   onChanged: (value) => {
-            //     Provider.of<UserData>(context, listen: false)
-            //         .searchPlaces(value),
-            //     setState(() {
-            //       _isfetchingCity = true;
-            //     })
-            //   },
-            //   decoration: InputDecoration(
-            //     labelStyle: TextStyle(
-            //       color: Colors.grey,
-            //     ),
-            //     enabledBorder: new UnderlineInputBorder(
-            //         borderSide: new BorderSide(color: Colors.grey)),
-            //     hintText: 'City of residence',
-            //     hintStyle: TextStyle(fontSize: 12, color: Colors.grey),
-            //     labelText: 'City',
-            //   ),
-            //   validator: (input) =>
-            //       input!.trim().length < 1 ? 'Choose city of residence' : null,
-            // ),
           ),
           SizedBox(
             height: 10,
           ),
+          _isfetchingCity
+              ? Padding(
+                  padding: const EdgeInsets.only(bottom: 5.0),
+                  child: SizedBox(
+                    height: 2.0,
+                    child: LinearProgressIndicator(
+                      backgroundColor: Colors.transparent,
+                      valueColor: AlwaysStoppedAnimation(Colors.grey),
+                    ),
+                  ),
+                )
+              : SizedBox.shrink(),
           // ignore: unnecessary_null_comparison
           if (Provider.of<UserData>(context, listen: false).searchResults !=
               null)
@@ -501,27 +468,37 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                                         ),
                                       )
                                     : SizedBox.shrink(),
-                                SizedBox(height: 20.0),
-                                Text(
-                                  'Enter your city in the field below. Tap on your correct city in the list below. ',
-                                  style: TextStyle(
-                                    color: ConfigBloc().darkModeOn
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 20.0,
-                                ),
-                                Align(
-                                  alignment: Alignment.bottomLeft,
-                                  child: Container(
-                                    height: 2,
-                                    color: Colors.blue,
-                                    width: width / 3,
-                                  ),
-                                ),
-                                SizedBox(height: 50),
+                                _isfetchingCity
+                                    ? SizedBox.shrink()
+                                    : SizedBox(height: 20.0),
+                                _isfetchingCity
+                                    ? SizedBox.shrink()
+                                    : Text(
+                                        'Enter your city in the field below. Tap on your correct city in the list below. ',
+                                        style: TextStyle(
+                                          color: ConfigBloc().darkModeOn
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
+                                      ),
+                                _isfetchingCity
+                                    ? SizedBox.shrink()
+                                    : SizedBox(
+                                        height: 20.0,
+                                      ),
+                                _isfetchingCity
+                                    ? SizedBox.shrink()
+                                    : Align(
+                                        alignment: Alignment.bottomLeft,
+                                        child: Container(
+                                          height: 2,
+                                          color: Colors.blue,
+                                          width: width / 3,
+                                        ),
+                                      ),
+                                _isfetchingCity
+                                    ? SizedBox.shrink()
+                                    : SizedBox(height: 50),
                                 buildCityForm()
                               ],
                             )),

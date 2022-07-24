@@ -246,6 +246,8 @@ export 'package:bars/general/pages/chats/message_image.dart';
 export 'package:bars/widgets/general_widget/user_list_tile.dart';
 export 'package:bars/widgets/schimmers/follower_user_schimmer.dart';
 export 'package:palette_generator/palette_generator.dart';
+export 'package:bars/general/pages/discover/discover_user_location/fetching_location.dart';
+export 'package:bars/general/pages/event/event_page_live.dart';
 export 'package:bars/widgets/schimmers/follower_user_shimmer_skeleton.dart';
 export 'package:bars/widgets/schimmers/explore_events_schimmer_skeleton.dart';
 export 'package:bars/widgets/schimmers/explore_forums_schimmer_skeleton.dart';

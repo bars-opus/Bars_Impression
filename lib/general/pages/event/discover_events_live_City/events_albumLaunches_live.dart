@@ -144,7 +144,7 @@ class _AlbumLaunchesLiveCityState extends State<AlbumLaunchesLiveCity>
     super.build(context);
     return Scaffold(
         backgroundColor:
-            ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+           ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
         body: _events.length > 0
             ? RefreshIndicator(
                 backgroundColor: Colors.white,
@@ -156,7 +156,9 @@ class _AlbumLaunchesLiveCityState extends State<AlbumLaunchesLiveCity>
                     child: _buildUser()))
             : _events.length == 0
                 ? Center(
-                    child: SizedBox.shrink(),
+                    child: NoUsersDicovered(
+                      title: 'Album Launches\n in ${widget.liveCity}',
+                    ),
                   )
                 : Center(
                     child: EventSchimmer(),

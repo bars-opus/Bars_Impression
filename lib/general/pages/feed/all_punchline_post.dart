@@ -87,7 +87,7 @@ class _AllPunclinePostState extends State<AllPunclinePost> {
 
   _setUpArtistPuchCount() async {
     final String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId;
+        Provider.of<UserData>(context, listen: false).currentUserId!;
     DatabaseService.numPunchlinePunch(currentUserId, widget.punch)
         .listen((punclinePunch) {
       if (mounted) {

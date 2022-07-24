@@ -83,15 +83,15 @@ class AuthPassWord {
         ),
         messageText: Container(
             child: Text(
-           result.toString(),
+          result.toString(),
           style: TextStyle(color: Colors.white),
         )),
         icon: Icon(Icons.info_outline, size: 28.0, color: Colors.blue),
         mainButton: OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                primary: Colors.white,
-                side: BorderSide(width: 1.0, color: Colors.transparent),
-              ),
+          style: OutlinedButton.styleFrom(
+            primary: Colors.white,
+            side: BorderSide(width: 1.0, color: Colors.transparent),
+          ),
           onPressed: () => Navigator.pop(context),
           child: Text("Ok",
               style: TextStyle(

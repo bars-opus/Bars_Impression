@@ -258,7 +258,7 @@ class _EditProfileMusicPrefState extends State<EditProfileMusicPref> {
                                     validator: (input) => input!.trim().length >
                                                 50 ||
                                             !input.contains('-')
-                                        ? ' songname - artist ( < 50 characters)'
+                                        ? ' Songname - artist ( < 50 characters)'
                                         : null,
                                     onSaved: (input) =>
                                         _favouriteSong = input!.toUpperCase(),
@@ -298,11 +298,11 @@ class _EditProfileMusicPrefState extends State<EditProfileMusicPref> {
                                           fontSize: 12, color: Colors.grey),
                                       labelText: 'Favorite Album',
                                     ),
-                                    validator: (input) =>
-                                        input!.trim().length > 50 ||
-                                                !input.contains('-')
-                                            ? 'Please, Album - artistName'
-                                            : null,
+                                    validator: (input) => input!.trim().length >
+                                                100 ||
+                                            !input.contains('-')
+                                        ? 'Album - artistName ( < 100 characters)'
+                                        : null,
                                     onSaved: (input) =>
                                         _favouriteAlbum = input!.toUpperCase(),
                                   ),

@@ -231,7 +231,7 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                                   currentUserId:
                                                                       Provider.of<UserData>(
                                                                               context)
-                                                                          .currentUserId,
+                                                                          .currentUserId!,
                                                                   user: widget
                                                                       .author,
                                                                   userId: widget
@@ -301,7 +301,7 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                                   currentUserId:
                                                                       Provider.of<UserData>(
                                                                               context)
-                                                                          .currentUserId,
+                                                                          .currentUserId!,
                                                                   userId: widget
                                                                       .author
                                                                       .id!,
@@ -441,81 +441,87 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                                               currentUserId: widget.currentUserId,
                                                                               userId: widget.post.authorId,
                                                                             ))),
-                                                                child: Row(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .spaceBetween,
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .end,
-                                                                  children: <
-                                                                      Widget>[
-                                                                    Material(
-                                                                      color: Colors
-                                                                          .transparent,
-                                                                      child: Container(
-                                                                          child: Row(children: <Widget>[
-                                                                        Hero(
-                                                                          tag: 'author' +
-                                                                              widget.post.id.toString(),
-                                                                          child:
-                                                                              CircleAvatar(
-                                                                            radius:
-                                                                                25.0,
-                                                                            backgroundColor: ConfigBloc().darkModeOn
-                                                                                ? Color(0xFF1a1a1a)
-                                                                                : Color(0xFFf2f2f2),
-                                                                            backgroundImage: widget.author.profileImageUrl!.isEmpty
-                                                                                ? AssetImage(
-                                                                                    ConfigBloc().darkModeOn ? 'assets/images/user_placeholder.png' : 'assets/images/user_placeholder2.png',
-                                                                                  ) as ImageProvider
-                                                                                : CachedNetworkImageProvider(widget.author.profileImageUrl!),
-                                                                          ),
-                                                                        ),
-                                                                        const SizedBox(
-                                                                          width:
-                                                                              8.0,
-                                                                        ),
-                                                                        Column(
-                                                                          mainAxisAlignment:
-                                                                              MainAxisAlignment.start,
-                                                                          crossAxisAlignment:
-                                                                              CrossAxisAlignment.start,
-                                                                          children: <
-                                                                              Widget>[
-                                                                            Stack(
-                                                                              alignment: Alignment.bottomRight,
-                                                                              children: [
-                                                                                Padding(
-                                                                                  padding: const EdgeInsets.only(right: 12.0),
-                                                                                  child: Text("${widget.author.userName}", style: const TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold)),
-                                                                                ),
-                                                                                widget.author.verified!.isEmpty
-                                                                                    ? SizedBox.shrink()
-                                                                                    : Positioned(
-                                                                                        top: 3,
-                                                                                        right: 0,
-                                                                                        child: Icon(
-                                                                                          MdiIcons.checkboxMarkedCircle,
-                                                                                          size: 11,
-                                                                                          color: Colors.blue,
-                                                                                        ),
-                                                                                      ),
-                                                                              ],
+                                                                child:
+                                                                    Container(
+                                                                  width: width,
+                                                                  height: 55,
+                                                                  child:
+                                                                      ListView(
+                                                                    scrollDirection:
+                                                                        Axis.horizontal,
+                                                                    // mainAxisAlignment:
+                                                                    //     MainAxisAlignment
+                                                                    //         .spaceBetween,
+                                                                    // crossAxisAlignment:
+                                                                    //     CrossAxisAlignment
+                                                                    //         .end,
+                                                                    children: <
+                                                                        Widget>[
+                                                                      Material(
+                                                                        color: Colors
+                                                                            .transparent,
+                                                                        child: Container(
+                                                                            child: Row(children: <Widget>[
+                                                                          Hero(
+                                                                            tag:
+                                                                                'author' + widget.post.id.toString(),
+                                                                            child:
+                                                                                CircleAvatar(
+                                                                              radius: 25.0,
+                                                                              backgroundColor: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+                                                                              backgroundImage: widget.author.profileImageUrl!.isEmpty
+                                                                                  ? AssetImage(
+                                                                                      ConfigBloc().darkModeOn ? 'assets/images/user_placeholder.png' : 'assets/images/user_placeholder2.png',
+                                                                                    ) as ImageProvider
+                                                                                  : CachedNetworkImageProvider(widget.author.profileImageUrl!),
                                                                             ),
-                                                                            RichText(
+                                                                          ),
+                                                                          const SizedBox(
+                                                                            width:
+                                                                                8.0,
+                                                                          ),
+                                                                          Column(
+                                                                            mainAxisAlignment:
+                                                                                MainAxisAlignment.start,
+                                                                            crossAxisAlignment:
+                                                                                CrossAxisAlignment.start,
+                                                                            children: <Widget>[
+                                                                              Stack(
+                                                                                alignment: Alignment.bottomRight,
+                                                                                children: [
+                                                                                  Padding(
+                                                                                    padding: const EdgeInsets.only(right: 12.0),
+                                                                                    child: Text("${widget.author.userName}", style: const TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold)),
+                                                                                  ),
+                                                                                  widget.author.verified!.isEmpty
+                                                                                      ? SizedBox.shrink()
+                                                                                      : Positioned(
+                                                                                          top: 3,
+                                                                                          right: 0,
+                                                                                          child: Icon(
+                                                                                            MdiIcons.checkboxMarkedCircle,
+                                                                                            size: 11,
+                                                                                            color: Colors.blue,
+                                                                                          ),
+                                                                                        ),
+                                                                                ],
+                                                                              ),
+                                                                              RichText(
                                                                                 textScaleFactor: MediaQuery.of(context).textScaleFactor,
                                                                                 text: TextSpan(
                                                                                   children: [
                                                                                     TextSpan(text: "${widget.author.profileHandle!}\n", style: const TextStyle(fontSize: 10, color: Colors.white)),
                                                                                     TextSpan(text: "${widget.author.company}", style: const TextStyle(fontSize: 10, color: Colors.white)),
                                                                                   ],
-                                                                                )),
-                                                                          ],
-                                                                        ),
-                                                                      ])),
-                                                                    ),
-                                                                  ],
+                                                                                ),
+                                                                                overflow: TextOverflow.ellipsis,
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                        ])),
+                                                                      ),
+                                                                    ],
+                                                                  ),
                                                                 ),
                                                               ),
                                                             ],

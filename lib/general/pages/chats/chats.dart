@@ -138,7 +138,7 @@ class _display extends StatelessWidget {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId;
+        Provider.of<UserData>(context, listen: false).currentUserId!;
     return Padding(
       padding: const EdgeInsets.only(top: 8.0, bottom: 8),
       child: FocusedMenuHolder(
@@ -298,21 +298,35 @@ class _display extends StatelessWidget {
                         const SizedBox(
                           height: 2.0,
                         ),
-                        Text(
-                          lastMessage,
-                          style: TextStyle(
-                            fontSize: 12.0,
-                            fontWeight: seen == 'seen'
-                                ? FontWeight.normal
-                                : FontWeight.bold,
-                            color:
-                                seen == 'seen' ? Colors.grey : Colors.teal[800],
-                            overflow: TextOverflow.ellipsis,
-                            decoration: chats.restrictChat
-                                ? TextDecoration.lineThrough
-                                : TextDecoration.none,
-                          ),
-                          maxLines: 2,
+                        Wrap(
+                          children: [
+                            chats.MediaType.isEmpty
+                                ? SizedBox.shrink()
+                                : Icon(
+                                    MdiIcons.image,
+                                    size: 20,
+                                    color: seen == 'seen'
+                                        ? Colors.grey
+                                        : Colors.blue,
+                                  ),
+                            Text(
+                              lastMessage,
+                              style: TextStyle(
+                                fontSize: 12.0,
+                                fontWeight: seen == 'seen'
+                                    ? FontWeight.normal
+                                    : FontWeight.bold,
+                                color: seen == 'seen'
+                                    ? Colors.grey
+                                    : Colors.teal[800],
+                                overflow: TextOverflow.ellipsis,
+                                decoration: chats.restrictChat
+                                    ? TextDecoration.lineThrough
+                                    : TextDecoration.none,
+                              ),
+                              maxLines: 2,
+                            ),
+                          ],
                         ),
                       ],
                     ),

@@ -139,14 +139,13 @@ class _EditAdviceState extends State<EditAdvice> {
       UserAdvice advice = UserAdvice(
         id: widget.advice.id,
         content: _content,
-        authorId: Provider.of<UserData>(context).currentUserId,
+        authorId: Provider.of<UserData>(context, listen: false).currentUserId!,
         timestamp: widget.advice.timestamp,
         report: '',
         reportConfirmed: '',
       );
 
       try {
-        Navigator.pop(context);
         DatabaseService.editAdvice(advice, widget.user);
         Navigator.pop(context);
         final double width = MediaQuery.of(context).size.width;

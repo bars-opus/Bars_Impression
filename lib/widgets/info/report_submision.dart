@@ -39,7 +39,7 @@ class _ReportContentSubmissionState extends State<ReportContentSubmission> {
         repotedAuthorId: widget.repotedAuthorId,
         parentContentId: widget.parentContentId,
         reportConfirmation: '',
-        authorId: Provider.of<UserData>(context, listen: false).currentUserId,
+        authorId: Provider.of<UserData>(context, listen: false).currentUserId!,
         timestamp: Timestamp.fromDate(DateTime.now()),
         id: '',
       );

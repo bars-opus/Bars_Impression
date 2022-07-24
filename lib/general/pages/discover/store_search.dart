@@ -13,69 +13,18 @@ class StoreSearch extends StatefulWidget {
 
 class _StoreSearchState extends State<StoreSearch> {
   Future<QuerySnapshot>? _users;
-  // Timer? _debounce;
   String query = "";
-  // String _userName = '';
-  Timer? _timer;
-
-  // int _debouncetime = 1500;
   final _controller = new TextEditingController();
   @override
   void initState() {
     super.initState();
-
-    // _controller.addListener(_onSearchChanged);
   }
 
   @override
   void dispose() {
-    // _controller.removeListener();
     _controller.dispose();
     super.dispose();
   }
-
-  _onSearchChanged() async {
-    if (_timer?.isActive != null) _timer!.cancel();
-    _timer = Timer(Duration(milliseconds: 1500),  _search());
-  }
-
-  _search() {
-    if (mounted) {
-      setState(() {
-        _users = DatabaseService.searchUsers(_controller.text.toUpperCase());
-      });
-      // }
-    }
-  }
-  // if (_debounce == null) {
-  // if (_debounce.isActive) _debounce.cancel();
-  // _debounce = Timer(Duration(milliseconds: _debouncetime), () {
-  //   if (_controller.text != "") {
-  //     if (mounted) {
-  //       setState(() {
-  //         _users =
-  //             DatabaseService.searchUsers(_controller.text.toUpperCase());
-  //       });
-  //     }
-  //   }
-  // });
-  // }
-  // }
-  // _onSearchChanged() async {
-  //   // if (_debounce == null) {
-  //   // } else {
-  //   //   return _debounce = Timer(Duration(milliseconds: _debouncetime), () {
-  //   //     if (_debounce!.isActive) _debounce!.cancel();
-  //   if (_userName.isNotEmpty) {
-  //     if (mounted) {
-  //       setState(() {
-  //         _users = DatabaseService.searchUsers(_controller.text.toUpperCase());
-  //       });
-  //       //     }
-  //     }
-  //     // });
-  //   }
-  // }
 
   _buildUserTile(AccountHolder user) {
     return SearchUserTile(
@@ -92,7 +41,7 @@ class _StoreSearchState extends State<StoreSearch> {
               MaterialPageRoute(
                   builder: (_) => ProfileScreen(
                         currentUserId:
-                            Provider.of<UserData>(context).currentUserId,
+                            Provider.of<UserData>(context).currentUserId!,
                         userId: user.id!,
                         user: user,
                       )));
@@ -129,16 +78,19 @@ class _StoreSearchState extends State<StoreSearch> {
                 elevation: 1.0,
                 borderRadius: BorderRadius.all(Radius.circular(30.0)),
                 child: TextField(
+                  autofocus: true,
                   style: TextStyle(
                     color:
                         ConfigBloc().darkModeOn ? Colors.black : Colors.white,
                   ),
                   cursorColor: Colors.blue,
                   controller: _controller,
-                  onChanged: (input) => _onSearchChanged(),
-                  // setState(()
-                  //   _users = DatabaseService.searchUsers(input.toUpperCase());
-                  // });
+                  onChanged: (input) {
+                    setState(() {
+                      _users = DatabaseService.searchUsers(input.toUpperCase());
+                    });
+                  },
+
                   // },
                   decoration: InputDecoration(
                     contentPadding:

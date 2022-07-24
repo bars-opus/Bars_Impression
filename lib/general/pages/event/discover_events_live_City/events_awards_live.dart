@@ -23,7 +23,7 @@ class _AwardEventsLiveCityState extends State<AwardEventsLiveCity>
   int limit = 10;
   bool _hasNext = true;
   bool _isFetchingEvent = false;
-late  ScrollController _hideButtonController;
+  late ScrollController _hideButtonController;
 
   @override
   void initState() {
@@ -98,7 +98,7 @@ late  ScrollController _hideButtonController;
       feed: 3,
       currentUserId: widget.currentUserId,
       event: event,
-      author: author,      user: widget.user,
+      author: author, user: widget.user,
 
       // eventList: _events,
     );
@@ -143,7 +143,7 @@ late  ScrollController _hideButtonController;
     super.build(context);
     return Scaffold(
         backgroundColor:
-            ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+            ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
         body: _events.length > 0
             ? RefreshIndicator(
                 backgroundColor: Colors.white,
@@ -154,8 +154,10 @@ late  ScrollController _hideButtonController;
                     padding: const EdgeInsets.only(top: 20),
                     child: _buildUser()))
             : _events.length == 0
-                ? Center(
-                    child: SizedBox.shrink(),
+                ?Center(
+                    child: NoUsersDicovered(
+                      title: 'Awards\n in ${widget.liveCity}',
+                    ),
                   )
                 : Center(
                     child: EventSchimmer(),

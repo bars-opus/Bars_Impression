@@ -34,14 +34,11 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
   int _different = 0;
   bool _displayWarning = false;
   bool _warningAnim = false;
-   Color lightVibrantColor = Colors.white;
+  Color lightVibrantColor = Colors.white;
   late Color lightMutedColor;
-
 
   @override
   void initState() {
-    
- 
     super.initState();
     _countDown();
     _displayWarning = widget.event.report.isNotEmpty ? true : false;
@@ -291,10 +288,10 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                 fontWeight: FontWeight.bold,
                                                 shadows: [
                                                   const BoxShadow(
-                                                    color: Colors.black45,
+                                                    color: Colors.black12,
                                                     offset: Offset(0, 10),
-                                                    blurRadius: 5.0,
-                                                    spreadRadius: 5.0,
+                                                    blurRadius: 10.0,
+                                                    spreadRadius: 3.0,
                                                   )
                                                 ]),
                                           ),
@@ -308,10 +305,10 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                   fontWeight: FontWeight.bold,
                                                   shadows: [
                                                     const BoxShadow(
-                                                      color: Colors.black45,
+                                                      color: Colors.black12,
                                                       offset: Offset(0, 10),
-                                                      blurRadius: 5.0,
-                                                      spreadRadius: 5.0,
+                                                      blurRadius: 10.0,
+                                                      spreadRadius: 3.0,
                                                     )
                                                   ]),
                                             ),
@@ -325,10 +322,10 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                   fontWeight: FontWeight.bold,
                                                   shadows: [
                                                     const BoxShadow(
-                                                      color: Colors.black45,
+                                                      color: Colors.black12,
                                                       offset: Offset(0, 10),
-                                                      blurRadius: 5.0,
-                                                      spreadRadius: 5.0,
+                                                      blurRadius: 10.0,
+                                                      spreadRadius: 3.0,
                                                     )
                                                   ]),
                                             ),
@@ -342,10 +339,10 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                   fontWeight: FontWeight.bold,
                                                   shadows: [
                                                     const BoxShadow(
-                                                      color: Colors.black45,
+                                                      color: Colors.black12,
                                                       offset: Offset(0, 10),
-                                                      blurRadius: 5.0,
-                                                      spreadRadius: 5.0,
+                                                      blurRadius: 10.0,
+                                                      spreadRadius: 3.0,
                                                     )
                                                   ]),
                                             ),
@@ -359,10 +356,10 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                   fontWeight: FontWeight.bold,
                                                   shadows: [
                                                     const BoxShadow(
-                                                      color: Colors.black45,
+                                                      color: Colors.black12,
                                                       offset: Offset(0, 10),
-                                                      blurRadius: 5.0,
-                                                      spreadRadius: 5.0,
+                                                      blurRadius: 10.0,
+                                                      spreadRadius: 3.0,
                                                     )
                                                   ]),
                                             ),
@@ -376,10 +373,10 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                   fontWeight: FontWeight.bold,
                                                   shadows: [
                                                     const BoxShadow(
-                                                      color: Colors.black45,
+                                                      color: Colors.black12,
                                                       offset: Offset(0, 10),
-                                                      blurRadius: 5.0,
-                                                      spreadRadius: 5.0,
+                                                      blurRadius: 10.0,
+                                                      spreadRadius: 3.0,
                                                     )
                                                   ]),
                                             ),
@@ -393,10 +390,10 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                   fontWeight: FontWeight.bold,
                                                   shadows: [
                                                     const BoxShadow(
-                                                      color: Colors.black45,
+                                                      color: Colors.black12,
                                                       offset: Offset(0, 10),
-                                                      blurRadius: 5.0,
-                                                      spreadRadius: 5.0,
+                                                      blurRadius: 10.0,
+                                                      spreadRadius: 3.0,
                                                     )
                                                   ]),
                                             ),
@@ -410,10 +407,10 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                   fontWeight: FontWeight.bold,
                                                   shadows: [
                                                     const BoxShadow(
-                                                      color: Colors.black45,
+                                                      color: Colors.black12,
                                                       offset: Offset(0, 10),
-                                                      blurRadius: 5.0,
-                                                      spreadRadius: 5.0,
+                                                      blurRadius: 10.0,
+                                                      spreadRadius: 3.0,
                                                     )
                                                   ]),
                                             ),
@@ -427,10 +424,10 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                   fontWeight: FontWeight.bold,
                                                   shadows: [
                                                     const BoxShadow(
-                                                      color: Colors.black45,
+                                                      color: Colors.black12,
                                                       offset: Offset(0, 10),
-                                                      blurRadius: 5.0,
-                                                      spreadRadius: 5.0,
+                                                      blurRadius: 10.0,
+                                                      spreadRadius: 3.0,
                                                     )
                                                   ]),
                                             ),
@@ -444,10 +441,10 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                   fontWeight: FontWeight.bold,
                                                   shadows: [
                                                     const BoxShadow(
-                                                      color: Colors.black45,
+                                                      color: Colors.black12,
                                                       offset: Offset(0, 10),
-                                                      blurRadius: 5.0,
-                                                      spreadRadius: 5.0,
+                                                      blurRadius: 10.0,
+                                                      spreadRadius: 3.0,
                                                     )
                                                   ]),
                                             ),
@@ -461,10 +458,10 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                   fontWeight: FontWeight.bold,
                                                   shadows: [
                                                     const BoxShadow(
-                                                      color: Colors.black45,
+                                                      color: Colors.black12,
                                                       offset: Offset(0, 10),
-                                                      blurRadius: 5.0,
-                                                      spreadRadius: 5.0,
+                                                      blurRadius: 10.0,
+                                                      spreadRadius: 3.0,
                                                     )
                                                   ]),
                                             ),

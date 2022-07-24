@@ -132,7 +132,7 @@ class _ActivityAdviceScreenState extends State<ActivityAdviceScreen>
               _isLoading = true;
             });
             String currentUserId =
-                Provider.of<UserData>(context, listen: false).currentUserId;
+                Provider.of<UserData>(context, listen: false).currentUserId!;
             AccountHolder user =
                 await DatabaseService.getUserWithId(currentUserId);
 

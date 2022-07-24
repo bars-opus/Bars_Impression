@@ -1,5 +1,4 @@
 import 'package:bars/utilities/exports.dart';
-import 'package:flutter/cupertino.dart';
 
 class UserView extends StatefulWidget {
   final String currentUserId;
@@ -19,8 +18,6 @@ class UserView extends StatefulWidget {
 
 class _UserViewState extends State<UserView> {
   bool _isBlockedUser = false;
-  bool _isBlockingUser = false;
-  bool _isAFollower = false;
 
   RandomColor _randomColor = RandomColor();
   final List<ColorHue> _hueType = <ColorHue>[
@@ -34,174 +31,6 @@ class _UserViewState extends State<UserView> {
   ];
 
   ColorSaturation _colorSaturation = ColorSaturation.random;
-
-  @override
-  void initState() {
-    super.initState();
-    _setupIsBlockedUser();
-    _setupIsBlocking();
-    _setupIsAFollowerUser();
-  }
-
-  _showSelectImageDialog() {
-    return Platform.isIOS ? _iosBottomSheet() : _androidDialog(context);
-  }
-
-  _iosBottomSheet() {
-    showCupertinoModalPopup(
-        context: context,
-        builder: (BuildContext context) {
-          return CupertinoActionSheet(
-            title: Text(
-              'Are you sure you want to block ${widget.user.userName}?',
-              style: TextStyle(
-                fontSize: 16,
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-              ),
-            ),
-            actions: <Widget>[
-              CupertinoActionSheetAction(
-                child: const Text(
-                  'Block',
-                  style: TextStyle(
-                    color: Colors.blue,
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-
-                  _blockOrUnBlock();
-                },
-              )
-            ],
-            cancelButton: CupertinoActionSheetAction(
-              child: const Text(
-                'Cancle',
-                style: TextStyle(
-                  color: Colors.red,
-                ),
-              ),
-              onPressed: () => Navigator.pop(context),
-            ),
-          );
-        });
-  }
-
-  _androidDialog(BuildContext parentContext) {
-    return showDialog(
-        context: parentContext,
-        builder: (context) {
-          return SimpleDialog(
-            title: Text(
-              'Are you sure you want to block ${widget.user.userName}?',
-            ),
-            children: <Widget>[
-              SimpleDialogOption(
-                child: const Text('Block'),
-                onPressed: () {
-                  Navigator.pop(context);
-                  _blockOrUnBlock();
-                },
-              ),
-              SimpleDialogOption(
-                child: const Text('cancel'),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          );
-        });
-  }
-
-  _setupIsAFollowerUser() async {
-    bool isAFollower = await DatabaseService.isAFollowerUser(
-      currentUserId: widget.currentUserId,
-      userId: widget.userId,
-    );
-    if (mounted) {
-      setState(() {
-        _isAFollower = isAFollower;
-      });
-    }
-  }
-
-  _setupIsBlockedUser() async {
-    bool isBlockedUser = await DatabaseService.isBlockedUser(
-      currentUserId: widget.currentUserId,
-      userId: widget.userId,
-    );
-    if (mounted) {
-      setState(() {
-        _isBlockedUser = isBlockedUser;
-      });
-    }
-  }
-
-  _setupIsBlocking() async {
-    bool isBlockingUser = await DatabaseService.isBlokingUser(
-      currentUserId: widget.currentUserId,
-      userId: widget.userId,
-    );
-    if (mounted) {
-      setState(() {
-        _isBlockingUser = isBlockingUser;
-      });
-    }
-  }
-
-  _blockOrUnBlock() {
-    HapticFeedback.heavyImpact();
-    if (_isBlockingUser) {
-      _unBlockser();
-    } else {
-      _blockser();
-    }
-  }
-
-  _unBlockser() {
-    DatabaseService.unBlockUser(
-      currentUserId: widget.currentUserId,
-      userId: widget.userId,
-    );
-    if (mounted) {
-      setState(() {
-        _isBlockingUser = false;
-      });
-    }
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: const Text(
-        'unBlocked ',
-        overflow: TextOverflow.ellipsis,
-      ),
-    ));
-  }
-
-  _blockser() async {
-    AccountHolder fromUser =
-        await DatabaseService.getUserWithId(widget.currentUserId);
-    DatabaseService.blockUser(
-      currentUserId: widget.currentUserId,
-      userId: widget.userId,
-      user: fromUser,
-    );
-    if (mounted) {
-      setState(() {
-        _isBlockingUser = true;
-      });
-    }
-    if (_isAFollower) {
-      DatabaseService.unfollowUser(
-        currentUserId: widget.currentUserId,
-        userId: widget.userId,
-      );
-    }
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      backgroundColor: Color(0xFFD38B41),
-      content: const Text(
-        'Blocked ',
-        overflow: TextOverflow.ellipsis,
-      ),
-    ));
-  }
 
   _userFans() {
     final width = MediaQuery.of(context).size.width;
@@ -219,7 +48,7 @@ class _UserViewState extends State<UserView> {
               child: Text(
                 _isBlockedUser
                     ? ''
-                    : 'Go to ${widget.user.userName}\' profile ',
+                    : 'Go to ${widget.user.userName}\'s profile ',
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -231,18 +60,9 @@ class _UserViewState extends State<UserView> {
                         builder: (_) => ProfileScreen(
                               user: null,
                               currentUserId:
-                                  Provider.of<UserData>(context).currentUserId,
+                                  Provider.of<UserData>(context).currentUserId!,
                               userId: widget.userId,
                             )))),
-        FocusedMenuItem(
-            title: Container(
-              width: width / 2,
-              child: Text(
-                _isBlockingUser ? 'unBlock' : 'Block',
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            onPressed: () => _showSelectImageDialog()),
         FocusedMenuItem(
             title: Container(
               width: width / 2,
@@ -262,22 +82,15 @@ class _UserViewState extends State<UserView> {
                         )))),
       ],
       child: GestureDetector(
-        onTap: () => _isBlockedUser
-            ? Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => UserNotFound(
-                          userName: widget.user.userName!,
-                        )))
-            : Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => ProfileScreen(
-                          user: null,
-                          currentUserId:
-                              Provider.of<UserData>(context).currentUserId,
-                          userId: widget.userId,
-                        ))),
+        onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => ProfileScreen(
+                      user: null,
+                      currentUserId:
+                          Provider.of<UserData>(context).currentUserId!,
+                      userId: widget.userId,
+                    ))),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -569,7 +382,7 @@ class _UserViewState extends State<UserView> {
                             builder: (_) => ProfileScreen(
                                   user: null,
                                   currentUserId: Provider.of<UserData>(context)
-                                      .currentUserId,
+                                      .currentUserId!,
                                   userId: widget.userId,
                                 )))),
             const SizedBox(
@@ -600,11 +413,11 @@ class _UserViewState extends State<UserView> {
       menuItems: [
         FocusedMenuItem(
             title: Container(
-              width: width / 2,
+              width: width - 50,
               child: Text(
                 _isBlockedUser
                     ? ''
-                    : 'Go to ${widget.user.userName}\' profile ',
+                    : 'Go to ${widget.user.userName}\'s profile ',
                 overflow: TextOverflow.ellipsis,
                 textScaleFactor: MediaQuery.of(context).textScaleFactor,
               ),
@@ -617,7 +430,7 @@ class _UserViewState extends State<UserView> {
                         builder: (_) => ProfileScreen(
                               user: null,
                               currentUserId:
-                                  Provider.of<UserData>(context).currentUserId,
+                                  Provider.of<UserData>(context).currentUserId!,
                               userId: widget.userId,
                             )))),
         FocusedMenuItem(
@@ -634,7 +447,7 @@ class _UserViewState extends State<UserView> {
                       builder: (_) => ProfessionalProfile(
                             exploreLocation: widget.exploreLocation,
                             currentUserId:
-                                Provider.of<UserData>(context).currentUserId,
+                                Provider.of<UserData>(context).currentUserId!,
                             user: widget.user,
                             userId: widget.user.id!,
                           ))),
@@ -657,7 +470,7 @@ class _UserViewState extends State<UserView> {
         ),
         FocusedMenuItem(
           title: Container(
-            width: width / 2,
+            width: width - 50,
             child: Text(
               _isBlockedUser
                   ? ''
@@ -680,16 +493,6 @@ class _UserViewState extends State<UserView> {
             title: Container(
               width: width / 2,
               child: Text(
-                _isBlockingUser ? 'unBlock' : 'Block',
-                overflow: TextOverflow.ellipsis,
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
-              ),
-            ),
-            onPressed: () => _showSelectImageDialog()),
-        FocusedMenuItem(
-            title: Container(
-              width: width / 2,
-              child:  Text(
                 'Report',
                 overflow: TextOverflow.ellipsis,
                 textScaleFactor: MediaQuery.of(context).textScaleFactor,
@@ -707,7 +510,7 @@ class _UserViewState extends State<UserView> {
         FocusedMenuItem(
             title: Container(
               width: width / 2,
-              child:  Text(
+              child: Text(
                 'Suggestion Box',
                 overflow: TextOverflow.ellipsis,
                 textScaleFactor: MediaQuery.of(context).textScaleFactor,
@@ -717,23 +520,16 @@ class _UserViewState extends State<UserView> {
                 context, MaterialPageRoute(builder: (_) => SuggestionBox()))),
       ],
       child: GestureDetector(
-        onTap: () => _isBlockedUser
-            ? Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => UserNotFound(
-                          userName: widget.user.userName!,
-                        )))
-            : Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => ProfessionalProfile(
-                          exploreLocation: widget.exploreLocation,
-                          currentUserId:
-                              Provider.of<UserData>(context).currentUserId,
-                          user: widget.user,
-                          userId: widget.user.id!,
-                        ))),
+        onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => ProfessionalProfile(
+                      exploreLocation: widget.exploreLocation,
+                      currentUserId:
+                          Provider.of<UserData>(context).currentUserId!,
+                      user: widget.user,
+                      userId: widget.user.id!,
+                    ))),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1208,7 +1004,7 @@ class _UserViewState extends State<UserView> {
                             builder: (_) => ProfessionalProfile(
                                   exploreLocation: widget.exploreLocation,
                                   currentUserId: Provider.of<UserData>(context)
-                                      .currentUserId,
+                                      .currentUserId!,
                                   user: widget.user,
                                   userId: widget.user.id!,
                                 )))),

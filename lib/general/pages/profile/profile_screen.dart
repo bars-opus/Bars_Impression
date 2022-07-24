@@ -759,7 +759,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   _buildStatistics(AccountHolder user) {
     final String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId;
+        Provider.of<UserData>(context, listen: false).currentUserId!;
     return Container(
       color: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
       height: 150.0,

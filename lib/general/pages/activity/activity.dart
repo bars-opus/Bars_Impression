@@ -174,7 +174,7 @@ class _ActivityScreenState extends State<ActivityScreen>
                         });
                         String currentUserId =
                             Provider.of<UserData>(context, listen: false)
-                                .currentUserId;
+                                .currentUserId!;
                         Post post = await DatabaseService.getUserPost(
                           currentUserId,
                           activity.postId!,
@@ -205,7 +205,7 @@ class _ActivityScreenState extends State<ActivityScreen>
                         });
                         String currentUserId =
                             Provider.of<UserData>(context, listen: false)
-                                .currentUserId;
+                                .currentUserId!;
                         Post post = await DatabaseService.getUserPost(
                           currentUserId,
                           activity.postId!,

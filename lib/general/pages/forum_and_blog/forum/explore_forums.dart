@@ -350,7 +350,7 @@ class _ExploreForumsState extends State<ExploreForums> {
                                       author: widget.author,
                                       currentUserId:
                                           Provider.of<UserData>(context)
-                                              .currentUserId,
+                                              .currentUserId!,
                                     ),
                                   ),
                                 );

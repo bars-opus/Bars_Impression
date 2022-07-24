@@ -105,6 +105,23 @@ class _IntroState extends State<Intro> {
                             ),
                           ),
                           SizedBox(height: 10),
+                          RichText(
+                            textScaleFactor:
+                                MediaQuery.of(context).textScaleFactor,
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                    text:
+                                        'We are bringing the whole music industry together. Connect and make history with legends.',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                    )),
+                              ],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: 20),
                           ShakeTransition(
                             axis: Axis.vertical,
                             child: WelcomeInfo(

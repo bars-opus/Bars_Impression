@@ -11,14 +11,17 @@ class SignpsScreen extends StatefulWidget {
 
 class _SignpsScreenState extends State<SignpsScreen>
     with SingleTickerProviderStateMixin {
- late Animation animation,
-       delayedAnimation,
+  late Animation animation,
+      delayedAnimation,
       muchDelayedAnimation,
       muchMoreDelayedAnimation;
- late AnimationController animationController;
+  late AnimationController animationController;
 
   final _formKey = GlobalKey<FormState>();
-  late String  _name, _email, _password;
+
+  String _name = '';
+  String _email = '';
+  String _password = '';
   bool _isLoading = false;
   bool _isHidden = true;
   @override
@@ -153,8 +156,8 @@ class _SignpsScreenState extends State<SignpsScreen>
                                                 Provider.of<UserData>(context,
                                                         listen: false)
                                                     .setPost3(input!),
-                                            validator: (input) => input
-                                                   ! .trim()
+                                            validator: (input) => input!
+                                                    .trim()
                                                     .isEmpty
                                                 ? 'Please enter a name'
                                                 : input.length < 2
@@ -290,7 +293,8 @@ class _SignpsScreenState extends State<SignpsScreen>
                                                 Provider.of<UserData>(context,
                                                         listen: false)
                                                     .setPost2(input!),
-                                            validator: (input) => input!.length <
+                                            validator: (input) => input!
+                                                        .length <
                                                     8
                                                 ? 'Password must be at least 8 characters'
                                                 : input.length > 24
@@ -365,7 +369,20 @@ class _SignpsScreenState extends State<SignpsScreen>
                                           ),
                                         ),
                                       ),
-                                      SizedBox(height: 20.0),
+                                      SizedBox(height: 80.0),
+                                      FadeAnimation(
+                                        2,
+                                        GestureDetector(
+                                          onTap: () => Navigator.pushNamed(
+                                              context, Password.id),
+                                          child: Text('Forgot Password?',
+                                              style: TextStyle(
+                                                color: Colors.blueGrey,
+                                                fontSize: width > 800 ? 18 : 12,
+                                              ),
+                                              textAlign: TextAlign.right),
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),

@@ -1,4 +1,3 @@
-import 'package:bars/general/pages/event/event_page_live.dart';
 import 'package:bars/utilities/exports.dart';
 
 class EventPage extends StatefulWidget {
@@ -25,43 +24,41 @@ class _EventPageState extends State<EventPage>
             Container(
               height: 35,
               width: width,
-              child: ListView(
-                shrinkWrap: true,
+              child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      SizedBox(width: 20),
-                      OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            primary: Colors.blue,
-                            side: BorderSide(width: 1.0, color: Colors.grey),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: Text(
-                              ' Virtual Events',
-                              style: TextStyle(
-                                color: ConfigBloc().darkModeOn
-                                    ? Colors.white
-                                    : Colors.black,
-                                fontSize: 12.0,
-                              ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    SizedBox(width: 20),
+                    OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          primary: Colors.blue,
+                          side: BorderSide(width: 1.0, color: Colors.grey),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Text(
+                            ' Virtual Events',
+                            style: TextStyle(
+                              color: ConfigBloc().darkModeOn
+                                  ? Colors.white
+                                  : Colors.black,
+                              fontSize: 12.0,
                             ),
                           ),
-                          onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => EventPageLocation(
-                                    locationType: 'Virtual',
-                                    currentUserId: widget.currentUserId,
-                                    user: widget.user,
-                                  ),
+                        ),
+                        onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => EventPageLocation(
+                                  locationType: 'Virtual',
+                                  currentUserId: widget.currentUserId,
+                                  user: widget.user,
                                 ),
-                              )),
-                      SizedBox(width: 20),
-                      OutlinedButton(
+                              ),
+                            )),
+                    SizedBox(width: 20),
+                    OutlinedButton(
                         style: OutlinedButton.styleFrom(
                           primary: Colors.blue,
                           side: BorderSide(width: 1.0, color: Colors.grey),
@@ -79,103 +76,60 @@ class _EventPageState extends State<EventPage>
                           ),
                         ),
                         onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => EventPageLive(
-                              currentUserId: widget.currentUserId,
-                              user: widget.user,
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => FetchingLocation(
+                                  currentUserId: widget.currentUserId,
+                                  user: widget.user,
+                                  type: 'Events',
+                                ),
+                              ),
+                            )),
+                    SizedBox(width: 20),
+                    Container(
+                      child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            primary: Colors.blue,
+                            side: BorderSide(width: 1.0, color: Colors.grey),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Text(
+                              widget.user.country!.isEmpty
+                                  ? 'In Your Country'
+                                  : 'In ' + widget.user.country!,
+                              style: TextStyle(
+                                color: ConfigBloc().darkModeOn
+                                    ? Colors.white
+                                    : Colors.black,
+                                fontSize: 12.0,
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      SizedBox(width: 20),
-                      Container(
-                        child: OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              primary: Colors.blue,
-                              side: BorderSide(width: 1.0, color: Colors.grey),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Text(
-                                widget.user.city!.isEmpty
-                                    ? 'in Your City'
-                                    : 'In ' + widget.user.city!,
-                                style: TextStyle(
-                                  color: ConfigBloc().darkModeOn
-                                      ? Colors.white
-                                      : Colors.black,
-                                  fontSize: 12.0,
-                                ),
-                              ),
-                            ),
-                            onPressed: () => widget.user.city!.isEmpty
-                                ? Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => NoCity(
-                                        currentUserId: widget.currentUserId,
-                                        user: widget.user,
-                                      ),
+                          onPressed: () => widget.user.country!.isEmpty
+                              ? Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => NoCity(
+                                      currentUserId: widget.currentUserId,
+                                      user: widget.user,
                                     ),
-                                  )
-                                : Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => EventPageLocation(
-                                        locationType: 'City',
-                                        currentUserId: widget.currentUserId,
-                                        user: widget.user,
-                                      ),
+                                  ),
+                                )
+                              : Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => EventPageLocation(
+                                      locationType: 'Country',
+                                      currentUserId: widget.currentUserId,
+                                      user: widget.user,
                                     ),
-                                  )),
-                      ),
-                      SizedBox(width: 20),
-                      Container(
-                        child: OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              primary: Colors.blue,
-                              side: BorderSide(width: 1.0, color: Colors.grey),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Text(
-                                widget.user.country!.isEmpty
-                                    ? 'In Your Country'
-                                    : 'In ' + widget.user.country!,
-                                style: TextStyle(
-                                  color: ConfigBloc().darkModeOn
-                                      ? Colors.white
-                                      : Colors.black,
-                                  fontSize: 12.0,
-                                ),
-                              ),
-                            ),
-                            onPressed: () => widget.user.country!.isEmpty
-                                ? Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => NoCity(
-                                        currentUserId: widget.currentUserId,
-                                        user: widget.user,
-                                      ),
-                                    ),
-                                  )
-                                : Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => EventPageLocation(
-                                        locationType: 'Country',
-                                        currentUserId: widget.currentUserId,
-                                        user: widget.user,
-                                      ),
-                                    ),
-                                  )),
-                      ),
-                      SizedBox(width: 20),
-                    ],
-                  ),
-                ],
+                                  ),
+                                )),
+                    ),
+                    SizedBox(width: 20),
+                  ],
+                ),
               ),
             ),
           );

@@ -257,7 +257,9 @@ class _OtherEventsLocationState extends State<OtherEventsLocation>
                     child: _buildUser()))
             : _events.length == 0
                 ? Center(
-                    child: SizedBox.shrink(),
+                    child: NoUsersDicovered(
+                      title: 'Other events',
+                    ),
                   )
                 : Center(
                     child: EventSchimmer(),

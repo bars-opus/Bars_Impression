@@ -49,30 +49,38 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
     _hideButtonController.addListener(() {
       if (_hideButtonController.position.userScrollDirection ==
           ScrollDirection.forward) {
-        setState(() {
-          _isVisible = true;
-        });
+        if (mounted) {
+          setState(() {
+            _isVisible = true;
+          });
+        }
       }
       if (_hideButtonController.position.userScrollDirection ==
           ScrollDirection.reverse) {
-        setState(() {
-          _isVisible = false;
-        });
+        if (mounted) {
+          setState(() {
+            _isVisible = false;
+          });
+        }
       }
     });
     _hideAppBarController = new ScrollController();
     _hideAppBarController.addListener(() {
       if (_hideButtonController.position.userScrollDirection ==
           ScrollDirection.forward) {
-        setState(() {
-          _isVisible = true;
-        });
+        if (mounted) {
+          setState(() {
+            _isVisible = true;
+          });
+        }
       }
       if (_hideButtonController.position.userScrollDirection ==
           ScrollDirection.reverse) {
-        setState(() {
-          _isVisible = false;
-        });
+        if (mounted) {
+          setState(() {
+            _isVisible = false;
+          });
+        }
       }
     });
   }
@@ -82,9 +90,11 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
       currentUserId: widget.currentUserId,
       userId: widget.user.id!,
     );
-    setState(() {
-      _isBlockedUser = isBlockedUser;
-    });
+    if (mounted) {
+      setState(() {
+        _isBlockedUser = isBlockedUser;
+      });
+    }
   }
 
   _setUpUserAdvice() async {
@@ -99,7 +109,7 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
 
   _buildBlogComment(UserAdvice userAdvice, AccountHolder author) {
     final width = MediaQuery.of(context).size.width;
-    final String currentUserId = Provider.of<UserData>(context).currentUserId;
+    final String currentUserId = Provider.of<UserData>(context).currentUserId!;
     return FutureBuilder(
       future: DatabaseService.getUserWithId(userAdvice.authorId),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -119,7 +129,7 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                 width: width / 2,
                 child: Text(
                   currentUserId == author.id!
-                      ? 'Edit your thought'
+                      ? 'Edit your advice'
                       : author.profileHandle!.startsWith('Fan') ||
                               author.profileHandle!.isEmpty
                           ? 'Go to ${author.userName}\' profile '
@@ -146,7 +156,7 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                               builder: (_) => ProfileScreen(
                                     currentUserId:
                                         Provider.of<UserData>(context)
-                                            .currentUserId,
+                                            .currentUserId!,
                                     userId: author.id!,
                                     user: widget.user,
                                   )))
@@ -156,7 +166,7 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                               builder: (_) => ProfileProfessionalProfile(
                                     currentUserId:
                                         Provider.of<UserData>(context)
-                                            .currentUserId,
+                                            .currentUserId!,
                                     user: author,
                                     userId: author.id!,
                                   ))),
@@ -184,7 +194,7 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
             data: MediaQuery.of(context).copyWith(
                 textScaleFactor:
                     MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
-                      child: Slidable(
+            child: Slidable(
               startActionPane: ActionPane(
                 motion: const ScrollMotion(),
                 children: [
@@ -205,7 +215,8 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                     backgroundColor: Color(0xFF1a1a1a),
                     foregroundColor: Colors.white,
                     icon: currentUserId == author.id! ? Icons.edit : null,
-                    label: currentUserId == author.id! ? 'Edit your advice' : '',
+                    label:
+                        currentUserId == author.id! ? 'Edit your advice' : '',
                   ),
                 ],
               ),
@@ -242,14 +253,15 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                                   backgroundColor: ConfigBloc().darkModeOn
                                       ? Color(0xFF1a1a1a)
                                       : Color(0xFFf2f2f2),
-                                  backgroundImage: author.profileImageUrl!.isEmpty
-                                      ? AssetImage(
-                                          ConfigBloc().darkModeOn
-                                              ? 'assets/images/user_placeholder.png'
-                                              : 'assets/images/user_placeholder2.png',
-                                        ) as ImageProvider
-                                      : CachedNetworkImageProvider(
-                                          author.profileImageUrl!),
+                                  backgroundImage:
+                                      author.profileImageUrl!.isEmpty
+                                          ? AssetImage(
+                                              ConfigBloc().darkModeOn
+                                                  ? 'assets/images/user_placeholder.png'
+                                                  : 'assets/images/user_placeholder2.png',
+                                            ) as ImageProvider
+                                          : CachedNetworkImageProvider(
+                                              author.profileImageUrl!),
                                 ),
                           title: Column(
                             crossAxisAlignment: currentUserId == author.id!
@@ -269,8 +281,8 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                                       alignment: Alignment.centerRight,
                                       children: [
                                         Padding(
-                                          padding:
-                                              const EdgeInsets.only(right: 12.0),
+                                          padding: const EdgeInsets.only(
+                                              right: 12.0),
                                           child: Text(
                                             author.userName!,
                                             style: TextStyle(
@@ -380,7 +392,7 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
   }
 
   _buildUserAdvice() {
-    final currentUserId = Provider.of<UserData>(context).currentUserId;
+    final currentUserId = Provider.of<UserData>(context).currentUserId!;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 10.0),
       child: AnimatedContainer(
@@ -412,7 +424,7 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                             _adviceControler.text.length > 300 ? 10 : null,
                         onChanged: (userAdvice) =>
                             Provider.of<UserData>(context, listen: false)
-                                .setPost9(userAdvice),
+                                .setPost9(userAdvice.trim()),
                         decoration: InputDecoration.collapsed(
                           hintText: widget.user.id == currentUserId
                               ? 'Reply advice'
@@ -450,7 +462,7 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                               currentUserId: currentUserId,
                               user: widget.user,
                               reportConfirmed: '',
-                              advice: _adviceControler.text,
+                              advice: _adviceControler.text.trim(),
                             );
                             _adviceControler.clear();
                             Provider.of<UserData>(context, listen: false)

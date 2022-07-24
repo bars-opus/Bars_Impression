@@ -128,7 +128,7 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
 
   _setUpactivityFollowerCount() async {
     final String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId;
+        Provider.of<UserData>(context, listen: false).currentUserId!;
     DatabaseService.numActivitiesFollower(currentUserId)
         .listen((activityFollowerCount) {
       if (mounted) {
@@ -141,7 +141,7 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
 
   _setUpactivityChatCount() async {
     final String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId;
+        Provider.of<UserData>(context, listen: false).currentUserId!;
     DatabaseService.numChats(
       currentUserId,
     ).listen((activityChatCount) {
@@ -155,7 +155,7 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
 
   _setUpactivityCount() async {
     final String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId;
+        Provider.of<UserData>(context, listen: false).currentUserId!;
     DatabaseService.numActivities(currentUserId).listen((activityCount) {
       if (mounted) {
         setState(() {
@@ -167,7 +167,7 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
 
   _setUpactivityForumCount() async {
     final String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId;
+        Provider.of<UserData>(context, listen: false).currentUserId!;
     DatabaseService.numForumActivities(currentUserId)
         .listen((activityForumCount) {
       if (mounted) {
@@ -180,7 +180,7 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
 
   _setUpactivityAdviceCount() async {
     final String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId;
+        Provider.of<UserData>(context, listen: false).currentUserId!;
     DatabaseService.numActivitiesAdvice(currentUserId)
         .listen((activityAdviceCount) {
       if (mounted) {
@@ -193,7 +193,7 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
 
   _setUpactivityEventCount() async {
     final String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId;
+        Provider.of<UserData>(context, listen: false).currentUserId!;
     DatabaseService.numEventActivities(currentUserId)
         .listen((activityEventCount) {
       if (mounted) {
@@ -388,7 +388,7 @@ class _buildNotification extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId;
+        Provider.of<UserData>(context, listen: false).currentUserId!;
     int eCount = activityEventCount.toInt();
     int pCount = activityCount.toInt();
     int fCount = activityForumCount.toInt();
@@ -523,7 +523,7 @@ class _buildToggleButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId;
+        Provider.of<UserData>(context, listen: false).currentUserId!;
     return Stack(
       children: [
         Row(

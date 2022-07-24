@@ -257,7 +257,9 @@ class _ToursEventsLocationState extends State<ToursEventsLocation>
                     child: _buildUser()))
             : _events.length == 0
                 ? Center(
-                    child: SizedBox.shrink(),
+                    child: NoUsersDicovered(
+                      title: 'Tours',
+                    ),
                   )
                 : Center(
                     child: EventSchimmer(),

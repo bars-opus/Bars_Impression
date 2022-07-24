@@ -15,19 +15,24 @@ class _TipScreenState extends State<TipScreen> {
           ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
       body: Padding(
         padding: const EdgeInsets.all(30.0),
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
+        child: ListView(
+
+            // mainAxisAlignment: MainAxisAlignment.center,
+            // crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              ShakeTransition(
-                child: Text('Tips',
-                    style: TextStyle(color: Colors.blue, fontSize: 40)),
+              Center(
+                child: ShakeTransition(
+                  child: Text('Tips',
+                      style: TextStyle(color: Colors.blue, fontSize: 40)),
+                ),
               ),
               SizedBox(height: 30),
-              Container(
-                height: 2,
-                color: Colors.blue,
-                width: 10,
+              Center(
+                child: Container(
+                  height: 2,
+                  color: Colors.blue,
+                  width: 10,
+                ),
               ),
               SizedBox(height: 20),
               ShakeTransition(
@@ -36,7 +41,7 @@ class _TipScreenState extends State<TipScreen> {
                   child: IntroInfo(
                     title: 'Reveal more infomation',
                     subTitle:
-                        "Slide a created content (mood punch, a forum, an event, a blog or a comment) to the right to see more information.\n You can also tap and hold to reveal more information",
+                        "Slide a created content (mood punch, a forum, an event, or a comment) to the right to see more information.\n You can also tap and hold to reveal more information",
                     icon: Icon(
                       Icons.info,
                       color: Colors.grey,

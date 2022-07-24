@@ -1,11 +1,16 @@
 import 'package:bars/utilities/exports.dart';
-import 'package:geocoding/geocoding.dart';
 
 class EventPageLive extends StatefulWidget {
   static final id = 'EventPageLive';
   final String currentUserId;
+  final String liveCity;
+  final String liveCountry;
   final AccountHolder user;
-  EventPageLive({required this.currentUserId, required this.user});
+  EventPageLive(
+      {required this.currentUserId,
+      required this.liveCity,
+      required this.liveCountry,
+      required this.user});
 
   @override
   _EventPageLiveState createState() => _EventPageLiveState();
@@ -13,34 +18,12 @@ class EventPageLive extends StatefulWidget {
 
 class _EventPageLiveState extends State<EventPageLive>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
-  String _city = '';
-  String _userCountry = '';
-  late double userLatitude;
-  late double userLongitude;
-
-  @override
-  void initState() {
-    super.initState();
-    _getCurrentLocation();
-  }
-
-  _getCurrentLocation() async {
-    final geoposition = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    setState(() {
-      userLatitude = geoposition.latitude;
-      userLongitude = geoposition.longitude;
-    });
-
-    List<Placemark> placemarks =
-        await placemarkFromCoordinates(userLatitude, userLongitude);
-    setState(() {
-      _city = (placemarks[0].locality == null ? '' : placemarks[0].locality)!;
-      _userCountry = (placemarks[0].country == null ? '' : placemarks[0].country)!;
-    });
-  }
-
   bool get wantKeepAlive => true;
+
+  _pop() {
+    Navigator.pop(context);
+    Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,11 +42,17 @@ class _EventPageLiveState extends State<EventPageLive>
               iconTheme: new IconThemeData(
                 color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
               ),
+              leading: IconButton(
+                icon: Icon(
+                    Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
+                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                onPressed: _pop,
+              ),
               backgroundColor:
                   ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
               centerTitle: true,
               title: Text(
-                'Events In ${widget.user.city}',
+                'Events In ${widget.liveCity}',
                 style: TextStyle(
                     color:
                         ConfigBloc().darkModeOn ? Colors.white : Colors.black,
@@ -106,41 +95,41 @@ class _EventPageLiveState extends State<EventPageLive>
             body: TabBarView(
               physics: const NeverScrollableScrollPhysics(),
               children: <Widget>[
-                EventsAllLiveCity(             
+                EventsAllLiveCity(
                   currentUserId: widget.currentUserId,
                   user: widget.user,
-                  liveCity: _city,
-                  liveCountry: _userCountry,
+                  liveCity: widget.liveCity,
+                  liveCountry: widget.liveCountry,
                 ),
                 FestivalEventsLiveCity(
                   currentUserId: widget.currentUserId,
                   user: widget.user,
-                  liveCity: _city,
-                  liveCountry: _userCountry,
+                  liveCity: widget.liveCity,
+                  liveCountry: widget.liveCountry,
                 ),
                 AwardEventsLiveCity(
                   currentUserId: widget.currentUserId,
                   user: widget.user,
-                  liveCity: _city,
-                  liveCountry: _userCountry,
+                  liveCity: widget.liveCity,
+                  liveCountry: widget.liveCountry,
                 ),
                 ToursEventsLiveCity(
                   currentUserId: widget.currentUserId,
                   user: widget.user,
-                  liveCity: _city,
-                  liveCountry: _userCountry,
+                  liveCity: widget.liveCity,
+                  liveCountry: widget.liveCountry,
                 ),
                 AlbumLaunchesLiveCity(
                   currentUserId: widget.currentUserId,
                   user: widget.user,
-                  liveCity: _city,
-                  liveCountry: _userCountry,
+                  liveCity: widget.liveCity,
+                  liveCountry: widget.liveCountry,
                 ),
                 OtherEventsLiveCity(
                   currentUserId: widget.currentUserId,
                   user: widget.user,
-                  liveCity: _city,
-                  liveCountry: _userCountry,
+                  liveCity: widget.liveCity,
+                  liveCountry: widget.liveCountry,
                 ),
               ],
             )),
