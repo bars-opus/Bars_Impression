@@ -247,7 +247,7 @@ class _locationTab extends StatelessWidget {
     return user == null
         ? SizedBox.shrink()
         : Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            padding: const EdgeInsets.only(left: 12.0, right: 12, top: 12),
             child: FadeAnimation(
               1,
               Container(

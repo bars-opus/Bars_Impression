@@ -703,6 +703,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ),
                               textAlign: TextAlign.center,
                             ),
+                            SizedBox(height: 40),
                           ],
                         ))),
               ),

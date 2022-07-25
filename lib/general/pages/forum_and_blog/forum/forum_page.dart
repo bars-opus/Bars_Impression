@@ -179,7 +179,7 @@ class _ForumPageState extends State<ForumPage>
                                   ),
                                 )
                               : Center(
-                                  child: UserSchimmer(),
+                                  child: ForumSchimmer(),
                                 ),
                     ),
                   ),

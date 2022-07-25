@@ -398,23 +398,19 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
           feedback: Padding(
             padding: EdgeInsets.only(
                 top: message.imageUrl.isEmpty ? 8.0 : width / 4),
-            child: ShakeTransition(
-              curve: Curves.easeInOutBack,
-              offset: -140.0,
-              child: Container(
-                decoration: BoxDecoration(
-                    color: currentUserId == message.authorId
-                        ? Colors.white
-                        : Colors.grey,
-                    shape: BoxShape.circle),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Icon(
-                    Icons.reply,
-                    color: currentUserId == message.authorId
-                        ? Colors.grey
-                        : Colors.white,
-                  ),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: currentUserId == message.authorId
+                      ? Colors.white
+                      : Colors.grey,
+                  shape: BoxShape.circle),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(
+                  Icons.reply,
+                  color: currentUserId == message.authorId
+                      ? Colors.grey
+                      : Colors.white,
                 ),
               ),
             ),
@@ -451,7 +447,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                             duration: Duration(milliseconds: 800),
                             height: null,
                             width: _dragging ? width - 50 : width,
-                            color: Colors.red,
+                            color: Colors.transparent,
                             child: Container(
                               width: double.infinity,
                               decoration: BoxDecoration(

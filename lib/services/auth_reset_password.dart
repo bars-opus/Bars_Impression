@@ -37,6 +37,7 @@ class AuthPassWord {
       await _auth.sendPasswordResetEmail(
         email: email,
       );
+      Navigator.pop(context);
       Flushbar(
         maxWidth: MediaQuery.of(context).size.width,
         margin: EdgeInsets.all(8),

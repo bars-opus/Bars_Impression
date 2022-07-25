@@ -123,7 +123,7 @@ class _FetchingLocationState extends State<FetchingLocation> {
                 child: NoContents(
                   icon: (Icons.location_on),
                   title: 'Fetching Live Location',
-                  subTitle: 'Just a moment, please wait',
+                  subTitle: 'Just a moment...',
                 ),
               ),
               const SizedBox(height: 3),

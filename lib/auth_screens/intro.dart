@@ -112,7 +112,7 @@ class _IntroState extends State<Intro> {
                               children: [
                                 TextSpan(
                                     text:
-                                        'We are bringing the whole music industry together. Connect and make history with legends.',
+                                        'Connecting all music creators. We are bringing the whole music industry together. Connect and make history with legends.',
                                     style: TextStyle(
                                       fontSize: 14,
                                       color: Colors.white,
@@ -135,7 +135,6 @@ class _IntroState extends State<Intro> {
                               ),
                             ),
                           ),
-                          // SizedBox(height: 20),
                           ShakeTransition(
                             child: WelcomeInfo(
                               title: 'Create a brand',
@@ -148,7 +147,6 @@ class _IntroState extends State<Intro> {
                               ),
                             ),
                           ),
-
                           ShakeTransition(
                             child: WelcomeInfo(
                               title: 'What is on your mind?',
