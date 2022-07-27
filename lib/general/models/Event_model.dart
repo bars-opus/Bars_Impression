@@ -24,6 +24,7 @@ class Event {
   final String virtualVenue;
   final String report;
   final String reportConfirmed;
+  final String blurHash;
   final String ticketSite;
   final bool isVirtual;
 
@@ -53,35 +54,37 @@ class Event {
     required this.virtualVenue,
     required this.ticketSite,
     required this.isVirtual,
+    required this.blurHash,
   });
 
   factory Event.fromDoc(DocumentSnapshot doc) {
     return Event(
       id: doc.id,
-      imageUrl: doc['imageUrl'],
-      type: doc['type'],
-      title: doc['title'],
-      rate: doc['rate'],
-      venue: doc['venue'],
-      date: doc['date'],
-      theme: doc['theme'],
-      dressCode: doc['dressCode'],
-      time: doc['time'],
-      dj: doc['dj'],
-      guess: doc['guess'],
-      host: doc['host'],
-      artist: doc['artist'],
-      authorId: doc['authorId'],
+      imageUrl: doc['imageUrl'] ?? '',
+      type: doc['type'] ?? "",
+      title: doc['title'] ?? '',
+      rate: doc['rate'] ?? '',
+      venue: doc['venue'] ?? '',
+      date: doc['date'] ?? '',
+      theme: doc['theme'] ?? '',
+      dressCode: doc['dressCode'] ?? '',
+      time: doc['time'] ?? '',
+      dj: doc['dj'] ?? '',
+      guess: doc['guess'] ?? '',
+      host: doc['host'] ?? '',
+      artist: doc['artist'] ?? '',
+      authorId: doc['authorId'] ?? '',
       timestamp: doc['timestamp'],
-      previousEvent: doc['previousEvent'],
-      triller: doc['triller'],
-      city: doc['city'],
+      previousEvent: doc['previousEvent'] ?? '',
+      triller: doc['triller'] ?? '',
+      city: doc['city'] ?? '',
       country: doc['country'],
       virtualVenue: doc['virtualVenue'],
       ticketSite: doc['ticketSite'],
-      report: doc['report']?? '',
+      report: doc['report'] ?? '',
       reportConfirmed: doc['reportConfirmed'],
-      isVirtual: doc['isVirtual'],
+      isVirtual: doc['isVirtual'] ?? false,
+      blurHash: doc['blurHash'] ?? '',
     );
   }
 }

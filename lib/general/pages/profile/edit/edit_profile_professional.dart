@@ -379,7 +379,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                   color: Colors.blue,
                   child: ListTile(
                     title: Text(
-                        'Add three professional images in order for you to be able to save your booking information',
+                        'Add three professional images in order to be able to save your booking information',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 12,
@@ -745,7 +745,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                       height: 10.0,
                                     ),
                                     Text(
-                                      'Enter your booking and management information. You can only one phone number with an email.  ',
+                                      'Enter your booking and management information. You can only add one phone number with an email.  ',
                                       style: TextStyle(
                                         color: ConfigBloc().darkModeOn
                                             ? Colors.white

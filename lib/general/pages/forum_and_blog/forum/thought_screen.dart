@@ -112,9 +112,11 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
       currentUserId: widget.currentUserId,
       userId: widget.author.id!,
     );
-    setState(() {
-      _isBlockedUser = isBlockedUser;
-    });
+    if (mounted) {
+      setState(() {
+        _isBlockedUser = isBlockedUser;
+      });
+    }
   }
 
   _setUpThoughts() async {

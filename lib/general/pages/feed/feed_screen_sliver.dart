@@ -225,7 +225,9 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
                     future: DatabaseService.getUserWithId(post.authorId),
                     builder: (BuildContext context, AsyncSnapshot snapshot) {
                       if (!snapshot.hasData) {
-                        return PostSchimmerSkeleton();
+                        return PostEnlargedBlurharsh(
+                          post: post,
+                        );
                       }
                       AccountHolder author = snapshot.data;
                       return PostView(

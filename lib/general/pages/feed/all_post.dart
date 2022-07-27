@@ -22,6 +22,7 @@ class _AllPostState extends State<AllPost> {
   void initState() {
     super.initState();
     _setupFeed();
+    PaintingBinding.instance.imageCache.clear();
     _hideButtonController = ScrollController();
   }
 
@@ -142,7 +143,14 @@ class _AllPostState extends State<AllPost> {
                                                 builder: (BuildContext context,
                                                     AsyncSnapshot snapshot) {
                                                   if (!snapshot.hasData) {
-                                                    return GridSchimmerSkeleton();
+                                                    return Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: PostBlurHash(
+                                                        post: post,
+                                                      ),
+                                                    );
                                                   }
                                                   AccountHolder author =
                                                       snapshot.data;

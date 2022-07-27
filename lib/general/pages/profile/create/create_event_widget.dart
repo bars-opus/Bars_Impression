@@ -1,5 +1,8 @@
 // ignore_for_file: unnecessary_null_comparison
 
+
+import 'dart:typed_data';
+import 'package:blurhash/blurhash.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/scheduler.dart';
@@ -71,9 +74,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
   TextEditingController? _controller;
   int index = 0;
   int showDatePicker = 0;
-  // late DateTime _date;
-  // late DateTime _toDaysDate;
-  // int _different = 0;
   int showTimePicker = 0;
   bool _isLoading = false;
   bool _isVirtual = false;
@@ -95,7 +95,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
 
   @override
   void initState() {
-    // _countDown();
     _type = widget.type;
     selectedValue = _type.isEmpty ? values.last : _type;
     _pageController = PageController(
@@ -117,18 +116,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
       Provider.of<UserData>(context, listen: false).setPost10(widget.country);
     });
   }
-
-  // _countDown() async {
-  //   DateTime date = DateTime.parse(widget.date);
-  //   final toDayDate = DateTime.now();
-  //   // var different = date.difference(toDayDate).inDays;
-
-  //   setState(() {
-  //     // _different = different;
-  //     _date = date;
-  //     _toDaysDate = toDayDate;
-  //   });
-  // }
 
   _handleImage() async {
     final file = await PickCropImage.pickedMedia(cropImage: _cropImage);
@@ -302,6 +289,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
       _formKey.currentState?.save();
       String _imageUrl = widget.event!.imageUrl;
       Event event = Event(
+        blurHash: '',
         id: widget.event!.id,
         imageUrl: _imageUrl,
         type: Provider.of<UserData>(context, listen: false).post6,
@@ -488,7 +476,15 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
       String? imageUrl = await StorageService.uploadEvent(
           Provider.of<UserData>(context, listen: false).postImage!);
 
+           
+         
+       Uint8List bytes =
+          await (Provider.of<UserData>(context, listen: false).postImage!)
+              .readAsBytes();
+      var blurHash = await BlurHash.encode(bytes, 4, 3);
+
       Event event = Event(
+        blurHash: blurHash,
         imageUrl: imageUrl,
         type: Provider.of<UserData>(context, listen: false).post6.isEmpty
             ? "Others"
@@ -1086,7 +1082,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
             key: _formKey,
             child: PageView(
               controller: _pageController,
-              physics: AlwaysScrollableScrollPhysics(),
+              physics: NeverScrollableScrollPhysics(),
               onPageChanged: (int index) {
                 setState(() {
                   _indexx = index;

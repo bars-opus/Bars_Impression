@@ -13,6 +13,7 @@ class Post {
   final String authorId;
   final String reportConfirmed;
   final String report;
+  final String blurHash;
   final Timestamp timestamp;
 
   Post({
@@ -28,6 +29,7 @@ class Post {
     required this.authorId,
     required this.report,
     required this.timestamp,
+    required this.blurHash,
     required this.reportConfirmed,
   });
 
@@ -44,7 +46,8 @@ class Post {
       disLikeCount: doc['disLikeCount'],
       authorId: doc['authorId'],
       reportConfirmed: doc['reportConfirmed'],
-      report: doc['report']?? '',
+      report: doc['report'] ?? '',
+      blurHash: doc['blurHash'] ?? '',
       timestamp: doc['timestamp'],
     );
   }

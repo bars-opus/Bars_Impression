@@ -1,8 +1,9 @@
 // ignore_for_file: unnecessary_null_comparison
 
+import 'dart:typed_data';
 import 'dart:ui';
-
 import 'package:bars/utilities/exports.dart';
+import 'package:blurhash/blurhash.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -240,6 +241,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
       _formKey.currentState?.save();
       String _imageUrl = widget.post!.imageUrl;
       Post post = Post(
+        blurHash: widget.post!.blurHash,
         id: widget.post!.id,
         imageUrl: _imageUrl,
         caption: Provider.of<UserData>(context, listen: false).post4!,
@@ -385,7 +387,16 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
 
       String imageUrl = await StorageService.uploadPost(
           Provider.of<UserData>(context, listen: false).postImage!);
+
+      Uint8List bytes =
+          await (Provider.of<UserData>(context, listen: false).postImage!)
+              .readAsBytes();
+      var blurHash = await BlurHash.encode(bytes, 4, 3);
+
+   
+
       Post post = Post(
+        blurHash: blurHash,
         imageUrl: imageUrl,
         caption: Provider.of<UserData>(context, listen: false).post4!,
         artist: Provider.of<UserData>(context, listen: false).post1,
@@ -817,6 +828,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                                                     child: Material(
                                                       color: Colors.transparent,
                                                       child: TextFormField(
+                                                      
                                                         keyboardType:
                                                             TextInputType
                                                                 .multiline,

@@ -368,6 +368,7 @@ class DatabaseService {
   static void createPost(Post post) {
     postsRef.doc(post.authorId).collection('userPosts').add({
       'postId': post.id,
+      'blurHash': post.blurHash,
       'imageUrl': post.imageUrl,
       'caption': post.caption,
       'artist': post.artist,
@@ -387,6 +388,7 @@ class DatabaseService {
     postsRef.doc(post.authorId).collection('userPosts').doc(post.id).update({
       'imageUrl': post.imageUrl,
       'caption': post.caption,
+      'blurHash': post.blurHash,
       'artist': post.artist,
       'punch': post.punch,
       'hashTag': post.hashTag,
@@ -424,6 +426,7 @@ class DatabaseService {
       'virtualVenue': event.virtualVenue,
       'ticketSite': event.ticketSite,
       'isVirtual': event.isVirtual,
+      'blurHash': event.blurHash,
     });
   }
 
@@ -455,6 +458,7 @@ class DatabaseService {
       'country': event.country,
       'virtualVenue': event.virtualVenue,
       'ticketSite': event.ticketSite,
+      'blurHash': event.blurHash,
     });
   }
 

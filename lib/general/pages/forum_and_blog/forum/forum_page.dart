@@ -175,7 +175,7 @@ class _ForumPageState extends State<ForumPage>
                                     _setupForumFeed();
                                   },
                                   child: Center(
-                                    child: SizedBox.shrink(),
+                                    child: ForumSchimmer(),
                                   ),
                                 )
                               : Center(

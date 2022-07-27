@@ -1,6 +1,12 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter_blurhash/flutter_blurhash.dart';
 
-class EventSchimmerSkeleton extends StatelessWidget {
+class EventSchimmerBlurHash extends StatelessWidget {
+  final Event event;
+
+  const EventSchimmerBlurHash({Key? key, required this.event})
+      : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final double width = Responsive.isDesktop(context)
@@ -14,32 +20,23 @@ class EventSchimmerSkeleton extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            SchimmerSkeleton(
-              schimmerWidget: Container(
-                height: width / 2,
-                width: width / 4,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  color: ConfigBloc().darkModeOn
-                      ? Color(0xFF1a1a1a)
-                      : Color(0xFFf2f2f2),
-                ),
-                child: Container(
-                  width: width / 1.5,
-                  height: 50,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.black : Colors.grey,
-                      gradient: LinearGradient(
-                          begin: Alignment.bottomRight,
-                          colors: [
-                            Colors.black.withOpacity(.5),
-                            Colors.black.withOpacity(.5)
-                          ])),
-                ),
+            Container(
+              height: width / 2,
+              width: width / 4,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                color: ConfigBloc().darkModeOn
+                    ? Color(0xFF1a1a1a)
+                    : Color(0xFFf2f2f2),
+              ),
+              child: BlurHash(
+                hash: event.blurHash.isEmpty
+                    ? 'LpQ0aNRkM{M{~qWBayWB4nofj[j['
+                    : event.blurHash,
+                imageFit: BoxFit.cover,
               ),
             ),
+            // ),
             Padding(
               padding: const EdgeInsets.only(
                 left: 20.0,

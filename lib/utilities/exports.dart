@@ -251,6 +251,9 @@ export 'package:bars/general/pages/event/event_page_live.dart';
 export 'package:bars/widgets/schimmers/follower_user_shimmer_skeleton.dart';
 export 'package:bars/widgets/schimmers/explore_events_schimmer_skeleton.dart';
 export 'package:bars/widgets/schimmers/explore_forums_schimmer_skeleton.dart';
+export 'package:bars/widgets/schimmers/post_enlarged_blurhash.dart';
+export 'package:bars/general/pages/feed/post_blurhash.dart';
+export 'package:bars/widgets/schimmers/event_schimmer_blurhash.dart';
 // discover user
 export 'package:bars/general/pages/discover/discover_page/account_categories/artists.dart';
 export 'package:bars/general/pages/discover/discover_page/account_categories/battle_rappers.dart';

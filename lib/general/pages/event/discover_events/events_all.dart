@@ -102,7 +102,8 @@ class _EventsAllState extends State<EventsAll>
       currentUserId: widget.currentUserId,
       event: event,
       feed: 2,
-      author: author, user: widget.user!,
+      author: author,
+      user: widget.user!,
     );
   }
 
@@ -123,7 +124,9 @@ class _EventsAllState extends State<EventsAll>
                       future: DatabaseService.getUserWithId(event.authorId),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (!snapshot.hasData) {
-                          return EventSchimmerSkeleton();
+                          return EventSchimmerBlurHash(
+                            event: event,
+                          );
                         }
                         AccountHolder author = snapshot.data;
 
@@ -157,7 +160,7 @@ class _EventsAllState extends State<EventsAll>
                     child: _buildUser()))
             : _events.length == 0
                 ? Center(
-                    child: SizedBox.shrink(),
+                    child: EventSchimmer(),
                   )
                 : Center(
                     child: EventSchimmer(),

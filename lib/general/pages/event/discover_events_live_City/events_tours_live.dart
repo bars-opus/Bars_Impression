@@ -121,7 +121,7 @@ late  ScrollController _hideButtonController;
                       future: DatabaseService.getUserWithId(event.authorId),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (!snapshot.hasData) {
-                          return EventSchimmerSkeleton();
+                          return EventSchimmerBlurHash(event: event,);
                         }
                         AccountHolder author = snapshot.data;
                         return _displayEvents(event, author);

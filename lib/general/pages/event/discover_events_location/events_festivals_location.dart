@@ -223,7 +223,7 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
                       future: DatabaseService.getUserWithId(event.authorId),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (!snapshot.hasData) {
-                          return EventSchimmerSkeleton();
+                          return EventSchimmerBlurHash(event: event,);
                         }
                         AccountHolder author = snapshot.data;
 

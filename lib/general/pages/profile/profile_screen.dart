@@ -1174,53 +1174,6 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
-  // _buildMoodPunchedBlog(AccountHolder user) {
-  //   return Row(
-  //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  //     children: <Widget>[
-  //       DisplayPosts(
-  //           title: 'Mood Punched',
-  //           color: _moodPunched == 0 ? Colors.blue : Colors.grey,
-  //           fontWeight: _moodPunched == 0 ? FontWeight.bold : FontWeight.normal,
-  //           onPressed: () {
-  //             if (mounted) {
-  //               setState(() {
-  //                 _moodPunched = 0;
-  //               });
-  //             }
-  //           }),
-  //       SizedBox(
-  //         width: 30.0,
-  //       ),
-  //       DisplayPosts(
-  //           title: 'Forums',
-  //           color: _moodPunched == 1 ? Colors.blue : Colors.grey,
-  //           fontWeight: _moodPunched == 1 ? FontWeight.bold : FontWeight.normal,
-  //           onPressed: () {
-  //             if (mounted) {
-  //               setState(() {
-  //                 _moodPunched = 1;
-  //               });
-  //             }
-  //           }),
-  //       SizedBox(
-  //         width: 30.0,
-  //       ),
-  //       DisplayPosts(
-  //           title: 'Events',
-  //           color: _moodPunched == 2 ? Colors.blue : Colors.grey,
-  //           fontWeight: _moodPunched == 2 ? FontWeight.bold : FontWeight.normal,
-  //           onPressed: () {
-  //             if (mounted) {
-  //               setState(() {
-  //                 _moodPunched = 2;
-  //               });
-  //             }
-  //           }),
-  //     ],
-  //   );
-  // }
-
   _buildDisplay(AccountHolder user) {
     if (_moodPunched == 0) {
       return Column(

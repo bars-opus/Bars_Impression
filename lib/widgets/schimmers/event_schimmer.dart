@@ -16,6 +16,9 @@ class _EventSchimmerState extends State<EventSchimmer> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            SizedBox(
+              height: 20,
+            ),
             EventSchimmerSkeleton(),
             EventSchimmerSkeleton(),
             EventSchimmerSkeleton(),
