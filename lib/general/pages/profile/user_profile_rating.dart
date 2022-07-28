@@ -1,3 +1,4 @@
+import 'package:bars/general/pages/forum_and_blog/no_account_list.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:intl/intl.dart';
 
@@ -200,13 +201,20 @@ class _ProfileRatingState extends State<ProfileRating> {
                       padding: const EdgeInsets.all(5.0),
                       child: GestureDetector(
                         onTap: () => widget.user.id == currentUserId
-                            ? Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => PossitiveRating(
-                                          currentUserId: widget.currentUserId,
-                                          user: widget.user,
-                                        )))
+                            ? _possitiveRatingCount == 0
+                                ? Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => NoAccountList(
+                                            follower: 'Positive')))
+                                : Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => PossitiveRating(
+                                              currentUserId:
+                                                  widget.currentUserId,
+                                              user: widget.user,
+                                            )))
                             : {},
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -225,7 +233,7 @@ class _ProfileRatingState extends State<ProfileRating> {
                               ),
                             ),
                             Text(
-                              'Posstively \nRatings',
+                              'Positively \nRatings',
                               style: TextStyle(
                                 color: Colors.grey,
                                 fontSize: 12,
@@ -243,13 +251,20 @@ class _ProfileRatingState extends State<ProfileRating> {
                       padding: const EdgeInsets.all(5.0),
                       child: GestureDetector(
                         onTap: () => widget.user.id == currentUserId
-                            ? Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => NegativelyRating(
-                                          user: widget.user,
-                                          currentUserId: widget.currentUserId,
-                                        )))
+                            ? _possitiveRatingCount == 0
+                                ? Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => NoAccountList(
+                                            follower: 'Negative')))
+                                : Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => NegativelyRating(
+                                              user: widget.user,
+                                              currentUserId:
+                                                  widget.currentUserId,
+                                            )))
                             : {},
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,

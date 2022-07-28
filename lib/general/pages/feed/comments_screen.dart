@@ -33,12 +33,12 @@ class _CommentsScreenState extends State<CommentsScreen>
 
   final TextEditingController _commentController = TextEditingController();
   bool _isCommenting = false;
-  bool _isBlockedUser = false;
+ 
 
   void initState() {
     super.initState();
     _setUpComments();
-    _setupIsBlockedUser();
+    
     _isVisible = true;
     SchedulerBinding.instance.addPostFrameCallback((_) {
       Provider.of<UserData>(context, listen: false).setPost9('');
@@ -60,17 +60,7 @@ class _CommentsScreenState extends State<CommentsScreen>
     });
   }
 
-  _setupIsBlockedUser() async {
-    bool isBlockedUser = await DatabaseService.isBlockedUser(
-      currentUserId: widget.currentUserId,
-      userId: widget.post.authorId,
-    );
-    if (mounted) {
-      setState(() {
-        _isBlockedUser = isBlockedUser;
-      });
-    }
-  }
+  
 
   _setUpComments() async {
     DatabaseService.numComments(widget.post.id).listen((commentCount) {
@@ -521,7 +511,7 @@ class _CommentsScreenState extends State<CommentsScreen>
                                   );
                           },
                         ),
-                        _isBlockedUser ? SizedBox.shrink() : _buildCommentTF(),
+                        _buildCommentTF(),
                       ],
                     ),
                   ),

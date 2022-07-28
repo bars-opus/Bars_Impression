@@ -3,6 +3,7 @@ import 'package:bars/utilities/exports.dart';
 class PossitiveRating extends StatefulWidget {
   static final id = 'PossitiveRating';
   final String currentUserId;
+  
   final AccountHolder? user;
 
   PossitiveRating({required this.currentUserId, required this.user});

@@ -4,7 +4,7 @@ class IntroInfo extends StatelessWidget {
   final String title;
   final String subTitle;
   final Icon icon;
-  final Function? onPressed;
+  final VoidCallback? onPressed;
 
   IntroInfo({
     required this.subTitle,
@@ -47,7 +47,7 @@ class IntroInfo extends StatelessWidget {
         scale: 1,
         child: RawMaterialButton(
           shape: CircleBorder(),
-          onPressed: () => onPressed,
+          onPressed: onPressed,
           child: icon,
         ),
       )

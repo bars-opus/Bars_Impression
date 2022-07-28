@@ -1,25 +1,19 @@
 import 'package:bars/utilities/exports.dart';
 
-class Following extends StatefulWidget {
-  static final id = 'Following';
-  final String currentUserId;
-  final int followingCount;
-  Following({
-    required this.currentUserId,
-    required this.followingCount,
-  });
+class BlockedAccounts extends StatefulWidget {
+  static final id = 'BlockedAccounts';
 
   @override
-  _FollowingState createState() => _FollowingState();
+  _BlockedAccountsState createState() => _BlockedAccountsState();
 }
 
-class _FollowingState extends State<Following>
+class _BlockedAccountsState extends State<BlockedAccounts>
     with AutomaticKeepAliveClientMixin {
-  List<DocId> _users = [];
-  int limit = 10;
-  bool _isFetchingUsers = false;
+  List<DocId> _userList = [];
   final _userSnapshot = <DocumentSnapshot>[];
+  int limit = 10;
   bool _hasNext = true;
+  bool _isFectchingUser = false;
   bool _showInfo = true;
   late ScrollController _hideButtonController;
 
@@ -37,7 +31,6 @@ class _FollowingState extends State<Following>
         _loadMoreUsers();
       }
     }
-
     return false;
   }
 
@@ -60,43 +53,45 @@ class _FollowingState extends State<Following>
   }
 
   _setUpFeed() async {
-    QuerySnapshot userSnapShot = await followingRef
-        .doc(widget.currentUserId)
-        .collection('userFollowing')
+    QuerySnapshot userSnapShot = await usersBlockedRef
+        .doc(Provider.of<UserData>(context, listen: false).currentUserId)
+        .collection('userBlocked')
         .limit(limit)
         .get();
     List<DocId> users =
         userSnapShot.docs.map((doc) => DocId.fromDoc(doc)).toList();
     _userSnapshot.addAll((userSnapShot.docs));
     if (mounted) {
+      print(users.length.toString());
       setState(() {
-        _users = users;
+        _hasNext = false;
+        _userList = users;
       });
     }
     return users;
   }
 
   _loadMoreUsers() async {
-    if (_isFetchingUsers) return;
-    _isFetchingUsers = true;
-    _hasNext = true;
-    QuerySnapshot userSnapShot = await followingRef
-        .doc(widget.currentUserId)
-        .collection('userFollowing')
+    if (_isFectchingUser) return;
+    _isFectchingUser = true;
+    QuerySnapshot userSnapShot = await usersBlockedRef
+        .doc(Provider.of<UserData>(context).currentUserId)
+        .collection('userBlocked')
         .limit(limit)
         .startAfterDocument(_userSnapshot.last)
         .get();
     List<DocId> moreusers =
         userSnapShot.docs.map((doc) => DocId.fromDoc(doc)).toList();
-    List<DocId> allusers = _users..addAll(moreusers);
+    if (_userSnapshot.length < limit) _hasNext = false;
+    List<DocId> allusers = _userList..addAll(moreusers);
     _userSnapshot.addAll((userSnapShot.docs));
     if (mounted) {
       setState(() {
-        _users = allusers;
+        _userList = allusers;
       });
     }
     _hasNext = false;
-    _isFetchingUsers = false;
+    _isFectchingUser = false;
     return _hasNext;
   }
 
@@ -124,7 +119,7 @@ class _FollowingState extends State<Following>
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                DocId user = _users[index];
+                DocId user = _userList[index];
                 return FutureBuilder(
                   future: DatabaseService.getUserWithId(user.id),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -132,13 +127,14 @@ class _FollowingState extends State<Following>
                       return FollowerUserSchimmerSkeleton();
                     }
                     AccountHolder user = snapshot.data;
-                    return widget.currentUserId == user.id
+                    return Provider.of<UserData>(context).currentUserId ==
+                            user.id
                         ? SizedBox.shrink()
                         : _buildUserTile(user);
                   },
                 );
               },
-              childCount: _users.length,
+              childCount: _userList.length,
             ),
           )
         ]),
@@ -166,7 +162,7 @@ class _FollowingState extends State<Following>
             backgroundColor:
                 ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
             title: Text(
-              'Following',
+              'Blocked Accounts',
               style: TextStyle(
                   color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
                   fontSize: 20,
@@ -189,48 +185,27 @@ class _FollowingState extends State<Following>
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    AnimatedContainer(
-                        curve: Curves.easeInOut,
-                        duration: Duration(milliseconds: 800),
-                        height: _showInfo ? 50 : 0.0,
-                        width: double.infinity,
-                        color: Colors.blue,
-                        child: ShakeTransition(
-                          child: ListTile(
-                            title: Text(
-                                'Other users can\'t see who you are following.',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                )),
-                            leading: IconButton(
-                              icon: Icon(Icons.info_outline_rounded),
-                              iconSize: 20.0,
-                              color:
-                                  _showInfo ? Colors.white : Colors.transparent,
-                              onPressed: () => () {},
-                            ),
-                          ),
-                        )),
-                    SizedBox(
-                      height: 30.0,
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(
+                        ' ${_userList.length.toString()} blocked accounts',
+                        style: TextStyle(
+                          color: Colors.grey,
+                        ),
+                      ),
                     ),
-                    Expanded(
-                      child: widget.followingCount > 0
-                          ? _buildEventBuilder()
-                          : _users.length > 0
-                              ? Expanded(
-                                  child: Center(
-                                    child: NoContents(
-                                      icon: (Icons.person_add),
-                                      title: 'No following yet,',
-                                      subTitle:
-                                          'You are not following anybody yet, follow people to see the contents they create and connect with them for collaborations ',
-                                    ),
-                                  ),
-                                )
-                              : Center(child: FollowUserSchimmer()),
-                    )
+                    Divider(),
+                    _userList.length == 0
+                        ? Expanded(
+                            child: Center(
+                              child: NoContents(
+                                icon: (Icons.person_add_disabled_outlined),
+                                title: 'No blocked Accounts,',
+                                subTitle: '',
+                              ),
+                            ),
+                          )
+                        : Expanded(child: _buildEventBuilder())
                   ],
                 ),
               ),

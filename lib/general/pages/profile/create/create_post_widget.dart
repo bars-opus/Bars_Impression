@@ -393,8 +393,6 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
               .readAsBytes();
       var blurHash = await BlurHash.encode(bytes, 4, 3);
 
-   
-
       Post post = Post(
         blurHash: blurHash,
         imageUrl: imageUrl,
@@ -828,7 +826,6 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                                                     child: Material(
                                                       color: Colors.transparent,
                                                       child: TextFormField(
-                                                      
                                                         keyboardType:
                                                             TextInputType
                                                                 .multiline,
@@ -1302,7 +1299,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                                               child: _users == null
                                                   ? DirectionWidget(
                                                       text:
-                                                          "${_user!.userName}, enter the name of the artist punchline used on the previous page. If there are multiple artists featured on the songs which lyrics you have used, make sure you enter the specific name of the artist\'s punchline you used.",
+                                                          "${_user!.userName}, enter the name of the artist punchline you are using. If there are multiple artists featured on the song, make sure you enter the  name of the specific artist\'s punchline you used.",
                                                       fontSize: null,
                                                     )
                                                   : DirectionWidget(
@@ -1456,7 +1453,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                                           DirectionWidget(
                                             fontSize: null,
                                             text:
-                                                " Provide a music Video link to the video of the punchline used.",
+                                                " Provide a music Video link to the music of the punchline used.",
                                           ),
                                           TextFormField(
                                             keyboardType:

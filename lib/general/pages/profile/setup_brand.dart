@@ -11,16 +11,12 @@ class SetUpBrand extends StatefulWidget {
 class _SetUpBrandState extends State<SetUpBrand> {
   final _formKey = GlobalKey<FormState>();
   String _userName = '';
-  // String _userName2 = '';
-  // bool _isAvailable = false;
   bool _isLoading = false;
   File? _profileImage;
   String _profileHandle = '';
   String _bio = '';
   String selectedValue = '';
-  // late Timer _debounce;
   String query = "";
-  // int _debouncetime = 2000;
   late TextEditingController _controller;
   late PageController _pageController;
   int _index = 0;
@@ -34,28 +30,14 @@ class _SetUpBrandState extends State<SetUpBrand> {
     _controller = TextEditingController(
       text: _userName,
     );
-    // _controller.addListener(_onSearchChanged);
-
     selectedValue = _profileHandle.isEmpty ? values.last : _profileHandle;
   }
 
   @override
   void dispose() {
-    // _controller.removeListener(_onSearchChanged);
     _controller.dispose();
     super.dispose();
   }
-
-  // _onSearchChanged() {
-  //   // if (_debounce.isActive) _debounce.cancel();
-  //   // _debounce = Timer(Duration(milliseconds: _debouncetime), () {
-  //   if (_controller.text != _userName2) {
-  //     if (mounted) {
-  //       _validate();
-  //     }
-  //   }
-  //   // });
-  // }
 
   _handleImageFromGallery() async {
     final file = await PickCropImage.pickedMedia(cropImage: _cropImage);
@@ -88,83 +70,9 @@ class _SetUpBrandState extends State<SetUpBrand> {
     }
   }
 
-  // _isTaken() {
-  //   return Flushbar(
-  //     maxWidth: MediaQuery.of(context).size.width,
-  //     margin: EdgeInsets.all(8),
-  //     flushbarPosition: FlushbarPosition.TOP,
-  //     flushbarStyle: FlushbarStyle.FLOATING,
-  //     boxShadows: [
-  //       BoxShadow(
-  //         color: Colors.black,
-  //         offset: Offset(0.0, 2.0),
-  //         blurRadius: 3.0,
-  //       )
-  //     ],
-  //     titleText: Text(
-  //       'Sorry $_userName is already in use by another user try using a different name',
-  //       style: TextStyle(color: Colors.white),
-  //     ),
-  //     messageText: Container(
-  //         child: Text(
-  //       '',
-  //       style: TextStyle(color: Colors.white),
-  //     )),
-  //     icon: Icon(Icons.info_outline, size: 28.0, color: Colors.blue),
-  //     mainButton: ElevatedButton(
-  //       style: ElevatedButton.styleFrom(
-  //         primary: Colors.transparent,
-  //       ),
-  //       onPressed: () => Navigator.pop(context),
-  //       child: Text("Ok",
-  //           style: TextStyle(
-  //             color: Colors.blue,
-  //           )),
-  //     ),
-  //     isDismissible: true,
-  //     duration: Duration(seconds: 3),
-  //     leftBarIndicatorColor: Colors.blue,
-  //   )..show(context);
-  // }
-
   _validate() async {
-    // final double width = Responsive.isDesktop(context)
-    //     ? 600.0
-    //     : MediaQuery.of(context).size.width;
     if (_formKey.currentState!.validate() & !_isLoading) {
       _formKey.currentState?.save();
-      // Flushbar(
-      //   maxWidth: MediaQuery.of(context).size.width,
-      //   backgroundColor: Color(0xFF1a1a1a),
-      //   margin: EdgeInsets.all(8),
-      //   showProgressIndicator: true,
-      //   progressIndicatorBackgroundColor: Color(0xFF1a1a1a),
-      //   progressIndicatorValueColor: AlwaysStoppedAnimation(Colors.blue),
-      //   flushbarPosition: FlushbarPosition.TOP,
-      //   boxShadows: [
-      //     BoxShadow(
-      //       color: Colors.black,
-      //       offset: Offset(0.0, 2.0),
-      //       blurRadius: 3.0,
-      //     )
-      //   ],
-      //   titleText: Text(
-      //     "Please wait...",
-      //     style: TextStyle(
-      //       color: Colors.white,
-      //       fontSize: width > 800 ? 22 : 14,
-      //     ),
-      //   ),
-      //   messageText: Text(
-      //     "Checking if username is available",
-      //     style: TextStyle(
-      //       color: Colors.white,
-      //       fontSize: width > 800 ? 20 : 12,
-      //     ),
-      //   ),
-      //   duration: Duration(seconds: 3),
-      // )..show(context);
-
       final QuerySnapshot result = await FirebaseFirestore.instance
           .collection('users')
           .where('userName', isEqualTo: _userName)
@@ -174,11 +82,6 @@ class _SetUpBrandState extends State<SetUpBrand> {
 
       if (documents.length > 0) {
         print(_userName + ' exists');
-        // setState(() {
-        //   setState(() {
-        //     _isAvailable = true;
-        //   });
-        // });
         final double width = Responsive.isDesktop(context)
             ? 600.0
             : MediaQuery.of(context).size.width;
@@ -216,13 +119,9 @@ class _SetUpBrandState extends State<SetUpBrand> {
           leftBarIndicatorColor: Colors.blue,
         )..show(context);
       } else {
-        // _isAvailable = false;
         String currentUserId =
             Provider.of<UserData>(context, listen: false).currentUserId!;
         FocusScope.of(context).unfocus();
-        // setState(() {
-        //   _isLoading = true;
-        // });
 
         try {
           usersRef.doc(currentUserId).update({
@@ -271,43 +170,6 @@ class _SetUpBrandState extends State<SetUpBrand> {
             leftBarIndicatorColor: Colors.blue,
           )..show(context);
         }
-
-        // final double width = Responsive.isDesktop(context)
-        //     ? 600.0
-        //     : MediaQuery.of(context).size.width;
-        // return Flushbar(
-        //   margin: EdgeInsets.all(8),
-        //   boxShadows: [
-        //     BoxShadow(
-        //       color: Colors.black,
-        //       offset: Offset(0.0, 2.0),
-        //       blurRadius: 3.0,
-        //     )
-        //   ],
-        //   flushbarPosition: FlushbarPosition.TOP,
-        //   flushbarStyle: FlushbarStyle.FLOATING,
-        //   titleText: Text(
-        //     '$_userName is avaible save your profile to use this username',
-        //     style: TextStyle(
-        //       color: Colors.white,
-        //       fontSize: width > 800 ? 22 : 14,
-        //     ),
-        //   ),
-        //   messageText: Text(
-        //     "",
-        //     style: TextStyle(
-        //       color: Colors.white,
-        //       fontSize: width > 800 ? 20 : 12,
-        //     ),
-        //   ),
-        //   icon: Icon(
-        //     Icons.info_outline,
-        //     size: 28.0,
-        //     color: Colors.blue,
-        //   ),
-        //   duration: Duration(seconds: 3),
-        //   leftBarIndicatorColor: Colors.blue,
-        // )..show(context);
       }
     }
   }
@@ -402,7 +264,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
             ),
           ),
           messageText: Text(
-            "Your profile was edited successfully!!!",
+            "Your brand has been setup successfully",
             style: TextStyle(
               color: Colors.white,
               fontSize: width > 800 ? 20 : 12,
@@ -463,69 +325,6 @@ class _SetUpBrandState extends State<SetUpBrand> {
       });
     }
   }
-
-  // _submitProfileName() async {
-  //   if (_formKey.currentState!.validate() && !_isLoading) {
-  //     _formKey.currentState?.save();
-  //     String currentUserId =
-  //         Provider.of<UserData>(context, listen: false).currentUserId!;
-  //     FocusScope.of(context).unfocus();
-  //     setState(() {
-  //       _isLoading = true;
-  //     });
-
-  //     try {
-  //       usersRef.doc(currentUserId).update({
-  //         'userName': _userName,
-  //       });
-  //       animateToPage();
-  //     } catch (e) {
-  //       final double width = Responsive.isDesktop(context)
-  //           ? 600.0
-  //           : MediaQuery.of(context).size.width;
-  //       String error = e.toString();
-  //       String result = error.contains(']')
-  //           ? error.substring(error.lastIndexOf(']') + 1)
-  //           : error;
-  //       Flushbar(
-  //         margin: EdgeInsets.all(8),
-  //         boxShadows: [
-  //           BoxShadow(
-  //             color: Colors.black,
-  //             offset: Offset(0.0, 2.0),
-  //             blurRadius: 3.0,
-  //           )
-  //         ],
-  //         flushbarPosition: FlushbarPosition.TOP,
-  //         flushbarStyle: FlushbarStyle.FLOATING,
-  //         titleText: Text(
-  //           'Error',
-  //           style: TextStyle(
-  //             color: Colors.white,
-  //             fontSize: width > 800 ? 22 : 14,
-  //           ),
-  //         ),
-  //         messageText: Text(
-  //           result.toString(),
-  //           style: TextStyle(
-  //             color: Colors.white,
-  //             fontSize: width > 800 ? 20 : 12,
-  //           ),
-  //         ),
-  //         icon: Icon(
-  //           Icons.error_outline,
-  //           size: 28.0,
-  //           color: Colors.blue,
-  //         ),
-  //         duration: Duration(seconds: 3),
-  //         leftBarIndicatorColor: Colors.blue,
-  //       )..show(context);
-  //     }
-  //     setState(() {
-  //       _isLoading = false;
-  //     });
-  //   }
-  // }
 
   _submitProfileHandle() async {
     String currentUserId =

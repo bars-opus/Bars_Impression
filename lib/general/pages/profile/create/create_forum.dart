@@ -141,7 +141,7 @@ class _CreateForumState extends State<CreateForum> {
           buttonText: 'Publish Forum',
           onSavedTitle: (input) => _title = input,
           onValidateTitle: (input) => input.trim().isEmpty
-              ? 'Please, enter the title for your forum'
+              ? 'Please, enter a title for your forum.'
               : input.trim().length > 200
                   ? 'The title is too long (fewer than 200 characters)'
                   : input.trim().length < 20

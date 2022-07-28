@@ -134,8 +134,8 @@ class _ChatDetailsState extends State<ChatDetails> {
       });
     }
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: const Text(
-        'unBlocked ',
+      content: Text(
+        'unBlocked ' + widget.user.userName!,
         overflow: TextOverflow.ellipsis,
       ),
     ));
@@ -156,14 +156,14 @@ class _ChatDetailsState extends State<ChatDetails> {
     }
     if (_isAFollower) {
       DatabaseService.unfollowUser(
-        currentUserId: widget.currentUserId,
-        userId: widget.user.id!,
+        currentUserId: widget.user.id!,
+        userId: widget.currentUserId,
       );
     }
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       backgroundColor: Color(0xFFD38B41),
-      content: const Text(
-        'Blocked ',
+      content: Text(
+        'Blocked ' + widget.user.userName!,
         overflow: TextOverflow.ellipsis,
       ),
     ));

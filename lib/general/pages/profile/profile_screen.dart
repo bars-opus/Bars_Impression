@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:bars/general/pages/forum_and_blog/no_account_list.dart';
 import 'package:bars/utilities/exports.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -783,13 +784,22 @@ class _ProfileScreenState extends State<ProfileScreen>
                         ? Colors.white
                         : Colors.black,
                 onPressed: () => user.id == currentUserId
-                    ? Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => Followers(
-                                  currentUserId: currentUserId,
-                                  followersCount: _followerCount,
-                                )))
+                    ? _followerCount == 0
+                        ? Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => NoAccountList(
+                                      follower: 'Follower',
+                                    )))
+                        : Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => FollowerFollowing(
+                                      currentUserId: currentUserId,
+                                      followerCount: _followerCount,
+                                      followingCount: _followingCount,
+                                      follower: 'Follower',
+                                    )))
                     : () {},
                 title: 'Followers',
                 subTitle: 'The number of accounts following you.',
@@ -808,13 +818,22 @@ class _ProfileScreenState extends State<ProfileScreen>
                         : Colors.black,
                 count: NumberFormat.compact().format(_followingCount),
                 onPressed: () => user.id == currentUserId
-                    ? Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => Following(
-                                  currentUserId: currentUserId,
-                                  followingCount: _followingCount,
-                                )))
+                    ? _followingCount == 0
+                        ? Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => NoAccountList(
+                                      follower: 'Following',
+                                    )))
+                        : Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => FollowerFollowing(
+                                      followerCount: _followerCount,
+                                      currentUserId: currentUserId,
+                                      followingCount: _followingCount,
+                                      follower: 'Following',
+                                    )))
                     : () {},
                 title: 'Following',
                 subTitle: 'The number of accounts you are following.',
@@ -926,13 +945,22 @@ class _ProfileScreenState extends State<ProfileScreen>
                 onPressed: () => user.id ==
                         Provider.of<UserData>(context, listen: false)
                             .currentUserId
-                    ? Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => Followers(
-                                  currentUserId: widget.currentUserId,
-                                  followersCount: _followerCount,
-                                )))
+                    ? _followerCount == 0
+                        ? Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => NoAccountList(
+                                      follower: 'Followers',
+                                    )))
+                        : Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => FollowerFollowing(
+                                      currentUserId: widget.currentUserId,
+                                      followingCount: _followingCount - 1,
+                                      follower: 'Followers',
+                                      followerCount: _followerCount,
+                                    )))
                     : () {},
                 title: 'Followers',
                 subTitle: 'The number of accounts following you.',
@@ -957,13 +985,22 @@ class _ProfileScreenState extends State<ProfileScreen>
                 onPressed: () => user.id ==
                         Provider.of<UserData>(context, listen: false)
                             .currentUserId
-                    ? Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => Following(
-                                  currentUserId: widget.currentUserId,
-                                  followingCount: _followingCount,
-                                )))
+                    ? _followingCount == 0
+                        ? Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => NoAccountList(
+                                      follower: 'Following',
+                                    )))
+                        : Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => FollowerFollowing(
+                                      currentUserId: widget.currentUserId,
+                                      followingCount: _followingCount,
+                                      followerCount: _followerCount,
+                                      follower: 'Following',
+                                    )))
                     : () {},
                 title: 'Following',
                 subTitle: 'The number of accounts you are following.',
@@ -2015,9 +2052,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                             SizedBox(
                               height: 40.0,
                             ),
-                            // user.profileHandle!.startsWith("Blog")
-                            // ? _buildMoodPunchedBlog(user)
-                            //     :
                             _buildMoodPunched(user),
                             SizedBox(
                               height: 30.0,

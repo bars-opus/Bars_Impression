@@ -95,8 +95,6 @@ class _AcceptTermsState extends State<AcceptTerms>
                     padding: const EdgeInsets.only(top: 60.0),
                     child: ListView(
                       scrollDirection: Axis.vertical,
-                      // crossAxisAlignment: CrossAxisAlignment.center,
-                      // mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         _isLoading
                             ? Padding(

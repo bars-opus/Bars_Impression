@@ -1,3 +1,4 @@
+import 'package:bars/general/pages/profile/statistics/blockedAccounts.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -400,6 +401,33 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                         ),
                                       ),
                                 Divider(color: Colors.grey),
+
+                                GestureDetector(
+                                  onTap: () =>
+                                  
+                                   Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => BlockedAccounts(),
+                                      )),
+                                  child: IntroInfo(
+                                    title: 'Blocked Accounts',
+                                    onPressed: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => BlockedAccounts(),
+                                        )),
+                                    subTitle: "Accounts you have blocked.",
+                                    icon: Icon(
+                                      Icons.block_rounded,
+                                      size: 20,
+                                      color: ConfigBloc().darkModeOn
+                                          ? Color(0xFFf2f2f2)
+                                          : Color(0xFF1a1a1a),
+                                    ),
+                                  ),
+                                ),
+                                Divider(color: Colors.grey),
                                 GestureDetector(
                                   onTap: () => Navigator.push(
                                       context,
@@ -461,6 +489,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                         ),
                                       ),
                                 Divider(color: Colors.grey),
+
                                 // GestureDetector(
                                 //   onTap: () => Navigator.push(
                                 //       context,

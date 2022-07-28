@@ -1087,8 +1087,6 @@ class UserProfessionalViewWidget extends StatelessWidget {
                                                         mainAxisAlignment:
                                                             MainAxisAlignment
                                                                 .spaceEvenly,
-                                                        // scrollDirection:
-                                                        //     Axis.horizontal,
                                                         children: [
                                                           Column(
                                                             children: [

@@ -102,7 +102,6 @@ class _LoginScreenState extends State<LoginScreen>
         email: Provider.of<UserData>(context, listen: false).post1,
         password: Provider.of<UserData>(context, listen: false).post2,
       );
-      // Navigator.pushReplacementNamed(context, WelcomeUsers.id);
 
       Navigator.push(
         context,

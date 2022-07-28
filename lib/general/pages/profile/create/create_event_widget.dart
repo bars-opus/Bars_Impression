@@ -1565,8 +1565,8 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                             onSavedText: (input) =>
                                 Provider.of<UserData>(context, listen: false)
                                     .setPost2(input),
-                            onValidateText: (input) => input.trim().length < 5
-                                ? "The theme is too short"
+                            onValidateText: (input) => input.trim().length < 10
+                                ? "The theme is too short( > 10 characters)"
                                 : null,
                           ),
                           ContentField(

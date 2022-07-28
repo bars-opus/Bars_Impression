@@ -56,9 +56,12 @@ class _DiscoverUserState extends State<DiscoverUser>
                                           color: ConfigBloc().darkModeOn
                                               ? Colors.white
                                               : Colors.black,
-                                          onPressed: () =>
-                                              Navigator.pushReplacementNamed(
-                                                  context, HomeScreen.id),
+                                          onPressed: () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => HomeScreen(),
+                                            ),
+                                          ),
                                         ),
                                         const SizedBox(width: 40),
                                         Padding(

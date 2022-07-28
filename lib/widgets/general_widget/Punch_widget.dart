@@ -37,6 +37,7 @@ class _PunchWidgetState extends State<PunchWidget> {
   bool _heartAnim = false;
   bool _thumbAnim = false;
   int _commentCount = 0;
+  bool _isBlockedUser = false;
 
   @override
   void initState() {
@@ -48,6 +49,19 @@ class _PunchWidgetState extends State<PunchWidget> {
     _setUpComments();
     _setUpLikes();
     _setUpDisLikes();
+    _setupIsBlockedUser();
+  }
+
+  _setupIsBlockedUser() async {
+    bool isBlockedUser = await DatabaseService.isBlockedUser(
+      currentUserId: widget.currentUserId,
+      userId: widget.post.authorId,
+    );
+    if (mounted) {
+      setState(() {
+        _isBlockedUser = isBlockedUser;
+      });
+    }
   }
 
   @override
@@ -539,211 +553,223 @@ class _PunchWidgetState extends State<PunchWidget> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
+                      _isBlockedUser
+                          ? SizedBox.shrink()
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                Column(
-                                  children: <Widget>[
-                                    CircularButton(
-                                        color: _isLiked
-                                            ? Colors.pink
-                                            : ConfigBloc().darkModeOn
-                                                ? Color(0xFF1f2022)
-                                                : Colors.white,
-                                        icon: _isLiked
-                                            ? Icon(
-                                                Icons.favorite,
-                                                color: Colors.white,
-                                              )
-                                            : Icon(
-                                                Icons.favorite_border,
-                                                color: Colors.grey,
-                                              ),
-                                        onPressed: () {
-                                          HapticFeedback.heavyImpact();
-                                          SystemSound.play(
-                                              SystemSoundType.click);
-                                          if (_isLiked) {
-                                            setState(() {
-                                              _unLikePost();
-                                            });
-                                          } else {
-                                            _likePost();
-                                          }
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: <Widget>[
+                                      Column(
+                                        children: <Widget>[
+                                          CircularButton(
+                                              color: _isLiked
+                                                  ? Colors.pink
+                                                  : ConfigBloc().darkModeOn
+                                                      ? Color(0xFF1f2022)
+                                                      : Colors.white,
+                                              icon: _isLiked
+                                                  ? Icon(
+                                                      Icons.favorite,
+                                                      color: Colors.white,
+                                                    )
+                                                  : Icon(
+                                                      Icons.favorite_border,
+                                                      color: Colors.grey,
+                                                    ),
+                                              onPressed: () {
+                                                HapticFeedback.heavyImpact();
+                                                SystemSound.play(
+                                                    SystemSoundType.click);
+                                                if (_isLiked) {
+                                                  setState(() {
+                                                    _unLikePost();
+                                                  });
+                                                } else {
+                                                  _likePost();
+                                                }
 
-                                          if (_isDisLiked) {
-                                            setState(() {
-                                              _unDisLikePost();
-                                            });
-                                          }
-                                        }),
-                                    SizedBox(
-                                      height: 10.0,
-                                    ),
-                                    GestureDetector(
-                                      onTap: _setShowInfo,
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 12.0),
-                                        child: Column(
-                                          children: <Widget>[
-                                            Container(
-                                              child: Text(
-                                                _dbLikeCount.toString(),
-                                                style: TextStyle(
-                                                  fontSize: 12.0,
-                                                  color: Colors.grey,
-                                                ),
+                                                if (_isDisLiked) {
+                                                  setState(() {
+                                                    _unDisLikePost();
+                                                  });
+                                                }
+                                              }),
+                                          SizedBox(
+                                            height: 10.0,
+                                          ),
+                                          GestureDetector(
+                                            onTap: _setShowInfo,
+                                            child: Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 12.0),
+                                              child: Column(
+                                                children: <Widget>[
+                                                  Container(
+                                                    child: Text(
+                                                      _dbLikeCount.toString(),
+                                                      style: TextStyle(
+                                                        fontSize: 12.0,
+                                                        color: Colors.grey,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    ' Dope',
+                                                    style: TextStyle(
+                                                      fontSize: width > 800
+                                                          ? 16
+                                                          : 12.0,
+                                                      color: Colors.grey,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
-                                            Text(
-                                              ' Dope',
-                                              style: TextStyle(
-                                                fontSize:
-                                                    width > 800 ? 16 : 12.0,
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                Column(
-                                  children: <Widget>[
-                                    CircularButton(
-                                        color: _isDisLiked
-                                            ? ConfigBloc().darkModeOn
-                                                ? Colors.white
-                                                : Colors.black
-                                            : ConfigBloc().darkModeOn
-                                                ? Color(0xFF1f2022)
-                                                : Colors.white,
-                                        icon: _isDisLiked
-                                            ? Icon(
-                                                Icons.thumb_down,
-                                                color: ConfigBloc().darkModeOn
-                                                    ? Colors.black
-                                                    : Colors.white,
-                                              )
-                                            : Icon(
-                                                MdiIcons.thumbDownOutline,
-                                                color: Colors.grey,
-                                              ),
-                                        onPressed: () {
-                                          HapticFeedback.heavyImpact();
-                                          SystemSound.play(
-                                              SystemSoundType.click);
-                                          if (_isDisLiked) {
-                                            setState(() {
-                                              _unDisLikePost();
-                                            });
-                                          } else {
-                                            setState(() {
-                                              _disLikePost();
-                                            });
-                                          }
+                                      Column(
+                                        children: <Widget>[
+                                          CircularButton(
+                                              color: _isDisLiked
+                                                  ? ConfigBloc().darkModeOn
+                                                      ? Colors.white
+                                                      : Colors.black
+                                                  : ConfigBloc().darkModeOn
+                                                      ? Color(0xFF1f2022)
+                                                      : Colors.white,
+                                              icon: _isDisLiked
+                                                  ? Icon(
+                                                      Icons.thumb_down,
+                                                      color: ConfigBloc()
+                                                              .darkModeOn
+                                                          ? Colors.black
+                                                          : Colors.white,
+                                                    )
+                                                  : Icon(
+                                                      MdiIcons.thumbDownOutline,
+                                                      color: Colors.grey,
+                                                    ),
+                                              onPressed: () {
+                                                HapticFeedback.heavyImpact();
+                                                SystemSound.play(
+                                                    SystemSoundType.click);
+                                                if (_isDisLiked) {
+                                                  setState(() {
+                                                    _unDisLikePost();
+                                                  });
+                                                } else {
+                                                  setState(() {
+                                                    _disLikePost();
+                                                  });
+                                                }
 
-                                          if (_isLiked) {
-                                            setState(() {
-                                              _unLikePost();
-                                            });
-                                          }
-                                        }),
-                                    const SizedBox(
-                                      height: 10.0,
-                                    ),
-                                    GestureDetector(
-                                      onTap: _setShowInfo,
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 12.0),
-                                        child: Column(
-                                          children: <Widget>[
-                                            Container(
-                                              child: Text(
-                                                _dbDisLikeCount.toString(),
-                                                style: TextStyle(
-                                                  fontSize: 12.0,
-                                                  color: Colors.grey,
-                                                ),
+                                                if (_isLiked) {
+                                                  setState(() {
+                                                    _unLikePost();
+                                                  });
+                                                }
+                                              }),
+                                          const SizedBox(
+                                            height: 10.0,
+                                          ),
+                                          GestureDetector(
+                                            onTap: _setShowInfo,
+                                            child: Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 12.0),
+                                              child: Column(
+                                                children: <Widget>[
+                                                  Container(
+                                                    child: Text(
+                                                      _dbDisLikeCount
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                        fontSize: 12.0,
+                                                        color: Colors.grey,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    '???',
+                                                    style: TextStyle(
+                                                      fontSize: width > 800
+                                                          ? 16
+                                                          : 12.0,
+                                                      color: Colors.grey,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
-                                            Text(
-                                              '???',
-                                              style: TextStyle(
-                                                fontSize:
-                                                    width > 800 ? 16 : 12.0,
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Container(
-                                    width: 40,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      color: Colors.cyan[800],
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: IconButton(
-                                      onPressed: () => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (_) => CommentsScreen(
-                                                    commentCount: _commentCount,
-                                                    post: widget.post,
-                                                    likeCount: _dbLikeCount,
-                                                    dislikeCount:
-                                                        _dbDisLikeCount,
-                                                    comment: null,
-                                                    currentUserId:
-                                                        widget.currentUserId,
-                                                  ))),
-                                      icon: Icon(Icons.comment_outlined,
-                                          color: Colors.white),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  RichText(
-                                      text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: NumberFormat.compact()
-                                            .format(_commentCount),
-                                        style: TextStyle(
-                                            fontSize: 12.0, color: Colors.grey),
-                                      ),
-                                      TextSpan(
-                                        text: ' Vibes',
-                                        style: TextStyle(
-                                            fontSize: 12.0, color: Colors.grey),
+                                          ),
+                                        ],
                                       ),
                                     ],
-                                  )),
-                                ],
-                              ),
-                            ),
-                          ]),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 8.0),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        Container(
+                                          width: 40,
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            color: Colors.cyan[800],
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: IconButton(
+                                            onPressed: () => Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        CommentsScreen(
+                                                          commentCount:
+                                                              _commentCount,
+                                                          post: widget.post,
+                                                          likeCount:
+                                                              _dbLikeCount,
+                                                          dislikeCount:
+                                                              _dbDisLikeCount,
+                                                          comment: null,
+                                                          currentUserId: widget
+                                                              .currentUserId,
+                                                        ))),
+                                            icon: Icon(Icons.comment_outlined,
+                                                color: Colors.white),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        RichText(
+                                            text: TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: NumberFormat.compact()
+                                                  .format(_commentCount),
+                                              style: TextStyle(
+                                                  fontSize: 12.0,
+                                                  color: Colors.grey),
+                                            ),
+                                            TextSpan(
+                                              text: ' Vibes',
+                                              style: TextStyle(
+                                                  fontSize: 12.0,
+                                                  color: Colors.grey),
+                                            ),
+                                          ],
+                                        )),
+                                      ],
+                                    ),
+                                  ),
+                                ]),
                       widget.post.hashTag.isEmpty
                           ? const SizedBox.shrink()
                           : Padding(

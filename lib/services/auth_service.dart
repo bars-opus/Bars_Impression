@@ -90,7 +90,9 @@ class AuthService {
             .doc(signedInHandler.uid)
             .collection('userFollowers')
             .doc(signedInHandler.uid)
-            .set({});
+            .set({
+          'uid': signedInHandler.uid,
+        });
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => TipScreen()),
             (Route<dynamic> route) => false);

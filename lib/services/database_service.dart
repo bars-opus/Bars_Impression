@@ -794,10 +794,10 @@ class DatabaseService {
       'uid': currentUserId,
     });
 
-    addUserBlockedItem(
-      currentUserId: currentUserId,
-      userId: userId,
-    );
+    // addUserBlockedItem(
+    //   currentUserId: currentUserId,
+    //   userId: userId,
+    // );
     // //Add current user to user's followers collection
   }
 
@@ -836,18 +836,18 @@ class DatabaseService {
     });
   }
 
-  static void addUserBlockedItem({
-    required String currentUserId,
-    required String userId,
-  }) {
-    if (currentUserId != userId) {
-      userBlockedRef.doc(userId).collection('userBlocked').add({
-        'fromUserId': currentUserId,
-        'blockedUserId': userId,
-        'timestamp': Timestamp.fromDate(DateTime.now()),
-      });
-    }
-  }
+  // static void addUserBlockedItem({
+  //   required String currentUserId,
+  //   required String userId,
+  // }) {
+  //   if (currentUserId != userId) {
+  //     userBlockedRef.doc(userId).collection('userBlocked').add({
+  //       'fromUserId': currentUserId,
+  //       'blockedUserId': userId,
+  //       'timestamp': Timestamp.fromDate(DateTime.now()),
+  //     });
+  //   }
+  // }
 
   static void possitivelyRateUser(
       {required String currentUserId, required String userId}) {

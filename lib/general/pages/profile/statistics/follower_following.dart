@@ -1,19 +1,23 @@
 import 'package:bars/utilities/exports.dart';
 
-class Followers extends StatefulWidget {
-  static final id = 'Followers';
+class FollowerFollowing extends StatefulWidget {
+  static final id = 'FollowerFollowing';
   final String currentUserId;
-  final int followersCount;
-  Followers({
+  final int followerCount;
+  final int followingCount;
+  final String follower;
+  FollowerFollowing({
     required this.currentUserId,
-    required this.followersCount,
+    required this.followerCount,
+    required this.followingCount,
+    required this.follower,
   });
 
   @override
-  _FollowersState createState() => _FollowersState();
+  _FollowerFollowingState createState() => _FollowerFollowingState();
 }
 
-class _FollowersState extends State<Followers>
+class _FollowerFollowingState extends State<FollowerFollowing>
     with AutomaticKeepAliveClientMixin {
   List<DocId> _userList = [];
   final _userSnapshot = <DocumentSnapshot>[];
@@ -26,7 +30,9 @@ class _FollowersState extends State<Followers>
   @override
   void initState() {
     super.initState();
-    _setUpFeed();
+    widget.follower.startsWith('Follower')
+        ? _setUpFollower()
+        : _setUpFollowing();
     __setShowInfo();
     _hideButtonController = ScrollController();
   }
@@ -34,7 +40,9 @@ class _FollowersState extends State<Followers>
   bool _handleScrollNotification(ScrollNotification notification) {
     if (notification is ScrollEndNotification) {
       if (_hideButtonController.position.extentAfter == 0) {
-        _loadMoreUsers();
+        widget.follower.startsWith('Follower')
+            ? _loadMoreFollower()
+            : _loadMoreFollowing();
       }
     }
     return false;
@@ -58,7 +66,7 @@ class _FollowersState extends State<Followers>
     }
   }
 
-  _setUpFeed() async {
+  _setUpFollower() async {
     QuerySnapshot userSnapShot = await followersRef
         .doc(widget.currentUserId)
         .collection('userFollowers')
@@ -77,12 +85,55 @@ class _FollowersState extends State<Followers>
     return users;
   }
 
-  _loadMoreUsers() async {
+  _loadMoreFollower() async {
     if (_isFectchingUser) return;
     _isFectchingUser = true;
     QuerySnapshot userSnapShot = await followersRef
         .doc(widget.currentUserId)
         .collection('userFollowers')
+        .limit(limit)
+        .startAfterDocument(_userSnapshot.last)
+        .get();
+    List<DocId> moreusers =
+        userSnapShot.docs.map((doc) => DocId.fromDoc(doc)).toList();
+    if (_userSnapshot.length < limit) _hasNext = false;
+    List<DocId> allusers = _userList..addAll(moreusers);
+    _userSnapshot.addAll((userSnapShot.docs));
+    if (mounted) {
+      setState(() {
+        _userList = allusers;
+      });
+    }
+    _hasNext = false;
+    _isFectchingUser = false;
+    return _hasNext;
+  }
+
+  _setUpFollowing() async {
+    QuerySnapshot userSnapShot = await followingRef
+        .doc(widget.currentUserId)
+        .collection('userFollowing')
+        .limit(limit)
+        .get();
+    List<DocId> users =
+        userSnapShot.docs.map((doc) => DocId.fromDoc(doc)).toList();
+    _userSnapshot.addAll((userSnapShot.docs));
+    if (mounted) {
+      print(users.length.toString());
+      setState(() {
+        _hasNext = false;
+        _userList = users;
+      });
+    }
+    return users;
+  }
+
+  _loadMoreFollowing() async {
+    if (_isFectchingUser) return;
+    _isFectchingUser = true;
+    QuerySnapshot userSnapShot = await followingRef
+        .doc(widget.currentUserId)
+        .collection('userFollowing')
         .limit(limit)
         .startAfterDocument(_userSnapshot.last)
         .get();
@@ -111,7 +162,8 @@ class _FollowersState extends State<Followers>
                   builder: (_) => ProfileScreen(
                         currentUserId:
                             Provider.of<UserData>(context).currentUserId!,
-                        userId: user.id!, user: null,
+                        userId: user.id!,
+                        user: null,
                       )));
         });
   }
@@ -166,7 +218,9 @@ class _FollowersState extends State<Followers>
             backgroundColor:
                 ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
             title: Text(
-              'Followers',
+              widget.follower.startsWith('Follower')
+                  ? 'Followers'
+                  : 'Following',
               style: TextStyle(
                   color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
                   fontSize: 20,
@@ -181,12 +235,11 @@ class _FollowersState extends State<Followers>
           child: Container(
             color: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
             child: SafeArea(
-              child:   MediaQuery(
-                    data: MediaQuery.of(context).copyWith(
-                        textScaleFactor: MediaQuery.of(context)
-                            .textScaleFactor
-                            .clamp(0.5, 1.5)),
-                              child: Column(
+              child: MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                    textScaleFactor:
+                        MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -198,11 +251,12 @@ class _FollowersState extends State<Followers>
                         color: Colors.blue,
                         child: ShakeTransition(
                           child: ListTile(
-                            title: Text('Other users can\'t see your followers.',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                )),
+                            title:
+                                Text('Other users can\'t see your followers.',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                    )),
                             leading: IconButton(
                               icon: Icon(Icons.info_outline_rounded),
                               iconSize: 20.0,
@@ -215,22 +269,39 @@ class _FollowersState extends State<Followers>
                     SizedBox(
                       height: 30.0,
                     ),
-                    Expanded(
-                      child: widget.followersCount > 0
-                          ? _buildEventBuilder()
-                          : _userList.length > 0
-                              ? Expanded(
-                                  child: Center(
-                                    child: NoContents(
-                                      icon: (Icons.people_outline),
-                                      title: 'No followers yet,',
-                                      subTitle:
-                                          'You don\'t have any follower yet. Make sure you have update your profile with the neccessary information and upload creative contents in order for people to follower you. ',
-                                    ),
-                                  ),
-                                )
-                              : Center(child: FollowUserSchimmer()),
-                    )
+                    widget.follower.startsWith('Follower')
+                        ? Expanded(
+                            child: widget.followerCount > 0
+                                ? _buildEventBuilder()
+                                : _userList.length > 0
+                                    ? Expanded(
+                                        child: Center(
+                                          child: NoContents(
+                                            icon: (Icons.people_outline),
+                                            title: 'No followers yet,',
+                                            subTitle:
+                                                'You don\'t have any follower yet. Make sure you have update your profile with the neccessary information and upload creative contents in order for people to follower you. ',
+                                          ),
+                                        ),
+                                      )
+                                    : Center(child: FollowUserSchimmer()),
+                          )
+                        : Expanded(
+                            child: widget.followingCount > 0
+                                ? _buildEventBuilder()
+                                : _userList.length > 0
+                                    ? Expanded(
+                                        child: Center(
+                                          child: NoContents(
+                                            icon: (Icons.people_outline),
+                                            title: 'No following yet,',
+                                            subTitle:
+                                                'You are not following anybody yet, follow people to see the contents they create and connect with them for collaborations ',
+                                          ),
+                                        ),
+                                      )
+                                    : Center(child: FollowUserSchimmer()),
+                          )
                   ],
                 ),
               ),

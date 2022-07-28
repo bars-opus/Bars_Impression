@@ -28,6 +28,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   bool _isreplying = false;
   bool _isLiked = false;
   bool _isBlockedUser = false;
+  bool _isBlockingUser = false;
   bool _isLoading = false;
   bool _restrictChat = false;
   late ScrollController _hideButtonController;
@@ -41,6 +42,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   void initState() {
     super.initState();
     _setupIsBlockedUser();
+    _setupIsBlockingUser();
     _isVisible = true;
     _restrictChat = widget.chat == null ? false : widget.chat!.restrictChat;
 
@@ -97,6 +99,18 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     if (mounted) {
       setState(() {
         _isBlockedUser = isBlockedUser;
+      });
+    }
+  }
+
+  _setupIsBlockingUser() async {
+    bool isBlockingUser = await DatabaseService.isBlokingUser(
+      currentUserId: widget.currentUserId,
+      userId: widget.user.id!,
+    );
+    if (mounted) {
+      setState(() {
+        _isBlockingUser = isBlockingUser;
       });
     }
   }
@@ -1200,6 +1214,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                     : AnimatedContainer(
                                         duration: Duration(milliseconds: 500),
                                         height: _isBlockedUser ||
+                                                _isBlockingUser ||
                                                 widget.user.disableChat! ||
                                                 _restrictChat ||
                                                 Provider.of<UserData>(context,
@@ -1210,10 +1225,13 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                             : 0.0,
                                         child: ListTile(
                                           leading: IconButton(
-                                            icon: Icon(Icons.error_outline),
+                                            icon: Icon(Icons.info_outline),
                                             iconSize: 25.0,
-                                            color: widget.chat!.restrictChat
-                                                ? Colors.red
+                                            color: widget.chat!.restrictChat ||
+                                                    _restrictChat ||
+                                                    _isBlockingUser ||
+                                                    widget.user.disableChat!
+                                                ? Colors.grey
                                                 : Colors.transparent,
                                             onPressed: () => () {},
                                           ),
@@ -1222,29 +1240,23 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                                   ? 'Disabled chat'
                                                   : _restrictChat
                                                       ? 'Restricted chat'
-                                                      : '',
+                                                      : _isBlockingUser
+                                                          ? 'Unblock to send message'
+                                                          : widget.user
+                                                                  .disableChat!
+                                                              ? widget.user
+                                                                      .userName! +
+                                                                  ' is not interested in receiving new messages'
+                                                              : '',
                                               style: TextStyle(
                                                 fontSize: 12.0,
-                                                color: Colors.red,
+                                                color: Colors.grey,
                                               )),
                                           onTap: () => () {},
                                         ),
                                       )
                               ],
                             ),
-                            widget.user.disableChat!
-                                ? Padding(
-                                    padding: EdgeInsets.all(40.0),
-                                    child: Text(
-                                      widget.user.userName! +
-                                          ' is not interested in receiving new messages',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  )
-                                : SizedBox.shrink(),
                             StreamBuilder(
                               stream: usersRef
                                   .doc(widget.currentUserId)
@@ -1328,6 +1340,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                               },
                             ),
                             _isBlockedUser ||
+                                    _isBlockingUser ||
                                     widget.user.disableChat! ||
                                     _restrictChat ||
                                     Provider.of<UserData>(context,

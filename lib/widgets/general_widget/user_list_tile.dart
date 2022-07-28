@@ -2,7 +2,7 @@ import 'package:bars/utilities/exports.dart';
 
 class UserListTile extends StatelessWidget {
   final AccountHolder user;
-  final Function onPressed;
+  final VoidCallback onPressed;
 
   UserListTile({required this.user, required this.onPressed});
 
@@ -104,7 +104,7 @@ class UserListTile extends StatelessWidget {
           )
         ],
       ),
-      onTap: () => onPressed,
+      onTap: onPressed,
     );
   }
 }

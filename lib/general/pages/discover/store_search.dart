@@ -187,7 +187,7 @@ class _StoreSearchState extends State<StoreSearch> {
                                         childCount: snapshot.data!.docs.length,
                                       ),
                                     ),
-                                  ],
+                                  ]
                                 ),
                               ),
                             );
