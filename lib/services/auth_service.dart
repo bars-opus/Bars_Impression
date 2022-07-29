@@ -23,7 +23,7 @@ class AuthService {
           )
         ],
         titleText: Text(
-          'Signing Up',
+          'Registering account',
           style: TextStyle(
             color: Colors.white,
           ),
@@ -80,6 +80,7 @@ class AuthService {
           'enableBookingOnChat': false,
           'hideAdvice': false,
           'noBooking': false,
+          'disabledAccount': false,
           'professionalPicture1': '',
           'professionalPicture2': '',
           'professionalPicture3': '',
@@ -103,9 +104,9 @@ class AuthService {
           flushbarPosition: FlushbarPosition.TOP,
           flushbarStyle: FlushbarStyle.FLOATING,
           titleText: Text(
-            'Sign Up successful',
+            'Registration Successful',
             style: TextStyle(
-              color: Colors.white,
+              color: Colors.black,
             ),
           ),
           icon: Icon(

@@ -39,6 +39,7 @@ class DatabaseService {
       'enableBookingOnChat': user.enableBookingOnChat,
       'hideAdvice': user.hideAdvice,
       'noBooking': user.noBooking,
+      'disabledAccount': user.disabledAccount,
       'professionalPicture1': user.professionalPicture1,
       'professionalPicture2': user.professionalPicture2,
       'professionalPicture3': user.professionalPicture3,
@@ -1138,6 +1139,7 @@ class DatabaseService {
       return AccountHolder.fromDoc(userDocSnapshot);
     }
     return AccountHolder(
+        disabledAccount: null,
         androidNotificationToken: '',
         continent: '',
         hideUploads: null,

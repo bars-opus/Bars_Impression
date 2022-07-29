@@ -253,6 +253,9 @@ export 'package:bars/widgets/schimmers/explore_forums_schimmer_skeleton.dart';
 export 'package:bars/widgets/schimmers/post_enlarged_blurhash.dart';
 export 'package:bars/general/pages/feed/post_blurhash.dart';
 export 'package:bars/widgets/schimmers/event_schimmer_blurhash.dart';
+export 'package:bars/general/pages/profile/blockedAccounts.dart';
+export 'package:bars/general/pages/profile/delete_account.dart';
+export 'package:bars/general/pages/profile/delete_account_reason.dart';
 // discover user
 export 'package:bars/general/pages/discover/discover_page/account_categories/artists.dart';
 export 'package:bars/general/pages/discover/discover_page/account_categories/battle_rappers.dart';

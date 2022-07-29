@@ -12,7 +12,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentTab = 0;
-  int _updateAppVersion = Platform.isIOS ? 4 : 3;
+  int _updateAppVersion = Platform.isIOS ? 4 : 4;
   late PageController _pageController;
   String notificationMsg = '';
 

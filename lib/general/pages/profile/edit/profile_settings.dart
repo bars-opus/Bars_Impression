@@ -1,4 +1,3 @@
-import 'package:bars/general/pages/profile/statistics/blockedAccounts.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -166,7 +165,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
     showAboutDialog(
         context: context,
         applicationName: 'Bars Impression',
-        applicationVersion: 'Version 1.1.3',
+        applicationVersion: 'Version 1.1.5',
         applicationIcon: Container(
           width: 40,
           height: 40,
@@ -181,7 +180,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                 text: TextSpan(
               children: [
                 TextSpan(
-                    text: "Version Release Date: May 2022\n",
+                    text: "Version Release Date: July 2022\n",
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.black,
@@ -403,9 +402,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                 Divider(color: Colors.grey),
 
                                 GestureDetector(
-                                  onTap: () =>
-                                  
-                                   Navigator.push(
+                                  onTap: () => Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (_) => BlockedAccounts(),
@@ -420,6 +417,35 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                     subTitle: "Accounts you have blocked.",
                                     icon: Icon(
                                       Icons.block_rounded,
+                                      size: 20,
+                                      color: ConfigBloc().darkModeOn
+                                          ? Color(0xFFf2f2f2)
+                                          : Color(0xFF1a1a1a),
+                                    ),
+                                  ),
+                                ),
+                                Divider(color: Colors.grey),
+
+                                GestureDetector(
+                                  onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => DeleteAccountReason(
+                                          user: widget.user,
+                                        ),
+                                      )),
+                                  child: IntroInfo(
+                                    title: 'Delete Accounts',
+                                    onPressed: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => DeleteAccountReason(
+                                            user: widget.user
+                                          ),
+                                        )),
+                                    subTitle: "Delete you user account",
+                                    icon: Icon(
+                                      Icons.person_remove_outlined,
                                       size: 20,
                                       color: ConfigBloc().darkModeOn
                                           ? Color(0xFFf2f2f2)

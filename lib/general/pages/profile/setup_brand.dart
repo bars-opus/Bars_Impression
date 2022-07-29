@@ -182,6 +182,8 @@ class _SetUpBrandState extends State<SetUpBrand> {
         Provider.of<UserData>(context, listen: false).currentUserId!;
     if (_formKey.currentState!.validate() && !_isLoading) {
       _formKey.currentState?.save();
+      FocusScope.of(context).unfocus();
+
       Flushbar(
         maxWidth: MediaQuery.of(context).size.width,
         backgroundColor: Color(0xFF1a1a1a),
@@ -198,14 +200,14 @@ class _SetUpBrandState extends State<SetUpBrand> {
           )
         ],
         titleText: Text(
-          "Saving",
+          "Setting up brand",
           style: TextStyle(
             color: Colors.white,
             fontSize: width > 800 ? 22 : 14,
           ),
         ),
         messageText: Text(
-          "Please wait...",
+          "Just a moment...",
           style: TextStyle(
             color: Colors.white,
             fontSize: width > 800 ? 20 : 12,

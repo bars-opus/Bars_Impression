@@ -13,9 +13,9 @@ class StorageService {
       RegExp exp = RegExp(r'userProfile_(.*).jpg');
       photoId = exp.firstMatch(url)![1];
     }
-
+    String currentUserId = FirebaseAuth.instance.currentUser!.uid;
     UploadTask uploadTask = storageRef
-        .child('images/users/userProfile_$photoId.jpg')
+        .child('images/users/$currentUserId/userProfile_$photoId.jpg')
         .putFile(image!);
     String downloadUrl = await (await uploadTask).ref.getDownloadURL();
     return downloadUrl;
@@ -30,10 +30,10 @@ class StorageService {
       RegExp exp = RegExp(r'professionalPicture1Url_(.*).jpg');
       photoId = exp.firstMatch(url)![1];
     }
-
+    String currentUserId = FirebaseAuth.instance.currentUser!.uid;
     UploadTask uploadTask = storageRef
         .child(
-            'images/professionalPicture1/professionalPicture1Url_$photoId.jpg')
+            'images/professionalPicture1/$currentUserId/professionalPicture1Url_$photoId.jpg')
         .putFile(image!);
     String downloadUrl = await (await uploadTask).ref.getDownloadURL();
     return downloadUrl;
@@ -48,10 +48,10 @@ class StorageService {
       RegExp exp = RegExp(r'professionalPicture2Url_(.*).jpg');
       photoId = exp.firstMatch(url)![1];
     }
-
+    String currentUserId = FirebaseAuth.instance.currentUser!.uid;
     UploadTask uploadTask = storageRef
         .child(
-            'images/professionalPicture2/professionalPicture2Url_$photoId.jpg')
+            'images/professionalPicture2/$currentUserId/professionalPicture2Url_$photoId.jpg')
         .putFile(image!);
     String downloadUrl = await (await uploadTask).ref.getDownloadURL();
     return downloadUrl;
@@ -66,10 +66,10 @@ class StorageService {
       RegExp exp = RegExp(r'professionalPicture3Url_(.*).jpg');
       photoId = exp.firstMatch(url)![1];
     }
-
+    String currentUserId = FirebaseAuth.instance.currentUser!.uid;
     UploadTask uploadTask = storageRef
         .child(
-            'images/professionalPicture3/professionalPicture3Url_$photoId.jpg')
+            'images/professionalPicture3/$currentUserId/professionalPicture3Url_$photoId.jpg')
         .putFile(image!);
     String downloadUrl = await (await uploadTask).ref.getDownloadURL();
     return downloadUrl;
@@ -89,18 +89,10 @@ class StorageService {
   static Future<String> uploadPost(File imageFile) async {
     String postId = Uuid().v4();
     File? image = await compressImage(postId, imageFile);
-
-    UploadTask uploadTask =
-        storageRef.child('images/posts/post_$postId.jpg').putFile(image!);
-    String downloadUrl = await (await uploadTask).ref.getDownloadURL();
-    return downloadUrl;
-  }
-
-  static Future<String> uploadPostVideo(File videoFile) async {
-    String postId = Uuid().v4();
-
-    UploadTask uploadTask =
-        storageRef.child('videos/posts/post_$postId.jpg').putFile(videoFile);
+    String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    UploadTask uploadTask = storageRef
+        .child('images/posts/$currentUserId/post_$postId.jpg')
+        .putFile(image!);
     String downloadUrl = await (await uploadTask).ref.getDownloadURL();
     return downloadUrl;
   }
@@ -108,9 +100,10 @@ class StorageService {
   static Future<String> uploadEvent(File imageFile) async {
     String eventId = Uuid().v4();
     File? image = await compressImage(eventId, imageFile);
-
-    UploadTask uploadTask =
-        storageRef.child('images/events/event_$eventId.jpg').putFile(image!);
+    String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    UploadTask uploadTask = storageRef
+        .child('images/events/$currentUserId/event_$eventId.jpg')
+        .putFile(image!);
     String downloadUrl = await (await uploadTask).ref.getDownloadURL();
     return downloadUrl;
   }
@@ -118,9 +111,9 @@ class StorageService {
   static Future<String> uploadMessageImage(File imageFile) async {
     String messageId = Uuid().v4();
     File? image = await compressImage(messageId, imageFile);
-
+    String currentUserId = FirebaseAuth.instance.currentUser!.uid;
     UploadTask uploadTask = storageRef
-        .child('images/messageImage/message_$messageId.jpg')
+        .child('images/messageImage/$currentUserId/message_$messageId.jpg')
         .putFile(image!);
     String downloadUrl = await (await uploadTask).ref.getDownloadURL();
     return downloadUrl;
@@ -129,9 +122,11 @@ class StorageService {
   static Future<String> gvIdImageUrl(File imageFile) async {
     String gvId = Uuid().v4();
     File? image = await compressImage(gvId, imageFile);
+    String currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
-    UploadTask uploadTask =
-        storageRef.child('images/posts/post_$gvId.jpg').putFile(image!);
+    UploadTask uploadTask = storageRef
+        .child('images/validate/$currentUserId/post_$gvId.jpg')
+        .putFile(image!);
     String downloadUrl = await (await uploadTask).ref.getDownloadURL();
     return downloadUrl;
   }

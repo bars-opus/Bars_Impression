@@ -40,6 +40,7 @@ class AccountHolder {
   final String? reportConfirmed;
   final bool? hideAdvice;
   final bool? noBooking;
+  final bool? disabledAccount;
   final String? androidNotificationToken;
   final Timestamp? timestamp;
 
@@ -83,6 +84,7 @@ class AccountHolder {
     required this.reportConfirmed,
     required this.hideAdvice,
     required this.noBooking,
+    required this.disabledAccount,
     required this.androidNotificationToken,
     required this.timestamp,
   });
@@ -128,6 +130,7 @@ class AccountHolder {
       enableBookingOnChat: doc['enableBookingOnChat'] ?? false,
       hideAdvice: doc['hideAdvice'] ?? false,
       noBooking: doc['noBooking'] ?? false,
+      disabledAccount: doc['disabledAccount'] ?? false,
       androidNotificationToken: doc['androidNotificationToken'] ?? '',
       timestamp: doc['timestamp'],
     );

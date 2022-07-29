@@ -20,7 +20,6 @@ class _ConfigPageState extends State<ConfigPage> {
     configBloc.darkModeOn = Bars.prefs!.getBool(Bars.darkModePref) ?? false;
   }
 
-
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
