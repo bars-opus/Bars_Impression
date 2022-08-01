@@ -139,7 +139,6 @@ class Authorview extends StatelessWidget {
                 builder: (_) => ProfileScreen(
                       currentUserId: currentUserId,
                       userId: author.id!,
-                      user: author,
                     ))),
       ),
     );

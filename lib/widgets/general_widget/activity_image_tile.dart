@@ -75,96 +75,96 @@ class ActivityImageTile extends StatelessWidget {
                         spreadRadius: 1.0,
                       )
                     ]),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ListTile(
-                leading: CircleAvatar(
-                  radius: 20.0,
-                  backgroundColor: ConfigBloc().darkModeOn
-                      ? Color(0xFF1a1a1a)
-                      : Color(0xFFf2f2f2),
-                  backgroundImage: profileImageUrl.isEmpty
-                      ? AssetImage(
-                          ConfigBloc().darkModeOn
-                              ? 'assets/images/user_placeholder.png'
-                              : 'assets/images/user_placeholder2.png',
-                        ) as ImageProvider
-                      : CachedNetworkImageProvider(profileImageUrl),
-                ),
-                trailing: CachedNetworkImage(
-                  imageUrl: activityImage,
-                  height: 40.0,
-                  width: 40.0,
-                  fit: BoxFit.cover,
-                ),
-                title: Stack(
-                  alignment: Alignment.bottomRight,
+          child: ListTile(
+            leading: CircleAvatar(
+              radius: 20.0,
+              backgroundColor: ConfigBloc().darkModeOn
+                  ? Color(0xFF1a1a1a)
+                  : Color(0xFFf2f2f2),
+              backgroundImage: profileImageUrl.isEmpty
+                  ? AssetImage(
+                      ConfigBloc().darkModeOn
+                          ? 'assets/images/user_placeholder.png'
+                          : 'assets/images/user_placeholder2.png',
+                    ) as ImageProvider
+                  : CachedNetworkImageProvider(profileImageUrl),
+            ),
+            trailing: CachedNetworkImage(
+              imageUrl: activityImage,
+              height: 40.0,
+              width: 40.0,
+              fit: BoxFit.cover,
+            ),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Stack(
+                  alignment: Alignment.centerRight,
                   children: [
-                    RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                              text: userName + '\n',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: ConfigBloc().darkModeOn
-                                    ? Colors.white
-                                    : Colors.black,
-                              )),
-                          TextSpan(
-                              text: activityIndicator,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: ConfigBloc().darkModeOn
-                                    ? Colors.white
-                                    : Colors.black,
-                              )),
-                          TextSpan(
-                              text: activityTitle + '\n',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.blueGrey,
-                              )),
-                          TextSpan(
-                              text: activityContent,
-                              style: TextStyle(
-                                fontSize: 16,
-                                color:
-                                    seen == 'seen' ? Colors.grey : Colors.blue,
-                              )),
-                        ],
+                    Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: Text(
+                        userName,
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          fontWeight: seen == 'seen'
+                              ? FontWeight.normal
+                              : FontWeight.bold,
+                          color: ConfigBloc().darkModeOn
+                              ? Colors.white
+                              : Colors.black,
+                        ),
                       ),
-                      maxLines: 4,
-                      overflow: TextOverflow.ellipsis,
                     ),
                     verified.isEmpty
                         ? SizedBox.shrink()
                         : Positioned(
-                            top: -17,
-                            right: 2,
-                            child: IconButton(
-                                icon: Icon(
-                                  MdiIcons.checkboxMarkedCircle,
-                                ),
-                                iconSize: 12,
-                                color: Colors.blue,
-                                onPressed: () {}),
+                            top: 0,
+                            right: 0,
+                            child: Icon(
+                              MdiIcons.checkboxMarkedCircle,
+                              size: 11,
+                              color: Colors.blue,
+                            ),
                           ),
                   ],
                 ),
-                subtitle: Text(
-                  activityTime,
-                  style: TextStyle(fontSize: 10, color: Colors.grey),
+                RichText(
+                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                          text: activityIndicator,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: ConfigBloc().darkModeOn
+                                ? Colors.white
+                                : Colors.black,
+                          )),
+                      TextSpan(
+                          text: activityTitle + '\n',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.blueGrey,
+                          )),
+                      TextSpan(
+                          text: activityContent,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: seen == 'seen' ? Colors.grey : Colors.blue,
+                          )),
+                    ],
+                  ),
+                  maxLines: 4,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                onTap: onPressed,
-              ),
-              const Divider(
-                color: Colors.grey,
-              )
-            ],
+              ],
+            ),
+            subtitle: Text(
+              activityTime,
+              style: TextStyle(fontSize: 10, color: Colors.grey),
+            ),
+            onTap: onPressed,
           ),
         ),
       ],

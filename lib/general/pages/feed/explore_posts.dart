@@ -369,7 +369,6 @@ class _ExplorePostsState extends State<ExplorePosts> {
                           currentUserId:
                               Provider.of<UserData>(context).currentUserId!,
                           userId: accountHolder.id!,
-                          user: null,
                         )))),
         FocusedMenuItem(
             title: Container(

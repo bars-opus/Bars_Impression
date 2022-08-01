@@ -42,6 +42,7 @@ final savedPostsRef = _firestore.collection('savedPosts');
 final chatsRef = _firestore.collection('chats');
 final chatMessagesRef = _firestore.collection('chatMessages');
 final tokenRef = _firestore.collection('token');
+final deletedDeactivatedAccountRef = _firestore.collection('_DeletedDeactivatedAccounts');
 final usersBlockedRef = _firestore.collection('usersBlocked_');
 final userBlockingRef = _firestore.collection('usersBlocking_');
 final surveysRef = _firestore.collection('_surveys');

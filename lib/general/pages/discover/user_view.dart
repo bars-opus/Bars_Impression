@@ -58,7 +58,6 @@ class _UserViewState extends State<UserView> {
                     context,
                     MaterialPageRoute(
                         builder: (_) => ProfileScreen(
-                              user: null,
                               currentUserId:
                                   Provider.of<UserData>(context).currentUserId!,
                               userId: widget.userId,
@@ -86,7 +85,6 @@ class _UserViewState extends State<UserView> {
             context,
             MaterialPageRoute(
                 builder: (_) => ProfileScreen(
-                      user: null,
                       currentUserId:
                           Provider.of<UserData>(context).currentUserId!,
                       userId: widget.userId,
@@ -380,7 +378,6 @@ class _UserViewState extends State<UserView> {
                         context,
                         MaterialPageRoute(
                             builder: (_) => ProfileScreen(
-                                  user: null,
                                   currentUserId: Provider.of<UserData>(context)
                                       .currentUserId!,
                                   userId: widget.userId,
@@ -428,7 +425,6 @@ class _UserViewState extends State<UserView> {
                     context,
                     MaterialPageRoute(
                         builder: (_) => ProfileScreen(
-                              user: null,
                               currentUserId:
                                   Provider.of<UserData>(context).currentUserId!,
                               userId: widget.userId,

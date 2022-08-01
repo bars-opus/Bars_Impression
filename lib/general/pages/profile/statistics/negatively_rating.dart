@@ -88,7 +88,6 @@ class _NegativelyRatingState extends State<NegativelyRating> {
                         currentUserId:
                             Provider.of<UserData>(context).currentUserId!,
                         userId: user.id!,
-                        user: widget.user,
                       )));
         });
   }

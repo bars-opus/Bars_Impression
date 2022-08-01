@@ -541,7 +541,6 @@ class _ProfilePostViewState extends State<ProfilePostView> {
                             builder: (_) => ProfileScreen(
                                   currentUserId: widget.currentUserId,
                                   userId: widget.post.authorId,
-                                  user: null,
                                 ))),
                   ),
             FocusedMenuItem(
@@ -622,7 +621,6 @@ class _ProfilePostViewState extends State<ProfilePostView> {
                       builder: (_) => ProfileScreen(
                             currentUserId: widget.currentUserId,
                             userId: widget.post.authorId,
-                            user: null,
                           ))),
             ),
             FocusedMenuItem(
@@ -642,7 +640,6 @@ class _ProfilePostViewState extends State<ProfilePostView> {
                     builder: (_) => ProfileScreen(
                           currentUserId: widget.currentUserId,
                           userId: widget.post.authorId,
-                          user: null,
                         ))),
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),

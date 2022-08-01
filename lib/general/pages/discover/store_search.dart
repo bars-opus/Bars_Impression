@@ -43,7 +43,6 @@ class _StoreSearchState extends State<StoreSearch> {
                         currentUserId:
                             Provider.of<UserData>(context).currentUserId!,
                         userId: user.id!,
-                        user: user,
                       )));
         });
   }

@@ -120,7 +120,6 @@ class _EventViewState extends State<EventView> {
                     context,
                     MaterialPageRoute(
                         builder: (_) => ProfileScreen(
-                              user: widget.user,
                               currentUserId: widget.currentUserId,
                               userId: widget.event.authorId,
                             ))),
@@ -188,7 +187,6 @@ class _EventViewState extends State<EventView> {
                           context,
                           MaterialPageRoute(
                               builder: (_) => ProfileScreen(
-                                    user: widget.user,
                                     currentUserId: widget.currentUserId,
                                     userId: widget.event.authorId,
                                   )));

@@ -107,7 +107,6 @@ class _FavoritAlbumState extends State<FavoritAlbum> {
                       currentUserId:
                           Provider.of<UserData>(context).currentUserId!,
                       userId: user.id!,
-                      user: widget.user,
                     ))),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,

@@ -163,7 +163,6 @@ class _FollowerFollowingState extends State<FollowerFollowing>
                         currentUserId:
                             Provider.of<UserData>(context).currentUserId!,
                         userId: user.id!,
-                        user: null,
                       )));
         });
   }

@@ -12,7 +12,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentTab = 0;
-  int _updateAppVersion = Platform.isIOS ? 4 : 4;
+  int _updateAppVersion = Platform.isIOS ? 5 : 5;
   late PageController _pageController;
   String notificationMsg = '';
 
@@ -453,7 +453,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ProfileScreen(
                                       currentUserId: currentUserId,
                                       userId: currentUserId,
-                                      user: null,
                                     ),
                                   ],
                                   onPageChanged: (int index) {
@@ -489,252 +488,296 @@ class _HomeScreenState extends State<HomeScreen> {
                                   )
                                 ],
                               ),
-                              child: Stack(
-                                children: [
-                                  Container(
-                                    height: double.infinity,
-                                    width: double.infinity,
-                                    child: PageView(
-                                      physics: NeverScrollableScrollPhysics(),
-                                      controller: _pageController,
-                                      children: <Widget>[
-                                        FeedScreenSliver(
-                                          currentUserId: currentUserId,
+                              child: Provider.of<UserData>(context,
+                                          listen: false)
+                                      .user!
+                                      .disabledAccount!
+                                  ? ReActivateAccount(
+                                      user: Provider.of<UserData>(context,
+                                              listen: false)
+                                          .user!)
+                                  : Stack(
+                                      children: [
+                                        Container(
+                                          height: double.infinity,
+                                          width: double.infinity,
+                                          child: PageView(
+                                            physics:
+                                                NeverScrollableScrollPhysics(),
+                                            controller: _pageController,
+                                            children: <Widget>[
+                                              FeedScreenSliver(
+                                                currentUserId: currentUserId,
+                                              ),
+                                              ForumFeed(
+                                                currentUserId: currentUserId,
+                                              ),
+                                              EventsFeed(
+                                                currentUserId: currentUserId,
+                                              ),
+                                              DiscoverUser(
+                                                currentUserId: currentUserId,
+                                                isWelcome: false,
+                                              ),
+                                              ProfileScreen(
+                                                currentUserId: currentUserId,
+                                                userId: currentUserId,
+                                              ),
+                                            ],
+                                            onPageChanged: (int index) {
+                                              setState(() {
+                                                _currentTab = index;
+                                              });
+                                            },
+                                          ),
                                         ),
-                                        ForumFeed(
-                                          currentUserId: currentUserId,
-                                        ),
-                                        EventsFeed(
-                                          currentUserId: currentUserId,
-                                        ),
-                                        DiscoverUser(
-                                          currentUserId: currentUserId,
-                                          isWelcome: false,
-                                        ),
-                                        ProfileScreen(
-                                          currentUserId: currentUserId,
-                                          userId: currentUserId,
-                                          user: Provider.of<UserData>(context,
-                                                  listen: false)
-                                              .user,
+                                        Positioned(
+                                            bottom: 7,
+                                            child: UpdateInfoMini(
+                                              updateNote:
+                                                  _updateApp.updateNote!,
+                                              showinfo:
+                                                  _updateAppVersion < version
+                                                      ? true
+                                                      : false,
+                                              displayMiniUpdate:
+                                                  _updateApp.displayMiniUpdate!,
+                                              onPressed: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            MyWebView(
+                                                              url: Platform
+                                                                      .isIOS
+                                                                  ? 'https://apps.apple.com/us/app/bars-impression/id1610868894'
+                                                                  : 'https://play.google.com/store/apps/details?id=com.barsOpus.barsImpression',
+                                                            )));
+                                              },
+                                            )),
+                                        Positioned(
+                                            bottom: 7, child: NoConnection()),
+                                      ],
+                                    ),
+                            ),
+                            bottomNavigationBar: Provider.of<UserData>(context,
+                                        listen: false)
+                                    .user!
+                                    .disabledAccount!
+                                ? SizedBox.shrink()
+                                : Container(
+                                    child: Wrap(
+                                      children: [
+                                        CupertinoTabBar(
+                                          backgroundColor:
+                                              ConfigBloc().darkModeOn
+                                                  ? Color(0xFF1a1a1a)
+                                                  : Colors.white,
+                                          currentIndex: _currentTab,
+                                          onTap: (int index) {
+                                            setState(() {
+                                              _currentTab = index;
+                                            });
+
+                                            _pageController.animateToPage(
+                                              index,
+                                              duration:
+                                                  Duration(milliseconds: 10),
+                                              curve: Curves.easeIn,
+                                            );
+                                          },
+                                          activeColor: ConfigBloc().darkModeOn
+                                              ? Colors.white
+                                              : Colors.black,
+                                          items: [
+                                            BottomNavigationBarItem(
+                                              icon: Column(
+                                                children: [
+                                                  Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              top: 0.0),
+                                                      child: AnimatedContainer(
+                                                        duration: Duration(
+                                                            milliseconds: 500),
+                                                        height: 2,
+                                                        curve: Curves.easeInOut,
+                                                        width: 30.0,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: _currentTab ==
+                                                                  0
+                                                              ? Colors.blue
+                                                              : Colors
+                                                                  .transparent,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                      )),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 1.0),
+                                                    child: Icon(
+                                                      MdiIcons.home,
+                                                      size: 25.0,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              label: 'Home',
+                                            ),
+                                            BottomNavigationBarItem(
+                                              icon: Column(
+                                                children: [
+                                                  Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              top: 0.0),
+                                                      child: AnimatedContainer(
+                                                        duration: Duration(
+                                                            milliseconds: 500),
+                                                        height: 2,
+                                                        curve: Curves.easeInOut,
+                                                        width: 30.0,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: _currentTab ==
+                                                                  1
+                                                              ? Colors.blue
+                                                              : Colors
+                                                                  .transparent,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                      )),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 1.0),
+                                                    child: Icon(Icons.forum,
+                                                        size: 25.0),
+                                                  ),
+                                                ],
+                                              ),
+                                              label: 'Forum',
+                                            ),
+                                            BottomNavigationBarItem(
+                                              icon: Column(
+                                                children: [
+                                                  Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              top: 0.0),
+                                                      child: AnimatedContainer(
+                                                        duration: Duration(
+                                                            milliseconds: 500),
+                                                        height: 2,
+                                                        curve: Curves.easeInOut,
+                                                        width: 30.0,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: _currentTab ==
+                                                                  2
+                                                              ? Colors.blue
+                                                              : Colors
+                                                                  .transparent,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                      )),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 1.0),
+                                                    child: Icon(Icons.event,
+                                                        size: 25.0),
+                                                  ),
+                                                ],
+                                              ),
+                                              label: 'Event',
+                                            ),
+                                            BottomNavigationBarItem(
+                                              icon: Column(
+                                                children: [
+                                                  Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              top: 0.0),
+                                                      child: AnimatedContainer(
+                                                        duration: Duration(
+                                                            milliseconds: 500),
+                                                        height: 2,
+                                                        curve: Curves.easeInOut,
+                                                        width: 30.0,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: _currentTab ==
+                                                                  3
+                                                              ? Colors.blue
+                                                              : Colors
+                                                                  .transparent,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                      )),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 1.0),
+                                                    child: Icon(Icons.search,
+                                                        size: 25.0),
+                                                  ),
+                                                ],
+                                              ),
+                                              label: 'Discover',
+                                            ),
+                                            BottomNavigationBarItem(
+                                              icon: Column(
+                                                children: [
+                                                  Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              top: 0.0),
+                                                      child: AnimatedContainer(
+                                                        duration: Duration(
+                                                            milliseconds: 500),
+                                                        height: 2,
+                                                        curve: Curves.easeInOut,
+                                                        width: 30.0,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: _currentTab ==
+                                                                  4
+                                                              ? Colors.blue
+                                                              : Colors
+                                                                  .transparent,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                      )),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 1.0),
+                                                    child: Icon(
+                                                        Icons.account_circle,
+                                                        size: 25.0),
+                                                  ),
+                                                ],
+                                              ),
+                                              label: 'Profile',
+                                            ),
+                                          ],
                                         ),
                                       ],
-                                      onPageChanged: (int index) {
-                                        setState(() {
-                                          _currentTab = index;
-                                        });
-                                      },
                                     ),
                                   ),
-                                  Positioned(
-                                      bottom: 7,
-                                      child: UpdateInfoMini(
-                                        updateNote: _updateApp.updateNote!,
-                                        showinfo: _updateAppVersion < version
-                                            ? true
-                                            : false,
-                                        displayMiniUpdate:
-                                            _updateApp.displayMiniUpdate!,
-                                        onPressed: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (_) => MyWebView(
-                                                        url: Platform.isIOS
-                                                            ? 'https://apps.apple.com/us/app/bars-impression/id1610868894'
-                                                            : 'https://play.google.com/store/apps/details?id=com.barsOpus.barsImpression',
-                                                      )));
-                                        },
-                                      )),
-                                  Positioned(bottom: 7, child: NoConnection()),
-                                ],
-                              ),
-                            ),
-                            bottomNavigationBar: Container(
-                              child: Wrap(
-                                children: [
-                                  CupertinoTabBar(
-                                    backgroundColor: ConfigBloc().darkModeOn
-                                        ? Color(0xFF1a1a1a)
-                                        : Colors.white,
-                                    currentIndex: _currentTab,
-                                    onTap: (int index) {
-                                      setState(() {
-                                        _currentTab = index;
-                                      });
-
-                                      _pageController.animateToPage(
-                                        index,
-                                        duration: Duration(milliseconds: 10),
-                                        curve: Curves.easeIn,
-                                      );
-                                    },
-                                    activeColor: ConfigBloc().darkModeOn
-                                        ? Colors.white
-                                        : Colors.black,
-                                    items: [
-                                      BottomNavigationBarItem(
-                                        icon: Column(
-                                          children: [
-                                            Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 0.0),
-                                                child: AnimatedContainer(
-                                                  duration: Duration(
-                                                      milliseconds: 500),
-                                                  height: 2,
-                                                  curve: Curves.easeInOut,
-                                                  width: 30.0,
-                                                  decoration: BoxDecoration(
-                                                    color: _currentTab == 0
-                                                        ? Colors.blue
-                                                        : Colors.transparent,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                  ),
-                                                )),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 1.0),
-                                              child: Icon(
-                                                MdiIcons.home,
-                                                size: 25.0,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        label: 'Home',
-                                      ),
-                                      BottomNavigationBarItem(
-                                        icon: Column(
-                                          children: [
-                                            Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 0.0),
-                                                child: AnimatedContainer(
-                                                  duration: Duration(
-                                                      milliseconds: 500),
-                                                  height: 2,
-                                                  curve: Curves.easeInOut,
-                                                  width: 30.0,
-                                                  decoration: BoxDecoration(
-                                                    color: _currentTab == 1
-                                                        ? Colors.blue
-                                                        : Colors.transparent,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                  ),
-                                                )),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 1.0),
-                                              child:
-                                                  Icon(Icons.forum, size: 25.0),
-                                            ),
-                                          ],
-                                        ),
-                                        label: 'Forum',
-                                      ),
-                                      BottomNavigationBarItem(
-                                        icon: Column(
-                                          children: [
-                                            Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 0.0),
-                                                child: AnimatedContainer(
-                                                  duration: Duration(
-                                                      milliseconds: 500),
-                                                  height: 2,
-                                                  curve: Curves.easeInOut,
-                                                  width: 30.0,
-                                                  decoration: BoxDecoration(
-                                                    color: _currentTab == 2
-                                                        ? Colors.blue
-                                                        : Colors.transparent,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                  ),
-                                                )),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 1.0),
-                                              child:
-                                                  Icon(Icons.event, size: 25.0),
-                                            ),
-                                          ],
-                                        ),
-                                        label: 'Event',
-                                      ),
-                                      BottomNavigationBarItem(
-                                        icon: Column(
-                                          children: [
-                                            Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 0.0),
-                                                child: AnimatedContainer(
-                                                  duration: Duration(
-                                                      milliseconds: 500),
-                                                  height: 2,
-                                                  curve: Curves.easeInOut,
-                                                  width: 30.0,
-                                                  decoration: BoxDecoration(
-                                                    color: _currentTab == 3
-                                                        ? Colors.blue
-                                                        : Colors.transparent,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                  ),
-                                                )),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 1.0),
-                                              child: Icon(Icons.search,
-                                                  size: 25.0),
-                                            ),
-                                          ],
-                                        ),
-                                        label: 'Discover',
-                                      ),
-                                      BottomNavigationBarItem(
-                                        icon: Column(
-                                          children: [
-                                            Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 0.0),
-                                                child: AnimatedContainer(
-                                                  duration: Duration(
-                                                      milliseconds: 500),
-                                                  height: 2,
-                                                  curve: Curves.easeInOut,
-                                                  width: 30.0,
-                                                  decoration: BoxDecoration(
-                                                    color: _currentTab == 4
-                                                        ? Colors.blue
-                                                        : Colors.transparent,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                  ),
-                                                )),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 1.0),
-                                              child: Icon(Icons.account_circle,
-                                                  size: 25.0),
-                                            ),
-                                          ],
-                                        ),
-                                        label: 'Profile',
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
                           )
                 // : SizedBox.shrink(),
                 );

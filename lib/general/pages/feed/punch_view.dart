@@ -51,7 +51,6 @@ class _PunchViewState extends State<PunchView> {
                               currentUserId:
                                   Provider.of<UserData>(context).currentUserId!,
                               userId: widget.author.id!,
-                              user: widget.author,
                             )))),
         FocusedMenuItem(
             title: Container(
@@ -173,7 +172,6 @@ class _PunchViewState extends State<PunchView> {
                                               Provider.of<UserData>(context)
                                                   .currentUserId!,
                                           userId: widget.author.id!,
-                                          user: null,
                                         ))),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,

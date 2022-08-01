@@ -1,6 +1,5 @@
 // ignore_for_file: unnecessary_null_comparison
 
-
 import 'dart:typed_data';
 import 'package:blurhash/blurhash.dart';
 import 'package:bars/utilities/exports.dart';
@@ -289,7 +288,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
       _formKey.currentState?.save();
       String _imageUrl = widget.event!.imageUrl;
       Event event = Event(
-        blurHash: '',
+        blurHash: widget.event!.blurHash,
         id: widget.event!.id,
         imageUrl: _imageUrl,
         type: Provider.of<UserData>(context, listen: false).post6,
@@ -323,7 +322,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
 
       try {
         DatabaseService.editEvent(event);
-        Navigator.pop(context);
+        _pop();
         final double width = Responsive.isDesktop(context)
             ? 600.0
             : MediaQuery.of(context).size.width;
@@ -476,9 +475,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
       String? imageUrl = await StorageService.uploadEvent(
           Provider.of<UserData>(context, listen: false).postImage!);
 
-           
-         
-       Uint8List bytes =
+      Uint8List bytes =
           await (Provider.of<UserData>(context, listen: false).postImage!)
               .readAsBytes();
       var blurHash = await BlurHash.encode(bytes, 4, 3);
@@ -519,7 +516,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
       );
       try {
         DatabaseService.createEvent(event);
-        Navigator.pop(context);
+        _pop();
         final double width = Responsive.isDesktop(context)
             ? 600.0
             : MediaQuery.of(context).size.width;
@@ -653,8 +650,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
             onChanged: (value) => setState(
               () {
                 _type = (this.selectedValue = value!);
-                Provider.of<UserData>(context, listen: false)
-                    .setPost6(this.selectedValue = value);
+                Provider.of<UserData>(context, listen: false).setPost6(_type);
               },
             ),
           );
@@ -705,8 +701,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                   ),
                 ),
                 onPressed: () {
-                  Provider.of<UserData>(context, listen: false)
-                      .setPost6('Others');
                   animateToPage();
                 }),
           ),
@@ -751,8 +745,44 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
             ),
           ),
           SizedBox(height: 70),
-          widget.isEditting
-              ? AlwaysWhiteButton(
+          // widget.isEditting
+          //     ? AlwaysWhiteButton(
+          //         onPressed: () {
+          //           Provider.of<UserData>(context, listen: false).setPost7(
+          //             MyDateFormat.toTime(DateTime.parse(widget.time)),
+          //           );
+          //           // setState(() {
+          //           //   widget.time = dayTime.toString();
+          //           // });
+          //           animateToPage();
+          //         },
+          //         buttonText: widget.isEditting ? 'Next' : "Continue")
+          //     :
+          AnimatedContainer(
+            duration: Duration(milliseconds: 300),
+            height: minTime.isBefore(dayTime) ? 0.0 : null,
+            curve: Curves.bounceInOut,
+            child: Container(
+              width: 200,
+              child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    primary: Colors.blue,
+                    side: BorderSide(
+                      width: 1.0,
+                      color:
+                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                  child: Text(
+                    'Pick Time',
+                    style: TextStyle(
+                      color:
+                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                    ),
+                  ),
                   onPressed: () {
                     Provider.of<UserData>(context, listen: false)
                         .setPost7(dayTime.toString());
@@ -763,48 +793,9 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                     print(
                       widget.time,
                     );
-                  },
-                  buttonText: widget.isEditting ? 'Next' : "Continue")
-              : AnimatedContainer(
-                  duration: Duration(milliseconds: 300),
-                  height: minTime.isBefore(dayTime) ? 0.0 : null,
-                  curve: Curves.bounceInOut,
-                  child: Container(
-                    width: 200,
-                    child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          primary: Colors.blue,
-                          side: BorderSide(
-                            width: 1.0,
-                            color: ConfigBloc().darkModeOn
-                                ? Colors.white
-                                : Colors.black,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                        ),
-                        child: Text(
-                          'Pick Time',
-                          style: TextStyle(
-                            color: ConfigBloc().darkModeOn
-                                ? Colors.white
-                                : Colors.black,
-                          ),
-                        ),
-                        onPressed: () {
-                          Provider.of<UserData>(context, listen: false)
-                              .setPost7(dayTime.toString());
-                          setState(() {
-                            widget.time = dayTime.toString();
-                          });
-                          animateToPage();
-                          print(
-                            widget.time,
-                          );
-                        }),
-                  ),
-                ),
+                  }),
+            ),
+          ),
         ],
       );
 
@@ -852,8 +843,36 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
             ),
           ),
           SizedBox(height: 70),
-          widget.isEditting
-              ? AlwaysWhiteButton(
+          AnimatedContainer(
+            duration: Duration(milliseconds: 300),
+            height:
+                minDateTime.add(Duration(days: 1)).isAtSameMomentAs(dateTime) ||
+                        minDateTime.isAfter(dateTime) ||
+                        minDateTime.add(Duration(days: 1)).isAfter(dateTime)
+                    ? 0.0
+                    : null,
+            curve: Curves.bounceInOut,
+            child: Container(
+              width: 200,
+              child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    primary: Colors.blue,
+                    side: BorderSide(
+                      width: 1.0,
+                      color:
+                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                  child: Text(
+                    'Pick Date',
+                    style: TextStyle(
+                      color:
+                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                    ),
+                  ),
                   onPressed: () {
                     Provider.of<UserData>(context, listen: false)
                         .setPost8(dateTime.toString());
@@ -861,51 +880,9 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                       widget.date = dateTime.toString();
                     });
                     animateToPage();
-                  },
-                  buttonText: widget.isEditting ? 'Next' : "Continue")
-              : AnimatedContainer(
-                  duration: Duration(milliseconds: 300),
-                  height: minDateTime
-                              .add(Duration(days: 1))
-                              .isAtSameMomentAs(dateTime) ||
-                          minDateTime.isAfter(dateTime) ||
-                          minDateTime.add(Duration(days: 1)).isAfter(dateTime)
-                      ? 0.0
-                      : null,
-                  curve: Curves.bounceInOut,
-                  child: Container(
-                    width: 200,
-                    child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          primary: Colors.blue,
-                          side: BorderSide(
-                            width: 1.0,
-                            color: ConfigBloc().darkModeOn
-                                ? Colors.white
-                                : Colors.black,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                        ),
-                        child: Text(
-                          'Pick Date',
-                          style: TextStyle(
-                            color: ConfigBloc().darkModeOn
-                                ? Colors.white
-                                : Colors.black,
-                          ),
-                        ),
-                        onPressed: () {
-                          Provider.of<UserData>(context, listen: false)
-                              .setPost8(dateTime.toString());
-                          setState(() {
-                            widget.date = dateTime.toString();
-                          });
-                          animateToPage();
-                        }),
-                  ),
-                ),
+                  }),
+            ),
+          ),
         ],
       );
 

@@ -92,7 +92,6 @@ class _ProfileForumViewState extends State<ProfileForumView> {
                         builder: (_) => ProfileScreen(
                               currentUserId: widget.currentUserId,
                               userId: widget.forum.authorId,
-                              user: widget.author,
                             ))),
               ),
       ],

@@ -158,7 +158,6 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                                         Provider.of<UserData>(context)
                                             .currentUserId!,
                                     userId: author.id!,
-                                    user: widget.user,
                                   )))
                       : Navigator.push(
                           context,
@@ -376,7 +375,6 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                                   builder: (_) => ProfileScreen(
                                         currentUserId: currentUserId,
                                         userId: author.id!,
-                                        user: widget.user,
                                       ))),
                         ),
                       ],

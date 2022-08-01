@@ -226,7 +226,6 @@ class _ChatDetailsState extends State<ChatDetails> {
                           context,
                           MaterialPageRoute(
                               builder: (_) => ProfileScreen(
-                                    user: null,
                                     currentUserId: widget.currentUserId,
                                     userId: widget.user.id!,
                                   ))),
@@ -296,7 +295,6 @@ class _ChatDetailsState extends State<ChatDetails> {
                           context,
                           MaterialPageRoute(
                               builder: (_) => ProfileScreen(
-                                    user: null,
                                     currentUserId: widget.currentUserId,
                                     userId: widget.user.id!,
                                   ))),

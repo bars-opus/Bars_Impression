@@ -91,7 +91,6 @@ class _ThoughtViewState extends State<ThoughtView> {
                                         Provider.of<UserData>(context)
                                             .currentUserId!,
                                     userId: author.id!,
-                                    user: widget.author,
                                   )))
                       : Navigator.push(
                           context,
@@ -235,10 +234,11 @@ class _ThoughtViewState extends State<ThoughtView> {
                           context,
                           MaterialPageRoute(
                               builder: (_) => ProfileScreen(
-                                  currentUserId: Provider.of<UserData>(context)
-                                      .currentUserId!,
-                                  userId: author.id!,
-                                  user: widget.author))),
+                                    currentUserId:
+                                        Provider.of<UserData>(context)
+                                            .currentUserId!,
+                                    userId: author.id!,
+                                  ))),
                     ),
                   ),
                 ),

@@ -126,7 +126,6 @@ class _AllArtistPostsState extends State<AllArtistPosts> {
                       currentUserId:
                           Provider.of<UserData>(context).currentUserId!,
                       userId: user.id!,
-                      user: null,
                     )));
       },
       verified: '',

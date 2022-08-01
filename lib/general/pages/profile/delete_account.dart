@@ -1,15 +1,14 @@
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/scheduler.dart';
 
 // ignore: must_be_immutable
 class DeleteAccount extends StatefulWidget {
   static final id = 'DeleteAccount_screen';
   final AccountHolder user;
-   final String reason;
 
   DeleteAccount({
     required this.user,
-     required this.reason,
   });
 
   @override
@@ -18,15 +17,36 @@ class DeleteAccount extends StatefulWidget {
 
 class _DeleteAccountState extends State<DeleteAccount> {
   final formKey = GlobalKey<FormState>();
-  bool _isLoading = false;
-
+  // bool _isLoading = false;
   bool _isHidden = true;
+  bool _deActive = false;
+  late PageController _pageController;
+  int _index = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(
+      initialPage: 0,
+    );
+
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      setNull();
+    });
+  }
 
   _submit() async {
-    if (formKey.currentState!.validate() & !_isLoading) {
+    if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
       _showSelectImageDialog();
     }
+  }
+
+  _deactivateAccount() {
+    setState(() {
+      _deActive = true;
+    });
+    _showSelectImageDialog();
   }
 
   _showSelectImageDialog() {
@@ -39,7 +59,9 @@ class _DeleteAccountState extends State<DeleteAccount> {
         builder: (BuildContext context) {
           return CupertinoActionSheet(
             title: Text(
-              'Are you sure you want to delete your account',
+              _deActive
+                  ? 'Are you sure you want to deactivate your account?'
+                  : 'Are you sure you want to delete your account?',
               style: TextStyle(
                 fontSize: 16,
                 color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
@@ -48,14 +70,14 @@ class _DeleteAccountState extends State<DeleteAccount> {
             actions: <Widget>[
               CupertinoActionSheetAction(
                 child: Text(
-                  'delete',
+                  _deActive ? 'deactivate' : 'delete',
                   style: TextStyle(
                     color: Colors.blue,
                   ),
                 ),
                 onPressed: () {
                   Navigator.pop(context);
-                  _reauthenticate();
+                  _deActive ? _deActivate() : _reauthenticate();
                 },
               )
             ],
@@ -77,13 +99,15 @@ class _DeleteAccountState extends State<DeleteAccount> {
         context: parentContext,
         builder: (context) {
           return SimpleDialog(
-            title: Text('Are you sure you want to delete this your account?'),
+            title: Text(_deActive
+                ? 'Are you sure you want to deactivate  your account?'
+                : 'Are you sure you want to delete  your account?'),
             children: <Widget>[
               SimpleDialogOption(
-                child: Text('delete'),
+                child: Text(_deActive ? 'deactivate' : 'delete'),
                 onPressed: () {
                   Navigator.pop(context);
-                  _reauthenticate();
+                  _deActive ? _deActivate() : _reauthenticate();
                 },
               ),
               SimpleDialogOption(
@@ -103,12 +127,104 @@ class _DeleteAccountState extends State<DeleteAccount> {
 
   static final _auth = FirebaseAuth.instance;
 
+  _deActivate() async {
+    try {
+      usersRef
+          .doc(
+        widget.user.id,
+      )
+          .update({
+        'disabledAccount': true,
+      });
+      await _auth.signOut();
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => Intro(),
+        ),
+      );
+      final double width = Responsive.isDesktop(context)
+          ? 600.0
+          : MediaQuery.of(context).size.width;
+      Flushbar(
+        margin: EdgeInsets.all(8),
+        boxShadows: [
+          BoxShadow(
+            color: Colors.black,
+            offset: Offset(0.0, 2.0),
+            blurRadius: 3.0,
+          )
+        ],
+        flushbarPosition: FlushbarPosition.TOP,
+        flushbarStyle: FlushbarStyle.FLOATING,
+        titleText: Text(
+          widget.user.name!,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: width > 800 ? 22 : 14,
+          ),
+        ),
+        messageText: Text(
+          "Your profile was deactivated successfully!!!",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: width > 800 ? 20 : 12,
+          ),
+        ),
+        icon: Icon(
+          MdiIcons.checkCircleOutline,
+          size: 30.0,
+          color: Colors.blue,
+        ),
+        duration: Duration(seconds: 3),
+        leftBarIndicatorColor: Colors.blue,
+      )..show(context);
+    } catch (e) {
+      final double width = Responsive.isDesktop(context)
+          ? 600.0
+          : MediaQuery.of(context).size.width;
+      String error = e.toString();
+      String result = error.contains(']')
+          ? error.substring(error.lastIndexOf(']') + 1)
+          : error;
+      Flushbar(
+        margin: EdgeInsets.all(8),
+        boxShadows: [
+          BoxShadow(
+            color: Colors.black,
+            offset: Offset(0.0, 2.0),
+            blurRadius: 3.0,
+          )
+        ],
+        flushbarPosition: FlushbarPosition.TOP,
+        flushbarStyle: FlushbarStyle.FLOATING,
+        titleText: Text(
+          'Error',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: width > 800 ? 22 : 14,
+          ),
+        ),
+        messageText: Text(
+          result.toString(),
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: width > 800 ? 20 : 12,
+          ),
+        ),
+        icon: Icon(
+          Icons.error_outline,
+          size: 28.0,
+          color: Colors.blue,
+        ),
+        duration: Duration(seconds: 3),
+        leftBarIndicatorColor: Colors.blue,
+      )..show(context);
+    }
+  }
+
   void _reauthenticate() async {
     FocusScope.of(context).unfocus();
-
-    setState(() {
-      _isLoading = true;
-    });
     try {
       Flushbar(
         maxWidth: MediaQuery.of(context).size.width,
@@ -140,8 +256,13 @@ class _DeleteAccountState extends State<DeleteAccount> {
         email: widget.user.email!,
         password: Provider.of<UserData>(context, listen: false).post2,
       );
-
-      _delelteAccount();
+      deletedDeactivatedAccountRef.add({
+        'author': widget.user.userName,
+        'reason': Provider.of<UserData>(context, listen: false).post3,
+        'timestamp': Timestamp.fromDate(DateTime.now()),
+      });
+      animateForward();
+      _deleteAccount();
     } catch (e) {
       final double width = MediaQuery.of(context).size.width;
       String error = e.toString();
@@ -198,18 +319,15 @@ class _DeleteAccountState extends State<DeleteAccount> {
         leftBarIndicatorColor: Colors.blue,
       )..show(context);
       print(e.toString());
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 
-  void _delelteAccount() async {
+  void _deleteAccount() async {
     final String currentUserId =
         Provider.of<UserData>(context, listen: false).currentUserId!;
 
     try {
-      await forumsRef
+      forumsRef
           .doc(currentUserId)
           .collection('userForums')
           .snapshots()
@@ -219,7 +337,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
         }
       });
 
-      await postsRef
+      postsRef
           .doc(currentUserId)
           .collection('userPosts')
           .snapshots()
@@ -229,7 +347,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
         }
       });
 
-      await FirebaseStorage.instance
+      FirebaseStorage.instance
           .ref('images/posts/$currentUserId')
           .listAll()
           .then((value) {
@@ -238,7 +356,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
         });
       });
 
-      await eventsRef
+      eventsRef
           .doc(currentUserId)
           .collection('userEvents')
           .snapshots()
@@ -247,7 +365,137 @@ class _DeleteAccountState extends State<DeleteAccount> {
           docSnapshot.reference.delete();
         }
       });
-      await FirebaseStorage.instance
+
+      eventsRef
+          .doc(currentUserId)
+          .collection('userEvents')
+          .snapshots()
+          .forEach((querySnapshot) {
+        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
+          docSnapshot.reference.delete();
+        }
+      });
+
+      possitiveRatingRef
+          .doc(currentUserId)
+          .collection('userPossitiveRating')
+          .snapshots()
+          .forEach((querySnapshot) {
+        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
+          docSnapshot.reference.delete();
+        }
+      });
+      possitveRatedRef
+          .doc(currentUserId)
+          .collection('userPossitiveRated')
+          .snapshots()
+          .forEach((querySnapshot) {
+        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
+          docSnapshot.reference.delete();
+        }
+      });
+
+      negativeRatingRef
+          .doc(currentUserId)
+          .collection('userNegativeRating')
+          .snapshots()
+          .forEach((querySnapshot) {
+        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
+          docSnapshot.reference.delete();
+        }
+      });
+
+      negativeRatingRef
+          .doc(currentUserId)
+          .collection('userNegativeRating')
+          .snapshots()
+          .forEach((querySnapshot) {
+        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
+          docSnapshot.reference.delete();
+        }
+      });
+      followingRef
+          .doc(currentUserId)
+          .collection('userFollowing')
+          .snapshots()
+          .forEach((querySnapshot) {
+        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
+          docSnapshot.reference.delete();
+        }
+      });
+
+      followingRef
+          .doc(currentUserId)
+          .collection('userFollowing')
+          .snapshots()
+          .forEach((querySnapshot) {
+        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
+          docSnapshot.reference.delete();
+        }
+      });
+
+      followersRef
+          .doc(currentUserId)
+          .collection('userFollowers')
+          .snapshots()
+          .forEach((querySnapshot) {
+        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
+          docSnapshot.reference.delete();
+        }
+      });
+
+      activitiesFollowerRef
+          .doc(currentUserId)
+          .collection('activitiesFollower')
+          .where('fromUserId', isEqualTo: currentUserId)
+          .snapshots()
+          .forEach((querySnapshot) {
+        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
+          docSnapshot.reference.delete();
+        }
+      });
+
+      activitiesForumRef
+          .doc(currentUserId)
+          .collection('userActivitiesForum')
+          .snapshots()
+          .forEach((querySnapshot) {
+        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
+          docSnapshot.reference.delete();
+        }
+      });
+
+      activitiesEventRef
+          .doc(currentUserId)
+          .collection('userActivitiesEvent')
+          .snapshots()
+          .forEach((querySnapshot) {
+        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
+          docSnapshot.reference.delete();
+        }
+      });
+
+      activitiesRef
+          .doc(currentUserId)
+          .collection('userActivities')
+          .snapshots()
+          .forEach((querySnapshot) {
+        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
+          docSnapshot.reference.delete();
+        }
+      });
+
+      activitiesAdviceRef
+          .doc(currentUserId)
+          .collection('userActivitiesAdvice')
+          .snapshots()
+          .forEach((querySnapshot) {
+        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
+          docSnapshot.reference.delete();
+        }
+      });
+
+      FirebaseStorage.instance
           .ref('images/events/$currentUserId')
           .listAll()
           .then((value) {
@@ -256,7 +504,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
         });
       });
 
-      await usersRef
+      usersRef
           .doc(currentUserId)
           .collection('chats')
           .snapshots()
@@ -266,7 +514,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
         }
       });
 
-      await FirebaseStorage.instance
+      FirebaseStorage.instance
           .ref('images/messageImage/$currentUserId')
           .listAll()
           .then((value) {
@@ -275,7 +523,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
         });
       });
 
-      await FirebaseStorage.instance
+      FirebaseStorage.instance
           .ref('images/users/$currentUserId')
           .listAll()
           .then((value) {
@@ -285,7 +533,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
       });
 
       usersRef.doc(currentUserId).delete();
-      await FirebaseStorage.instance
+      FirebaseStorage.instance
           .ref('images/professionalPicture1/$currentUserId')
           .listAll()
           .then((value) {
@@ -293,7 +541,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
           FirebaseStorage.instance.ref(element.fullPath).delete();
         });
       });
-      await FirebaseStorage.instance
+      FirebaseStorage.instance
           .ref('images/professionalPicture2/$currentUserId')
           .listAll()
           .then((value) {
@@ -301,7 +549,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
           FirebaseStorage.instance.ref(element.fullPath).delete();
         });
       });
-      await FirebaseStorage.instance
+      FirebaseStorage.instance
           .ref('images/professionalPicture3/$currentUserId')
           .listAll()
           .then((value) {
@@ -309,7 +557,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
           FirebaseStorage.instance.ref(element.fullPath).delete();
         });
       });
-      await FirebaseStorage.instance
+      FirebaseStorage.instance
           .ref('images/validate/$currentUserId')
           .listAll()
           .then((value) {
@@ -327,6 +575,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
             ),
             (Route<dynamic> route) => false);
       });
+      setNull();
     } catch (e) {
       String error = e.toString();
       String result = error.contains(']')
@@ -364,9 +613,27 @@ class _DeleteAccountState extends State<DeleteAccount> {
       )..show(context);
       print(e.toString());
     }
-    setState(() {
-      _isLoading = false;
-    });
+  }
+
+  animateBack() {
+    _pageController.animateToPage(
+      _index - 1,
+      duration: Duration(milliseconds: 800),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  animateForward() {
+    _pageController.animateToPage(
+      _index + 1,
+      duration: Duration(milliseconds: 800),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  setNull() {
+    Provider.of<UserData>(context, listen: false).setPost2('');
+    Provider.of<UserData>(context, listen: false).setPost3('');
   }
 
   @override
@@ -389,14 +656,319 @@ class _DeleteAccountState extends State<DeleteAccount> {
               icon: Icon(
                   Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
               onPressed: () {
-                Navigator.pop(context);
+                _index != 0 ? animateBack() : Navigator.pop(context);
               }),
           automaticallyImplyLeading: true,
           elevation: 0,
         ),
-        body: SingleChildScrollView(
-          child: _isLoading
-              ? Container(
+        body: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Form(
+            key: formKey,
+            child: PageView(
+              controller: _pageController,
+              physics: NeverScrollableScrollPhysics(),
+              onPageChanged: (int index) {
+                setState(() {
+                  _index = index;
+                });
+              },
+              children: [
+                SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Center(
+                        child: Material(
+                          color: Colors.transparent,
+                          child: Text(
+                            'Why?',
+                            style: TextStyle(
+                                color: ConfigBloc().darkModeOn
+                                    ? Color(0xFFf2f2f2)
+                                    : Color(0xFF1a1a1a),
+                                fontSize: 40),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Text(
+                          'We would like to know why you want to delete your account. This information helps improve our platform.',
+                          style: TextStyle(
+                              color: ConfigBloc().darkModeOn
+                                  ? Color(0xFFf2f2f2)
+                                  : Color(0xFF1a1a1a),
+                              fontSize: 14),
+                        ),
+                      ),
+                      Divider(color: Colors.grey),
+                      GestureDetector(
+                        onTap: () {
+                          Provider.of<UserData>(context, listen: false)
+                              .setPost3('Non-beneficial');
+                          animateForward();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 20),
+                          child: IntroInfo(
+                            title: 'Non-beneficial',
+                            subTitle:
+                                "Bars Impression platform is not helpful to you in any way.",
+                            icon: Icon(
+                              Icons.arrow_forward_ios_outlined,
+                              color: ConfigBloc().darkModeOn
+                                  ? Color(0xFFf2f2f2)
+                                  : Color(0xFF1a1a1a),
+                              size: 20,
+                            ),
+                            onPressed: () {
+                              Provider.of<UserData>(context, listen: false)
+                                  .setPost3('Non-beneficial');
+                              animateForward();
+                            },
+                          ),
+                        ),
+                      ),
+                      Divider(color: Colors.grey),
+                      GestureDetector(
+                        onTap: () {
+                          Provider.of<UserData>(context, listen: false)
+                              .setPost3('Issues with content');
+                          animateForward();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 20),
+                          child: IntroInfo(
+                            onPressed: () {
+                              Provider.of<UserData>(context, listen: false)
+                                  .setPost3('Issues with content');
+                              animateForward();
+                            },
+                            title: 'Issues with content',
+                            subTitle:
+                                'You don\'t like the type of content shared on Bars Impression.',
+                            icon: Icon(
+                              Icons.arrow_forward_ios_outlined,
+                              color: ConfigBloc().darkModeOn
+                                  ? Color(0xFFf2f2f2)
+                                  : Color(0xFF1a1a1a),
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Divider(color: Colors.grey),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: ContentField(
+                          labelText: 'Other reasons',
+                          hintText: "Specify any other reasons",
+                          initialValue: '',
+                          onSavedText: (input) =>
+                              Provider.of<UserData>(context, listen: false)
+                                  .setPost3(input),
+                          onValidateText: () {},
+                        ),
+                      ),
+                      SizedBox(
+                        height: 50.0,
+                      ),
+                      AvatarCircularButton(
+                        onPressed: () {
+                          animateForward();
+                        },
+                        buttonText: "Next",
+                      ),
+                    ],
+                  ),
+                ),
+                SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Center(
+                        child: Material(
+                          color: Colors.transparent,
+                          child: Text(
+                            'Deactivate your account instead?',
+                            style: TextStyle(
+                                color: ConfigBloc().darkModeOn
+                                    ? Color(0xFFf2f2f2)
+                                    : Color(0xFF1a1a1a),
+                                fontSize: 24),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      Divider(color: Colors.grey),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20),
+                        child: GestureDetector(
+                          onTap: () {
+                            _deactivateAccount();
+                          },
+                          child: IntroInfo(
+                            title: 'Deactivating your accunt is temporary',
+                            subTitle:
+                                "Your information and contents would be hidden until you reactivate your account again",
+                            icon: Icon(
+                              Icons.arrow_forward_ios_outlined,
+                              color: Colors.transparent,
+                              size: 20,
+                            ),
+                            onPressed: () {
+                              _deactivateAccount();
+                            },
+                          ),
+                        ),
+                      ),
+                      Divider(color: Colors.grey),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20),
+                        child: GestureDetector(
+                          onTap: () {
+                            animateForward();
+                          },
+                          child: IntroInfo(
+                            onPressed: () {
+                              animateForward();
+                            },
+                            title: 'Deleting your account is permanent.',
+                            subTitle:
+                                'Deleting your account would erase all your user data and every content you have created. Your account cannot be recovered after you have deleted it.',
+                            icon: Icon(
+                              Icons.arrow_forward_ios_outlined,
+                              color: ConfigBloc().darkModeOn
+                                  ? Color(0xFFf2f2f2)
+                                  : Color(0xFF1a1a1a),
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Divider(color: Colors.grey),
+                    ],
+                  ),
+                ),
+                SingleChildScrollView(
+                  child: Container(
+                    height: width * 2,
+                    width: double.infinity,
+                    child: Column(
+                      children: [
+                        Container(
+                          height: 2,
+                          color: Colors.blue,
+                          width: 10,
+                        ),
+                        ShakeTransition(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 30.0, vertical: 10),
+                            child: Text(
+                              'Enter your password to delete your account.',
+                              style: TextStyle(
+                                  color: ConfigBloc().darkModeOn
+                                      ? Color(0xFFf2f2f2)
+                                      : Color(0xFF1a1a1a),
+                                  fontSize: 14),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 30.0, vertical: 10.0),
+                          child: TextFormField(
+                            style: TextStyle(
+                              fontSize: 12.0,
+                              color: ConfigBloc().darkModeOn
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
+                            decoration: InputDecoration(
+                                labelText: 'Password',
+                                labelStyle: TextStyle(
+                                  fontSize: width > 800 ? 22 : 14,
+                                  color: Colors.grey,
+                                ),
+                                hintText: 'Your Bars Impression password',
+                                hintStyle: TextStyle(
+                                  fontSize: width > 800 ? 20 : 14,
+                                  color: Colors.blueGrey,
+                                ),
+                                suffixIcon: IconButton(
+                                    icon: _isHidden
+                                        ? Icon(
+                                            Icons.visibility_off,
+                                            size: width > 800 ? 35 : 20.0,
+                                            color: Colors.grey,
+                                          )
+                                        : Icon(
+                                            Icons.visibility,
+                                            size: width > 800 ? 35 : 20.0,
+                                            color: Colors.white,
+                                          ),
+                                    onPressed: _toggleVisibility),
+                                icon: Icon(
+                                  Icons.lock,
+                                  size: width > 800 ? 35 : 20.0,
+                                  color: Colors.grey,
+                                ),
+                                enabledBorder: new UnderlineInputBorder(
+                                    borderSide:
+                                        new BorderSide(color: Colors.grey))),
+                            autofillHints: [AutofillHints.password],
+                            onChanged: (input) =>
+                                Provider.of<UserData>(context, listen: false)
+                                    .setPost2(input),
+                            onSaved: (input) =>
+                                Provider.of<UserData>(context, listen: false)
+                                    .setPost2(input!),
+                            validator: (input) => input!.length < 8
+                                ? 'Password must be at least 8 characters'
+                                : null,
+                            obscureText: _isHidden,
+                          ),
+                        ),
+                        SizedBox(height: 60),
+                        InkWell(
+                          borderRadius: BorderRadius.circular(10),
+                          onTap: () => _submit(),
+                          child: Ink(
+                            decoration: BoxDecoration(
+                              color: ConfigBloc().darkModeOn
+                                  ? Colors.white
+                                  : Colors.black,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Container(
+                              height: 40,
+                              width: 40,
+                              child: IconButton(
+                                icon: Icon(Icons.delete_forever),
+                                iconSize: 25,
+                                color: ConfigBloc().darkModeOn
+                                    ? Colors.black
+                                    : Colors.white,
+                                onPressed: () => _submit(),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
                   height: width * 2,
                   width: width,
                   child: Column(
@@ -426,135 +998,9 @@ class _DeleteAccountState extends State<DeleteAccount> {
                     ],
                   ),
                 )
-              : GestureDetector(
-                  onTap: () => FocusScope.of(context).unfocus(),
-                  child: Form(
-                    key: formKey,
-                    child: Container(
-                      height: width * 2,
-                      width: double.infinity,
-                      child: Column(
-                        children: [
-                          Center(
-                            child: Material(
-                              color: Colors.transparent,
-                              child: Text(
-                                'Delete \nAccount',
-                                style: TextStyle(
-                                    color: ConfigBloc().darkModeOn
-                                        ? Color(0xFFf2f2f2)
-                                        : Color(0xFF1a1a1a),
-                                    fontSize: 40),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Container(
-                            height: 2,
-                            color: Colors.blue,
-                            width: 10,
-                          ),
-                          ShakeTransition(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 30.0, vertical: 10),
-                              child: Text(
-                                _isLoading
-                                    ? ''
-                                    : 'Deleting your account would erase all your user data and every content you have created. Your account cannot be recovered after you have deleted it.',
-                                style: TextStyle(
-                                    color: ConfigBloc().darkModeOn
-                                        ? Color(0xFFf2f2f2)
-                                        : Color(0xFF1a1a1a),
-                                    fontSize: 14),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 30.0, vertical: 10.0),
-                            child: TextFormField(
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: width > 800 ? 20 : 14,
-                              ),
-                              decoration: InputDecoration(
-                                  labelText: 'Password',
-                                  labelStyle: TextStyle(
-                                    fontSize: width > 800 ? 22 : 14,
-                                    color: Colors.grey,
-                                  ),
-                                  hintText: 'Your Bars Impression password',
-                                  hintStyle: TextStyle(
-                                    fontSize: width > 800 ? 20 : 14,
-                                    color: Colors.blueGrey,
-                                  ),
-                                  suffixIcon: IconButton(
-                                      icon: _isHidden
-                                          ? Icon(
-                                              Icons.visibility_off,
-                                              size: width > 800 ? 35 : 20.0,
-                                              color: Colors.grey,
-                                            )
-                                          : Icon(
-                                              Icons.visibility,
-                                              size: width > 800 ? 35 : 20.0,
-                                              color: Colors.white,
-                                            ),
-                                      onPressed: _toggleVisibility),
-                                  icon: Icon(
-                                    Icons.lock,
-                                    size: width > 800 ? 35 : 20.0,
-                                    color: Colors.grey,
-                                  ),
-                                  enabledBorder: new UnderlineInputBorder(
-                                      borderSide:
-                                          new BorderSide(color: Colors.grey))),
-                              autofillHints: [AutofillHints.password],
-                              onChanged: (input) =>
-                                  Provider.of<UserData>(context, listen: false)
-                                      .setPost2(input),
-                              onSaved: (input) =>
-                                  Provider.of<UserData>(context, listen: false)
-                                      .setPost2(input!),
-                              validator: (input) => input!.length < 8
-                                  ? 'Password must be at least 8 characters'
-                                  : null,
-                              obscureText: _isHidden,
-                            ),
-                          ),
-                          SizedBox(height: 60),
-                          InkWell(
-                            borderRadius: BorderRadius.circular(10),
-                            onTap: () => _submit(),
-                            child: Ink(
-                              decoration: BoxDecoration(
-                                color: ConfigBloc().darkModeOn
-                                    ? Colors.white
-                                    : Colors.black,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Container(
-                                height: 40,
-                                width: 40,
-                                child: IconButton(
-                                  icon: Icon(Icons.delete_forever),
-                                  iconSize: 25,
-                                  color: ConfigBloc().darkModeOn
-                                      ? Colors.black
-                                      : Colors.white,
-                                  onPressed: () => _submit(),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

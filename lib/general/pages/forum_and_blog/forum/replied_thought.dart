@@ -201,7 +201,6 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
                           currentUserId:
                               Provider.of<UserData>(context).currentUserId!,
                           userId: author.id!,
-                          user: widget.author,
                         ))),
           );
         },
@@ -421,7 +420,6 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
                                                             .currentUserId!,
                                                         userId:
                                                             widget.author.id!,
-                                                        user: widget.author,
                                                       ))),
                                           child: CircleAvatar(
                                             radius: 30.0,

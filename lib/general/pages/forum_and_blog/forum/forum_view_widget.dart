@@ -43,7 +43,6 @@ class ForumViewWidget extends StatelessWidget {
                           builder: (_) => ProfileScreen(
                                 currentUserId: currentUserId,
                                 userId: forum.authorId,
-                                user: author,
                               )));
             },
             backgroundColor:

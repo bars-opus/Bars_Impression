@@ -412,7 +412,6 @@ class _PunchWidgetState extends State<PunchWidget> {
                                                   Provider.of<UserData>(context)
                                                       .currentUserId!,
                                               userId: widget.author.id!,
-                                              user: widget.author,
                                             )))),
                     FocusedMenuItem(
                         title: Container(

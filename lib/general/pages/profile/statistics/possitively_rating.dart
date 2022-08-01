@@ -88,7 +88,6 @@ class _PossitiveRatingState extends State<PossitiveRating> {
                         currentUserId:
                             Provider.of<UserData>(context).currentUserId!,
                         userId: user.id!,
-                        user: user,
                       )));
         });
   }

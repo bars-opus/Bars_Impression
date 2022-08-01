@@ -122,7 +122,6 @@ class _EventProfileViewState extends State<EventProfileView> {
                       context,
                       MaterialPageRoute(
                           builder: (_) => ProfileScreen(
-                                user: widget.user,
                                 currentUserId: widget.currentUserId,
                                 userId: widget.event.authorId,
                               ))),
@@ -157,7 +156,6 @@ class _EventProfileViewState extends State<EventProfileView> {
                           context,
                           MaterialPageRoute(
                               builder: (_) => ProfileScreen(
-                                    user: widget.user,
                                     currentUserId: widget.currentUserId,
                                     userId: widget.event.authorId,
                                   )));
@@ -273,7 +271,7 @@ class _EventProfileViewState extends State<EventProfileView> {
                                 ),
                                 onPressed: () => Navigator.push(
                                     context,
-                                    MaterialPageRoute( 
+                                    MaterialPageRoute(
                                         builder: (_) => AllEvenEnlargedProfile(
                                               askCount: _askCount,
                                               currentUserId:

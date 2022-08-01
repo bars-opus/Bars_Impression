@@ -183,7 +183,6 @@ class _ActivityFollowerScreenState extends State<ActivityFollowerScreen>
                                   currentUserId: Provider.of<UserData>(context)
                                       .currentUserId!,
                                   userId: activity.fromUserId,
-                                  user: null,
                                 )));
                   },
                   leading: CircleAvatar(
@@ -224,18 +223,17 @@ class _ActivityFollowerScreenState extends State<ActivityFollowerScreen>
                                   ),
                                 ),
                               ),
-                              // !author.verified
-                              //     ? SizedBox.shrink()
-                              //     :
-                              Positioned(
-                                top: 0,
-                                right: 0,
-                                child: Icon(
-                                  MdiIcons.checkboxMarkedCircle,
-                                  size: 11,
-                                  color: Colors.blue,
-                                ),
-                              ),
+                              author.verified!.isEmpty
+                                  ? SizedBox.shrink()
+                                  : Positioned(
+                                      top: 0,
+                                      right: 0,
+                                      child: Icon(
+                                        MdiIcons.checkboxMarkedCircle,
+                                        size: 11,
+                                        color: Colors.blue,
+                                      ),
+                                    ),
                             ],
                           ),
                           RichText(

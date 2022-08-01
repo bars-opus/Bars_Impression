@@ -166,7 +166,6 @@ class _ProfessionalProfileState extends State<ProfessionalProfile> {
                 context,
                 MaterialPageRoute(
                     builder: (_) => ProfileScreen(
-                          user: null,
                           currentUserId:
                               Provider.of<UserData>(context).currentUserId!,
                           userId: widget.userId,

@@ -107,8 +107,20 @@ class _ChatsState extends State<Chats> {
                       )
                     ])));
                   }
-                  return const Center(
-                    child: CircularProgressIndicator(),
+                  return Expanded(
+                    child: Center(
+                      child: SizedBox(
+                        height: 250,
+                        width: 250,
+                        child: CircularProgressIndicator(
+                          backgroundColor: Colors.transparent,
+                          valueColor: new AlwaysStoppedAnimation<Color>(
+                            Colors.teal,
+                          ),
+                          strokeWidth: 1,
+                        ),
+                      ),
+                    ),
                   );
                 },
               ),

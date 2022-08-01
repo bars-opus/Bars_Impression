@@ -92,7 +92,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         )
             .update({
           'name': _name,
-          'profileImageUrl!': _profileImageUrl,
+          'profileImageUrl': _profileImageUrl,
           'bio': _bio,
         });
         Navigator.pop(context);
@@ -315,7 +315,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                           ),
                                         ),
                                         Hero(
-                                          tag: 'profileHandle!',
+                                          tag: 'profileHandle',
                                           child: new Material(
                                             color: Colors.transparent,
                                             child: Text(

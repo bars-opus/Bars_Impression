@@ -248,37 +248,37 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                                                       children: [
                                                         SlidableAction(
                                                           onPressed: (_) {
-                                                            widget.currentUserId ==
-                                                                    widget
-                                                                        .author
-                                                                        .id
-                                                                ? Navigator
-                                                                    .push(
-                                                                    context,
-                                                                    MaterialPageRoute(
-                                                                      builder:
-                                                                          (_) =>
-                                                                              EditPost(
-                                                                        post: widget
-                                                                            .post,
-                                                                        currentUserId:
-                                                                            widget.currentUserId,
-                                                                      ),
-                                                                    ),
-                                                                  )
-                                                                : widget.author
-                                                                        .profileHandle!
-                                                                        .startsWith(
-                                                                            'Fan')
-                                                                    ? () {}
-                                                                    : Navigator.push(
-                                                                        context,
-                                                                        MaterialPageRoute(
-                                                                            builder: (_) => ProfileProfessionalProfile(
-                                                                                  currentUserId: Provider.of<UserData>(context).currentUserId!,
-                                                                                  user: widget.author,
-                                                                                  userId: widget.author.id!,
-                                                                                )));
+                                                            // widget.currentUserId ==
+                                                            //         widget
+                                                            //             .author
+                                                            //             .id
+                                                            //     ?
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder: (_) =>
+                                                                    EditPost(
+                                                                  post: widget
+                                                                      .post,
+                                                                  currentUserId:
+                                                                      widget
+                                                                          .currentUserId,
+                                                                ),
+                                                              ),
+                                                            );
+                                                            // : widget.author
+                                                            //         .profileHandle!
+                                                            //         .startsWith(
+                                                            //             'Fan')
+                                                            //     ? () {}
+                                                            //     : Navigator.push(
+                                                            //         context,
+                                                            //         MaterialPageRoute(
+                                                            //             builder: (_) => ProfileProfessionalProfile(
+                                                            //                   currentUserId: Provider.of<UserData>(context).currentUserId!,
+                                                            //                   user: widget.author,
+                                                            //                   userId: widget.author.id!,
+                                                            //                 )));
                                                           },
                                                           backgroundColor:
                                                               Colors
@@ -363,7 +363,6 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                                                                         builder: (_) => ProfileScreen(
                                                                               currentUserId: Provider.of<UserData>(context).currentUserId!,
                                                                               userId: widget.author.id!,
-                                                                              user: widget.author,
                                                                             )))),
                                                         FocusedMenuItem(
                                                             title: Container(
@@ -542,7 +541,6 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                                                                                         builder: (_) => ProfileScreen(
                                                                                               currentUserId: widget.currentUserId,
                                                                                               userId: widget.post.authorId,
-                                                                                              user: widget.author,
                                                                                             ))),
                                                                                 child: Container(
                                                                                   width: width,

@@ -305,8 +305,7 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                                   userId: widget
                                                                       .author
                                                                       .id!,
-                                                                  user: widget
-                                                                      .author,
+                                                                
                                                                 )))),
                                         FocusedMenuItem(
                                             title: Container(
@@ -437,7 +436,6 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                                     context,
                                                                     MaterialPageRoute(
                                                                         builder: (_) => ProfileScreen(
-                                                                              user: widget.author,
                                                                               currentUserId: widget.currentUserId,
                                                                               userId: widget.post.authorId,
                                                                             ))),

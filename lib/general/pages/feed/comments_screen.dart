@@ -124,7 +124,6 @@ class _CommentsScreenState extends State<CommentsScreen>
                                         Provider.of<UserData>(context)
                                             .currentUserId!,
                                     userId: author.id!,
-                                    user: null,
                                   )))
                       : Navigator.push(
                           context,

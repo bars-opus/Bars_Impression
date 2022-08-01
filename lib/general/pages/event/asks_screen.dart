@@ -127,7 +127,6 @@ class _AsksScreenState extends State<AsksScreen> {
                                         Provider.of<UserData>(context)
                                             .currentUserId!,
                                     userId: author.id!,
-                                    user: widget.author,
                                   )))
                       : Navigator.push(
                           context,

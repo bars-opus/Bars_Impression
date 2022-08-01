@@ -165,7 +165,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
     showAboutDialog(
         context: context,
         applicationName: 'Bars Impression',
-        applicationVersion: 'Version 1.1.5',
+        applicationVersion: 'Version 1.1.6',
         applicationIcon: Container(
           width: 40,
           height: 40,
@@ -180,7 +180,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                 text: TextSpan(
               children: [
                 TextSpan(
-                    text: "Version Release Date: July 2022\n",
+                    text: "Version Release Date: August 2022\n",
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.black,
@@ -430,22 +430,20 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                   onTap: () => Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (_) => DeleteAccountReason(
-                                          user: widget.user,
-                                        ),
-                                      )),
+                                          builder: (_) => DeleteAccount(
+                                                user: widget.user,
+                                              ))),
                                   child: IntroInfo(
                                     title: 'Delete Accounts',
                                     onPressed: () => Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (_) => DeleteAccountReason(
-                                            user: widget.user
-                                          ),
-                                        )),
+                                            builder: (_) => DeleteAccount(
+                                                  user: widget.user,
+                                                ))),
                                     subTitle: "Delete you user account",
                                     icon: Icon(
-                                      Icons.person_remove_outlined,
+                                      Icons.delete_outline_outlined,
                                       size: 20,
                                       color: ConfigBloc().darkModeOn
                                           ? Color(0xFFf2f2f2)

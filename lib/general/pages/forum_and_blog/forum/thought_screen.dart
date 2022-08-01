@@ -183,7 +183,6 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                                         Provider.of<UserData>(context)
                                             .currentUserId!,
                                     userId: author.id!,
-                                    user: widget.author,
                                   )))
                       : Navigator.push(
                           context,
@@ -407,7 +406,6 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                                               Provider.of<UserData>(context)
                                                   .currentUserId!,
                                           userId: author.id!,
-                                          user: widget.author,
                                         ))),
                           ),
                         ),

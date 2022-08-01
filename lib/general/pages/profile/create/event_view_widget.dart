@@ -113,588 +113,802 @@ class EventViewWidget extends StatelessWidget {
                                                 width: width / 2 * 1.2,
                                                 height: width / 2,
                                                 child: GestureDetector(
-                                                  onTap:
-                                                      onPressedEventEnlarged,
-                                                  child:
-                                                      event.report.isNotEmpty
-                                                          ? RichText(
-                                                              textScaleFactor:
-                                                                  MediaQuery.of(
-                                                                          context)
-                                                                      .textScaleFactor,
-                                                              text: TextSpan(
-                                                                  children: [
-                                                                    TextSpan(
-                                                                      text: namePartition[0]
-                                                                          .toUpperCase(),
-                                                                      style:
-                                                                          TextStyle(
-                                                                        decorationColor:
-                                                                            Colors.grey,
-                                                                        decorationStyle:
-                                                                            TextDecorationStyle.solid,
-                                                                        decoration:
-                                                                            TextDecoration.lineThrough,
-                                                                        fontSize:
-                                                                            25,
-                                                                        color:
-                                                                            Colors.grey,
-                                                                        fontWeight:
-                                                                            FontWeight.bold,
-                                                                      ),
+                                                  onTap: onPressedEventEnlarged,
+                                                  child: event.report.isNotEmpty
+                                                      ? RichText(
+                                                          textScaleFactor:
+                                                              MediaQuery.of(
+                                                                      context)
+                                                                  .textScaleFactor,
+                                                          text: TextSpan(
+                                                              children: [
+                                                                TextSpan(
+                                                                  text: namePartition[
+                                                                          0]
+                                                                      .toUpperCase(),
+                                                                  style:
+                                                                      TextStyle(
+                                                                    decorationColor:
+                                                                        Colors
+                                                                            .grey,
+                                                                    decorationStyle:
+                                                                        TextDecorationStyle
+                                                                            .solid,
+                                                                    decoration:
+                                                                        TextDecoration
+                                                                            .lineThrough,
+                                                                    fontSize:
+                                                                        25,
+                                                                    color: Colors
+                                                                        .grey,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                  ),
+                                                                ),
+                                                                if (namePartition
+                                                                        .length >
+                                                                    1)
+                                                                  TextSpan(
+                                                                    text:
+                                                                        "\n${namePartition[1].toUpperCase()} ",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      decorationColor:
+                                                                          Colors
+                                                                              .grey,
+                                                                      decorationStyle:
+                                                                          TextDecorationStyle
+                                                                              .solid,
+                                                                      decoration:
+                                                                          TextDecoration
+                                                                              .lineThrough,
+                                                                      fontSize:
+                                                                          25,
+                                                                      color: Colors
+                                                                          .grey,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
                                                                     ),
-                                                                    if (namePartition
-                                                                            .length >
-                                                                        1)
-                                                                      TextSpan(
-                                                                        text:
-                                                                            "\n${namePartition[1].toUpperCase()} ",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          decorationColor:
-                                                                              Colors.grey,
-                                                                          decorationStyle:
-                                                                              TextDecorationStyle.solid,
-                                                                          decoration:
-                                                                              TextDecoration.lineThrough,
-                                                                          fontSize:
-                                                                              25,
-                                                                          color:
-                                                                              Colors.grey,
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                        ),
-                                                                      ),
-                                                                    if (namePartition
-                                                                            .length >
-                                                                        2)
-                                                                      TextSpan(
-                                                                        text:
-                                                                            "\n${namePartition[2].toUpperCase()} ",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          decorationColor:
-                                                                              Colors.grey,
-                                                                          decorationStyle:
-                                                                              TextDecorationStyle.solid,
-                                                                          decoration:
-                                                                              TextDecoration.lineThrough,
-                                                                          fontSize:
-                                                                              25,
-                                                                          color:
-                                                                              Colors.grey,
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                        ),
-                                                                      ),
-                                                                    if (namePartition
-                                                                            .length >
-                                                                        3)
-                                                                      TextSpan(
-                                                                        text:
-                                                                            "\n${namePartition[3].toUpperCase()} ",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          decorationColor:
-                                                                              Colors.grey,
-                                                                          decorationStyle:
-                                                                              TextDecorationStyle.solid,
-                                                                          decoration:
-                                                                              TextDecoration.lineThrough,
-                                                                          fontSize:
-                                                                              25,
-                                                                          color:
-                                                                              Colors.grey,
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                        ),
-                                                                      ),
-                                                                    if (namePartition
-                                                                            .length >
-                                                                        4)
-                                                                      TextSpan(
-                                                                        text:
-                                                                            "\n${namePartition[4].toUpperCase()} ",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          decorationColor:
-                                                                              Colors.grey,
-                                                                          decorationStyle:
-                                                                              TextDecorationStyle.solid,
-                                                                          decoration:
-                                                                              TextDecoration.lineThrough,
-                                                                          fontSize:
-                                                                              25,
-                                                                          color:
-                                                                              Colors.grey,
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                        ),
-                                                                      ),
-                                                                    if (namePartition
-                                                                            .length >
-                                                                        5)
-                                                                      TextSpan(
-                                                                        text:
-                                                                            "\n${namePartition[5].toUpperCase()}",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          decorationColor:
-                                                                              Colors.grey,
-                                                                          decorationStyle:
-                                                                              TextDecorationStyle.solid,
-                                                                          decoration:
-                                                                              TextDecoration.lineThrough,
-                                                                          fontSize:
-                                                                              25,
-                                                                          color:
-                                                                              Colors.grey,
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                        ),
-                                                                      ),
-                                                                    TextSpan(
-                                                                        children: [
-                                                                          TextSpan(
-                                                                              text: "\n${event.theme.toUpperCase()}",
-                                                                              style: TextStyle(
-                                                                                decorationColor: Colors.grey,
-                                                                                decorationStyle: TextDecorationStyle.solid,
-                                                                                decoration: TextDecoration.lineThrough,
-                                                                                fontSize: 14,
-                                                                                color: Colors.grey,
-                                                                              )),
-                                                                          TextSpan(
-                                                                              text: "\n${event.venue}",
-                                                                              style: TextStyle(
-                                                                                decorationColor: Colors.grey,
-                                                                                decorationStyle: TextDecorationStyle.solid,
-                                                                                decoration: TextDecoration.lineThrough,
-                                                                                fontSize: 14,
-                                                                                fontWeight: FontWeight.bold,
-                                                                                color: Colors.grey,
-                                                                              )),
-                                                                          TextSpan(
-                                                                              text: "\n${MyDateFormat.toDate(DateTime.parse(event.date))}\n",
-                                                                              style: TextStyle(
-                                                                                decorationColor: Colors.grey,
-                                                                                decorationStyle: TextDecorationStyle.solid,
-                                                                                decoration: TextDecoration.lineThrough,
-                                                                                fontSize: 12,
-                                                                                color: Colors.green,
-                                                                              )),
-                                                                          TextSpan(
-                                                                              text: "Special guess: ",
-                                                                              style: TextStyle(
-                                                                                decorationColor: Colors.grey,
-                                                                                decorationStyle: TextDecorationStyle.solid,
-                                                                                decoration: TextDecoration.lineThrough,
-                                                                                fontSize: 12,
-                                                                                color: Colors.grey,
-                                                                              )),
-                                                                          TextSpan(
-                                                                              text: " ${event.guess}\n",
-                                                                              style: TextStyle(
-                                                                                decorationColor: Colors.grey,
-                                                                                decorationStyle: TextDecorationStyle.solid,
-                                                                                decoration: TextDecoration.lineThrough,
-                                                                                fontSize: 12,
-                                                                                color: Colors.grey,
-                                                                              )),
-                                                                          TextSpan(
-                                                                              text: "Artist performing: ",
-                                                                              style: TextStyle(
-                                                                                decorationColor: Colors.grey,
-                                                                                decorationStyle: TextDecorationStyle.solid,
-                                                                                decoration: TextDecoration.lineThrough,
-                                                                                fontSize: 12,
-                                                                                color: Colors.grey,
-                                                                              )),
-                                                                          TextSpan(
-                                                                              text: " ${event.artist}\n",
-                                                                              style: TextStyle(
-                                                                                decorationColor: Colors.grey,
-                                                                                decorationStyle: TextDecorationStyle.solid,
-                                                                                decoration: TextDecoration.lineThrough,
-                                                                                fontSize: 12,
-                                                                                color: Colors.grey,
-                                                                              )),
-                                                                          TextSpan(
-                                                                              text: "Time: ",
-                                                                              style: TextStyle(
-                                                                                decorationColor: Colors.grey,
-                                                                                decorationStyle: TextDecorationStyle.solid,
-                                                                                decoration: TextDecoration.lineThrough,
-                                                                                fontSize: 12,
-                                                                                color: Colors.grey,
-                                                                              )),
-                                                                          TextSpan(
-                                                                              text: " ${MyDateFormat.toTime(DateTime.parse(event.time))}\n",
-                                                                              style: TextStyle(
-                                                                                decorationColor: Colors.grey,
-                                                                                decorationStyle: TextDecorationStyle.solid,
-                                                                                decoration: TextDecoration.lineThrough,
-                                                                                fontSize: 12,
-                                                                                color: Colors.grey,
-                                                                              )),
-                                                                          TextSpan(
-                                                                              text: "Host: ",
-                                                                              style: TextStyle(
-                                                                                decorationColor: Colors.grey,
-                                                                                decorationStyle: TextDecorationStyle.solid,
-                                                                                decoration: TextDecoration.lineThrough,
-                                                                                fontSize: 12,
-                                                                                color: Colors.grey,
-                                                                              )),
-                                                                          TextSpan(
-                                                                              text: " ${event.host}\n",
-                                                                              style: TextStyle(
-                                                                                decorationColor: Colors.grey,
-                                                                                decorationStyle: TextDecorationStyle.solid,
-                                                                                decoration: TextDecoration.lineThrough,
-                                                                                fontSize: 12,
-                                                                                color: Colors.grey,
-                                                                              )),
-                                                                          TextSpan(
-                                                                              text: "Rate: ",
-                                                                              style: TextStyle(
-                                                                                decorationColor: Colors.grey,
-                                                                                decorationStyle: TextDecorationStyle.solid,
-                                                                                decoration: TextDecoration.lineThrough,
-                                                                                fontSize: 12,
-                                                                                color: Colors.grey,
-                                                                              )),
-                                                                          TextSpan(
-                                                                              text: " ${event.rate}\n",
-                                                                              style: TextStyle(
-                                                                                decorationColor: Colors.grey,
-                                                                                decorationStyle: TextDecorationStyle.solid,
-                                                                                decoration: TextDecoration.lineThrough,
-                                                                                fontSize: 12,
-                                                                                color: Colors.grey,
-                                                                              )),
-                                                                        ],
-                                                                        style:
-                                                                            TextStyle(
-                                                                          decorationColor:
-                                                                              Colors.grey,
-                                                                          decorationStyle:
-                                                                              TextDecorationStyle.solid,
-                                                                          decoration:
-                                                                              TextDecoration.lineThrough,
-                                                                          color:
-                                                                              Colors.grey,
-                                                                        )),
-                                                                    TextSpan(
-                                                                        text:
-                                                                            "Dress code: ",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          decorationColor:
-                                                                              Colors.grey,
-                                                                          decorationStyle:
-                                                                              TextDecorationStyle.solid,
-                                                                          decoration:
-                                                                              TextDecoration.lineThrough,
-                                                                          fontSize:
-                                                                              12,
-                                                                          color:
-                                                                              Colors.grey,
-                                                                        )),
-                                                                    TextSpan(
-                                                                        text:
-                                                                            " ${event.dressCode}\n",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          decorationColor:
-                                                                              Colors.grey,
-                                                                          decorationStyle:
-                                                                              TextDecorationStyle.solid,
-                                                                          decoration:
-                                                                              TextDecoration.lineThrough,
-                                                                          fontSize:
-                                                                              12,
-                                                                          color:
-                                                                              Colors.grey,
-                                                                        )),
-                                                                    TextSpan(
-                                                                        text:
-                                                                            "DJ: ",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          decorationColor:
-                                                                              Colors.grey,
-                                                                          decorationStyle:
-                                                                              TextDecorationStyle.solid,
-                                                                          decoration:
-                                                                              TextDecoration.lineThrough,
-                                                                          fontSize:
-                                                                              12,
-                                                                          color:
-                                                                              Colors.grey,
-                                                                        )),
-                                                                    TextSpan(
-                                                                        text:
-                                                                            " ${event.dj}\n",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          decorationColor:
-                                                                              Colors.grey,
-                                                                          decorationStyle:
-                                                                              TextDecorationStyle.solid,
-                                                                          decoration:
-                                                                              TextDecoration.lineThrough,
-                                                                          fontSize:
-                                                                              12,
-                                                                          color:
-                                                                              Colors.grey,
-                                                                        )),
-                                                                  ]),
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .start,
-                                                            )
-                                                          : RichText(
-                                                              textScaleFactor:
-                                                                  MediaQuery.of(
-                                                                          context)
-                                                                      .textScaleFactor,
-                                                              text: TextSpan(
-                                                                  children: [
-                                                                    TextSpan(
-                                                                      text: namePartition[0]
-                                                                          .toUpperCase(),
-                                                                      style:
-                                                                          TextStyle(
-                                                                        fontSize:
-                                                                            25,
-                                                                        color: ConfigBloc().darkModeOn
-                                                                            ? Colors.white
-                                                                            : Colors.black,
-                                                                        fontWeight:
-                                                                            FontWeight.bold,
-                                                                      ),
+                                                                  ),
+                                                                if (namePartition
+                                                                        .length >
+                                                                    2)
+                                                                  TextSpan(
+                                                                    text:
+                                                                        "\n${namePartition[2].toUpperCase()} ",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      decorationColor:
+                                                                          Colors
+                                                                              .grey,
+                                                                      decorationStyle:
+                                                                          TextDecorationStyle
+                                                                              .solid,
+                                                                      decoration:
+                                                                          TextDecoration
+                                                                              .lineThrough,
+                                                                      fontSize:
+                                                                          25,
+                                                                      color: Colors
+                                                                          .grey,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
                                                                     ),
-                                                                    if (namePartition
-                                                                            .length >
-                                                                        1)
+                                                                  ),
+                                                                if (namePartition
+                                                                        .length >
+                                                                    3)
+                                                                  TextSpan(
+                                                                    text:
+                                                                        "\n${namePartition[3].toUpperCase()} ",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      decorationColor:
+                                                                          Colors
+                                                                              .grey,
+                                                                      decorationStyle:
+                                                                          TextDecorationStyle
+                                                                              .solid,
+                                                                      decoration:
+                                                                          TextDecoration
+                                                                              .lineThrough,
+                                                                      fontSize:
+                                                                          25,
+                                                                      color: Colors
+                                                                          .grey,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                    ),
+                                                                  ),
+                                                                if (namePartition
+                                                                        .length >
+                                                                    4)
+                                                                  TextSpan(
+                                                                    text:
+                                                                        "\n${namePartition[4].toUpperCase()} ",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      decorationColor:
+                                                                          Colors
+                                                                              .grey,
+                                                                      decorationStyle:
+                                                                          TextDecorationStyle
+                                                                              .solid,
+                                                                      decoration:
+                                                                          TextDecoration
+                                                                              .lineThrough,
+                                                                      fontSize:
+                                                                          25,
+                                                                      color: Colors
+                                                                          .grey,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                    ),
+                                                                  ),
+                                                                if (namePartition
+                                                                        .length >
+                                                                    5)
+                                                                  TextSpan(
+                                                                    text:
+                                                                        "\n${namePartition[5].toUpperCase()}",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      decorationColor:
+                                                                          Colors
+                                                                              .grey,
+                                                                      decorationStyle:
+                                                                          TextDecorationStyle
+                                                                              .solid,
+                                                                      decoration:
+                                                                          TextDecoration
+                                                                              .lineThrough,
+                                                                      fontSize:
+                                                                          25,
+                                                                      color: Colors
+                                                                          .grey,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                    ),
+                                                                  ),
+                                                                TextSpan(
+                                                                    children: [
                                                                       TextSpan(
-                                                                        text:
-                                                                            "\n${namePartition[1].toUpperCase()} ",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontSize:
-                                                                              25,
-                                                                          color: ConfigBloc().darkModeOn
-                                                                              ? Colors.white
-                                                                              : Colors.black,
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                        ),
-                                                                      ),
-                                                                    if (namePartition
-                                                                            .length >
-                                                                        2)
+                                                                          text:
+                                                                              "\n${event.theme.toUpperCase()}",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            decorationColor:
+                                                                                Colors.grey,
+                                                                            decorationStyle:
+                                                                                TextDecorationStyle.solid,
+                                                                            decoration:
+                                                                                TextDecoration.lineThrough,
+                                                                            fontSize:
+                                                                                14,
+                                                                            color:
+                                                                                Colors.grey,
+                                                                          )),
                                                                       TextSpan(
-                                                                        text:
-                                                                            "\n${namePartition[2].toUpperCase()} ",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontSize:
-                                                                              25,
-                                                                          color: ConfigBloc().darkModeOn
-                                                                              ? Colors.white
-                                                                              : Colors.black,
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                        ),
-                                                                      ),
-                                                                    if (namePartition
-                                                                            .length >
-                                                                        3)
+                                                                          text:
+                                                                              "\n${event.venue}",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            decorationColor:
+                                                                                Colors.grey,
+                                                                            decorationStyle:
+                                                                                TextDecorationStyle.solid,
+                                                                            decoration:
+                                                                                TextDecoration.lineThrough,
+                                                                            fontSize:
+                                                                                14,
+                                                                            fontWeight:
+                                                                                FontWeight.bold,
+                                                                            color:
+                                                                                Colors.grey,
+                                                                          )),
                                                                       TextSpan(
-                                                                        text:
-                                                                            "\n${namePartition[3].toUpperCase()} ",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontSize:
-                                                                              25,
-                                                                          color: ConfigBloc().darkModeOn
-                                                                              ? Colors.white
-                                                                              : Colors.black,
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                        ),
-                                                                      ),
-                                                                    if (namePartition
-                                                                            .length >
-                                                                        4)
+                                                                          text:
+                                                                              "\n${MyDateFormat.toDate(DateTime.parse(event.date))}\n",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            decorationColor:
+                                                                                Colors.grey,
+                                                                            decorationStyle:
+                                                                                TextDecorationStyle.solid,
+                                                                            decoration:
+                                                                                TextDecoration.lineThrough,
+                                                                            fontSize:
+                                                                                12,
+                                                                            color:
+                                                                                Colors.green,
+                                                                          )),
                                                                       TextSpan(
-                                                                        text:
-                                                                            "\n${namePartition[4].toUpperCase()} ",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontSize:
-                                                                              25,
-                                                                          color: ConfigBloc().darkModeOn
-                                                                              ? Colors.white
-                                                                              : Colors.black,
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                        ),
-                                                                      ),
-                                                                    if (namePartition
-                                                                            .length >
-                                                                        5)
+                                                                          text:
+                                                                              "Special guess: ",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            decorationColor:
+                                                                                Colors.grey,
+                                                                            decorationStyle:
+                                                                                TextDecorationStyle.solid,
+                                                                            decoration:
+                                                                                TextDecoration.lineThrough,
+                                                                            fontSize:
+                                                                                12,
+                                                                            color:
+                                                                                Colors.grey,
+                                                                          )),
                                                                       TextSpan(
-                                                                        text:
-                                                                            "\n${namePartition[5].toUpperCase()}",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontSize:
-                                                                              25,
-                                                                          color: ConfigBloc().darkModeOn
-                                                                              ? Colors.white
-                                                                              : Colors.black,
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                        ),
-                                                                      ),
-                                                                    TextSpan(
-                                                                        children: [
-                                                                          TextSpan(
-                                                                              text: "\n${event.theme.toUpperCase()}",
-                                                                              style: TextStyle(
-                                                                                fontSize: 14,
-                                                                                color: ConfigBloc().darkModeOn ? Colors.grey : Colors.black,
-                                                                              )),
-                                                                          TextSpan(
-                                                                              text: "\n${event.venue}",
-                                                                              style: TextStyle(
-                                                                                fontSize: 14,
-                                                                                fontWeight: FontWeight.bold,
-                                                                                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                                                                              )),
-                                                                          TextSpan(
-                                                                              text: "\n${MyDateFormat.toDate(DateTime.parse(event.date))}\n",
-                                                                              style: TextStyle(
-                                                                                fontSize: 12,
-                                                                                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                                                                              )),
-                                                                          TextSpan(
-                                                                              text: "Special guess: ",
-                                                                              style: TextStyle(
-                                                                                fontSize: 12,
-                                                                                color: Colors.blueGrey,
-                                                                              )),
-                                                                          TextSpan(
-                                                                              text: " ${event.guess}\n",
-                                                                              style: TextStyle(
-                                                                                fontSize: 12,
-                                                                                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                                                                              )),
-                                                                          TextSpan(
-                                                                              text: "Artist performing: ",
-                                                                              style: TextStyle(
-                                                                                fontSize: 12,
-                                                                                color: Colors.blueGrey,
-                                                                              )),
-                                                                          TextSpan(
-                                                                              text: " ${event.artist}\n",
-                                                                              style: TextStyle(
-                                                                                fontSize: 12,
-                                                                                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                                                                              )),
-                                                                          TextSpan(
-                                                                              text: "Time: ",
-                                                                              style: TextStyle(
-                                                                                fontSize: 12,
-                                                                                color: Colors.blueGrey,
-                                                                              )),
-                                                                          TextSpan(
-                                                                              text: "${MyDateFormat.toTime(DateTime.parse(event.time))}\n",
-                                                                              style: TextStyle(
-                                                                                fontSize: 12,
-                                                                                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                                                                              )),
-                                                                          TextSpan(
-                                                                              text: "Host: ",
-                                                                              style: TextStyle(
-                                                                                fontSize: 12,
-                                                                                color: Colors.blueGrey,
-                                                                              )),
-                                                                          TextSpan(
-                                                                              text: " ${event.host}\n",
-                                                                              style: TextStyle(
-                                                                                fontSize: 12,
-                                                                                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                                                                              )),
-                                                                          TextSpan(
-                                                                              text: "Rate: ",
-                                                                              style: TextStyle(
-                                                                                fontSize: 12,
-                                                                                color: Colors.blueGrey,
-                                                                              )),
-                                                                          TextSpan(
-                                                                              text: " ${event.rate}\n",
-                                                                              style: TextStyle(
-                                                                                fontSize: 12,
-                                                                                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                                                                              )),
-                                                                        ],
-                                                                        style:
-                                                                            TextStyle(
-                                                                          color: ConfigBloc().darkModeOn
-                                                                              ? Colors.white
-                                                                              : Colors.black,
-                                                                        )),
-                                                                    TextSpan(
-                                                                        text:
-                                                                            "Dress code: ",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontSize:
-                                                                              12,
-                                                                          color:
-                                                                              Colors.blueGrey,
-                                                                        )),
-                                                                    TextSpan(
-                                                                        text:
-                                                                            " ${event.dressCode}\n",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontSize:
-                                                                              12,
-                                                                          color: ConfigBloc().darkModeOn
-                                                                              ? Colors.white
-                                                                              : Colors.black,
-                                                                        )),
-                                                                    TextSpan(
-                                                                        text:
-                                                                            "DJ: ",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontSize:
-                                                                              12,
-                                                                          color:
-                                                                              Colors.blueGrey,
-                                                                        )),
-                                                                    TextSpan(
-                                                                        text:
-                                                                            " ${event.dj}\n",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontSize:
-                                                                              12,
-                                                                          color: ConfigBloc().darkModeOn
-                                                                              ? Colors.white
-                                                                              : Colors.black,
-                                                                        )),
-                                                                  ]),
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .start,
-                                                            ),
+                                                                          text:
+                                                                              " ${event.guess}\n",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            decorationColor:
+                                                                                Colors.grey,
+                                                                            decorationStyle:
+                                                                                TextDecorationStyle.solid,
+                                                                            decoration:
+                                                                                TextDecoration.lineThrough,
+                                                                            fontSize:
+                                                                                12,
+                                                                            color:
+                                                                                Colors.grey,
+                                                                          )),
+                                                                      TextSpan(
+                                                                          text:
+                                                                              "Artist performing: ",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            decorationColor:
+                                                                                Colors.grey,
+                                                                            decorationStyle:
+                                                                                TextDecorationStyle.solid,
+                                                                            decoration:
+                                                                                TextDecoration.lineThrough,
+                                                                            fontSize:
+                                                                                12,
+                                                                            color:
+                                                                                Colors.grey,
+                                                                          )),
+                                                                      TextSpan(
+                                                                          text:
+                                                                              " ${event.artist}\n",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            decorationColor:
+                                                                                Colors.grey,
+                                                                            decorationStyle:
+                                                                                TextDecorationStyle.solid,
+                                                                            decoration:
+                                                                                TextDecoration.lineThrough,
+                                                                            fontSize:
+                                                                                12,
+                                                                            color:
+                                                                                Colors.grey,
+                                                                          )),
+                                                                      TextSpan(
+                                                                          text:
+                                                                              "Time: ",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            decorationColor:
+                                                                                Colors.grey,
+                                                                            decorationStyle:
+                                                                                TextDecorationStyle.solid,
+                                                                            decoration:
+                                                                                TextDecoration.lineThrough,
+                                                                            fontSize:
+                                                                                12,
+                                                                            color:
+                                                                                Colors.grey,
+                                                                          )),
+                                                                      TextSpan(
+                                                                          text:
+                                                                              " ${MyDateFormat.toTime(DateTime.parse(event.time))}\n",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            decorationColor:
+                                                                                Colors.grey,
+                                                                            decorationStyle:
+                                                                                TextDecorationStyle.solid,
+                                                                            decoration:
+                                                                                TextDecoration.lineThrough,
+                                                                            fontSize:
+                                                                                12,
+                                                                            color:
+                                                                                Colors.grey,
+                                                                          )),
+                                                                      TextSpan(
+                                                                          text:
+                                                                              "Host: ",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            decorationColor:
+                                                                                Colors.grey,
+                                                                            decorationStyle:
+                                                                                TextDecorationStyle.solid,
+                                                                            decoration:
+                                                                                TextDecoration.lineThrough,
+                                                                            fontSize:
+                                                                                12,
+                                                                            color:
+                                                                                Colors.grey,
+                                                                          )),
+                                                                      TextSpan(
+                                                                          text:
+                                                                              " ${event.host}\n",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            decorationColor:
+                                                                                Colors.grey,
+                                                                            decorationStyle:
+                                                                                TextDecorationStyle.solid,
+                                                                            decoration:
+                                                                                TextDecoration.lineThrough,
+                                                                            fontSize:
+                                                                                12,
+                                                                            color:
+                                                                                Colors.grey,
+                                                                          )),
+                                                                      TextSpan(
+                                                                          text:
+                                                                              "Rate: ",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            decorationColor:
+                                                                                Colors.grey,
+                                                                            decorationStyle:
+                                                                                TextDecorationStyle.solid,
+                                                                            decoration:
+                                                                                TextDecoration.lineThrough,
+                                                                            fontSize:
+                                                                                12,
+                                                                            color:
+                                                                                Colors.grey,
+                                                                          )),
+                                                                      TextSpan(
+                                                                          text:
+                                                                              " ${event.rate}\n",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            decorationColor:
+                                                                                Colors.grey,
+                                                                            decorationStyle:
+                                                                                TextDecorationStyle.solid,
+                                                                            decoration:
+                                                                                TextDecoration.lineThrough,
+                                                                            fontSize:
+                                                                                12,
+                                                                            color:
+                                                                                Colors.grey,
+                                                                          )),
+                                                                    ],
+                                                                    style:
+                                                                        TextStyle(
+                                                                      decorationColor:
+                                                                          Colors
+                                                                              .grey,
+                                                                      decorationStyle:
+                                                                          TextDecorationStyle
+                                                                              .solid,
+                                                                      decoration:
+                                                                          TextDecoration
+                                                                              .lineThrough,
+                                                                      color: Colors
+                                                                          .grey,
+                                                                    )),
+                                                                TextSpan(
+                                                                    text:
+                                                                        "Dress code: ",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      decorationColor:
+                                                                          Colors
+                                                                              .grey,
+                                                                      decorationStyle:
+                                                                          TextDecorationStyle
+                                                                              .solid,
+                                                                      decoration:
+                                                                          TextDecoration
+                                                                              .lineThrough,
+                                                                      fontSize:
+                                                                          12,
+                                                                      color: Colors
+                                                                          .grey,
+                                                                    )),
+                                                                TextSpan(
+                                                                    text:
+                                                                        " ${event.dressCode}\n",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      decorationColor:
+                                                                          Colors
+                                                                              .grey,
+                                                                      decorationStyle:
+                                                                          TextDecorationStyle
+                                                                              .solid,
+                                                                      decoration:
+                                                                          TextDecoration
+                                                                              .lineThrough,
+                                                                      fontSize:
+                                                                          12,
+                                                                      color: Colors
+                                                                          .grey,
+                                                                    )),
+                                                                TextSpan(
+                                                                    text:
+                                                                        "DJ: ",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      decorationColor:
+                                                                          Colors
+                                                                              .grey,
+                                                                      decorationStyle:
+                                                                          TextDecorationStyle
+                                                                              .solid,
+                                                                      decoration:
+                                                                          TextDecoration
+                                                                              .lineThrough,
+                                                                      fontSize:
+                                                                          12,
+                                                                      color: Colors
+                                                                          .grey,
+                                                                    )),
+                                                                TextSpan(
+                                                                    text:
+                                                                        " ${event.dj}\n",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      decorationColor:
+                                                                          Colors
+                                                                              .grey,
+                                                                      decorationStyle:
+                                                                          TextDecorationStyle
+                                                                              .solid,
+                                                                      decoration:
+                                                                          TextDecoration
+                                                                              .lineThrough,
+                                                                      fontSize:
+                                                                          12,
+                                                                      color: Colors
+                                                                          .grey,
+                                                                    )),
+                                                              ]),
+                                                          textAlign:
+                                                              TextAlign.start,
+                                                        )
+                                                      : RichText(
+                                                          textScaleFactor:
+                                                              MediaQuery.of(
+                                                                      context)
+                                                                  .textScaleFactor,
+                                                          text: TextSpan(
+                                                              children: [
+                                                                TextSpan(
+                                                                  text: namePartition[
+                                                                          0]
+                                                                      .toUpperCase(),
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontSize:
+                                                                        25,
+                                                                    color: ConfigBloc().darkModeOn
+                                                                        ? Colors
+                                                                            .white
+                                                                        : Colors
+                                                                            .black,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                  ),
+                                                                ),
+                                                                if (namePartition
+                                                                        .length >
+                                                                    1)
+                                                                  TextSpan(
+                                                                    text:
+                                                                        "\n${namePartition[1].toUpperCase()} ",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          25,
+                                                                      color: ConfigBloc().darkModeOn
+                                                                          ? Colors
+                                                                              .white
+                                                                          : Colors
+                                                                              .black,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                    ),
+                                                                  ),
+                                                                if (namePartition
+                                                                        .length >
+                                                                    2)
+                                                                  TextSpan(
+                                                                    text:
+                                                                        "\n${namePartition[2].toUpperCase()} ",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          25,
+                                                                      color: ConfigBloc().darkModeOn
+                                                                          ? Colors
+                                                                              .white
+                                                                          : Colors
+                                                                              .black,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                    ),
+                                                                  ),
+                                                                if (namePartition
+                                                                        .length >
+                                                                    3)
+                                                                  TextSpan(
+                                                                    text:
+                                                                        "\n${namePartition[3].toUpperCase()} ",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          25,
+                                                                      color: ConfigBloc().darkModeOn
+                                                                          ? Colors
+                                                                              .white
+                                                                          : Colors
+                                                                              .black,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                    ),
+                                                                  ),
+                                                                if (namePartition
+                                                                        .length >
+                                                                    4)
+                                                                  TextSpan(
+                                                                    text:
+                                                                        "\n${namePartition[4].toUpperCase()} ",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          25,
+                                                                      color: ConfigBloc().darkModeOn
+                                                                          ? Colors
+                                                                              .white
+                                                                          : Colors
+                                                                              .black,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                    ),
+                                                                  ),
+                                                                if (namePartition
+                                                                        .length >
+                                                                    5)
+                                                                  TextSpan(
+                                                                    text:
+                                                                        "\n${namePartition[5].toUpperCase()}",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          25,
+                                                                      color: ConfigBloc().darkModeOn
+                                                                          ? Colors
+                                                                              .white
+                                                                          : Colors
+                                                                              .black,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                    ),
+                                                                  ),
+                                                                TextSpan(
+                                                                    children: [
+                                                                      TextSpan(
+                                                                          text:
+                                                                              "\n${event.theme.toUpperCase()}",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                14,
+                                                                            color: ConfigBloc().darkModeOn
+                                                                                ? Colors.grey
+                                                                                : Colors.black,
+                                                                          )),
+                                                                      TextSpan(
+                                                                          text:
+                                                                              "\n${event.venue}",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                14,
+                                                                            fontWeight:
+                                                                                FontWeight.bold,
+                                                                            color: ConfigBloc().darkModeOn
+                                                                                ? Colors.white
+                                                                                : Colors.black,
+                                                                          )),
+                                                                      TextSpan(
+                                                                          text:
+                                                                              "\n${MyDateFormat.toDate(DateTime.parse(event.date))}\n",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                12,
+                                                                            color: ConfigBloc().darkModeOn
+                                                                                ? Colors.white
+                                                                                : Colors.black,
+                                                                          )),
+                                                                      TextSpan(
+                                                                          text:
+                                                                              "Special guess: ",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                12,
+                                                                            color:
+                                                                                Colors.blueGrey,
+                                                                          )),
+                                                                      TextSpan(
+                                                                          text:
+                                                                              " ${event.guess}\n",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                12,
+                                                                            color: ConfigBloc().darkModeOn
+                                                                                ? Colors.white
+                                                                                : Colors.black,
+                                                                          )),
+                                                                      TextSpan(
+                                                                          text:
+                                                                              "Artist performing: ",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                12,
+                                                                            color:
+                                                                                Colors.blueGrey,
+                                                                          )),
+                                                                      TextSpan(
+                                                                          text:
+                                                                              " ${event.artist}\n",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                12,
+                                                                            color: ConfigBloc().darkModeOn
+                                                                                ? Colors.white
+                                                                                : Colors.black,
+                                                                          )),
+                                                                      TextSpan(
+                                                                          text:
+                                                                              "Time: ",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                12,
+                                                                            color:
+                                                                                Colors.blueGrey,
+                                                                          )),
+                                                                      TextSpan(
+                                                                          text:
+                                                                              "${MyDateFormat.toTime(DateTime.parse(event.time))}\n",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                12,
+                                                                            color: ConfigBloc().darkModeOn
+                                                                                ? Colors.white
+                                                                                : Colors.black,
+                                                                          )),
+                                                                      TextSpan(
+                                                                          text:
+                                                                              "Host: ",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                12,
+                                                                            color:
+                                                                                Colors.blueGrey,
+                                                                          )),
+                                                                      TextSpan(
+                                                                          text:
+                                                                              " ${event.host}\n",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                12,
+                                                                            color: ConfigBloc().darkModeOn
+                                                                                ? Colors.white
+                                                                                : Colors.black,
+                                                                          )),
+                                                                      TextSpan(
+                                                                          text:
+                                                                              "Rate: ",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                12,
+                                                                            color:
+                                                                                Colors.blueGrey,
+                                                                          )),
+                                                                      TextSpan(
+                                                                          text:
+                                                                              " ${event.rate}\n",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                12,
+                                                                            color: ConfigBloc().darkModeOn
+                                                                                ? Colors.white
+                                                                                : Colors.black,
+                                                                          )),
+                                                                    ],
+                                                                    style:
+                                                                        TextStyle(
+                                                                      color: ConfigBloc().darkModeOn
+                                                                          ? Colors
+                                                                              .white
+                                                                          : Colors
+                                                                              .black,
+                                                                    )),
+                                                                TextSpan(
+                                                                    text:
+                                                                        "Dress code: ",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          12,
+                                                                      color: Colors
+                                                                          .blueGrey,
+                                                                    )),
+                                                                TextSpan(
+                                                                    text:
+                                                                        " ${event.dressCode}\n",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          12,
+                                                                      color: ConfigBloc().darkModeOn
+                                                                          ? Colors
+                                                                              .white
+                                                                          : Colors
+                                                                              .black,
+                                                                    )),
+                                                                TextSpan(
+                                                                    text:
+                                                                        "DJ: ",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          12,
+                                                                      color: Colors
+                                                                          .blueGrey,
+                                                                    )),
+                                                                TextSpan(
+                                                                    text:
+                                                                        " ${event.dj}\n",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          12,
+                                                                      color: ConfigBloc().darkModeOn
+                                                                          ? Colors
+                                                                              .white
+                                                                          : Colors
+                                                                              .black,
+                                                                    )),
+                                                              ]),
+                                                          textAlign:
+                                                              TextAlign.start,
+                                                        ),
                                                 ),
                                               ))),
                                     ),
