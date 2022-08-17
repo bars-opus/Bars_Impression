@@ -108,14 +108,11 @@ class Authorview extends StatelessWidget {
                       fontSize: 12,
                       text: content,
                     )
-                  : Text(
-                      content,
-                      style: TextStyle(
-                          color: ConfigBloc().darkModeOn
-                              ? Colors.white
-                              : Colors.black,
-                          fontSize: 12.0),
-                    ),
+                  :  HyperLinkText(
+                  from: '',
+                  text:   content,
+                ),
+
             ),
             Text(
                 timeago.format(

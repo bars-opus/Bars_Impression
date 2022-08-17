@@ -41,14 +41,14 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
-	<key>NSCameraUsageDescrition</key>
-	<string>share photos , punch your mood and change avatar</string>
+	<key>NSCameraUsageDescription</key>
+	<string>share photos, punch your mood and change avatar</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>To help us suggest music creators living in your city for you</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app needs access to location when open.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>share photos , punch your mood and change avatar</string>
+	<string>share photos, punch your mood and change avatar</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

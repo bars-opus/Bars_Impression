@@ -6,10 +6,12 @@ class DirectionWidget extends StatefulWidget {
 
   double? fontSize = 14;
   FontWeight fontWeight;
+  double sizedBox;
 
   DirectionWidget(
       {required this.text,
       this.fontWeight = FontWeight.normal,
+      this.sizedBox = 40,
       required this.fontSize});
 
   @override
@@ -49,7 +51,7 @@ class _DirectionWidgetState extends State<DirectionWidget> {
                 ),
               ),
             ),
-            SizedBox(height: 40),
+            SizedBox(height: widget.sizedBox),
           ]),
     );
   }

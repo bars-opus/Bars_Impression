@@ -255,17 +255,9 @@ class UserProfessionalViewWidget extends StatelessWidget {
                                         ),
                                       ],
                                     ),
-                                    Material(
-                                      color: Colors.transparent,
-                                      child: Text(
-                                        user.bio!,
-                                        style: TextStyle(
-                                            color: ConfigBloc().darkModeOn
-                                                ? Color(0xFF1a1a1a)
-                                                : Colors.black,
-                                            fontSize: width > 600 ? 16 : 12.0),
-                                        textAlign: TextAlign.center,
-                                      ),
+                                    HyperLinkText(
+                                      from: 'Link',
+                                      text: user.bio!,
                                     ),
                                     SizedBox(height: 30),
                                     user.profileHandle!.startsWith('Fan')

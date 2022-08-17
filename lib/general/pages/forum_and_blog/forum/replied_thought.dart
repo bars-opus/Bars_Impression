@@ -172,13 +172,9 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
                         fontSize: 12,
                         text: replyThought.content,
                       )
-                    : Text(
-                        replyThought.content,
-                        style: TextStyle(
-                            color: ConfigBloc().darkModeOn
-                                ? Colors.white
-                                : Colors.black,
-                            fontSize: 12.0),
+                    : HyperLinkText(
+                        from: '',
+                        text: replyThought.content,
                       ),
                 SizedBox(height: 10.0),
                 Text(

@@ -14,7 +14,7 @@ class ProfileVerification extends StatefulWidget {
 }
 
 class _ProfileVerificationState extends State<ProfileVerification> {
-  String _brandType = '';
+  String _publicPresence = '';
   String _govIdType = '';
   String _legalName = '';
   String _brandAudienceCustomers = '';
@@ -51,7 +51,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
           Provider.of<UserData>(context, listen: false).postImage!);
 
       Verification verification = Verification(
-        brandType: _brandType.isEmpty ? 'Public Figure' : _brandType,
+        brandType: _publicPresence.isEmpty ? 'Public Figure' : _publicPresence,
         govIdType: _govIdType.isEmpty ? 'Driver license' : _govIdType,
         legalName: _legalName,
         verificationType: 'ThroughApp',
@@ -143,7 +143,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
         print(e.toString());
       }
       setState(() {
-        _brandType = '';
+        _publicPresence = '';
         _govIdType = '';
         _website = '';
         _phoneNumber = '';
@@ -155,47 +155,83 @@ class _ProfileVerificationState extends State<ProfileVerification> {
     }
   }
 
-  static const brandType = <String>[
-    "Public Figure",
-    "Business/Institution",
-  ];
-  String selectedBrandType = brandType.last;
+  // static const publicPresence = <String>[
+  //   "Public presence",
+  // ];
+  // String selectedPublicPresence = publicPresence.last;
 
-  Widget buildBrandType() => Theme(
-        data: Theme.of(context).copyWith(
-          unselectedWidgetColor:
-              ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-        ),
-        child: Column(
-            children: brandType.map((mostHelpfulFeature) {
-          final selected = this.selectedBrandType == mostHelpfulFeature;
-          final color = selected
-              ? Colors.blue
-              : ConfigBloc().darkModeOn
-                  ? Colors.white
-                  : Colors.black;
+  // Widget buildPublicPresence() => Theme(
+  //       data: Theme.of(context).copyWith(
+  //         unselectedWidgetColor:
+  //             ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+  //       ),
+  //       child: Column(
+  //           children: publicPresence.map((mostHelpfulFeature) {
+  //         final selected = this.selectedBrandPresence == mostHelpfulFeature;
+  //         final color = selected
+  //             ? Colors.blue
+  //             : ConfigBloc().darkModeOn
+  //                 ? Colors.white
+  //                 : Colors.black;
 
-          return RadioListTile<String>(
-            value: mostHelpfulFeature,
-            groupValue: selectedBrandType,
-            title: Text(
-              mostHelpfulFeature,
-              style: TextStyle(color: color, fontSize: 14),
-            ),
-            activeColor: Colors.blue,
-            onChanged: (brandType) => setState(
-              () {
-                _brandType = this.selectedBrandType = brandType!;
-              },
-            ),
-          );
-        }).toList()),
-      );
+  //         return RadioListTile<String>(
+  //           value: mostHelpfulFeature,
+  //           groupValue: selectedBrandPresence,
+  //           title: Text(
+  //             mostHelpfulFeature,
+  //             style: TextStyle(color: color, fontSize: 14),
+  //           ),
+  //           activeColor: Colors.blue,
+  //           onChanged: (brandPresence) => setState(
+  //             () {
+  //               _publicPresence = this.selectedBrandPresence = brandPresence!;
+  //             },
+  //           ),
+  //         );
+  //       }).toList()),
+  //     );
+
+  // static const newsCoverage = <String>[
+  //   "News Coverage",
+  // ];
+  // String selectedBrandPresence = newsCoverage.last;
+
+  // Widget buildNewsCoverage() => Theme(
+  //       data: Theme.of(context).copyWith(
+  //         unselectedWidgetColor:
+  //             ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+  //       ),
+  //       child: Column(
+  //           children: newsCoverage.map((mostHelpfulFeature) {
+  //         final selected = this.selectedBrandPresence == mostHelpfulFeature;
+  //         final color = selected
+  //             ? Colors.blue
+  //             : ConfigBloc().darkModeOn
+  //                 ? Colors.white
+  //                 : Colors.black;
+
+  //         return RadioListTile<String>(
+  //           value: mostHelpfulFeature,
+  //           groupValue: selectedBrandPresence,
+  //           title: Text(
+  //             mostHelpfulFeature,
+  //             style: TextStyle(color: color, fontSize: 14),
+  //           ),
+  //           activeColor: Colors.blue,
+  //           onChanged: (brandPresence) => setState(
+  //             () {
+  //               _newsCoverage = this.selectedBrandPresence = brandPresence!;
+  //             },
+  //           ),
+  //         );
+  //       }).toList()),
+  //     );
 
   static const govIdType = <String>[
     "Driver license",
     "Passport",
     "Voters Id Card",
+    "Document of incorporation",
   ];
   String selectedGovIdType = govIdType.last;
 
@@ -376,7 +412,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                             child: Padding(
                               padding: const EdgeInsets.all(30.0),
                               child: Text(
-                                'Bars Impression verification adds a blue check to a verified account to establish the truth, accuracy, and validity of the presence of a brand, public figure, or celebrities.',
+                                'Bars Impression verification adds a blue check to a verified account to establish the authenticity of the account.',
                                 style: TextStyle(
                                     color: ConfigBloc().darkModeOn
                                         ? Color(0xFFf2f2f2)
@@ -416,11 +452,175 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             DirectionWidget(
+                              text: 'Requirements',
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              sizedBox: 10,
+                            ),
+                            Text(
+                              'You will need to meet specific requirements to be verified.',
+                              style: TextStyle(
+                                  color: ConfigBloc().darkModeOn
+                                      ? Color(0xFFf2f2f2)
+                                      : Color(0xFF1a1a1a),
+                                  fontSize: 14),
+                              textAlign: TextAlign.left,
+                            ),
+                            SizedBox(height: 30),
+                            ShakeTransition(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 7.0),
+                                child: FeatureInfoWidget(
+                                  title: 'Adherence to Terms of Use.',
+                                  subTitle:
+                                      'Your account must be active with a record of adherence to the Bars Impression Terms of Use.',
+                                  number: '1',
+                                ),
+                              ),
+                            ),
+                            ShakeTransition(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 7.0),
+                                child: FeatureInfoWidget(
+                                  title: 'Account Information: ',
+                                  subTitle:
+                                      'You must provide the necessary information required for setting up your brand. Information such as username, profile image, and bio, must be provided for account types of fan.  Other account types such as artist, producer, cover art designer, music video director, dj, battle rapper, photographer, dancer, video vixen, Makeup artist, record label, brand influencer, blogger, and mC(Host) must provide the necessary booking infromation.',
+                                  number: '2',
+                                ),
+                              ),
+                            ),
+                            ShakeTransition(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 7.0),
+                                child: FeatureInfoWidget(
+                                  title: 'Active: ',
+                                  subTitle:
+                                      'You must have logged into your account in the last two months.',
+                                  number: '3',
+                                ),
+                              ),
+                            ),
+                            ShakeTransition(
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 7.0),
+                                child: FeatureInfoWidget(
+                                  title: 'Ineligible accounts',
+                                  subTitle:
+                                      'Certain accounts are ineligible for verification.\nParody, newsfeed, commentary, unofficial fan accounts, Pets and fictional characters.',
+                                  number: '4',
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 55.0),
+                              child: Text(
+                                'Learn more.',
+                                style:
+                                    TextStyle(color: Colors.blue, fontSize: 12),
+                                textAlign: TextAlign.left,
+                              ),
+                            ),
+                            Center(
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 70.0),
+                                child: AlwaysWhiteButton(
+                                    onPressed: () {
+                                      animateToPage();
+                                    },
+                                    buttonText: "Continue"),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SingleChildScrollView(
+                  child: Container(
+                    child: Container(
+                      height: width * 2,
+                      width: double.infinity,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            DirectionWidget(
+                              text: 'Authenticity',
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              sizedBox: 10,
+                            ),
+                            Text(
+                              'You will need to meet specific requirements to be verified.',
+                              style: TextStyle(
+                                  color: ConfigBloc().darkModeOn
+                                      ? Color(0xFFf2f2f2)
+                                      : Color(0xFF1a1a1a),
+                                  fontSize: 14),
+                              textAlign: TextAlign.left,
+                            ),
+                            SizedBox(height: 10),
+                            buildConfirmBrandAuthenticity(),
+                            Center(
+                              child: _displayPostImage(),
+                            ),
+                            // buildPublicPresence(),
+                            // Padding(
+                            //   padding:
+                            //       const EdgeInsets.symmetric(horizontal: 30.0),
+                            //   child: BarsTextSubTitle(
+                            //       text:
+                            //           'Bars Impression verification adds a blue check to a verified account to establish the authenticity of the account'),
+                            // ),
+                            // SizedBox(height: 10),
+                            // buildNewsCoverage(),
+                            // Padding(
+                            //   padding:
+                            //       const EdgeInsets.symmetric(horizontal: 30.0),
+                            //   child: BarsTextSubTitle(
+                            //       text:
+                            //           'Bars Impression verification adds a blue check to a verified account to establish the authenticity of the account'),
+                            // ),
+                            // Center(
+                            //   child: Padding(
+                            //     padding: const EdgeInsets.only(top: 70.0),
+                            //     child: AlwaysWhiteButton(
+                            //         onPressed: () {
+                            //           animateToPage();
+                            //         },
+                            //         buttonText: "Continue"),
+                            //   ),
+                            // ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SingleChildScrollView(
+                  child: Container(
+                    child: Container(
+                      height: width * 2,
+                      width: double.infinity,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            DirectionWidget(
                               text: 'Select Brand Type',
                               fontSize: 20,
                             ),
                             SizedBox(height: 20),
-                            buildBrandType(),
+                            // buildBrandType(),
                             ContentField(
                               labelText: 'Contact email',
                               hintText: "Contact email",

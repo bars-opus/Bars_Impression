@@ -389,11 +389,9 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                                         fontSize: 12,
                                         text: thought.content,
                                       )
-                                    : Text(
-                                        thought.content,
-                                        style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 12.0),
+                                    : HyperLinkText(
+                                        from: 'Advice',
+                                        text: thought.content,
                                       ),
                                 SizedBox(height: 10.0),
                               ],

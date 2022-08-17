@@ -33,7 +33,6 @@ class _EditProfileNameState extends State<EditProfileName> {
   }
 
   _validate() async {
-
     if (_formKey.currentState!.validate() & !_isLoading) {
       _formKey.currentState!.save();
 
@@ -60,7 +59,7 @@ class _EditProfileNameState extends State<EditProfileName> {
             flushbarPosition: FlushbarPosition.TOP,
             flushbarStyle: FlushbarStyle.FLOATING,
             titleText: Text(
-              'Sorry $_userName is already in use by another user try using a different name',
+              'Sorry $_userName is already in use by another user. Try using a different name',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: width > 800 ? 22 : 14,
@@ -241,7 +240,7 @@ class _EditProfileNameState extends State<EditProfileName> {
                                     EditProfileInfo(
                                         editTitle: 'Select \nUsername',
                                         info:
-                                            'Select a unique username for your brand. The username can be your stage name if you are a music creator. Please note that all usernames on are converted to uppercase.',
+                                            'Select a unique username for your brand. The username can be your stage name if you are a music creator. Please note that all usernames are converted to uppercase.',
                                         icon: MdiIcons.accountDetails),
                                     Hero(
                                       tag: 'name',
@@ -372,14 +371,7 @@ class _EditProfileNameState extends State<EditProfileName> {
                                                     ),
                                                   ),
                                                   onPressed: () {
-                                                    // _controller.text ==
-                                                    //         _userName
-                                                    //     ? Navigator.pop(context)
-                                                    //     :
                                                     _validate();
-                                                    // _isAvailable
-                                                    //     ? _isTaken()
-                                                    //     : _submit();
                                                   },
                                                   child: Text(
                                                     'Save Profile',

@@ -18,11 +18,13 @@ class ShakeTransition extends StatelessWidget {
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
       duration: duration,
+      
       curve: curve,
       child: child,
       tween: Tween(begin: 1.0, end: 0.0),
       builder: (context, value, child) {
         return Transform.translate(
+          
           offset: axis == Axis.horizontal
               ? Offset(
                   value * offset,

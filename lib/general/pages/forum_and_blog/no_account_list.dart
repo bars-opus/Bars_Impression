@@ -106,9 +106,9 @@ class _NoAccountListState extends State<NoAccountList> {
                     padding: const EdgeInsets.only(left: 30.0, right: 30),
                     child: Text(
                       widget.follower.startsWith('Follower')
-                          ? 'You don\'t have any follower yet. Make sure you have update your profile with the neccessary information and upload creative contents in order for people to follower you.'
+                          ? 'You don\'t have any followers yet. Make sure you have updated your profile with the necessary information and upload creative content for people to follow you.'
                           : widget.follower.startsWith('Following')
-                              ? 'You are not following anybody yet, follow people to see the contents they create and connect with them for collaborations'
+                              ? 'You are not following anybody yet. Follow people to see the contents they create and connect with them for collaborations.'
                               : widget.follower.startsWith('Positive')
                                   ? 'You have not rated creators positively'
                                   : widget.follower.startsWith('Negative')

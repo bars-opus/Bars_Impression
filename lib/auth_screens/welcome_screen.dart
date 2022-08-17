@@ -201,8 +201,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               MaterialPageRoute(
                                 builder: (_) => LoginScreen(),
                               )),
-                          // Navigator.pushNamed(context, LoginScreen.id),
-
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(

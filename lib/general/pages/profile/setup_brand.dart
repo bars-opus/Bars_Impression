@@ -97,7 +97,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
           flushbarPosition: FlushbarPosition.TOP,
           flushbarStyle: FlushbarStyle.FLOATING,
           titleText: Text(
-            'Sorry $_userName is already in use by another user try using a different name',
+            'Sorry $_userName is already in use by another user try using a different username',
             style: TextStyle(
               color: Colors.white,
               fontSize: width > 800 ? 22 : 14,
@@ -183,7 +183,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
     if (_formKey.currentState!.validate() && !_isLoading) {
       _formKey.currentState?.save();
       FocusScope.of(context).unfocus();
-
+      animateToPage();
       Flushbar(
         maxWidth: MediaQuery.of(context).size.width,
         backgroundColor: Color(0xFF1a1a1a),
@@ -456,22 +456,26 @@ class _SetUpBrandState extends State<SetUpBrand> {
   Widget build(BuildContext context) {
     return ResponsiveScaffold(
       child: Scaffold(
-        backgroundColor:
-            ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+        backgroundColor: ConfigBloc().darkModeOn || _index == 4
+            ? Color(0xFF1a1a1a)
+            : Color(0xFFf2f2f2),
         appBar: AppBar(
-          backgroundColor:
-              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+          backgroundColor: ConfigBloc().darkModeOn || _index == 4
+              ? Color(0xFF1a1a1a)
+              : Color(0xFFf2f2f2),
           iconTheme: IconThemeData(
               color: ConfigBloc().darkModeOn
                   ? Color(0xFFf2f2f2)
                   : Color(0xFF1a1a1a)),
           automaticallyImplyLeading: true,
-          leading: IconButton(
-              icon: Icon(
-                  Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
-              onPressed: () {
-                _index != 0 ? animateBack() : Navigator.pop(context);
-              }),
+          leading: _index == 4
+              ? SizedBox.shrink()
+              : IconButton(
+                  icon: Icon(
+                      Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
+                  onPressed: () {
+                    _index != 0 ? animateBack() : Navigator.pop(context);
+                  }),
           elevation: 0,
         ),
         body: FutureBuilder(
@@ -691,11 +695,6 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                               child: Container(
                                                 color: Colors.transparent,
                                                 child: TextFormField(
-                                                  // onChanged: (input) {
-                                                  //   setState(() {
-                                                  //     _userName = input.trim();
-                                                  //   });
-                                                  // },
                                                   controller: _controller,
                                                   textCapitalization:
                                                       TextCapitalization
@@ -812,9 +811,6 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                                             ),
                                                             onPressed: () {
                                                               _validate();
-                                                              // _isAvailable
-                                                              //     ? _isTaken()
-                                                              //     : _submitProfileName();
                                                             },
                                                           ),
                                                         ),
@@ -1014,7 +1010,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                                   .trim()
                                                   .length >
                                               700
-                                          ? 'Please, enter a bio less than 700 characters.'
+                                          ? 'Please, enter a bio of fewer than 700 characters.'
                                           : null,
                                       onSaved: (input) => Provider.of<UserData>(
                                               context,
@@ -1072,6 +1068,16 @@ class _SetUpBrandState extends State<SetUpBrand> {
                               ]),
                         ),
                       ),
+                      SingleChildScrollView(
+                        child: Container(
+                            color: Color(0xFF1a1a1a),
+                            height: MediaQuery.of(context).size.height - 200,
+                            child: Center(
+                                child: Loading(
+                              title: 'Setting up brand',
+                              icon: (Icons.person),
+                            ))),
+                      )
                     ],
                   ),
                 ),

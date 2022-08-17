@@ -1,13 +1,10 @@
 import 'dart:ui';
-import 'package:bars/general/pages/forum_and_blog/no_account_list.dart';
 import 'package:bars/utilities/exports.dart';
-
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String currentUserId;
-  // final AccountHolder? user;
   static final id = 'Profile_screen';
   final String userId;
   ProfileScreen({required this.currentUserId, required this.userId});
@@ -28,7 +25,6 @@ class _ProfileScreenState extends State<ProfileScreen>
   List<Post> _posts = [];
   List<Forum> _forums = [];
   List<Event> _events = [];
-  int _displayPosts = 0;
   late AccountHolder _profileUser;
   int _moodPunched = 0;
   int _negativeRatedCount = 0;
@@ -1058,84 +1054,18 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
-  _buildToggleButton(AccountHolder user) {
-    return Column(
-      children: [
-        Wrap(
-          direction: Axis.vertical,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                IconButton(
-                    icon: Icon(Icons.grid_on),
-                    iconSize: 30.0,
-                    color: _displayPosts == 0 ? Colors.blue : Colors.grey,
-                    onPressed: () {
-                      if (mounted) {
-                        setState(() {
-                          _displayPosts = 0;
-                        });
-                      }
-                    }),
-                IconButton(
-                    icon: Icon(Icons.list),
-                    iconSize: 30.0,
-                    color: _displayPosts == 1 ? Colors.blue : Colors.grey,
-                    onPressed: () {
-                      if (mounted) {
-                        setState(() {
-                          _displayPosts = 1;
-                        });
-                      }
-                    }),
-              ],
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
   _buildDisplayPosts() {
-    if (_displayPosts == 1) {
-      List<PunchView> postViews = [];
-      _posts.forEach((post) {
-        postViews.add(PunchView(
-          currentUserId: widget.currentUserId,
-          post: post,
-          author: _profileUser,
-          // postList: [],
-        ));
-      });
-      return Container(
-          margin: const EdgeInsets.only(top: 10.0),
-          decoration: BoxDecoration(
-            color: ConfigBloc().darkModeOn
-                ? Colors.transparent
-                : Color(0xFFf2f2f2),
-            borderRadius: BorderRadius.only(
-              topRight: Radius.circular(30.0),
-              topLeft: Radius.circular(30.0),
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.only(top: 10.0),
-            child: Column(children: postViews),
-          ));
-    } else if (_displayPosts == 0) {
-      List<GridTile> tiles = [];
-      _posts.forEach((post) => tiles.add(_buildTilePost(post)));
-      return GridView.count(
-        crossAxisCount: 2,
-        childAspectRatio: 1.0,
-        mainAxisSpacing: 2.0,
-        crossAxisSpacing: 2.0,
-        shrinkWrap: true,
-        children: tiles,
-        physics: NeverScrollableScrollPhysics(),
-      );
-    }
+    List<GridTile> tiles = [];
+    _posts.forEach((post) => tiles.add(_buildTilePost(post)));
+    return GridView.count(
+      crossAxisCount: 2,
+      childAspectRatio: 1.0,
+      mainAxisSpacing: 2.0,
+      crossAxisSpacing: 2.0,
+      shrinkWrap: true,
+      children: tiles,
+      physics: NeverScrollableScrollPhysics(),
+    );
   }
 
   _buildDisplayForum() {
@@ -1218,7 +1148,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     if (_moodPunched == 0) {
       return Column(
         children: <Widget>[
-          _buildToggleButton(user),
+          // _buildToggleButton(user),
           _buildDisplayPosts(),
         ],
       );
@@ -1927,42 +1857,24 @@ class _ProfileScreenState extends State<ProfileScreen>
                                         SizedBox(
                                           height: 5.0,
                                         ),
-                                        Container(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Text(
-                                              'Bio',
-                                              style: TextStyle(
-                                                color: ConfigBloc().darkModeOn
-                                                    ? Colors.blueGrey[100]
-                                                    : Colors.grey,
-                                                fontSize: width > 600 ? 16 : 12,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            'Bio',
+                                            style: TextStyle(
+                                              color: ConfigBloc().darkModeOn
+                                                  ? Colors.blueGrey[100]
+                                                  : Colors.grey,
+                                              fontSize: width > 600 ? 16 : 12,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                           ),
                                         ),
-                                        RichText(
-                                          textScaleFactor:
-                                              MediaQuery.of(context)
-                                                  .textScaleFactor,
-                                          text: TextSpan(
-                                            children: [
-                                              TextSpan(
-                                                text: user.bio,
-                                                style: TextStyle(
-                                                    color:
-                                                        ConfigBloc().darkModeOn
-                                                            ? Colors.blueGrey
-                                                            : Colors.white,
-                                                    fontSize: width > 600
-                                                        ? 16
-                                                        : 12.0),
-                                              ),
-                                            ],
-                                          ),
-                                          textAlign: TextAlign.center,
+                                        HyperLinkText(
+                                          from: 'Profile',
+                                          text: user.bio!,
                                         ),
+                                      
                                         _displayButton(user, _point),
                                       ],
                                     ),
@@ -2067,6 +1979,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   height: 30.0,
                                 ),
                                 _buildDisplay(user),
+                                SizedBox(
+                                  height: 40.0,
+                                ),
                               ]),
                             ),
                           ),

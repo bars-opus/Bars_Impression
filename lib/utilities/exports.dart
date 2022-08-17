@@ -130,7 +130,6 @@ export 'package:bars/general/pages/feed/feed_grid.dart';
 export 'package:bars/widgets/schimmers/grid_schimmer.dart';
 export 'package:bars/widgets/schimmers/group_grid_schimmer.dart';
 export 'package:bars/widgets/schimmers/punch_schimmer.dart';
-export 'package:bars/general/pages/feed/punch_view.dart';
 export 'package:bars/general/pages/activity/notification.dart';
 export 'package:bars/general/pages/activity/notification_NotFans.dart';
 export 'package:bars/general/pages/feed/all_post.dart';
@@ -256,6 +255,12 @@ export 'package:bars/widgets/schimmers/event_schimmer_blurhash.dart';
 export 'package:bars/general/pages/profile/blockedAccounts.dart';
 export 'package:bars/general/pages/profile/delete_account.dart';
 export 'package:bars/utilities/reactivate_account.dart';
+export 'package:bars/utilities/hyperLink_text.dart';
+export 'package:bars/general/pages/forum_and_blog/no_account_list.dart';
+export 'package:bars/widgets/info/violating_terms.dart';
+export 'package:bars/widgets/animation/repeat_shake_transition.dart';
+export 'package:bars/widgets/info/loading.dart';
+
 // discover user
 export 'package:bars/general/pages/discover/discover_page/account_categories/artists.dart';
 export 'package:bars/general/pages/discover/discover_page/account_categories/battle_rappers.dart';

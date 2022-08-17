@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:bars/utilities/exports.dart';
+import 'package:bars/utilities/profaine_text%20copy.dart';
 import 'package:intl/intl.dart';
 
 class PunchWidget extends StatefulWidget {
@@ -459,16 +460,23 @@ class _PunchWidgetState extends State<PunchWidget> {
                         Hero(
                           tag: 'punch' + widget.post.id.toString(),
                           child: Material(
-                            color: Colors.transparent,
-                            child: Text(
-                              '" ${widget.post.punch} " '.toLowerCase(),
-                              style: TextStyle(
-                                fontSize: 20,
+                              color: Colors.transparent,
+                              child: ProfainTextCheck(
                                 color: Colors.blue,
+                                fontSize: 20,
+                                from: '',
+                                text: widget.post.punch.toLowerCase(),
+                              )
+
+                              // Text(
+                              //   '" ${widget.post.punch} " '.toLowerCase(),
+                              //   style: TextStyle(
+                              //     fontSize: 20,
+                              //     color: Colors.blue,
+                              //   ),
+                              //   textAlign: TextAlign.center,
+                              // ),
                               ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
                         ),
                         _thumbAnim
                             ? Animator(
@@ -811,12 +819,9 @@ class _PunchWidgetState extends State<PunchWidget> {
                     ],
                   ),
                 ),
-                Text(
-                  ' ${widget.post.caption} '.toLowerCase(),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
+                HyperLinkText(
+                  from: 'Caption',
+                  text: '${widget.post.caption}'.toLowerCase(),
                 ),
               ],
             ),
@@ -826,18 +831,3 @@ class _PunchWidgetState extends State<PunchWidget> {
     );
   }
 }
-
-//  _heartAnim
-//                 ? Animator(
-//                     duration: Duration(milliseconds: 300),
-//                     tween: Tween(begin: 0.5, end: 1.4),
-//                     curve: Curves.elasticOut,
-//                     builder: (context, anim2, child) => Transform.scale(
-//                           scale: anim2.value,
-//                           child: Icon(
-//                             Icons.favorite,
-//                             size: 100.0,
-//                             color: Colors.pink,
-//                           ),
-//                         ))
-//                 : SizedBox.shrink(),

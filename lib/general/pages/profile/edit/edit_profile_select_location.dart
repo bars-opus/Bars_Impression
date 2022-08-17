@@ -208,7 +208,6 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
       _isLoading = false;
     });
     animateToBack();
-  
   }
 
   static const values = <String>[
@@ -301,7 +300,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
               ),
               initialValue: widget.user.city,
               decoration: InputDecoration(
-                  hintText: "Event venue address",
+                  hintText: "Your current city",
                   hintStyle: TextStyle(
                     fontSize: 12.0,
                     color: Colors.grey,
@@ -528,7 +527,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                                     EditProfileInfo(
                                       editTitle: 'Choose \nLocation',
                                       info:
-                                          'Choosing a location helps us suggest users with similar interests living close to you. For instance, when you enter your city, we propose other users in your city for you on the discover page so you can connect with them for business and collaborations. Even though it is optional to enter your location,  providing your location leads to better user experience.',
+                                          'Choosing a location helps us suggest users with similar interests living close to you. For instance, when you enter your city, we propose other users in your city for you on the discover page so you can connect with them for business and collaborations.',
                                       icon: Icons.location_on,
                                     ),
                                     Text(
@@ -621,7 +620,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                             children: [
                               SizedBox(height: 20.0),
                               Text(
-                                'Select your continent in the list below. Tap on the Pick Continent button to continue. ',
+                                'Select your continent in the list below.',
                                 style: TextStyle(
                                   color: ConfigBloc().darkModeOn
                                       ? Colors.white

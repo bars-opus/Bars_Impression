@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/rendering.dart';
 
 class DesignersLocation extends StatefulWidget {
   static final id = 'DesignersLocation';
@@ -35,6 +36,16 @@ class _DesignersLocationState extends State<DesignersLocation>
                 ? _setupContinentUsers()
                 : () {};
     _hideButtonController = ScrollController();
+      _hideButtonController.addListener(() {
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        Provider.of<UserData>(context, listen: false).setShowUsersTab(true);
+      }
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        Provider.of<UserData>(context, listen: false).setShowUsersTab(false);
+      }
+    });
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {

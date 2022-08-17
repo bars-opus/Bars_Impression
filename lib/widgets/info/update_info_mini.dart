@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:bars/utilities/exports.dart';
 
 class UpdateInfoMini extends StatefulWidget {
-  final Function onPressed;
+  final VoidCallback onPressed;
   final String updateNote;
   final bool displayMiniUpdate;
   final bool showinfo;
 
   UpdateInfoMini({
     required this.onPressed,
-   required this.displayMiniUpdate,
-   required this.showinfo,
+    required this.displayMiniUpdate,
+    required this.showinfo,
     required this.updateNote,
   });
 
@@ -27,6 +27,7 @@ class _UpdateInfoMiniState extends State<UpdateInfoMini> {
     final width = MediaQuery.of(context).size.width;
     return AnimatedContainer(
         curve: Curves.easeInOut,
+        
         duration: Duration(milliseconds: 800),
         height:
             widget.displayMiniUpdate && widget.showinfo && _showinfo ? 80 : 0.0,
@@ -70,7 +71,7 @@ class _UpdateInfoMiniState extends State<UpdateInfoMini> {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          onTap: () => widget.onPressed,
+          onTap: widget.onPressed,
         ));
   }
 }

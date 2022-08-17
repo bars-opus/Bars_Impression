@@ -139,7 +139,7 @@ class _IntroState extends State<Intro> {
                             child: WelcomeInfo(
                               title: 'Create a brand',
                               subTitle:
-                                  "Different account types to help you easily create and grow your brand. Set up a unique profile that influences people to easily connect and work with you.",
+                                  "Different account types to help you easily create and grow your brand. Set up a unique profile that influences people to connect and work with you.",
                               icon: Icon(
                                 Icons.person_outlined,
                                 size: 40,
@@ -151,7 +151,7 @@ class _IntroState extends State<Intro> {
                             child: WelcomeInfo(
                               title: 'What is on your mind?',
                               subTitle:
-                                  "Express yourself and let others know what you think. Create forums to discuss news, events, and even ask questions about projects you are working on if you find it difficult. Just tell us what is on your mind.",
+                                  "Express yourself and let others know what you think. Create forums to discuss news and events. You can also ask questions about projects you are working on if you find it difficult. Just tell us what is on your mind.",
                               icon: Icon(
                                 Icons.forum_outlined,
                                 size: 40,
@@ -164,7 +164,7 @@ class _IntroState extends State<Intro> {
                             child: WelcomeInfo(
                               title: 'Attend meet and experience',
                               subTitle:
-                                  "Explore events and have fun attending and making new friends. A  platform for event organizers to promote upcoming events. People can easily discover great events and have great experiences in attending events with friends.",
+                                  "Explore events and have fun attending and making new friends. A  platform for event organizers to promote upcoming events. Attend, meet, and experience.",
                               icon: Icon(
                                 Icons.event_outlined,
                                 size: 40,
@@ -177,7 +177,7 @@ class _IntroState extends State<Intro> {
                             child: WelcomeInfo(
                               title: 'Punch your mood',
                               subTitle:
-                                  "An opportunity to honor your favorite artists by expressing your moods in pictures using lyrics of songs. Post and share pictures with friends and express the mood of your picture by relating it with lyrics of songs. Users can get a direct link to the song of which lyric is being used. With moods being punched, other users can get to know the artist of which lyric is being used. Express yourself in a creative way and promote your favorite artists.",
+                                  "Post and share pictures with friends and express the mood of your picture by relating it with lyrics of songs. Other users can get a direct link to the song and artist's lyrics used. bExpress yourself in a creative way and promote your favorite artists.",
                               icon: Icon(
                                 Icons.photo_outlined,
                                 size: 40,

@@ -333,12 +333,13 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                                               fontSize: 12,
                                               text: userAdvice.content,
                                             )
-                                          : Text(
-                                              userAdvice.content,
-                                              style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 12.0),
-                                            ))
+                                          : 
+                                       
+                                           HyperLinkText(
+                  from: 'Advice',
+                  text:   userAdvice.content,
+                ),
+                                            )
                                   : widget.user.hideAdvice!
                                       ? BarsTextStrikeThrough(
                                           fontSize: 12,
@@ -351,12 +352,10 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                                                   fontSize: 12,
                                                   text: userAdvice.content,
                                                 )
-                                              : Text(
-                                                  userAdvice.content,
-                                                  style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 12.0),
-                                                )),
+                                              :  HyperLinkText(
+                  from: 'Advice',
+                  text:   userAdvice.content,
+                ),),
                               Text(
                                   timeago.format(
                                     userAdvice.timestamp.toDate(),

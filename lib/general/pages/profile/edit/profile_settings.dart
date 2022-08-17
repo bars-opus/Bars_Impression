@@ -261,7 +261,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
             backgroundColor:
                 ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
             title: Text(
-              'Settings',
+              'Account Settings',
               style: TextStyle(
                   color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
                   fontSize: 20,
@@ -286,8 +286,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                 Divider(color: Colors.grey),
                                 SettingSwitch(
                                   title: 'Disable Chat',
-                                  subTitle:
-                                      'Others users can\'t chat with you.',
+                                  subTitle: 'Other users can\'t chat with you.',
                                   value: _disableChat,
                                   onChanged: (value) => setState(
                                     () {
@@ -335,7 +334,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                     : SettingSwitch(
                                         title: 'Disable Advice',
                                         subTitle:
-                                            'Others users can\'t leave an advice for but can read previousely sent advices.',
+                                            'Other users can\'t leave advice but can read previously sent advice.',
                                         value: _disableAdvice,
                                         onChanged: (value) => setState(
                                           () {
@@ -359,7 +358,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                     : SettingSwitch(
                                         title: 'Hide Advices',
                                         subTitle:
-                                            'Others can\'t read your advices but can still send new advices .',
+                                            'Other users can\'t read your advice but can still send new advice.',
                                         value: _hideAdvice,
                                         onChanged: (value) => setState(
                                           () {
@@ -383,7 +382,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                     : SettingSwitch(
                                         title: 'Not Avaliable For Booking',
                                         subTitle:
-                                            'Others users can\'t book you.',
+                                            'Other users can\'t book you.',
                                         value: _noBooking,
                                         onChanged: (value) => setState(
                                           () {
@@ -400,7 +399,6 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                         ),
                                       ),
                                 Divider(color: Colors.grey),
-
                                 GestureDetector(
                                   onTap: () => Navigator.push(
                                       context,
@@ -425,7 +423,6 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                   ),
                                 ),
                                 Divider(color: Colors.grey),
-
                                 GestureDetector(
                                   onTap: () => Navigator.push(
                                       context,
@@ -434,14 +431,14 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                                 user: widget.user,
                                               ))),
                                   child: IntroInfo(
-                                    title: 'Delete Accounts',
+                                    title: 'Delete Account',
                                     onPressed: () => Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (_) => DeleteAccount(
                                                   user: widget.user,
                                                 ))),
-                                    subTitle: "Delete you user account",
+                                    subTitle: "Delete your user account",
                                     icon: Icon(
                                       Icons.delete_outline_outlined,
                                       size: 20,
@@ -451,7 +448,33 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                     ),
                                   ),
                                 ),
-                                Divider(color: Colors.grey),
+                                // Divider(color: Colors.blue),
+                                // GestureDetector(
+                                //   onTap: () => Navigator.push(
+                                //       context,
+                                //       MaterialPageRoute(
+                                //         builder: (_) => ProfileVerification(
+                                //           user: widget.user,
+                                //         ),
+                                //       )),
+                                //   child: IntroInfo(
+                                //     title: 'Request Verification',
+                                //     onPressed: () => Navigator.push(
+                                //         context,
+                                //         MaterialPageRoute(
+                                //           builder: (_) => ProfileVerification(
+                                //             user: widget.user,
+                                //           ),
+                                //         )),
+                                //     subTitle: "Verify your account",
+                                //     icon: Icon(
+                                //       MdiIcons.checkboxMarkedCircle,
+                                //       size: 20,
+                                //       color: Colors.blue,
+                                //     ),
+                                //   ),
+                                // ),
+                                Divider(color: Colors.blue),
                                 GestureDetector(
                                   onTap: () => Navigator.push(
                                       context,
@@ -464,17 +487,15 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                             builder: (_) => FeatureSurvey())),
                                     title: 'Take a survey',
                                     subTitle:
-                                        "Take a survey and let us know what you think about Bars Impression",
+                                        "Take a survey and let us know what you think about Bars Impression.",
                                     icon: Icon(
                                       Icons.arrow_forward_ios_outlined,
-                                      color: ConfigBloc().darkModeOn
-                                          ? Color(0xFFf2f2f2)
-                                          : Color(0xFF1a1a1a),
+                                      color: Colors.blue,
                                       size: 20,
                                     ),
                                   ),
                                 ),
-                                Divider(color: Colors.grey),
+                                Divider(color: Colors.blue),
                                 Platform.isIOS
                                     ? GestureDetector(
                                         onTap: () => Share.share(
@@ -487,9 +508,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                               "Share Bars Impression with others",
                                           icon: Icon(
                                             Icons.share,
-                                            color: ConfigBloc().darkModeOn
-                                                ? Color(0xFFf2f2f2)
-                                                : Color(0xFF1a1a1a),
+                                            color: Colors.blue,
                                             size: 20,
                                           ),
                                         ),
@@ -512,35 +531,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                           ),
                                         ),
                                       ),
-                                Divider(color: Colors.grey),
-
-                                // GestureDetector(
-                                //   onTap: () => Navigator.push(
-                                //       context,
-                                //       MaterialPageRoute(
-                                //         builder: (_) => ProfileVerification(
-                                //           user: widget.user,
-                                //         ),
-                                //       )),
-                                //   child: IntroInfo(
-                                //     title: 'Request Verification',
-                                //     onPressed: () => Navigator.push(
-                                //         context,
-                                //         MaterialPageRoute(
-                                //           builder: (_) => ProfileVerification(
-                                //             user: widget.user,
-                                //           ),
-                                //         )),
-                                //     subTitle:
-                                //         "Share Bars Impression with others",
-                                //     icon: Icon(
-                                //       MdiIcons.checkboxMarkedCircle,
-                                //       size: 20,
-                                //       color: Colors.blue,
-                                //     ),
-                                //   ),
-                                // ),
-                                // Divider(color: Colors.grey),
+                                Divider(color: Colors.blue),
                                 Align(
                                   alignment: Alignment.center,
                                   child: Padding(

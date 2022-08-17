@@ -16,9 +16,6 @@ class _TipScreenState extends State<TipScreen> {
       body: Padding(
         padding: const EdgeInsets.all(30.0),
         child: ListView(
-
-            // mainAxisAlignment: MainAxisAlignment.center,
-            // crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Center(
                 child: ShakeTransition(
@@ -39,7 +36,7 @@ class _TipScreenState extends State<TipScreen> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12.0),
                   child: IntroInfo(
-                    title: 'Reveal more infomation',
+                    title: 'Reveal more information',
                     subTitle:
                         "Slide a created content (mood punch, a forum, an event, or a comment) to the right to see more information.\n You can also tap and hold to reveal more information",
                     icon: Icon(
@@ -56,7 +53,7 @@ class _TipScreenState extends State<TipScreen> {
                   child: IntroInfo(
                     title: 'Change mood punched state',
                     subTitle:
-                        'Double tap a mood punched to change the state of a punch. To hide the punchline associated with the picture.',
+                        'Double tap a mood punched to change the state of a punch, to hide the punchline associated with the picture.',
                     icon: Icon(
                       Icons.change_circle,
                       color: Colors.grey,
@@ -71,7 +68,7 @@ class _TipScreenState extends State<TipScreen> {
                   child: IntroInfo(
                     title: 'Suggestion Box',
                     subTitle:
-                        'Tap and hold on a content to reveal more actions and select suggestion box. We want to know what you think. This is how you can help Bars Impression become the best ecosystem for you and other music creatives worldwide. ',
+                        'Tap and hold on a content to reveal more actions and select the suggestion box. We want to know what you think. This is how you can help Bars Impression become the best ecosystem for you and other music creatives worldwide.',
                     icon: Icon(
                       Icons.mail_rounded,
                       color: Colors.grey,

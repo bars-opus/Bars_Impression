@@ -305,7 +305,6 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                                   userId: widget
                                                                       .author
                                                                       .id!,
-                                                                
                                                                 )))),
                                         FocusedMenuItem(
                                             title: Container(
@@ -447,12 +446,6 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                                       ListView(
                                                                     scrollDirection:
                                                                         Axis.horizontal,
-                                                                    // mainAxisAlignment:
-                                                                    //     MainAxisAlignment
-                                                                    //         .spaceBetween,
-                                                                    // crossAxisAlignment:
-                                                                    //     CrossAxisAlignment
-                                                                    //         .end,
                                                                     children: <
                                                                         Widget>[
                                                                       Material(

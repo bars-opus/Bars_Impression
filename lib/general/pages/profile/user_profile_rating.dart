@@ -1,4 +1,3 @@
-import 'package:bars/general/pages/forum_and_blog/no_account_list.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:intl/intl.dart';
 
@@ -181,7 +180,7 @@ class _ProfileRatingState extends State<ProfileRating> {
           ),
           Text(
               widget.user.id! == currentUserId
-                  ? '${widget.user.name} you can tap below to see people you have rated. This information is not display to other people '
+                  ? '${widget.user.name} you can tap below to see people you have rated. This information is not displayed to other people.'
                   : 'This is how ${widget.user.name} has rated people.',
               style: TextStyle(
                 fontSize: 14,

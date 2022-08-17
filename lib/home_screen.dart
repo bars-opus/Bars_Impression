@@ -2,6 +2,7 @@ import 'package:bars/utilities/local_notification.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:bars/utilities/exports.dart';
+import 'package:store_redirect/store_redirect.dart';
 
 class HomeScreen extends StatefulWidget {
   static final id = 'Home_screen';
@@ -533,7 +534,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                         Positioned(
                                             bottom: 7,
-                                            child: UpdateInfoMini(
+                                            child: GestureDetector(
+                                                child: UpdateInfoMini(
                                               updateNote:
                                                   _updateApp.updateNote!,
                                               showinfo:
@@ -543,18 +545,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                               displayMiniUpdate:
                                                   _updateApp.displayMiniUpdate!,
                                               onPressed: () {
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (_) =>
-                                                            MyWebView(
-                                                              url: Platform
-                                                                      .isIOS
-                                                                  ? 'https://apps.apple.com/us/app/bars-impression/id1610868894'
-                                                                  : 'https://play.google.com/store/apps/details?id=com.barsOpus.barsImpression',
-                                                            )));
+                                                StoreRedirect.redirect(
+                                                  androidAppId:
+                                                      "com.barsOpus.barsImpression",
+                                                  iOSAppId: "1610868894",
+                                                );
+
                                               },
-                                            )),
+                                            ))),
                                         Positioned(
                                             bottom: 7, child: NoConnection()),
                                       ],

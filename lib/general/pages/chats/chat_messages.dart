@@ -486,7 +486,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                       children: [
                                         TextSpan(
                                             text:
-                                                "${message.replyingAuthor}: \n",
+                                                "replied:  ${message.replyingAuthor}: \n",
                                             style: TextStyle(
                                               fontSize: 12,
                                               color: Colors.teal[800],
@@ -602,12 +602,10 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                             fontSize: 12,
                                             text: message.content,
                                           )
-                                        : Text(
-                                            message.content,
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 12.0),
-                                          ),
+                                        :  HyperLinkText(
+                  from: 'Message',
+                  text:   message.content,
+                ),
                                   ),
                                   Text(
                                       timeago.format(
@@ -1002,7 +1000,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
         userId: widget.user.id!,
         imageUrl: '',
         MediaType: '',
-        // chat: widget.chat!,
         replyingAuthor: Provider.of<UserData>(context, listen: false).post7 ==
                 widget.currentUserId
             ? 'Me'

@@ -17,7 +17,6 @@ class DeleteAccount extends StatefulWidget {
 
 class _DeleteAccountState extends State<DeleteAccount> {
   final formKey = GlobalKey<FormState>();
-  // bool _isLoading = false;
   bool _isHidden = true;
   bool _deActive = false;
   late PageController _pageController;
@@ -652,12 +651,14 @@ class _DeleteAccountState extends State<DeleteAccount> {
               color: ConfigBloc().darkModeOn
                   ? Color(0xFFf2f2f2)
                   : Color(0xFF1a1a1a)),
-          leading: IconButton(
-              icon: Icon(
-                  Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
-              onPressed: () {
-                _index != 0 ? animateBack() : Navigator.pop(context);
-              }),
+          leading: _index == 3
+              ? SizedBox.shrink()
+              : IconButton(
+                  icon: Icon(
+                      Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
+                  onPressed: () {
+                    _index != 0 ? animateBack() : Navigator.pop(context);
+                  }),
           automaticallyImplyLeading: true,
           elevation: 0,
         ),
@@ -688,6 +689,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
                                 color: ConfigBloc().darkModeOn
                                     ? Color(0xFFf2f2f2)
                                     : Color(0xFF1a1a1a),
+                                fontWeight: FontWeight.bold,
                                 fontSize: 40),
                             textAlign: TextAlign.center,
                           ),
@@ -800,6 +802,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
                                 color: ConfigBloc().darkModeOn
                                     ? Color(0xFFf2f2f2)
                                     : Color(0xFF1a1a1a),
+                                fontWeight: FontWeight.bold,
                                 fontSize: 24),
                             textAlign: TextAlign.center,
                           ),
@@ -968,35 +971,16 @@ class _DeleteAccountState extends State<DeleteAccount> {
                     ),
                   ),
                 ),
-                Container(
-                  height: width * 2,
-                  width: width,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Shimmer.fromColors(
-                        period: Duration(milliseconds: 1000),
-                        baseColor: Colors.grey,
-                        highlightColor: Colors.blue,
-                        child: NoContents(
-                          icon: (Icons.delete_forever_outlined),
-                          title: 'Deleting Account',
-                          subTitle: 'Just a moment...',
+                SingleChildScrollView(
+                  child: Container(
+                      color: Colors.grey[600],
+                      height: MediaQuery.of(context).size.height - 200,
+                      child: Center(
+                        child: Loading(
+                          icon: (Icons.delete_forever),
+                          title: 'Deleting account',
                         ),
-                      ),
-                      const SizedBox(height: 30),
-                      SizedBox(
-                          height: 1.0,
-                          child: LinearProgressIndicator(
-                            backgroundColor: ConfigBloc().darkModeOn
-                                ? Color(0xFF1a1a1a)
-                                : Colors.grey[100],
-                            valueColor: AlwaysStoppedAnimation(Colors.blue),
-                          )),
-                      const SizedBox(height: 100),
-                    ],
-                  ),
+                      )),
                 )
               ],
             ),

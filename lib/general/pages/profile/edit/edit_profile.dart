@@ -205,20 +205,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   fontWeight: FontWeight.bold),
             ),
             centerTitle: true,
-            actions: [
-              IconButton(
-                icon: Icon(Icons.settings),
-                iconSize: 30.0,
-                color: Colors.grey,
-                onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ProfileSettings(
-                        user: widget.user,
-                      ),
-                    )),
-              ),
-            ],
           ),
           body: SafeArea(
             child: GestureDetector(
@@ -266,7 +252,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       ),
                                       onPressed: _handleImageFromGallery,
                                       child: Text(
-                                        'Set Avatar',
+                                        'Set photo',
                                         style: TextStyle(
                                           color: Colors.blue,
                                           fontSize: 16.0,
@@ -476,7 +462,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                       .trim()
                                                       .length >
                                                   700
-                                              ? 'Please, enter a bio less than 700 characters.'
+                                              ? 'Please, enter a bio of fewer than 700 characters.'
                                               : null,
                                           onSaved: (input) => _bio = input!,
                                         ),
@@ -492,7 +478,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         iconSize: 20,
                                         raduis: 10,
                                         title: ' Select an Account Type',
-                                        icon: Icons.person_outline,
+                                        icon: Icons.person,
                                         textColor: ConfigBloc().darkModeOn
                                             ? Colors.white
                                             : Colors.black,
@@ -517,7 +503,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         iconSize: 20,
                                         raduis: 10,
                                         title: ' Choose Your Location',
-                                        icon: MdiIcons.mapMarkerOutline,
+                                        icon: MdiIcons.mapMarker,
                                         textColor: ConfigBloc().darkModeOn
                                             ? Colors.white
                                             : Colors.black,
@@ -547,8 +533,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                 iconSize: 20,
                                                 raduis: 10,
                                                 title: ' Booking Portfolio',
-                                                icon: MdiIcons
-                                                    .briefcaseEditOutline,
+                                                icon: MdiIcons.briefcaseEdit,
                                                 textColor:
                                                     ConfigBloc().darkModeOn
                                                         ? Colors.white
@@ -576,7 +561,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         padding: 5,
                                         raduis: 10,
                                         title: '  Music Preference',
-                                        icon: Icons.favorite_border,
+                                        icon: Icons.favorite,
                                         textColor: ConfigBloc().darkModeOn
                                             ? Colors.white
                                             : Colors.black,
@@ -588,6 +573,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                             MaterialPageRoute(
                                               builder: (_) =>
                                                   EditProfileMusicPref(
+                                                user: widget.user,
+                                              ),
+                                            )),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(3.0),
+                                      child: UserWebsite(
+                                        containerColor: Colors.transparent,
+                                        iconSize: 20,
+                                        padding: 5,
+                                        raduis: 10,
+                                        title: 'Account Settings',
+                                        icon: Icons.settings,
+                                        textColor: ConfigBloc().darkModeOn
+                                            ? Colors.white
+                                            : Colors.black,
+                                        iconColor: ConfigBloc().darkModeOn
+                                            ? Colors.white
+                                            : Colors.black,
+                                        onPressed: () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => ProfileSettings(
                                                 user: widget.user,
                                               ),
                                             )),

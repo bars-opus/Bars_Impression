@@ -4,8 +4,9 @@ class PickCropCamera {
   static Future<File?> pickedMedia({
     required Future<File> Function(File file) cropImage,
   }) async {
-    final pickedFile = await ImagePicker()
-        .pickImage(source: ImageSource.camera, imageQuality: 100);
+    final pickedFile = await ImagePicker().pickImage(
+      source: ImageSource.camera,
+    );
 
     if (pickedFile == null) return null;
     // ignore: unnecessary_null_comparison

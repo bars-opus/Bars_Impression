@@ -216,9 +216,9 @@ class _UserBookingState extends State<UserBooking> {
                                       TextSpan(
                                         text: "\nEven though we try to get the contact of " +
                                             widget.user.userName! +
-                                            ' for you, we cannot garantee that this are the exact and correct contact of ' +
+                                            ' for you, we cannot guarantee that this are the exact and correct contact of  ' +
                                             widget.user.userName! +
-                                            ', we therefor advice that you do extra reseaches concerning the management of ' +
+                                            ', we therefore advice that you do extra research concerning the management of ' +
                                             widget.user.userName!,
                                         style: TextStyle(
                                           fontSize: 14,

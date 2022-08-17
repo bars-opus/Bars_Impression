@@ -48,7 +48,9 @@ class _WebDisclaimerState extends State<WebDisclaimer> {
                   Material(
                     color: Colors.transparent,
                     child: Text(
-                      widget.contentType,
+                      widget.contentType.contains('Link')
+                          ? ''
+                          : widget.contentType,
                       style: TextStyle(
                           color: ConfigBloc().darkModeOn
                               ? Color(0xFFf2f2f2)
@@ -67,12 +69,14 @@ class _WebDisclaimerState extends State<WebDisclaimer> {
                             widget.contentType +
                             ' to see if you will like to do business. Bars Impression accepts no liability or responsibility for the information, views, or opinion contained therein.'
                         : widget.contentType.contains('Music Video')
-                            ? 'Access music video link featured with this mood punched. Note that the author of this mood punch might not be the owner or author of the music video link you are about to access. But rather an appreciator, lover, and promoter of the creativity of the original author(right owner/s).'
+                            ? 'Access the music video link featured with this mood punched. Note that the author of this mood punch might not be the owner or author of the music video link you are about to access. But rather an appreciator, lover, and promoter of the creativity of the original author(right owner/s).'
                             : widget.contentType.contains('Event ticket')
                                 ? ' Even though Bars Impression would direct you to the website provided by the publisher of this event,  We strongly advise that: you thoroughly research this event if you are interested.'
                                 : widget.contentType.contains('Previous Event')
                                     ? 'Watch the previous event to know how this upcoming event might be.'
-                                    : '',
+                                    : widget.contentType.contains('Link')
+                                        ? 'You are accessing an external link. Bars Impression accepts no liability or responsibility for the information, views, or opinion contained therein.'
+                                        : '',
                     style: TextStyle(
                         color: ConfigBloc().darkModeOn
                             ? Color(0xFFf2f2f2)

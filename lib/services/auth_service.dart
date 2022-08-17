@@ -119,7 +119,7 @@ class AuthService {
             text: TextSpan(children: [
               TextSpan(
                   text:
-                      "We have put together some tips to help you understand certain features of Bars Impression and to use this platform effectively. ",
+                      "We have put together some tips to help you understand certain features of Bars Impression and to use this platform effectively.",
                   style: TextStyle(fontSize: 14, color: Colors.black)),
             ]),
           ),
@@ -145,7 +145,7 @@ class AuthService {
           )
         ],
         titleText: Text(
-          'Sign Up Failed',
+          'Sign up failed',
           style: TextStyle(color: Colors.white),
         ),
         messageText: Container(

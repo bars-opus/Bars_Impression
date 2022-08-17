@@ -949,30 +949,30 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                               ? MainAxisAlignment.center
                                               : MainAxisAlignment.spaceEvenly,
                                           children: [
-                                            // widget.event.previousEvent.isEmpty
-                                            //     ? SizedBox.shrink()
-                                            //     :
-                                            ShakeTransition(
-                                              axis: Axis.vertical,
-                                              child: OutlinedButton(
-                                                style: OutlinedButton.styleFrom(
-                                                  primary: Colors.white,
-                                                  side: BorderSide(
-                                                      width: 1.0,
-                                                      color:
-                                                          Colors.transparent),
-                                                ),
-                                                child: Text(
-                                                  'Previous Event',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 12.0,
+                                            widget.event.previousEvent.isEmpty
+                                                ? SizedBox.shrink()
+                                                : ShakeTransition(
+                                                    axis: Axis.vertical,
+                                                    child: OutlinedButton(
+                                                      style: OutlinedButton
+                                                          .styleFrom(
+                                                        primary: Colors.white,
+                                                        side: BorderSide(
+                                                            width: 1.0,
+                                                            color: Colors
+                                                                .transparent),
+                                                      ),
+                                                      child: Text(
+                                                        'Previous Event',
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 12.0,
+                                                        ),
+                                                      ),
+                                                      onPressed: widget
+                                                          .onPressedPreviousEvent,
+                                                    ),
                                                   ),
-                                                ),
-                                                onPressed: widget
-                                                    .onPressedPreviousEvent,
-                                              ),
-                                            ),
                                             widget.event.ticketSite.isEmpty ||
                                                     widget.event.previousEvent
                                                         .isEmpty

@@ -138,7 +138,7 @@ class _EditProfileMusicPrefState extends State<EditProfileMusicPref> {
                                 EditProfileInfo(
                                     editTitle: 'Music \nPreference',
                                     info:
-                                        'Even though this is optional, you can enter your favorite punchline, favorite musician, and favorite music album so that other users can know the type of music you like, and relate to you. These also help promote your favorite music. ',
+                                        'Even though this is optional, you can enter your favorite punchline, favorite musician, and favorite music album so that other users can know the type of music you like and relate to you. These also help promote your favorite music. ',
                                     icon: Icons.favorite),
                                 Padding(
                                   padding: const EdgeInsets.only(
@@ -215,7 +215,7 @@ class _EditProfileMusicPrefState extends State<EditProfileMusicPref> {
                                     ),
                                     validator: (input) => input!.trim().length >
                                             50
-                                        ? 'Please, enter an artist name with fewer than 50 characters.'
+                                        ? 'Please, enter an artist\'s name with fewer than 50 characters.'
                                         : null,
                                     onSaved: (input) =>
                                         _favouriteArtist = input!.toUpperCase(),

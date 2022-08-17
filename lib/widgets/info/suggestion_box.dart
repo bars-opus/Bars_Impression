@@ -179,10 +179,13 @@ class _SuggestionBoxState extends State<SuggestionBox> {
                     ),
                   ),
                   SizedBox(height: 10),
-                  Container(
-                    height: 2,
-                    color: Colors.blue,
-                    width: 10,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 100.0),
+                    child: Container(
+                      height: 0.5,
+                      color: Colors.blue,
+                      width: 10,
+                    ),
                   ),
                   ShakeTransition(
                     child: Padding(

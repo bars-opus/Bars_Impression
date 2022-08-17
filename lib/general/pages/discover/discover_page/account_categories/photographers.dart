@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/rendering.dart';
 
 class Photographers extends StatefulWidget {
   static final id = 'Photographers';
@@ -26,6 +27,17 @@ class _PhotographersState extends State<Photographers>
   void initState() {
     super.initState();
     _setupUsers();
+    _hideButtonController = ScrollController();
+    _hideButtonController.addListener(() {
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        Provider.of<UserData>(context, listen: false).setShowUsersTab(true);
+      }
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        Provider.of<UserData>(context, listen: false).setShowUsersTab(false);
+      }
+    });
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {
@@ -129,13 +141,16 @@ class _PhotographersState extends State<Photographers>
       backgroundColor:
           ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
       body: _userList.length > 0
-          ? RefreshIndicator(
-              backgroundColor: Colors.white,
-              onRefresh: () async {
-                _setupUsers();
-              },
-              child: Padding(
-                  padding: const EdgeInsets.only(top: 20), child: _buildUser()))
+          ? Padding(
+            padding: const EdgeInsets.only(top: 20.0),
+            child: RefreshIndicator(
+                backgroundColor: Colors.white,
+                onRefresh: () async {
+                  _setupUsers();
+                },
+                child: _buildUser(),
+              ),
+          )
           : _userList.length == 0
               ? Center(
                   child: SizedBox.shrink(),

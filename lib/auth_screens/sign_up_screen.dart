@@ -130,7 +130,7 @@ class _SignpsScreenState extends State<SignpsScreen>
                                                   color: Colors.grey,
                                                 ),
                                                 hintText:
-                                                    'Stage, brand or nickname',
+                                                    'Stage, brand, or nickname',
                                                 hintStyle: TextStyle(
                                                   fontSize:
                                                       width > 800 ? 20 : 14,

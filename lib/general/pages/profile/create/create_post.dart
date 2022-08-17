@@ -27,7 +27,6 @@ class _CreatePostState extends State<CreatePost> {
       musicLink: _musicLink,
       isEditting: false,
       punch: _punch,
-      // user: widget.user,
       imageUrl: '',
       post: null,
       hashTag: _hashTag,

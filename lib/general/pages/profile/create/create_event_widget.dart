@@ -433,6 +433,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
   _submitCreate() async {
     if (_formKey.currentState!.validate() & !_isLoading) {
       _formKey.currentState?.save();
+      animateToPage();
       setState(() {
         _isLoading = true;
       });
@@ -1017,39 +1018,59 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
         : MediaQuery.of(context).size.width;
     return ResponsiveScaffold(
       child: Scaffold(
-        backgroundColor:
-            ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+        backgroundColor: _indexx == 8
+            ? Color(0xFFFF2D55)
+            : ConfigBloc().darkModeOn
+                ? Color(0xFF1a1a1a)
+                : Color(0xFFf2f2f2),
         appBar: AppBar(
           iconTheme: IconThemeData(
             color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
           ),
-          leading: widget.isEditting
-              ? IconButton(
-                  icon: Icon(
-                      Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
-                  onPressed: () {
-                    _indexx == 1 || _indexx == 0
-                        ? Navigator.pop(context)
-                        : animateBack();
-                  })
-              : IconButton(
-                  icon: Icon(
-                      Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
-                  onPressed: () {
-                    _indexx != 0 ? animateBack() : _pop();
-                  }),
+          leading: _indexx == 8
+              ? SizedBox.shrink()
+              : widget.isEditting
+                  ? IconButton(
+                      icon: Icon(Platform.isIOS
+                          ? Icons.arrow_back_ios
+                          : Icons.arrow_back),
+                      onPressed: () {
+                        _indexx == 1 || _indexx == 0
+                            ? Navigator.pop(context)
+                            : animateBack();
+                      })
+                  : IconButton(
+                      icon: Icon(Platform.isIOS
+                          ? Icons.arrow_back_ios
+                          : Icons.arrow_back),
+                      onPressed: () {
+                        _indexx != 0 ? animateBack() : _pop();
+                      }),
           elevation: 0,
-          backgroundColor:
-              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+          backgroundColor: _indexx == 8
+              ? Color(0xFFFF2D55)
+              : ConfigBloc().darkModeOn
+                  ? Color(0xFF1a1a1a)
+                  : Color(0xFFf2f2f2),
           title: Material(
             color: Colors.transparent,
-            child: Text(
-              widget.isEditting ? 'Edit Event' : 'Create Event',
-              style: TextStyle(
-                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-            ),
+            child: _isLoading
+                ? Text(
+                    '',
+                  )
+                : Text(
+                    _indexx == 8
+                        ? ''
+                        : widget.isEditting
+                            ? 'Edit Event'
+                            : 'Create Event',
+                    style: TextStyle(
+                        color: ConfigBloc().darkModeOn
+                            ? Colors.white
+                            : Colors.black,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
+                  ),
           ),
           centerTitle: true,
         ),
@@ -1722,23 +1743,20 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                 ],
                               )
                             : SizedBox.shrink(),
-                        _isLoading
-                            ? Padding(
-                                padding: const EdgeInsets.only(bottom: 10.0),
-                                child: SizedBox(
-                                  height: 2.0,
-                                  child: LinearProgressIndicator(
-                                    backgroundColor: Colors.transparent,
-                                    valueColor:
-                                        AlwaysStoppedAnimation(Colors.blue),
-                                  ),
-                                ),
-                              )
-                            : SizedBox.shrink(),
                       ],
                     ),
                   ),
                 ),
+                SingleChildScrollView(
+                  child: Container(
+                      color: Color(0xFFFF2D55),
+                      height: MediaQuery.of(context).size.height - 200,
+                      child: Center(
+                          child: Loading(
+                        title: 'Creating event',
+                        icon: (Icons.event),
+                      ))),
+                )
               ],
             ),
           ),

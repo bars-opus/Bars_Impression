@@ -266,19 +266,7 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                                                                 ),
                                                               ),
                                                             );
-                                                            // : widget.author
-                                                            //         .profileHandle!
-                                                            //         .startsWith(
-                                                            //             'Fan')
-                                                            //     ? () {}
-                                                            //     : Navigator.push(
-                                                            //         context,
-                                                            //         MaterialPageRoute(
-                                                            //             builder: (_) => ProfileProfessionalProfile(
-                                                            //                   currentUserId: Provider.of<UserData>(context).currentUserId!,
-                                                            //                   user: widget.author,
-                                                            //                   userId: widget.author.id!,
-                                                            //                 )));
+                                                          
                                                           },
                                                           backgroundColor:
                                                               Colors

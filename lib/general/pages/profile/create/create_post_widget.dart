@@ -726,7 +726,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
-                                _show != 0
+                                _show != 0 || _isLoading
                                     ? SizedBox.shrink()
                                     : Row(
                                         mainAxisAlignment:
@@ -791,166 +791,186 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                                           ),
                                         ],
                                       ),
-                                SizedBox(height: 0),
-                                Padding(
-                                  padding: EdgeInsets.all(10),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: buildBlur(
-                                      borderRadius: BorderRadius.circular(30),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(30),
-                                          color: Colors.white.withOpacity(0.2),
-                                        ),
-                                        height: width / 1.5,
+                                _isLoading
+                                    ? SizedBox.shrink()
+                                    : Padding(
+                                        padding: EdgeInsets.all(10),
                                         child: Padding(
-                                          padding: const EdgeInsets.all(30.0),
-                                          child: SingleChildScrollView(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              children: <Widget>[
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(0.0),
-                                                  child: Hero(
-                                                    tag: !widget.isEditting
-                                                        ? '1'
-                                                        : 'punch' +
-                                                            widget.post!.id
-                                                                .toString(),
-                                                    child: Material(
-                                                      color: Colors.transparent,
-                                                      child: TextFormField(
-                                                        keyboardType:
-                                                            TextInputType
-                                                                .multiline,
-                                                        maxLines: null,
-                                                        textCapitalization:
-                                                            TextCapitalization
-                                                                .sentences,
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          color: Colors.white,
-                                                        ),
-                                                        initialValue:
-                                                            widget.isEditting
-                                                                ? widget.punch
-                                                                : '',
-                                                        decoration: InputDecoration(
-                                                            hintText:
-                                                                "Enter a punchline to express your mood",
-                                                            hintStyle: TextStyle(
+                                          padding: const EdgeInsets.all(10.0),
+                                          child: buildBlur(
+                                            borderRadius:
+                                                BorderRadius.circular(30),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(30),
+                                                color: Colors.white
+                                                    .withOpacity(0.2),
+                                              ),
+                                              height: width / 1.5,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(30.0),
+                                                child: SingleChildScrollView(
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    children: <Widget>[
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(0.0),
+                                                        child: Hero(
+                                                          tag: !widget
+                                                                  .isEditting
+                                                              ? '1'
+                                                              : 'punch' +
+                                                                  widget
+                                                                      .post!.id
+                                                                      .toString(),
+                                                          child: Material(
+                                                            color: Colors
+                                                                .transparent,
+                                                            child:
+                                                                TextFormField(
+                                                              keyboardType:
+                                                                  TextInputType
+                                                                      .multiline,
+                                                              maxLines: null,
+                                                              textCapitalization:
+                                                                  TextCapitalization
+                                                                      .sentences,
+                                                              style: TextStyle(
                                                                 fontSize: 14,
                                                                 color: Colors
-                                                                    .grey),
-                                                            labelText:
-                                                                'Punchline',
-                                                            labelStyle: TextStyle(
-                                                                fontSize: 14,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                color: Colors
-                                                                    .white),
-                                                            enabledBorder: new UnderlineInputBorder(
-                                                                borderSide: new BorderSide(
-                                                                    color: Colors
-                                                                        .grey))),
-                                                        onChanged: (input) =>
-                                                            Provider.of<UserData>(
-                                                                    context,
-                                                                    listen:
-                                                                        false)
-                                                                .setPost3(
-                                                                    input),
-                                                        onSaved: (input) =>
-                                                            Provider.of<UserData>(
-                                                                    context,
-                                                                    listen:
-                                                                        false)
-                                                                .setPost3(
-                                                                    input!),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  height: 10,
-                                                ),
-                                                Hero(
-                                                  tag: !widget.isEditting
-                                                      ? '2'
-                                                      : 'caption' +
-                                                          widget.post!.id
-                                                              .toString(),
-                                                  child: Material(
-                                                    color: Colors.transparent,
-                                                    child: TextFormField(
-                                                      keyboardType:
-                                                          TextInputType
-                                                              .multiline,
-                                                      maxLines: null,
-                                                      textCapitalization:
-                                                          TextCapitalization
-                                                              .sentences,
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        color: Colors.white,
-                                                      ),
-                                                      initialValue:
-                                                          widget.isEditting
-                                                              ? widget.caption
-                                                              : '',
-                                                      decoration:
-                                                          InputDecoration(
-                                                              hintText:
-                                                                  "A brief story about your punch and mood",
-                                                              hintStyle: TextStyle(
-                                                                  fontSize: 14,
-                                                                  color: Colors
-                                                                      .grey),
-                                                              labelText:
-                                                                  'Punch Annotation (optional)',
-                                                              labelStyle:
-                                                                  TextStyle(
-                                                                fontSize: 14,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                color:
-                                                                    Colors.grey,
+                                                                    .white,
                                                               ),
-                                                              enabledBorder: new UnderlineInputBorder(
-                                                                  borderSide:
-                                                                      new BorderSide(
-                                                                          color:
-                                                                              Colors.grey))),
-                                                      onChanged: (input) =>
-                                                          Provider.of<UserData>(
-                                                                  context,
-                                                                  listen: false)
-                                                              .setPost4(input),
-                                                      onSaved: (input) =>
-                                                          Provider.of<UserData>(
-                                                                  context,
-                                                                  listen: false)
-                                                              .setPost4(input!),
-                                                    ),
+                                                              initialValue: widget
+                                                                      .isEditting
+                                                                  ? widget.punch
+                                                                  : '',
+                                                              decoration: InputDecoration(
+                                                                  hintText:
+                                                                      "Enter a punchline to express your mood",
+                                                                  hintStyle: TextStyle(
+                                                                      fontSize:
+                                                                          14,
+                                                                      color: Colors
+                                                                          .grey),
+                                                                  labelText:
+                                                                      'Punchline',
+                                                                  labelStyle: TextStyle(
+                                                                      fontSize:
+                                                                          14,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      color: Colors
+                                                                          .white),
+                                                                  enabledBorder:
+                                                                      new UnderlineInputBorder(
+                                                                          borderSide:
+                                                                              new BorderSide(color: Colors.grey))),
+                                                              onChanged: (input) =>
+                                                                  Provider.of<UserData>(
+                                                                          context,
+                                                                          listen:
+                                                                              false)
+                                                                      .setPost3(
+                                                                          input),
+                                                              onSaved: (input) =>
+                                                                  Provider.of<UserData>(
+                                                                          context,
+                                                                          listen:
+                                                                              false)
+                                                                      .setPost3(
+                                                                          input!),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 10,
+                                                      ),
+                                                      Hero(
+                                                        tag: !widget.isEditting
+                                                            ? '2'
+                                                            : 'caption' +
+                                                                widget.post!.id
+                                                                    .toString(),
+                                                        child: Material(
+                                                          color: Colors
+                                                              .transparent,
+                                                          child: TextFormField(
+                                                            keyboardType:
+                                                                TextInputType
+                                                                    .multiline,
+                                                            maxLines: null,
+                                                            textCapitalization:
+                                                                TextCapitalization
+                                                                    .sentences,
+                                                            style: TextStyle(
+                                                              fontSize: 14,
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
+                                                            initialValue: widget
+                                                                    .isEditting
+                                                                ? widget.caption
+                                                                : '',
+                                                            decoration:
+                                                                InputDecoration(
+                                                                    hintText:
+                                                                        "A brief story about your punch and mood",
+                                                                    hintStyle: TextStyle(
+                                                                        fontSize:
+                                                                            14,
+                                                                        color: Colors
+                                                                            .grey),
+                                                                    labelText:
+                                                                        'Punch Annotation (optional)',
+                                                                    labelStyle:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          14,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      color: Colors
+                                                                          .grey,
+                                                                    ),
+                                                                    enabledBorder:
+                                                                        new UnderlineInputBorder(
+                                                                            borderSide:
+                                                                                new BorderSide(color: Colors.grey))),
+                                                            onChanged: (input) =>
+                                                                Provider.of<UserData>(
+                                                                        context,
+                                                                        listen:
+                                                                            false)
+                                                                    .setPost4(
+                                                                        input),
+                                                            onSaved: (input) =>
+                                                                Provider.of<UserData>(
+                                                                        context,
+                                                                        listen:
+                                                                            false)
+                                                                    .setPost4(
+                                                                        input!),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
-                                              ],
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ),
-                                ),
                                 SizedBox(
                                   height: 30,
                                 ),
@@ -997,7 +1017,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                                             padding: const EdgeInsets.only(
                                                 left: 50.0, right: 50),
                                             child: Text(
-                                              " Only music video, punch annotation, and hastag can be empty\nRefresh your page to see the effect of your punch edited or deleted",
+                                              " Only music video, punch annotation, and hashtag can be empty\nRefresh your page to see the effect of your punch edited or deleted",
                                               style: TextStyle(
                                                   color: Colors.grey,
                                                   fontSize: 12),
@@ -1166,96 +1186,95 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                                             ),
                                           ),
                                 _isLoading
-                                    ? Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 10.0),
-                                        child: SizedBox(
-                                          height: 2.0,
-                                          child: LinearProgressIndicator(
-                                            backgroundColor: Colors.transparent,
-                                            valueColor: AlwaysStoppedAnimation(
-                                                Colors.blue),
-                                          ),
-                                        ),
+                                    ? Loading(
+                                        icon: (Icons.mood),
+                                        title: 'Punching mood',
                                       )
                                     : SizedBox.shrink(),
                               ]),
                         ),
                       ),
                     ]),
-                    Positioned(
-                      top: 35,
-                      left: 5,
-                      child: IconButton(
-                          icon: Icon(Icons.close, color: Colors.white),
-                          onPressed: () {
-                            _showSheet
-                                ? setState(() {
-                                    _showSheet = false;
-                                    _show = 0;
-                                  })
-                                : _pop();
-                          }),
-                    ),
-                    Positioned(
-                      top: 40,
-                      right: 5,
-                      child: _showSheet
-                          ? AnimatedContainer(
-                              duration: Duration(milliseconds: 700),
-                              width: _showSheet ? 100 : 0.0,
-                              child: ShakeTransition(
-                                curve: Curves.easeOutBack,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Colors.blue,
-                                    elevation: 20.0,
-                                    onPrimary: Colors.blue,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _showSheet = false;
-                                      _show = 0;
-                                    });
-                                  },
-                                  child: Text(
-                                    'Done',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            )
-                          : Provider.of<UserData>(context, listen: false)
-                                      .post1
-                                      .isNotEmpty &&
-                                  Provider.of<UserData>(context, listen: false)
-                                      .post3
-                                      .isNotEmpty
-                              ? Provider.of<UserData>(context, listen: false)
-                                              .postImage !=
-                                          null ||
-                                      widget.imageUrl.isNotEmpty
-                                  ? CircularButton(
-                                      color: Colors.blue,
-                                      icon: Icon(
-                                        Icons.send,
-                                        size: 20,
-                                        color: Colors.white,
+                    _isLoading
+                        ? SizedBox.shrink()
+                        : Positioned(
+                            top: 35,
+                            left: 5,
+                            child: IconButton(
+                                icon: Icon(Icons.close, color: Colors.white),
+                                onPressed: () {
+                                  _showSheet
+                                      ? setState(() {
+                                          _showSheet = false;
+                                          _show = 0;
+                                        })
+                                      : _pop();
+                                }),
+                          ),
+                    _isLoading
+                        ? SizedBox.shrink()
+                        : Positioned(
+                            top: 40,
+                            right: 5,
+                            child: _showSheet
+                                ? AnimatedContainer(
+                                    duration: Duration(milliseconds: 700),
+                                    width: _showSheet ? 100 : 0.0,
+                                    child: ShakeTransition(
+                                      curve: Curves.easeOutBack,
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          primary: Colors.blue,
+                                          elevation: 20.0,
+                                          onPrimary: Colors.blue,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20.0),
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            _showSheet = false;
+                                            _show = 0;
+                                          });
+                                        },
+                                        child: Text(
+                                          'Done',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
                                       ),
-                                      onPressed: widget.isEditting
-                                          ? _submitEdit
-                                          : _submitCreate,
-                                    )
-                                  : SizedBox()
-                              : SizedBox(),
-                    ),
+                                    ),
+                                  )
+                                : Provider.of<UserData>(context, listen: false)
+                                            .post1
+                                            .isNotEmpty &&
+                                        Provider.of<UserData>(context,
+                                                listen: false)
+                                            .post3
+                                            .isNotEmpty
+                                    ? Provider.of<UserData>(context,
+                                                        listen: false)
+                                                    .postImage !=
+                                                null ||
+                                            widget.imageUrl.isNotEmpty
+                                        ? CircularButton(
+                                            color: Colors.blue,
+                                            icon: Icon(
+                                              Icons.send,
+                                              size: 20,
+                                              color: Colors.white,
+                                            ),
+                                            onPressed: widget.isEditting
+                                                ? _submitEdit
+                                                : _submitCreate,
+                                          )
+                                        : SizedBox()
+                                    : SizedBox(),
+                          ),
                     Positioned(
                       bottom: 0,
                       child: AnimatedContainer(

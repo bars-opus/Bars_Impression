@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:store_redirect/store_redirect.dart';
 
 class UpdateAppInfo extends StatefulWidget {
   final String updateNote;
@@ -70,39 +71,38 @@ class _UpdateAppInfoState extends State<UpdateAppInfo> {
                 style: TextStyle(
                   color: Colors.white,
                 ),
-                // textAlign: TextAlign.center,
+                textAlign: TextAlign.center,
               ),
             ),
             SizedBox(height: 50),
-            Container(
-              width: width - 100,
-              child: TextButton(
-                style: ElevatedButton.styleFrom(
-                  primary: ConfigBloc().darkModeOn
-                      ? Color(0xFF1a1a1a)
-                      : Colors.white,
-                  onPrimary: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(3.0),
+            Center(
+              child: Container(
+                width: width - 100,
+                child: TextButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: ConfigBloc().darkModeOn
+                        ? Color(0xFF1a1a1a)
+                        : Colors.white,
+                    onPrimary: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(3.0),
+                    ),
                   ),
-                ),
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => MyWebView(
-                                url: Platform.isIOS
-                                    ? 'https://apps.apple.com/us/app/bars-impression/id1610868894'
-                                    : 'https://play.google.com/store/apps/details?id=com.barsOpus.barsImpression',
-                              )));
-                },
-                child: Material(
-                  color: Colors.transparent,
-                  child: Text(
-                    'Update',
-                    style: TextStyle(
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                  onPressed: () {
+                    StoreRedirect.redirect(
+                      androidAppId: "com.barsOpus.barsImpression",
+                      iOSAppId: "1610868894",
+                    );
+                  },
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Text(
+                      'Update',
+                      style: TextStyle(
+                        color: ConfigBloc().darkModeOn
+                            ? Colors.white
+                            : Colors.black,
+                      ),
                     ),
                   ),
                 ),

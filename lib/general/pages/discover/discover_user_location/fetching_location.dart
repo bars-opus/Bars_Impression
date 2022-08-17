@@ -37,50 +37,58 @@ class _FetchingLocationState extends State<FetchingLocation> {
           child: NoContents(
             icon: (Icons.location_off),
             title: 'Permission Denied',
-            subTitle:
-                'Allow location permission to see users in your live location',
+            subTitle: widget.type.startsWith('Users')
+                ? 'Allow location permission to see users in your live location'
+                : 'Allow location permission to see events in your live location',
           ),
         );
+      } else if (permission == LocationPermission.always ||
+          permission == LocationPermission.whileInUse) {
+        return _fetichingLocation();
       }
     } else {
-      final geoposition = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-      setState(() {
-        userLatitude = geoposition.latitude;
-        userLongitude = geoposition.longitude;
-      });
-
-      List<Placemark> placemarks =
-          await placemarkFromCoordinates(userLatitude!, userLongitude!);
-      setState(() {
-        _city = (placemarks[0].locality == null ? '' : placemarks[0].locality)!;
-        _userCountry =
-            (placemarks[0].country == null ? '' : placemarks[0].country)!;
-        widget.type.startsWith('Users')
-            ? Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => UserLive(
-                    currentUserId: widget.currentUserId,
-                    user: widget.user,
-                    liveCity: _city,
-                    liveCountry: _userCountry,
-                  ),
-                ),
-              )
-            : Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => EventPageLive(
-                    currentUserId: widget.currentUserId,
-                    user: widget.user,
-                    liveCity: _city,
-                    liveCountry: _userCountry,
-                  ),
-                ),
-              );
-      });
+      _fetichingLocation();
     }
+  }
+
+  _fetichingLocation() async {
+    final geoposition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      userLatitude = geoposition.latitude;
+      userLongitude = geoposition.longitude;
+    });
+
+    List<Placemark> placemarks =
+        await placemarkFromCoordinates(userLatitude!, userLongitude!);
+    setState(() {
+      _city = (placemarks[0].locality == null ? '' : placemarks[0].locality)!;
+      _userCountry =
+          (placemarks[0].country == null ? '' : placemarks[0].country)!;
+      widget.type.startsWith('Users')
+          ? Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => UserLive(
+                  currentUserId: widget.currentUserId,
+                  user: widget.user,
+                  liveCity: _city,
+                  liveCountry: _userCountry,
+                ),
+              ),
+            )
+          : Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => EventPageLive(
+                  currentUserId: widget.currentUserId,
+                  user: widget.user,
+                  liveCity: _city,
+                  liveCountry: _userCountry,
+                ),
+              ),
+            );
+    });
   }
 
   @override

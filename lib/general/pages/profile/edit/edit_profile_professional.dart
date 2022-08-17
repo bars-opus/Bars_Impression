@@ -464,7 +464,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                 EditProfileInfo(
                                   editTitle: 'Booking \nportfolio',
                                   info:
-                                      'Enter your professional information to make it easy for other users to get to know you for business and recommendation purposes. Kindly read the instruction under each text filed carefully before filling the forms. ',
+                                      'Enter your professional information to make it easy for other users to get to know you for business and recommendation purposes.  Read the instruction under each text field carefully before filling out the forms.',
                                   icon: Icons.work,
                                 ),
                                 TextFormField(
@@ -535,7 +535,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                         borderSide:
                                             new BorderSide(color: Colors.grey)),
                                     hintText:
-                                        " example (rapping, singing, dancing)",
+                                        "example (rapping, singing, dancing)",
                                     hintStyle: TextStyle(
                                         fontSize: 12, color: Colors.grey),
                                     labelText: 'Skills',
@@ -599,7 +599,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                                     .trim()
                                                     .length <
                                                 1
-                                            ? 'Please, enter at least 3 performances/exhibitions'
+                                            ? 'Please, enter at least three performances/exhibitions'
                                             : null,
                                         onSaved: (input) =>
                                             _performances = input!,
@@ -658,7 +658,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                 ),
                                 SizedBox(height: 10),
                                 Text(
-                                  "With artists, producers, designers or organizers",
+                                  "With artists, producers, designers, or organizers",
                                   style: TextStyle(
                                       color: Colors.grey, fontSize: 12),
                                 ),
@@ -745,7 +745,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                       height: 10.0,
                                     ),
                                     Text(
-                                      'Enter your booking and management information. You can only add one phone number with an email.  ',
+                                      'Enter your booking and management information. You can only add one phone number with an email.',
                                       style: TextStyle(
                                         color: ConfigBloc().darkModeOn
                                             ? Colors.white
