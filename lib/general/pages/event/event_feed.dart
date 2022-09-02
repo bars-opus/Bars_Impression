@@ -16,7 +16,7 @@ class _EventsFeedState extends State<EventsFeed>
   final _eventSnapshot = <DocumentSnapshot>[];
   List<Event> _events = [];
   int _feedCount = 0;
-  int limit = 7;
+  int limit = 5;
   bool _hasNext = true;
   bool _isFetchingEvent = false;
   late ScrollController _hideButtonController;

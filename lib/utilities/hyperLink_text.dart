@@ -42,12 +42,20 @@ class _HyperLinkTextState extends State<HyperLinkText> {
                                 fontSize: 14.0,
                                 color: Colors.black,
                               )
-                            : TextStyle(
-                                fontSize: 12.0,
-                                color: ConfigBloc().darkModeOn
-                                    ? Colors.white
-                                    : Colors.black,
-                              ),
+                            : widget.from!.startsWith('Verified')
+                                ? TextStyle(
+                                    fontSize: 14.0,
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.white
+                                        : Colors.black,
+                                  )
+                                
+                                    : TextStyle(
+                                        fontSize: 12.0,
+                                        color: ConfigBloc().darkModeOn
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
         textAlign: widget.from!.startsWith('Profile') ||
                 widget.from!.startsWith('Link')
             ? TextAlign.center
@@ -156,12 +164,14 @@ class _HyperLinkTextState extends State<HyperLinkText> {
       "(fuck|shit|pussy|dick|asshole|asshole|asshole|asshole|bitch|bastard|cunt|butthole|sex|porn|dick|bugger|twat|butt|idiot|fool|jerk|Cumbubble|kill|rape|killer|rapist|muderer)";
   static const String urlPattern = 'https?:/\/\\S+';
 
+  static const String nameMention = (r"\@(\w+)");
+
   static const String emailPattern = r'\S+@\S+';
 
   static const String phonePattern = r'[\d-]{9,}';
 
   final RegExp linkRegExp = RegExp(
-      '($urlPattern)|($emailPattern)|($phonePattern)|($profainPattern)',
+      '($urlPattern)|($emailPattern)|($phonePattern)|($profainPattern)|($nameMention)',
       caseSensitive: false);
 
   WidgetSpan buildLinkComponent(String text, String linkToOpen, String type) =>
@@ -188,19 +198,37 @@ class _HyperLinkTextState extends State<HyperLinkText> {
                         WebDisclaimer(link: linkToOpen, contentType: 'Link'),
                   ),
                 )
-              : type.startsWith('Profaine')
+              : type.startsWith('nameMention')
                   ? Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => ViolatingTerms(
-                            link: linkToOpen, contentType: 'Safety'),
+                        builder: (_) => TaggedUser(
+                          user: linkToOpen,
+                          currentUserId: '',
+                        ),
                       ),
                     )
-                  : type.startsWith('mail')
-                      ? _sendMail(linkToOpen)
-                      : type.startsWith('contact')
-                          ? _makePhoneCall(linkToOpen)
-                          : () {};
+                  : type.startsWith('verified')
+                      ? Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => WebDisclaimer(
+                                link: linkToOpen, contentType: 'Link'),
+                          ),
+                        )
+                      : type.startsWith('Profaine')
+                          ? Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ViolatingTerms(
+                                    link: linkToOpen, contentType: 'Safety'),
+                              ),
+                            )
+                          : type.startsWith('mail')
+                              ? _sendMail(linkToOpen)
+                              : type.startsWith('contact')
+                                  ? _makePhoneCall(linkToOpen)
+                                  : () {};
         },
       ));
 
@@ -233,6 +261,8 @@ class _HyperLinkTextState extends State<HyperLinkText> {
     } else if (linkText
         .contains(RegExp(profainPattern, caseSensitive: false))) {
       list.add(buildLinkComponent(linkText, linkText, 'Profaine'));
+    } else if (linkText.contains(RegExp(nameMention, caseSensitive: false))) {
+      list.add(buildLinkComponent(linkText, linkText, 'nameMention'));
     } else {
       throw 'Unexpected match: $linkText';
     }

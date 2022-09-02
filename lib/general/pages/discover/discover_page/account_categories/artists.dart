@@ -17,7 +17,7 @@ class Artists extends StatefulWidget {
 class _ArtistsState extends State<Artists> with AutomaticKeepAliveClientMixin {
   List<AccountHolder> _userList = [];
   final _userSnapshot = <DocumentSnapshot>[];
-  int limit = 3;
+  int limit = 5;
   bool _hasNext = true;
   bool _isFectchingUser = false;
   late ScrollController _hideButtonController;

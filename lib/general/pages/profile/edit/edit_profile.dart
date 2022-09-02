@@ -3,7 +3,6 @@ import 'package:timeago/timeago.dart' as timeago;
 
 class EditProfileScreen extends StatefulWidget {
   final AccountHolder user;
-
   EditProfileScreen({
     required this.user,
   });
@@ -188,7 +187,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return ResponsiveScaffold(
       child: Scaffold(
           backgroundColor:
-              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
           appBar: AppBar(
             iconTheme: IconThemeData(
               color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
@@ -196,7 +195,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             automaticallyImplyLeading: index != 0 ? false : true,
             elevation: 0,
             backgroundColor:
-                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
             title: Text(
               'Edit Profile',
               style: TextStyle(
@@ -326,13 +325,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                           bottom: 10.0,
                                           right: 10.0),
                                       child: GestureDetector(
-                                        onTap: () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (_) => EditProfileName(
-                                                user: widget.user,
-                                              ),
-                                            )),
+                                        onTap: () =>
+                                            widget.user.verified!.isEmpty
+                                                ? Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (_) =>
+                                                          EditProfileName(
+                                                        user: widget.user,
+                                                      ),
+                                                    ))
+                                                : Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (_) =>
+                                                          VerificationNutralized(
+                                                        user: widget.user,
+                                                        from: 'userName',
+                                                      ),
+                                                    )),
                                         child: Container(
                                           color: Colors.transparent,
                                           child: Column(
@@ -485,13 +496,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         iconColor: ConfigBloc().darkModeOn
                                             ? Colors.white
                                             : Colors.black,
-                                        onPressed: () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (_) => EditProfileHandle(
-                                                user: widget.user,
-                                              ),
-                                            )),
+                                        onPressed: () =>
+                                            widget.user.verified!.isEmpty
+                                                ? Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (_) =>
+                                                          EditProfileHandle(
+                                                        user: widget.user,
+                                                      ),
+                                                    ))
+                                                : Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (_) =>
+                                                          VerificationNutralized(
+                                                        user: widget.user,
+                                                        from: 'accountType',
+                                                      ),
+                                                    )),
                                         containerColor: Colors.transparent,
                                       ),
                                     ),

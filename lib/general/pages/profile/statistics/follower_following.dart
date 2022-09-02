@@ -251,7 +251,8 @@ class _FollowerFollowingState extends State<FollowerFollowing>
                         child: ShakeTransition(
                           child: ListTile(
                             title:
-                                Text('Other users can\'t see your followers.',
+                                Text(   widget.follower.startsWith('Follower')
+                  ?'Other users can\'t see your followers.': 'Other users can\'t see your following.',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 12,

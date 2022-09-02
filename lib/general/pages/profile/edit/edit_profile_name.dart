@@ -32,7 +32,7 @@ class _EditProfileNameState extends State<EditProfileName> {
     super.dispose();
   }
 
-  _validate() async {
+  _validate(BuildContext context) async {
     if (_formKey.currentState!.validate() & !_isLoading) {
       _formKey.currentState!.save();
 
@@ -93,14 +93,20 @@ class _EditProfileNameState extends State<EditProfileName> {
               });
             }
             try {
-              usersRef
-                  .doc(
-                widget.user.id,
-              )
-                  .update({
-                'userName': _userName,
-              });
-              Navigator.pop(context);
+              widget.user.verified!.isEmpty
+                  ? usersRef
+                      .doc(
+                      widget.user.id,
+                    )
+                      .update({
+                      'userName': _userName,
+                    })
+                  : _unVerify();
+
+              widget.user.verified!.isEmpty
+                  ? Navigator.pop(context)
+                  : _pop(context);
+
               Flushbar(
                 margin: EdgeInsets.all(8),
                 boxShadows: [
@@ -131,7 +137,7 @@ class _EditProfileNameState extends State<EditProfileName> {
                   size: 28.0,
                   color: Colors.blue,
                 ),
-                duration: Duration(seconds: 3),
+                duration: Duration(seconds: 1),
                 leftBarIndicatorColor: Colors.blue,
               )..show(context);
             } catch (e) {
@@ -184,9 +190,38 @@ class _EditProfileNameState extends State<EditProfileName> {
           }
         }
       } else {
-        Navigator.pop(context);
+        widget.user.verified!.isEmpty ? Navigator.pop(context) : _pop(context);
       }
     }
+  }
+
+  _unVerify() {
+    usersRef
+        .doc(
+      widget.user.id,
+    )
+        .update({
+      'userName': _userName,
+      'verified': '',
+    });
+    verificationRef.doc(widget.user.id).get().then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+    FirebaseStorage.instance
+        .ref('images/validate/${widget.user.id}')
+        .listAll()
+        .then((value) {
+      value.items.forEach((element) {
+        FirebaseStorage.instance.ref(element.fullPath).delete();
+      });
+    });
+  }
+
+  _pop(BuildContext context) {
+    Navigator.pop(context);
+    Navigator.pop(context);
   }
 
   @override
@@ -194,7 +229,7 @@ class _EditProfileNameState extends State<EditProfileName> {
     return ResponsiveScaffold(
       child: Scaffold(
           backgroundColor:
-              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
           appBar: AppBar(
             iconTheme: IconThemeData(
               color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
@@ -202,7 +237,7 @@ class _EditProfileNameState extends State<EditProfileName> {
             automaticallyImplyLeading: true,
             elevation: 0,
             backgroundColor:
-                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
             title: Text(
               'Edit Profile ',
               style: TextStyle(
@@ -371,7 +406,7 @@ class _EditProfileNameState extends State<EditProfileName> {
                                                     ),
                                                   ),
                                                   onPressed: () {
-                                                    _validate();
+                                                    _validate(context);
                                                   },
                                                   child: Text(
                                                     'Save Profile',

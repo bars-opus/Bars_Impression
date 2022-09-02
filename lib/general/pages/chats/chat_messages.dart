@@ -233,7 +233,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   Future<File> _cropImage(File imageFile) async {
     File? croppedImage = await ImageCropper().cropImage(
       sourcePath: imageFile.path,
-      aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
     );
     return croppedImage!;
   }
@@ -341,7 +340,9 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
               ),
             ),
             onPressed: () => currentUserId == message.authorId
-                ? _deleteMessage(message)
+                ? _deleteMessage(
+                    message,
+                  )
                 : Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -486,16 +487,16 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                       children: [
                                         TextSpan(
                                             text:
-                                                "replied:  ${message.replyingAuthor}: \n",
+                                                "replied:\n${message.replyingAuthor}: \n",
                                             style: TextStyle(
                                               fontSize: 12,
-                                              color: Colors.teal[800],
+                                              color: Colors.grey,
                                             )),
                                         TextSpan(
                                             text: message.replyingMessage,
                                             style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.black,
+                                              fontSize: 14,
+                                              color: Colors.teal[800],
                                             )),
                                       ],
                                     ),
@@ -602,10 +603,10 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                             fontSize: 12,
                                             text: message.content,
                                           )
-                                        :  HyperLinkText(
-                  from: 'Message',
-                  text:   message.content,
-                ),
+                                        : HyperLinkText(
+                                            from: 'Message',
+                                            text: message.content,
+                                          ),
                                   ),
                                   Text(
                                       timeago.format(
@@ -841,7 +842,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                       : GestureDetector(
                                           onTap: _showSelectImageDialog,
                                           child: Icon(
-                                            Icons.image,
+                                            MdiIcons.camera,
                                             color: Colors.grey,
                                           ),
                                         )
@@ -938,7 +939,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
         restrictChat: false,
         imageUrl: '',
         MediaType: '',
-        // chat: widget.chat!,
         replyingAuthor: '',
         replyingMessage: '',
         reportConfirmed: '',
@@ -989,7 +989,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     Provider.of<UserData>(context, listen: false).setPostImage(null);
     Provider.of<UserData>(context, listen: false).setPost8('');
     Provider.of<UserData>(context, listen: false).setPost7('');
-    // }
   }
 
   _submitMessageWithoutImage() async {

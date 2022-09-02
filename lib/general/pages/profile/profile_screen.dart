@@ -1,4 +1,5 @@
 import 'dart:ui';
+
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
@@ -626,6 +627,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     ],
                                   ),
                                   textAlign: TextAlign.center,
+                                  maxLines: 7,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                         ),
                       ),
@@ -1427,565 +1430,589 @@ class _ProfileScreenState extends State<ProfileScreen>
                     ? UserNotFound(
                         userName: user.userName!,
                       )
-                    : Scaffold(
-                        appBar: AppBar(
-                          iconTheme: IconThemeData(
-                            color: Colors.white,
-                          ),
-                          automaticallyImplyLeading:
-                              widget.currentUserId == widget.userId
-                                  ? false
-                                  : true,
-                          actions: <Widget>[
-                            widget.currentUserId == widget.userId
-                                ? Row(
-                                    children: <Widget>[
-                                      ConfigBloc().darkModeOn
-                                          ? Shimmer.fromColors(
-                                              period:
-                                                  Duration(milliseconds: 1000),
-                                              baseColor: Colors.blueGrey,
-                                              highlightColor: Colors.white,
-                                              child: Text('lights off',
-                                                  style: TextStyle(
-                                                    color: Colors.blueGrey,
-                                                  )),
-                                            )
-                                          : Shimmer.fromColors(
-                                              period:
-                                                  Duration(milliseconds: 1000),
-                                              baseColor: Colors.white,
-                                              highlightColor: Colors.grey,
-                                              child: Text(
-                                                'lights on',
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                      IconButton(
-                                          icon: Icon(
-                                            ConfigBloc().darkModeOn
-                                                ? FontAwesomeIcons.lightbulb
-                                                : FontAwesomeIcons
-                                                    .solidLightbulb,
-                                          ),
-                                          iconSize: 20,
-                                          color: ConfigBloc().darkModeOn
-                                              ? Colors.blueGrey
-                                              : Colors.white,
-                                          onPressed: () async {
-                                            ConfigBloc().add(DarkModeEvent(
-                                                !ConfigBloc().darkModeOn));
-                                          }),
-                                    ],
-                                  )
-                                : IconButton(
-                                    icon: Icon(
-                                      Icons.more_vert,
-                                    ),
-                                    color: Colors.white,
-                                    onPressed: () =>
-                                        _showSelectImageDialog(user),
-                                  ),
-                          ],
-                          elevation: 0,
-                          backgroundColor: Color(0xFF1a1a1a),
-                        ),
-                        backgroundColor: ConfigBloc().darkModeOn
-                            ? Color(0xFF1a1a1a)
-                            : Colors.white,
-                        body: SingleChildScrollView(
-                          child: Container(
-                            height: MediaQuery.of(context).size.height - 150,
-                            width: width.toDouble(),
-                            child: RefreshIndicator(
-                              backgroundColor: Colors.white,
-                              onRefresh: () async {
-                                _setupIsFollowing();
-                                _setUpFollowers();
-                                _setUpFollowing();
-                                _setupIsBlocking();
-                                _setupPosts();
-                                _setUpForums();
-                                _setUpEvents();
-                                _setUpPossitiveRated();
-                                _setUpNegativeRated();
-                                _setUpProfileUser();
-                              },
-                              child: ListView(children: <Widget>[
-                                Container(
-                                  color: Color(0xFF1a1a1a),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                      left: 30.0,
-                                      right: 30,
-                                      bottom: 30,
-                                      top: 10,
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Stack(
-                                          alignment: Alignment.bottomCenter,
-                                          children: [
-                                            Padding(
-                                              padding: EdgeInsets.only(
-                                                  right:
-                                                      user.verified!.isNotEmpty
-                                                          ? 18.0
-                                                          : 0.0),
-                                              child: new Material(
-                                                color: Colors.transparent,
-                                                child: Text(
-                                                  user.userName!.toUpperCase(),
-                                                  style: TextStyle(
-                                                    color:
-                                                        ConfigBloc().darkModeOn
-                                                            ? Colors.blueGrey
-                                                            : Colors.white,
-                                                    fontSize:
-                                                        width > 600 ? 40 : 30.0,
-                                                    fontWeight: FontWeight.bold,
+                    : user.reportConfirmed!.isNotEmpty
+                        ? UserBanned(
+                            userName: user.userName!,
+                          )
+                        : Scaffold(
+                            appBar: AppBar(
+                              iconTheme: IconThemeData(
+                                color: Colors.white,
+                              ),
+                              automaticallyImplyLeading:
+                                  widget.currentUserId == widget.userId
+                                      ? false
+                                      : true,
+                              actions: <Widget>[
+                                widget.currentUserId == widget.userId
+                                    ? Row(
+                                        children: <Widget>[
+                                          ConfigBloc().darkModeOn
+                                              ? Shimmer.fromColors(
+                                                  period: Duration(
+                                                      milliseconds: 1000),
+                                                  baseColor: Colors.blueGrey,
+                                                  highlightColor: Colors.white,
+                                                  child: Text('lights off',
+                                                      style: TextStyle(
+                                                        color: Colors.blueGrey,
+                                                      )),
+                                                )
+                                              : Shimmer.fromColors(
+                                                  period: Duration(
+                                                      milliseconds: 1000),
+                                                  baseColor: Colors.white,
+                                                  highlightColor: Colors.grey,
+                                                  child: Text(
+                                                    'lights on',
+                                                    style: TextStyle(
+                                                        color: Colors.white),
                                                   ),
-                                                  textAlign: TextAlign.center,
                                                 ),
+                                          IconButton(
+                                              icon: Icon(
+                                                ConfigBloc().darkModeOn
+                                                    ? FontAwesomeIcons.lightbulb
+                                                    : FontAwesomeIcons
+                                                        .solidLightbulb,
                                               ),
-                                            ),
-                                            user.verified!.isEmpty
-                                                ? SizedBox.shrink()
-                                                : Positioned(
-                                                    top: 5,
-                                                    right: 0,
-                                                    child: Icon(
-                                                      MdiIcons
-                                                          .checkboxMarkedCircle,
-                                                      size: 20,
-                                                      color: Colors.blue,
-                                                    ),
-                                                  ),
-                                          ],
+                                              iconSize: 20,
+                                              color: ConfigBloc().darkModeOn
+                                                  ? Colors.blueGrey
+                                                  : Colors.white,
+                                              onPressed: () async {
+                                                ConfigBloc().add(DarkModeEvent(
+                                                    !ConfigBloc().darkModeOn));
+                                              }),
+                                        ],
+                                      )
+                                    : IconButton(
+                                        icon: Icon(
+                                          Icons.more_vert,
                                         ),
-                                        SizedBox(
-                                          height: 10,
+                                        color: Colors.white,
+                                        onPressed: () =>
+                                            _showSelectImageDialog(user),
+                                      ),
+                              ],
+                              elevation: 0,
+                              backgroundColor: Color(0xFF1a1a1a),
+                            ),
+                            backgroundColor: ConfigBloc().darkModeOn
+                                ? Color(0xFF1a1a1a)
+                                : Colors.white,
+                            body: SingleChildScrollView(
+                              child: Container(
+                                height:
+                                    MediaQuery.of(context).size.height - 150,
+                                width: width.toDouble(),
+                                child: RefreshIndicator(
+                                  backgroundColor: Colors.white,
+                                  onRefresh: () async {
+                                    _setupIsFollowing();
+                                    _setUpFollowers();
+                                    _setUpFollowing();
+                                    _setupIsBlocking();
+                                    _setupPosts();
+                                    _setUpForums();
+                                    _setUpEvents();
+                                    _setUpPossitiveRated();
+                                    _setUpNegativeRated();
+                                    _setUpProfileUser();
+                                  },
+                                  child: ListView(children: <Widget>[
+                                    Container(
+                                      color: Color(0xFF1a1a1a),
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                          left: 30.0,
+                                          right: 30,
+                                          bottom: 30,
+                                          top: 10,
                                         ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: Color(0xFF1a1a1a),
-                                            borderRadius:
-                                                BorderRadius.circular(100.0),
-                                          ),
-                                          child: Hero(
-                                            tag: 'useravater',
-                                            child: CircleAvatar(
-                                              backgroundColor:
-                                                  Color(0xFF1a1a1a),
-                                              radius: width > 600 ? 120 : 80.0,
-                                              backgroundImage: user
-                                                      .profileImageUrl!.isEmpty
-                                                  ? AssetImage(
-                                                      'assets/images/user_placeholder.png',
-                                                    ) as ImageProvider
-                                                  : CachedNetworkImageProvider(
-                                                      user.profileImageUrl!),
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 20.0,
-                                        ),
-                                        Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                        child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
-                                          children: [
-                                            Hero(
-                                              tag: 'nickName',
-                                              child: new Material(
-                                                color: Colors.transparent,
-                                                child: Text(
-                                                  user.name!,
-                                                  style: TextStyle(
-                                                    color:
-                                                        ConfigBloc().darkModeOn
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            Stack(
+                                              alignment: Alignment.bottomCenter,
+                                              children: [
+                                                Padding(
+                                                  padding: EdgeInsets.only(
+                                                      right: user.verified!
+                                                              .isNotEmpty
+                                                          ? 18.0
+                                                          : 0.0),
+                                                  child: new Material(
+                                                    color: Colors.transparent,
+                                                    child: Text(
+                                                      user.userName!
+                                                          .toUpperCase(),
+                                                      style: TextStyle(
+                                                        color: ConfigBloc()
+                                                                .darkModeOn
                                                             ? Colors.blueGrey
                                                             : Colors.white,
-                                                    fontSize:
-                                                        width > 600 ? 16 : 14.0,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            Hero(
-                                              tag: 'profileHandle',
-                                              child: new Material(
-                                                color: Colors.transparent,
-                                                child: Text(
-                                                  user.profileHandle!,
-                                                  style: TextStyle(
-                                                    color: ConfigBloc()
-                                                            .darkModeOn
-                                                        ? Colors.blueGrey[300]
-                                                        : Colors.white,
-                                                    fontSize:
-                                                        width > 600 ? 30 : 20.0,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            user.profileHandle!
-                                                        .startsWith('F') ||
-                                                    user.profileHandle!.isEmpty
-                                                ? SizedBox.shrink()
-                                                : Text(
-                                                    user.company!,
-                                                    style: TextStyle(
-                                                      color: ConfigBloc()
-                                                              .darkModeOn
-                                                          ? Colors.blueGrey
-                                                          : Colors.white,
-                                                      fontSize:
-                                                          width > 600 ? 16 : 14,
+                                                        fontSize: width > 600
+                                                            ? 40
+                                                            : 30.0,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                      textAlign:
+                                                          TextAlign.center,
                                                     ),
                                                   ),
-                                            user.profileHandle!
-                                                        .startsWith('F') ||
-                                                    user.profileHandle!.isEmpty
-                                                ? SizedBox.shrink()
-                                                : Row(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Stars(score: user.score!),
-                                                    ],
+                                                ),
+                                                user.verified!.isEmpty
+                                                    ? SizedBox.shrink()
+                                                    : Positioned(
+                                                        top: 5,
+                                                        right: 0,
+                                                        child: Icon(
+                                                          MdiIcons
+                                                              .checkboxMarkedCircle,
+                                                          size: 20,
+                                                          color: Colors.blue,
+                                                        ),
+                                                      ),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color: Color(0xFF1a1a1a),
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        100.0),
+                                              ),
+                                              child: Hero(
+                                                tag: 'useravater',
+                                                child: CircleAvatar(
+                                                  backgroundColor:
+                                                      Color(0xFF1a1a1a),
+                                                  radius:
+                                                      width > 600 ? 120 : 80.0,
+                                                  backgroundImage: user
+                                                          .profileImageUrl!
+                                                          .isEmpty
+                                                      ? AssetImage(
+                                                          'assets/images/user_placeholder.png',
+                                                        ) as ImageProvider
+                                                      : CachedNetworkImageProvider(
+                                                          user.profileImageUrl!),
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 20.0,
+                                            ),
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Hero(
+                                                  tag: 'nickName',
+                                                  child: new Material(
+                                                    color: Colors.transparent,
+                                                    child: Text(
+                                                      user.name!,
+                                                      style: TextStyle(
+                                                        color: ConfigBloc()
+                                                                .darkModeOn
+                                                            ? Colors.blueGrey
+                                                            : Colors.white,
+                                                        fontSize: width > 600
+                                                            ? 16
+                                                            : 14.0,
+                                                      ),
+                                                    ),
                                                   ),
-                                            user.profileHandle!
-                                                        .startsWith('F') ||
-                                                    user.profileHandle!.isEmpty
-                                                ? SizedBox.shrink()
-                                                : SizedBox(
-                                                    height: 10.0,
+                                                ),
+                                                Hero(
+                                                  tag: 'profileHandle',
+                                                  child: new Material(
+                                                    color: Colors.transparent,
+                                                    child: Text(
+                                                      user.profileHandle!,
+                                                      style: TextStyle(
+                                                        color: ConfigBloc()
+                                                                .darkModeOn
+                                                            ? Colors
+                                                                .blueGrey[300]
+                                                            : Colors.white,
+                                                        fontSize: width > 600
+                                                            ? 30
+                                                            : 20.0,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
                                                   ),
-                                            user.profileHandle!
-                                                        .startsWith('F') ||
-                                                    user.profileHandle!.isEmpty
-                                                ? SizedBox.shrink()
-                                                : Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      GestureDetector(
-                                                        onTap: () =>
-                                                            Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                    builder: (_) =>
-                                                                        ProfileProfessionalProfile(
-                                                                          user:
-                                                                              user,
-                                                                          currentUserId:
-                                                                              widget.currentUserId,
-                                                                          userId:
-                                                                              '',
-                                                                        ))),
-                                                        child: Container(
-                                                          width: 35,
-                                                          height: 35,
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Colors
-                                                                .transparent,
-                                                            shape:
-                                                                BoxShape.circle,
-                                                            border: Border.all(
-                                                                width: 1.0,
+                                                ),
+                                                user.profileHandle!
+                                                            .startsWith('F') ||
+                                                        user.profileHandle!
+                                                            .isEmpty
+                                                    ? SizedBox.shrink()
+                                                    : Text(
+                                                        user.company!,
+                                                        style: TextStyle(
+                                                          color: ConfigBloc()
+                                                                  .darkModeOn
+                                                              ? Colors.blueGrey
+                                                              : Colors.white,
+                                                          fontSize: width > 600
+                                                              ? 16
+                                                              : 14,
+                                                        ),
+                                                      ),
+                                                user.profileHandle!
+                                                            .startsWith('F') ||
+                                                        user.profileHandle!
+                                                            .isEmpty
+                                                    ? SizedBox.shrink()
+                                                    : Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Stars(
+                                                              score:
+                                                                  user.score!),
+                                                        ],
+                                                      ),
+                                                user.profileHandle!
+                                                            .startsWith('F') ||
+                                                        user.profileHandle!
+                                                            .isEmpty
+                                                    ? SizedBox.shrink()
+                                                    : SizedBox(
+                                                        height: 10.0,
+                                                      ),
+                                                user.profileHandle!
+                                                            .startsWith('F') ||
+                                                        user.profileHandle!
+                                                            .isEmpty
+                                                    ? SizedBox.shrink()
+                                                    : Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          GestureDetector(
+                                                            onTap: () =>
+                                                                Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                        builder: (_) =>
+                                                                            ProfileProfessionalProfile(
+                                                                              user: user,
+                                                                              currentUserId: widget.currentUserId,
+                                                                              userId: '',
+                                                                            ))),
+                                                            child: Container(
+                                                              width: 35,
+                                                              height: 35,
+                                                              decoration:
+                                                                  BoxDecoration(
                                                                 color: Colors
-                                                                    .white),
-                                                          ),
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(1.0),
-                                                            child: Align(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child: Text(
-                                                                'B',
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontSize: 14,
+                                                                    .transparent,
+                                                                shape: BoxShape
+                                                                    .circle,
+                                                                border: Border.all(
+                                                                    width: 1.0,
+                                                                    color: Colors
+                                                                        .white),
+                                                              ),
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .all(
+                                                                        1.0),
+                                                                child: Align(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  child: Text(
+                                                                    'B',
+                                                                    style:
+                                                                        TextStyle(
+                                                                      color: Colors
+                                                                          .white,
+                                                                      fontSize:
+                                                                          14,
+                                                                    ),
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .center,
+                                                                  ),
                                                                 ),
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .center,
                                                               ),
                                                             ),
                                                           ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        width: 10,
-                                                      ),
-                                                      GestureDetector(
-                                                        onTap: () =>
-                                                            Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                    builder: (_) =>
-                                                                        ProfileRating(
-                                                                          user:
-                                                                              user,
-                                                                          currentUserId:
-                                                                              widget.currentUserId,
-                                                                        ))),
-                                                        child: Container(
-                                                          width: 35,
-                                                          height: 35,
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Colors
-                                                                .transparent,
-                                                            shape:
-                                                                BoxShape.circle,
-                                                            border: Border.all(
-                                                                width: 1.0,
-                                                                color: Colors
-                                                                    .white),
+                                                          SizedBox(
+                                                            width: 10,
                                                           ),
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(1.0),
-                                                            child: Align(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child: Text(
-                                                                'R',
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontSize: 14,
+                                                          GestureDetector(
+                                                            onTap: () =>
+                                                                Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                        builder: (_) =>
+                                                                            ProfileRating(
+                                                                              user: user,
+                                                                              currentUserId: widget.currentUserId,
+                                                                            ))),
+                                                            child: Container(
+                                                              width: 35,
+                                                              height: 35,
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                color: Colors
+                                                                    .transparent,
+                                                                shape: BoxShape
+                                                                    .circle,
+                                                                border: Border.all(
+                                                                    width: 1.0,
+                                                                    color: Colors
+                                                                        .white),
+                                                              ),
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .all(
+                                                                        1.0),
+                                                                child: Align(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  child: Text(
+                                                                    'R',
+                                                                    style:
+                                                                        TextStyle(
+                                                                      color: Colors
+                                                                          .white,
+                                                                      fontSize:
+                                                                          14,
+                                                                    ),
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .center,
+                                                                  ),
                                                                 ),
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .center,
                                                               ),
                                                             ),
                                                           ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        width: 10,
-                                                      ),
-                                                      GestureDetector(
-                                                        onTap: () =>
-                                                            Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                    builder: (_) =>
-                                                                        UserAdviceScreen(
-                                                                          user:
-                                                                              user,
-                                                                          currentUserId:
-                                                                              widget.currentUserId,
-                                                                        ))),
-                                                        child: Container(
-                                                          width: 35,
-                                                          height: 35,
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Colors
-                                                                .transparent,
-                                                            shape:
-                                                                BoxShape.circle,
-                                                            border: Border.all(
-                                                                width: 1.0,
-                                                                color: Colors
-                                                                    .white),
+                                                          SizedBox(
+                                                            width: 10,
                                                           ),
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(1.0),
-                                                            child: Align(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child: Text(
-                                                                'A',
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontSize: 14,
+                                                          GestureDetector(
+                                                            onTap: () =>
+                                                                Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                        builder: (_) =>
+                                                                            UserAdviceScreen(
+                                                                              user: user,
+                                                                              currentUserId: widget.currentUserId,
+                                                                            ))),
+                                                            child: Container(
+                                                              width: 35,
+                                                              height: 35,
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                color: Colors
+                                                                    .transparent,
+                                                                shape: BoxShape
+                                                                    .circle,
+                                                                border: Border.all(
+                                                                    width: 1.0,
+                                                                    color: Colors
+                                                                        .white),
+                                                              ),
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .all(
+                                                                        1.0),
+                                                                child: Align(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  child: Text(
+                                                                    'A',
+                                                                    style:
+                                                                        TextStyle(
+                                                                      color: Colors
+                                                                          .white,
+                                                                      fontSize:
+                                                                          14,
+                                                                    ),
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .center,
+                                                                  ),
                                                                 ),
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .center,
                                                               ),
                                                             ),
                                                           ),
-                                                        ),
+                                                        ],
                                                       ),
-                                                    ],
-                                                  ),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 10.0,
+                                            ),
+                                            Divider(
+                                              color: Colors.white,
+                                            ),
+                                            SizedBox(
+                                              height: 5.0,
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Text(
+                                                'Bio',
+                                                style: TextStyle(
+                                                  color: ConfigBloc().darkModeOn
+                                                      ? Colors.blueGrey[100]
+                                                      : Colors.grey,
+                                                  fontSize:
+                                                      width > 600 ? 16 : 12,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                            HyperLinkText(
+                                              from: 'Profile',
+                                              text: user.bio!,
+                                            ),
+                                            _displayButton(user, _point),
                                           ],
-                                        ),
-                                        SizedBox(
-                                          height: 10.0,
-                                        ),
-                                        Divider(
-                                          color: Colors.white,
-                                        ),
-                                        SizedBox(
-                                          height: 5.0,
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(
-                                            'Bio',
-                                            style: TextStyle(
-                                              color: ConfigBloc().darkModeOn
-                                                  ? Colors.blueGrey[100]
-                                                  : Colors.grey,
-                                              fontSize: width > 600 ? 16 : 12,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                        HyperLinkText(
-                                          from: 'Profile',
-                                          text: user.bio!,
-                                        ),
-                                      
-                                        _displayButton(user, _point),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                ConfigBloc().darkModeOn
-                                    ? Divider(color: Colors.white)
-                                    : SizedBox.shrink(),
-                                SizedBox(
-                                  height: 30.0,
-                                ),
-                                !user.profileHandle!.startsWith('Ar') ||
-                                        user.profileHandle!.isEmpty
-                                    ? _buildStatistics(user)
-                                    : _buildArtistStatistics(user),
-                                SizedBox(
-                                  height: 20.0,
-                                ),
-                                _buildMusicPreference(user),
-                                SizedBox(
-                                  height: 30.0,
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20.0),
-                                  child: Text(
-                                    'Favorite Punchline',
-                                    style: TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 20.0,
-                                      right: 20,
-                                      bottom: 20,
-                                      top: 20),
-                                  child: RichText(
-                                    text: TextSpan(
-                                      children: [
-                                        TextSpan(
-                                            text:
-                                                '"${user.favouritePunchline}"',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              color: ConfigBloc().darkModeOn
-                                                  ? Colors.white
-                                                  : Colors.black,
-                                            )),
-                                      ],
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 30,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Container(
-                                      color: Colors.grey,
-                                      height: 1,
-                                      width: width / 4,
-                                    ),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: Colors.grey, width: 1)),
-                                      width: width / 3,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(5.0),
-                                        child: Align(
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            'contents',
-                                            style: TextStyle(
-                                              color: ConfigBloc().darkModeOn
-                                                  ? Colors.grey
-                                                  : Colors.black,
-                                              fontSize: 12,
-                                            ),
-                                          ),
                                         ),
                                       ),
                                     ),
-                                    Container(
-                                      color: Colors.grey,
-                                      height: 1,
-                                      width: width / 4,
+                                    ConfigBloc().darkModeOn
+                                        ? Divider(color: Colors.white)
+                                        : SizedBox.shrink(),
+                                    SizedBox(
+                                      height: 30.0,
                                     ),
-                                  ],
+                                    !user.profileHandle!.startsWith('Ar') ||
+                                            user.profileHandle!.isEmpty
+                                        ? _buildStatistics(user)
+                                        : _buildArtistStatistics(user),
+                                    SizedBox(
+                                      height: 20.0,
+                                    ),
+                                    _buildMusicPreference(user),
+                                    SizedBox(
+                                      height: 30.0,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20.0),
+                                      child: Text(
+                                        'Favorite Punchline',
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 20.0,
+                                          right: 20,
+                                          bottom: 20,
+                                          top: 20),
+                                      child: RichText(
+                                        text: TextSpan(
+                                          children: [
+                                            TextSpan(
+                                                text:
+                                                    '"${user.favouritePunchline}"',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: ConfigBloc().darkModeOn
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                                )),
+                                          ],
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 30,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Container(
+                                          color: Colors.grey,
+                                          height: 1,
+                                          width: width / 4,
+                                        ),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Colors.grey,
+                                                  width: 1)),
+                                          width: width / 3,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(5.0),
+                                            child: Align(
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                'contents',
+                                                style: TextStyle(
+                                                  color: ConfigBloc().darkModeOn
+                                                      ? Colors.grey
+                                                      : Colors.black,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Container(
+                                          color: Colors.grey,
+                                          height: 1,
+                                          width: width / 4,
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 40.0,
+                                    ),
+                                    _buildMoodPunched(user),
+                                    SizedBox(
+                                      height: 30.0,
+                                    ),
+                                    _buildDisplay(user),
+                                    SizedBox(
+                                      height: 40.0,
+                                    ),
+                                  ]),
                                 ),
-                                SizedBox(
-                                  height: 40.0,
-                                ),
-                                _buildMoodPunched(user),
-                                SizedBox(
-                                  height: 30.0,
-                                ),
-                                _buildDisplay(user),
-                                SizedBox(
-                                  height: 40.0,
-                                ),
-                              ]),
-                            ),
-                          ),
-                        ));
+                              ),
+                            ));
               }),
     );
   }

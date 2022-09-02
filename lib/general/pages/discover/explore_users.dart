@@ -1,4 +1,5 @@
 import 'dart:ui';
+
 import 'package:flutter/rendering.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
@@ -636,7 +637,8 @@ class _UserExpandedWidgetState extends State<UserExpandedWidget> {
           context,
           MaterialPageRoute(
               builder: (_) => ProfileProfessionalProfile(
-                    currentUserId: Provider.of<UserData>(context).currentUserId!,
+                    currentUserId:
+                        Provider.of<UserData>(context).currentUserId!,
                     user: widget.user,
                     userId: widget.user.id!,
                   ))),
@@ -662,7 +664,7 @@ class _UserExpandedWidgetState extends State<UserExpandedWidget> {
                       spreadRadius: 4.0,
                     ),
                   ],
-                  color: ConfigBloc().darkModeOn ? Colors.grey : Colors.white,
+                  color: Colors.white,
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(20.0),
                     topLeft: Radius.circular(20.0),

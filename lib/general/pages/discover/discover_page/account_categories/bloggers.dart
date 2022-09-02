@@ -18,7 +18,7 @@ class _BloggersState extends State<Bloggers>
     with AutomaticKeepAliveClientMixin {
   List<AccountHolder> _userList = [];
   final _userSnapshot = <DocumentSnapshot>[];
-  int limit = 10;
+int limit = 5;
   bool _hasNext = true;
   bool _isFectchingUser = false;
   late ScrollController _hideButtonController;

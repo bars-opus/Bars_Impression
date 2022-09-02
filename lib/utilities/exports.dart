@@ -260,6 +260,11 @@ export 'package:bars/general/pages/forum_and_blog/no_account_list.dart';
 export 'package:bars/widgets/info/violating_terms.dart';
 export 'package:bars/widgets/animation/repeat_shake_transition.dart';
 export 'package:bars/widgets/info/loading.dart';
+export 'package:bars/utilities/verification_nutralized.dart';
+export 'package:bars/utilities/verification_info.dart';
+export 'package:bars/widgets/info/user_banned.dart';
+export 'package:bars/utilities/about_us.dart';
+export 'package:bars/utilities/tagged_user.dart';
 
 // discover user
 export 'package:bars/general/pages/discover/discover_page/account_categories/artists.dart';

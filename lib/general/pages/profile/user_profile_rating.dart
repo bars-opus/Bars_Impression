@@ -250,7 +250,7 @@ class _ProfileRatingState extends State<ProfileRating> {
                       padding: const EdgeInsets.all(5.0),
                       child: GestureDetector(
                         onTap: () => widget.user.id == currentUserId
-                            ? _possitiveRatingCount == 0
+                            ? _negativeRatingCount == 0
                                 ? Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -698,7 +698,15 @@ class _ProfileRatingState extends State<ProfileRating> {
                                       widget.user.id == currentUserId
                                           ? SizedBox.shrink()
                                           : CircularButton(
-                                              onPressed: () {},
+                                              onPressed: () => Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (_) =>
+                                                          UserAdviceScreen(
+                                                            currentUserId: widget
+                                                                .currentUserId,
+                                                            user: widget.user,
+                                                          ))),
                                               color: Colors.blue,
                                               icon: Icon(
                                                 Icons.comment,

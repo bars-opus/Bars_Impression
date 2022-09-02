@@ -94,6 +94,7 @@ class AuthService {
             .set({
           'uid': signedInHandler.uid,
         });
+        Provider.of<UserData>(context, listen: false).setShowUsersTab(true);
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => TipScreen()),
             (Route<dynamic> route) => false);

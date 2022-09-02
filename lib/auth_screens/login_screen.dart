@@ -102,7 +102,7 @@ class _LoginScreenState extends State<LoginScreen>
         email: Provider.of<UserData>(context, listen: false).post1,
         password: Provider.of<UserData>(context, listen: false).post2,
       );
-
+      Provider.of<UserData>(context, listen: false).setShowUsersTab(true);
       Navigator.push(
         context,
         MaterialPageRoute(

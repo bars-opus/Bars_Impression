@@ -87,25 +87,27 @@ class _WebDisclaimerState extends State<WebDisclaimer> {
                   SizedBox(
                     height: 40,
                   ),
-                  Container(
-                    width: MediaQuery.of(context).size.width / 2,
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        primary: Colors.blue,
-                        side: BorderSide(width: 1.0, color: Colors.blue),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => MyWebView(
-                                      url: widget.link,
-                                    )));
-                      },
-                      child: Text(
-                        'Access Link',
-                        style: TextStyle(
-                          color: Colors.blue,
+                  Center(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width / 2,
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          primary: Colors.blue,
+                          side: BorderSide(width: 1.0, color: Colors.blue),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => MyWebView(
+                                        url: widget.link,
+                                      )));
+                        },
+                        child: Text(
+                          'Access Link',
+                          style: TextStyle(
+                            color: Colors.blue,
+                          ),
                         ),
                       ),
                     ),

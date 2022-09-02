@@ -4,12 +4,16 @@ class IntroInfo extends StatelessWidget {
   final String title;
   final String subTitle;
   final Icon icon;
+  final Color titleColor;
+  final Color subTitleColor;
   final VoidCallback? onPressed;
 
   IntroInfo({
     required this.subTitle,
     required this.title,
     required this.icon,
+    this.titleColor = Colors.blue,
+    this.subTitleColor = Colors.grey,
     required this.onPressed,
   });
 
@@ -29,14 +33,11 @@ class IntroInfo extends StatelessWidget {
                   text: title + '\n',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.blue,
+                    color: titleColor,
                   )),
               TextSpan(
                 text: subTitle,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                ),
+                style: TextStyle(fontSize: 12, color: subTitleColor),
               ),
             ],
           ),

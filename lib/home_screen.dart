@@ -2,6 +2,7 @@ import 'package:bars/utilities/local_notification.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:store_redirect/store_redirect.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,7 +14,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentTab = 0;
-  int _updateAppVersion = Platform.isIOS ? 5 : 5;
+  int _updateAppVersion = Platform.isIOS ? 6 : 6;
   late PageController _pageController;
   String notificationMsg = '';
 
@@ -23,7 +24,9 @@ class _HomeScreenState extends State<HomeScreen> {
     _pageController = PageController();
     LocalNotificationService.initilize();
     _configureNotification();
-    _setUpUser();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _setUpUser();
+    });
   }
 
   _setUpUser() async {
@@ -550,7 +553,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       "com.barsOpus.barsImpression",
                                                   iOSAppId: "1610868894",
                                                 );
-
                                               },
                                             ))),
                                         Positioned(

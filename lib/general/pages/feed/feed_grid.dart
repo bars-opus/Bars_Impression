@@ -1,4 +1,5 @@
 import 'dart:ui';
+
 import 'package:bars/utilities/exports.dart';
 
 class FeedGrid extends StatefulWidget {
@@ -136,6 +137,8 @@ class _FeedGridState extends State<FeedGrid> {
                                             ],
                                           ),
                                           textAlign: TextAlign.center,
+                                          maxLines: 7,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
                                     ),

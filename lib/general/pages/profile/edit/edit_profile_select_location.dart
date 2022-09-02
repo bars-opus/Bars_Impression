@@ -412,7 +412,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
     return ResponsiveScaffold(
       child: Scaffold(
           backgroundColor:
-              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
           appBar: AppBar(
             iconTheme: IconThemeData(
               color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
@@ -426,7 +426,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                 }),
             elevation: 0,
             backgroundColor:
-                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
             title: Text(
               'Edit Profile',
               style: TextStyle(

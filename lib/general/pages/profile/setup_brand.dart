@@ -7,7 +7,6 @@ class SetUpBrand extends StatefulWidget {
   @override
   _SetUpBrandState createState() => _SetUpBrandState();
 }
-
 class _SetUpBrandState extends State<SetUpBrand> {
   final _formKey = GlobalKey<FormState>();
   String _userName = '';
@@ -220,11 +219,14 @@ class _SetUpBrandState extends State<SetUpBrand> {
       });
 
       String _profileImageUrl = '';
-
-      _profileImageUrl = await StorageService.uploadUserProfileImage(
-        '',
-        _profileImage!,
-      );
+      if (_profileImage == null) {
+        _profileImageUrl = '';
+      } else {
+        _profileImageUrl = await StorageService.uploadUserProfileImage(
+          '',
+          _profileImage!,
+        );
+      }
 
       try {
         usersRef.doc(currentUserId).update({
@@ -232,14 +234,13 @@ class _SetUpBrandState extends State<SetUpBrand> {
           'bio': Provider.of<UserData>(context, listen: false).post6,
         });
         Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => DiscoverUser(
-              currentUserId: currentUserId,
-              isWelcome: true,
-            ),
-          ),
-        );
+            context,
+            MaterialPageRoute(
+              builder: (_) => DiscoverUser(
+                currentUserId: FirebaseAuth.instance.currentUser!.uid,
+                isWelcome: true,
+              ),
+            ));
         final double width = Responsive.isDesktop(context)
             ? 600.0
             : MediaQuery.of(context).size.width;

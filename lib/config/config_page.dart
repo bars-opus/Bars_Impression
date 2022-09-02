@@ -40,6 +40,7 @@ class MyApp extends StatelessWidget {
         builder: (context, AsyncSnapshot<User?> snapshot) {
           if (snapshot.hasData) {
             Provider.of<UserData>(context).currentUserId = snapshot.data!.uid;
+            
             return HomeScreen();
           } else {
             return Intro();

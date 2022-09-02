@@ -106,7 +106,6 @@ class _ForumPageState extends State<ForumPage>
                             currentUserId: widget.currentUserId,
                             forum: forum,
                             author: author,
-                            // forumList: _forumList,
                           );
                         });
                   },

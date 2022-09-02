@@ -29,7 +29,8 @@ class BarsTextTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
+    return 
+     Text(
       text,
       style: TextStyle(
         fontSize: 16,
@@ -48,12 +49,9 @@ class BarsTextSubTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: TextStyle(
-        fontSize: 12,
-        color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-      ),
+    return HyperLinkText(
+      from: '',
+      text: text,
     );
   }
 }

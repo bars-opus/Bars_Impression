@@ -318,10 +318,10 @@ class _FeatureSurveyState extends State<FeatureSurvey> {
     return ResponsiveScaffold(
       child: Scaffold(
         backgroundColor:
-            ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+            ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
         appBar: AppBar(
           backgroundColor:
-              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
           iconTheme: IconThemeData(
               color: ConfigBloc().darkModeOn
                   ? Color(0xFFf2f2f2)
@@ -479,7 +479,6 @@ class _FeatureSurveyState extends State<FeatureSurvey> {
                               text:
                                   'What is the overall satisfaction with Bars Impression?',
                               fontSize: 16,
-                              
                             ),
                             buildSatisfaction(),
                           ]),

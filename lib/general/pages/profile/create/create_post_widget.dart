@@ -96,7 +96,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
         builder: (BuildContext context) {
           return CupertinoActionSheet(
             title: Text(
-              'Are you sure you want to delete this mood punch?',
+              'Are you sure you want to delete this mood punched?',
               style: TextStyle(
                 fontSize: 16,
                 color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
@@ -134,7 +134,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
         context: parentContext,
         builder: (context) {
           return SimpleDialog(
-            title: Text('Are you sure you want to delete this mood punch?'),
+            title: Text('Are you sure you want to delete this mood punched?'),
             children: <Widget>[
               SimpleDialogOption(
                 child: Text('delete'),
@@ -909,9 +909,6 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                                                                 TextInputType
                                                                     .multiline,
                                                             maxLines: null,
-                                                            textCapitalization:
-                                                                TextCapitalization
-                                                                    .sentences,
                                                             style: TextStyle(
                                                               fontSize: 14,
                                                               color:
@@ -1330,6 +1327,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                                       TextFormField(
                                         keyboardType: TextInputType.multiline,
                                         maxLines: null,
+                                        autofocus: true,
                                         textCapitalization:
                                             TextCapitalization.characters,
                                         initialValue: Provider.of<UserData>(

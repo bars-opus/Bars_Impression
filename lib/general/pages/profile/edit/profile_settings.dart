@@ -13,7 +13,6 @@ class ProfileSettings extends StatefulWidget {
 }
 
 class _ProfileSettingsState extends State<ProfileSettings> {
-  final _formKey = GlobalKey<FormState>();
   bool _disableChat = false;
   bool _enableBookingOnChat = false;
   bool _disableAdvice = false;
@@ -161,41 +160,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
     }
   }
 
-  _aboutBars() {
-    showAboutDialog(
-        context: context,
-        applicationName: 'Bars Impression',
-        applicationVersion: 'Version 1.1.6',
-        applicationIcon: Container(
-          width: 40,
-          height: 40,
-          child: Image.asset(
-            'assets/images/barsw.png',
-            color: Colors.black,
-          ),
-        ),
-        children: [
-          Column(children: <Widget>[
-            RichText(
-                text: TextSpan(
-              children: [
-                TextSpan(
-                    text: "Version Release Date: August 2022\n",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.black,
-                    )),
-                TextSpan(
-                    text: "Language: English.",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.black,
-                    )),
-              ],
-            )),
-          ])
-        ]);
-  }
+ 
 
   Future<void> _sendMail(String url) async {
     final double width = Responsive.isDesktop(
@@ -251,7 +216,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
     return ResponsiveScaffold(
       child: Scaffold(
           backgroundColor:
-              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
           appBar: AppBar(
             iconTheme: IconThemeData(
               color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
@@ -259,7 +224,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
             automaticallyImplyLeading: true,
             elevation: 0,
             backgroundColor:
-                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
             title: Text(
               'Account Settings',
               style: TextStyle(
@@ -272,379 +237,421 @@ class _ProfileSettingsState extends State<ProfileSettings> {
           body: SafeArea(
             child: GestureDetector(
               onTap: () => FocusScope.of(context).unfocus(),
-              child: SingleChildScrollView(
-                child: Center(
-                  child: Container(
-                      child: Form(
-                          key: _formKey,
-                          child: Padding(
-                            padding: const EdgeInsets.all(30.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Divider(color: Colors.grey),
-                                SettingSwitch(
-                                  title: 'Disable Chat',
-                                  subTitle: 'Other users can\'t chat with you.',
-                                  value: _disableChat,
-                                  onChanged: (value) => setState(
-                                    () {
-                                      _disableChat = this._disableChat = value;
-                                      usersRef
-                                          .doc(
-                                        widget.user.id,
-                                      )
-                                          .update({
-                                        'disableChat': _disableChat,
-                                      });
-                                    },
-                                  ),
+              child: ListView(
+                children: [
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Container(
+                    color: Colors.grey,
+                    height: 0.5,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              right: 10.0, top: 10, bottom: 10, left: 30),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SettingSwitch(
+                                title: 'Disable Chat',
+                                subTitle: 'Other users can\'t chat with you.',
+                                value: _disableChat,
+                                onChanged: (value) => setState(
+                                  () {
+                                    _disableChat = this._disableChat = value;
+                                    usersRef
+                                        .doc(
+                                      widget.user.id,
+                                    )
+                                        .update({
+                                      'disableChat': _disableChat,
+                                    });
+                                  },
                                 ),
-                                widget.user.profileHandle!.startsWith('Fan')
-                                    ? SizedBox.shrink()
-                                    : Divider(color: Colors.grey),
-                                widget.user.profileHandle!.startsWith('Fan')
-                                    ? SizedBox.shrink()
-                                    : SettingSwitch(
-                                        title: 'Enable chat booking',
-                                        subTitle:
-                                            'Your management contact appears on your chat details.',
-                                        value: _enableBookingOnChat,
-                                        onChanged: (value) => setState(
-                                          () {
-                                            _enableBookingOnChat = this
-                                                ._enableBookingOnChat = value;
-                                            usersRef
-                                                .doc(
-                                              widget.user.id,
-                                            )
-                                                .update({
-                                              'enableBookingOnChat':
-                                                  _enableBookingOnChat,
-                                            });
-                                          },
-                                        ),
+                              ),
+                              widget.user.profileHandle!.startsWith('Fan')
+                                  ? SizedBox.shrink()
+                                  : Divider(color: Colors.grey),
+                              widget.user.profileHandle!.startsWith('Fan')
+                                  ? SizedBox.shrink()
+                                  : SettingSwitch(
+                                      title: 'Enable chat booking',
+                                      subTitle:
+                                          'Your management contact appears on your chat details.',
+                                      value: _enableBookingOnChat,
+                                      onChanged: (value) => setState(
+                                        () {
+                                          _enableBookingOnChat =
+                                              this._enableBookingOnChat = value;
+                                          usersRef
+                                              .doc(
+                                            widget.user.id,
+                                          )
+                                              .update({
+                                            'enableBookingOnChat':
+                                                _enableBookingOnChat,
+                                          });
+                                        },
                                       ),
-                                widget.user.profileHandle!.startsWith('Fan')
-                                    ? SizedBox.shrink()
-                                    : Divider(color: Colors.grey),
-                                widget.user.profileHandle!.startsWith('Fan')
-                                    ? SizedBox.shrink()
-                                    : SettingSwitch(
-                                        title: 'Disable Advice',
-                                        subTitle:
-                                            'Other users can\'t leave advice but can read previously sent advice.',
-                                        value: _disableAdvice,
-                                        onChanged: (value) => setState(
-                                          () {
-                                            _disableAdvice =
-                                                this._disableAdvice = value;
-                                            usersRef
-                                                .doc(
-                                              widget.user.id,
-                                            )
-                                                .update({
-                                              'disableAdvice': _disableAdvice,
-                                            });
-                                          },
-                                        ),
+                                    ),
+                              widget.user.profileHandle!.startsWith('Fan')
+                                  ? SizedBox.shrink()
+                                  : Divider(color: Colors.grey),
+                              widget.user.profileHandle!.startsWith('Fan')
+                                  ? SizedBox.shrink()
+                                  : SettingSwitch(
+                                      title: 'Disable Advice',
+                                      subTitle:
+                                          'Other users can\'t leave advice but can read previously sent advice.',
+                                      value: _disableAdvice,
+                                      onChanged: (value) => setState(
+                                        () {
+                                          _disableAdvice =
+                                              this._disableAdvice = value;
+                                          usersRef
+                                              .doc(
+                                            widget.user.id,
+                                          )
+                                              .update({
+                                            'disableAdvice': _disableAdvice,
+                                          });
+                                        },
                                       ),
-                                widget.user.profileHandle!.startsWith('Fan')
-                                    ? SizedBox.shrink()
-                                    : Divider(color: Colors.grey),
-                                widget.user.profileHandle!.startsWith('Fan')
-                                    ? SizedBox.shrink()
-                                    : SettingSwitch(
-                                        title: 'Hide Advices',
-                                        subTitle:
-                                            'Other users can\'t read your advice but can still send new advice.',
-                                        value: _hideAdvice,
-                                        onChanged: (value) => setState(
-                                          () {
-                                            _hideAdvice =
-                                                this._hideAdvice = value;
-                                            usersRef
-                                                .doc(
-                                              widget.user.id,
-                                            )
-                                                .update({
-                                              'hideAdvice': _hideAdvice,
-                                            });
-                                          },
-                                        ),
+                                    ),
+                              widget.user.profileHandle!.startsWith('Fan')
+                                  ? SizedBox.shrink()
+                                  : Divider(color: Colors.grey),
+                              widget.user.profileHandle!.startsWith('Fan')
+                                  ? SizedBox.shrink()
+                                  : SettingSwitch(
+                                      title: 'Hide Advices',
+                                      subTitle:
+                                          'Other users can\'t read your advice but can still send new advice.',
+                                      value: _hideAdvice,
+                                      onChanged: (value) => setState(
+                                        () {
+                                          _hideAdvice =
+                                              this._hideAdvice = value;
+                                          usersRef
+                                              .doc(
+                                            widget.user.id,
+                                          )
+                                              .update({
+                                            'hideAdvice': _hideAdvice,
+                                          });
+                                        },
                                       ),
-                                widget.user.profileHandle!.startsWith('Fan')
-                                    ? SizedBox.shrink()
-                                    : Divider(color: Colors.grey),
-                                widget.user.profileHandle!.startsWith('Fan')
-                                    ? SizedBox.shrink()
-                                    : SettingSwitch(
-                                        title: 'Not Avaliable For Booking',
-                                        subTitle:
-                                            'Other users can\'t book you.',
-                                        value: _noBooking,
-                                        onChanged: (value) => setState(
-                                          () {
-                                            _noBooking =
-                                                this._noBooking = value;
-                                            usersRef
-                                                .doc(
-                                              widget.user.id,
-                                            )
-                                                .update({
-                                              'noBooking': _noBooking,
-                                            });
-                                          },
-                                        ),
+                                    ),
+                              widget.user.profileHandle!.startsWith('Fan')
+                                  ? SizedBox.shrink()
+                                  : Divider(color: Colors.grey),
+                              widget.user.profileHandle!.startsWith('Fan')
+                                  ? SizedBox.shrink()
+                                  : SettingSwitch(
+                                      title: 'Not Avaliable For Booking',
+                                      subTitle: 'Other users can\'t book you.',
+                                      value: _noBooking,
+                                      onChanged: (value) => setState(
+                                        () {
+                                          _noBooking = this._noBooking = value;
+                                          usersRef
+                                              .doc(
+                                            widget.user.id,
+                                          )
+                                              .update({
+                                            'noBooking': _noBooking,
+                                          });
+                                        },
                                       ),
-                                Divider(color: Colors.grey),
-                                GestureDetector(
-                                  onTap: () => Navigator.push(
+                                    ),
+                              Divider(color: Colors.grey),
+                              GestureDetector(
+                                onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => BlockedAccounts(),
+                                    )),
+                                child: IntroInfo(
+                                  titleColor: ConfigBloc().darkModeOn
+                                      ? Color(0xFFf2f2f2)
+                                      : Color(0xFF1a1a1a),
+                                  title: 'Blocked Accounts',
+                                  onPressed: () => Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (_) => BlockedAccounts(),
                                       )),
-                                  child: IntroInfo(
-                                    title: 'Blocked Accounts',
-                                    onPressed: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => BlockedAccounts(),
-                                        )),
-                                    subTitle: "Accounts you have blocked.",
-                                    icon: Icon(
-                                      Icons.block_rounded,
-                                      size: 20,
-                                      color: ConfigBloc().darkModeOn
-                                          ? Color(0xFFf2f2f2)
-                                          : Color(0xFF1a1a1a),
-                                    ),
+                                  subTitle: "Accounts you have blocked.",
+                                  icon: Icon(
+                                    Icons.block_rounded,
+                                    size: 20,
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.white
+                                        : Colors.black,
                                   ),
                                 ),
-                                Divider(color: Colors.grey),
-                                GestureDetector(
-                                  onTap: () => Navigator.push(
+                              ),
+                              Divider(color: Colors.grey),
+                              GestureDetector(
+                                onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => DeleteAccount(
+                                              user: widget.user,
+                                            ))),
+                                child: IntroInfo(
+                                  titleColor: ConfigBloc().darkModeOn
+                                      ? Colors.white
+                                      : Colors.black,
+                                  title: 'Delete Account',
+                                  onPressed: () => Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (_) => DeleteAccount(
                                                 user: widget.user,
                                               ))),
-                                  child: IntroInfo(
-                                    title: 'Delete Account',
-                                    onPressed: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (_) => DeleteAccount(
-                                                  user: widget.user,
-                                                ))),
-                                    subTitle: "Delete your user account",
-                                    icon: Icon(
-                                      Icons.delete_outline_outlined,
-                                      size: 20,
-                                      color: ConfigBloc().darkModeOn
-                                          ? Color(0xFFf2f2f2)
-                                          : Color(0xFF1a1a1a),
-                                    ),
+                                  subTitle: "Delete your user account",
+                                  icon: Icon(
+                                    Icons.delete_outline_outlined,
+                                    size: 20,
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.white
+                                        : Colors.black,
                                   ),
                                 ),
-                                // Divider(color: Colors.blue),
-                                // GestureDetector(
-                                //   onTap: () => Navigator.push(
-                                //       context,
-                                //       MaterialPageRoute(
-                                //         builder: (_) => ProfileVerification(
-                                //           user: widget.user,
-                                //         ),
-                                //       )),
-                                //   child: IntroInfo(
-                                //     title: 'Request Verification',
-                                //     onPressed: () => Navigator.push(
-                                //         context,
-                                //         MaterialPageRoute(
-                                //           builder: (_) => ProfileVerification(
-                                //             user: widget.user,
-                                //           ),
-                                //         )),
-                                //     subTitle: "Verify your account",
-                                //     icon: Icon(
-                                //       MdiIcons.checkboxMarkedCircle,
-                                //       size: 20,
-                                //       color: Colors.blue,
-                                //     ),
-                                //   ),
-                                // ),
-                                Divider(color: Colors.blue),
-                                GestureDetector(
-                                  onTap: () => Navigator.push(
+                              ),
+                            ],
+                          ),
+                        )),
+                  ),
+                  Container(
+                    color: Colors.grey,
+                    height: 0.5,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              right: 10.0, top: 10, bottom: 10, left: 30),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              GestureDetector(
+                                onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => ProfileVerification(
+                                        user: widget.user,
+                                      ),
+                                    )),
+                                child: IntroInfo(
+                                  title: widget.user.verified!.isNotEmpty
+                                      ? 'Verified account'
+                                      : 'Request Verification',
+                                  onPressed: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => ProfileVerification(
+                                          user: widget.user,
+                                        ),
+                                      )),
+                                  subTitle: widget.user.verified!.isNotEmpty
+                                      ? 'Your account has been verified'
+                                      : "Verify your account",
+                                  icon: Icon(
+                                    MdiIcons.checkboxMarkedCircle,
+                                    size: 20,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                              ),
+                              Divider(color: Colors.grey),
+                              GestureDetector(
+                                onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => FeatureSurvey())),
+                                child: IntroInfo(
+                                  onPressed: () => Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (_) => FeatureSurvey())),
-                                  child: IntroInfo(
-                                    onPressed: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (_) => FeatureSurvey())),
-                                    title: 'Take a survey',
-                                    subTitle:
-                                        "Take a survey and let us know what you think about Bars Impression.",
-                                    icon: Icon(
-                                      Icons.arrow_forward_ios_outlined,
-                                      color: Colors.blue,
-                                      size: 20,
-                                    ),
+                                  title: 'Take a survey',
+                                  subTitle:
+                                      "Take a survey and let us know what you think about Bars Impression.",
+                                  icon: Icon(
+                                    Icons.arrow_forward_ios_outlined,
+                                    color: Colors.blue,
+                                    size: 20,
                                   ),
                                 ),
-                                Divider(color: Colors.blue),
-                                Platform.isIOS
-                                    ? GestureDetector(
-                                        onTap: () => Share.share(
+                              ),
+                              Divider(color: Colors.grey),
+                              Platform.isIOS
+                                  ? GestureDetector(
+                                      onTap: () => Share.share(
+                                          'https://apps.apple.com/us/app/bars-impression/id1610868894'),
+                                      child: IntroInfo(
+                                        title: 'Share',
+                                        onPressed: () => Share.share(
                                             'https://apps.apple.com/us/app/bars-impression/id1610868894'),
-                                        child: IntroInfo(
-                                          title: 'Share',
-                                          onPressed: () => Share.share(
-                                              'https://apps.apple.com/us/app/bars-impression/id1610868894'),
-                                          subTitle:
-                                              "Share Bars Impression with others",
-                                          icon: Icon(
-                                            Icons.share,
-                                            color: Colors.blue,
-                                            size: 20,
-                                          ),
+                                        subTitle:
+                                            "Share Bars Impression with others",
+                                        icon: Icon(
+                                          Icons.share,
+                                          color: Colors.blue,
+                                          size: 20,
                                         ),
-                                      )
-                                    : GestureDetector(
-                                        onTap: () => Share.share(
+                                      ),
+                                    )
+                                  : GestureDetector(
+                                      onTap: () => Share.share(
+                                          'https://play.google.com/store/apps/details?id=com.barsOpus.barsImpression'),
+                                      child: IntroInfo(
+                                        title: 'Share',
+                                        onPressed: () => Share.share(
                                             'https://play.google.com/store/apps/details?id=com.barsOpus.barsImpression'),
-                                        child: IntroInfo(
-                                          title: 'Share',
-                                          onPressed: () => Share.share(
-                                              'https://play.google.com/store/apps/details?id=com.barsOpus.barsImpression'),
-                                          subTitle:
-                                              "Share Bars Impression with others",
-                                          icon: Icon(
-                                            Icons.share,
-                                            color: ConfigBloc().darkModeOn
-                                                ? Color(0xFFf2f2f2)
-                                                : Color(0xFF1a1a1a),
-                                            size: 20,
-                                          ),
+                                        subTitle:
+                                            "Share Bars Impression with others",
+                                        icon: Icon(
+                                          Icons.share,
+                                          color: ConfigBloc().darkModeOn
+                                              ? Color(0xFFf2f2f2)
+                                              : Color(0xFF1a1a1a),
+                                          size: 20,
                                         ),
                                       ),
-                                Divider(color: Colors.blue),
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 60.0, bottom: 40),
-                                    child: Container(
-                                      width: 250.0,
-                                      child: OutlinedButton(
-                                        style: OutlinedButton.styleFrom(
-                                          primary: Colors.blue,
-                                          side: BorderSide(
-                                              width: 1.0, color: Colors.blue),
-                                        ),
-                                        child: Hero(
-                                          tag: 'logout',
-                                          child: Material(
-                                            color: Colors.transparent,
-                                            child: Text(
-                                              'Log Out',
-                                              style: TextStyle(
-                                                color: Colors.blue,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        onPressed: _showSelectImageDialog,
-                                      ),
                                     ),
-                                  ),
+                            ],
+                          ),
+                        )),
+                  ),
+                  Container(
+                    color: Colors.grey,
+                    height: 0.5,
+                  ),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 60.0, bottom: 40),
+                      child: Container(
+                        width: 250.0,
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            primary: Colors.blue,
+                            side: BorderSide(width: 1.0, color: Colors.blue),
+                          ),
+                          child: Hero(
+                            tag: 'logout',
+                            child: Material(
+                              color: Colors.transparent,
+                              child: Text(
+                                'Log Out',
+                                style: TextStyle(
+                                  color: Colors.blue,
                                 ),
-                                SizedBox(height: 40),
-                                IconButton(
-                                  icon: Icon(Icons.close),
-                                  iconSize: 30.0,
-                                  color: ConfigBloc().darkModeOn
-                                      ? Color(0xFFf2f2f2)
-                                      : Color(0xFF1a1a1a),
-                                  onPressed: () => Navigator.pop(context),
-                                ),
-                                SizedBox(
-                                  height: 50.0,
-                                ),
-                                GestureDetector(
-                                  onTap: _aboutBars,
-                                  child: Text(
-                                    'App Info.',
-                                    style: TextStyle(color: Colors.blue),
-                                  ),
-                                ),
-                                SizedBox(height: 20),
-                                GestureDetector(
-                                  onTap: () => setState(() {
-                                    _sendMail('mailto:support@barsopus.com');
-                                  }),
-                                  child: Text(
-                                    'Contact us',
-                                    style: TextStyle(color: Colors.blue),
-                                  ),
-                                ),
-                                SizedBox(height: 70),
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (_) => MyWebView(
-                                                  url:
-                                                      'https://www.barsopus.com/',
-                                                )));
-                                  },
-                                  child: Text(
-                                    'BARS IMPRESSION',
-                                    style: TextStyle(
-                                      color: Colors.blueGrey,
-                                      fontSize: 12,
-                                      letterSpacing: 7,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (_) => MyWebView(
-                                                  url:
-                                                      'https://www.barsopus.com/',
-                                                )));
-                                  },
-                                  child: Text(
-                                    'from Bars Opus',
-                                    style: TextStyle(
-                                      color: Colors.blueGrey,
-                                      fontSize: 10,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                                _isLoading
-                                    ? SizedBox(
-                                        height: 2.0,
-                                        child: LinearProgressIndicator(
-                                          backgroundColor: Colors.grey[100],
-                                          valueColor: AlwaysStoppedAnimation(
-                                              Colors.blue),
-                                        ),
-                                      )
-                                    : SizedBox.shrink(),
-                              ],
+                              ),
                             ),
-                          ))),
-                ),
+                          ),
+                          onPressed: _showSelectImageDialog,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 40),
+                  IconButton(
+                    icon: Icon(Icons.close),
+                    iconSize: 30.0,
+                    color: ConfigBloc().darkModeOn
+                        ? Color(0xFFf2f2f2)
+                        : Color(0xFF1a1a1a),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  SizedBox(
+                    height: 50.0,
+                  ),
+                  Center(
+                    child: GestureDetector(
+                      onTap: () => Navigator.push(context,
+                          MaterialPageRoute(builder: (_) => AboutUs())),
+                      child: Text(
+                        'About Us.',
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Center(
+                    child: GestureDetector(
+                      onTap: () => setState(() {
+                        _sendMail('mailto:support@barsopus.com');
+                      }),
+                      child: Text(
+                        'Contact us',
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 70),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => MyWebView(
+                                    url: 'https://www.barsopus.com/',
+                                  )));
+                    },
+                    child: Text(
+                      'BARS IMPRESSION',
+                      style: TextStyle(
+                        color: Colors.blueGrey,
+                        fontSize: 12,
+                        letterSpacing: 7,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => MyWebView(
+                                    url: 'https://www.barsopus.com/',
+                                  )));
+                    },
+                    child: Text(
+                      'from Bars Opus',
+                      style: TextStyle(
+                        color: Colors.blueGrey,
+                        fontSize: 10,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  _isLoading
+                      ? SizedBox(
+                          height: 2.0,
+                          child: LinearProgressIndicator(
+                            backgroundColor: Colors.grey[100],
+                            valueColor: AlwaysStoppedAnimation(Colors.blue),
+                          ),
+                        )
+                      : SizedBox.shrink(),
+                ],
               ),
             ),
           )),

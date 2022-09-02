@@ -130,4 +130,16 @@ class StorageService {
     String downloadUrl = await (await uploadTask).ref.getDownloadURL();
     return downloadUrl;
   }
+
+  static Future<String> virIdImageUrl(File imageFile) async {
+    String virId = Uuid().v4();
+    File? image = await compressImage(virId, imageFile);
+    String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+
+    UploadTask uploadTask = storageRef
+        .child('images/validate/$currentUserId/post_$virId.jpg')
+        .putFile(image!);
+    String downloadUrl = await (await uploadTask).ref.getDownloadURL();
+    return downloadUrl;
+  }
 }

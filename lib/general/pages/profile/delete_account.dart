@@ -346,15 +346,6 @@ class _DeleteAccountState extends State<DeleteAccount> {
         }
       });
 
-      FirebaseStorage.instance
-          .ref('images/posts/$currentUserId')
-          .listAll()
-          .then((value) {
-        value.items.forEach((element) {
-          FirebaseStorage.instance.ref(element.fullPath).delete();
-        });
-      });
-
       eventsRef
           .doc(currentUserId)
           .collection('userEvents')
@@ -495,7 +486,16 @@ class _DeleteAccountState extends State<DeleteAccount> {
       });
 
       FirebaseStorage.instance
-          .ref('images/events/$currentUserId')
+          .ref('images/posts/${currentUserId}')
+          .listAll()
+          .then((value) {
+        value.items.forEach((element) {
+          FirebaseStorage.instance.ref(element.fullPath).delete();
+        });
+      });
+
+      FirebaseStorage.instance
+          .ref('images/events/${currentUserId}')
           .listAll()
           .then((value) {
         value.items.forEach((element) {
@@ -514,7 +514,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
       });
 
       FirebaseStorage.instance
-          .ref('images/messageImage/$currentUserId')
+          .ref('images/messageImage/${currentUserId}')
           .listAll()
           .then((value) {
         value.items.forEach((element) {
@@ -523,7 +523,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
       });
 
       FirebaseStorage.instance
-          .ref('images/users/$currentUserId')
+          .ref('images/users/${currentUserId}')
           .listAll()
           .then((value) {
         value.items.forEach((element) {
@@ -533,7 +533,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
 
       usersRef.doc(currentUserId).delete();
       FirebaseStorage.instance
-          .ref('images/professionalPicture1/$currentUserId')
+          .ref('images/professionalPicture1/${currentUserId}')
           .listAll()
           .then((value) {
         value.items.forEach((element) {
@@ -541,7 +541,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
         });
       });
       FirebaseStorage.instance
-          .ref('images/professionalPicture2/$currentUserId')
+          .ref('images/professionalPicture2/${currentUserId}')
           .listAll()
           .then((value) {
         value.items.forEach((element) {
@@ -549,20 +549,27 @@ class _DeleteAccountState extends State<DeleteAccount> {
         });
       });
       FirebaseStorage.instance
-          .ref('images/professionalPicture3/$currentUserId')
+          .ref('images/professionalPicture3/${currentUserId}')
           .listAll()
           .then((value) {
         value.items.forEach((element) {
           FirebaseStorage.instance.ref(element.fullPath).delete();
         });
       });
+
       FirebaseStorage.instance
-          .ref('images/validate/$currentUserId')
+          .ref('images/validate/${currentUserId}')
           .listAll()
           .then((value) {
         value.items.forEach((element) {
           FirebaseStorage.instance.ref(element.fullPath).delete();
         });
+      });
+
+      usersRef.doc(currentUserId).get().then((doc) {
+        if (doc.exists) {
+          doc.reference.delete();
+        }
       });
 
       await _auth.currentUser!.delete().then((value) async {
@@ -819,7 +826,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
                             _deactivateAccount();
                           },
                           child: IntroInfo(
-                            title: 'Deactivating your accunt is temporary',
+                            title: 'Deactivating your account is temporary.',
                             subTitle:
                                 "Your information and contents would be hidden until you reactivate your account again",
                             icon: Icon(

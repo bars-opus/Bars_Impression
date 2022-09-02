@@ -280,7 +280,7 @@ class _PunchWidgetState extends State<PunchWidget> {
                           duration: Duration(milliseconds: 1000),
                           child: ListTile(
                             title: Text(
-                                'Punchline score is the subtraction of the negative reaction(???) from the positive reaction(Dope) of a punchline. It indicates how people are relating with a punchline.',
+                                'Punchline score is the subtraction of the negative reaction(???) from the positive reaction(Dope) of a punchline. It indicates how people are relating to a punchline.',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 12,

@@ -56,19 +56,6 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
     });
   }
 
-  // Widget buildBlur({
-  //   required Widget child,
-  //   double sigmaX = 50,
-  //   double sigmaY = 50,
-  //   BorderRadius? borderRadius,
-  // }) =>
-  //     ClipRRect(
-  //       borderRadius: borderRadius ?? BorderRadius.zero,
-  //       child: BackdropFilter(
-  //         filter: ImageFilter.blur(sigmaX: sigmaX, sigmaY: sigmaY),
-  //         child: child,
-  //       ),
-  //     );
 
   _setContentWarning() {
     if (mounted) {

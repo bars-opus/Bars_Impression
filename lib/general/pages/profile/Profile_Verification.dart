@@ -1,4 +1,6 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/scheduler.dart';
 
 // ignore: must_be_immutable
 class ProfileVerification extends StatefulWidget {
@@ -14,23 +16,16 @@ class ProfileVerification extends StatefulWidget {
 }
 
 class _ProfileVerificationState extends State<ProfileVerification> {
-  String _publicPresence = '';
+  String _newsCoverage = '';
   String _govIdType = '';
-  String _legalName = '';
-  String _brandAudienceCustomers = '';
+  String _wikipedia = '';
   String _website = '';
-  String _email = '';
-  String _phoneNumber = '';
   String _socialMedia = '';
-  String _notableArticleLink1 = '';
-  String _notableArticleLink2 = '';
+  String _otherLink = '';
   late PageController _pageController;
   int _index = 0;
 
   bool _isLoading = false;
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _brandAudienceCustomersTextController =
-      TextEditingController();
 
   @override
   void initState() {
@@ -38,40 +33,40 @@ class _ProfileVerificationState extends State<ProfileVerification> {
       initialPage: 0,
     );
     super.initState();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _setNull();
+    });
   }
 
   _submit() async {
-    if (_formKey.currentState!.validate() && !_isLoading) {
-      _formKey.currentState?.save();
-      setState(() {
-        _isLoading = true;
-      });
-
+    if (!_isLoading) {
+      animateToPage();
       String imageUrl = await StorageService.gvIdImageUrl(
           Provider.of<UserData>(context, listen: false).postImage!);
-
+      String vImageUrl = await StorageService.virIdImageUrl(
+          Provider.of<UserData>(context, listen: false).image!);
       Verification verification = Verification(
-        brandType: _publicPresence.isEmpty ? 'Public Figure' : _publicPresence,
-        govIdType: _govIdType.isEmpty ? 'Driver license' : _govIdType,
-        legalName: _legalName,
+        newsCoverage: _newsCoverage,
+        govIdType: _govIdType,
         verificationType: 'ThroughApp',
         profileHandle: widget.user.profileHandle!,
-        brandAudienceCustomers: _brandAudienceCustomers,
-        email: _email,
-        phoneNumber: _phoneNumber,
+        wikipedia: _wikipedia,
+        email: widget.user.email!,
+        phoneNumber: widget.user.contacts!,
         website: _website,
         socialMedia: _socialMedia,
-        notableAricle1: _notableArticleLink1,
-        notableAricle2: _notableArticleLink2,
+        validationImage: vImageUrl,
+        otherLink: _otherLink,
         gvIdImageUrl: imageUrl,
+        status: 'Submitted for review',
+        rejectedReason: '',
         userId: widget.user.id!,
         timestamp: Timestamp.fromDate(DateTime.now()),
-        id: '',
       );
       try {
         DatabaseService.requestVerification(verification);
         final double width = MediaQuery.of(context).size.width;
-        Navigator.pop(context);
+        _pop();
         Flushbar(
           margin: EdgeInsets.all(8),
           boxShadows: [
@@ -142,98 +137,15 @@ class _ProfileVerificationState extends State<ProfileVerification> {
         )..show(context);
         print(e.toString());
       }
-      setState(() {
-        _publicPresence = '';
-        _govIdType = '';
-        _website = '';
-        _phoneNumber = '';
-        _legalName = '';
-        _email = '';
-        _brandAudienceCustomers = '';
-        _isLoading = false;
-      });
     }
   }
-
-  // static const publicPresence = <String>[
-  //   "Public presence",
-  // ];
-  // String selectedPublicPresence = publicPresence.last;
-
-  // Widget buildPublicPresence() => Theme(
-  //       data: Theme.of(context).copyWith(
-  //         unselectedWidgetColor:
-  //             ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-  //       ),
-  //       child: Column(
-  //           children: publicPresence.map((mostHelpfulFeature) {
-  //         final selected = this.selectedBrandPresence == mostHelpfulFeature;
-  //         final color = selected
-  //             ? Colors.blue
-  //             : ConfigBloc().darkModeOn
-  //                 ? Colors.white
-  //                 : Colors.black;
-
-  //         return RadioListTile<String>(
-  //           value: mostHelpfulFeature,
-  //           groupValue: selectedBrandPresence,
-  //           title: Text(
-  //             mostHelpfulFeature,
-  //             style: TextStyle(color: color, fontSize: 14),
-  //           ),
-  //           activeColor: Colors.blue,
-  //           onChanged: (brandPresence) => setState(
-  //             () {
-  //               _publicPresence = this.selectedBrandPresence = brandPresence!;
-  //             },
-  //           ),
-  //         );
-  //       }).toList()),
-  //     );
-
-  // static const newsCoverage = <String>[
-  //   "News Coverage",
-  // ];
-  // String selectedBrandPresence = newsCoverage.last;
-
-  // Widget buildNewsCoverage() => Theme(
-  //       data: Theme.of(context).copyWith(
-  //         unselectedWidgetColor:
-  //             ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-  //       ),
-  //       child: Column(
-  //           children: newsCoverage.map((mostHelpfulFeature) {
-  //         final selected = this.selectedBrandPresence == mostHelpfulFeature;
-  //         final color = selected
-  //             ? Colors.blue
-  //             : ConfigBloc().darkModeOn
-  //                 ? Colors.white
-  //                 : Colors.black;
-
-  //         return RadioListTile<String>(
-  //           value: mostHelpfulFeature,
-  //           groupValue: selectedBrandPresence,
-  //           title: Text(
-  //             mostHelpfulFeature,
-  //             style: TextStyle(color: color, fontSize: 14),
-  //           ),
-  //           activeColor: Colors.blue,
-  //           onChanged: (brandPresence) => setState(
-  //             () {
-  //               _newsCoverage = this.selectedBrandPresence = brandPresence!;
-  //             },
-  //           ),
-  //         );
-  //       }).toList()),
-  //     );
 
   static const govIdType = <String>[
     "Driver license",
     "Passport",
-    "Voters Id Card",
     "Document of incorporation",
   ];
-  String selectedGovIdType = govIdType.last;
+  String selectedGovIdType = '';
 
   Widget buildConfirmBrandAuthenticity() => Theme(
         data: Theme.of(context).copyWith(
@@ -282,6 +194,14 @@ class _ProfileVerificationState extends State<ProfileVerification> {
     );
   }
 
+  animateToPage2() {
+    _pageController.animateToPage(
+      _index + 2,
+      duration: Duration(milliseconds: 800),
+      curve: Curves.easeInOut,
+    );
+  }
+
   _handleImage() async {
     final file = await PickCropImage.pickedMedia(cropImage: _cropImage);
     if (file == null) return;
@@ -297,45 +217,266 @@ class _ProfileVerificationState extends State<ProfileVerification> {
   Future<File> _cropImage(File imageFile) async {
     File? croppedImage = await ImageCropper().cropImage(
       sourcePath: imageFile.path,
-      aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.5),
     );
     return croppedImage!;
   }
 
-  _displayPostImage() {
+  _handleImage2() async {
+    final file = await PickCropImage.pickedMedia(cropImage: _cropImage2);
+    if (file == null) return;
+    // ignore: unnecessary_null_comparison
+    if (file != null) {
+      if (mounted) {
+        Provider.of<UserData>(context, listen: false).setImage(file as File);
+      }
+    }
+  }
+
+  _handleImageCamera() async {
+    final file = await PickCropCamera.pickedMedia(cropImage: _cropImage);
+    if (file == null) return;
+
+    if (mounted) {
+      Provider.of<UserData>(context, listen: false).setPostImage(file);
+    }
+  }
+
+  Future<File> _cropImage2(File imageFile) async {
+    File? croppedImage = await ImageCropper().cropImage(
+      sourcePath: imageFile.path,
+    );
+    return croppedImage!;
+  }
+
+  _displayGovIdImage() {
     final width = Responsive.isDesktop(context)
         ? 600.0
         : MediaQuery.of(context).size.width;
 
-    return GestureDetector(
-      onTap: _handleImage,
-      child: Container(
-        // ignore: unnecessary_null_comparison
-        child: Provider.of<UserData>(context).postImage == null
-            ? Container(
-                height: width / 4,
-                width: width / 4,
-                decoration: BoxDecoration(
-                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                  borderRadius: BorderRadius.circular(5),
+    return AnimatedContainer(
+      curve: Curves.easeInOut,
+      duration: Duration(milliseconds: 800),
+      height: _govIdType.isNotEmpty ? width / 3 : 0.0,
+      width: width / 3,
+      color: Colors.transparent,
+      child: GestureDetector(
+        onTap: _handleImage,
+        child: Container(
+          // ignore: unnecessary_null_comparison
+          child: Provider.of<UserData>(context).postImage == null
+              ? Container(
+                  height: width / 3,
+                  width: width / 3,
+                  decoration: BoxDecoration(
+                    color:
+                        ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Icon(
+                    MdiIcons.image,
+                    color: ConfigBloc().darkModeOn
+                        ? Color(0xFF1a1a1a)
+                        : Color(0xFFf2f2f2),
+                    size: 30,
+                  ),
+                )
+              : Image(
+                  height: width / 3,
+                  width: width / 3,
+                  image: FileImage(
+                      File(Provider.of<UserData>(context).postImage!.path)),
+                  fit: BoxFit.cover,
                 ),
-                child: Icon(
-                  MdiIcons.image,
-                  color: ConfigBloc().darkModeOn
-                      ? Color(0xFF1a1a1a)
-                      : Color(0xFFf2f2f2),
-                  size: 30,
-                ),
-              )
-            : Image(
-                height: width / 4,
-                width: width / 4,
-                image: FileImage(
-                    File(Provider.of<UserData>(context).postImage!.path)),
-                fit: BoxFit.cover,
-              ),
+        ),
       ),
     );
+  }
+
+  _showSelectImageDialog() {
+    return Platform.isIOS ? _iosBottomSheet() : _androidDialog(context);
+  }
+
+  _iosBottomSheet() {
+    showCupertinoModalPopup(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoActionSheet(
+            title: Text(
+              'Pick image',
+              style: TextStyle(
+                fontSize: 16,
+                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+              ),
+            ),
+            actions: <Widget>[
+              CupertinoActionSheetAction(
+                child: Text(
+                  'Camera',
+                  style: TextStyle(
+                    color: Colors.blue,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  _handleImageCamera();
+                },
+              ),
+              CupertinoActionSheetAction(
+                child: Text(
+                  'Gallery',
+                  style: TextStyle(
+                    color: Colors.blue,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  _handleImage2();
+                },
+              )
+            ],
+            cancelButton: CupertinoActionSheetAction(
+              child: Text(
+                'Cancle',
+                style: TextStyle(
+                  color: Colors.red,
+                ),
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
+          );
+        });
+  }
+
+  _androidDialog(BuildContext parentContext) {
+    return showDialog(
+        context: parentContext,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text('Pick image'),
+            children: <Widget>[
+              SimpleDialogOption(
+                child: Text('Camera'),
+                onPressed: () {
+                  Navigator.pop(context);
+                  _handleImageCamera();
+                },
+              ),
+              SimpleDialogOption(
+                child: Text('Gallery'),
+                onPressed: () {
+                  Navigator.pop(context);
+                  _handleImage2();
+                },
+              ),
+              SimpleDialogOption(
+                child: Text('cancel'),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          );
+        });
+  }
+
+  _displayValidationImage() {
+    final width = Responsive.isDesktop(context)
+        ? 600.0
+        : MediaQuery.of(context).size.width;
+
+    return AnimatedContainer(
+      curve: Curves.easeInOut,
+      duration: Duration(milliseconds: 800),
+      height: Provider.of<UserData>(context).post2.isEmpty ? 0.0 : width / 3,
+      width: width / 3,
+      color: Colors.transparent,
+      child: GestureDetector(
+        onTap: _showSelectImageDialog,
+        child: Container(
+          // ignore: unnecessary_null_comparison
+          child: Provider.of<UserData>(context).image == null
+              ? Icon(
+                  MdiIcons.camera,
+                  color: Provider.of<UserData>(context).post2.isEmpty
+                      ? Colors.transparent
+                      : Colors.grey,
+                  size: 150,
+                )
+              : Image(
+                  height: width / 3,
+                  width: width / 3,
+                  image: FileImage(
+                      File(Provider.of<UserData>(context).image!.path)),
+                  fit: BoxFit.cover,
+                ),
+        ),
+      ),
+    );
+  }
+
+  showNotabilityWarning() {
+    final width = Responsive.isDesktop(context)
+        ? 600.0
+        : MediaQuery.of(context).size.width;
+    Flushbar(
+      margin: EdgeInsets.all(8),
+      boxShadows: [
+        BoxShadow(
+          color: Colors.black,
+          offset: Offset(0.0, 2.0),
+          blurRadius: 3.0,
+        )
+      ],
+      flushbarPosition: FlushbarPosition.TOP,
+      flushbarStyle: FlushbarStyle.FLOATING,
+      titleText: Text(
+        'Action denied',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: width > 800 ? 22 : 14,
+        ),
+      ),
+      messageText: Text(
+        "Kindly enter atleast two links in order to continue",
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: width > 800 ? 20 : 12,
+        ),
+      ),
+      icon: Icon(
+        MdiIcons.checkCircleOutline,
+        size: 30.0,
+        color: Colors.blue,
+      ),
+      duration: Duration(seconds: 3),
+      leftBarIndicatorColor: Colors.blue,
+    )..show(context);
+  }
+
+  _pop() {
+    Navigator.pop(context);
+    _setNull();
+  }
+
+  _setNull() {
+    _otherLink = '';
+    _govIdType = '';
+    _website = '';
+    _newsCoverage = '';
+    _wikipedia = '';
+    Provider.of<UserData>(context, listen: false).setPostImage(null);
+    Provider.of<UserData>(context, listen: false).setImage(null);
+    Provider.of<UserData>(context, listen: false).setPost2('');
+    _isLoading = false;
+  }
+
+  _setCode() {
+    Provider.of<UserData>(context, listen: false).setPost2(
+        widget.user.id!.substring(0, 3) +
+            Timestamp.fromDate(DateTime.now()..microsecond)
+                .toString()
+                .substring(43, 45));
+    Timer(Duration(minutes: 1), () {
+      Provider.of<UserData>(context, listen: false).setPost2('');
+    });
   }
 
   @override
@@ -344,512 +485,645 @@ class _ProfileVerificationState extends State<ProfileVerification> {
         ? 600.0
         : MediaQuery.of(context).size.width;
     return ResponsiveScaffold(
-      child: Scaffold(
-        backgroundColor:
-            ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
-        appBar: AppBar(
-          backgroundColor:
-              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
-          iconTheme: IconThemeData(
-              color: ConfigBloc().darkModeOn
-                  ? Color(0xFFf2f2f2)
-                  : Color(0xFF1a1a1a)),
-          leading: IconButton(
-              icon: Icon(
-                  Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
-              onPressed: () {
-                _index != 0 ? animateBack() : Navigator.pop(context);
-              }),
-          automaticallyImplyLeading: true,
-          elevation: 0,
-        ),
-        body: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Form(
-            key: _formKey,
-            child: PageView(
-              controller: _pageController,
-              physics: NeverScrollableScrollPhysics(),
-              onPageChanged: (int index) {
-                setState(() {
-                  _index = index;
-                });
-              },
-              children: [
-                SingleChildScrollView(
-                  child: Container(
-                    child: Container(
-                      height: width * 2,
-                      width: double.infinity,
-                      child: Column(
+      child: FutureBuilder(
+          future: DatabaseService.getVerificationUser(widget.user.id!),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (!snapshot.hasData) {
+              return Expanded(
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+            Verification _verification = snapshot.data;
+            return _verification.userId.isNotEmpty ||
+                    _verification.email.isNotEmpty
+                ? VerificationInfo(
+                    user: widget.user,
+                    verification: _verification,
+                  )
+                : Scaffold(
+                    backgroundColor: _index == 7
+                        ? Colors.blue
+                        : ConfigBloc().darkModeOn
+                            ? Color(0xFF1a1a1a)
+                            : Color(0xFFf2f2f2),
+                    appBar: AppBar(
+                      backgroundColor: _index == 7
+                          ? Colors.blue
+                          : ConfigBloc().darkModeOn
+                              ? Color(0xFF1a1a1a)
+                              : Color(0xFFf2f2f2),
+                      iconTheme: IconThemeData(
+                          color: ConfigBloc().darkModeOn
+                              ? Color(0xFFf2f2f2)
+                              : Color(0xFF1a1a1a)),
+                      leading: _index == 7
+                          ? SizedBox.shrink()
+                          : IconButton(
+                              icon: Icon(Platform.isIOS
+                                  ? Icons.arrow_back_ios
+                                  : Icons.arrow_back),
+                              onPressed: () {
+                                _index != 0 ? animateBack() : _pop();
+                              }),
+                      automaticallyImplyLeading: true,
+                      elevation: 0,
+                    ),
+                    body: GestureDetector(
+                      onTap: () => FocusScope.of(context).unfocus(),
+                      child: PageView(
+                        controller: _pageController,
+                        physics: NeverScrollableScrollPhysics(),
+                        onPageChanged: (int index) {
+                          setState(() {
+                            _index = index;
+                          });
+                        },
                         children: [
-                          Icon(
-                            MdiIcons.checkboxMarkedCircle,
-                            size: 50,
-                            color: Colors.blue,
-                          ),
-                          Center(
-                            child: Material(
-                              color: Colors.transparent,
-                              child: Text(
-                                'Request \nVerification',
-                                style: TextStyle(
-                                    color: ConfigBloc().darkModeOn
-                                        ? Color(0xFFf2f2f2)
-                                        : Color(0xFF1a1a1a),
-                                    fontSize: 40),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 10),
                           Container(
-                            height: 2,
-                            color: Colors.blue,
-                            width: 10,
-                          ),
-                          ShakeTransition(
-                            child: Padding(
-                              padding: const EdgeInsets.all(30.0),
-                              child: Text(
-                                'Bars Impression verification adds a blue check to a verified account to establish the authenticity of the account.',
-                                style: TextStyle(
-                                    color: ConfigBloc().darkModeOn
-                                        ? Color(0xFFf2f2f2)
-                                        : Color(0xFF1a1a1a),
-                                    fontSize: 14),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          FadeAnimation(
-                            0.5,
-                            Center(
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 70.0),
-                                child: AlwaysWhiteButton(
-                                    onPressed: () {
-                                      animateToPage();
-                                    },
-                                    buttonText: "Start"),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                SingleChildScrollView(
-                  child: Container(
-                    child: Container(
-                      height: width * 2,
-                      width: double.infinity,
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            DirectionWidget(
-                              text: 'Requirements',
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              sizedBox: 10,
-                            ),
-                            Text(
-                              'You will need to meet specific requirements to be verified.',
-                              style: TextStyle(
-                                  color: ConfigBloc().darkModeOn
-                                      ? Color(0xFFf2f2f2)
-                                      : Color(0xFF1a1a1a),
-                                  fontSize: 14),
-                              textAlign: TextAlign.left,
-                            ),
-                            SizedBox(height: 30),
-                            ShakeTransition(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 7.0),
-                                child: FeatureInfoWidget(
-                                  title: 'Adherence to Terms of Use.',
-                                  subTitle:
-                                      'Your account must be active with a record of adherence to the Bars Impression Terms of Use.',
-                                  number: '1',
+                            height: width * 2,
+                            width: double.infinity,
+                            child: ListView(
+                              children: [
+                                Icon(
+                                  MdiIcons.checkboxMarkedCircle,
+                                  size: 50,
+                                  color: Colors.blue,
                                 ),
-                              ),
-                            ),
-                            ShakeTransition(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 7.0),
-                                child: FeatureInfoWidget(
-                                  title: 'Account Information: ',
-                                  subTitle:
-                                      'You must provide the necessary information required for setting up your brand. Information such as username, profile image, and bio, must be provided for account types of fan.  Other account types such as artist, producer, cover art designer, music video director, dj, battle rapper, photographer, dancer, video vixen, Makeup artist, record label, brand influencer, blogger, and mC(Host) must provide the necessary booking infromation.',
-                                  number: '2',
-                                ),
-                              ),
-                            ),
-                            ShakeTransition(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 7.0),
-                                child: FeatureInfoWidget(
-                                  title: 'Active: ',
-                                  subTitle:
-                                      'You must have logged into your account in the last two months.',
-                                  number: '3',
-                                ),
-                              ),
-                            ),
-                            ShakeTransition(
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 7.0),
-                                child: FeatureInfoWidget(
-                                  title: 'Ineligible accounts',
-                                  subTitle:
-                                      'Certain accounts are ineligible for verification.\nParody, newsfeed, commentary, unofficial fan accounts, Pets and fictional characters.',
-                                  number: '4',
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 55.0),
-                              child: Text(
-                                'Learn more.',
-                                style:
-                                    TextStyle(color: Colors.blue, fontSize: 12),
-                                textAlign: TextAlign.left,
-                              ),
-                            ),
-                            Center(
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 70.0),
-                                child: AlwaysWhiteButton(
-                                    onPressed: () {
-                                      animateToPage();
-                                    },
-                                    buttonText: "Continue"),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SingleChildScrollView(
-                  child: Container(
-                    child: Container(
-                      height: width * 2,
-                      width: double.infinity,
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            DirectionWidget(
-                              text: 'Authenticity',
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              sizedBox: 10,
-                            ),
-                            Text(
-                              'You will need to meet specific requirements to be verified.',
-                              style: TextStyle(
-                                  color: ConfigBloc().darkModeOn
-                                      ? Color(0xFFf2f2f2)
-                                      : Color(0xFF1a1a1a),
-                                  fontSize: 14),
-                              textAlign: TextAlign.left,
-                            ),
-                            SizedBox(height: 10),
-                            buildConfirmBrandAuthenticity(),
-                            Center(
-                              child: _displayPostImage(),
-                            ),
-                            // buildPublicPresence(),
-                            // Padding(
-                            //   padding:
-                            //       const EdgeInsets.symmetric(horizontal: 30.0),
-                            //   child: BarsTextSubTitle(
-                            //       text:
-                            //           'Bars Impression verification adds a blue check to a verified account to establish the authenticity of the account'),
-                            // ),
-                            // SizedBox(height: 10),
-                            // buildNewsCoverage(),
-                            // Padding(
-                            //   padding:
-                            //       const EdgeInsets.symmetric(horizontal: 30.0),
-                            //   child: BarsTextSubTitle(
-                            //       text:
-                            //           'Bars Impression verification adds a blue check to a verified account to establish the authenticity of the account'),
-                            // ),
-                            // Center(
-                            //   child: Padding(
-                            //     padding: const EdgeInsets.only(top: 70.0),
-                            //     child: AlwaysWhiteButton(
-                            //         onPressed: () {
-                            //           animateToPage();
-                            //         },
-                            //         buttonText: "Continue"),
-                            //   ),
-                            // ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SingleChildScrollView(
-                  child: Container(
-                    child: Container(
-                      height: width * 2,
-                      width: double.infinity,
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            DirectionWidget(
-                              text: 'Select Brand Type',
-                              fontSize: 20,
-                            ),
-                            SizedBox(height: 20),
-                            // buildBrandType(),
-                            ContentField(
-                              labelText: 'Contact email',
-                              hintText: "Contact email",
-                              initialValue: widget.user.mail!,
-                              onSavedText: (input) => _email = input,
-                              onValidateText: (email) => email.isEmpty
-                                  ? 'Contant email cannot be empty'
-                                  : null,
-                            ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              'We\"ll use this for communication about your account',
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 10),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(
-                              height: 12,
-                            ),
-                            ContentField(
-                              labelText: 'Contact phone number',
-                              hintText: "Contact phone number",
-                              initialValue: widget.user.contacts!,
-                              onSavedText: (input) => _phoneNumber = input,
-                              onValidateText: (phoneNumber) =>
-                                  phoneNumber.isEmpty
-                                      ? 'Contant phone number cannot be empty'
-                                      : null,
-                            ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              'Include the + symbol, country code and area code.',
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 10),
-                              textAlign: TextAlign.center,
-                            ),
-                            Center(
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 70.0),
-                                child: AlwaysWhiteButton(
-                                    onPressed: () {
-                                      animateToPage();
-                                    },
-                                    buttonText: "Continue"),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SingleChildScrollView(
-                  child: Container(
-                    height: width * 2,
-                    width: double.infinity,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            DirectionWidget(
-                              text: 'Organization Name',
-                              fontSize: 20,
-                            ),
-                            SizedBox(height: 20),
-                            ContentField(
-                              labelText: widget.user.name!,
-                              hintText: "The full legal name ",
-                              initialValue: widget.user.name!,
-                              onSavedText: (input) => _legalName = input,
-                              onValidateText: (legalName) => legalName.isEmpty
-                                  ? 'Orgnization name cannot be empty'
-                                  : null,
-                            ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              'The full legal name of your organization for example Bar Impression  LLC',
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 10),
-                              textAlign: TextAlign.center,
-                            ),
-                            buildConfirmBrandAuthenticity(),
-                            Center(
-                              child: _displayPostImage(),
-                            ),
-                            Center(
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 70.0),
-                                child: AlwaysWhiteButton(
-                                    onPressed: () {
-                                      animateToPage();
-                                    },
-                                    buttonText: "Continue"),
-                              ),
-                            ),
-                          ]),
-                    ),
-                  ),
-                ),
-                SingleChildScrollView(
-                  child: Container(
-                    height: width * 2,
-                    width: double.infinity,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            DirectionWidget(
-                              text: 'Confirm Notability',
-                              fontSize: 20,
-                            ),
-                            const SizedBox(height: 20),
-                            Container(
-                              color: Colors.blue[100],
-                              height: 100,
-                              child: Align(
-                                alignment: Alignment.bottomCenter,
-                                child: TextFormField(
-                                  controller:
-                                      _brandAudienceCustomersTextController,
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines:
-                                      _brandAudienceCustomersTextController
-                                                  .text.length >
-                                              300
-                                          ? 10
-                                          : null,
-                                  textCapitalization:
-                                      TextCapitalization.sentences,
-                                  validator: (brandAudience) =>
-                                      brandAudience!.isEmpty
-                                          ? 'Kindly leave an advice'
-                                          : null,
-                                  onSaved: (input) =>
-                                      _brandAudienceCustomers = input!,
-                                  decoration: InputDecoration.collapsed(
-                                    hintText: 'What do you think?...',
-                                    hintStyle: TextStyle(
-                                      fontSize: 14,
+                                Center(
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: Text(
+                                      'Request \nVerification',
+                                      style: TextStyle(
+                                          color: Colors.blue, fontSize: 40),
+                                      textAlign: TextAlign.center,
                                     ),
                                   ),
                                 ),
+                                SizedBox(height: 10),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 150),
+                                  child: Container(
+                                    height: 1.5,
+                                    color: Colors.blue,
+                                    width: 10,
+                                  ),
+                                ),
+                                ShakeTransition(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(30.0),
+                                    child: Text(
+                                      'Bars Impression verification adds a blue check to a verified account to establish the authenticity of the account.',
+                                      style: TextStyle(
+                                          color: ConfigBloc().darkModeOn
+                                              ? Color(0xFFf2f2f2)
+                                              : Color(0xFF1a1a1a),
+                                          fontSize: 14),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                                FadeAnimation(
+                                  0.5,
+                                  Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 70.0),
+                                      child: AlwaysWhiteButton(
+                                          onPressed: () {
+                                            animateToPage();
+                                          },
+                                          buttonText: "Start"),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height: width * 2,
+                            width: double.infinity,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: ListView(
+                                children: [
+                                  Center(
+                                    child: Text(
+                                      'Requirements',
+                                      style: TextStyle(
+                                          color: Colors.blue, fontSize: 30),
+                                      textAlign: TextAlign.left,
+                                    ),
+                                  ),
+                                  DirectionWidget(
+                                    text:
+                                        'You will need to meet specific requirements to be verified.',
+                                    fontSize: 14,
+                                    sizedBox: 10,
+                                  ),
+                                  SizedBox(height: 30),
+                                  ShakeTransition(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 7.0),
+                                      child: FeatureInfoWidget(
+                                        title: 'Adherence to Terms of Use.',
+                                        subTitle:
+                                            'Your account must be active with a record of adherence to the Bars Impression Terms of Use.',
+                                        number: '1',
+                                      ),
+                                    ),
+                                  ),
+                                  ShakeTransition(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 7.0),
+                                      child: FeatureInfoWidget(
+                                        title: 'Account Information: ',
+                                        subTitle:
+                                            'You must provide the necessary information required for setting up your brand. Information such as username, profile image, and bio, must be provided for account types of fan.  Other account types such as artist, producer, cover art designer, music video director, dj, battle rapper, photographer, dancer, video vixen, Makeup artist, record label, brand influencer, blogger, and mC(Host) must provide the necessary booking infromation.',
+                                        number: '2',
+                                      ),
+                                    ),
+                                  ),
+                                  ShakeTransition(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 7.0),
+                                      child: FeatureInfoWidget(
+                                        title: 'Active: ',
+                                        subTitle:
+                                            'You must have logged into your account in the last two months.',
+                                        number: '3',
+                                      ),
+                                    ),
+                                  ),
+                                  ShakeTransition(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 7.0),
+                                      child: FeatureInfoWidget(
+                                        title: 'Ineligible accounts',
+                                        subTitle:
+                                            'Certain accounts are ineligible for verification.\nParody, newsfeed, commentary, unofficial fan accounts, Pets and fictional characters.',
+                                        number: '4',
+                                      ),
+                                    ),
+                                  ),
+                                  // Padding(
+                                  //   padding: const EdgeInsets.symmetric(
+                                  //       horizontal: 55.0),
+                                  //   child: Text(
+                                  //     'Learn more.',
+                                  //     style: TextStyle(
+                                  //         color: Colors.blue, fontSize: 12),
+                                  //     textAlign: TextAlign.left,
+                                  //   ),
+                                  // ),
+                                  Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 70.0),
+                                      child: AlwaysWhiteButton(
+                                          onPressed: () {
+                                            widget.user.skills!.isNotEmpty &&
+                                                    widget.user.otherSites1!
+                                                        .isNotEmpty &&
+                                                    widget.user.otherSites2!
+                                                        .isNotEmpty &&
+                                                    widget.user.website!
+                                                        .isNotEmpty &&
+                                                    widget.user.management!
+                                                        .isNotEmpty &&
+                                                    widget.user.contacts!
+                                                        .isNotEmpty &&
+                                                    widget.user.mail!
+                                                        .isNotEmpty &&
+                                                    widget
+                                                        .user
+                                                        .professionalPicture1!
+                                                        .isNotEmpty &&
+                                                    widget
+                                                        .user
+                                                        .professionalPicture2!
+                                                        .isNotEmpty &&
+                                                    widget
+                                                        .user
+                                                        .professionalPicture3!
+                                                        .isNotEmpty &&
+                                                    widget.user.profileImageUrl!
+                                                        .isNotEmpty &&
+                                                    widget.user.userName!
+                                                        .isNotEmpty &&
+                                                    widget.user.company!
+                                                        .isNotEmpty &&
+                                                    widget.user.bio!.isNotEmpty
+                                                ? animateToPage2()
+                                                : animateToPage();
+                                          },
+                                          buttonText: "Continue"),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            ContentField(
-                              labelText: 'Social media account',
-                              hintText:
-                                  "Link to any of your social media account",
-                              initialValue: '',
-                              onSavedText: (input) => _socialMedia = input,
-                              onValidateText: (suggestion) => suggestion.isEmpty
-                                  ? 'Social link media cannot be empty'
-                                  : null,
-                            ),
-                            ContentField(
-                              labelText: 'Website',
-                              hintText: "Link to your website",
-                              initialValue: '',
-                              onSavedText: (input) => _website = input,
-                              onValidateText: (_) {},
-                            ),
-                            ContentField(
-                              labelText: 'Notable article 1',
-                              hintText: "link to articles about you",
-                              initialValue: '',
-                              onSavedText: (input) =>
-                                  _notableArticleLink1 = input,
-                              onValidateText: (_) {},
-                            ),
-                            ContentField(
-                              labelText: 'Notable article 2',
-                              hintText: "link to articles about you",
-                              initialValue: '',
-                              onSavedText: (input) =>
-                                  _notableArticleLink2 = input,
-                              onValidateText: (_) {},
-                            ),
-                            FadeAnimation(
-                              0.5,
-                              Align(
-                                alignment: Alignment.center,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 60.0, bottom: 40),
-                                  child: Container(
-                                    width: 250.0,
-                                    child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          primary: Colors.blue,
-                                          elevation: 20.0,
-                                          onPrimary: Colors.blue,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20.0),
+                          ),
+                          widget.user.skills!.isNotEmpty &&
+                                  widget.user.otherSites1!.isNotEmpty &&
+                                  widget.user.otherSites2!.isNotEmpty &&
+                                  widget.user.website!.isNotEmpty &&
+                                  widget.user.management!.isNotEmpty &&
+                                  widget.user.contacts!.isNotEmpty &&
+                                  widget.user.mail!.isNotEmpty &&
+                                  widget
+                                      .user.professionalPicture1!.isNotEmpty &&
+                                  widget
+                                      .user.professionalPicture2!.isNotEmpty &&
+                                  widget
+                                      .user.professionalPicture3!.isNotEmpty &&
+                                  widget.user.profileImageUrl!.isNotEmpty &&
+                                  widget.user.userName!.isNotEmpty &&
+                                  widget.user.company!.isNotEmpty &&
+                                  widget.user.bio!.isNotEmpty
+                              ? SizedBox.shrink()
+                              : Container(
+                                  height: width * 2,
+                                  width: double.infinity,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: ListView(
+                                      children: [
+                                        Center(
+                                          child: Text(
+                                            'Account\nInformation',
+                                            style: TextStyle(
+                                                color: Colors.blue,
+                                                fontSize: 30),
+                                            textAlign: TextAlign.center,
                                           ),
                                         ),
-                                        child: Material(
-                                          color: Colors.transparent,
-                                          child: Text(
-                                            'Submit Request',
-                                            style: TextStyle(
-                                              color: Colors.white,
+                                        DirectionWidget(
+                                          text:
+                                              'We have notice that some information about your account have not been provided. You must provide the necessary information required for account verification.\n(bio, username, profile photo, company, contact, email, management, skills, website or any other social media platform and 3 professional photos).\n\nRestart your verification request process after providing the information required.',
+                                          fontSize: 14,
+                                          sizedBox: 10,
+                                        ),
+                                        SizedBox(height: 40),
+                                        GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (_) =>
+                                                      EditProfileProfessional(
+                                                    user: widget.user,
+                                                  ),
+                                                ));
+                                          },
+                                          child: Center(
+                                            child: Text(
+                                              'Edit profile',
+                                              style: TextStyle(
+                                                  color: Colors.blue,
+                                                  fontSize: 16),
+                                              textAlign: TextAlign.center,
                                             ),
                                           ),
                                         ),
-                                        onPressed: _submit),
+                                      ],
+                                    ),
                                   ),
                                 ),
+                          Container(
+                            height: width * 2,
+                            width: double.infinity,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Center(
+                                    child: Text(
+                                      'Authenticity',
+                                      style: TextStyle(
+                                          color: Colors.blue, fontSize: 30),
+                                      textAlign: TextAlign.left,
+                                    ),
+                                  ),
+                                  DirectionWidget(
+                                    text: _govIdType.isEmpty
+                                        ? 'You will need to confirm your identity with Bars Impression to be Verified. This helps encourage and maintain trust between users on the platform.  Provide a photo of a valid official government-issued identification document, such as your Driver’s License or Passport if you are and individual. Companies, brands, or organizations are required to provide their document of incorporation.'
+                                        : 'Attach an image of your ${_govIdType} and lets continue',
+                                    fontSize: 14,
+                                    sizedBox: 10,
+                                  ),
+                                  SizedBox(height: 10),
+                                  _govIdType.isEmpty
+                                      ? buildConfirmBrandAuthenticity()
+                                      : SizedBox.shrink(),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 30.0),
+                                    child: Center(
+                                      child: _displayGovIdImage(),
+                                    ),
+                                  ),
+                                  Provider.of<UserData>(context).postImage ==
+                                          null
+                                      ? SizedBox.shrink()
+                                      : Center(
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 70.0),
+                                            child: AlwaysWhiteButton(
+                                                onPressed: () {
+                                                  animateToPage();
+                                                },
+                                                buttonText: "Continue"),
+                                          ),
+                                        ),
+                                ],
                               ),
                             ),
-                          ]),
+                          ),
+                          Container(
+                            height: width * 2,
+                            width: double.infinity,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: ListView(
+                                children: [
+                                  Center(
+                                    child: Text(
+                                      'Notability: 1',
+                                      style: TextStyle(
+                                          color: Colors.blue, fontSize: 30),
+                                      textAlign: TextAlign.left,
+                                    ),
+                                  ),
+                                  DirectionWidget(
+                                    text:
+                                        'Your account must represent or otherwise be associated with a prominently recognized individual or brand. Add articles, social media accounts, and other links that show your account is in the public interest. ',
+                                    fontSize: 14,
+                                    sizedBox: 10,
+                                  ),
+                                  SizedBox(height: 20),
+                                  ContentField(
+                                    labelText: 'Wikipedia',
+                                    hintText: "Wikipeidia link",
+                                    initialValue: _wikipedia,
+                                    onSavedText: (input) => _wikipedia = input,
+                                    onValidateText: () {},
+                                  ),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    'Provide a link to a stable Wikipedia article about you',
+                                    style: TextStyle(
+                                        color: Colors.grey, fontSize: 12),
+                                    textAlign: TextAlign.start,
+                                  ),
+                                  const SizedBox(
+                                    height: 12,
+                                  ),
+                                  ContentField(
+                                    labelText: 'News coverage',
+                                    hintText: "News article link",
+                                    initialValue: _newsCoverage,
+                                    onSavedText: (input) =>
+                                        _newsCoverage = input,
+                                    onValidateText: () {},
+                                  ),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    'Provide news articles that are about or reference yourself multiple times in the article. These articles must be from recorgnised news organizations and cannot be a blog or self-published content.',
+                                    style: TextStyle(
+                                        color: Colors.grey, fontSize: 12),
+                                    textAlign: TextAlign.start,
+                                  ),
+                                  const SizedBox(
+                                    height: 12,
+                                  ),
+                                  Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 70.0),
+                                      child: AlwaysWhiteButton(
+                                          onPressed: () {
+                                            _wikipedia.isEmpty &&
+                                                    _newsCoverage.isEmpty
+                                                ? showNotabilityWarning()
+                                                : animateToPage();
+                                          },
+                                          buttonText: "Continue"),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 100,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            height: width * 2,
+                            width: double.infinity,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: ListView(
+                                children: [
+                                  Center(
+                                    child: Text(
+                                      'Notability: 2',
+                                      style: TextStyle(
+                                          color: Colors.blue, fontSize: 30),
+                                      textAlign: TextAlign.left,
+                                    ),
+                                  ),
+                                  DirectionWidget(
+                                    text:
+                                        'Your account must represent or otherwise be associated with a prominently recognized individual or brand. Add articles, social media accounts, and other links that show your account is in the public interest. ',
+                                    fontSize: 14,
+                                    sizedBox: 10,
+                                  ),
+                                  ContentField(
+                                    labelText: 'Social media',
+                                    hintText: "link to any social account",
+                                    initialValue: _socialMedia,
+                                    onSavedText: (input) =>
+                                        _socialMedia = input,
+                                    onValidateText: () {},
+                                  ),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    'Provide a link to any of your social media accounts that are in the public insterest.',
+                                    style: TextStyle(
+                                        color: Colors.grey, fontSize: 12),
+                                    textAlign: TextAlign.start,
+                                  ),
+                                  ContentField(
+                                    labelText: 'Other link',
+                                    hintText: "link",
+                                    initialValue: _otherLink,
+                                    onSavedText: (input) => _otherLink = input,
+                                    onValidateText: () {},
+                                  ),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    'You can provide an additional link to confirm your notability.',
+                                    style: TextStyle(
+                                        color: Colors.grey, fontSize: 12),
+                                    textAlign: TextAlign.start,
+                                  ),
+                                  Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 70.0),
+                                      child: AlwaysWhiteButton(
+                                          onPressed: () {
+                                            _socialMedia.isEmpty &&
+                                                    _otherLink.isEmpty
+                                                ? showNotabilityWarning()
+                                                : animateToPage();
+                                          },
+                                          buttonText: "Continue"),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 100,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            height: width * 2,
+                            width: double.infinity,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: ListView(children: [
+                                Center(
+                                  child: Text(
+                                    'Validation',
+                                    style: TextStyle(
+                                        color: Colors.blue, fontSize: 30),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                ),
+                                Provider.of<UserData>(context).image == null
+                                    ? DirectionWidget(
+                                        text: Provider.of<UserData>(context,
+                                                    listen: false)
+                                                .post2
+                                                .isEmpty
+                                            ? 'This final step requires you to provide a picture of yourself holding a paper with a generated code.\nYou can generate the code by tapping on the button below.\nYou have 5 minutes to boldly write the code on paper and take a picture with it for submission.'
+                                            : 'You have 5 minutes to boldly write the code on paper and take a picture with it for submission',
+                                        fontSize: 14,
+                                        sizedBox: 10,
+                                      )
+                                    : DirectionWidget(
+                                        text:
+                                            'You can submit your request for review',
+                                        fontSize: 14,
+                                        sizedBox: 10,
+                                      ),
+                                Center(
+                                  child: Text(
+                                    Provider.of<UserData>(context,
+                                            listen: false)
+                                        .post2,
+                                    style: TextStyle(
+                                        color: Colors.blue, fontSize: 30),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                ),
+                                SizedBox(height: 20),
+                                Center(
+                                  child: _displayValidationImage(),
+                                ),
+                                Provider.of<UserData>(context).image == null
+                                    ? Center(
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 70.0),
+                                          child: AnimatedContainer(
+                                            curve: Curves.easeInOut,
+                                            duration:
+                                                Duration(milliseconds: 800),
+                                            height:
+                                                Provider.of<UserData>(context)
+                                                        .post2
+                                                        .isEmpty
+                                                    ? 35.0
+                                                    : 0.0,
+                                            child: AlwaysWhiteButton(
+                                                onPressed: () {
+                                                  _setCode();
+                                                },
+                                                buttonText: "Generate Code"),
+                                          ),
+                                        ),
+                                      )
+                                    : FadeAnimation(
+                                        0.5,
+                                        Align(
+                                          alignment: Alignment.center,
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 60.0, bottom: 40),
+                                            child: Container(
+                                              width: 250.0,
+                                              child: ElevatedButton(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    primary: Colors.blue,
+                                                    elevation: 20.0,
+                                                    onPrimary: Colors.blue,
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20.0),
+                                                    ),
+                                                  ),
+                                                  child: Material(
+                                                    color: Colors.transparent,
+                                                    child: Text(
+                                                      'Submit Request',
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  onPressed: _submit),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                              ]),
+                            ),
+                          ),
+                          SingleChildScrollView(
+                            child: Container(
+                                color: Colors.blue,
+                                height:
+                                    MediaQuery.of(context).size.height - 200,
+                                child: Center(
+                                    child: Loading(
+                                  title: 'Submitting request',
+                                  icon: (MdiIcons.checkboxMarkedCircle),
+                                ))),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+                  );
+          }),
     );
   }
 }

@@ -33,12 +33,11 @@ class _CommentsScreenState extends State<CommentsScreen>
 
   final TextEditingController _commentController = TextEditingController();
   bool _isCommenting = false;
- 
 
   void initState() {
     super.initState();
     _setUpComments();
-    
+
     _isVisible = true;
     SchedulerBinding.instance.addPostFrameCallback((_) {
       Provider.of<UserData>(context, listen: false).setPost9('');
@@ -59,8 +58,6 @@ class _CommentsScreenState extends State<CommentsScreen>
       }
     });
   }
-
-  
 
   _setUpComments() async {
     DatabaseService.numComments(widget.post.id).listen((commentCount) {
@@ -462,9 +459,9 @@ class _CommentsScreenState extends State<CommentsScreen>
                                     child: Center(
                                       child: NoContents(
                                         icon: (MdiIcons.emoticonHappyOutline),
-                                        title: 'No Vibes yet,',
+                                        title: 'No Vibes yet.',
                                         subTitle:
-                                            'Can you relate to this pucnline and the mood of the puch?, then vibe with it, ',
+                                            'Can you relate to this punchline and the mood of the punch? then vibe with it.',
                                       ),
                                     ),
                                   )

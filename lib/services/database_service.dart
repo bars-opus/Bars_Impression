@@ -488,21 +488,22 @@ class DatabaseService {
   }
 
   static void requestVerification(Verification verification) {
-    surveysRef.add({
-      'id': verification.id,
+    verificationRef.doc(verification.userId).set({
       'userId': verification.userId,
-      'legalName': verification.legalName,
       'verificationType': verification.verificationType,
-      'brandType': verification.brandType,
+      'newsCoverage': verification.newsCoverage,
       'govIdType': verification.govIdType,
       'email': verification.email,
       'phoneNumber': verification.phoneNumber,
+      'profileHandle': verification.profileHandle,
       'gvIdImageUrl': verification.gvIdImageUrl,
       'website': verification.website,
       'socialMedia': verification.socialMedia,
-      'notableAricle1': verification.notableAricle1,
-      'brandAudienceCustomers': verification.brandAudienceCustomers,
-      'notableAricle2': verification.notableAricle2,
+      'wikipedia': verification.wikipedia,
+      'validationImage': verification.validationImage,
+      'otherLink': verification.otherLink,
+      'status': verification.status,
+      'rejectedReason': verification.rejectedReason,
       'timestamp': verification.timestamp,
     });
   }
@@ -1181,6 +1182,31 @@ class DatabaseService {
         website: '',
         profileHandle: '',
         timestamp: null);
+  }
+
+  static Future<Verification> getVerificationUser(String? userId) async {
+    DocumentSnapshot userDocSnapshot = await verificationRef.doc(userId).get();
+    if (userDocSnapshot.exists) {
+      return Verification.fromDoc(userDocSnapshot);
+    }
+    return Verification(
+      email: '',
+      gvIdImageUrl: '',
+      govIdType: '',
+      otherLink: '',
+      newsCoverage: '',
+      phoneNumber: '',
+      profileHandle: '',
+      rejectedReason: '',
+      socialMedia: '',
+      status: '',
+      validationImage: '',
+      verificationType: '',
+      website: '',
+      userId: '',
+      wikipedia: '',
+      timestamp: null,
+    );
   }
 
   static Future<int> numLikes(String? postId) async {

@@ -489,9 +489,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
             : Provider.of<UserData>(context, listen: false).post6,
         title: Provider.of<UserData>(context, listen: false).post1,
         rate: Provider.of<UserData>(context, listen: false).post3,
-        venue: widget.isVirtual || _isVirtual
-            ? ''
-            : Provider.of<UserData>(context, listen: false).post5,
+        venue: Provider.of<UserData>(context, listen: false).post5,
         time: Provider.of<UserData>(context, listen: false).post7,
         date: Provider.of<UserData>(context, listen: false).post8,
         theme: Provider.of<UserData>(context, listen: false).post2,
@@ -1186,6 +1184,34 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                           onPressed: _validate,
                                           buttonText: "Continue"),
                                     ),
+                          SizedBox(
+                            height: 30,
+                          ),
+                          widget.isEditting
+                              ? InkWell(
+                                  borderRadius: BorderRadius.circular(10),
+                                  onTap: () => () {},
+                                  child: Ink(
+                                    decoration: BoxDecoration(
+                                      color: ConfigBloc().darkModeOn
+                                          ? Colors.white
+                                          : Colors.grey,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Container(
+                                      height: 40,
+                                      width: 40,
+                                      child: IconButton(
+                                          icon: Icon(Icons.delete_forever),
+                                          iconSize: 25,
+                                          color: ConfigBloc().darkModeOn
+                                              ? Colors.black
+                                              : Colors.white,
+                                          onPressed: _showSelectImageDialog),
+                                    ),
+                                  ),
+                                )
+                              : SizedBox.shrink(),
                           SizedBox(
                             height: 70,
                           ),

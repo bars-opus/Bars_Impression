@@ -24,6 +24,8 @@ class UserData extends ChangeNotifier {
   late bool _showEventTab;
   late bool _showUsersTab;
   late File? _postImage;
+  late File? _image;
+  late List? _message;
 
   final placesService = PlacesService();
   final addressService = AddressService();
@@ -52,6 +54,8 @@ class UserData extends ChangeNotifier {
     _usersTab = 0;
     _eventTab = 0;
     _postImage = null;
+    _image = null;
+    _message = [];
   }
   String get navigationBar => _navigationBar;
   String get post1 => _post1;
@@ -71,8 +75,10 @@ class UserData extends ChangeNotifier {
   bool get showEventTab => _showEventTab;
   bool get showUsersTab => _showUsersTab;
   File? get postImage => _postImage;
+  File? get image => _image;
   AccountHolder? get user => _user;
   int get messageCount => _messageCount;
+  List? get message => _message;
 
   void setnavigationBar(String navigationBar) {
     _navigationBar = navigationBar;
@@ -144,6 +150,11 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setImage(File? image) {
+    _image = image;
+    notifyListeners();
+  }
+
   void setNotificaitonTab(int notificaitonTab) {
     _notificaitonTab = notificaitonTab;
     notifyListeners();
@@ -171,6 +182,11 @@ class UserData extends ChangeNotifier {
 
   void setShowUsersTab(bool showUsersTab) {
     _showUsersTab = showUsersTab;
+    notifyListeners();
+  }
+
+  void chatMessage(List message) async {
+    _message = message;
     notifyListeners();
   }
 

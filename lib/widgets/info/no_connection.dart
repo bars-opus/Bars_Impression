@@ -7,43 +7,8 @@ class NoConnection extends StatefulWidget {
 }
 
 class _NoConnectionState extends State<NoConnection> {
-  // StreamSubscription connectivityStream;
    ConnectivityResult? oldResult;
   bool _networkConnection = false;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-
-  //   connectivityStream = Connectivity()
-  //       .onConnectivityChanged
-  //       .listen((ConnectivityResult resNow) {
-  //     if (resNow == ConnectivityResult.none) {
-  //       if (mounted) {
-  //         setState(() {
-  //           _networkConnection = true;
-  //         });
-  //       }
-  //     } else if (oldResult == ConnectivityResult.none) {
-  //       if (mounted) {
-  //         setState(() {
-  //           _networkConnection = false;
-  //         });
-  //       }
-  //     }
-
-  //     oldResult = resNow;
-  //   });
-  // }
-
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  //   // connectivityStream.cancel();
-  // }
-
-  // ConnectivityResult _connectionStatus = ConnectivityResult.none;
-  // final Connectivity _connectivity = Connectivity();
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
   @override
@@ -66,23 +31,14 @@ class _NoConnectionState extends State<NoConnection> {
         }
       }
       oldResult = result;
-      // Got a new connectivity status!
     });
   }
 
-// Be sure to cancel subscription after you are done
   @override
   dispose() {
     super.dispose();
-
     _connectivitySubscription.cancel();
   }
-
-  // Future<void> _updateConnectionStatus(ConnectivityResult result) async {
-  //   setState(() {
-  //     _connectionStatus = result;
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {

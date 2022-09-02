@@ -1,0 +1,208 @@
+import 'package:bars/utilities/exports.dart';
+
+class AboutUs extends StatefulWidget {
+  @override
+  _AboutUsState createState() => _AboutUsState();
+}
+
+class _AboutUsState extends State<AboutUs> {
+  _aboutBars() {
+    showAboutDialog(
+        context: context,
+        applicationName: 'Bars Impression',
+        applicationVersion: 'Version 1.1.7',
+        applicationIcon: Container(
+          width: 40,
+          height: 40,
+          child: Image.asset(
+            'assets/images/barsw.png',
+            color: Colors.black,
+          ),
+        ),
+        children: [
+          Column(children: <Widget>[
+            RichText(
+                text: TextSpan(
+              children: [
+                TextSpan(
+                    text: "Version Release Date: August 2022\n",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black,
+                    )),
+                TextSpan(
+                    text: "Language: English.",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black,
+                    )),
+              ],
+            )),
+          ])
+        ]);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color(0xFF1a1a1a),
+      appBar: AppBar(
+        automaticallyImplyLeading: true,
+        elevation: 0,
+        backgroundColor: Color(0xFF1a1a1a),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: ListView(
+          children: <Widget>[
+            SizedBox(
+              height: 50,
+            ),
+            new Material(
+              color: Colors.transparent,
+              child: Column(
+                children: [
+                  ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.asset('assets/images/barsw.png',
+                          height: 100, width: 100, fit: BoxFit.cover)),
+                  Text(
+                    'BARS',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 30.0,
+                      fontWeight: FontWeight.w100,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    'IMPRESSION',
+                    style: TextStyle(fontSize: 18.0, color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(height: 50),
+            Divider(
+              color: Colors.grey,
+            ),
+            Material(
+              color: Colors.transparent,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => MyWebView(
+                                url: 'https://www.barsopus.com/contact-us',
+                              )));
+                },
+                child: Text(
+                  'Contact us',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+            Divider(
+              color: Colors.grey,
+            ),
+            Material(
+              color: Colors.transparent,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => MyWebView(
+                                url: 'https://www.barsopus.com/terms-of-use',
+                              )));
+                },
+                child: Text(
+                  'Terms of use',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+            Divider(
+              color: Colors.grey,
+            ),
+            Material(
+              color: Colors.transparent,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => MyWebView(
+                                url: 'https://www.barsopus.com/privacy',
+                              )));
+                },
+                child: Text(
+                  'Privacy policies',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+            Divider(
+              color: Colors.grey,
+            ),
+            Material(
+              color: Colors.transparent,
+              child: GestureDetector(
+                onTap: _aboutBars,
+                child: Text(
+                  'App info',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+            // Center(
+            //   child: Container(
+            //     width: width - 100,
+            //     child: TextButton(
+            //       style: ElevatedButton.styleFrom(
+            //         primary: ConfigBloc().darkModeOn
+            //             ? Color(0xFF1a1a1a)
+            //             : Colors.white,
+            //         onPrimary: Colors.blue,
+            //         shape: RoundedRectangleBorder(
+            //           borderRadius: BorderRadius.circular(3.0),
+            //         ),
+            //       ),
+            //       onPressed: () {
+
+            //       },
+            //       child: Material(
+            //         color: Colors.transparent,
+            //         child: Text(
+            //           'Update',
+            //           style: TextStyle(
+            //             color: ConfigBloc().darkModeOn
+            //                 ? Colors.white
+            //                 : Colors.black,
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            SizedBox(height: 100),
+          ],
+        ),
+      ),
+    );
+  }
+}

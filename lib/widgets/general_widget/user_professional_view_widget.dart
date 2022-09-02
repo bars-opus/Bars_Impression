@@ -1558,8 +1558,17 @@ class UserProfessionalViewWidget extends StatelessWidget {
                               fontSize: 12,
                             ))),
                   )),
+              SizedBox(height: 50),
+              Center(
+                child: IconButton(
+                  icon: Icon(Icons.close),
+                  iconSize: 30.0,
+                  color: Colors.grey,
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ),
               SizedBox(
-                height: 70,
+                height: 50.0,
               ),
             ],
           ),

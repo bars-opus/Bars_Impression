@@ -28,13 +28,15 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
       _profileHandle = 'Fan';
     }
     try {
-      usersRef
-          .doc(
-        widget.user.id,
-      )
-          .update({
-        'profileHandle': _profileHandle,
-      });
+      widget.user.verified!.isEmpty
+          ? usersRef
+              .doc(
+              widget.user.id,
+            )
+              .update({
+              'profileHandle': _profileHandle,
+            })
+          : _unVerify();
     } catch (e) {
       final double width = Responsive.isDesktop(context)
           ? 600.0
@@ -73,6 +75,30 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
         leftBarIndicatorColor: Colors.blue,
       )..show(context);
     }
+  }
+
+  _unVerify() {
+    usersRef
+        .doc(
+      widget.user.id,
+    )
+        .update({
+      'profileHandle': _profileHandle,
+      'verified': '',
+    });
+    verificationRef.doc(widget.user.id).get().then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+    FirebaseStorage.instance
+        .ref('images/validate/${widget.user.id}')
+        .listAll()
+        .then((value) {
+      value.items.forEach((element) {
+        FirebaseStorage.instance.ref(element.fullPath).delete();
+      });
+    });
   }
 
   static const values = <String>[
@@ -133,7 +159,7 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
     return ResponsiveScaffold(
       child: Scaffold(
           backgroundColor:
-              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
           appBar: AppBar(
             iconTheme: IconThemeData(
               color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
@@ -141,7 +167,7 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
             automaticallyImplyLeading: true,
             elevation: 0,
             backgroundColor:
-                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
             title: Text(
               'Edit Profile',
               style: TextStyle(
