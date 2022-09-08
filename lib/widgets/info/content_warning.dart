@@ -5,7 +5,7 @@ class ContentWarning extends StatelessWidget {
   final String imageUrl;
   final String report;
 
-  final Function onPressed;
+  final VoidCallback? onPressed;
 
   ContentWarning(
       {required this.imageUrl, required this.report, required this.onPressed});
@@ -101,7 +101,7 @@ class ContentWarning extends StatelessWidget {
                         primary: Colors.transparent,
                         side: BorderSide(width: 1.0, color: Colors.transparent),
                       ),
-                      onPressed: () => onPressed,
+                      onPressed: onPressed,
                       child: Text(
                         'Reveal Content',
                         style: TextStyle(

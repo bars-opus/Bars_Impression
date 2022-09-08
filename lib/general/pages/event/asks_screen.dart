@@ -7,7 +7,6 @@ import 'package:flutter/rendering.dart';
 
 class AsksScreen extends StatefulWidget {
   final Event event;
-  final AccountHolder author;
   final Ask? ask;
   final int askCount;
   final String currentUserId;
@@ -15,7 +14,6 @@ class AsksScreen extends StatefulWidget {
   AsksScreen(
       {required this.event,
       required this.askCount,
-      required this.author,
       required this.ask,
       required this.currentUserId});
 
@@ -58,7 +56,7 @@ class _AsksScreenState extends State<AsksScreen> {
   _setupIsBlockedUser() async {
     bool isBlockedUser = await DatabaseService.isBlockedUser(
       currentUserId: widget.currentUserId,
-      userId: widget.author.id!,
+      userId: 'widget.author.id'!,
     );
     setState(() {
       _isBlockedUser = isBlockedUser;
@@ -357,6 +355,43 @@ class _AsksScreenState extends State<AsksScreen> {
                               SizedBox(
                                 height: 3.0,
                               ),
+                              GestureDetector(
+                                onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => ProfileScreen(
+                                              currentUserId:
+                                                  Provider.of<UserData>(context)
+                                                      .currentUserId!,
+                                              userId: widget.event.authorId,
+                                            ))),
+                                child: RichText(
+                                  textScaleFactor:
+                                      MediaQuery.of(context).textScaleFactor,
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                          text: 'created by:    ',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: ConfigBloc().darkModeOn
+                                                ? Color(0xFF1a1a1a)
+                                                : Color(0xFFe8f3fa),
+                                          )),
+                                      TextSpan(
+                                          text: " ",
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: ConfigBloc().darkModeOn
+                                                ? Color(0xFF1a1a1a)
+                                                : Color(0xFFe8f3fa),
+                                          )),
+                                    ],
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ),
                               RichText(
                                 text: TextSpan(
                                   children: [
@@ -384,7 +419,7 @@ class _AsksScreenState extends State<AsksScreen> {
                               ),
                               Text(
                                   timeago.format(
-                                    widget.event.timestamp.toDate(),
+                                    widget.event.timestamp!.toDate(),
                                   ),
                                   style: TextStyle(
                                     fontSize: 10,

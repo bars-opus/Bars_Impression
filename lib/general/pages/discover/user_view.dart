@@ -106,10 +106,9 @@ class _UserViewState extends State<UserView> {
                                             BorderRadius.circular(100.0),
                                       ),
                                       child: CircleAvatar(
-                                        backgroundColor:
-                                            ConfigBloc().darkModeOn
-                                                ? Color(0xFF1a1a1a)
-                                                : Colors.white,
+                                        backgroundColor: ConfigBloc().darkModeOn
+                                            ? Color(0xFF1a1a1a)
+                                            : Colors.white,
                                         radius: 25.0,
                                         backgroundImage: widget
                                                 .user.profileImageUrl!.isEmpty
@@ -608,34 +607,6 @@ class _UserViewState extends State<UserView> {
                                     ),
                                   ),
                                 ),
-                                widget.user.report!.isNotEmpty
-                                    ? Column(
-                                        children: [
-                                          Divider(
-                                            color: Colors.red,
-                                          ),
-                                          ListTile(
-                                            title: Text(
-                                                widget.user.userName! +
-                                                    ': reported for violating guidelines. ',
-                                                style: TextStyle(
-                                                  color: Colors.red,
-                                                  fontSize: 12,
-                                                )),
-                                            leading: IconButton(
-                                              icon: Icon(
-                                                  Icons.info_outline_rounded),
-                                              iconSize: 20.0,
-                                              color: Colors.red,
-                                              onPressed: () => () {},
-                                            ),
-                                          ),
-                                          Divider(
-                                            color: Colors.red,
-                                          ),
-                                        ],
-                                      )
-                                    : const SizedBox.shrink(),
                               ],
                             ),
                             subtitle: RichText(

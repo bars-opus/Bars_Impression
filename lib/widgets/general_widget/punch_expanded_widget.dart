@@ -99,8 +99,9 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
 
   _likePost() {
     DatabaseService.likePost(
-        currentUserId: widget.currentUserId, post: widget.post); HapticFeedback.heavyImpact();
-                          SystemSound.play(SystemSoundType.click);
+        currentUserId: widget.currentUserId, post: widget.post);
+    HapticFeedback.heavyImpact();
+    SystemSound.play(SystemSoundType.click);
     if (mounted) {
       setState(() {
         _isLiked = true;
@@ -258,7 +259,6 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                               top: 0.0, left: 10.0, right: 10.0),
                           child: GestureDetector(
                             onDoubleTap: () {
-                             
                               if (_isLiked) {
                                 setState(() {
                                   _unLikePost();

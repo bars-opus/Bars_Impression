@@ -797,41 +797,51 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                                                                 CrossAxisAlignment
                                                                     .start,
                                                             children: [
-                                                              RichText(
-                                                                textScaleFactor:
-                                                                    MediaQuery.of(
-                                                                            context)
-                                                                        .textScaleFactor,
-                                                                text: TextSpan(
-                                                                  children: [
-                                                                    TextSpan(
-                                                                        text:
-                                                                            'created by:    ',
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontSize:
-                                                                              12,
-                                                                          color: ConfigBloc().darkModeOn
-                                                                              ? Color(0xFF1a1a1a)
-                                                                              : Color(0xFFe8f3fa),
-                                                                        )),
-                                                                    TextSpan(
-                                                                        text:
-                                                                            "${widget.author.userName}  ",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontSize:
-                                                                              12,
-                                                                          color: ConfigBloc().darkModeOn
-                                                                              ? Color(0xFF1a1a1a)
-                                                                              : Color(0xFFe8f3fa),
-                                                                        )),
-                                                                  ],
+                                                              GestureDetector(
+                                                                onTap: () => Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                        builder: (_) => ProfileScreen(
+                                                                              currentUserId: Provider.of<UserData>(context).currentUserId!,
+                                                                              userId: widget.forum.authorId,
+                                                                            ))),
+                                                                child: RichText(
+                                                                  textScaleFactor:
+                                                                      MediaQuery.of(
+                                                                              context)
+                                                                          .textScaleFactor,
+                                                                  text:
+                                                                      TextSpan(
+                                                                    children: [
+                                                                      TextSpan(
+                                                                          text:
+                                                                              'created by:    ',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                12,
+                                                                            color: ConfigBloc().darkModeOn
+                                                                                ? Color(0xFF1a1a1a)
+                                                                                : Color(0xFFe8f3fa),
+                                                                          )),
+                                                                      TextSpan(
+                                                                          text:
+                                                                              "${widget.author.userName}  ",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                12,
+                                                                            color: ConfigBloc().darkModeOn
+                                                                                ? Color(0xFF1a1a1a)
+                                                                                : Color(0xFFe8f3fa),
+                                                                          )),
+                                                                    ],
+                                                                  ),
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                  maxLines: 1,
                                                                 ),
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                                maxLines: 1,
                                                               ),
                                                               RichText(
                                                                 textScaleFactor:

@@ -89,8 +89,9 @@ class _WebDisclaimerState extends State<WebDisclaimer> {
                   ),
                   Center(
                     child: Container(
-                      width: MediaQuery.of(context).size.width / 2,
+                      width: 250,
                       child: OutlinedButton(
+                        
                         style: OutlinedButton.styleFrom(
                           primary: Colors.blue,
                           side: BorderSide(width: 1.0, color: Colors.blue),

@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
@@ -162,7 +161,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   _followOrUnfollow(AccountHolder user) {
     HapticFeedback.heavyImpact();
     if (_isFollowing) {
-      _unfollowUser(user);
+      _showSelectImageDialog2(user, 'unfollow');
     } else {
       _followUser(user);
     }
@@ -171,9 +170,9 @@ class _ProfileScreenState extends State<ProfileScreen>
   _blockOrUnBlock(AccountHolder user) {
     HapticFeedback.heavyImpact();
     if (_isBlockingUser) {
-      _unBlockser(user);
+      _showSelectImageDialog2(user, 'unBlock');
     } else {
-      _blockser(user);
+      _showSelectImageDialog2(user, 'block');
     }
   }
 
@@ -1179,6 +1178,112 @@ class _ProfileScreenState extends State<ProfileScreen>
     return Platform.isIOS
         ? _iosBottomSheet(user)
         : _androidDialog(context, user);
+  }
+
+  _showSelectImageDialog2(AccountHolder user, String from) {
+    return Platform.isIOS
+        ? _iosBottomSheet2(user, from)
+        : _androidDialog2(context, user, from);
+  }
+
+  _iosBottomSheet2(AccountHolder user, String from) {
+    showCupertinoModalPopup(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoActionSheet(
+            title: Text(
+              from.startsWith('unfollow')
+                  ? 'Are you sure you want to unfollow ${user.userName}?'
+                  : from.startsWith('block')
+                      ? 'Are you sure you want to block ${user.userName}?'
+                      : from.startsWith('unBlock')
+                          ? 'Are you sure you want to unblock ${user.userName}?'
+                          : '',
+              style: TextStyle(
+                fontSize: 16,
+                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+              ),
+            ),
+            actions: <Widget>[
+              CupertinoActionSheetAction(
+                  child: Text(
+                    from.startsWith('unfollow')
+                        ? 'unFollow'
+                        : from.startsWith('block')
+                            ? 'block'
+                            : from.startsWith('unBlock')
+                                ? 'unBlock'
+                                : '',
+                    style: TextStyle(
+                      color: Colors.blue,
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    from.startsWith('unfollow')
+                        ? _unfollowUser(user)
+                        : from.startsWith('block')
+                            ? _blockser(user)
+                            : from.startsWith('unBlock')
+                                ? _unBlockser(user)
+                                : () {};
+                  }),
+            ],
+            cancelButton: CupertinoActionSheetAction(
+              child: Text(
+                'Cancle',
+                style: TextStyle(
+                  color: Colors.red,
+                ),
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
+          );
+        });
+  }
+
+  _androidDialog2(BuildContext parentContext, AccountHolder user, String from) {
+    return showDialog(
+        context: parentContext,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text(
+              from.startsWith('unfollow')
+                  ? 'Are you sure you want to unfollow ${user.userName}?'
+                  : from.startsWith('block')
+                      ? 'Are you sure you want to block ${user.userName}?'
+                      : from.startsWith('unBlock')
+                          ? 'Are you sure you want to unblock ${user.userName}?'
+                          : '',
+            ),
+            children: <Widget>[
+              SimpleDialogOption(
+                  child: Text(
+                    from.startsWith('unfollow')
+                        ? 'unFollow'
+                        : from.startsWith('block')
+                            ? 'block'
+                            : from.startsWith('unBlock')
+                                ? 'unBlock'
+                                : '',
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    from.startsWith('unfollow')
+                        ? _unfollowUser(user)
+                        : from.startsWith('block')
+                            ? _blockser(user)
+                            : from.startsWith('unBlock')
+                                ? _unBlockser(user)
+                                : () {};
+                  }),
+              SimpleDialogOption(
+                child: Text('cancel'),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          );
+        });
   }
 
   _iosBottomSheet(AccountHolder user) {

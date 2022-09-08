@@ -27,29 +27,35 @@ class _HyperLinkTextState extends State<HyperLinkText> {
                     fontSize: 12.0,
                     color: Colors.grey,
                   )
-                : widget.from!.startsWith('Advice')
+                : widget.from!.startsWith('forum')
                     ? TextStyle(
                         fontSize: 12.0,
-                        color: Colors.black,
+                        color: ConfigBloc().darkModeOn
+                            ? Colors.black
+                            : Colors.white,
                       )
-                    : widget.from!.startsWith('Link')
+                    : widget.from!.startsWith('Advice')
                         ? TextStyle(
                             fontSize: 12.0,
                             color: Colors.black,
                           )
-                        : widget.from!.startsWith('Message')
+                        : widget.from!.startsWith('Link')
                             ? TextStyle(
-                                fontSize: 14.0,
+                                fontSize: 12.0,
                                 color: Colors.black,
                               )
-                            : widget.from!.startsWith('Verified')
+                            : widget.from!.startsWith('Message')
                                 ? TextStyle(
                                     fontSize: 14.0,
-                                    color: ConfigBloc().darkModeOn
-                                        ? Colors.white
-                                        : Colors.black,
+                                    color: Colors.black,
                                   )
-                                
+                                : widget.from!.startsWith('Verified')
+                                    ? TextStyle(
+                                        fontSize: 14.0,
+                                        color: ConfigBloc().darkModeOn
+                                            ? Colors.white
+                                            : Colors.black,
+                                      )
                                     : TextStyle(
                                         fontSize: 12.0,
                                         color: ConfigBloc().darkModeOn
@@ -180,8 +186,11 @@ class _HyperLinkTextState extends State<HyperLinkText> {
         child: Text(
           text,
           style: TextStyle(
-            color:
-                type.startsWith('Profaine') ? Colors.grey : Colors.blueAccent,
+            color: type.startsWith('Profaine')
+                ? Colors.grey
+                : widget.from!.startsWith('forum')
+                    ? Colors.white
+                    : Colors.blueAccent,
             decorationColor:
                 type.startsWith('Profaine') ? Colors.red : Colors.blueAccent,
             decoration: type.startsWith('Profaine')

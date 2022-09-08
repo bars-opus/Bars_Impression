@@ -17,7 +17,7 @@ class Dancers extends StatefulWidget {
 class _DancersState extends State<Dancers> with AutomaticKeepAliveClientMixin {
   List<AccountHolder> _userList = [];
   final _userSnapshot = <DocumentSnapshot>[];
- int limit = 5;
+  int limit = 5;
   bool _hasNext = true;
   bool _isFectchingUser = false;
   late ScrollController _hideButtonController;
@@ -140,16 +140,16 @@ class _DancersState extends State<Dancers> with AutomaticKeepAliveClientMixin {
       backgroundColor:
           ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
       body: _userList.length > 0
-          ?Padding(
-            padding: const EdgeInsets.only(top: 20.0),
-            child: RefreshIndicator(
+          ? Padding(
+              padding: const EdgeInsets.only(top: 20.0),
+              child: RefreshIndicator(
                 backgroundColor: Colors.white,
                 onRefresh: () async {
                   _setupUsers();
                 },
                 child: _buildUser(),
               ),
-          )
+            )
           : _userList.length == 0
               ? Center(
                   child: SizedBox.shrink(),

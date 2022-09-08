@@ -138,7 +138,7 @@ class _EditProfileMusicPrefState extends State<EditProfileMusicPref> {
                                 EditProfileInfo(
                                     editTitle: 'Music \nPreference',
                                     info:
-                                        'Even though this is optional, you can enter your favorite punchline, favorite musician, and favorite music album so that other users can know the type of music you like and relate to you. These also help promote your favorite music. ',
+                                        'You can enter your favorite punchline, favorite musician, and favorite music album so that other users can know the type of music you like and relate to you. These also help promote your favorite music. ',
                                     icon: Icons.favorite),
                                 Padding(
                                   padding: const EdgeInsets.only(

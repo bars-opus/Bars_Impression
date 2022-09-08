@@ -265,6 +265,20 @@ export 'package:bars/utilities/verification_info.dart';
 export 'package:bars/widgets/info/user_banned.dart';
 export 'package:bars/utilities/about_us.dart';
 export 'package:bars/utilities/tagged_user.dart';
+export 'package:bars/general/pages/event/event_attend.dart';
+export 'package:bars/general/models/invite_model.dart';
+export 'package:bars/general/pages/event/event_attendees.dart';
+export 'package:bars/general/pages/event/event_dashboard.dart';
+export 'package:bars/general/pages/event/send_event_invitation.dart';
+export 'package:bars/general/pages/event/invitation_message.dart';
+export 'package:bars/general/pages/event/invite_search.dart';
+export 'package:bars/general/pages/event/event_invites.dart';
+export 'package:bars/general/pages/event/events_atteding.dart';
+export 'package:bars/general/pages/event/event_invite_available.dart';
+export 'package:bars/widgets/events_attending_widget.dart';
+export 'package:syncfusion_flutter_calendar/calendar.dart';
+export 'package:bars/general/pages/event/event_calender.dart';
+
 
 // discover user
 export 'package:bars/general/pages/discover/discover_page/account_categories/artists.dart';

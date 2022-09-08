@@ -10,7 +10,7 @@ class _AboutUsState extends State<AboutUs> {
     showAboutDialog(
         context: context,
         applicationName: 'Bars Impression',
-        applicationVersion: 'Version 1.1.7',
+        applicationVersion: 'Version 1.1.8',
         applicationIcon: Container(
           width: 40,
           height: 40,
@@ -25,7 +25,7 @@ class _AboutUsState extends State<AboutUs> {
                 text: TextSpan(
               children: [
                 TextSpan(
-                    text: "Version Release Date: August 2022\n",
+                    text: "Version Release Date: September 2022\n",
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.black,
@@ -82,7 +82,6 @@ class _AboutUsState extends State<AboutUs> {
                 ],
               ),
             ),
-
             SizedBox(height: 50),
             Divider(
               color: Colors.grey,
@@ -95,7 +94,7 @@ class _AboutUsState extends State<AboutUs> {
                       context,
                       MaterialPageRoute(
                           builder: (_) => MyWebView(
-                                url: 'https://www.barsopus.com/contact-us',
+                                url: 'https://www.barsopus.com/contact',
                               )));
                 },
                 child: Text(
@@ -107,8 +106,11 @@ class _AboutUsState extends State<AboutUs> {
                 ),
               ),
             ),
-            Divider(
-              color: Colors.grey,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Divider(
+                color: Colors.grey,
+              ),
             ),
             Material(
               color: Colors.transparent,
@@ -130,8 +132,11 @@ class _AboutUsState extends State<AboutUs> {
                 ),
               ),
             ),
-            Divider(
-              color: Colors.grey,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Divider(
+                color: Colors.grey,
+              ),
             ),
             Material(
               color: Colors.transparent,
@@ -153,8 +158,11 @@ class _AboutUsState extends State<AboutUs> {
                 ),
               ),
             ),
-            Divider(
-              color: Colors.grey,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Divider(
+                color: Colors.grey,
+              ),
             ),
             Material(
               color: Colors.transparent,
@@ -169,36 +177,6 @@ class _AboutUsState extends State<AboutUs> {
                 ),
               ),
             ),
-            // Center(
-            //   child: Container(
-            //     width: width - 100,
-            //     child: TextButton(
-            //       style: ElevatedButton.styleFrom(
-            //         primary: ConfigBloc().darkModeOn
-            //             ? Color(0xFF1a1a1a)
-            //             : Colors.white,
-            //         onPrimary: Colors.blue,
-            //         shape: RoundedRectangleBorder(
-            //           borderRadius: BorderRadius.circular(3.0),
-            //         ),
-            //       ),
-            //       onPressed: () {
-
-            //       },
-            //       child: Material(
-            //         color: Colors.transparent,
-            //         child: Text(
-            //           'Update',
-            //           style: TextStyle(
-            //             color: ConfigBloc().darkModeOn
-            //                 ? Colors.white
-            //                 : Colors.black,
-            //           ),
-            //         ),
-            //       ),
-            //     ),
-            //   ),
-            // ),
             SizedBox(height: 100),
           ],
         ),

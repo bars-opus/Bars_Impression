@@ -19,24 +19,13 @@ class EventSchimmerSkeleton extends StatelessWidget {
                 height: width / 2,
                 width: width / 4,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
                   color: ConfigBloc().darkModeOn
-                      ? Color(0xFF1a1a1a)
-                      : Color(0xFFf2f2f2),
+                      ? Colors.black.withOpacity(.5)
+                      : Colors.black.withOpacity(.5),
                 ),
                 child: Container(
                   width: width / 1.5,
                   height: 50,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.black : Colors.grey,
-                      gradient: LinearGradient(
-                          begin: Alignment.bottomRight,
-                          colors: [
-                            Colors.black.withOpacity(.5),
-                            Colors.black.withOpacity(.5)
-                          ])),
                 ),
               ),
             ),
@@ -62,16 +51,11 @@ class EventSchimmerSkeleton extends StatelessWidget {
                                 child: Container(
                                   height: 15,
                                   decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(50),
-                                      color: ConfigBloc().darkModeOn
-                                          ? Colors.black
-                                          : Colors.grey,
-                                      gradient: LinearGradient(
-                                          begin: Alignment.bottomRight,
-                                          colors: [
-                                            Colors.black.withOpacity(.5),
-                                            Colors.black.withOpacity(.5)
-                                          ])),
+                                    borderRadius: BorderRadius.circular(50),
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.black.withOpacity(.5)
+                                        : Colors.black.withOpacity(.5),
+                                  ),
                                 ),
                               ),
                             )),
@@ -83,16 +67,11 @@ class EventSchimmerSkeleton extends StatelessWidget {
                                 schimmerWidget: Container(
                                   height: 15,
                                   decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(50),
-                                      color: ConfigBloc().darkModeOn
-                                          ? Colors.black
-                                          : Colors.grey,
-                                      gradient: LinearGradient(
-                                          begin: Alignment.bottomRight,
-                                          colors: [
-                                            Colors.black.withOpacity(.5),
-                                            Colors.black.withOpacity(.5)
-                                          ])),
+                                    borderRadius: BorderRadius.circular(50),
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.black.withOpacity(.5)
+                                        : Colors.black.withOpacity(.5),
+                                  ),
                                 ),
                               )),
                         ),
@@ -104,16 +83,11 @@ class EventSchimmerSkeleton extends StatelessWidget {
                                 schimmerWidget: Container(
                                   height: 15,
                                   decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(50),
-                                      color: ConfigBloc().darkModeOn
-                                          ? Colors.black
-                                          : Colors.grey,
-                                      gradient: LinearGradient(
-                                          begin: Alignment.bottomRight,
-                                          colors: [
-                                            Colors.black.withOpacity(.5),
-                                            Colors.black.withOpacity(.5)
-                                          ])),
+                                    borderRadius: BorderRadius.circular(50),
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.black.withOpacity(.5)
+                                        : Colors.black.withOpacity(.5),
+                                  ),
                                 ),
                               )),
                         ),
@@ -125,16 +99,11 @@ class EventSchimmerSkeleton extends StatelessWidget {
                                 schimmerWidget: Container(
                                   height: 10,
                                   decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(50),
-                                      color: ConfigBloc().darkModeOn
-                                          ? Colors.black
-                                          : Colors.grey,
-                                      gradient: LinearGradient(
-                                          begin: Alignment.bottomRight,
-                                          colors: [
-                                            Colors.black.withOpacity(.5),
-                                            Colors.black.withOpacity(.5)
-                                          ])),
+                                    borderRadius: BorderRadius.circular(50),
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.black.withOpacity(.5)
+                                        : Colors.black.withOpacity(.5),
+                                  ),
                                 ),
                               )),
                         ),
@@ -146,16 +115,11 @@ class EventSchimmerSkeleton extends StatelessWidget {
                                 schimmerWidget: Container(
                                   height: 10,
                                   decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(50),
-                                      color: ConfigBloc().darkModeOn
-                                          ? Colors.black
-                                          : Colors.grey,
-                                      gradient: LinearGradient(
-                                          begin: Alignment.bottomRight,
-                                          colors: [
-                                            Colors.black.withOpacity(.5),
-                                            Colors.black.withOpacity(.5)
-                                          ])),
+                                    borderRadius: BorderRadius.circular(50),
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.black.withOpacity(.5)
+                                        : Colors.black.withOpacity(.5),
+                                  ),
                                 ),
                               )),
                         ),
@@ -173,17 +137,11 @@ class EventSchimmerSkeleton extends StatelessWidget {
                                       height: 10,
                                       width: width / 2,
                                       decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                          color: ConfigBloc().darkModeOn
-                                              ? Colors.black
-                                              : Colors.grey,
-                                          gradient: LinearGradient(
-                                              begin: Alignment.bottomRight,
-                                              colors: [
-                                                Colors.black.withOpacity(.5),
-                                                Colors.black.withOpacity(.5)
-                                              ])),
+                                        borderRadius: BorderRadius.circular(5),
+                                        color: ConfigBloc().darkModeOn
+                                            ? Colors.black.withOpacity(.5)
+                                            : Colors.black.withOpacity(.5),
+                                      ),
                                     ),
                                   )),
                             ),
@@ -196,17 +154,11 @@ class EventSchimmerSkeleton extends StatelessWidget {
                                       height: 10,
                                       width: width / 2,
                                       decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                          color: ConfigBloc().darkModeOn
-                                              ? Colors.black
-                                              : Colors.grey,
-                                          gradient: LinearGradient(
-                                              begin: Alignment.bottomRight,
-                                              colors: [
-                                                Colors.black.withOpacity(.5),
-                                                Colors.black.withOpacity(.5)
-                                              ])),
+                                        borderRadius: BorderRadius.circular(5),
+                                        color: ConfigBloc().darkModeOn
+                                            ? Colors.black.withOpacity(.5)
+                                            : Colors.black.withOpacity(.5),
+                                      ),
                                     ),
                                   )),
                             ),
@@ -226,17 +178,11 @@ class EventSchimmerSkeleton extends StatelessWidget {
                                       height: 10,
                                       width: width / 3,
                                       decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                          color: ConfigBloc().darkModeOn
-                                              ? Colors.black
-                                              : Colors.grey,
-                                          gradient: LinearGradient(
-                                              begin: Alignment.bottomRight,
-                                              colors: [
-                                                Colors.black.withOpacity(.5),
-                                                Colors.black.withOpacity(.5)
-                                              ])),
+                                        borderRadius: BorderRadius.circular(5),
+                                        color: ConfigBloc().darkModeOn
+                                            ? Colors.black.withOpacity(.5)
+                                            : Colors.black.withOpacity(.5),
+                                      ),
                                     ),
                                   )),
                             ),
@@ -249,17 +195,11 @@ class EventSchimmerSkeleton extends StatelessWidget {
                                       height: 10,
                                       width: width / 3,
                                       decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                          color: ConfigBloc().darkModeOn
-                                              ? Colors.black
-                                              : Colors.grey,
-                                          gradient: LinearGradient(
-                                              begin: Alignment.bottomRight,
-                                              colors: [
-                                                Colors.black.withOpacity(.5),
-                                                Colors.black.withOpacity(.5)
-                                              ])),
+                                        borderRadius: BorderRadius.circular(5),
+                                        color: ConfigBloc().darkModeOn
+                                            ? Colors.black.withOpacity(.5)
+                                            : Colors.black.withOpacity(.5),
+                                      ),
                                     ),
                                   )),
                             ),
@@ -274,17 +214,11 @@ class EventSchimmerSkeleton extends StatelessWidget {
                                       height: 10,
                                       width: width / 4,
                                       decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                          color: ConfigBloc().darkModeOn
-                                              ? Colors.black
-                                              : Colors.grey,
-                                          gradient: LinearGradient(
-                                              begin: Alignment.bottomRight,
-                                              colors: [
-                                                Colors.black.withOpacity(.5),
-                                                Colors.black.withOpacity(.5)
-                                              ])),
+                                        borderRadius: BorderRadius.circular(5),
+                                        color: ConfigBloc().darkModeOn
+                                            ? Colors.black.withOpacity(.5)
+                                            : Colors.black.withOpacity(.5),
+                                      ),
                                     ),
                                   )),
                             ),

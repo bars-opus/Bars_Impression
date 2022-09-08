@@ -16,7 +16,7 @@ class Event {
   final String host;
   final String artist;
   final String authorId;
-  final Timestamp timestamp;
+  final Timestamp? timestamp;
   final String previousEvent;
   final String triller;
   final String city;
@@ -27,6 +27,7 @@ class Event {
   final String blurHash;
   final String ticketSite;
   final bool isVirtual;
+  final bool isPrivate;
 
   Event({
     required this.id,
@@ -54,6 +55,7 @@ class Event {
     required this.virtualVenue,
     required this.ticketSite,
     required this.isVirtual,
+    required this.isPrivate,
     required this.blurHash,
   });
 
@@ -84,6 +86,7 @@ class Event {
       report: doc['report'] ?? '',
       reportConfirmed: doc['reportConfirmed'],
       isVirtual: doc['isVirtual'] ?? false,
+      isPrivate: doc['isPrivate'] ?? false,
       blurHash: doc['blurHash'] ?? '',
     );
   }

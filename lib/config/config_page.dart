@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
         builder: (context, AsyncSnapshot<User?> snapshot) {
           if (snapshot.hasData) {
             Provider.of<UserData>(context).currentUserId = snapshot.data!.uid;
-            
+
             return HomeScreen();
           } else {
             return Intro();
@@ -55,6 +55,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Bars',
         debugShowCheckedModeBanner: false,
+        // showPerformanceOverlay: true,
         home: _getScreenId(),
         routes: {
           WelcomeScreen.id: (context) => WelcomeScreen(),

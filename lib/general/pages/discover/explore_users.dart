@@ -637,6 +637,7 @@ class _UserExpandedWidgetState extends State<UserExpandedWidget> {
           context,
           MaterialPageRoute(
               builder: (_) => ProfileProfessionalProfile(
+                
                     currentUserId:
                         Provider.of<UserData>(context).currentUserId!,
                     user: widget.user,

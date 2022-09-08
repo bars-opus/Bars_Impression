@@ -427,6 +427,7 @@ class DatabaseService {
       'virtualVenue': event.virtualVenue,
       'ticketSite': event.ticketSite,
       'isVirtual': event.isVirtual,
+      'isPrivate': event.isPrivate,
       'blurHash': event.blurHash,
     });
   }
@@ -458,6 +459,7 @@ class DatabaseService {
       'city': event.city,
       'country': event.country,
       'virtualVenue': event.virtualVenue,
+      'isPrivate': event.isPrivate,
       'ticketSite': event.ticketSite,
       'blurHash': event.blurHash,
     });
@@ -1184,6 +1186,45 @@ class DatabaseService {
         timestamp: null);
   }
 
+  static Future<Event> getEventWithId(EventInvite invite) async {
+    DocumentSnapshot userDocSnapshot = await eventsRef
+        .doc(invite.authorId)
+        .collection('userEvents')
+        .doc(invite.eventId)
+        .get();
+    if (userDocSnapshot.exists) {
+      return Event.fromDoc(userDocSnapshot);
+    }
+    return Event(
+        country: '',
+        city: '',
+        id: '',
+        report: '',
+        reportConfirmed: '',
+        timestamp: null,
+        artist: '',
+        authorId: '',
+        blurHash: '',
+        date: '',
+        dj: '',
+        dressCode: '',
+        guess: '',
+        host: '',
+        imageUrl: '',
+        isPrivate: false,
+        isVirtual: false,
+        previousEvent: '',
+        rate: '',
+        theme: '',
+        ticketSite: '',
+        time: '',
+        title: '',
+        triller: '',
+        type: '',
+        venue: '',
+        virtualVenue: '');
+  }
+
   static Future<Verification> getVerificationUser(String? userId) async {
     DocumentSnapshot userDocSnapshot = await verificationRef.doc(userId).get();
     if (userDocSnapshot.exists) {
@@ -1474,6 +1515,238 @@ class DatabaseService {
         .collection('forumThoughts')
         .snapshots()
         .map((documentSnapshot) => documentSnapshot.docs.length);
+  }
+
+  static Stream<int> numEventAttendeeRequest(
+    String eventId,
+  ) {
+    return eventInviteRef
+        .doc(eventId)
+        .collection('eventInvite')
+        .where('invited', isEqualTo: false)
+        .snapshots()
+        .map((documentSnapshot) => documentSnapshot.docs.length);
+  }
+
+  static Stream<int> numAllEventInvites(
+    String eventId,
+  ) {
+    return eventInviteRef
+        .doc(eventId)
+        .collection('eventInvite')
+        .where('invited', isEqualTo: true)
+        .snapshots()
+        .map((documentSnapshot) => documentSnapshot.docs.length);
+  }
+
+  // static Stream<int> numEventAttendeeAccepted(String eventId) {
+  //   return eventInviteRef
+  //       .doc(eventId)
+  //       .collection('eventInvite')
+  //       .where('inviteStatus', isEqualTo: 'Accepted')
+  //       .snapshots()
+  //       .map((documentSnapshot) => documentSnapshot.docs.length);
+  // }
+
+  static Stream<int> numEventAttendee(String eventId, String from) {
+    return eventInviteRef
+        .doc(eventId)
+        .collection('eventInvite')
+        .where('attendeeStatus', isEqualTo: from)
+        .where('invited', isEqualTo: false)
+        .snapshots()
+        .map((documentSnapshot) => documentSnapshot.docs.length);
+  }
+
+  static Stream<int> numEventInvites(String eventId, String from) {
+    return eventInviteRef
+        .doc(eventId)
+        .collection('eventInvite')
+        .where('attendeeStatus', isEqualTo: from)
+        .where('invited', isEqualTo: true)
+        .snapshots()
+        .map((documentSnapshot) => documentSnapshot.docs.length);
+  }
+
+  // static Stream<int> numEventAttendeeRequestString eventId) {
+  //   return eventInviteRef
+  //       .doc(eventId)
+  //       .collection('eventInvite')
+  //       .where('inviteStatus', isEqualTo: '')
+  //       .snapshots()
+  //       .map((documentSnapshot) => documentSnapshot.docs.length);
+  // }
+
+  static Future<EventInvite> getEventAttendeee(
+      Event event, String? userId) async {
+    DocumentSnapshot userDocSnapshot = await eventInviteRef
+        .doc(event.id)
+        .collection('eventInvite')
+        .doc(userId)
+        .get();
+    if (userDocSnapshot.exists) {
+      return EventInvite.fromDoc(userDocSnapshot);
+    }
+    return EventInvite(
+      inviteeName: '',
+      message: '',
+      invited: false,
+      timestamp: null,
+      attendeeStatus: '',
+      anttendeeId: '',
+      anttendeeName: '',
+      anttendeeprofileHandle: '',
+      anttendeeprofileImageUrl: '',
+      attendNumber: '',
+      authorId: '',
+      eventId: '',
+      eventImageUrl: '',
+      id: '',
+      requestNumber: '',
+      inviteStatus: '',
+    );
+  }
+
+  static void attendEvent({
+    required Event event,
+    required AccountHolder user,
+    required String requestNumber,
+    required String message,
+  }) {
+    eventInviteRef.doc(event.id).collection('eventInvite').doc(user.id).set({
+      'eventId': event.id,
+      'inviteeName': '',
+      'requestNumber': requestNumber,
+      'attendNumber': '',
+      'anttendeeId': user.id,
+      'message': message,
+      'inviteStatus': '',
+      'invited': false,
+      'attendeeStatus': '',
+      'anttendeeName': user.userName,
+      'anttendeeprofileHandle': user.profileHandle,
+      'anttendeeprofileImageUrl': user.profileImageUrl,
+      'eventImageUrl': event.imageUrl,
+      'authorId': event.authorId,
+      'timestamp': Timestamp.fromDate(DateTime.now()),
+    });
+
+    userInviteRef.doc(user.id).collection('eventInvite').doc(event.id).set({
+      'eventId': event.id,
+      'requestNumber': requestNumber,
+      'attendNumber': '',
+      'inviteeName': '',
+      'anttendeeId': user.id,
+      'message': message,
+      'inviteStatus': '',
+      'invited': false,
+      'attendeeStatus': '',
+      'anttendeeName': user.userName,
+      'anttendeeprofileHandle': user.profileHandle,
+      'anttendeeprofileImageUrl': user.profileImageUrl,
+      'eventImageUrl': event.imageUrl,
+      'authorId': event.authorId,
+      'timestamp': Timestamp.fromDate(DateTime.now()),
+    });
+
+    // addActivityEventItem(currentUserId: currentUserId, event: event, ask: ask);
+  }
+
+  static void sendEventInvite({
+    required Event event,
+    required AccountHolder user,
+    required String requestNumber,
+    required String message,
+  }) {
+    userInviteRef.doc(user.id).collection('eventInvite').doc(event.id).set({
+      'eventId': event.id,
+      'requestNumber': requestNumber,
+      'attendNumber': '',
+      'anttendeeId': user.id,
+      'message': message,
+      'inviteStatus': '',
+      'inviteeName': user.userName,
+      'invited': true,
+      'attendeeStatus': '',
+      'anttendeeName': user.userName,
+      'anttendeeprofileHandle': user.profileHandle,
+      'anttendeeprofileImageUrl': user.profileImageUrl,
+      'eventImageUrl': event.imageUrl,
+      'authorId': event.authorId,
+      'timestamp': Timestamp.fromDate(DateTime.now()),
+    });
+
+    eventInviteRef.doc(event.id).collection('eventInvite').doc(user.id).set({
+      'eventId': event.id,
+      'requestNumber': requestNumber,
+      'attendNumber': '',
+      'anttendeeId': user.id,
+      'message': message,
+      'inviteStatus': '',
+      'inviteeName': user.userName,
+      'invited': true,
+      'attendeeStatus': '',
+      'anttendeeName': user.userName,
+      'anttendeeprofileHandle': user.profileHandle,
+      'anttendeeprofileImageUrl': user.profileImageUrl,
+      'eventImageUrl': event.imageUrl,
+      'authorId': event.authorId,
+      'timestamp': Timestamp.fromDate(DateTime.now()),
+    });
+    // addActivityEventItem(currentUserId: currentUserId, event: event, ask: ask);
+  }
+
+  static void cancelInvite({
+    required EventInvite eventInvite,
+  }) {
+    eventInviteRef
+        .doc(eventInvite.eventId)
+        .collection('eventInvite')
+        .doc(eventInvite.anttendeeId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+
+    userInviteRef
+        .doc(eventInvite.anttendeeId)
+        .collection('eventInvite')
+        .doc(eventInvite.eventId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+
+    // addActivityEventItem(currentUserId: currentUserId, event: event, ask: ask);
+  }
+
+  static void answerEventAttendee({
+    required EventInvite eventInvite,
+    required String answer,
+  }) {
+    eventInviteRef
+        .doc(eventInvite.eventId)
+        .collection('eventInvite')
+        .doc(eventInvite.anttendeeId)
+        .update({
+      'attendeeStatus': answer,
+      'timestamp': Timestamp.fromDate(DateTime.now()),
+    });
+
+    userInviteRef
+        .doc(eventInvite.anttendeeId)
+        .collection('eventInvite')
+        .doc(eventInvite.eventId)
+        .update({
+      'attendeeStatus': answer,
+      'timestamp': Timestamp.fromDate(DateTime.now()),
+    });
+
+    // addActivityEventItem(currentUserId: currentUserId, event: event, ask: ask);
   }
 
   static void askAboutEvent(

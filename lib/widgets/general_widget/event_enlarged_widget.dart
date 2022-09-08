@@ -8,6 +8,8 @@ class EventEnlargedWidget extends StatefulWidget {
   final Event event;
   final VoidCallback onPressedEventEnlarged;
   final VoidCallback onPressedLocationMap;
+  final VoidCallback onPressedAttend;
+  final VoidCallback onPressedCalendar;
   final VoidCallback onPressedEventticketSite;
   final VoidCallback onPressedPreviousEvent;
   final VoidCallback onPressedAsk;
@@ -19,9 +21,11 @@ class EventEnlargedWidget extends StatefulWidget {
     required this.imageHero,
     required this.onPressedEventEnlarged,
     required this.onPressedEventticketSite,
+    required this.onPressedAttend,
     required this.onPressedLocationMap,
     required this.onPressedPreviousEvent,
     required this.onPressedAsk,
+    required this.onPressedCalendar,
   });
 
   @override
@@ -55,7 +59,6 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
       _toDaysDate = toDayDate;
     });
   }
-
 
   _setContentWarning() {
     if (mounted) {
@@ -601,8 +604,10 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                               color: Colors.white,
                                             )),
                                         TextSpan(
-                                            text: ' and would take place at ' +
-                                                widget.event.venue,
+                                            text: widget.event.isVirtual
+                                                ? 'and be a vitual event'
+                                                : ' and would take place at ' +
+                                                    widget.event.venue,
                                             style: TextStyle(
                                               fontSize: 12,
                                               color: Colors.white,
@@ -786,6 +791,69 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                         onPressed: widget
                                                             .onPressedLocationMap,
                                                       ))),
+                                        ShakeTransition(
+                                            child: Material(
+                                                color: Colors.transparent,
+                                                child: IconButton(
+                                                  icon: Icon(
+                                                    MdiIcons.car,
+                                                    color: Colors.white,
+                                                  ),
+                                                  iconSize: 30.0,
+                                                  onPressed:
+                                                      widget.onPressedAttend,
+                                                ))),
+                                        IconButton(
+                                          icon: Icon(
+                                            Icons.event_available,
+                                            color: Colors.white,
+                                            size: 30.0,
+                                          ),
+                                          onPressed: widget.onPressedCalendar,
+                                        ),
+                                        Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 50.0, top: 70),
+                                            child: Align(
+                                                alignment:
+                                                    Alignment.bottomCenter,
+                                                child: ShakeTransition(
+                                                  axis: Axis.vertical,
+                                                  child: Container(
+                                                    width: 150.0,
+                                                    child: OutlinedButton(
+                                                      style: OutlinedButton
+                                                          .styleFrom(
+                                                        primary: Colors.blue,
+                                                        side: BorderSide(
+                                                            width: 1.0,
+                                                            color:
+                                                                Colors.white),
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      20.0),
+                                                        ),
+                                                      ),
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(10.0),
+                                                        child: Text(
+                                                          'Ask more',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 14.0,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      onPressed:
+                                                          widget.onPressedAsk,
+                                                    ),
+                                                  ),
+                                                ))),
                                         Padding(
                                             padding: const EdgeInsets.only(
                                                 bottom: 50.0, top: 70),

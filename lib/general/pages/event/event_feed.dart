@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/scheduler.dart';
 
 class EventsFeed extends StatefulWidget {
   static final id = 'EventsFeed';
@@ -14,7 +15,12 @@ class EventsFeed extends StatefulWidget {
 class _EventsFeedState extends State<EventsFeed>
     with AutomaticKeepAliveClientMixin {
   final _eventSnapshot = <DocumentSnapshot>[];
+  final _invitesSnapshot = <DocumentSnapshot>[];
   List<Event> _events = [];
+  List<EventInvite> _invites = [];
+  late DateTime _date;
+  late DateTime _toDaysDate;
+  int _different = 0;
   int _feedCount = 0;
   int limit = 5;
   bool _hasNext = true;
@@ -26,6 +32,7 @@ class _EventsFeedState extends State<EventsFeed>
     super.initState();
     _setupEventFeed();
     _setUpFeedCount();
+    _setUpInvites();
     _hideButtonController = ScrollController();
   }
 
@@ -51,6 +58,27 @@ class _EventsFeedState extends State<EventsFeed>
         _feedCount = feedCount;
       });
     }
+  }
+
+  _setUpInvites() async {
+    QuerySnapshot invitesFeedSnapShot = await userInviteRef
+        .doc(widget.currentUserId)
+        .collection('eventInvite')
+        .orderBy('timestamp', descending: true)
+        .limit(10)
+        .get();
+    List<EventInvite> invites = invitesFeedSnapShot.docs
+        .map((doc) => EventInvite.fromDoc(doc))
+        .toList();
+    _invitesSnapshot.addAll((invitesFeedSnapShot.docs));
+    if (mounted) {
+      setState(() {
+        _hasNext = false;
+        _invites = invites;
+      });
+    }
+
+    return invites;
   }
 
   _setupEventFeed() async {
@@ -140,6 +168,128 @@ class _EventsFeedState extends State<EventsFeed>
     );
   }
 
+  // _buildInviteTile(EventInvite invite, Event event) {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(horizontal: 10.0),
+  //     child: GestureDetector(
+  //       onTap: () => Navigator.push(
+  //           context,
+  //           MaterialPageRoute(
+  //               builder: (_) => EventsAttending(
+  //                     invite: invite,
+  //                     event: event,
+  //                   ))),
+  //       child: Column(
+  //         children: [
+  //           Stack(
+  //             children: [
+  //               Container(
+  //                 height: 50,
+  //                 width: 50,
+  //                 decoration: BoxDecoration(
+  //                     shape: BoxShape.circle,
+  //                     color: ConfigBloc().darkModeOn
+  //                         ? Color(0xFF1a1a1a)
+  //                         : Colors.white,
+  //                     image: DecorationImage(
+  //                       image: CachedNetworkImageProvider(invite.eventImageUrl),
+  //                       fit: BoxFit.cover,
+  //                     )),
+  //               ),
+  //               Container(
+  //                 height: 50,
+  //                 width: 50,
+  //                 decoration: BoxDecoration(
+  //                   gradient: LinearGradient(
+  //                     begin: Alignment.center,
+  //                     colors: [
+  //                       Colors.black.withOpacity(.6),
+  //                       Colors.black.withOpacity(.6),
+  //                     ],
+  //                   ),
+  //                   shape: BoxShape.circle,
+  //                   color: ConfigBloc().darkModeOn
+  //                       ? Color(0xFF1a1a1a)
+  //                       : Colors.white,
+  //                 ),
+  //                 child: Icon(
+  //                   Icons.event_available,
+  //                   color: Colors.white,
+  //                   size: 20.0,
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //           RichText(
+  //             textScaleFactor: MediaQuery.of(context).textScaleFactor,
+  //             text: TextSpan(
+  //               children: [
+  //                 TextSpan(
+  //                   text: _different.toString(),
+  //                   style: TextStyle(
+  //                     fontSize: 18,
+  //                     color: Colors.black,
+  //                   ),
+  //                 ),
+  //                 TextSpan(
+  //                   text: '\nDays\nMore',
+  //                   style: TextStyle(
+  //                     fontSize: 12,
+  //                     color: Colors.black,
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //             textAlign: TextAlign.left,
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+
+  _countDown(Event event) {
+    DateTime date = DateTime.parse(event.date);
+    final toDayDate = DateTime.now();
+    var different = date.difference(toDayDate).inDays;
+
+    setState(() {
+      _different = different;
+      _date = date;
+      _toDaysDate = toDayDate;
+    });
+  }
+
+  _buildInviteBuilder() {
+    return CustomScrollView(scrollDirection: Axis.horizontal, slivers: [
+      SliverList(
+        delegate: SliverChildBuilderDelegate(
+          (context, index) {
+            EventInvite invite = _invites[index];
+            return FutureBuilder(
+                future: DatabaseService.getEventWithId(invite),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (!snapshot.hasData) {
+                    return SizedBox.shrink();
+                  }
+                  Event event = snapshot.data;
+
+                  SchedulerBinding.instance.addPostFrameCallback((_) {
+                    _countDown(event);
+                  });
+
+                  return EventsAttendingWidget(
+                    event: event,
+                    invite: invite,
+                  );
+                });
+          },
+          childCount: _invites.length,
+        ),
+      )
+    ]);
+  }
+
   bool get wantKeepAlive => true;
   @override
   Widget build(BuildContext context) {
@@ -174,53 +324,64 @@ class _EventsFeedState extends State<EventsFeed>
           ),
         ),
       ],
-      body: Container(
-        color: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-        child: SafeArea(
-          // ignore: unnecessary_null_comparison
-          child: user == null
-              ? NoContents(
-                  icon: (Icons.error),
-                  title: 'Sorry',
-                  subTitle: 'We run into a prblem please refresh your app',
-                )
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      child: _events.length > 0
-                          ? RefreshIndicator(
-                              backgroundColor: Colors.white,
-                              onRefresh: () async {
-                                _setupEventFeed();
-                              },
-                              child: _buildEventBuilder(user))
-                          : _feedCount.isNegative
-                              ? RefreshIndicator(
-                                  backgroundColor: Colors.white,
-                                  onRefresh: () => _setupEventFeed(),
-                                  child: SingleChildScrollView(
-                                      child: NoFeed(
-                                    title: "Set up your event feed. ",
-                                    subTitle:
-                                        'Your event feed contains events by people you follow. You can set up your feed by exploring events and following people by tapping on the button below. You can also discover people based on account types you are interested in by tapping on the discover icon on the bottom navigation bar.',
-                                    buttonText: 'Explore Events',
-                                    onPressed: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => EventPage(
-                                          currentUserId: widget.currentUserId,
-                                          user: user,
+      body: MediaQuery.removePadding(
+        context: context,
+        removeTop: true,
+        child: Container(
+          color: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+          child: SafeArea(
+            // ignore: unnecessary_null_comparison
+            child: user == null
+                ? NoContents(
+                    icon: (Icons.error),
+                    title: 'Sorry',
+                    subTitle: 'We run into a prblem please refresh your app',
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      _invites.length == 0
+                          ? SizedBox.shrink()
+                          : Container(height: 80, child: _buildInviteBuilder()),
+                      Divider(),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Expanded(
+                        child: _events.length > 0
+                            ? RefreshIndicator(
+                                backgroundColor: Colors.white,
+                                onRefresh: () async {
+                                  _setupEventFeed();
+                                },
+                                child: _buildEventBuilder(user))
+                            : _feedCount.isNegative
+                                ? RefreshIndicator(
+                                    backgroundColor: Colors.white,
+                                    onRefresh: () => _setupEventFeed(),
+                                    child: SingleChildScrollView(
+                                        child: NoFeed(
+                                      title: "Set up your event feed. ",
+                                      subTitle:
+                                          'Your event feed contains events by people you follow. You can set up your feed by exploring events and following people by tapping on the button below. You can also discover people based on account types you are interested in by tapping on the discover icon on the bottom navigation bar.',
+                                      buttonText: 'Explore Events',
+                                      onPressed: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => EventPage(
+                                            currentUserId: widget.currentUserId,
+                                            user: user,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  )),
-                                )
-                              : Center(child: EventSchimmer()),
-                    )
-                  ],
-                ),
+                                    )),
+                                  )
+                                : Center(child: EventSchimmer()),
+                      )
+                    ],
+                  ),
+          ),
         ),
       ),
     );

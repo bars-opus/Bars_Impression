@@ -18,7 +18,6 @@ class DeleteAccount extends StatefulWidget {
 class _DeleteAccountState extends State<DeleteAccount> {
   final formKey = GlobalKey<FormState>();
   bool _isHidden = true;
-  bool _deActive = false;
   late PageController _pageController;
   int _index = 0;
 
@@ -37,28 +36,23 @@ class _DeleteAccountState extends State<DeleteAccount> {
   _submit() async {
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
-      _showSelectImageDialog();
+      _showSelectImageDialog('delete');
     }
   }
 
-  _deactivateAccount() {
-    setState(() {
-      _deActive = true;
-    });
-    _showSelectImageDialog();
+  _showSelectImageDialog(String from) {
+    return Platform.isIOS
+        ? _iosBottomSheet(from)
+        : _androidDialog(context, from);
   }
 
-  _showSelectImageDialog() {
-    return Platform.isIOS ? _iosBottomSheet() : _androidDialog(context);
-  }
-
-  _iosBottomSheet() {
+  _iosBottomSheet(String from) {
     showCupertinoModalPopup(
         context: context,
         builder: (BuildContext context) {
           return CupertinoActionSheet(
             title: Text(
-              _deActive
+              from.startsWith('deactivate')
                   ? 'Are you sure you want to deactivate your account?'
                   : 'Are you sure you want to delete your account?',
               style: TextStyle(
@@ -69,14 +63,16 @@ class _DeleteAccountState extends State<DeleteAccount> {
             actions: <Widget>[
               CupertinoActionSheetAction(
                 child: Text(
-                  _deActive ? 'deactivate' : 'delete',
+                  from.startsWith('deactivate') ? 'deactivate' : 'delete',
                   style: TextStyle(
                     color: Colors.blue,
                   ),
                 ),
                 onPressed: () {
                   Navigator.pop(context);
-                  _deActive ? _deActivate() : _reauthenticate();
+                  from.startsWith('deactivate')
+                      ? _deActivate()
+                      : _reauthenticate();
                 },
               )
             ],
@@ -93,20 +89,23 @@ class _DeleteAccountState extends State<DeleteAccount> {
         });
   }
 
-  _androidDialog(BuildContext parentContext) {
+  _androidDialog(BuildContext parentContext, String from) {
     return showDialog(
         context: parentContext,
         builder: (context) {
           return SimpleDialog(
-            title: Text(_deActive
+            title: Text(from.startsWith('deactivate')
                 ? 'Are you sure you want to deactivate  your account?'
                 : 'Are you sure you want to delete  your account?'),
             children: <Widget>[
               SimpleDialogOption(
-                child: Text(_deActive ? 'deactivate' : 'delete'),
+                child: Text(
+                    from.startsWith('deactivate') ? 'deactivate' : 'delete'),
                 onPressed: () {
                   Navigator.pop(context);
-                  _deActive ? _deActivate() : _reauthenticate();
+                  from.startsWith('deactivate')
+                      ? _deActivate()
+                      : _reauthenticate();
                 },
               ),
               SimpleDialogOption(
@@ -485,24 +484,6 @@ class _DeleteAccountState extends State<DeleteAccount> {
         }
       });
 
-      FirebaseStorage.instance
-          .ref('images/posts/${currentUserId}')
-          .listAll()
-          .then((value) {
-        value.items.forEach((element) {
-          FirebaseStorage.instance.ref(element.fullPath).delete();
-        });
-      });
-
-      FirebaseStorage.instance
-          .ref('images/events/${currentUserId}')
-          .listAll()
-          .then((value) {
-        value.items.forEach((element) {
-          FirebaseStorage.instance.ref(element.fullPath).delete();
-        });
-      });
-
       usersRef
           .doc(currentUserId)
           .collection('chats')
@@ -514,7 +495,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
       });
 
       FirebaseStorage.instance
-          .ref('images/messageImage/${currentUserId}')
+          .ref('images/posts/$currentUserId')
           .listAll()
           .then((value) {
         value.items.forEach((element) {
@@ -523,7 +504,24 @@ class _DeleteAccountState extends State<DeleteAccount> {
       });
 
       FirebaseStorage.instance
-          .ref('images/users/${currentUserId}')
+          .ref('images/events/$currentUserId')
+          .listAll()
+          .then((value) {
+        value.items.forEach((element) {
+          FirebaseStorage.instance.ref(element.fullPath).delete();
+        });
+      });
+      FirebaseStorage.instance
+          .ref('images/messageImage/$currentUserId')
+          .listAll()
+          .then((value) {
+        value.items.forEach((element) {
+          FirebaseStorage.instance.ref(element.fullPath).delete();
+        });
+      });
+
+      FirebaseStorage.instance
+          .ref('images/users/$currentUserId')
           .listAll()
           .then((value) {
         value.items.forEach((element) {
@@ -533,7 +531,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
 
       usersRef.doc(currentUserId).delete();
       FirebaseStorage.instance
-          .ref('images/professionalPicture1/${currentUserId}')
+          .ref('images/professionalPicture1/$currentUserId')
           .listAll()
           .then((value) {
         value.items.forEach((element) {
@@ -541,7 +539,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
         });
       });
       FirebaseStorage.instance
-          .ref('images/professionalPicture2/${currentUserId}')
+          .ref('images/professionalPicture2/$currentUserId')
           .listAll()
           .then((value) {
         value.items.forEach((element) {
@@ -549,7 +547,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
         });
       });
       FirebaseStorage.instance
-          .ref('images/professionalPicture3/${currentUserId}')
+          .ref('images/professionalPicture3/$currentUserId')
           .listAll()
           .then((value) {
         value.items.forEach((element) {
@@ -558,7 +556,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
       });
 
       FirebaseStorage.instance
-          .ref('images/validate/${currentUserId}')
+          .ref('images/validate/$currentUserId')
           .listAll()
           .then((value) {
         value.items.forEach((element) {
@@ -823,7 +821,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
                         padding: const EdgeInsets.only(left: 20),
                         child: GestureDetector(
                           onTap: () {
-                            _deactivateAccount();
+                            _showSelectImageDialog('deactivate');
                           },
                           child: IntroInfo(
                             title: 'Deactivating your account is temporary.',
@@ -835,7 +833,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
                               size: 20,
                             ),
                             onPressed: () {
-                              _deactivateAccount();
+                              _showSelectImageDialog('deactivate');
                             },
                           ),
                         ),

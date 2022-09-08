@@ -890,7 +890,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                       autofillHints: [AutofillHints.email],
                                       validator: (email) => email != null &&
                                               !EmailValidator.validate(email)
-                                          ? 'Please enter your email'
+                                          ? 'Please enter a valid email'
                                           : null,
                                       onSaved: (input) => _mail = input!,
                                     ),

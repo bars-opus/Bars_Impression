@@ -156,7 +156,6 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
                   event: event,
                   ask: null,
                   askCount: _askCount,
-                  author: user,
                   currentUserId: widget.currentUserId,
                 ),
               ),

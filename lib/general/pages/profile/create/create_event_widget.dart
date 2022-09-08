@@ -35,6 +35,7 @@ class CreateEventWidget extends StatefulWidget {
   String virtualVenue;
   Event? event;
   bool isVirtual;
+  bool isPrivate;
   static final id = 'Create_event';
 
   CreateEventWidget({
@@ -62,6 +63,7 @@ class CreateEventWidget extends StatefulWidget {
     required this.virtualVenue,
     required this.event,
     required this.isVirtual,
+    required this.isPrivate,
   });
 
   @override
@@ -318,6 +320,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
         ticketSite: widget.ticketSite,
         isVirtual: widget.isVirtual,
         report: '',
+        isPrivate: widget.isPrivate, 
       );
 
       try {
@@ -511,6 +514,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
             : '',
         ticketSite: widget.ticketSite,
         isVirtual: widget.isVirtual,
+        isPrivate: widget.isPrivate,
         id: '',
       );
       try {

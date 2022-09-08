@@ -884,7 +884,6 @@ class UserProfessionalViewWidget extends StatelessWidget {
                                                                               1.5,
                                                                       decoration: BoxDecoration(
                                                                           color: Color(0xFF1a1a1a),
-                                                                          border: Border.all(width: 0.2, color: Colors.black),
                                                                           borderRadius: BorderRadius.circular(5),
                                                                           image: DecorationImage(
                                                                             image:
@@ -925,7 +924,6 @@ class UserProfessionalViewWidget extends StatelessWidget {
                                                                               1.5,
                                                                       decoration: BoxDecoration(
                                                                           color: Color(0xFF1a1a1a),
-                                                                          border: Border.all(width: 0.2, color: Colors.black),
                                                                           borderRadius: BorderRadius.circular(5),
                                                                           image: DecorationImage(
                                                                             image:
@@ -966,7 +964,6 @@ class UserProfessionalViewWidget extends StatelessWidget {
                                                                               1.5,
                                                                       decoration: BoxDecoration(
                                                                           color: Color(0xFF1a1a1a),
-                                                                          border: Border.all(width: 0.2, color: Colors.black),
                                                                           borderRadius: BorderRadius.circular(5),
                                                                           image: DecorationImage(
                                                                             image:

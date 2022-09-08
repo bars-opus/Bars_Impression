@@ -3,21 +3,20 @@ import 'package:bars/utilities/exports.dart';
 class AllEvenEnlargedProfile extends StatefulWidget {
   final String currentUserId;
   final Event event;
-  final AccountHolder author;
   final AccountHolder user;
   final int? askCount;
   final int feed;
 
   final String exploreLocation;
 
-  AllEvenEnlargedProfile(
-      {required this.currentUserId,
-      required this.user,
-      required this.askCount,
-      required this.exploreLocation,
-      required this.feed,
-      required this.event,
-      required this.author});
+  AllEvenEnlargedProfile({
+    required this.currentUserId,
+    required this.user,
+    required this.askCount,
+    required this.exploreLocation,
+    required this.feed,
+    required this.event,
+  });
 
   @override
   _AllEvenEnlargedProfileState createState() => _AllEvenEnlargedProfileState();
@@ -28,30 +27,44 @@ class _AllEvenEnlargedProfileState extends State<AllEvenEnlargedProfile> {
     return MapsLauncher.launchQuery(widget.event.venue);
   }
 
-  //  Future<void> _generatePalette(
-  //   context,
-  // ) async {
-  //   PaletteGenerator _paletteGenerator =
-  //       await PaletteGenerator.fromImageProvider(
-  //     CachedNetworkImageProvider(widget.event.imageUrl),
-  //     size: Size(1110, 150),
-  //     maximumColorCount: 20,
-  //   );
-  //   Navigator.push(
-  //       context,
-  //       MaterialPageRoute(
-  //           builder: (_) => AllEvenEnlarged(
-  //                 exploreLocation: widget.exploreLocation,
-  //                 feed: widget.feed,
-  //                 askCount: widget.askCount,
-  //                 currentUserId: widget.currentUserId,
-  //                 event: widget.event,
-  //                 author: widget.author,
-  //                 user: widget.user,
-  //                 palette: _paletteGenerator,
-  //                 // eventList: widget.eventList,
-  //               )));
-  // }
+  Future<void> _generatePalette(
+    context,
+  ) async {
+    PaletteGenerator _paletteGenerator =
+        await PaletteGenerator.fromImageProvider(
+      CachedNetworkImageProvider(widget.event.imageUrl),
+      size: Size(1110, 150),
+      maximumColorCount: 20,
+    );
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (_) => AttendEvent(
+                event: widget.event,
+                currentUserId: widget.currentUserId,
+                palette: _paletteGenerator,
+              )),
+    );
+  }
+
+  Future<void> _generatePalette2(
+    context,
+  ) async {
+    PaletteGenerator _paletteGenerator =
+        await PaletteGenerator.fromImageProvider(
+      CachedNetworkImageProvider(widget.event.imageUrl),
+      size: Size(1110, 150),
+      maximumColorCount: 20,
+    );
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (_) => EventCalender(
+                event: widget.event,
+                palette: _paletteGenerator,
+              )),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,11 +82,10 @@ class _AllEvenEnlargedProfileState extends State<AllEvenEnlargedProfile> {
                     child: ExploreEvent(
                       exploreLocation: widget.exploreLocation,
                       feed: widget.feed,
-                      user: widget.author,
                       currentUserId: widget.currentUserId,
                       askCount: widget.askCount!,
-                      author: widget.author,
                       event: widget.event,
+                      user: widget.user,
                     ),
                   );
                 }));
@@ -81,6 +93,7 @@ class _AllEvenEnlargedProfileState extends State<AllEvenEnlargedProfile> {
           child: Stack(
             children: [
               EventEnlargedWidget(
+                onPressedAttend: () => _generatePalette(context),
                 closeHero: 'close' + widget.event.id.toString(),
                 onPressedEventEnlarged: () => Navigator.push(
                     context,
@@ -91,7 +104,6 @@ class _AllEvenEnlargedProfileState extends State<AllEvenEnlargedProfile> {
                               askCount: widget.askCount!,
                               currentUserId: widget.currentUserId,
                               event: widget.event,
-                              author: widget.author,
                               user: widget.user,
                             ))),
                 imageHero: 'image' + widget.event.id.toString(),
@@ -120,12 +132,12 @@ class _AllEvenEnlargedProfileState extends State<AllEvenEnlargedProfile> {
                       builder: (_) => AsksScreen(
                             askCount: widget.askCount!,
                             event: widget.event,
-                            author: widget.author,
                             ask: null,
                             currentUserId: widget.currentUserId,
                           )),
                 ),
                 event: widget.event,
+                onPressedCalendar: () => _generatePalette2(context),
               ),
               Positioned(
                 top: 55,
@@ -145,7 +157,6 @@ class _AllEvenEnlargedProfileState extends State<AllEvenEnlargedProfile> {
                             user: widget.user,
                             currentUserId: widget.currentUserId,
                             askCount: widget.askCount!,
-                            author: widget.author,
                             event: widget.event,
                             exploreLocation: widget.exploreLocation,
                           ),

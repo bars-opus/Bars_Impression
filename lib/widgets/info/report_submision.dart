@@ -138,7 +138,7 @@ class _ReportContentSubmissionState extends State<ReportContentSubmission> {
             .update({
             'report': reportContent.reportType,
           })
-        : reportContent.contentType.contains('post')
+        : reportContent.contentType.contains('Mood punched')
             ? postsRef
                 .doc(reportContent.repotedAuthorId)
                 .collection('userPosts')

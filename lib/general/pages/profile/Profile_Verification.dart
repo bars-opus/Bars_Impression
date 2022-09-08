@@ -186,17 +186,17 @@ class _ProfileVerificationState extends State<ProfileVerification> {
     );
   }
 
-  animateToPage() {
+  animateBack2() {
     _pageController.animateToPage(
-      _index + 1,
+      _index - 2,
       duration: Duration(milliseconds: 800),
       curve: Curves.easeInOut,
     );
   }
 
-  animateToPage2() {
+  animateToPage() {
     _pageController.animateToPage(
-      _index + 2,
+      _index + 1,
       duration: Duration(milliseconds: 800),
       curve: Curves.easeInOut,
     );
@@ -366,6 +366,138 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                 onPressed: () {
                   Navigator.pop(context);
                   _handleImage2();
+                },
+              ),
+              SimpleDialogOption(
+                child: Text('cancel'),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          );
+        });
+  }
+
+  _showSelectImageDialog2() {
+    return Platform.isIOS ? _iosBottomSheet2() : _androidDialog2(context);
+  }
+
+  _iosBottomSheet2() {
+    showCupertinoModalPopup(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoActionSheet(
+            title: RichText(
+              textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Account  Information\n',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.blue,
+                    ),
+                  ),
+                  TextSpan(
+                    text:
+                        'We have noticed that some information about your account has not been provided. You must provide the necessary information required for account verification.\n(bio, username, profile photo, company, contact, email, management, skills, website, or any other social media platform and 3 professional photos).\n\nRestart your verification request process after providing the information required.',
+                    style: TextStyle(
+                      color:
+                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              textAlign: TextAlign.start,
+            ),
+            actions: <Widget>[
+              CupertinoActionSheetAction(
+                child: Text(
+                  'Edit Profile',
+                  style: TextStyle(
+                    color: Colors.blue,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  widget.user.profileHandle!.startsWith('Fan')
+                      ? Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => EditProfileScreen(
+                              user: widget.user,
+                            ),
+                          ))
+                      : Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => EditProfileProfessional(
+                              user: widget.user,
+                            ),
+                          ));
+                },
+              ),
+            ],
+            cancelButton: CupertinoActionSheetAction(
+              child: Text(
+                'Cancle',
+                style: TextStyle(
+                  color: Colors.red,
+                ),
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
+          );
+        });
+  }
+
+  _androidDialog2(BuildContext parentContext) {
+    return showDialog(
+        context: parentContext,
+        builder: (context) {
+          return SimpleDialog(
+            title: RichText(
+              textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Account  Information\n',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.blue,
+                    ),
+                  ),
+                  TextSpan(
+                    text:
+                        'We have noticed that some information about your account has not been provided. You must provide the necessary information required for account verification.\n(bio, username, profile photo, company, contact, email, management, skills, website, or any other social media platform and 3 professional photos).\n\nRestart your verification request process after providing the information required.',
+                    style: TextStyle(
+                      color:
+                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              textAlign: TextAlign.start,
+            ),
+            children: <Widget>[
+              SimpleDialogOption(
+                child: Text('Edit profile'),
+                onPressed: () {
+                  Navigator.pop(context);
+                  widget.user.profileHandle!.startsWith('Fan')
+                      ? Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => EditProfileScreen(
+                              user: widget.user,
+                            ),
+                          ))
+                      : Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => EditProfileProfessional(
+                              user: widget.user,
+                            ),
+                          ));
                 },
               ),
               SimpleDialogOption(
@@ -576,7 +708,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(30.0),
                                     child: Text(
-                                      'Bars Impression verification adds a blue check to a verified account to establish the authenticity of the account.',
+                                      'A blue check is added to a verified account to establish the authenticity of that account. You will need to confirm your identity with Bars Impression in order to be Verified. This helps encourage and maintain trust between users.',
                                       style: TextStyle(
                                           color: ConfigBloc().darkModeOn
                                               ? Color(0xFFf2f2f2)
@@ -619,7 +751,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                   ),
                                   DirectionWidget(
                                     text:
-                                        'You will need to meet specific requirements to be verified.',
+                                        'Specific requirements must be met in order to be verifified.',
                                     fontSize: 14,
                                     sizedBox: 10,
                                   ),
@@ -643,7 +775,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                       child: FeatureInfoWidget(
                                         title: 'Account Information: ',
                                         subTitle:
-                                            'You must provide the necessary information required for setting up your brand. Information such as username, profile image, and bio, must be provided for account types of fan.  Other account types such as artist, producer, cover art designer, music video director, dj, battle rapper, photographer, dancer, video vixen, Makeup artist, record label, brand influencer, blogger, and mC(Host) must provide the necessary booking infromation.',
+                                            'You must provide the necessary information required for setting up your brand. Information such as username, profile image, and bio, must be provided for account types of fans.  Other account types such as artist, producer, cover art designer, music video director, DJ, battle rapper, photographer, dancer, video vixen, Makeup artist, record label, brand influencer, blogger, and mC(Host) must provide the necessary booking information.',
                                         number: '2',
                                       ),
                                     ),
@@ -666,7 +798,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                       child: FeatureInfoWidget(
                                         title: 'Ineligible accounts',
                                         subTitle:
-                                            'Certain accounts are ineligible for verification.\nParody, newsfeed, commentary, unofficial fan accounts, Pets and fictional characters.',
+                                            'Certain accounts are ineligible for verification.\nParody, newsfeed, commentary, unofficial fan accounts, Pets, and fictional characters.',
                                         number: '4',
                                       ),
                                     ),
@@ -684,116 +816,67 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                   Center(
                                     child: Padding(
                                       padding: const EdgeInsets.only(top: 70.0),
-                                      child: AlwaysWhiteButton(
-                                          onPressed: () {
-                                            widget.user.skills!.isNotEmpty &&
-                                                    widget.user.otherSites1!
-                                                        .isNotEmpty &&
-                                                    widget.user.otherSites2!
-                                                        .isNotEmpty &&
-                                                    widget.user.website!
-                                                        .isNotEmpty &&
-                                                    widget.user.management!
-                                                        .isNotEmpty &&
-                                                    widget.user.contacts!
-                                                        .isNotEmpty &&
-                                                    widget.user.mail!
-                                                        .isNotEmpty &&
-                                                    widget
-                                                        .user
-                                                        .professionalPicture1!
-                                                        .isNotEmpty &&
-                                                    widget
-                                                        .user
-                                                        .professionalPicture2!
-                                                        .isNotEmpty &&
-                                                    widget
-                                                        .user
-                                                        .professionalPicture3!
-                                                        .isNotEmpty &&
-                                                    widget.user.profileImageUrl!
-                                                        .isNotEmpty &&
-                                                    widget.user.userName!
-                                                        .isNotEmpty &&
-                                                    widget.user.company!
-                                                        .isNotEmpty &&
-                                                    widget.user.bio!.isNotEmpty
-                                                ? animateToPage2()
-                                                : animateToPage();
-                                          },
-                                          buttonText: "Continue"),
+                                      child: widget.user.profileHandle!
+                                              .startsWith('Fan')
+                                          ? AlwaysWhiteButton(
+                                              onPressed: () {
+                                                widget.user.profileImageUrl!
+                                                            .isNotEmpty &&
+                                                        widget.user.userName!
+                                                            .isNotEmpty &&
+                                                        widget.user.bio!
+                                                            .isNotEmpty
+                                                    ? animateToPage()
+                                                    : _showSelectImageDialog2();
+                                              },
+                                              buttonText: "Continue")
+                                          : AlwaysWhiteButton(
+                                              onPressed: () {
+                                                widget.user.skills!.isNotEmpty &&
+                                                        widget.user.otherSites1!
+                                                            .isNotEmpty &&
+                                                        widget.user.otherSites2!
+                                                            .isNotEmpty &&
+                                                        widget.user.website!
+                                                            .isNotEmpty &&
+                                                        widget.user.management!
+                                                            .isNotEmpty &&
+                                                        widget.user.contacts!
+                                                            .isNotEmpty &&
+                                                        widget.user.mail!
+                                                            .isNotEmpty &&
+                                                        widget
+                                                            .user
+                                                            .professionalPicture1!
+                                                            .isNotEmpty &&
+                                                        widget
+                                                            .user
+                                                            .professionalPicture2!
+                                                            .isNotEmpty &&
+                                                        widget
+                                                            .user
+                                                            .professionalPicture3!
+                                                            .isNotEmpty &&
+                                                        widget
+                                                            .user
+                                                            .profileImageUrl!
+                                                            .isNotEmpty &&
+                                                        widget.user.userName!
+                                                            .isNotEmpty &&
+                                                        widget.user.company!
+                                                            .isNotEmpty &&
+                                                        widget.user.bio!
+                                                            .isNotEmpty
+                                                    ? animateToPage()
+                                                    : _showSelectImageDialog2();
+                                              },
+                                              buttonText: "Continue"),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
                           ),
-                          widget.user.skills!.isNotEmpty &&
-                                  widget.user.otherSites1!.isNotEmpty &&
-                                  widget.user.otherSites2!.isNotEmpty &&
-                                  widget.user.website!.isNotEmpty &&
-                                  widget.user.management!.isNotEmpty &&
-                                  widget.user.contacts!.isNotEmpty &&
-                                  widget.user.mail!.isNotEmpty &&
-                                  widget
-                                      .user.professionalPicture1!.isNotEmpty &&
-                                  widget
-                                      .user.professionalPicture2!.isNotEmpty &&
-                                  widget
-                                      .user.professionalPicture3!.isNotEmpty &&
-                                  widget.user.profileImageUrl!.isNotEmpty &&
-                                  widget.user.userName!.isNotEmpty &&
-                                  widget.user.company!.isNotEmpty &&
-                                  widget.user.bio!.isNotEmpty
-                              ? SizedBox.shrink()
-                              : Container(
-                                  height: width * 2,
-                                  width: double.infinity,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(12.0),
-                                    child: ListView(
-                                      children: [
-                                        Center(
-                                          child: Text(
-                                            'Account\nInformation',
-                                            style: TextStyle(
-                                                color: Colors.blue,
-                                                fontSize: 30),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                        DirectionWidget(
-                                          text:
-                                              'We have notice that some information about your account have not been provided. You must provide the necessary information required for account verification.\n(bio, username, profile photo, company, contact, email, management, skills, website or any other social media platform and 3 professional photos).\n\nRestart your verification request process after providing the information required.',
-                                          fontSize: 14,
-                                          sizedBox: 10,
-                                        ),
-                                        SizedBox(height: 40),
-                                        GestureDetector(
-                                          onTap: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      EditProfileProfessional(
-                                                    user: widget.user,
-                                                  ),
-                                                ));
-                                          },
-                                          child: Center(
-                                            child: Text(
-                                              'Edit profile',
-                                              style: TextStyle(
-                                                  color: Colors.blue,
-                                                  fontSize: 16),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
                           Container(
                             height: width * 2,
                             width: double.infinity,
@@ -870,7 +953,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                   SizedBox(height: 20),
                                   ContentField(
                                     labelText: 'Wikipedia',
-                                    hintText: "Wikipeidia link",
+                                    hintText: "Wikipedia link",
                                     initialValue: _wikipedia,
                                     onSavedText: (input) => _wikipedia = input,
                                     onValidateText: () {},
@@ -889,7 +972,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                   ),
                                   ContentField(
                                     labelText: 'News coverage',
-                                    hintText: "News article link",
+                                    hintText: "News coverage link",
                                     initialValue: _newsCoverage,
                                     onSavedText: (input) =>
                                         _newsCoverage = input,
@@ -899,7 +982,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                     height: 5,
                                   ),
                                   Text(
-                                    'Provide news articles that are about or reference yourself multiple times in the article. These articles must be from recorgnised news organizations and cannot be a blog or self-published content.',
+                                    'Provide news articles that are about or reference yourself multiple times in the article. These articles must be from recognized news organizations and cannot be blog or self-published content.',
                                     style: TextStyle(
                                         color: Colors.grey, fontSize: 12),
                                     textAlign: TextAlign.start,
@@ -960,7 +1043,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                     height: 5,
                                   ),
                                   Text(
-                                    'Provide a link to any of your social media accounts that are in the public insterest.',
+                                    'Provide a link to any of your social media accounts that are in the public interest.',
                                     style: TextStyle(
                                         color: Colors.grey, fontSize: 12),
                                     textAlign: TextAlign.start,

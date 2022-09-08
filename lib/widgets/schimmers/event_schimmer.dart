@@ -12,23 +12,17 @@ class _EventSchimmerState extends State<EventSchimmer> {
   Widget build(BuildContext context) {
     return ListView(
       children: <Widget>[
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            SizedBox(
-              height: 20,
-            ),
-            EventSchimmerSkeleton(),
-            EventSchimmerSkeleton(),
-            EventSchimmerSkeleton(),
-            EventSchimmerSkeleton(),
-            EventSchimmerSkeleton(),
-            EventSchimmerSkeleton(),
-            EventSchimmerSkeleton(),
-            EventSchimmerSkeleton(),
-          ],
+        const SizedBox(
+          height: 20,
         ),
+        EventSchimmerSkeleton(),
+        EventSchimmerSkeleton(),
+        EventSchimmerSkeleton(),
+        EventSchimmerSkeleton(),
+        EventSchimmerSkeleton(),
+        EventSchimmerSkeleton(),
+        EventSchimmerSkeleton(),
+        EventSchimmerSkeleton(),
       ],
     );
   }

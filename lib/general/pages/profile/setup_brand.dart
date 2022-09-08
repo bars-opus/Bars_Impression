@@ -7,6 +7,7 @@ class SetUpBrand extends StatefulWidget {
   @override
   _SetUpBrandState createState() => _SetUpBrandState();
 }
+
 class _SetUpBrandState extends State<SetUpBrand> {
   final _formKey = GlobalKey<FormState>();
   String _userName = '';

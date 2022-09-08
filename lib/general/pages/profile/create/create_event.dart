@@ -36,6 +36,7 @@ class _CreateEventState extends State<CreateEvent> {
   String _virtualVenue = '';
   String _ticketSite = '';
   bool _isVirtual = false;
+  bool _isPrivate = false;
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +65,7 @@ class _CreateEventState extends State<CreateEvent> {
       triller: _triller,
       event: null,
       isVirtual: _isVirtual,
+      isPrivate: _isPrivate,
     );
   }
 }

@@ -78,7 +78,6 @@ class _EventProfileViewState extends State<EventProfileView> {
                       builder: (_) => AllEvenEnlargedProfile(
                             currentUserId: widget.currentUserId,
                             event: widget.event,
-                            author: widget.author,
                             exploreLocation: widget.exploreLocation,
                             feed: widget.feed,
                             user: widget.user,
@@ -126,6 +125,35 @@ class _EventProfileViewState extends State<EventProfileView> {
                                 userId: widget.event.authorId,
                               ))),
                 ),
+          FocusedMenuItem(
+              title: Container(
+                width: width / 2,
+                child: Text(
+                  'Report',
+                  overflow: TextOverflow.ellipsis,
+                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                ),
+              ),
+              onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => ReportContentPage(
+                            contentId: widget.event.id,
+                            parentContentId: widget.event.id,
+                            repotedAuthorId: widget.event.authorId,
+                            contentType: 'event',
+                          )))),
+          FocusedMenuItem(
+              title: Container(
+                width: width / 2,
+                child: Text(
+                  'Suggestion Box',
+                  overflow: TextOverflow.ellipsis,
+                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                ),
+              ),
+              onPressed: () => Navigator.push(
+                  context, MaterialPageRoute(builder: (_) => SuggestionBox()))),
         ],
         child: Slidable(
           startActionPane: ActionPane(
@@ -181,7 +209,6 @@ class _EventProfileViewState extends State<EventProfileView> {
                             askCount: _askCount,
                             currentUserId: widget.currentUserId,
                             event: widget.event,
-                            author: widget.author,
                             exploreLocation: widget.exploreLocation,
                             feed: widget.feed,
                             user: widget.user,
@@ -206,7 +233,6 @@ class _EventProfileViewState extends State<EventProfileView> {
                                     askCount: _askCount,
                                     currentUserId: widget.currentUserId,
                                     event: widget.event,
-                                    author: widget.author,
                                     user: widget.user,
                                   ))),
                       imageHero: 'image1 ${widget.event.id.toString()}',
@@ -222,7 +248,6 @@ class _EventProfileViewState extends State<EventProfileView> {
                                 builder: (_) => AllEvenEnlargedProfile(
                                       currentUserId: widget.currentUserId,
                                       event: widget.event,
-                                      author: widget.author,
                                       exploreLocation: widget.exploreLocation,
                                       feed: widget.feed,
                                       user: widget.user,
@@ -281,7 +306,6 @@ class _EventProfileViewState extends State<EventProfileView> {
                                                   widget.exploreLocation,
                                               feed: widget.feed,
                                               user: widget.user,
-                                              author: widget.author,
                                             ))),
                               ),
                             ),

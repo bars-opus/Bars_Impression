@@ -9,7 +9,7 @@ class ExploreEvent extends StatefulWidget {
   final String currentUserId;
   final AccountHolder user;
   final int askCount;
-  final AccountHolder author;
+  // final AccountHolder author;
   final Event event;
   final int feed;
   final String exploreLocation;
@@ -17,7 +17,7 @@ class ExploreEvent extends StatefulWidget {
   ExploreEvent(
       {required this.currentUserId,
       required this.askCount,
-      required this.author,
+      // required this.author,
       required this.feed,
       required this.exploreLocation,
       required this.event,
@@ -934,7 +934,7 @@ class _ExploreEventState extends State<ExploreEvent> {
                                       user: widget.user,
                                       exploreLocation: widget.exploreLocation,
                                       feed: widget.feed,
-                                      author: widget.author,
+                                      // author: widget.author,
                                       currentUserId:
                                           Provider.of<UserData>(context)
                                               .currentUserId!,
@@ -958,7 +958,7 @@ class _ExploreEventState extends State<ExploreEvent> {
 class ExploreEventEnlarged extends StatefulWidget {
   final String currentUserId;
   final Event event;
-  final AccountHolder author;
+  // final AccountHolder author;
   final AccountHolder user;
   final int askCount;
   final int feed;
@@ -971,7 +971,7 @@ class ExploreEventEnlarged extends StatefulWidget {
       required this.feed,
       required this.exploreLocation,
       required this.event,
-      required this.author});
+  });
 
   @override
   _ExploreEventEnlargedState createState() => _ExploreEventEnlargedState();
@@ -1017,7 +1017,7 @@ class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
                     builder: (_) => AllEvenEnlargedProfile(
                           currentUserId: widget.currentUserId,
                           event: widget.event,
-                          author: widget.author,
+                          // author: widget.author,
                           user: widget.user,
                           feed: widget.feed,
                           exploreLocation: widget.exploreLocation,
@@ -1046,7 +1046,7 @@ class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
                                 builder: (_) => AllEvenEnlargedProfile(
                                       currentUserId: widget.currentUserId,
                                       event: widget.event,
-                                      author: widget.author,
+                                      // author: widget.author,
                                       user: widget.user,
                                       exploreLocation: widget.exploreLocation,
                                       feed: widget.feed,

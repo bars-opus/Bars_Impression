@@ -53,7 +53,6 @@ class EventViewWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 Container(
-                  padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
@@ -957,7 +956,7 @@ class EventViewWidget extends StatelessWidget {
                 ),
                 Text(
                     timeago.format(
-                      event.timestamp.toDate(),
+                      event.timestamp!.toDate(),
                     ),
                     style: TextStyle(fontSize: 10, color: Colors.grey)),
               ],
