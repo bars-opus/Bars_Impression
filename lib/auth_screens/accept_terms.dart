@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/scheduler.dart';
 
 class AcceptTerms extends StatefulWidget {
   static final id = 'Accept_terms';
@@ -16,10 +17,8 @@ class _AcceptTermsState extends State<AcceptTerms>
   late AnimationController animationController;
 
   final _formKey = GlobalKey<FormState>();
-  String _name = '';
-  String _email = '';
-  String _password = '';
-  bool _isLoading = false;
+
+  // bool _isLoading = false;
   @override
   void initState() {
     super.initState();
@@ -44,34 +43,14 @@ class _AcceptTermsState extends State<AcceptTerms>
             curve: Interval(0.9, 1.0, curve: Curves.fastOutSlowIn)));
 
     animationController.forward();
-    _set();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _set();
+    });
   }
 
   _set() {
     setState(() {
-      _isLoading = false;
-      _name = Provider.of<UserData>(context, listen: false).post3;
-      _email = Provider.of<UserData>(context, listen: false).post1;
-      _password = Provider.of<UserData>(context, listen: false).post2;
-    });
-  }
-
-  _submit() {
-    FocusScope.of(context).unfocus();
-
-    setState(() {
-      _isLoading = false;
-    });
-
-    AuthService.signUpUser(
-      context,
-      _name,
-      _email,
-      _password,
-    );
-
-    setState(() {
-      _isLoading = false;
+      Provider.of<UserData>(context, listen: false).setIsLoading(false);
     });
   }
 
@@ -96,7 +75,7 @@ class _AcceptTermsState extends State<AcceptTerms>
                     child: ListView(
                       scrollDirection: Axis.vertical,
                       children: <Widget>[
-                        _isLoading
+                        Provider.of<UserData>(context, listen: false).isLoading
                             ? Padding(
                                 padding: const EdgeInsets.only(bottom: 10.0),
                                 child: SizedBox(
@@ -197,8 +176,8 @@ class _AcceptTermsState extends State<AcceptTerms>
                                           text: TextSpan(
                                             children: [
                                               TextSpan(
-                                                text: _name +
-                                                    ', to continue, you must review and accept the terms of use. Tap and review.',
+                                                text:
+                                                    'To continue, you must review and accept the terms of use. Tap and review.',
                                                 style: TextStyle(
                                                   fontSize: 12,
                                                   color: Colors.blueGrey,
@@ -227,7 +206,14 @@ class _AcceptTermsState extends State<AcceptTerms>
                                               BorderRadius.circular(20.0),
                                         ),
                                       ),
-                                      onPressed: _submit,
+                                      onPressed: () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => LoginScreenOptions(
+                                              from: 'Register',
+                                            ),
+                                          )),
+                                      //  _submit,
                                       child: Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: Text(

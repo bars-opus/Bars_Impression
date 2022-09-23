@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+
 import 'package:intl/intl.dart';
 
 class FeedScreenSliver extends StatefulWidget {
@@ -44,7 +45,6 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
     _setupFeed();
     _setUpactivityCount();
     _setUpactivityForumCount();
-
     _setUpactivityEventCount();
     _setUpactivityFollowerCount();
     _setUpactivityChatCount();
@@ -114,6 +114,7 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
     }
     _hasNext = false;
     _isFetchingPost = false;
+
     return _hasNext;
   }
 
@@ -363,7 +364,7 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
               ),
               Chats(
                 currentUserId: widget.currentUserId,
-                activityChatCount: _activityChatCount,
+                // activityChatCount: _activityChatCount,
                 userId: '',
               ),
             ]));
@@ -579,7 +580,7 @@ class _buildToggleButton extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (_) => Chats(
                       currentUserId: currentUserId,
-                      activityChatCount: activityChatCount,
+                      // activityChatCount: activityChatCount,
                       userId: '',
                     ),
                   ),
@@ -600,7 +601,7 @@ class _buildToggleButton extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (_) => Chats(
                           currentUserId: currentUserId,
-                          activityChatCount: activityChatCount,
+                          // activityChatCount: activityChatCount,
                           userId: '',
                         ),
                       ),

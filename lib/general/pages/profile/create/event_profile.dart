@@ -28,6 +28,7 @@ class _EventProfileViewState extends State<EventProfileView> {
   int _askCount = 0;
   late DateTime _date;
   late DateTime _toDaysDate;
+  late DateTime _closingDate;
 
   void initState() {
     super.initState();
@@ -37,10 +38,13 @@ class _EventProfileViewState extends State<EventProfileView> {
 
   _countDown() async {
     DateTime date = DateTime.parse(widget.event.date);
+    DateTime clossingDate = DateTime.parse(widget.event.clossingDay);
+
     final toDayDate = DateTime.now();
     setState(() {
       _date = date;
       _toDaysDate = toDayDate;
+      _closingDate = clossingDate;
     });
   }
 
@@ -65,34 +69,19 @@ class _EventProfileViewState extends State<EventProfileView> {
         openWithTap: false,
         onPressed: () {},
         menuItems: [
-          FocusedMenuItem(
-            title: Text(
-              'Enlarge Event',
-              overflow: TextOverflow.ellipsis,
-              textScaleFactor: MediaQuery.of(context).textScaleFactor,
-            ),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => AllEvenEnlargedProfile(
-                            currentUserId: widget.currentUserId,
-                            event: widget.event,
-                            exploreLocation: widget.exploreLocation,
-                            feed: widget.feed,
-                            user: widget.user,
-                            askCount: _askCount,
-                          )));
-            },
-          ),
           widget.event.authorId == widget.currentUserId
               ? FocusedMenuItem(
-                  title: Text(
-                    'Edit event',
-                    overflow: TextOverflow.ellipsis,
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  title: Container(
+                    width: width - 40,
+                    child: Center(
+                      child: Text(
+                        'Edit event',
+                        overflow: TextOverflow.ellipsis,
+                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      ),
+                    ),
                   ),
-                  onPressed: () => _toDaysDate.isAfter(_date)
+                  onPressed: () => _toDaysDate.isAfter(_closingDate)
                       ? Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -112,10 +101,15 @@ class _EventProfileViewState extends State<EventProfileView> {
                         ),
                 )
               : FocusedMenuItem(
-                  title: Text(
-                    "Go to ${widget.author.userName}'s profile",
-                    overflow: TextOverflow.ellipsis,
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  title: Container(
+                    width: width - 40,
+                    child: Center(
+                      child: Text(
+                        "Go to ${widget.author.userName}'s profile",
+                        overflow: TextOverflow.ellipsis,
+                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      ),
+                    ),
                   ),
                   onPressed: () => Navigator.push(
                       context,
@@ -127,11 +121,65 @@ class _EventProfileViewState extends State<EventProfileView> {
                 ),
           FocusedMenuItem(
               title: Container(
-                width: width / 2,
-                child: Text(
-                  'Report',
-                  overflow: TextOverflow.ellipsis,
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                width: width - 40,
+                child: Center(
+                  child: Text(
+                    'Send ',
+                    overflow: TextOverflow.ellipsis,
+                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  ),
+                ),
+              ),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => SendToChats(
+                              currentUserId: widget.currentUserId,
+                              userId: '',
+                              sendContentType: 'Event',
+                              event: widget.event,
+                              post: null,
+                              forum: null,
+                              user: null,
+                              sendContentId: widget.event.id,
+                            )));
+              }),
+          FocusedMenuItem(
+              title: Container(
+                width: width - 40,
+                child: Center(
+                  child: Text(
+                    'Share ',
+                    overflow: TextOverflow.ellipsis,
+                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  ),
+                ),
+              ),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => SendToChats(
+                              currentUserId: widget.currentUserId,
+                              userId: '',
+                              sendContentType: 'Event',
+                              event: widget.event,
+                              post: null,
+                              forum: null,
+                              user: null,
+                              sendContentId: widget.event.id,
+                            )));
+              }),
+          FocusedMenuItem(
+              title: Container(
+                width: width - 40,
+                child: Center(
+                  child: Text(
+                    'Report',
+                    overflow: TextOverflow.ellipsis,
+                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  ),
                 ),
               ),
               onPressed: () => Navigator.push(
@@ -145,11 +193,13 @@ class _EventProfileViewState extends State<EventProfileView> {
                           )))),
           FocusedMenuItem(
               title: Container(
-                width: width / 2,
-                child: Text(
-                  'Suggestion Box',
-                  overflow: TextOverflow.ellipsis,
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                width: width - 40,
+                child: Center(
+                  child: Text(
+                    'Suggestion Box',
+                    overflow: TextOverflow.ellipsis,
+                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  ),
                 ),
               ),
               onPressed: () => Navigator.push(
@@ -162,7 +212,7 @@ class _EventProfileViewState extends State<EventProfileView> {
               SlidableAction(
                 onPressed: (_) {
                   widget.currentUserId == widget.author.id!
-                      ? _toDaysDate.isAfter(_date)
+                      ? _toDaysDate.isAfter(_closingDate)
                           ? Navigator.push(
                               context,
                               MaterialPageRoute(

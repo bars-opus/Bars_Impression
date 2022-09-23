@@ -553,7 +553,6 @@ class _ProfilePostViewState extends State<ProfilePostView> {
                             post: widget.post,
                             likeCount: _dbLikeCount,
                             dislikeCount: _dbDisLikeCount,
-                            commentCount: 0,
                             comment: null,
                             currentUserId: widget.currentUserId,
                           ))),
@@ -743,7 +742,7 @@ class _ProfilePostViewState extends State<ProfilePostView> {
               ),
               Text(
                   timeago.format(
-                    widget.post.timestamp.toDate(),
+                    widget.post.timestamp!.toDate(),
                   ),
                   style: TextStyle(fontSize: 10, color: Colors.grey)),
             ],
@@ -905,7 +904,6 @@ class _ProfilePostViewState extends State<ProfilePostView> {
                           context,
                           MaterialPageRoute(
                               builder: (_) => CommentsScreen(
-                                    commentCount: _commentCount,
                                     post: widget.post,
                                     likeCount: _dbLikeCount,
                                     dislikeCount: _dbDisLikeCount,

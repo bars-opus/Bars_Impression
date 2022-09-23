@@ -1,15 +1,19 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/cupertino.dart';
 
 class EventInvites extends StatefulWidget {
   static final id = 'EventInvites';
   final Event event;
   final String from;
+  final bool letShowAppBar;
+
   final PaletteGenerator palette;
 
   EventInvites({
     required this.event,
     required this.palette,
     required this.from,
+    required this.letShowAppBar,
   });
 
   @override
@@ -29,7 +33,7 @@ class _EventInvitesState extends State<EventInvites>
   @override
   void initState() {
     super.initState();
-    widget.from.startsWith('Sent') ? _setUpInviteAll() : _setUpInvite();
+    widget.from.startsWith('Sent') ? _setUpInvited() : _setUpInvite();
     __setShowInfo();
     _hideButtonController = ScrollController();
   }
@@ -81,7 +85,7 @@ class _EventInvitesState extends State<EventInvites>
     return users;
   }
 
-  _setUpInviteAll() async {
+  _setUpInvited() async {
     QuerySnapshot inviteSnapShot = await eventInviteRef
         .doc(widget.event.id)
         .collection('eventInvite')
@@ -149,6 +153,95 @@ class _EventInvitesState extends State<EventInvites>
     _hasNext = false;
     _isFectchingUser = false;
     return _hasNext;
+  }
+
+  _showSelectImageDialog(EventInvite invite) {
+    return Platform.isIOS
+        ? _iosBottomSheet(invite)
+        : _androidDialog(context, invite);
+  }
+
+  _iosBottomSheet(EventInvite invite) {
+    showCupertinoModalPopup(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoActionSheet(
+            title: Text(
+              'Are you sure you want to cancel this invitation?',
+              style: TextStyle(
+                fontSize: 16,
+                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+              ),
+            ),
+            actions: <Widget>[
+              CupertinoActionSheetAction(
+                child: Text(
+                  'Cancel Invitation',
+                  style: TextStyle(
+                    color: Colors.blue,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  DatabaseService.cancelInvite(
+                    eventInvite: invite,
+                  );
+                },
+              )
+            ],
+            cancelButton: CupertinoActionSheetAction(
+              child: Text(
+                'Cancle',
+                style: TextStyle(
+                  color: Colors.red,
+                ),
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
+          );
+        });
+  }
+
+  _androidDialog(BuildContext parentContext, EventInvite invite) {
+    return showDialog(
+        context: parentContext,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text(
+              'Are you sure you want to cancel this invitation?',
+              style: TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            children: <Widget>[
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'Cancel Invitation',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.blue),
+                    textAlign: TextAlign.center,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    DatabaseService.cancelInvite(
+                      eventInvite: invite,
+                    );
+                  },
+                ),
+              ),
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'Cancel',
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ),
+            ],
+          );
+        });
   }
 
   _buildUserTile(EventInvite invite) {
@@ -248,15 +341,18 @@ class _EventInvitesState extends State<EventInvites>
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: 'Request reason:',
+                              text: invite.invited!
+                                  ? 'Invite message'
+                                  : 'Request reason:',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.black,
+                                color: widget.palette.darkMutedColor == null
+                                    ? Color(0xFF1a1a1a)
+                                    : widget.palette.darkMutedColor!.color,
                               ),
                             ),
                             TextSpan(
-                              text:
-                                  '\n${invite.anttendeeprofileHandle}, i want to come to your party to chill and get fucked up.',
+                              text: '\n${invite.message}',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.black,
@@ -319,9 +415,7 @@ class _EventInvitesState extends State<EventInvites>
                               ),
                             ),
                             onPressed: () {
-                              HapticFeedback.heavyImpact();
-                              DatabaseService.answerEventAttendee(
-                                  answer: 'Accepted', eventInvite: invite);
+                              _showSelectImageDialog(invite);
                             },
                           ),
                         ),
@@ -340,7 +434,8 @@ class _EventInvitesState extends State<EventInvites>
     return NotificationListener<ScrollNotification>(
       onNotification: _handleScrollNotification,
       child: Scrollbar(
-        child: CustomScrollView(slivers: [
+        controller: _hideButtonController,
+        child: CustomScrollView(controller: _hideButtonController, slivers: [
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
@@ -363,27 +458,54 @@ class _EventInvitesState extends State<EventInvites>
       child: NestedScrollView(
         controller: _hideButtonController,
         headerSliverBuilder: (context, innerBoxScrolled) => [
-          SliverAppBar(
-            elevation: 0.0,
-            automaticallyImplyLeading: true,
-            floating: true,
-            snap: true,
-            pinned: true,
-            iconTheme: new IconThemeData(
-              color: ConfigBloc().darkModeOn ? Colors.black : Colors.white,
-            ),
-            backgroundColor: widget.palette.darkMutedColor == null
-                ? Color(0xFF1a1a1a)
-                : widget.palette.darkMutedColor!.color,
-            title: Text(
-              'Invites ${widget.from}',
-              style: TextStyle(
-                  color: ConfigBloc().darkModeOn ? Colors.black : Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-            ),
-            centerTitle: true,
-          ),
+          widget.letShowAppBar
+              ? SliverAppBar(
+                  elevation: 0.0,
+                  automaticallyImplyLeading: true,
+                  floating: true,
+                  snap: true,
+                  pinned: true,
+                  iconTheme: new IconThemeData(
+                    color:
+                        ConfigBloc().darkModeOn ? Colors.black : Colors.white,
+                  ),
+                  backgroundColor: widget.palette.darkMutedColor == null
+                      ? Color(0xFF1a1a1a)
+                      : widget.palette.darkMutedColor!.color,
+                  title: Text(
+                    'Invites ${widget.from}',
+                    style: TextStyle(
+                        color: ConfigBloc().darkModeOn
+                            ? Colors.black
+                            : Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  centerTitle: true,
+                )
+              : SliverAppBar(
+                  elevation: 0.0,
+                  automaticallyImplyLeading: false,
+                  floating: false,
+                  snap: false,
+                  pinned: false,
+                  iconTheme: new IconThemeData(
+                    color: Colors.transparent,
+                  ),
+                  backgroundColor: widget.palette.darkMutedColor == null
+                      ? Color(0xFF1a1a1a)
+                      : widget.palette.darkMutedColor!.color,
+                  title: Text(
+                    'Invitation responds',
+                    style: TextStyle(
+                        color: ConfigBloc().darkModeOn
+                            ? Colors.black
+                            : Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  centerTitle: true,
+                ),
         ],
         body: MediaQuery.removePadding(
           context: context,

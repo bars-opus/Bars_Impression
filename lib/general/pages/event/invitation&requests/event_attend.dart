@@ -23,8 +23,9 @@ class _AttendEventState extends State<AttendEvent> {
   @override
   void initState() {
     super.initState();
+
     _setUpAttendeeRequest();
-    _setUpAttendee();
+    widget.event.isPrivate ? _setUpInviteAttendee() : _setUpAttendee();
   }
 
   _setUpAttendeeRequest() async {
@@ -49,6 +50,17 @@ class _AttendEventState extends State<AttendEvent> {
     });
   }
 
+  _setUpInviteAttendee() async {
+    DatabaseService.numEventInvites(widget.event.id, 'Accepted')
+        .listen((inviteCount) {
+      if (mounted) {
+        setState(() {
+          _inviteCount = inviteCount;
+        });
+      }
+    });
+  }
+
   _showSelectImageDialog2(EventInvite eventInvite) {
     return Platform.isIOS
         ? _iosBottomSheet2(eventInvite)
@@ -61,7 +73,7 @@ class _AttendEventState extends State<AttendEvent> {
         builder: (BuildContext context) {
           return CupertinoActionSheet(
             title: Text(
-              'Are you sure you want to request for invitation?',
+              'Are you sure you want to request for an invitation?',
               style: TextStyle(
                 fontSize: 16,
                 color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
@@ -94,31 +106,80 @@ class _AttendEventState extends State<AttendEvent> {
         });
   }
 
+  // _androidDialog2(BuildContext parentContext, EventInvite eventInvite) {
+  //   return showDialog(
+  //       context: parentContext,
+  //       builder: (context) {
+  //         return SimpleDialog(
+  //           title: Text(
+  //             'Are you sure you want to request for an invitation?',
+  //             style: TextStyle(fontWeight: FontWeight.bold),
+  //             textAlign: TextAlign.center,
+  //           ),
+  //           children: <Widget>[
+  //             Divider(),
+  //             Center(
+  //               child: SimpleDialogOption(
+  //                 child: Text(
+  //                   'Request',
+  //                   style: TextStyle(
+  //                       fontWeight: FontWeight.bold, color: Colors.blue),
+  //                   textAlign: TextAlign.center,
+  //                 ),
+  //                 onPressed: () {
+  //                   Navigator.pop(context);
+  //                   _checkUser();
+  //                 },
+  //               ),
+  //             ),
+  //             Divider(),
+  //             Center(
+  //               child: SimpleDialogOption(
+  //                 child: Text(
+  //                   'Cancel',
+  //                 ),
+  //                 onPressed: () => Navigator.pop(context),
+  //               ),
+  //             ),
+  //           ],
+  //         );
+  //       });
+  // }
+
   _androidDialog2(BuildContext parentContext, EventInvite eventInvite) {
     return showDialog(
         context: parentContext,
         builder: (context) {
           return SimpleDialog(
             title: Text(
-              'Are you sure you want to request for invitation?',
-              style: TextStyle(
-                fontSize: 16,
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-              ),
+              'Are you sure you want to request for an invitation?',
+              style: TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
             ),
             children: <Widget>[
-              SimpleDialogOption(
-                child: Text(
-                  'Request',
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'Request',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.blue),
+                    textAlign: TextAlign.center,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _checkUser();
+                  },
                 ),
-                onPressed: () {
-                  Navigator.pop(context);
-                  _checkUser();
-                },
               ),
-              SimpleDialogOption(
-                child: Text('cancel'),
-                onPressed: () => Navigator.pop(context),
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'Cancel',
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
               ),
             ],
           );
@@ -147,7 +208,7 @@ class _AttendEventState extends State<AttendEvent> {
               ),
             ),
             messageText: Text(
-              "We run into a problem refresh you app and start again",
+              "We run into a problem refresh your app and start again",
               style: TextStyle(
                 color: Colors.white,
                 fontSize: width > 800 ? 20 : 12,
@@ -167,13 +228,15 @@ class _AttendEventState extends State<AttendEvent> {
   _SendInvitation() {
     final double width = MediaQuery.of(context).size.width;
     int _requestNumber = _attendeeRequesCount + 1;
-
     try {
       DatabaseService.attendEvent(
           message: _message,
+          eventDate: DateTime.parse(widget.event.date),
           event: widget.event,
           user: Provider.of<UserData>(context, listen: false).user!,
-          requestNumber: _requestNumber.toString());
+          requestNumber: _requestNumber.toString(),
+          currentUserId:
+              Provider.of<UserData>(context, listen: false).currentUserId!);
 
       Flushbar(
         margin: EdgeInsets.all(8),
@@ -194,7 +257,7 @@ class _AttendEventState extends State<AttendEvent> {
           ),
         ),
         messageText: Text(
-          "Your inviation request has been sent succesfully",
+          "Your invitation request has been sent successfully. You would be notified when your invitation is accepted.",
           style: TextStyle(
             color: Colors.white,
             fontSize: width > 800 ? 20 : 12,
@@ -276,11 +339,11 @@ class _AttendEventState extends State<AttendEvent> {
             EventInvite _eventInvite = snapshot.data;
             return _eventInvite.anttendeeId.isNotEmpty ||
                     _eventInvite.eventId.isNotEmpty
-                ? InviteAvailable(
+                ? EventInviteAvailable(
+                    from: '',
                     eventInvite: _eventInvite,
                     event: widget.event,
                     palette: widget.palette,
-                    attendeeRequesCount: _attendeeRequesCount,
                     inviteCount: _inviteCount,
                   )
                 : Scaffold(
@@ -309,19 +372,6 @@ class _AttendEventState extends State<AttendEvent> {
                       child: ListView(
                         children: <Widget>[
                           const SizedBox(height: 40),
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(right: 30.0, left: 30),
-                            child: Text(
-                              'This event is private, you must request invitation and if your request is accepted you can attend this event',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                              ),
-                              textAlign: TextAlign.start,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
                           ShakeTransition(
                             child: new Material(
                               color: Colors.transparent,
@@ -385,7 +435,7 @@ class _AttendEventState extends State<AttendEvent> {
                                         padding: const EdgeInsets.only(
                                             left: 12.0, right: 12),
                                         child: Text(
-                                          'You can add a reason why your request should be accepted.',
+                                          'You can give a reason why your request should be accepted.',
                                           style: TextStyle(
                                             color: Colors.black,
                                             fontSize: 12,
@@ -448,6 +498,19 @@ class _AttendEventState extends State<AttendEvent> {
                                   ),
                                 ),
                               ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(right: 30.0, left: 30),
+                            child: Text(
+                              'This event is private. You need an invitation to attend.\ If you are interested in this event but you have not received an invitation, you can request for an invitation. Your invitation request needs to be accepted by this event organizer before you can attend this event.',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
                           ),
                           SizedBox(height: 100),

@@ -1,17 +1,17 @@
 import 'package:bars/utilities/exports.dart';
 
-class ReActivateAccount extends StatefulWidget {
+class reActivateAccount extends StatefulWidget {
   final AccountHolder user;
 
-  ReActivateAccount({
+  reActivateAccount({
     required this.user,
   });
 
   @override
-  _ReActivateAccountState createState() => _ReActivateAccountState();
+  _reActivateAccountState createState() => _reActivateAccountState();
 }
 
-class _ReActivateAccountState extends State<ReActivateAccount> {
+class _reActivateAccountState extends State<reActivateAccount> {
   _reActivate() {
     try {
       usersRef

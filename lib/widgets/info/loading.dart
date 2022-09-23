@@ -73,7 +73,7 @@ class Loading extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(bottom: 10.0, top: 30),
           child: SizedBox(
-            height: 2.0,
+            height: 1.0,
             child: LinearProgressIndicator(
               backgroundColor: Colors.transparent,
               valueColor: AlwaysStoppedAnimation(Colors.white),

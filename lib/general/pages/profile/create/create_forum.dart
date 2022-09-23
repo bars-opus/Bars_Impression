@@ -12,11 +12,10 @@ class CreateForum extends StatefulWidget {
 
 class _CreateForumState extends State<CreateForum> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _titleController = TextEditingController();
   String _title = '';
-  TextEditingController _subTitleController = TextEditingController();
   String _subTitle = '';
   bool _isLoading = false;
+  bool _isPrivate = false;
 
   _submit() async {
     if (_formKey.currentState!.validate() &&
@@ -27,7 +26,9 @@ class _CreateForumState extends State<CreateForum> {
       setState(() {
         _isLoading = true;
       });
+    
 
+    
       Forum forum = Forum(
         title: _title,
         subTitle: _subTitle,
@@ -36,6 +37,7 @@ class _CreateForumState extends State<CreateForum> {
         authorId: Provider.of<UserData>(context, listen: false).currentUserId!,
         timestamp: Timestamp.fromDate(DateTime.now()),
         id: '',
+        isPrivate: _isPrivate, linkedContentId: '',
       );
       try {
         DatabaseService.createForum(forum);
@@ -71,7 +73,7 @@ class _CreateForumState extends State<CreateForum> {
             size: 30.0,
             color: Colors.blue,
           ),
-          duration: Duration(seconds: 3),
+          duration: Duration(seconds: 1),
           leftBarIndicatorColor: Colors.blue,
         )..show(context);
       } catch (e) {
@@ -116,8 +118,6 @@ class _CreateForumState extends State<CreateForum> {
         print(e.toString());
       }
 
-      _titleController.clear();
-      _subTitleController.clear();
 
       setState(() {
         _title = '';

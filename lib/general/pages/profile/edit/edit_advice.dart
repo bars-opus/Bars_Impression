@@ -64,23 +64,63 @@ class _EditAdviceState extends State<EditAdvice> {
         });
   }
 
+  // _androidDialog(BuildContext parentContext, UserAdvice advice) {
+  //   return showDialog(
+  //       context: parentContext,
+  //       builder: (context) {
+  //         return SimpleDialog(
+  //           title: Text('Are you sure you want to delete this advice'),
+  //           children: <Widget>[
+  //             SimpleDialogOption(
+  //               child: Text('delete'),
+  //               onPressed: () {
+  //                 Navigator.pop(context);
+  //                 _deleteAdvice(advice);
+  //               },
+  //             ),
+  //             SimpleDialogOption(
+  //               child: Text('cancel'),
+  //               onPressed: () => Navigator.pop(context),
+  //             ),
+  //           ],
+  //         );
+  //       });
+  // }
+
   _androidDialog(BuildContext parentContext, UserAdvice advice) {
     return showDialog(
         context: parentContext,
         builder: (context) {
           return SimpleDialog(
-            title: Text('Are you sure you want to delete this advice'),
+            title: Text(
+              'Are you sure you want to delete this advice?',
+              style: TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
             children: <Widget>[
-              SimpleDialogOption(
-                child: Text('delete'),
-                onPressed: () {
-                  Navigator.pop(context);
-                  _deleteAdvice(advice);
-                },
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'Delete',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.blue),
+                    textAlign: TextAlign.center,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _deleteAdvice(advice);
+                  },
+                ),
               ),
-              SimpleDialogOption(
-                child: Text('cancel'),
-                onPressed: () => Navigator.pop(context),
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'Cancel',
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
               ),
             ],
           );
@@ -122,7 +162,7 @@ class _EditAdviceState extends State<EditAdvice> {
         size: 28.0,
         color: Colors.blue,
       ),
-      duration: Duration(seconds: 3),
+      duration: Duration(seconds: 1),
       leftBarIndicatorColor: Colors.blue,
     )..show(context);
   }
@@ -179,11 +219,15 @@ class _EditAdviceState extends State<EditAdvice> {
             size: 28.0,
             color: Colors.blue,
           ),
-          duration: Duration(seconds: 3),
+          duration: Duration(seconds: 2),
           leftBarIndicatorColor: Colors.blue,
         )..show(context);
       } catch (e) {
         final double width = MediaQuery.of(context).size.width;
+        String error = e.toString();
+        String result = error.contains(']')
+            ? error.substring(error.lastIndexOf(']') + 1)
+            : error;
         Flushbar(
           margin: EdgeInsets.all(8),
           boxShadows: [
@@ -203,7 +247,7 @@ class _EditAdviceState extends State<EditAdvice> {
             ),
           ),
           messageText: Text(
-            e.toString(),
+            result.toString(),
             style: TextStyle(
               color: Colors.white,
               fontSize: width > 800 ? 20 : 12,

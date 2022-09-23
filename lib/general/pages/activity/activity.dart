@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -18,7 +19,7 @@ class ActivityScreen extends StatefulWidget {
 class _ActivityScreenState extends State<ActivityScreen>
     with AutomaticKeepAliveClientMixin {
   List<Activity> _activities = [];
-  bool _isLoadingContent = false;
+  // bool _isLoadingContent = false;
   final _activitySnapshot = <DocumentSnapshot>[];
   int limit = 10;
   bool _hasNext = true;
@@ -30,6 +31,10 @@ class _ActivityScreenState extends State<ActivityScreen>
     super.initState();
     _setupActivities();
     _hideButtonController = ScrollController();
+
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      Provider.of<UserData>(context, listen: false).setIsLoading(false);
+    });
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {
@@ -169,9 +174,11 @@ class _ActivityScreenState extends State<ActivityScreen>
               child: ListTile(
                 onTap: activity.comment != null
                     ? () async {
-                        setState(() {
-                          _isLoadingContent = true;
-                        });
+                        // setState(() {
+                        //   _isLoadingContent = true;
+                        // });
+                        Provider.of<UserData>(context, listen: false)
+                            .setIsLoading(true);
                         String currentUserId =
                             Provider.of<UserData>(context, listen: false)
                                 .currentUserId!;
@@ -190,19 +197,22 @@ class _ActivityScreenState extends State<ActivityScreen>
                               likeCount: post.likeCount,
                               dislikeCount: post.disLikeCount,
                               comment: null,
-                              commentCount: 0,
                               currentUserId: widget.currentUserId,
                             ),
                           ),
                         );
-                        setState(() {
-                          _isLoadingContent = false;
-                        });
+                        // setState(() {
+                        //   _isLoadingContent = false;
+                        // });
+                        Provider.of<UserData>(context, listen: false)
+                            .setIsLoading(false);
                       }
                     : () async {
-                        setState(() {
-                          _isLoadingContent = true;
-                        });
+                        // setState(() {
+                        //   _isLoadingContent = true;
+                        // });
+                        Provider.of<UserData>(context, listen: false)
+                            .setIsLoading(true);
                         String currentUserId =
                             Provider.of<UserData>(context, listen: false)
                                 .currentUserId!;
@@ -226,9 +236,11 @@ class _ActivityScreenState extends State<ActivityScreen>
                             ),
                           ),
                         );
-                        setState(() {
-                          _isLoadingContent = false;
-                        });
+                        // setState(() {
+                        //   _isLoadingContent = false;
+                        // });
+                        Provider.of<UserData>(context, listen: false)
+                            .setIsLoading(false);
                       },
                 leading: CircleAvatar(
                   radius: 20.0,
@@ -246,138 +258,138 @@ class _ActivityScreenState extends State<ActivityScreen>
                 // ignore: unnecessary_null_comparison
                 title: activity.comment != null
                     ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Stack(
-                          alignment: Alignment.centerRight,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(right: 12.0),
-                              child: Text(
-                                user.userName!,
-                                style: TextStyle(
-                                  fontSize: 12.0,
-                                  fontWeight: activity.seen == 'seen'
-                                      ? FontWeight.normal
-                                      : FontWeight.bold,
-                                  color: ConfigBloc().darkModeOn
-                                      ? Colors.white
-                                      : Colors.black,
-                                ),
-                              ),
-                            ),
-                            user.verified!.isEmpty
-                                ? SizedBox.shrink()
-                                : Positioned(
-                                    top: 0,
-                                    right: 0,
-                                    child: Icon(
-                                      MdiIcons.checkboxMarkedCircle,
-                                      size: 11,
-                                      color: Colors.blue,
-                                    ),
-                                  ),
-                          ],
-                        ),
-                        RichText(
-                          textScaleFactor:
-                              MediaQuery.of(context).textScaleFactor,
-                          text: TextSpan(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Stack(
+                            alignment: Alignment.centerRight,
                             children: [
-                              TextSpan(
-                                  text: "vibed:",
+                              Padding(
+                                padding: const EdgeInsets.only(right: 12.0),
+                                child: Text(
+                                  user.userName!,
                                   style: TextStyle(
-                                    fontSize: 12,
+                                    fontSize: 12.0,
+                                    fontWeight: activity.seen == 'seen'
+                                        ? FontWeight.normal
+                                        : FontWeight.bold,
                                     color: ConfigBloc().darkModeOn
                                         ? Colors.white
                                         : Colors.black,
-                                  )),
-                              TextSpan(
-                                text: ' ${activity.comment}',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: activity.seen != ''
-                                      ? Colors.grey
-                                      : Colors.blue,
+                                  ),
                                 ),
                               ),
+                              user.verified!.isEmpty
+                                  ? SizedBox.shrink()
+                                  : Positioned(
+                                      top: 0,
+                                      right: 0,
+                                      child: Icon(
+                                        MdiIcons.checkboxMarkedCircle,
+                                        size: 11,
+                                        color: Colors.blue,
+                                      ),
+                                    ),
                             ],
                           ),
-                          maxLines: 4,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    )
+                          RichText(
+                            textScaleFactor:
+                                MediaQuery.of(context).textScaleFactor,
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                    text: "vibed:",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: ConfigBloc().darkModeOn
+                                          ? Colors.white
+                                          : Colors.black,
+                                    )),
+                                TextSpan(
+                                  text: ' ${activity.comment}',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: activity.seen != ''
+                                        ? Colors.grey
+                                        : Colors.blue,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            maxLines: 4,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      )
                     : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Stack(
-                          alignment: Alignment.centerRight,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(right: 12.0),
-                              child: Text(
-                                user.userName!,
-                                style: TextStyle(
-                                  fontSize: 12.0,
-                                  fontWeight: activity.seen == 'seen'
-                                      ? FontWeight.normal
-                                      : FontWeight.bold,
-                                  color: ConfigBloc().darkModeOn
-                                      ? Colors.white
-                                      : Colors.black,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Stack(
+                            alignment: Alignment.centerRight,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(right: 12.0),
+                                child: Text(
+                                  user.userName!,
+                                  style: TextStyle(
+                                    fontSize: 12.0,
+                                    fontWeight: activity.seen == 'seen'
+                                        ? FontWeight.normal
+                                        : FontWeight.bold,
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
                                 ),
                               ),
-                            ),
-                            user.verified!.isEmpty
-                                ? SizedBox.shrink()
-                                : Positioned(
-                                    top: 0,
-                                    right: 0,
-                                    child: Icon(
-                                      MdiIcons.checkboxMarkedCircle,
-                                      size: 11,
-                                      color: Colors.blue,
+                              user.verified!.isEmpty
+                                  ? SizedBox.shrink()
+                                  : Positioned(
+                                      top: 0,
+                                      right: 0,
+                                      child: Icon(
+                                        MdiIcons.checkboxMarkedCircle,
+                                        size: 11,
+                                        color: Colors.blue,
+                                      ),
                                     ),
-                                  ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            RichText(
-                                textScaleFactor:
-                                    MediaQuery.of(context).textScaleFactor,
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                        text: 'liked your punch',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: activity.seen != 'seen'
-                                              ? Colors.pink
-                                              : Colors.grey,
-                                        ))
-                                  ],
-                                )),
-                            SizedBox(
-                              width: 10.0,
-                            ),
-                            Container(
-                                height: 30,
-                                child: activity.seen != 'seen'
-                                    ? CircularButton(
-                                        color: Colors.pink,
-                                        icon: Icon(Icons.favorite,
-                                            color: Colors.white),
-                                        onPressed: () {},
-                                      )
-                                    : SizedBox.shrink()),
-                          ],
-                        ),
-                      ],
-                    ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              RichText(
+                                  textScaleFactor:
+                                      MediaQuery.of(context).textScaleFactor,
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                          text: 'liked your punch',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: activity.seen != 'seen'
+                                                ? Colors.pink
+                                                : Colors.grey,
+                                          ))
+                                    ],
+                                  )),
+                              SizedBox(
+                                width: 10.0,
+                              ),
+                              Container(
+                                  height: 30,
+                                  child: activity.seen != 'seen'
+                                      ? CircularButton(
+                                          color: Colors.pink,
+                                          icon: Icon(Icons.favorite,
+                                              color: Colors.white),
+                                          onPressed: () {},
+                                        )
+                                      : SizedBox.shrink()),
+                            ],
+                          ),
+                        ],
+                      ),
                 subtitle: Text(
                     timeago.format(
                       activity.timestamp!.toDate(),
@@ -439,7 +451,7 @@ class _ActivityScreenState extends State<ActivityScreen>
                     ),
                   ],
                 ),
-          _isLoadingContent
+          Provider.of<UserData>(context, listen: false).isLoading
               ? Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Shimmer.fromColors(

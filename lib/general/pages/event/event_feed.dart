@@ -1,5 +1,4 @@
 import 'package:bars/utilities/exports.dart';
-import 'package:flutter/scheduler.dart';
 
 class EventsFeed extends StatefulWidget {
   static final id = 'EventsFeed';
@@ -18,9 +17,7 @@ class _EventsFeedState extends State<EventsFeed>
   final _invitesSnapshot = <DocumentSnapshot>[];
   List<Event> _events = [];
   List<EventInvite> _invites = [];
-  late DateTime _date;
-  late DateTime _toDaysDate;
-  int _different = 0;
+
   int _feedCount = 0;
   int limit = 5;
   bool _hasNext = true;
@@ -64,7 +61,8 @@ class _EventsFeedState extends State<EventsFeed>
     QuerySnapshot invitesFeedSnapShot = await userInviteRef
         .doc(widget.currentUserId)
         .collection('eventInvite')
-        .orderBy('timestamp', descending: true)
+        .orderBy('eventTimestamp', descending: false)
+        .where('eventTimestamp')
         .limit(10)
         .get();
     List<EventInvite> invites = invitesFeedSnapShot.docs
@@ -126,6 +124,7 @@ class _EventsFeedState extends State<EventsFeed>
     }
     _hasNext = false;
     _isFetchingEvent = false;
+
     return _hasNext;
   }
 
@@ -168,98 +167,6 @@ class _EventsFeedState extends State<EventsFeed>
     );
   }
 
-  // _buildInviteTile(EventInvite invite, Event event) {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(horizontal: 10.0),
-  //     child: GestureDetector(
-  //       onTap: () => Navigator.push(
-  //           context,
-  //           MaterialPageRoute(
-  //               builder: (_) => EventsAttending(
-  //                     invite: invite,
-  //                     event: event,
-  //                   ))),
-  //       child: Column(
-  //         children: [
-  //           Stack(
-  //             children: [
-  //               Container(
-  //                 height: 50,
-  //                 width: 50,
-  //                 decoration: BoxDecoration(
-  //                     shape: BoxShape.circle,
-  //                     color: ConfigBloc().darkModeOn
-  //                         ? Color(0xFF1a1a1a)
-  //                         : Colors.white,
-  //                     image: DecorationImage(
-  //                       image: CachedNetworkImageProvider(invite.eventImageUrl),
-  //                       fit: BoxFit.cover,
-  //                     )),
-  //               ),
-  //               Container(
-  //                 height: 50,
-  //                 width: 50,
-  //                 decoration: BoxDecoration(
-  //                   gradient: LinearGradient(
-  //                     begin: Alignment.center,
-  //                     colors: [
-  //                       Colors.black.withOpacity(.6),
-  //                       Colors.black.withOpacity(.6),
-  //                     ],
-  //                   ),
-  //                   shape: BoxShape.circle,
-  //                   color: ConfigBloc().darkModeOn
-  //                       ? Color(0xFF1a1a1a)
-  //                       : Colors.white,
-  //                 ),
-  //                 child: Icon(
-  //                   Icons.event_available,
-  //                   color: Colors.white,
-  //                   size: 20.0,
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //           RichText(
-  //             textScaleFactor: MediaQuery.of(context).textScaleFactor,
-  //             text: TextSpan(
-  //               children: [
-  //                 TextSpan(
-  //                   text: _different.toString(),
-  //                   style: TextStyle(
-  //                     fontSize: 18,
-  //                     color: Colors.black,
-  //                   ),
-  //                 ),
-  //                 TextSpan(
-  //                   text: '\nDays\nMore',
-  //                   style: TextStyle(
-  //                     fontSize: 12,
-  //                     color: Colors.black,
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //             textAlign: TextAlign.left,
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  _countDown(Event event) {
-    DateTime date = DateTime.parse(event.date);
-    final toDayDate = DateTime.now();
-    var different = date.difference(toDayDate).inDays;
-
-    setState(() {
-      _different = different;
-      _date = date;
-      _toDaysDate = toDayDate;
-    });
-  }
-
   _buildInviteBuilder() {
     return CustomScrollView(scrollDirection: Axis.horizontal, slivers: [
       SliverList(
@@ -267,18 +174,13 @@ class _EventsFeedState extends State<EventsFeed>
           (context, index) {
             EventInvite invite = _invites[index];
             return FutureBuilder(
-                future: DatabaseService.getEventWithId(invite),
+                future: DatabaseService.getInviteEventWithId(invite),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (!snapshot.hasData) {
                     return SizedBox.shrink();
                   }
                   Event event = snapshot.data;
-
-                  SchedulerBinding.instance.addPostFrameCallback((_) {
-                    _countDown(event);
-                  });
-
-                  return EventsAttendingWidget(
+                  return EventsFeedAttendingWidget(
                     event: event,
                     invite: invite,
                   );
@@ -344,7 +246,10 @@ class _EventsFeedState extends State<EventsFeed>
                       _invites.length == 0
                           ? SizedBox.shrink()
                           : Container(height: 80, child: _buildInviteBuilder()),
-                      Divider(),
+                      Divider(
+                        color: Colors.grey,
+                        thickness: .1,
+                      ),
                       const SizedBox(
                         height: 20,
                       ),
@@ -354,12 +259,18 @@ class _EventsFeedState extends State<EventsFeed>
                                 backgroundColor: Colors.white,
                                 onRefresh: () async {
                                   _setupEventFeed();
+                                  _setUpFeedCount();
+                                  _setUpInvites();
                                 },
                                 child: _buildEventBuilder(user))
                             : _feedCount.isNegative
                                 ? RefreshIndicator(
                                     backgroundColor: Colors.white,
-                                    onRefresh: () => _setupEventFeed(),
+                                    onRefresh: () async {
+                                      _setupEventFeed();
+                                      _setUpFeedCount();
+                                      _setUpInvites();
+                                    },
                                     child: SingleChildScrollView(
                                         child: NoFeed(
                                       title: "Set up your event feed. ",

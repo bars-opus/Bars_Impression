@@ -33,38 +33,47 @@ class CreateEventWidget extends StatefulWidget {
   String city;
   String country;
   String virtualVenue;
+  String clossingDay;
   Event? event;
   bool isVirtual;
   bool isPrivate;
+  bool isFree;
+  bool isCashPayment;
+  bool showOnExplorePage;
+  bool showToFollowers;
   static final id = 'Create_event';
 
-  CreateEventWidget({
-    this.user,
-    required this.image,
-    required this.isEditting,
-    required this.title,
-    required this.rate,
-    required this.venue,
-    required this.time,
-    required this.guess,
-    required this.host,
-    required this.artist,
-    required this.dressCode,
-    required this.date,
-    required this.imageUrl,
-    required this.dj,
-    required this.type,
-    required this.theme,
-    required this.previousEvent,
-    required this.ticketSite,
-    required this.triller,
-    required this.city,
-    required this.country,
-    required this.virtualVenue,
-    required this.event,
-    required this.isVirtual,
-    required this.isPrivate,
-  });
+  CreateEventWidget(
+      {this.user,
+      required this.image,
+      required this.isEditting,
+      required this.title,
+      required this.rate,
+      required this.venue,
+      required this.time,
+      required this.guess,
+      required this.host,
+      required this.artist,
+      required this.dressCode,
+      required this.date,
+      required this.imageUrl,
+      required this.dj,
+      required this.type,
+      required this.theme,
+      required this.previousEvent,
+      required this.ticketSite,
+      required this.triller,
+      required this.city,
+      required this.country,
+      required this.virtualVenue,
+      required this.event,
+      required this.isVirtual,
+      required this.isPrivate,
+      required this.isFree,
+      required this.isCashPayment,
+      required this.clossingDay,
+      required this.showOnExplorePage,
+      required this.showToFollowers});
 
   @override
   _CreateEventWidgetState createState() => _CreateEventWidgetState();
@@ -76,9 +85,12 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
   int index = 0;
   int showDatePicker = 0;
   int showTimePicker = 0;
-  bool _isLoading = false;
-  bool _isVirtual = false;
-  bool _isPhysical = false;
+  // bool _isLoading = false;
+  // bool _isVirtual = false;
+  // bool _isPhysical = false;
+  // bool _isPrivate = false;
+  // bool _isPublic = false;
+  // bool _isFree = false;
   bool _isfetchingAddress = false;
   int eventTypeIndex = 0;
   int showEventTypePicker = 0;
@@ -89,7 +101,10 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
   DateTime minTime = DateTime.now().subtract(Duration(minutes: 1));
   DateTime dayTime = DateTime.now();
   String selectedValue = '';
+  String selectedclosingDay = '';
   String _type = '';
+
+  String _closingDay = '';
 
   final musicVideoLink =
       RegExp(r"^(https?\:\/\/)?((www\.)?youtube\.com|youtu\.?be)\/.+$");
@@ -97,9 +112,12 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
   @override
   void initState() {
     _type = widget.type;
+    _indexx = widget.isEditting ? 5 : 0;
     selectedValue = _type.isEmpty ? values.last : _type;
+    selectedclosingDay =
+        _closingDay.isEmpty ? eventClossingDay.first : _closingDay;
     _pageController = PageController(
-      initialPage: widget.isEditting ? 1 : 0,
+      initialPage: widget.isEditting ? 5 : 0,
     );
 
     super.initState();
@@ -115,6 +133,20 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
       Provider.of<UserData>(context, listen: false).setPost8(widget.date);
       Provider.of<UserData>(context, listen: false).setPost9(widget.city);
       Provider.of<UserData>(context, listen: false).setPost10(widget.country);
+      Provider.of<UserData>(context, listen: false).setPost11(widget.guess);
+      Provider.of<UserData>(context, listen: false).setPost12(widget.artist);
+      Provider.of<UserData>(context, listen: false).setBool1(widget.isPrivate);
+      Provider.of<UserData>(context, listen: false).setBool2(widget.isVirtual);
+      Provider.of<UserData>(context, listen: false).setBool3(widget.isFree);
+      Provider.of<UserData>(context, listen: false)
+          .setPost13(widget.clossingDay);
+      Provider.of<UserData>(context, listen: false).setIsLoading(false);
+      Provider.of<UserData>(context, listen: false)
+          .setBool4(widget.isCashPayment);
+      Provider.of<UserData>(context, listen: false)
+          .setBool5(widget.showOnExplorePage);
+      Provider.of<UserData>(context, listen: false)
+          .setBool6(widget.showToFollowers);
     });
   }
 
@@ -137,17 +169,24 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
     return croppedImage!;
   }
 
-  _showSelectImageDialog() {
-    return Platform.isIOS ? _iosBottomSheet() : _androidDialog(context);
+  _showSelectImageDialog(String action) {
+    return Platform.isIOS
+        ? _iosBottomSheet(action)
+        : _androidDialog(context, action);
   }
 
-  _iosBottomSheet() {
+  _iosBottomSheet(String action) {
     showCupertinoModalPopup(
         context: context,
         builder: (BuildContext context) {
           return CupertinoActionSheet(
             title: Text(
-              'Are you sure you want to delete this event?',
+              action.startsWith('create')
+                  ? 'Certiain information of an event cannot be modified once an event is created. Information such as date, time, category, flyer background, and event settings cannot be changed.\nWould you like to continue and create event?'
+                  : 'Are you sure you want to delete this event?',
+              textAlign: action.startsWith('create')
+                  ? TextAlign.start
+                  : TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
                 color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
@@ -156,14 +195,16 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
             actions: <Widget>[
               CupertinoActionSheetAction(
                 child: Text(
-                  'delete',
+                  action.startsWith('create') ? 'Create' : 'Delete',
                   style: TextStyle(
                     color: Colors.blue,
                   ),
                 ),
                 onPressed: () {
                   Navigator.pop(context);
-                  _deleteEvent();
+                  action.startsWith('create')
+                      ? _submitCreate()
+                      : _deleteEvent();
                 },
               )
             ],
@@ -180,23 +221,46 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
         });
   }
 
-  _androidDialog(BuildContext parentContext) {
+  _androidDialog(BuildContext parentContext, String action) {
     return showDialog(
         context: parentContext,
         builder: (context) {
           return SimpleDialog(
-            title: Text('Are you sure you want to delete this event?'),
+            title: Text(
+              action.startsWith('create')
+                  ? 'Certiain information of an event cannot be modified once an event is created. Information such as date, time, category, flyer background, and event settings cannot be changed.\nWould you like to continue and create event?'
+                  : 'Are you sure you want to delete this event?',
+              style: TextStyle(fontWeight: FontWeight.bold),
+              textAlign: action.startsWith('create')
+                  ? TextAlign.start
+                  : TextAlign.center,
+            ),
             children: <Widget>[
-              SimpleDialogOption(
-                child: Text('delete'),
-                onPressed: () {
-                  Navigator.pop(context);
-                  _deleteEvent();
-                },
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    action.startsWith('create') ? 'Create' : 'Delete',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.blue),
+                    textAlign: TextAlign.center,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    action.startsWith('create')
+                        ? _submitCreate()
+                        : _deleteEvent();
+                  },
+                ),
               ),
-              SimpleDialogOption(
-                child: Text('cancel'),
-                onPressed: () => Navigator.pop(context),
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'Cancel',
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
               ),
             ],
           );
@@ -234,7 +298,10 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
               ),
             ),
             messageText: Text(
-              e.toString(),
+              e.contains(']')
+                  ? e.substring(e.lastIndexOf(']') + 1).toString()
+                  : e.toString(),
+              // e.toString(),
               style: TextStyle(
                 color: Colors.white,
                 fontSize: width > 800 ? 20 : 12,
@@ -280,13 +347,14 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
         size: 30.0,
         color: Colors.blue,
       ),
-      duration: Duration(seconds: 3),
+      duration: Duration(seconds: 2),
       leftBarIndicatorColor: Colors.blue,
     )..show(context);
   }
 
   _submitEdit() async {
-    if (_formKey.currentState!.validate() & !_isLoading) {
+    if (_formKey.currentState!.validate() &
+        !Provider.of<UserData>(context, listen: false).isLoading) {
       _formKey.currentState?.save();
       String _imageUrl = widget.event!.imageUrl;
       Event event = Event(
@@ -296,7 +364,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
         type: Provider.of<UserData>(context, listen: false).post6,
         title: Provider.of<UserData>(context, listen: false).post1,
         rate: Provider.of<UserData>(context, listen: false).post3,
-        venue: widget.isVirtual || _isVirtual
+        venue: Provider.of<UserData>(context, listen: false).bool2
             ? ''
             : Provider.of<UserData>(context, listen: false).post5,
         time: Provider.of<UserData>(context, listen: false).post7,
@@ -304,9 +372,9 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
         theme: Provider.of<UserData>(context, listen: false).post2,
         dressCode: widget.dressCode,
         dj: widget.dj,
-        guess: widget.guess,
+        guess: Provider.of<UserData>(context, listen: false).post11,
+        artist: Provider.of<UserData>(context, listen: false).post12,
         host: Provider.of<UserData>(context, listen: false).post4!,
-        artist: widget.artist,
         authorId: Provider.of<UserData>(context, listen: false).currentUserId!,
         timestamp: widget.event!.timestamp,
         previousEvent: widget.previousEvent,
@@ -314,13 +382,18 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
         reportConfirmed: '',
         city: Provider.of<UserData>(context, listen: false).post9,
         country: Provider.of<UserData>(context, listen: false).post10,
-        virtualVenue: widget.isVirtual || _isVirtual
+        virtualVenue: Provider.of<UserData>(context, listen: false).bool2
             ? Provider.of<UserData>(context, listen: false).post5
             : '',
         ticketSite: widget.ticketSite,
-        isVirtual: widget.isVirtual,
+        isVirtual: Provider.of<UserData>(context, listen: false).bool2,
+        isFree: Provider.of<UserData>(context, listen: false).bool3,
         report: '',
-        isPrivate: widget.isPrivate, 
+        isPrivate: Provider.of<UserData>(context, listen: false).bool1,
+        isCashPayment: Provider.of<UserData>(context, listen: false).bool4,
+        showOnExplorePage: Provider.of<UserData>(context, listen: false).bool5,
+        showToFollowers: Provider.of<UserData>(context, listen: false).bool6,
+        clossingDay: Provider.of<UserData>(context, listen: false).post13,
       );
 
       try {
@@ -359,7 +432,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
             size: 30.0,
             color: Colors.blue,
           ),
-          duration: Duration(seconds: 3),
+          duration: Duration(seconds: 2),
           leftBarIndicatorColor: Colors.blue,
         )..show(context);
       } catch (e) {
@@ -408,9 +481,10 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
   }
 
   _reverseGeocoding() async {
-    setState(() {
-      _isLoading = true;
-    });
+    // setState(() {
+    //   _isLoading = true;
+    // });
+    Provider.of<UserData>(context, listen: false).setIsLoading(true);
     try {
       List<Location> locations = await locationFromAddress(
           Provider.of<UserData>(context, listen: false).post5);
@@ -427,97 +501,127 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
       });
     } catch (e) {}
     Provider.of<UserData>(context, listen: false).addressSearchResults = [];
-    setState(() {
-      _isLoading = false;
-    });
+    // setState(() {
+    //   _isLoading = false;
+    // });
+    Provider.of<UserData>(context, listen: false).setIsLoading(false);
     animateToPage();
   }
 
   _submitCreate() async {
-    if (_formKey.currentState!.validate() & !_isLoading) {
+    if (_formKey.currentState!.validate() &
+        !Provider.of<UserData>(context, listen: false).isLoading) {
       _formKey.currentState?.save();
-      animateToPage();
-      setState(() {
-        _isLoading = true;
-      });
-      final double width = Responsive.isDesktop(context)
-          ? 600.0
-          : MediaQuery.of(context).size.width;
       FocusScope.of(context).unfocus();
-      Flushbar(
-        maxWidth: MediaQuery.of(context).size.width,
-        backgroundColor: Color(0xFF1a1a1a),
-        margin: EdgeInsets.all(8),
-        showProgressIndicator: true,
-        progressIndicatorBackgroundColor: Color(0xFF1a1a1a),
-        progressIndicatorValueColor: AlwaysStoppedAnimation(Colors.blue),
-        flushbarPosition: FlushbarPosition.TOP,
-        boxShadows: [
-          BoxShadow(
-            color: Colors.black,
-            offset: Offset(0.0, 2.0),
-            blurRadius: 3.0,
-          )
-        ],
-        titleText: Text(
-          'Creating event',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: width > 800 ? 22 : 14,
-          ),
-        ),
-        messageText: Text(
-          "Please wait...",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: width > 800 ? 20 : 12,
-          ),
-        ),
-        duration: Duration(seconds: 3),
-      )..show(context);
+      animateToPage();
 
-      String? imageUrl = await StorageService.uploadEvent(
-          Provider.of<UserData>(context, listen: false).postImage!);
+      // setState(() {
+      //   _isLoading = true;
+      // });
+      Provider.of<UserData>(context, listen: false).setIsLoading(true);
+      // final double width = Responsive.isDesktop(context)
+      //     ? 600.0
+      //     : MediaQuery.of(context).size.width;
+      // FocusScope.of(context).unfocus();
+      // Flushbar(
+      //   maxWidth: MediaQuery.of(context).size.width,
+      //   backgroundColor: Color(0xFF1a1a1a),
+      //   margin: EdgeInsets.all(8),
+      //   showProgressIndicator: true,
+      //   progressIndicatorBackgroundColor: Color(0xFF1a1a1a),
+      //   progressIndicatorValueColor: AlwaysStoppedAnimation(Colors.blue),
+      //   flushbarPosition: FlushbarPosition.TOP,
+      //   boxShadows: [
+      //     BoxShadow(
+      //       color: Colors.black,
+      //       offset: Offset(0.0, 2.0),
+      //       blurRadius: 3.0,
+      //     )
+      //   ],
+      //   titleText: Text(
+      //     'Creating event',
+      //     style: TextStyle(
+      //       color: Colors.white,
+      //       fontSize: width > 800 ? 22 : 14,
+      //     ),
+      //   ),
+      //   messageText: Text(
+      //     "Please wait...",
+      //     style: TextStyle(
+      //       color: Colors.white,
+      //       fontSize: width > 800 ? 20 : 12,
+      //     ),
+      //   ),
 
-      Uint8List bytes =
-          await (Provider.of<UserData>(context, listen: false).postImage!)
-              .readAsBytes();
-      var blurHash = await BlurHash.encode(bytes, 4, 3);
+      DateTime date =
+          DateTime.parse(Provider.of<UserData>(context, listen: false).post8);
+      final closeDate = Provider.of<UserData>(context, listen: false)
+              .post13
+              .startsWith('On')
+          ? date.add(const Duration(hours: 12))
+          : Provider.of<UserData>(context, listen: false).post13.startsWith('A')
+              ? date.add(const Duration(days: 1))
+              : Provider.of<UserData>(context, listen: false)
+                      .post13
+                      .startsWith('3')
+                  ? date.add(const Duration(days: 3))
+                  : Provider.of<UserData>(context, listen: false)
+                          .post13
+                          .startsWith('1')
+                      ? date.add(const Duration(days: 7))
+                      : date.add(const Duration(hours: 12));
+      Provider.of<UserData>(context, listen: false)
+          .setPost13(closeDate.toString());
 
-      Event event = Event(
-        blurHash: blurHash,
-        imageUrl: imageUrl,
-        type: Provider.of<UserData>(context, listen: false).post6.isEmpty
-            ? "Others"
-            : Provider.of<UserData>(context, listen: false).post6,
-        title: Provider.of<UserData>(context, listen: false).post1,
-        rate: Provider.of<UserData>(context, listen: false).post3,
-        venue: Provider.of<UserData>(context, listen: false).post5,
-        time: Provider.of<UserData>(context, listen: false).post7,
-        date: Provider.of<UserData>(context, listen: false).post8,
-        theme: Provider.of<UserData>(context, listen: false).post2,
-        dressCode: widget.dressCode,
-        dj: widget.dj,
-        guess: widget.guess,
-        host: Provider.of<UserData>(context, listen: false).post4!,
-        artist: widget.artist,
-        authorId: Provider.of<UserData>(context, listen: false).currentUserId!,
-        timestamp: Timestamp.fromDate(DateTime.now()),
-        previousEvent: widget.previousEvent,
-        triller: widget.triller,
-        report: '',
-        reportConfirmed: '',
-        city: Provider.of<UserData>(context, listen: false).post9,
-        country: Provider.of<UserData>(context, listen: false).post10,
-        virtualVenue: widget.isVirtual || _isVirtual
-            ? Provider.of<UserData>(context, listen: false).post5
-            : '',
-        ticketSite: widget.ticketSite,
-        isVirtual: widget.isVirtual,
-        isPrivate: widget.isPrivate,
-        id: '',
-      );
       try {
+        String? imageUrl = await StorageService.uploadEvent(
+            Provider.of<UserData>(context, listen: false).postImage!);
+
+        Uint8List bytes =
+            await (Provider.of<UserData>(context, listen: false).postImage!)
+                .readAsBytes();
+        var blurHash = await BlurHash.encode(bytes, 4, 3);
+
+        Event event = Event(
+          blurHash: blurHash,
+          imageUrl: imageUrl,
+          type: Provider.of<UserData>(context, listen: false).post6.isEmpty
+              ? "Others"
+              : Provider.of<UserData>(context, listen: false).post6,
+          title: Provider.of<UserData>(context, listen: false).post1,
+          rate: Provider.of<UserData>(context, listen: false).post3,
+          venue: Provider.of<UserData>(context, listen: false).post5,
+          time: Provider.of<UserData>(context, listen: false).post7,
+          date: Provider.of<UserData>(context, listen: false).post8,
+          theme: Provider.of<UserData>(context, listen: false).post2,
+          dressCode: widget.dressCode,
+          dj: widget.dj,
+          guess: Provider.of<UserData>(context, listen: false).post11,
+          artist: Provider.of<UserData>(context, listen: false).post12,
+          host: Provider.of<UserData>(context, listen: false).post4!,
+          authorId:
+              Provider.of<UserData>(context, listen: false).currentUserId!,
+          timestamp: Timestamp.fromDate(DateTime.now()),
+          previousEvent: widget.previousEvent,
+          triller: widget.triller,
+          report: '',
+          reportConfirmed: '',
+          city: Provider.of<UserData>(context, listen: false).post9,
+          country: Provider.of<UserData>(context, listen: false).post10,
+          virtualVenue: Provider.of<UserData>(context, listen: false).bool2
+              ? Provider.of<UserData>(context, listen: false).post5
+              : '',
+          ticketSite: widget.ticketSite,
+          isVirtual: Provider.of<UserData>(context, listen: false).bool2,
+          isPrivate: Provider.of<UserData>(context, listen: false).bool1,
+          id: '',
+          isFree: Provider.of<UserData>(context, listen: false).bool3,
+          isCashPayment: Provider.of<UserData>(context, listen: false).bool4,
+          showOnExplorePage:
+              Provider.of<UserData>(context, listen: false).bool5,
+          showToFollowers: Provider.of<UserData>(context, listen: false).bool6,
+          clossingDay: Provider.of<UserData>(context, listen: false).post13,
+        );
         DatabaseService.createEvent(event);
         _pop();
         final double width = Responsive.isDesktop(context)
@@ -553,7 +657,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
             size: 30.0,
             color: Colors.blue,
           ),
-          duration: Duration(seconds: 3),
+          duration: Duration(seconds: 2),
           leftBarIndicatorColor: Colors.blue,
         )..show(context);
       } catch (e) {
@@ -614,11 +718,100 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
         widget.dressCode = '';
         widget.type = '';
         widget.date = '';
-        _isLoading = false;
+        Provider.of<UserData>(context, listen: false).setIsLoading(false);
         setNull();
       });
     }
   }
+
+  static const eventClossingDay = <String>[
+    "On event day",
+    "A day after",
+    "3 days after",
+    "1 week after",
+  ];
+
+  Widget buildClosingDay() => Theme(
+        data: Theme.of(context).copyWith(
+          unselectedWidgetColor:
+              ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+        ),
+        child: Column(
+            children: eventClossingDay.map((value) {
+          final selected = this.selectedclosingDay == value;
+          final color = selected
+              ? Colors.blue
+              : ConfigBloc().darkModeOn
+                  ? Colors.white
+                  : Colors.black;
+
+          return RadioListTile<String>(
+            value: value,
+            groupValue: selectedclosingDay,
+            title: Text(
+              value,
+              style: TextStyle(color: color, fontSize: 14),
+            ),
+            activeColor: Colors.blue,
+            onChanged: (value) => setState(
+              () {
+                _closingDay = (this.selectedclosingDay = value!);
+                Provider.of<UserData>(context, listen: false).setPost13(value);
+              },
+            ),
+          );
+        }).toList()),
+      );
+
+  Widget buildClosingDayPicker() => Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              // Text(
+              //   'Select event type.',
+              //   style: TextStyle(
+              //     color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+              //     fontSize: 14,
+              //   ),
+              // ),
+              // SizedBox(
+              //   height: 20,
+              // ),
+              buildClosingDay(),
+            ],
+          ),
+          SizedBox(height: 70),
+          Container(
+            width: 200,
+            child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  primary: Colors.blue,
+                  side: BorderSide(
+                    width: 1.0,
+                    color:
+                        ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                ),
+                child: Text(
+                  'Pick day',
+                  style: TextStyle(
+                    color:
+                        ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                  ),
+                ),
+                onPressed: () {
+                  animateToPage();
+                }),
+          ),
+        ],
+      );
 
   static const values = <String>[
     "Festival",
@@ -668,16 +861,16 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
-                'Select event type.',
-                style: TextStyle(
-                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                  fontSize: 14,
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
+              // Text(
+              //   'Select event type.',
+              //   style: TextStyle(
+              //     color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+              //     fontSize: 14,
+              //   ),
+              // ),
+              // SizedBox(
+              //   height: 20,
+              // ),
               buildRadios(),
             ],
           ),
@@ -905,21 +1098,37 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
     );
   }
 
-  _isVirtualEvent() {
-    setState(() {
-      _isVirtual = true;
-      widget.isVirtual = true;
-      _isPhysical = false;
-    });
-  }
+  // _isVirtualEvent() {
+  //   setState(() {
+  //     _isVirtual = true;
+  //     widget.isVirtual = true;
+  //     _isPhysical = false;
+  //   });
+  // }
 
-  _isPhysicalEvent() {
-    setState(() {
-      _isPhysical = true;
-      _isVirtual = false;
-      widget.isVirtual = false;
-    });
-  }
+  // _isPhysicalEvent() {
+  //   setState(() {
+  //     _isPhysical = true;
+  //     _isVirtual = false;
+  //     widget.isVirtual = false;
+  //   });
+  // }
+
+  // _isPrivateEvent() {
+  //   setState(() {
+  //     _isPrivate = true;
+  //     widget.isPrivate = true;
+  //     _isPublic = false;
+  //   });
+  // }
+
+  // _isPublicEvent() {
+  //   setState(() {
+  //     _isPublic = true;
+  //     _isPrivate = false;
+  //     widget.isPrivate = false;
+  //   });
+  // }
 
   _validate() {
     if (_formKey.currentState!.validate()) {
@@ -949,8 +1158,8 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
         : MediaQuery.of(context).size.width;
     if (widget.imageUrl.isNotEmpty) {
       return Container(
-          height: width,
-          width: width,
+          height: width / 2,
+          width: width / 2,
           decoration: BoxDecoration(
               image: DecorationImage(
             image: CachedNetworkImageProvider(widget.imageUrl),
@@ -970,7 +1179,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
           child: Provider.of<UserData>(context).postImage == null
               ? Center(
                   child: InkBoxColumn(
-                    size: 2,
+                    size: 3,
                     onPressed: _handleImage,
                     icon: Icon(
                       Icons.add_a_photo,
@@ -1005,6 +1214,15 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
     Provider.of<UserData>(context, listen: false).setPost8('');
     Provider.of<UserData>(context, listen: false).setPost9('');
     Provider.of<UserData>(context, listen: false).setPost10('');
+    Provider.of<UserData>(context, listen: false).setPost11('');
+    Provider.of<UserData>(context, listen: false).setPost12('');
+    Provider.of<UserData>(context, listen: false).setPost13('');
+    Provider.of<UserData>(context, listen: false).setBool1(false);
+    Provider.of<UserData>(context, listen: false).setBool2(false);
+    Provider.of<UserData>(context, listen: false).setBool3(false);
+    Provider.of<UserData>(context, listen: false).setBool4(false);
+    Provider.of<UserData>(context, listen: false).setBool5(false);
+    Provider.of<UserData>(context, listen: false).setBool6(false);
     Provider.of<UserData>(context, listen: false).addressSearchResults = [];
   }
 
@@ -1015,12 +1233,9 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final width = Responsive.isDesktop(context)
-        ? 600.0
-        : MediaQuery.of(context).size.width;
     return ResponsiveScaffold(
       child: Scaffold(
-        backgroundColor: _indexx == 8
+        backgroundColor: _indexx == 10
             ? Color(0xFFFF2D55)
             : ConfigBloc().darkModeOn
                 ? Color(0xFF1a1a1a)
@@ -1029,7 +1244,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
           iconTheme: IconThemeData(
             color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
           ),
-          leading: _indexx == 8
+          leading: _indexx == 10
               ? SizedBox.shrink()
               : widget.isEditting
                   ? IconButton(
@@ -1037,7 +1252,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                           ? Icons.arrow_back_ios
                           : Icons.arrow_back),
                       onPressed: () {
-                        _indexx == 1 || _indexx == 0
+                        _indexx == 4 || _indexx == 0
                             ? Navigator.pop(context)
                             : animateBack();
                       })
@@ -1049,30 +1264,32 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                         _indexx != 0 ? animateBack() : _pop();
                       }),
           elevation: 0,
-          backgroundColor: _indexx == 8
+          backgroundColor: _indexx == 10
               ? Color(0xFFFF2D55)
               : ConfigBloc().darkModeOn
                   ? Color(0xFF1a1a1a)
                   : Color(0xFFf2f2f2),
           title: Material(
             color: Colors.transparent,
-            child: _isLoading
-                ? Text(
-                    '',
-                  )
-                : Text(
-                    _indexx == 8
-                        ? ''
-                        : widget.isEditting
-                            ? 'Edit Event'
-                            : 'Create Event',
-                    style: TextStyle(
-                        color: ConfigBloc().darkModeOn
-                            ? Colors.white
-                            : Colors.black,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
-                  ),
+            child:
+                // _isLoading
+                Provider.of<UserData>(context, listen: false).isLoading
+                    ? Text(
+                        '',
+                      )
+                    : Text(
+                        _indexx == 10
+                            ? ''
+                            : widget.isEditting
+                                ? 'Edit Event'
+                                : 'Create Event',
+                        style: TextStyle(
+                            color: ConfigBloc().darkModeOn
+                                ? Colors.white
+                                : Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      ),
           ),
           centerTitle: true,
         ),
@@ -1096,78 +1313,91 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                       child: Column(
                         children: [
                           SizedBox(height: 10),
-                          Container(
-                            child: DecisionContainer(
-                              questions:
-                                  'You can create an event where people can attend or you can also create a virtual event that can be hosted on virtual platforms, where people can interact with you. Are You Creating A you creating a physical event or a virtual event?',
-                              answer1: 'Virtual Event',
-                              answer2: 'Physical Event',
-                              onPressed1: _isVirtualEvent,
-                              onPressed2: _isPhysicalEvent,
-                              isPicked1: _isVirtual,
-                              isPicked2: _isPhysical,
-                            ),
-                          ),
-                          AnimatedContainer(
-                            duration: Duration(milliseconds: 300),
-                            height: _isVirtual || _isPhysical ? 130 : 0.0,
-                            width: double.infinity,
-                            curve: Curves.bounceInOut,
-                            child: Center(
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 70.0),
-                                child: AlwaysWhiteButton(
-                                    onPressed: () {
-                                      animateToPage();
-                                    },
-                                    buttonText: "Continue"),
-                              ),
-                            ),
-                          ),
-                          AnimatedContainer(
-                            duration: Duration(milliseconds: 300),
-                            height: _isVirtual || _isPhysical ? 0.0 : width,
-                            curve: Curves.bounceInOut,
-                            child: SingleChildScrollView(
-                              child: GestureDetector(
-                                onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => FeatureInfo(
-                                              feature: 'Event',
-                                            ))),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 30.0),
-                                  child: PageHint(
-                                    more: 'more',
-                                    body:
-                                        "Create an event where people can attend, have fun, create memories, and have unforgettable experiences.",
-                                    title: "Create Events.",
+                          // Container(
+                          //   child: DecisionContainer(
+                          //     questions:
+                          //         'You can create an event where people can attend or you can also create a virtual event that can be hosted on virtual platforms, where people can interact with you. Are You Creating A you creating a physical event or a virtual event?',
+                          //     answer1: 'Virtual Event',
+                          //     answer2: 'Physical Event',eve
+                          //     onPressed1: _isVirtualEvent,
+                          //     onPressed2: _isPhysicalEvent,
+                          //     isPicked1: _isVirtual,
+                          //     isPicked2: _isPhysical,
+                          //   ),
+                          // ),
+                          // AnimatedContainer(
+                          //   duration: Duration(milliseconds: 300),
+                          //   height: _isVirtual || _isPhysical ? 130 : 0.0,
+                          //   width: double.infinity,
+                          //   curve: Curves.bounceInOut,
+                          //   child: Center(
+                          //     child: Padding(
+                          //       padding: const EdgeInsets.only(top: 70.0),
+                          //       child: AlwaysWhiteButton(
+                          //           onPressed: () {
+                          //             animateToPage();
+                          //           },
+                          //           buttonText: "Continue"),
+                          //     ),
+                          //   ),
+                          // ),
+                          // AnimatedContainer(
+                          //   duration: Duration(milliseconds: 300),
+                          //   height: _isVirtual || _isPhysical ? 0.0 : width,
+                          //   curve: Curves.bounceInOut,
+                          //   child: SingleChildScrollView(
+                          //     child: GestureDetector(
+                          //       onTap: () => Navigator.push(
+                          //           context,
+                          //           MaterialPageRoute(
+                          //               builder: (_) => FeatureInfo(
+                          //                     feature: 'Event',
+                          //                   ))),
+                          //       child: Padding(
+                          //         padding: const EdgeInsets.symmetric(
+                          //             horizontal: 30.0),
+                          //         child: PageHint(
+                          //           more: 'more',
+                          //           body:
+                          //               "Create an event where people can attend, have fun, create memories, and have unforgettable experiences.",
+                          //           title: "Create Events.",
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // )
+
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Row(
+                              children: [
+                                Text(
+                                  '1. ',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontSize: 30,
                                   ),
                                 ),
-                              ),
+                                Text(
+                                  'Background\nImage.',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
                             ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                SingleChildScrollView(
-                  child: Container(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          DirectionWidget(
-                            text:
-                                'Select a background image for your event. The image selected should not contain any text and should be of good pixel quality. The image selected should align with the context of your event and the information already provided in the previous stages. We advise you to select a great background image. ',
-                            fontSize: null,
                           ),
-                          SizedBox(
+                          Provider.of<UserData>(context, listen: false)
+                                      .postImage ==
+                                  null
+                              ? DirectionWidget(
+                                  text:
+                                      'Select a background image for your event. The image selected should not contain any text and should be of good pixel quality. The image selected should align with the context of your event. We advise you to select a great background image. ',
+                                  fontSize: null,
+                                )
+                              : const SizedBox.shrink(),
+                          const SizedBox(
                             height: 20,
                           ),
                           _displayPostImage(),
@@ -1181,49 +1411,263 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                               : Provider.of<UserData>(context, listen: false)
                                           .postImage ==
                                       null
-                                  ? SizedBox.shrink()
+                                  ? const SizedBox.shrink()
                                   : Padding(
                                       padding: const EdgeInsets.only(top: 50.0),
                                       child: AlwaysWhiteButton(
                                           onPressed: _validate,
                                           buttonText: "Continue"),
                                     ),
-                          SizedBox(
-                            height: 30,
+                          GestureDetector(
+                            onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => FeatureInfo(
+                                          feature: 'Event',
+                                        ))),
+                            child: PageHint(
+                              more: 'tap to read',
+                              body: "Event documentation.",
+                              title: ".",
+                            ),
                           ),
-                          widget.isEditting
-                              ? InkWell(
-                                  borderRadius: BorderRadius.circular(10),
-                                  onTap: () => () {},
-                                  child: Ink(
-                                    decoration: BoxDecoration(
-                                      color: ConfigBloc().darkModeOn
-                                          ? Colors.white
-                                          : Colors.grey,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Container(
-                                      height: 40,
-                                      width: 40,
-                                      child: IconButton(
-                                          icon: Icon(Icons.delete_forever),
-                                          iconSize: 25,
-                                          color: ConfigBloc().darkModeOn
-                                              ? Colors.black
-                                              : Colors.white,
-                                          onPressed: _showSelectImageDialog),
-                                    ),
+                          // Padding(
+                          //   padding:
+                          //       const EdgeInsets.symmetric(horizontal: 30.0),
+                          //   child: PageHint(
+                          //     more: 'more',
+                          //     body:
+                          //         "Create an event where people can attend, have fun, create memories, and have unforgettable experiences.",
+                          //     title: "Create Events.",
+                          //   ),
+                          // ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                SingleChildScrollView(
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Row(
+                              children: [
+                                Text(
+                                  '2. ',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontSize: 30,
                                   ),
-                                )
-                              : SizedBox.shrink(),
-                          SizedBox(
-                            height: 70,
+                                ),
+                                Text(
+                                  'Event\nsettings.',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 30),
+                          // Container(
+                          //   child: DecisionContainer(
+                          //     questions:
+                          //         'You can create a private event and invite only specifc people or you can create a general event where anybody can attend.',
+                          //     answer1: 'Private Event',
+                          //     answer2: 'Public Event',
+                          //     onPressed1: _isPrivateEvent,
+                          //     onPressed2: _isPublicEvent,
+                          //     isPicked1: _isPrivate,
+                          //     isPicked2: _isPublic,
+                          //   ),
+                          // ),
+
+                          SettingSwitch(
+                              title: 'Private event',
+                              subTitle:
+                                  'You can create a private event and invite only specific people, or you can create a general event where anybody can attend.',
+                              value:
+                                  Provider.of<UserData>(context, listen: false)
+                                      .bool1,
+                              onChanged: (value) =>
+                                  Provider.of<UserData>(context, listen: false)
+                                      .setBool1(value)),
+                          !Provider.of<UserData>(context, listen: false).bool1
+                              ? SizedBox.shrink()
+                              : Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 10.0, bottom: 10),
+                                  child: Divider(
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                          !Provider.of<UserData>(context, listen: false).bool1
+                              ? SizedBox.shrink()
+                              : SettingSwitch(
+                                  title: 'Show on explore page',
+                                  subTitle:
+                                      'Should your private event be shown on the explore page?',
+                                  value: Provider.of<UserData>(context,
+                                          listen: false)
+                                      .bool5,
+                                  onChanged: (value) => Provider.of<UserData>(
+                                          context,
+                                          listen: false)
+                                      .setBool5(value)),
+
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(top: 10.0, bottom: 10),
+                            child: Divider(
+                              color: Colors.grey,
+                            ),
+                          ),
+
+                          SettingSwitch(
+                              title: 'Virtual event',
+                              subTitle:
+                                  'You can create an event that people can attend, or you can also create a virtual event that can be hosted on virtual platforms, where people can interact with you. ',
+                              value:
+                                  Provider.of<UserData>(context, listen: false)
+                                      .bool2,
+                              onChanged: (value) =>
+                                  Provider.of<UserData>(context, listen: false)
+                                      .setBool2(value)),
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(top: 10.0, bottom: 10),
+                            child: Divider(
+                              color: Colors.grey,
+                            ),
+                          ),
+
+                          Provider.of<UserData>(context, listen: false).bool4
+                              ? SizedBox.shrink()
+                              : SettingSwitch(
+                                  title: 'Free event',
+                                  subTitle:
+                                      'A free event without a ticket or gate fee (rate free).',
+                                  value: Provider.of<UserData>(context,
+                                          listen: false)
+                                      .bool3,
+                                  onChanged: (value) => Provider.of<UserData>(
+                                          context,
+                                          listen: false)
+                                      .setBool3(value)
+
+                                  // setState(
+                                  //   () {
+                                  //     _isFree = this._isFree = value;
+                                  //     widget.isFree = _isFree;
+                                  //   },
+                                  // ),
+                                  ),
+                          Provider.of<UserData>(context, listen: false).bool4
+                              ? SizedBox.shrink()
+                              : Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 10.0, bottom: 10),
+                                  child: Divider(
+                                    color: Colors.grey,
+                                  ),
+                                ),
+
+                          Provider.of<UserData>(context, listen: false).bool3
+                              ? SizedBox.shrink()
+                              : Container(
+                                  child: SettingSwitch(
+                                      title: 'Cash payment',
+                                      subTitle:
+                                          'Cash in hand mode of payment for ticket or gate fee?',
+                                      value: Provider.of<UserData>(context,
+                                              listen: false)
+                                          .bool4,
+                                      onChanged: (value) =>
+                                          Provider.of<UserData>(context,
+                                                  listen: false)
+                                              .setBool4(value)
+
+                                      // setState(
+                                      //   () {
+                                      //     _isFree = this._isFree = value;
+                                      //     widget.isFree = _isFree;
+                                      //   },
+                                      // ),
+                                      ),
+                                ),
+
+                          Provider.of<UserData>(context, listen: false).bool3
+                              ? SizedBox.shrink()
+                              : Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 10.0, bottom: 10),
+                                  child: Divider(
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                          Center(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(bottom: 70.0, top: 50),
+                              child: AlwaysWhiteButton(
+                                  onPressed: () {
+                                    animateToPage();
+                                  },
+                                  buttonText: "Continue"),
+                            ),
                           ),
                         ],
                       ),
                     ),
                   ),
                 ),
+                // SingleChildScrollView(
+                //   child: Container(
+                //     child: Padding(
+                //       padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                //       child: Column(
+                //         mainAxisAlignment: MainAxisAlignment.center,
+                //         crossAxisAlignment: CrossAxisAlignment.center,
+                //         children: <Widget>[
+                //           DirectionWidget(
+                //             text:
+                //                 'Select a background image for your event. The image selected should not contain any text and should be of good pixel quality. The image selected should align with the context of your event and the information already provided in the previous stages. We advise you to select a great background image. ',
+                //             fontSize: null,
+                //           ),
+                //           SizedBox(
+                //             height: 20,
+                //           ),
+                //           _displayPostImage(),
+                //           widget.imageUrl.isNotEmpty && widget.isEditting
+                //               ? Padding(
+                //                   padding: const EdgeInsets.only(top: 50.0),
+                //                   child: AlwaysWhiteButton(
+                //                       onPressed: _validate2,
+                //                       buttonText: "Next"),
+                //                 )
+                //               : Provider.of<UserData>(context, listen: false)
+                //                           .postImage ==
+                //                       null
+                //                   ? SizedBox.shrink()
+                //                   : Padding(
+                //                       padding: const EdgeInsets.only(top: 50.0),
+                //                       child: AlwaysWhiteButton(
+                //                           onPressed: _validate,
+                //                           buttonText: "Continue"),
+                //                     ),
+                //           SizedBox(
+                //             height: 70,
+                //           ),
+                //         ],
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 SingleChildScrollView(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -1231,10 +1675,31 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Row(
+                            children: [
+                              Text(
+                                '3. ',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 30,
+                                ),
+                              ),
+                              Text(
+                                'Category.',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                         DirectionWidget(
                           fontSize: null,
                           text:
-                              'Select an event type that matches the event you are creating. ',
+                              'Select an event category that matches the event you are creating. ',
                         ),
                         buildEventTypePicker(),
                       ],
@@ -1248,6 +1713,27 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Row(
+                            children: [
+                              Text(
+                                '4. ',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 30,
+                                ),
+                              ),
+                              Text(
+                                'Time',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                         DirectionWidget(
                           fontSize: null,
                           text:
@@ -1266,13 +1752,84 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Row(
+                            children: [
+                              Text(
+                                '5. ',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 30,
+                                ),
+                              ),
+                              Text(
+                                'Date.',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                         DirectionWidget(
                           fontSize: null,
-                          text:
-                              'Select the exact date of your event. You cannot select today\'s date. ',
+                          text: 'Select the exact date of your event. ',
                         ),
                         SizedBox(height: 20),
                         buildDatePicker(),
+                      ],
+                    ),
+                  ),
+                ),
+                SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Row(
+                            children: [
+                              Text(
+                                widget.isEditting ? '' : '6. ',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 30,
+                                ),
+                              ),
+                              Text(
+                                widget.isEditting ? '' : 'Closeing day.',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        widget.isEditting
+                            ? DirectionWidget(
+                                fontSize: null,
+                                text:
+                                    'Certiain information of an event cannot be modified once an event is created. Information such as date, time, category, flyer background, and event settings cannot be changed. ',
+                              )
+                            : DirectionWidget(
+                                fontSize: null,
+                                text:
+                                    'Choose a closing day for your event. This indicates the closing period of your event. For instance, if you pick three days, your event dashboard and flyer would be disabled three days after your event date specified previously. ',
+                              ),
+                        SizedBox(height: 20),
+                        widget.isEditting
+                            ? Center(
+                                child: AlwaysWhiteButton(
+                                    onPressed: _validate,
+                                    buttonText: "Start editing"),
+                              )
+                            : buildClosingDayPicker(),
                       ],
                     ),
                   ),
@@ -1289,7 +1846,29 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            _isLoading
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Row(
+                                children: [
+                                  Text(
+                                    '7. ',
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                      fontSize: 30,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Venue.',
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Provider.of<UserData>(context, listen: false)
+                                    .isLoading
                                 ? Padding(
                                     padding:
                                         const EdgeInsets.only(bottom: 10.0),
@@ -1330,7 +1909,9 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                     ? SizedBox.shrink()
                                     : DirectionWidget(
                                         fontSize: null,
-                                        text: widget.isVirtual || _isVirtual
+                                        text: Provider.of<UserData>(context,
+                                                    listen: false)
+                                                .bool2
                                             ? 'Enter the host link of the event. It will help other users virtually join the event if they are interested. '
                                             : 'Enter the address venue of the event. Make sure you select the correct address from the list suggested below. It will help other users navigate to the venue if they are interested. ',
                                       ),
@@ -1344,7 +1925,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                   fontWeight: FontWeight.bold),
                             ),
                             SizedBox(height: 10),
-                            widget.isVirtual || _isVirtual
+                            Provider.of<UserData>(context, listen: false).bool2
                                 ? ContentField(
                                     labelText: "Virtual venue",
                                     hintText: "Link to virtual event venue",
@@ -1396,31 +1977,30 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                             if (Provider.of<UserData>(context, listen: false)
                                     .addressSearchResults !=
                                 null)
-                              SizedBox(
+                              const SizedBox(
                                 height: 30,
                               ),
-                            widget.isVirtual || _isVirtual
+                            Provider.of<UserData>(context, listen: false).bool2
                                 ? SizedBox.shrink()
-                                : SizedBox.shrink(),
-                            Container(
-                              color: ConfigBloc().darkModeOn
-                                  ? Colors.white
-                                  : Colors.black,
-                              child: Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Text(
-                                    'Tap to below to select the venue\'s address',
-                                    style: TextStyle(
-                                      color: ConfigBloc().darkModeOn
-                                          ? Colors.black
-                                          : Colors.white,
+                                : Container(
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.white
+                                        : Colors.black,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Align(
+                                        alignment: Alignment.topLeft,
+                                        child: Text(
+                                          'Tap below to select the venue\'s address',
+                                          style: TextStyle(
+                                            color: ConfigBloc().darkModeOn
+                                                ? Colors.black
+                                                : Colors.white,
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ),
-                            ),
                             if (Provider.of<UserData>(
                                   context,
                                 ).addressSearchResults !=
@@ -1428,7 +2008,9 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                               Padding(
                                 padding: const EdgeInsets.only(top: 10.0),
                                 child: SingleChildScrollView(
-                                  child: widget.isVirtual || _isVirtual
+                                  child: Provider.of<UserData>(context,
+                                              listen: false)
+                                          .bool2
                                       ? SizedBox.shrink()
                                       : Column(
                                           children: [
@@ -1557,6 +2139,73 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                   ),
                 ),
                 SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Row(
+                            children: [
+                              Text(
+                                '8. ',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 30,
+                                ),
+                              ),
+                              Text(
+                                'People (Optional)',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        DirectionWidget(
+                          fontSize: null,
+                          text:
+                              'Enter the name of people participating in this event. Separate each name with a comma(,).\nExmaple: James,Edith',
+                        ),
+                        ContentField(
+                          labelText: "Name(s) of guests",
+                          hintText: 'Special Guests (optional)',
+                          initialValue:
+                              Provider.of<UserData>(context, listen: false)
+                                  .post11,
+                          onSavedText: (input) =>
+                              Provider.of<UserData>(context, listen: false)
+                                  .setPost11(input),
+                          onValidateText: (_) {},
+                        ),
+                        ContentField(
+                          labelText: "Name(s) of artists",
+                          hintText: 'Artist Performing (optional)',
+                          initialValue:
+                              Provider.of<UserData>(context, listen: false)
+                                  .post12,
+                          onSavedText: (input) =>
+                              Provider.of<UserData>(context, listen: false)
+                                  .setPost12(input),
+                          onValidateText: (_) {},
+                        ),
+                        SizedBox(height: 70),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 50),
+                          child: AlwaysWhiteButton(
+                              onPressed: _validate,
+                              buttonText:
+                                  widget.isEditting ? 'Next' : "Continue"),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SingleChildScrollView(
                   child: Container(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -1564,10 +2213,31 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Row(
+                              children: [
+                                Text(
+                                  '8. ',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontSize: 30,
+                                  ),
+                                ),
+                                Text(
+                                  'Flyer\nInformation.',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                           DirectionWidget(
                             fontSize: null,
                             text:
-                                'Provide the necessary information below correctly. The fields on this page cannot be empty. ',
+                                'Provide the required information below correctly. The fields on this page cannot be empty. ',
                           ),
                           ContentField(
                             labelText: 'Title',
@@ -1585,7 +2255,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                           ),
                           ContentField(
                             labelText: 'Theme',
-                            hintText: "Enter a theme of event",
+                            hintText: "Enter a theme for the event",
                             initialValue:
                                 Provider.of<UserData>(context, listen: false)
                                     .post2
@@ -1597,21 +2267,27 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                 ? "The theme is too short( > 10 characters)"
                                 : null,
                           ),
-                          ContentField(
-                            labelText: 'Rate',
-                            hintText:
-                                "currency - amount: example (\$: 00.0) or Free   ",
-                            initialValue:
-                                Provider.of<UserData>(context, listen: false)
-                                    .post3
-                                    .toString(),
-                            onSavedText: (input) =>
-                                Provider.of<UserData>(context, listen: false)
-                                    .setPost3(input),
-                            onValidateText: (input) => input.trim().length < 3
-                                ? "The price rate cannot be empty"
-                                : null,
-                          ),
+                          Provider.of<UserData>(context, listen: false).bool3
+                              ? const SizedBox.shrink()
+                              : ContentField(
+                                  labelText: 'Rate',
+                                  hintText:
+                                      "currency - amount: example (\$: 00.0) ",
+                                  initialValue: Provider.of<UserData>(context,
+                                          listen: false)
+                                      .post3
+                                      .toString(),
+                                  onSavedText: (input) => Provider.of<UserData>(
+                                          context,
+                                          listen: false)
+                                      .setPost3(input),
+                                  onValidateText: (input) => input
+                                              .trim()
+                                              .length <
+                                          3
+                                      ? "The price rate cannot be empty (input free)"
+                                      : null,
+                                ),
                           ContentField(
                             labelText: 'Host',
                             hintText: "Name of event host",
@@ -1629,33 +2305,70 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                           Provider.of<UserData>(context, listen: false)
                                   .post10
                                   .isEmpty
-                              ? ContentField(
-                                  labelText: 'Country',
-                                  hintText: "Country of event",
-                                  initialValue: Provider.of<UserData>(context,
-                                          listen: false)
-                                      .post4
-                                      .toString(),
-                                  onSavedText: (input) => Provider.of<UserData>(
-                                          context,
-                                          listen: false)
-                                      .setPost4(input),
-                                  onValidateText: (input) =>
-                                      input.trim().length < 1
-                                          ? "Enter the country of event"
-                                          : null,
-                                )
+                              ? Provider.of<UserData>(context, listen: false)
+                                      .bool2
+                                  ? SizedBox.shrink()
+                                  : ContentField(
+                                      labelText: 'Country',
+                                      hintText: "Country of event",
+                                      initialValue: Provider.of<UserData>(
+                                              context,
+                                              listen: false)
+                                          .post10
+                                          .toString(),
+                                      onSavedText: (input) =>
+                                          Provider.of<UserData>(context,
+                                                  listen: false)
+                                              .setPost10(input),
+                                      onValidateText: (input) =>
+                                          input.trim().length < 1
+                                              ? "Enter the country of event"
+                                              : null,
+                                    )
                               : SizedBox.shrink(),
-                          SizedBox(height: 70),
+                          const SizedBox(height: 70),
                           AlwaysWhiteButton(
                               onPressed: _validate,
                               buttonText:
                                   widget.isEditting ? 'Next' : "Continue"),
+                          const SizedBox(height: 70),
                         ],
                       ),
                     ),
                   ),
                 ),
+
+                // SingleChildScrollView(
+                //   child: Padding(
+                //     padding: const EdgeInsets.all(20.0),
+                //     child: Column(
+                //       mainAxisAlignment: MainAxisAlignment.center,
+                //       crossAxisAlignment: CrossAxisAlignment.center,
+                //       children: [
+                //         DirectionWidget(
+                //           fontSize: null,
+                //           text:
+                //               'You can provide the following information if available for your event. The information required on this page is optional. ',
+                //         ),
+                //         ContentField(
+                //           labelText: "Name(s) of artists",
+                //           hintText: 'Artist Performing (optional)',
+                //           initialValue: widget.artist,
+                //           onSavedText: (input) => widget.artist = input,
+                //           onValidateText: (_) {},
+                //         ),
+                //         SizedBox(height: 70),
+                //         Padding(
+                //           padding: const EdgeInsets.only(bottom: 50),
+                //           child: AlwaysWhiteButton(
+                //               onPressed: _validate,
+                //               buttonText:
+                //                   widget.isEditting ? 'Next' : "Continue"),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
                 SingleChildScrollView(
                   child: Padding(
                     padding: const EdgeInsets.all(20.0),
@@ -1663,6 +2376,27 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Row(
+                            children: [
+                              Text(
+                                '9. ',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 30,
+                                ),
+                              ),
+                              Text(
+                                'Flyer\nInformation.(optional)',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                         DirectionWidget(
                           fontSize: null,
                           text:
@@ -1670,63 +2404,49 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                         ),
                         ContentField(
                           labelText: "Name of Dj",
-                          hintText: 'Dj (optional)',
+                          hintText: 'Dj',
                           initialValue: widget.dj,
                           onSavedText: (input) => widget.dj = input,
                           onValidateText: (_) {},
                         ),
                         ContentField(
-                          labelText: "Name(s) of guests",
-                          hintText: 'Special Guests (optional)',
-                          initialValue: widget.guess,
-                          onSavedText: (input) => widget.guess = input,
-                          onValidateText: (_) {},
-                        ),
-                        ContentField(
-                          labelText: "Dress code for event",
-                          hintText: 'Dress code (optional)',
+                          labelText: "Dress code for the event",
+                          hintText: 'Dress code',
                           initialValue: widget.dressCode,
                           onSavedText: (input) => widget.dressCode = input,
                           onValidateText: (_) {},
                         ),
                         ContentField(
-                          labelText: "Name(s) of artists",
-                          hintText: 'Artist Performing (optional)',
-                          initialValue: widget.artist,
-                          onSavedText: (input) => widget.artist = input,
-                          onValidateText: (_) {},
-                        ),
-                        ContentField(
                           labelText: "Ticket site",
-                          hintText: 'Website to purchase ticket (optional)',
+                          hintText: 'Website to purchase ticket',
                           initialValue: widget.ticketSite,
                           onSavedText: (input) => widget.ticketSite = input,
                           onValidateText: (_) {},
                         ),
                         ContentField(
                           labelText: "Previous event",
-                          hintText:
-                              'Music video link of previous events (optional)',
+                          hintText: 'A Video link of the previous events',
                           initialValue: widget.previousEvent,
                           onSavedText: (input) => widget.previousEvent = input,
                           onValidateText: (input) =>
                               !musicVideoLink.hasMatch(input) &&
                                       input.trim().length > 1
-                                  ? "Enter a valid music video link"
+                                  ? "Enter a valid video link"
                                   : null,
                         ),
                         SizedBox(height: 70),
-                        _isLoading
+                        Provider.of<UserData>(context, listen: false).isLoading
                             ? SizedBox.shrink()
                             : Padding(
                                 padding: const EdgeInsets.only(bottom: 50),
                                 child: AvatarCircularButton(
-                                  buttonText:
-                                      widget.isEditting ? 'Save' : "Create",
-                                  onPressed: widget.isEditting
-                                      ? _submitEdit
-                                      : _submitCreate,
-                                ),
+                                    buttonText:
+                                        widget.isEditting ? 'Save' : "Create",
+                                    onPressed: () => widget.isEditting
+                                        ? _submitEdit()
+                                        : _showSelectImageDialog('create')
+                                    // _submitCreate,
+                                    ),
                               ),
                         widget.isEditting
                             ? Column(
@@ -1750,7 +2470,9 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                             color: ConfigBloc().darkModeOn
                                                 ? Colors.black
                                                 : Colors.white,
-                                            onPressed: _showSelectImageDialog),
+                                            onPressed: () {
+                                              _showSelectImageDialog('');
+                                            }),
                                       ),
                                     ),
                                   ),

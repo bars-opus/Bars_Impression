@@ -15,8 +15,12 @@ class EventInvite {
   final String inviteStatus;
   final String attendeeStatus;
   final String message;
-  final bool invited;
+  final String commonId;
+  final String personnelStatus;
+  final bool? invited;
+  final bool? validated;
   final Timestamp? timestamp;
+  final Timestamp? eventTimestamp;
 
   EventInvite({
     required this.id,
@@ -33,8 +37,12 @@ class EventInvite {
     required this.invited,
     required this.message,
     required this.inviteeName,
+    required this.validated,
     required this.attendeeStatus,
     required this.timestamp,
+    required this.personnelStatus,
+    required this.eventTimestamp,
+    required this.commonId,
   });
 
   factory EventInvite.fromDoc(DocumentSnapshot doc) {
@@ -42,6 +50,7 @@ class EventInvite {
       id: doc.id,
       eventId: doc['eventId'],
       authorId: doc['authorId'],
+      commonId: doc['commonId'],
       anttendeeName: doc['anttendeeName'],
       anttendeeprofileHandle: doc['anttendeeprofileHandle'],
       anttendeeprofileImageUrl: doc['anttendeeprofileImageUrl'],
@@ -52,9 +61,12 @@ class EventInvite {
       inviteeName: doc['inviteeName'] ?? '',
       requestNumber: doc['requestNumber'] ?? '',
       message: doc['message'] ?? '',
+      personnelStatus: doc['personnelStatus'] ?? '',
       eventImageUrl: doc['eventImageUrl'] ?? '',
       invited: doc['invited'] ?? false,
+      validated: doc['validated'] ?? false,
       timestamp: doc['timestamp'],
+      eventTimestamp: doc['eventTimestamp'],
     );
   }
 }

@@ -27,7 +27,6 @@ class ContentField extends StatelessWidget {
             textCapitalization: TextCapitalization.sentences,
             initialValue: initialValue,
             style: TextStyle(
-              fontSize: 16,
               color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
             ),
             decoration: InputDecoration(
@@ -35,8 +34,8 @@ class ContentField extends StatelessWidget {
                 hintStyle: TextStyle(fontSize: 12.0, color: Colors.grey),
                 labelText: labelText,
                 labelStyle: TextStyle(
-                  fontSize: 16.0,
                   fontWeight: FontWeight.bold,
+                  fontSize: 14.0,
                   color: Colors.grey,
                 ),
                 enabledBorder: new UnderlineInputBorder(

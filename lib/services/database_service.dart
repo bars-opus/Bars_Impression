@@ -54,6 +54,17 @@ class DatabaseService {
     return users;
   }
 
+  static Future<QuerySnapshot> searchAttendeeNumber(
+      String eventId, attendeeNumber) {
+    Future<QuerySnapshot> invite = eventInviteRef
+        .doc(eventId)
+        .collection('eventInvite')
+        .where('attendNumber', isGreaterThanOrEqualTo: attendeeNumber)
+        .limit(30)
+        .get();
+    return invite;
+  }
+
   static Future<QuerySnapshot> searchArtist(String name) {
     Future<QuerySnapshot> users =
         usersRef.where('userName', isEqualTo: name).get();
@@ -80,19 +91,6 @@ class DatabaseService {
         .snapshots()
         .map((documentSnapshot) => documentSnapshot.docs.length);
   }
-
-  // static Future<List<AccountHolder>> getAllUsers(
-  //   String userId,
-  // ) async {
-  //   final userSnapShot = await usersRef
-  //       .where('profileHandle!', isNotEqualTo: 'Fan')
-  //       .limit(50)
-  //       .get();
-  //   List<AccountHolder> accountHolder =
-  //       userSnapShot.docs.map((doc) => AccountHolder.fromDoc(doc)).toList();
-
-  //   return accountHolder;
-  // }
 
   static void addChatActivityItem({
     required String currentUserId,
@@ -203,18 +201,34 @@ class DatabaseService {
         .map((documentSnapshot) => documentSnapshot.docs.length);
   }
 
+  static Stream<int> numChatsMessages(
+    String currentUserId,
+    String userId,
+  ) {
+    return usersRef
+        .doc(userId)
+        .collection('chats')
+        .doc(currentUserId)
+        .collection('chatMessage')
+        .snapshots()
+        .map((documentSnapshot) => documentSnapshot.docs.length);
+  }
+
   static void firstChatMessage(
       {required String currentUserId,
       required String userId,
       // required Chat chat,
-      required String MediaType,
+      required String mediaType,
       required String replyingMessage,
       required String replyingAuthor,
-      required String imageUrl,
+      required String mediaUrl,
+      required String sendContentId,
+      required String sendPostType,
       required String messageInitiator,
       required bool restrictChat,
       required String message,
       required String liked,
+      required String sendContentTitle,
       required String reportConfirmed}) {
     String messageId = Uuid().v4();
     usersRef
@@ -229,7 +243,11 @@ class DatabaseService {
       'content': message,
       'replyingMessage': replyingMessage,
       'replyingAuthor': replyingAuthor,
-      'imageUrl': imageUrl,
+      'mediaUrl': mediaUrl,
+      'mediaType': '',
+      'sendContentId': sendContentId,
+      'sendPostType': sendPostType,
+      'sendContentTitle': sendContentTitle,
       'report': '',
       'liked': false,
       'reportConfirmed': reportConfirmed,
@@ -241,7 +259,7 @@ class DatabaseService {
         'messageInitiator': messageInitiator,
         'restrictChat': restrictChat,
         'firstMessage': message,
-        'MediaType': MediaType,
+        'mediaType': mediaType,
         'timestamp': Timestamp.fromDate(DateTime.now()),
         'seen': 'seen',
         'fromUserId': currentUserId,
@@ -262,7 +280,11 @@ class DatabaseService {
       'content': message,
       'replyingMessage': replyingMessage,
       'replyingAuthor': replyingAuthor,
-      'imageUrl': imageUrl,
+      'mediaUrl': mediaUrl,
+      'mediaType': '',
+      'sendContentId': sendContentId,
+      'sendPostType': sendPostType,
+      'sendContentTitle': sendContentTitle,
       'report': '',
       'liked': false,
       'reportConfirmed': reportConfirmed,
@@ -274,7 +296,7 @@ class DatabaseService {
         'messageInitiator': messageInitiator,
         'restrictChat': restrictChat,
         'firstMessage': message,
-        'MediaType': MediaType,
+        'mediaType': mediaType,
         'timestamp': Timestamp.fromDate(DateTime.now()),
         'seen': ' ',
         'fromUserId': currentUserId,
@@ -292,9 +314,12 @@ class DatabaseService {
       // required Chat chat,
       required String replyingMessage,
       required String replyingAuthor,
-      required String imageUrl,
+      required String mediaUrl,
+      required String sendContentId,
+      required String sendPostType,
       required String message,
-      required String MediaType,
+      required String sendContentTitle,
+      required String mediaType,
       required String liked,
       required String reportConfirmed}) {
     String messageId = Uuid().v4();
@@ -310,7 +335,11 @@ class DatabaseService {
       'content': message,
       'replyingMessage': replyingMessage,
       'replyingAuthor': replyingAuthor,
-      'imageUrl': imageUrl,
+      'mediaUrl': mediaUrl,
+      'sendContentId': sendContentId,
+      'sendContentTitle': sendContentTitle,
+      'mediaType': '',
+      'sendPostType': sendPostType,
       'report': '',
       'liked': false,
       'reportConfirmed': reportConfirmed,
@@ -320,7 +349,7 @@ class DatabaseService {
       usersRef.doc(currentUserId).collection('chats').doc(userId).update({
         'lastMessage': message,
         'seen': 'seen',
-        'MediaType': MediaType,
+        'MediaType': mediaType,
         'newMessageTimestamp': Timestamp.fromDate(DateTime.now()),
       });
     });
@@ -337,7 +366,11 @@ class DatabaseService {
       'content': message,
       'replyingMessage': replyingMessage,
       'replyingAuthor': replyingAuthor,
-      'imageUrl': imageUrl,
+      'mediaUrl': mediaUrl,
+      'sendContentId': sendContentId,
+      'mediaType': '',
+      'sendPostType': sendPostType,
+      'sendContentTitle': sendContentTitle,
       'report': '',
       'liked': false,
       'reportConfirmed': reportConfirmed,
@@ -346,7 +379,7 @@ class DatabaseService {
     }).then((value) {
       usersRef.doc(userId).collection('chats').doc(currentUserId).update({
         'lastMessage': message,
-        'MediaType': MediaType,
+        'MediaType': mediaType,
         'seen': ' ',
         'newMessageTimestamp': Timestamp.fromDate(DateTime.now()),
       });
@@ -381,6 +414,10 @@ class DatabaseService {
       'reportConfirmed': post.reportConfirmed,
       'disLikeCount': post.disLikeCount,
       'authorId': post.authorId,
+      'peopleTagged': post.peopleTagged,
+      'disbleSharing': post.disbleSharing,
+      'disableReaction': post.disableReaction,
+      'disableVibe': post.disableVibe,
       'timestamp': post.timestamp,
     });
   }
@@ -397,6 +434,10 @@ class DatabaseService {
       'likeCount': post.likeCount,
       'disLikeCount': post.disLikeCount,
       'authorId': post.authorId,
+      'peopleTagged': post.peopleTagged,
+      'disbleSharing': post.disbleSharing,
+      'disableReaction': post.disableReaction,
+      'disableVibe': post.disableVibe,
       'timestamp': post.timestamp,
     });
   }
@@ -429,6 +470,11 @@ class DatabaseService {
       'isVirtual': event.isVirtual,
       'isPrivate': event.isPrivate,
       'blurHash': event.blurHash,
+      'isFree': event.isFree,
+      'isCashPayment': event.isCashPayment,
+      'showToFollowers': event.showToFollowers,
+      'showOnExplorePage': event.showOnExplorePage,
+      'clossingDay': event.clossingDay,
     });
   }
 
@@ -438,28 +484,30 @@ class DatabaseService {
         .collection('userEvents')
         .doc(event.id)
         .update({
-      'imageUrl': event.imageUrl,
+      // 'imageUrl': event.imageUrl,
       'title': event.title,
-      'type': event.type,
+      // 'type': event.type,
       'rate': event.rate,
       'venue': event.venue,
       'theme': event.theme,
-      'date': event.date,
+      // 'date': event.date,
       'dressCode': event.dressCode,
-      'time': event.time,
+      // 'time': event.time,
       'dj': event.dj,
       'guess': event.guess,
       'host': event.host,
       'artist': event.artist,
-      'authorId': event.authorId,
-      'timestamp': event.timestamp,
+      // 'authorId': event.authorId,
+      // 'timestamp': event.timestamp,
       'previousEvent': event.previousEvent,
+      'clossingDay': event.clossingDay,
+
       'triller': event.triller,
-      'isVirtual': event.isVirtual,
+      // 'isVirtual': event.isVirtual,
       'city': event.city,
       'country': event.country,
-      'virtualVenue': event.virtualVenue,
-      'isPrivate': event.isPrivate,
+      // 'virtualVenue': event.virtualVenue,
+      // 'isPrivate': event.isPrivate,
       'ticketSite': event.ticketSite,
       'blurHash': event.blurHash,
     });
@@ -468,11 +516,13 @@ class DatabaseService {
   static void createForum(Forum forum) {
     forumsRef.doc(forum.authorId).collection('userForums').add({
       'title': forum.title,
+      'isPrivate': forum.isPrivate,
       'subTitle': forum.subTitle,
       'authorId': forum.authorId,
       'report': forum.report,
       'reportConfirmed': forum.reportConfirmed,
       'timestamp': forum.timestamp,
+      'linkedContentId': forum.linkedContentId
     });
   }
 
@@ -483,9 +533,11 @@ class DatabaseService {
         .doc(forum.id)
         .update({
       'title': forum.title,
+      'isPrivate': forum.isPrivate,
       'subTitle': forum.subTitle,
       'authorId': forum.authorId,
       'timestamp': forum.timestamp,
+      'linkedContentId': forum.linkedContentId
     });
   }
 
@@ -642,18 +694,6 @@ class DatabaseService {
     required Event event,
     required String photoId,
   }) async {
-    // Remove user from current user's following collection
-    eventsRef
-        .doc(currentUserId)
-        .collection('userEvents')
-        .doc(event.id)
-        .get()
-        .then((doc) {
-      if (doc.exists) {
-        doc.reference.delete();
-      }
-    });
-    // delete activity image
     QuerySnapshot activitySnapShot = await activitiesEventRef
         .doc(currentUserId)
         .collection('userActivitiesEvent')
@@ -666,7 +706,6 @@ class DatabaseService {
       }
     });
 
-    // delet event asks
     QuerySnapshot asksSnapShot =
         await asksRef.doc(event.id).collection('eventAsks').get();
     asksSnapShot.docs.forEach((doc) {
@@ -674,6 +713,32 @@ class DatabaseService {
         doc.reference.delete();
       }
     });
+
+    // userInviteRef.doc(user.id).collection('eventInvite').doc(event.id)
+    await eventInviteRef
+        .doc(event.id)
+        .collection('eventInvite')
+        .doc(currentUserId)
+        .get();
+    activitySnapShot.docs.forEach((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+
+    eventsRef
+        .doc(currentUserId)
+        .collection('userEvents')
+        .doc(event.id)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+    // delete activity
+
+    // delet event asks
   }
 
   static void followUser(
@@ -797,12 +862,6 @@ class DatabaseService {
         .set({
       'uid': currentUserId,
     });
-
-    // addUserBlockedItem(
-    //   currentUserId: currentUserId,
-    //   userId: userId,
-    // );
-    // //Add current user to user's followers collection
   }
 
   static Future<bool> isBlockedUser(
@@ -839,19 +898,6 @@ class DatabaseService {
       }
     });
   }
-
-  // static void addUserBlockedItem({
-  //   required String currentUserId,
-  //   required String userId,
-  // }) {
-  //   if (currentUserId != userId) {
-  //     userBlockedRef.doc(userId).collection('userBlocked').add({
-  //       'fromUserId': currentUserId,
-  //       'blockedUserId': userId,
-  //       'timestamp': Timestamp.fromDate(DateTime.now()),
-  //     });
-  //   }
-  // }
 
   static void possitivelyRateUser(
       {required String currentUserId, required String userId}) {
@@ -1142,51 +1188,117 @@ class DatabaseService {
       return AccountHolder.fromDoc(userDocSnapshot);
     }
     return AccountHolder(
-        disabledAccount: null,
-        androidNotificationToken: '',
-        continent: '',
-        hideUploads: null,
-        favouriteSong: '',
-        name: '',
-        mail: '',
-        noBooking: null,
-        hideAdvice: null,
-        enableBookingOnChat: null,
-        email: '',
-        disableChat: null,
-        disableAdvice: null,
-        favouritePunchline: '',
-        otherSites1: '',
-        management: '',
-        otherSites2: '',
-        performances: '',
-        collaborations: '',
-        favouriteAlbum: '',
-        country: '',
-        favouriteArtist: '',
-        company: '',
-        bio: '',
-        awards: '',
-        city: '',
-        id: '',
-        contacts: '',
-        professionalPicture1: '',
-        professionalPicture2: '',
-        professionalPicture3: '',
-        profileImageUrl: '',
-        userName: '',
-        score: null,
-        privateAccount: null,
-        skills: '',
-        verified: '',
-        report: '',
-        reportConfirmed: '',
-        website: '',
-        profileHandle: '',
-        timestamp: null);
+      disabledAccount: null,
+      androidNotificationToken: '',
+      continent: '',
+      hideUploads: null,
+      favouriteSong: '',
+      name: '',
+      mail: '',
+      noBooking: null,
+      hideAdvice: null,
+      enableBookingOnChat: null,
+      email: '',
+      disableChat: null,
+      disableAdvice: null,
+      favouritePunchline: '',
+      otherSites1: '',
+      management: '',
+      otherSites2: '',
+      performances: '',
+      collaborations: '',
+      favouriteAlbum: '',
+      country: '',
+      favouriteArtist: '',
+      company: '',
+      bio: '',
+      awards: '',
+      city: '',
+      id: '',
+      contacts: '',
+      professionalPicture1: '',
+      professionalPicture2: '',
+      professionalPicture3: '',
+      profileImageUrl: '',
+      userName: '',
+      score: null,
+      privateAccount: null,
+      skills: '',
+      verified: '',
+      report: '',
+      reportConfirmed: '',
+      website: '',
+      profileHandle: '',
+      timestamp: Timestamp.fromDate(DateTime.now()),
+      disableContentSharing: null,
+      disableMoodPunchReaction: null,
+      disableMoodPunchVibe: null,
+      dontShowContentOnExplorePage: null,
+      specialtyTags: '',
+      professionalVideo1: '',
+      professionalVideo2: '',
+      professionalVideo3: '',
+      blurHash: '',
+      genreTags: '',
+    );
   }
 
-  static Future<Event> getEventWithId(EventInvite invite) async {
+  static Future<ActivityEvent> getEventInviteAcivityWithId(
+      String commonId, String userId) async {
+    await activitiesEventRef
+        .doc(userId)
+        .collection('userActivitiesEvent')
+        .where('commonId', isEqualTo: commonId)
+        .get();
+
+    return ActivityEvent(
+        ask: '',
+        eventId: '',
+        eventImageUrl: '',
+        eventInviteType: '',
+        eventTitle: '',
+        fromUserId: '',
+        id: '',
+        seen: '',
+        timestamp: null,
+        commonId: '',
+        toUserId: '');
+  }
+
+  static Future<EventInvite> getEventInviteWithId(
+      String eventId, String userId) async {
+    DocumentSnapshot userDocSnapshot = await eventInviteRef
+        .doc(eventId)
+        .collection('eventInvite')
+        .doc(userId)
+        .get();
+    if (userDocSnapshot.exists) {
+      return EventInvite.fromDoc(userDocSnapshot);
+    }
+    return EventInvite(
+        anttendeeId: '',
+        anttendeeName: '',
+        anttendeeprofileHandle: '',
+        anttendeeprofileImageUrl: '',
+        attendeeStatus: '',
+        attendNumber: '',
+        authorId: '',
+        eventId: '',
+        eventImageUrl: '',
+        eventTimestamp: null,
+        id: '',
+        invited: null,
+        inviteeName: '',
+        inviteStatus: '',
+        message: '',
+        requestNumber: '',
+        timestamp: null,
+        commonId: '',
+        validated: false,
+        personnelStatus: '');
+  }
+
+  static Future<Event> getInviteEventWithId(EventInvite invite) async {
     DocumentSnapshot userDocSnapshot = await eventsRef
         .doc(invite.authorId)
         .collection('userEvents')
@@ -1196,6 +1308,7 @@ class DatabaseService {
       return Event.fromDoc(userDocSnapshot);
     }
     return Event(
+        isFree: false,
         country: '',
         city: '',
         id: '',
@@ -1222,7 +1335,51 @@ class DatabaseService {
         triller: '',
         type: '',
         venue: '',
-        virtualVenue: '');
+        virtualVenue: '',
+        isCashPayment: false,
+        showOnExplorePage: false,
+        showToFollowers: false,
+        clossingDay: '');
+  }
+
+  static Future<Event> getEventWithId(String eventId) async {
+    DocumentSnapshot userDocSnapshot = await allEventsRef.doc(eventId).get();
+    if (userDocSnapshot.exists) {
+      return Event.fromDoc(userDocSnapshot);
+    }
+    return Event(
+        isFree: false,
+        country: '',
+        city: '',
+        id: '',
+        report: '',
+        reportConfirmed: '',
+        timestamp: null,
+        artist: '',
+        authorId: '',
+        blurHash: '',
+        date: '',
+        dj: '',
+        dressCode: '',
+        guess: '',
+        host: '',
+        imageUrl: '',
+        isPrivate: false,
+        isVirtual: false,
+        previousEvent: '',
+        rate: '',
+        theme: '',
+        ticketSite: '',
+        time: '',
+        title: '',
+        triller: '',
+        type: '',
+        venue: '',
+        virtualVenue: '',
+        isCashPayment: false,
+        showOnExplorePage: false,
+        showToFollowers: false,
+        clossingDay: '');
   }
 
   static Future<Verification> getVerificationUser(String? userId) async {
@@ -1247,6 +1404,50 @@ class DatabaseService {
       userId: '',
       wikipedia: '',
       timestamp: null,
+    );
+  }
+
+  static Future<Forum> getForumWithId(String forumId) async {
+    DocumentSnapshot userDocSnapshot = await allForumsRef.doc(forumId).get();
+    if (userDocSnapshot.exists) {
+      return Forum.fromDoc(userDocSnapshot);
+    }
+    return Forum(
+        authorId: '',
+        id: '',
+        isPrivate: false,
+        report: '',
+        reportConfirmed: '',
+        subTitle: '',
+        timestamp: null,
+        title: '',
+        linkedContentId: '');
+  }
+
+  static Future<Post> getPostWithId(String postId) async {
+    DocumentSnapshot userDocSnapshot = await allPostsRef.doc(postId).get();
+    if (userDocSnapshot.exists) {
+      return Post.fromDoc(userDocSnapshot);
+    }
+    return Post(
+      authorId: '',
+      id: '',
+      report: '',
+      reportConfirmed: '',
+      timestamp: null,
+      artist: '',
+      blurHash: '',
+      caption: '',
+      disableReaction: false,
+      disableVibe: false,
+      disbleSharing: false,
+      disLikeCount: 0,
+      hashTag: '',
+      imageUrl: '',
+      likeCount: 0,
+      musicLink: '',
+      peopleTagged: '',
+      punch: '',
     );
   }
 
@@ -1539,21 +1740,22 @@ class DatabaseService {
         .map((documentSnapshot) => documentSnapshot.docs.length);
   }
 
-  // static Stream<int> numEventAttendeeAccepted(String eventId) {
-  //   return eventInviteRef
-  //       .doc(eventId)
-  //       .collection('eventInvite')
-  //       .where('inviteStatus', isEqualTo: 'Accepted')
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
-
   static Stream<int> numEventAttendee(String eventId, String from) {
     return eventInviteRef
         .doc(eventId)
         .collection('eventInvite')
         .where('attendeeStatus', isEqualTo: from)
         .where('invited', isEqualTo: false)
+        .snapshots()
+        .map((documentSnapshot) => documentSnapshot.docs.length);
+  }
+
+  static Stream<int> numEventAttendeeValidate(String eventId, String from) {
+    return eventInviteRef
+        .doc(eventId)
+        .collection('eventInvite')
+        .where('attendeeStatus', isEqualTo: from)
+        .where('validated', isEqualTo: true)
         .snapshots()
         .map((documentSnapshot) => documentSnapshot.docs.length);
   }
@@ -1568,15 +1770,6 @@ class DatabaseService {
         .map((documentSnapshot) => documentSnapshot.docs.length);
   }
 
-  // static Stream<int> numEventAttendeeRequestString eventId) {
-  //   return eventInviteRef
-  //       .doc(eventId)
-  //       .collection('eventInvite')
-  //       .where('inviteStatus', isEqualTo: '')
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
-
   static Future<EventInvite> getEventAttendeee(
       Event event, String? userId) async {
     DocumentSnapshot userDocSnapshot = await eventInviteRef
@@ -1590,7 +1783,7 @@ class DatabaseService {
     return EventInvite(
       inviteeName: '',
       message: '',
-      invited: false,
+      invited: null,
       timestamp: null,
       attendeeStatus: '',
       anttendeeId: '',
@@ -1604,6 +1797,10 @@ class DatabaseService {
       id: '',
       requestNumber: '',
       inviteStatus: '',
+      eventTimestamp: null,
+      commonId: '',
+      validated: null,
+      personnelStatus: '',
     );
   }
 
@@ -1612,16 +1809,23 @@ class DatabaseService {
     required AccountHolder user,
     required String requestNumber,
     required String message,
+    required DateTime eventDate,
+    required String currentUserId,
   }) {
+    String commonId = Uuid().v4();
+
     eventInviteRef.doc(event.id).collection('eventInvite').doc(user.id).set({
       'eventId': event.id,
       'inviteeName': '',
+      'commonId': commonId,
       'requestNumber': requestNumber,
       'attendNumber': '',
       'anttendeeId': user.id,
       'message': message,
       'inviteStatus': '',
+      'personnelStatus': '',
       'invited': false,
+      'validated': false,
       'attendeeStatus': '',
       'anttendeeName': user.userName,
       'anttendeeprofileHandle': user.profileHandle,
@@ -1629,17 +1833,21 @@ class DatabaseService {
       'eventImageUrl': event.imageUrl,
       'authorId': event.authorId,
       'timestamp': Timestamp.fromDate(DateTime.now()),
+      'eventTimestamp': eventDate,
     });
 
     userInviteRef.doc(user.id).collection('eventInvite').doc(event.id).set({
       'eventId': event.id,
       'requestNumber': requestNumber,
+      'commonId': commonId,
       'attendNumber': '',
       'inviteeName': '',
       'anttendeeId': user.id,
       'message': message,
       'inviteStatus': '',
+      'personnelStatus': '',
       'invited': false,
+      'validated': false,
       'attendeeStatus': '',
       'anttendeeName': user.userName,
       'anttendeeprofileHandle': user.profileHandle,
@@ -1647,9 +1855,34 @@ class DatabaseService {
       'eventImageUrl': event.imageUrl,
       'authorId': event.authorId,
       'timestamp': Timestamp.fromDate(DateTime.now()),
+      'eventTimestamp': eventDate,
     });
+    !event.isPrivate
+        ? activitiesEventRef
+            .doc(event.id)
+            .collection('userActivitiesEvent')
+            .doc(commonId)
+            .set({
+            'toUserId': currentUserId,
+            'fromUserId': currentUserId,
+            'eventId': event.id,
+            'eventInviteType': 'AttendRequest',
+            'seen': '',
+            'eventImageUrl': event.imageUrl,
+            'eventTitle': event.title,
+            'commonId': commonId,
+            'ask': '',
+            'timestamp': Timestamp.fromDate(DateTime.now()),
+          })
 
-    // addActivityEventItem(currentUserId: currentUserId, event: event, ask: ask);
+        // addActivityEventItem(
+        //     currentUserId: user.id!,
+        //     event: event,
+        //     ask: '',
+        //     eventInviteType: 'AttendRequest',
+        //     commonId: commonId,
+        //   )
+        : () {};
   }
 
   static void sendEventInvite({
@@ -1657,34 +1890,42 @@ class DatabaseService {
     required AccountHolder user,
     required String requestNumber,
     required String message,
+    required DateTime eventDate,
+    required String currentUserId,
   }) {
-    userInviteRef.doc(user.id).collection('eventInvite').doc(event.id).set({
-      'eventId': event.id,
-      'requestNumber': requestNumber,
-      'attendNumber': '',
-      'anttendeeId': user.id,
-      'message': message,
-      'inviteStatus': '',
-      'inviteeName': user.userName,
-      'invited': true,
-      'attendeeStatus': '',
-      'anttendeeName': user.userName,
-      'anttendeeprofileHandle': user.profileHandle,
-      'anttendeeprofileImageUrl': user.profileImageUrl,
-      'eventImageUrl': event.imageUrl,
-      'authorId': event.authorId,
-      'timestamp': Timestamp.fromDate(DateTime.now()),
-    });
+    String commonId = Uuid().v4();
+    // userInviteRef.doc(user.id).collection('eventInvite').doc(event.id).set({
+    //   'eventId': event.id,
+    //   'requestNumber': requestNumber,
+    //   'commonId': commonId,
+    //   'attendNumber': '',
+    //   'anttendeeId': user.id,
+    //   'message': message,
+    //   'inviteStatus': '',
+    //   'inviteeName': '',
+    //   'invited': true,
+    //   'attendeeStatus': '',
+    //   'anttendeeName': user.userName,
+    //   'anttendeeprofileHandle': user.profileHandle,
+    //   'anttendeeprofileImageUrl': user.profileImageUrl,
+    //   'eventImageUrl': event.imageUrl,
+    //   'authorId': event.authorId,
+    //   'timestamp': Timestamp.fromDate(DateTime.now()),
+    //   'eventTimestamp': eventDate,
+    // });
 
     eventInviteRef.doc(event.id).collection('eventInvite').doc(user.id).set({
       'eventId': event.id,
       'requestNumber': requestNumber,
       'attendNumber': '',
+      'commonId': commonId,
       'anttendeeId': user.id,
       'message': message,
       'inviteStatus': '',
+      'personnelStatus': '',
       'inviteeName': user.userName,
       'invited': true,
+      'validated': false,
       'attendeeStatus': '',
       'anttendeeName': user.userName,
       'anttendeeprofileHandle': user.profileHandle,
@@ -1692,8 +1933,109 @@ class DatabaseService {
       'eventImageUrl': event.imageUrl,
       'authorId': event.authorId,
       'timestamp': Timestamp.fromDate(DateTime.now()),
+      'eventTimestamp': eventDate,
     });
+
+    activitiesEventRef
+        .doc(user.id)
+        .collection('userActivitiesEvent')
+        .doc(commonId)
+        .set({
+      'toUserId': user.id,
+      'fromUserId': currentUserId,
+      'eventId': event.id,
+      'eventInviteType': 'Invitation',
+      'seen': '',
+      'eventImageUrl': event.imageUrl,
+      'eventTitle': event.title,
+      'commonId': commonId,
+      'ask': '',
+      'timestamp': Timestamp.fromDate(DateTime.now()),
+    });
+
     // addActivityEventItem(currentUserId: currentUserId, event: event, ask: ask);
+  }
+
+  static void addEventInviteToAttending({
+    required Event event,
+    required AccountHolder user,
+    required String requestNumber,
+    required String message,
+    required DateTime eventDate,
+    required String currentUserId,
+    required String answer,
+    required EventInvite eventInvite,
+    required String attendeeNumber,
+  }) {
+    String commonId = Uuid().v4();
+
+    userInviteRef.doc(user.id).collection('eventInvite').doc(event.id).set({
+      'eventId': event.id,
+      'requestNumber': requestNumber,
+      'commonId': commonId,
+      'attendNumber': attendeeNumber,
+      'anttendeeId': user.id,
+      'message': message,
+      'inviteStatus': '',
+      'personnelStatus': '',
+      'inviteeName': '',
+      'invited': true,
+      'validated': false,
+      'attendeeStatus': '',
+      'anttendeeName': user.userName,
+      'anttendeeprofileHandle': user.profileHandle,
+      'anttendeeprofileImageUrl': user.profileImageUrl,
+      'eventImageUrl': event.imageUrl,
+      'authorId': event.authorId,
+      'timestamp': Timestamp.fromDate(DateTime.now()),
+      'eventTimestamp': eventDate,
+    });
+
+    eventInviteRef.doc(event.id).collection('eventInvite').doc(user.id).update({
+      'attendeeStatus': 'Accepted',
+      'inviteStatus': 'Accepted',
+      'attendNumber': attendeeNumber,
+    });
+
+    activitiesEventRef
+        .doc(user.id)
+        .collection('userActivitiesEvent')
+        .doc(eventInvite.commonId)
+        .update({
+      'seen': 'seen',
+      'timestamp': Timestamp.fromDate(DateTime.now()),
+    });
+    // activitiesEventRef
+    //     .doc(event.authorId)
+    //     .collection('userActivitiesEvent')
+    //     .doc(commonId)
+    //     .set({
+    //   'toUserId': currentUserId,
+    //   'fromUserId': currentUserId,
+    //   'eventId': event.id,
+    //   'eventInviteType': 'Invitation',
+    //   'seen': '',
+    //   'eventImageUrl': event.imageUrl,
+    //   'eventTitle': event.title,
+    //   'commonId': commonId,
+    //   'ask': '',
+    //   'timestamp': Timestamp.fromDate(DateTime.now()),
+    // });
+  }
+
+  static void deleteUnAvailableEvent({
+    required EventInvite eventInvite,
+  }) {
+    userInviteRef
+        .doc(eventInvite.anttendeeId)
+        .collection('eventInvite')
+        .doc(eventInvite.eventId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
   }
 
   static void cancelInvite({
@@ -1721,20 +2063,31 @@ class DatabaseService {
       }
     });
 
+    activitiesEventRef
+        .doc(eventInvite.anttendeeId)
+        .collection('userActivitiesEvent')
+        .doc(eventInvite.commonId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+
     // addActivityEventItem(currentUserId: currentUserId, event: event, ask: ask);
   }
 
-  static void answerEventAttendee({
-    required EventInvite eventInvite,
-    required String answer,
-  }) {
+  static void answerEventAttendeeReques(
+      {required EventInvite eventInvite,
+      required String answer,
+      required String attendNumber}) {
     eventInviteRef
         .doc(eventInvite.eventId)
         .collection('eventInvite')
         .doc(eventInvite.anttendeeId)
         .update({
       'attendeeStatus': answer,
-      'timestamp': Timestamp.fromDate(DateTime.now()),
+      'attendNumber': attendNumber,
     });
 
     userInviteRef
@@ -1743,11 +2096,38 @@ class DatabaseService {
         .doc(eventInvite.eventId)
         .update({
       'attendeeStatus': answer,
+      'attendNumber': attendNumber,
       'timestamp': Timestamp.fromDate(DateTime.now()),
     });
 
     // addActivityEventItem(currentUserId: currentUserId, event: event, ask: ask);
   }
+
+  static void validateEventAttendee({
+    required EventInvite eventInvite,
+    required bool validate,
+  }) {
+    eventInviteRef
+        .doc(eventInvite.eventId)
+        .collection('eventInvite')
+        .doc(eventInvite.anttendeeId)
+        .update({
+      'validated': validate,
+    });
+
+    userInviteRef
+        .doc(eventInvite.anttendeeId)
+        .collection('eventInvite')
+        .doc(eventInvite.eventId)
+        .update({
+      'validated': validate,
+    });
+
+    // addActivityEventItem(currentUserId: currentUserId, event: event, ask: ask);
+  }
+
+  // addActivityEventItem(currentUserId: currentUserId, event: event, ask: ask);
+  // }
 
   static void askAboutEvent(
       {required String currentUserId,
@@ -1761,7 +2141,14 @@ class DatabaseService {
       'authorId': currentUserId,
       'timestamp': Timestamp.fromDate(DateTime.now()),
     });
-    addActivityEventItem(currentUserId: currentUserId, event: event, ask: ask);
+    String commonId = Uuid().v4();
+    addActivityEventItem(
+      currentUserId: currentUserId,
+      event: event,
+      ask: ask,
+      eventInviteType: '',
+      commonId: commonId,
+    );
   }
 
   static Stream<int> numAsks(String eventId) {
@@ -1973,20 +2360,26 @@ class DatabaseService {
     return Forum.fromDoc(forumDocSnapshot);
   }
 
-  static void addActivityEventItem(
-      {required String currentUserId,
-      required Event event,
-      required String ask}) {
+  static void addActivityEventItem({
+    required String currentUserId,
+    required Event event,
+    required String ask,
+    required String commonId,
+    required String eventInviteType,
+  }) {
     if (currentUserId != event.authorId) {
       activitiesEventRef
           .doc(event.authorId)
           .collection('userActivitiesEvent')
-          .add({
+          .doc(commonId)
+          .set({
         'fromUserId': currentUserId,
         'eventId': event.id,
+        'eventInviteType': eventInviteType,
         'seen': '',
         'eventImageUrl': event.imageUrl,
         'eventTitle': event.title,
+        'commonId': commonId,
         'ask': ask,
         'timestamp': Timestamp.fromDate(DateTime.now()),
       });
@@ -2004,6 +2397,7 @@ class DatabaseService {
       'seen': activityEvent.seen,
       'eventImageUrl': activityEvent.eventImageUrl,
       'eventTitle': activityEvent.eventTitle,
+      'commonId': activityEvent.commonId,
       'ask': activityEvent.ask,
       'timestamp': activityEvent.timestamp,
     });
@@ -2014,6 +2408,26 @@ class DatabaseService {
         .doc(userId)
         .collection('userActivitiesEvent')
         .where('seen', isEqualTo: '')
+        .snapshots()
+        .map((documentSnapshot) => documentSnapshot.docs.length);
+  }
+
+  static Stream<int> numSpecificEventActivities(String userId, String eventId) {
+    return activitiesEventRef
+        .doc(userId)
+        .collection('userActivitiesEvent')
+        .where('seen', isEqualTo: '')
+        .where('eventId', isEqualTo: eventId)
+        .snapshots()
+        .map((documentSnapshot) => documentSnapshot.docs.length);
+  }
+
+  static Stream<int> numEventInviteActivities(String userId) {
+    return activitiesEventRef
+        .doc(userId)
+        .collection('userActivitiesEvent')
+        .where('seen', isEqualTo: '')
+        .where('ask', isEqualTo: '')
         .snapshots()
         .map((documentSnapshot) => documentSnapshot.docs.length);
   }

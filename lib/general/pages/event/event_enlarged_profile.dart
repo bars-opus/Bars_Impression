@@ -47,23 +47,30 @@ class _AllEvenEnlargedProfileState extends State<AllEvenEnlargedProfile> {
     );
   }
 
-  Future<void> _generatePalette2(
-    context,
-  ) async {
+  Future<void> _generatePalette2(context, String from) async {
     PaletteGenerator _paletteGenerator =
         await PaletteGenerator.fromImageProvider(
       CachedNetworkImageProvider(widget.event.imageUrl),
       size: Size(1110, 150),
       maximumColorCount: 20,
     );
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (_) => EventCalender(
-                event: widget.event,
-                palette: _paletteGenerator,
-              )),
-    );
+    from.startsWith('People')
+        ? Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => EventPeople(
+                      event: widget.event,
+                      palette: _paletteGenerator,
+                    )),
+          )
+        : Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => EventCalender(
+                      event: widget.event,
+                      palette: _paletteGenerator,
+                    )),
+          );
   }
 
   @override
@@ -93,7 +100,9 @@ class _AllEvenEnlargedProfileState extends State<AllEvenEnlargedProfile> {
           child: Stack(
             children: [
               EventEnlargedWidget(
-                onPressedAttend: () => _generatePalette(context),
+                onPressedAttend: () => _generatePalette(
+                  context,
+                ),
                 closeHero: 'close' + widget.event.id.toString(),
                 onPressedEventEnlarged: () => Navigator.push(
                     context,
@@ -106,8 +115,8 @@ class _AllEvenEnlargedProfileState extends State<AllEvenEnlargedProfile> {
                               event: widget.event,
                               user: widget.user,
                             ))),
-                imageHero: 'image' + widget.event.id.toString(),
-                titleHero: 'title' + widget.event.id.toString(),
+                imageHero: 'image ${widget.event.id.toString()}',
+                titleHero:  'title ${widget.event.id.toString()}',
                 onPressedLocationMap: _launchMap,
                 onPressedEventticketSite: () {
                   Navigator.push(
@@ -130,14 +139,15 @@ class _AllEvenEnlargedProfileState extends State<AllEvenEnlargedProfile> {
                   context,
                   MaterialPageRoute(
                       builder: (_) => AsksScreen(
-                            askCount: widget.askCount!,
+                            // askCount: widget.askCount!,
                             event: widget.event,
                             ask: null,
                             currentUserId: widget.currentUserId,
                           )),
                 ),
                 event: widget.event,
-                onPressedCalendar: () => _generatePalette2(context),
+                onPressedCalendar: () => _generatePalette2(context, ''),
+                onPressedPeople: () => _generatePalette2(context, 'People'),
               ),
               Positioned(
                 top: 55,

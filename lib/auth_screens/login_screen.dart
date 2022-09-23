@@ -20,12 +20,13 @@ class _LoginScreenState extends State<LoginScreen>
   final formKey = GlobalKey<FormState>();
   String _email = '';
   String _password = '';
-  bool _isLoading = false;
+  // bool _isLoading = false;
   bool _isHidden = true;
 
   @override
   void initState() {
     super.initState();
+
     animationController =
         AnimationController(duration: Duration(seconds: 1), vsync: this);
 
@@ -49,11 +50,13 @@ class _LoginScreenState extends State<LoginScreen>
     SchedulerBinding.instance.addPostFrameCallback((_) {
       Provider.of<UserData>(context, listen: false).setPost1(_email);
       Provider.of<UserData>(context, listen: false).setPost2(_password);
+      Provider.of<UserData>(context, listen: false).setIsLoading(false);
     });
   }
 
   _submit() async {
-    if (formKey.currentState!.validate() & !_isLoading) {
+    if (formKey.currentState!.validate() &
+        !Provider.of<UserData>(context, listen: false).isLoading) {
       formKey.currentState!.save();
       loginUser(context, _email, _password);
       FocusScope.of(context).unfocus();
@@ -95,9 +98,10 @@ class _LoginScreenState extends State<LoginScreen>
         ),
         duration: Duration(seconds: 3),
       )..show(context);
-      setState(() {
-        _isLoading = true;
-      });
+      // setState(() {
+      //   _isLoading = true;
+      // });
+      Provider.of<UserData>(context, listen: false).setIsLoading(true);
       await _auth.signInWithEmailAndPassword(
         email: Provider.of<UserData>(context, listen: false).post1,
         password: Provider.of<UserData>(context, listen: false).post2,
@@ -112,9 +116,10 @@ class _LoginScreenState extends State<LoginScreen>
           ),
         ),
       );
-      setState(() {
-        _isLoading = false;
-      });
+      // setState(() {
+      //   _isLoading = false;
+      // });
+      Provider.of<UserData>(context, listen: false).setIsLoading(false);
       Flushbar(
         maxWidth: MediaQuery.of(context).size.width,
         margin: EdgeInsets.all(8),
@@ -200,9 +205,10 @@ class _LoginScreenState extends State<LoginScreen>
         leftBarIndicatorColor: Colors.blue,
       )..show(context);
       print(e.toString());
-      setState(() {
-        _isLoading = false;
-      });
+      // setState(() {
+      //   _isLoading = false;
+      // });
+      Provider.of<UserData>(context, listen: false).setIsLoading(false);
     }
   }
 
@@ -237,7 +243,8 @@ class _LoginScreenState extends State<LoginScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          _isLoading
+                          Provider.of<UserData>(context, listen: false)
+                                  .isLoading
                               ? Padding(
                                   padding: const EdgeInsets.only(top: 10.0),
                                   child: SizedBox(
@@ -421,7 +428,11 @@ class _LoginScreenState extends State<LoginScreen>
                                         SizedBox(height: 40.0),
                                         AnimatedContainer(
                                           duration: Duration(milliseconds: 300),
-                                          height: _isLoading ? 0.0 : 250,
+                                          height: Provider.of<UserData>(context,
+                                                      listen: false)
+                                                  .isLoading
+                                              ? 0.0
+                                              : 250,
                                           width: double.infinity,
                                           curve: Curves.easeInOut,
                                           child: SingleChildScrollView(

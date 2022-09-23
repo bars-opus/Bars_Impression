@@ -29,11 +29,12 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   bool _isLiked = false;
   bool _isBlockedUser = false;
   bool _isBlockingUser = false;
-  bool _isLoading = false;
+  int _chatMessageCount = 0;
+  // bool _isLoading = false;
   bool _restrictChat = false;
   late ScrollController _hideButtonController;
   late ScrollController _hideAppBarController;
-  var _isVisible;
+  // var _isVisible;
   final FocusNode _focusNode = FocusNode();
   bool _heartAnim = false;
 
@@ -43,12 +44,15 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     super.initState();
     _setupIsBlockedUser();
     _setupIsBlockingUser();
-    _isVisible = true;
+    _setUpMessageCount();
+    // _isVisible = true;
     _restrictChat = widget.chat == null ? false : widget.chat!.restrictChat;
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _clear();
       Provider.of<UserData>(context, listen: false).setPost9('');
+      Provider.of<UserData>(context, listen: false).setIsLoading(false);
+      Provider.of<UserData>(context, listen: false).setBool1(true);
     });
 
     _hideButtonController = new ScrollController();
@@ -56,17 +60,19 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
       if (_hideButtonController.position.userScrollDirection ==
           ScrollDirection.forward) {
         if (mounted) {
-          setState(() {
-            _isVisible = true;
-          });
+          // setState(() {
+          //   _isVisible = true;
+          // });
+          Provider.of<UserData>(context, listen: false).setBool1(true);
         }
       }
       if (_hideButtonController.position.userScrollDirection ==
           ScrollDirection.reverse) {
         if (mounted) {
-          setState(() {
-            _isVisible = false;
-          });
+          Provider.of<UserData>(context, listen: false).setBool1(false);
+          // setState(() {
+          //   _isVisible = false;
+          // });
         }
       }
     });
@@ -75,18 +81,35 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
       if (_hideButtonController.position.userScrollDirection ==
           ScrollDirection.forward) {
         if (mounted) {
-          setState(() {
-            _isVisible = true;
-          });
+          // setState(() {
+          //   _isVisible = true;
+          // });
+          Provider.of<UserData>(context, listen: false).setBool1(true);
         }
       }
       if (_hideButtonController.position.userScrollDirection ==
           ScrollDirection.reverse) {
         if (mounted) {
-          setState(() {
-            _isVisible = false;
-          });
+          // setState(() {
+          //   _isVisible = false;
+          // });
+          Provider.of<UserData>(context, listen: false).setBool1(false);
         }
+      }
+    });
+  }
+
+  _setUpMessageCount() async {
+    final String currentUserId =
+        Provider.of<UserData>(context, listen: false).currentUserId!;
+    DatabaseService.numChatsMessages(
+      currentUserId,
+      widget.user.id!,
+    ).listen((chatMessageCount) {
+      if (mounted) {
+        setState(() {
+          _chatMessageCount = chatMessageCount;
+        });
       }
     });
   }
@@ -136,10 +159,10 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
         currentUserId: widget.currentUserId,
         userId: widget.user.id!,
         message: message);
-    message.imageUrl.isEmpty
+    message.mediaUrl.isEmpty
         ? () {}
         : FirebaseStorage.instance
-            .refFromURL(message.imageUrl)
+            .refFromURL(message.mediaUrl)
             .delete()
             .catchError(
               (e) => Flushbar(
@@ -288,37 +311,104 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
         });
   }
 
-  _androidDialog(BuildContext parentContext) {
+
+
+_androidDialog(BuildContext parentContext) {
     return showDialog(
         context: parentContext,
         builder: (context) {
           return SimpleDialog(
-            title: Text('Pick image'),
+            title: Text(
+              'Pick image',
+              style: TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
             children: <Widget>[
-              SimpleDialogOption(
-                child: Text('Camera'),
-                onPressed: () {
-                  Navigator.pop(context);
-                  _handleImageCamera();
-                },
-              ),
-              SimpleDialogOption(
-                child: Text('Gallery'),
-                onPressed: () {
-                  Navigator.pop(context);
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'Camera',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.blue),
+                    textAlign: TextAlign.center,
+                  ),
+                  onPressed: () {
+                     Navigator.pop(context);
                   _handleImage();
-                },
+                  },
+                ),
               ),
-              SimpleDialogOption(
-                child: Text('cancel'),
-                onPressed: () => Navigator.pop(context),
+               Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'Gallery',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.blue),
+                    textAlign: TextAlign.center,
+                  ),
+                  onPressed: () {
+                     Navigator.pop(context);
+                  _handleImage();
+                  },
+                ),
+              ),
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'Cancel',
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
               ),
             ],
           );
         });
   }
 
-  _buildBlogComment(
+
+  _displayMessageImage(ChatMessage message, String currentUserId) {
+    final width = MediaQuery.of(context).size.width;
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: GestureDetector(
+        onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => MessageImage(
+                      message: message,
+                    ))),
+        child: Hero(
+          tag: 'image ${message.id}',
+          child: Container(
+            height: width / 2,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: currentUserId == message.authorId
+                  ? BorderRadius.only(
+                      topLeft: Radius.circular(30.0),
+                      topRight: Radius.circular(30.0),
+                      bottomLeft: Radius.circular(30.0),
+                    )
+                  : BorderRadius.only(
+                      topLeft: Radius.circular(30.0),
+                      topRight: Radius.circular(30.0),
+                      bottomRight: Radius.circular(30.0),
+                    ),
+              image: DecorationImage(
+                image: CachedNetworkImageProvider(message.mediaUrl),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  _buildMessage(
     ChatMessage message,
   ) {
     final width = MediaQuery.of(context).size.width;
@@ -363,7 +453,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
             onPressed: () {
               HapticFeedback.heavyImpact();
               if (mounted) {
-                return _isVisible
+                return Provider.of<UserData>(context, listen: false).bool1
                     ? setState(() {
                         _isreplying = true;
                         Provider.of<UserData>(context, listen: false)
@@ -379,7 +469,9 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                             .setPost8(message.content);
                         Provider.of<UserData>(context, listen: false)
                             .setPost7(message.authorId);
-                        _isVisible = true;
+                        // _isVisible = true;
+                        Provider.of<UserData>(context, listen: false)
+                            .setBool1(true);
                       });
               }
             }),
@@ -389,7 +481,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
         child: Draggable(
           onDragCompleted: () {
             HapticFeedback.heavyImpact();
-            return _isVisible
+            return Provider.of<UserData>(context, listen: false).bool1
                 ? setState(() {
                     _isreplying = true;
                     Provider.of<UserData>(context, listen: false)
@@ -405,14 +497,16 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                         .setPost8(message.content);
                     Provider.of<UserData>(context, listen: false)
                         .setPost7(message.authorId);
-                    _isVisible = true;
+                    // _isVisible = true;
+                    Provider.of<UserData>(context, listen: false)
+                        .setBool1(true);
                   });
           },
           affinity: Axis.horizontal,
           axis: Axis.horizontal,
           feedback: Padding(
             padding: EdgeInsets.only(
-                top: message.imageUrl.isEmpty ? 8.0 : width / 4),
+                top: message.mediaUrl.isEmpty ? 8.0 : width / 4),
             child: Container(
               decoration: BoxDecoration(
                   color: currentUserId == message.authorId
@@ -439,76 +533,12 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                   ? CrossAxisAlignment.end
                   : CrossAxisAlignment.start,
               children: [
+                const SizedBox(
+                  height: 5,
+                ),
                 message.replyingMessage.isEmpty
                     ? SizedBox.shrink()
-                    : Column(
-                        crossAxisAlignment: currentUserId == message.authorId
-                            ? CrossAxisAlignment.end
-                            : CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(left: 15.0, right: 15),
-                            child: Container(
-                              width: 30,
-                              height: 2,
-                              color: currentUserId == message.authorId
-                                  ? Colors.teal[800]
-                                  : Colors.black,
-                            ),
-                          ),
-                          AnimatedContainer(
-                            curve: Curves.easeInOut,
-                            duration: Duration(milliseconds: 800),
-                            height: null,
-                            width: _dragging ? width - 50 : width,
-                            color: Colors.transparent,
-                            child: Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Colors.transparent,
-                                borderRadius: currentUserId == message.authorId
-                                    ? BorderRadius.only(
-                                        topLeft: Radius.circular(5.0),
-                                        topRight: Radius.circular(0.0),
-                                        bottomLeft: Radius.circular(5.0),
-                                      )
-                                    : BorderRadius.only(
-                                        topLeft: Radius.circular(50.0),
-                                        topRight: Radius.circular(50.0),
-                                        bottomRight: Radius.circular(50.0),
-                                      ),
-                              ),
-                              child: ListTile(
-                                  title: RichText(
-                                    textScaleFactor:
-                                        MediaQuery.of(context).textScaleFactor,
-                                    text: TextSpan(
-                                      children: [
-                                        TextSpan(
-                                            text:
-                                                "replied:\n${message.replyingAuthor}: \n",
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.grey,
-                                            )),
-                                        TextSpan(
-                                            text: message.replyingMessage,
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.teal[800],
-                                            )),
-                                      ],
-                                    ),
-                                    textAlign: currentUserId == message.authorId
-                                        ? TextAlign.end
-                                        : TextAlign.start,
-                                  ),
-                                  onTap: () {}),
-                            ),
-                          ),
-                        ],
-                      ),
+                    : _repliedMessageContent(message, currentUserId),
                 DragTarget<bool>(builder: (context, data, rejectedData) {
                   return Container(
                     decoration: BoxDecoration(
@@ -542,60 +572,10 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                         ? CrossAxisAlignment.end
                                         : CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  message.imageUrl.isEmpty
-                                      ? SizedBox.shrink()
-                                      : Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 8.0),
-                                          child: GestureDetector(
-                                            onTap: () => Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        MessageImage(
-                                                          message: message,
-                                                        ))),
-                                            child: Hero(
-                                              tag: 'image ${message.id}',
-                                              child: Container(
-                                                height: width / 2,
-                                                width: double.infinity,
-                                                decoration: BoxDecoration(
-                                                  borderRadius: currentUserId ==
-                                                          message.authorId
-                                                      ? BorderRadius.only(
-                                                          topLeft:
-                                                              Radius.circular(
-                                                                  30.0),
-                                                          topRight:
-                                                              Radius.circular(
-                                                                  30.0),
-                                                          bottomLeft:
-                                                              Radius.circular(
-                                                                  30.0),
-                                                        )
-                                                      : BorderRadius.only(
-                                                          topLeft:
-                                                              Radius.circular(
-                                                                  30.0),
-                                                          topRight:
-                                                              Radius.circular(
-                                                                  30.0),
-                                                          bottomRight:
-                                                              Radius.circular(
-                                                                  30.0),
-                                                        ),
-                                                  image: DecorationImage(
-                                                    image:
-                                                        CachedNetworkImageProvider(
-                                                            message.imageUrl),
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
+                                  message.mediaUrl.isEmpty
+                                      ? const SizedBox.shrink()
+                                      : _displayMessageImage(
+                                          message, currentUserId),
                                   Material(
                                     color: Colors.transparent,
                                     child: message.report.isNotEmpty
@@ -675,6 +655,456 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     );
   }
 
+  _buildReceivedContentMessage(
+    ChatMessage message,
+  ) {
+    final width = MediaQuery.of(context).size.width;
+    final String currentUserId = Provider.of<UserData>(context).currentUserId!;
+    return FocusedMenuHolder(
+      menuWidth: width,
+      menuOffset: 1,
+      blurBackgroundColor:
+          ConfigBloc().darkModeOn ? Colors.grey[900] : Colors.teal[100],
+      openWithTap: false,
+      onPressed: () {},
+      menuItems: [
+        FocusedMenuItem(
+            title: Container(
+              width: width / 2,
+              child: Text(
+                currentUserId == message.authorId ? 'Unsend' : 'Report',
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            onPressed: () => currentUserId == message.authorId
+                ? _deleteMessage(
+                    message,
+                  )
+                : Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => ReportContentPage(
+                              parentContentId: widget.chat!.id,
+                              repotedAuthorId: message.authorId,
+                              contentId: message.id,
+                              contentType: 'message',
+                            )))),
+        FocusedMenuItem(
+            title: Container(
+              width: width / 2,
+              child: Text(
+                'Reply',
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            onPressed: () {
+              HapticFeedback.heavyImpact();
+              if (mounted) {
+                return Provider.of<UserData>(context, listen: false).bool1
+                    ? setState(() {
+                        _isreplying = true;
+                        Provider.of<UserData>(context, listen: false)
+                            .setPost8(message.content);
+                        Provider.of<UserData>(context, listen: false)
+                            .setPost7(message.authorId);
+
+                        _focusNode.requestFocus();
+                      })
+                    : setState(() {
+                        _isreplying = true;
+                        Provider.of<UserData>(context, listen: false)
+                            .setPost8(message.content);
+                        Provider.of<UserData>(context, listen: false)
+                            .setPost7(message.authorId);
+                        // _isVisible = true;
+                        Provider.of<UserData>(context, listen: false)
+                            .setBool1(true);
+                      });
+              }
+            }),
+      ],
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Draggable(
+          onDragCompleted: () {
+            HapticFeedback.heavyImpact();
+            return Provider.of<UserData>(context, listen: false).bool1
+                ? setState(() {
+                    _isreplying = true;
+                    Provider.of<UserData>(context, listen: false)
+                        .setPost8(message.content);
+                    Provider.of<UserData>(context, listen: false)
+                        .setPost7(message.authorId);
+
+                    _focusNode.requestFocus();
+                  })
+                : setState(() {
+                    _isreplying = true;
+                    Provider.of<UserData>(context, listen: false)
+                        .setPost8(message.content);
+                    Provider.of<UserData>(context, listen: false)
+                        .setPost7(message.authorId);
+                    // _isVisible = true;
+                    Provider.of<UserData>(context, listen: false)
+                        .setBool1(true);
+                  });
+          },
+          affinity: Axis.horizontal,
+          axis: Axis.horizontal,
+          feedback: Padding(
+            padding: EdgeInsets.only(
+                top: message.mediaUrl.isEmpty ? 8.0 : width / 4),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: currentUserId == message.authorId
+                      ? Colors.white
+                      : Colors.grey,
+                  shape: BoxShape.circle),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(
+                  Icons.reply,
+                  color: currentUserId == message.authorId
+                      ? Colors.grey
+                      : Colors.white,
+                ),
+              ),
+            ),
+          ),
+          child: Padding(
+            padding: currentUserId == message.authorId
+                ? const EdgeInsets.only(left: 30.0)
+                : const EdgeInsets.only(right: 30.0),
+            child: Column(
+              crossAxisAlignment: currentUserId == message.authorId
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
+              children: [
+                // GestureDetector(
+                //   onTap: () => Navigator.push(
+                //       context,
+                //       MaterialPageRoute(
+                //           builder: (_) => ViewSentContent(
+                //                 contentId: message.sendContentId,
+                //                 contentType: message.sendPostType,
+                //               ))),
+                //   child: Padding(
+                //     padding: const EdgeInsets.all(8.0),
+                //     child:
+                //  Row(
+                //   mainAxisAlignment: currentUserId == message.authorId
+                //       ? MainAxisAlignment.end
+                //       : MainAxisAlignment.start,
+                //   crossAxisAlignment: CrossAxisAlignment.end,
+                //   children: [
+                //     currentUserId == message.authorId
+                //         ? Text(
+                //             message.sendContentTitle,
+                //             style: TextStyle(
+                //                 color: Colors.grey,
+                //                 fontSize: 10,
+                //                 fontWeight: FontWeight.bold),
+                //             overflow: TextOverflow.ellipsis,
+                //             textScaleFactor:
+                //                 MediaQuery.of(context).textScaleFactor,
+                //           )
+                //         : SizedBox.shrink(),
+                //     currentUserId == message.authorId
+                //         ? const SizedBox(
+                //             width: 10,
+                //           )
+                //         : const SizedBox.shrink(),
+                //     Container(
+                //       width: 50,
+                //       height: 50,
+                //       decoration: BoxDecoration(
+                //           color: Colors.grey,
+                //           borderRadius: BorderRadius.circular(10)),
+                //       child: CachedNetworkImage(
+                //         imageUrl: message.mediaUrl,
+                //         height: 40.0,
+                //         width: 40.0,
+                //         fit: BoxFit.cover,
+                //       ),
+                //     ),
+                //     currentUserId != message.authorId
+                //         ? const SizedBox(
+                //             width: 10,
+                //           )
+                //         : const SizedBox.shrink(),
+                //     currentUserId != message.authorId
+                //         ? Text(
+                //             message.sendContentTitle,
+                //             style: TextStyle(
+                //                 color: Colors.grey,
+                //                 fontSize: 10,
+                //                 fontWeight: FontWeight.bold),
+                //             overflow: TextOverflow.ellipsis,
+                //             textScaleFactor:
+                //                 MediaQuery.of(context).textScaleFactor,
+                //           )
+                //         : const SizedBox.shrink(),
+                //   ],
+                // ),
+                // ),
+                // ),
+                const SizedBox(
+                  height: 5,
+                ),
+                DragTarget<bool>(builder: (context, data, rejectedData) {
+                  return Container(
+                    // decoration: BoxDecoration(
+                    // color: currentUserId == message.authorId
+                    //     ? Colors.teal[200]
+                    //     : Colors.white,
+                    // borderRadius: currentUserId == message.authorId
+                    //     ? BorderRadius.only(
+                    //         topLeft: Radius.circular(50.0),
+                    //         topRight: Radius.circular(50.0),
+                    //         bottomLeft: Radius.circular(50.0),
+                    //       )
+                    //     : BorderRadius.only(
+                    //         topLeft: Radius.circular(50.0),
+                    //         topRight: Radius.circular(50.0),
+                    //         bottomRight: Radius.circular(50.0),
+                    //         ),
+                    // ),
+                    child: Column(
+                      crossAxisAlignment: currentUserId == message.authorId
+                          ? CrossAxisAlignment.end
+                          : CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        ListTile(
+                          onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => ViewSentContent(
+                                        contentId: message.sendContentId,
+                                        contentType: message.sendPostType,
+                                      ))),
+                          title: Column(
+                            crossAxisAlignment:
+                                currentUserId == message.authorId
+                                    ? CrossAxisAlignment.end
+                                    : CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Material(
+                                color: Colors.transparent,
+                                child: Text(
+                                  message.sendContentTitle,
+                                  style: TextStyle(color: Colors.blue),
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                          leading: message.sendPostType.startsWith('Forum')
+                              ? null
+                              : currentUserId != message.authorId
+                                  ? Container(
+                                      width: 50,
+                                      height: 50,
+                                      decoration: BoxDecoration(
+                                          color: Colors.grey,
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      child: message.mediaUrl.isEmpty
+                                          ? Icon(
+                                              Icons.account_circle_rounded,
+                                              color: Colors.white,
+                                            )
+                                          : CachedNetworkImage(
+                                              imageUrl: message.mediaUrl,
+                                              height: 40.0,
+                                              width: 40.0,
+                                              fit: BoxFit.cover,
+                                            ),
+                                    )
+                                  : null,
+                          trailing: message.sendPostType.startsWith('Forum')
+                              ? null
+                              : currentUserId != message.authorId
+                                  ? null
+                                  : Container(
+                                      width: 50,
+                                      height: 50,
+                                      decoration: BoxDecoration(
+                                          color: Colors.grey,
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      child: message.mediaUrl.isEmpty
+                                          ? Icon(
+                                              Icons.account_circle_rounded,
+                                              color: Colors.white,
+                                            )
+                                          : CachedNetworkImage(
+                                              imageUrl: message.mediaUrl,
+                                              height: 40.0,
+                                              width: 40.0,
+                                              fit: BoxFit.cover,
+                                            ),
+                                    ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 3.0),
+                          child: ListTile(
+                            title: Column(
+                              crossAxisAlignment:
+                                  currentUserId == message.authorId
+                                      ? CrossAxisAlignment.end
+                                      : CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Material(
+                                    color: Colors.transparent,
+                                    child: Text(
+                                      message.content,
+                                      style: TextStyle(
+                                        fontSize: 14.0,
+                                        color: Colors.blueGrey,
+                                      ),
+                                      textAlign:
+                                          currentUserId == message.authorId
+                                              ? TextAlign.right
+                                              : TextAlign.left,
+                                    )),
+                                Text(
+                                    timeago.format(
+                                      message.timestamp.toDate(),
+                                    ),
+                                    style: TextStyle(
+                                        fontSize: 10, color: Colors.grey[700])),
+                              ],
+                            ),
+                            leading: currentUserId == message.authorId
+                                ? message.liked
+                                    ? IconButton(
+                                        icon: Icon(message.liked
+                                            ? Icons.favorite
+                                            : Icons.favorite_border_outlined),
+                                        color: message.liked
+                                            ? Colors.pink
+                                            : Colors.black,
+                                        onPressed: () => () {},
+                                      )
+                                    : null
+                                : null,
+                            trailing: currentUserId == message.authorId
+                                ? null
+                                : IconButton(
+                                    icon: Icon(message.liked
+                                        ? Icons.favorite
+                                        : Icons.favorite_border_outlined),
+                                    color: message.liked
+                                        ? Colors.pink
+                                        : Colors.grey,
+                                    onPressed: () {
+                                      HapticFeedback.heavyImpact();
+                                      SystemSound.play(SystemSoundType.click);
+                                      if (_isLiked) {
+                                        setState(() {
+                                          _unLikeMessage(message);
+                                        });
+                                      } else {
+                                        setState(() {
+                                          _likeMessage(message);
+                                          _heartAnim = true;
+                                        });
+
+                                        Timer(Duration(milliseconds: 350), () {
+                                          setState(() {
+                                            _heartAnim = false;
+                                          });
+                                        });
+                                      }
+                                    },
+                                  ),
+                          ),
+                        ),
+                        Divider(),
+                      ],
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
+        ),
+      ),
+      // ),
+    );
+  }
+
+  _repliedMessageContent(ChatMessage message, String currentUserId) {
+    final width = MediaQuery.of(context).size.width;
+    return Column(
+      crossAxisAlignment: currentUserId == message.authorId
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 15.0, right: 15),
+          child: Container(
+            width: 30,
+            height: 2,
+            color: currentUserId == message.authorId
+                ? Colors.teal[800]
+                : Colors.black,
+          ),
+        ),
+        AnimatedContainer(
+          curve: Curves.easeInOut,
+          duration: Duration(milliseconds: 800),
+          height: null,
+          width: _dragging ? width - 50 : width,
+          color: Colors.transparent,
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: currentUserId == message.authorId
+                  ? BorderRadius.only(
+                      topLeft: Radius.circular(5.0),
+                      topRight: Radius.circular(0.0),
+                      bottomLeft: Radius.circular(5.0),
+                    )
+                  : BorderRadius.only(
+                      topLeft: Radius.circular(50.0),
+                      topRight: Radius.circular(50.0),
+                      bottomRight: Radius.circular(50.0),
+                    ),
+            ),
+            child: ListTile(
+                title: RichText(
+                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                          text: "replied:\n${message.replyingAuthor}: \n",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          )),
+                      TextSpan(
+                          text: message.replyingMessage,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.teal[800],
+                          )),
+                    ],
+                  ),
+                  textAlign: currentUserId == message.authorId
+                      ? TextAlign.end
+                      : TextAlign.start,
+                ),
+                onTap: () {}),
+          ),
+        ),
+      ],
+    );
+  }
+
   _displayImage() {
     final width = MediaQuery.of(context).size.width;
 
@@ -694,7 +1124,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _isLoading
+                      Provider.of<UserData>(context, listen: false).isLoading
                           ? Padding(
                               padding:
                                   const EdgeInsets.only(bottom: 10.0, top: 5),
@@ -722,7 +1152,10 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                       .setPostImage(null);
                                 }),
                             Text(
-                              _isLoading ? "Sending message" : "Ready to send",
+                              Provider.of<UserData>(context, listen: false)
+                                      .isLoading
+                                  ? "Sending message"
+                                  : "Ready to send",
                               style: TextStyle(
                                 fontSize: 12.0,
                                 color: Colors.white,
@@ -819,7 +1252,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
               children: [
                 _displayIsReplying(),
                 _displayImage(),
-                _isLoading
+                Provider.of<UserData>(context, listen: false).isLoading
                     ? SizedBox.shrink()
                     : Material(
                         color: Colors.white,
@@ -903,10 +1336,11 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                                     .disabledColor,
                                       ),
                                       onPressed: () {
-                                        Provider.of<UserData>(context,
-                                                        listen: false)
-                                                    .messageCount <
-                                                1
+                                        // Provider.of<UserData>(context,
+                                        //                 listen: false)
+                                        //             .messageCount <
+                                        //         1
+                                        _chatMessageCount < 1
                                             ? _submitMessageFirstMessage()
                                             : Provider.of<UserData>(context,
                                                             listen: false)
@@ -937,13 +1371,16 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
         userId: widget.user.id!,
         messageInitiator: currentUser.userName!,
         restrictChat: false,
-        imageUrl: '',
-        MediaType: '',
+        mediaUrl: '',
+        sendContentId: '',
+        mediaType: '',
         replyingAuthor: '',
+        sendContentTitle: '',
         replyingMessage: '',
         reportConfirmed: '',
         liked: '',
         message: _adviceControler.text,
+        sendPostType: '',
       );
       _adviceControler.clear();
       Provider.of<UserData>(context, listen: false).setPost9('');
@@ -958,25 +1395,29 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   }
 
   _submitMessageWithImage() async {
-    setState(() {
-      _isLoading = true;
-    });
+    // setState(() {
+    //   _isLoading = true;
+    // });
+    Provider.of<UserData>(context, listen: false).setIsLoading(true);
     String imageUrl = await StorageService.uploadMessageImage(
         Provider.of<UserData>(context, listen: false).postImage!);
     HapticFeedback.mediumImpact();
     DatabaseService.chatMessage(
       currentUserId: widget.currentUserId,
       userId: widget.user.id!,
-      imageUrl: imageUrl,
-      MediaType: 'Image',
+      mediaUrl: imageUrl,
+      mediaType: 'Image',
       replyingAuthor: Provider.of<UserData>(context, listen: false).post7 ==
               widget.currentUserId
           ? 'Me'
           : widget.user.userName!,
       replyingMessage: Provider.of<UserData>(context, listen: false).post8,
       reportConfirmed: '',
+      sendContentTitle: '',
       liked: '',
       message: _adviceControler.text.isEmpty ? "Image" : _adviceControler.text,
+      sendContentId: '',
+      sendPostType: '',
     );
     _adviceControler.clear();
     Provider.of<UserData>(context, listen: false).setPost9('');
@@ -984,8 +1425,9 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
       _isAdvicingUser = false;
       _isreplying = false;
       imageUrl = '';
-      _isLoading = false;
+      // _isLoading = false;
     });
+    Provider.of<UserData>(context, listen: false).setIsLoading(false);
     Provider.of<UserData>(context, listen: false).setPostImage(null);
     Provider.of<UserData>(context, listen: false).setPost8('');
     Provider.of<UserData>(context, listen: false).setPost7('');
@@ -997,8 +1439,9 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
       DatabaseService.chatMessage(
         currentUserId: widget.currentUserId,
         userId: widget.user.id!,
-        imageUrl: '',
-        MediaType: '',
+        mediaUrl: '',
+        sendContentTitle: '',
+        mediaType: '',
         replyingAuthor: Provider.of<UserData>(context, listen: false).post7 ==
                 widget.currentUserId
             ? 'Me'
@@ -1007,6 +1450,8 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
         reportConfirmed: '',
         liked: '',
         message: _adviceControler.text,
+        sendContentId: '',
+        sendPostType: '',
       );
       _adviceControler.clear();
       Provider.of<UserData>(context, listen: false).setPost9('');
@@ -1058,7 +1503,11 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                               children: [
                                 AnimatedContainer(
                                   duration: Duration(milliseconds: 500),
-                                  height: _isVisible ? 60 : 0.0,
+                                  height: Provider.of<UserData>(
+                                    context,
+                                  ).bool1
+                                      ? 60
+                                      : 0.0,
                                   child: SingleChildScrollView(
                                     child: Column(
                                       crossAxisAlignment:
@@ -1317,9 +1766,14 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                                           .data.docs.length);
                                                 });
 
-                                                return _buildBlogComment(
-                                                  message,
-                                                );
+                                                return message
+                                                        .sendContentId.isEmpty
+                                                    ? _buildMessage(
+                                                        message,
+                                                      )
+                                                    : _buildReceivedContentMessage(
+                                                        message,
+                                                      );
                                               },
                                               childCount:
                                                   snapshot.data.docs.length,

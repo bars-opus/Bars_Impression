@@ -177,6 +177,7 @@ class NotificationNotFan extends StatelessWidget {
                   activityForumCount: activityForumCount,
                 ),
                 ActivityEventScreen(
+                  from: '',
                   currentUserId: currentUserId,
                   activityEventCount: activityEventCount,
                 ),

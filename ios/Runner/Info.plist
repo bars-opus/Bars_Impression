@@ -20,6 +20,25 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.270470269823-dbidgerbrmu17atp7ci9tbfdtt05brbr</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>Bundle Id</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.bars-Opus.barsImpression</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
@@ -41,7 +60,7 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 		<key>NSAllowsArbitraryLoadsInWebContent</key>
-   		<true/>
+		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>share photos, punch your mood and change avatar</string>
@@ -77,5 +96,10 @@
 	<false/>
 	<key>io.flutter.embedded_views_preview</key>
 	<string>YES</string>
+	<key>FirebaseDynamicLinksCustomDomains</key>
+	<array>
+		<string>https://custom.domain.io/path1</string>
+		<string>https://custom.domain.io/path2</string>
+</array>
 </dict>
 </plist>

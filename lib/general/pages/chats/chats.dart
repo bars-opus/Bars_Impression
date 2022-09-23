@@ -5,12 +5,12 @@ class Chats extends StatefulWidget {
   static final id = 'Chats';
   final String currentUserId;
   final String? userId;
-  final int activityChatCount;
+  // final int activityChatCount;
 
   Chats({
     required this.currentUserId,
     required this.userId,
-    required this.activityChatCount,
+    // required this.activityChatCount,
   });
 
   @override
@@ -312,7 +312,7 @@ class _display extends StatelessWidget {
                         ),
                         Wrap(
                           children: [
-                            chats.MediaType.isEmpty
+                            chats.mediaType.isEmpty
                                 ? SizedBox.shrink()
                                 : Icon(
                                     MdiIcons.image,

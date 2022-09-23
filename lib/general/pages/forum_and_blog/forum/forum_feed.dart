@@ -96,6 +96,7 @@ class _ForumFeedState extends State<ForumFeed>
     }
     _hasNext = false;
     _isFetchingForum = false;
+
     return _hasNext;
   }
 

@@ -737,8 +737,6 @@ class _PunchWidgetState extends State<PunchWidget> {
                                                 MaterialPageRoute(
                                                     builder: (_) =>
                                                         CommentsScreen(
-                                                          commentCount:
-                                                              _commentCount,
                                                           post: widget.post,
                                                           likeCount:
                                                               _dbLikeCount,
@@ -819,9 +817,12 @@ class _PunchWidgetState extends State<PunchWidget> {
                     ],
                   ),
                 ),
-                HyperLinkText(
-                  from: 'Caption',
-                  text: '${widget.post.caption}'.toLowerCase(),
+                Align(
+                  alignment: Alignment.bottomLeft,
+                  child: HyperLinkText(
+                    from: 'Caption',
+                    text: '${widget.post.caption}'.toLowerCase(),
+                  ),
                 ),
               ],
             ),

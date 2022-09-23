@@ -1,22 +1,26 @@
-
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/cupertino.dart';
 
-class InviteAvailable extends StatelessWidget {
+class EventInviteAvailable extends StatefulWidget {
   final EventInvite eventInvite;
   final Event event;
   final PaletteGenerator palette;
-  final int attendeeRequesCount;
   final int inviteCount;
+  final String from;
 
-  const InviteAvailable({
+  const EventInviteAvailable({
     required this.eventInvite,
     required this.event,
     required this.palette,
-    required this.attendeeRequesCount,
     required this.inviteCount,
+    required this.from,
   });
 
+  @override
+  State<EventInviteAvailable> createState() => _EventInviteAvailableState();
+}
+
+class _EventInviteAvailableState extends State<EventInviteAvailable> {
   _showSelectImageDialog2(
       BuildContext context, String from, EventInvite eventInvite) {
     return Platform.isIOS
@@ -58,7 +62,7 @@ class InviteAvailable extends StatelessWidget {
                 ),
                 onPressed: () {
                   Navigator.pop(context);
-                  _answereInvitation(context, from, eventInvite);
+                  _answereInvitation(from, eventInvite);
                 },
               ),
             ],
@@ -89,47 +93,79 @@ class InviteAvailable extends StatelessWidget {
                       : from.startsWith('Cancel')
                           ? 'Are you sure you want to cancel this invitation request?'
                           : '',
-              style: TextStyle(
-                fontSize: 16,
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-              ),
+              style: TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
             ),
             children: <Widget>[
-              SimpleDialogOption(
-                child: Text(
-                  from.startsWith('Accept')
-                      ? 'Accept'
-                      : from.startsWith('Reject')
-                          ? 'Reject'
-                          : from.startsWith('Cancel')
-                              ? 'Cancel request'
-                              : 'Request',
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    from.startsWith('Accept')
+                        ? 'Accept'
+                        : from.startsWith('Reject')
+                            ? 'Reject'
+                            : from.startsWith('Cancel')
+                                ? 'Cancel request'
+                                : 'Request',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.blue),
+                    textAlign: TextAlign.center,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _answereInvitation(from, eventInvite);
+                  },
                 ),
-                onPressed: () {
-                  Navigator.pop(context);
-                  _answereInvitation(context, from, eventInvite);
-                },
               ),
-              SimpleDialogOption(
-                child: Text('cancel'),
-                onPressed: () => Navigator.pop(context),
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'Cancel',
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
               ),
             ],
           );
         });
   }
 
-  _answereInvitation(
-      BuildContext context, String from, EventInvite eventInvite) {
+  _answereInvitation(String from, EventInvite eventInvite) async {
     final double width = MediaQuery.of(context).size.width;
     // int _requestNumber = _attendeeRequesCount + 1;
+
+    DatabaseService.numEventAttendee(eventInvite.eventId, 'Accepted')
+        .listen((attendeeNumber) {
+      Provider.of<UserData>(
+        context,
+      ).setChatCount(attendeeNumber + 1);
+    });
+
+    AccountHolder user =
+        await DatabaseService.getUserWithId(eventInvite.anttendeeId);
 
     try {
       from.startsWith('Cancel')
           ? DatabaseService.cancelInvite(eventInvite: eventInvite)
-          : DatabaseService.answerEventAttendee(
-              answer: from, eventInvite: eventInvite);
-
+          : DatabaseService.addEventInviteToAttending(
+              answer: from,
+              eventInvite: eventInvite,
+              currentUserId: eventInvite.authorId,
+              event: widget.event,
+              eventDate: DateTime.parse(widget.event.date),
+              message: '',
+              requestNumber: '',
+              user: user,
+              attendeeNumber: Provider.of<UserData>(context, listen: false)
+                      .chatCount
+                      .toString() +
+                  Provider.of<UserData>(context, listen: false)
+                      .currentUserId!
+                      .substring(0, 3),
+            );
+      Provider.of<UserData>(context, listen: false).setChatCount(0);
       Flushbar(
         margin: EdgeInsets.all(8),
         boxShadows: [
@@ -211,184 +247,144 @@ class InviteAvailable extends StatelessWidget {
     }
   }
 
-  _unAnsweredWidget(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    Column(
-      children: [
-        const SizedBox(
-          height: 60,
-        ),
-        Text(
-          'Invitation\nReceived',
-          style: TextStyle(
-              fontSize: 30,
-              color: palette.darkMutedColor == null
-                  ? Color(0xFF1a1a1a)
-                  : palette.darkMutedColor!.color,
-              height: 0.8),
-          textAlign: TextAlign.start,
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 12.0, right: 12),
-          child: Text(
-            'You have been invited by ${eventInvite.anttendeeName} to attend ${event.title} at  ${event.venue}',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 12,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        eventInvite.message.isEmpty
-            ? SizedBox.shrink()
-            : Padding(
-                padding: const EdgeInsets.only(top: 30.0, bottom: 30),
-                child: Divider(
-                  color: Colors.grey,
+  _unAnsweredWidget(BuildContext context, double width) {
+    return ShakeTransition(
+      child: Padding(
+        padding: const EdgeInsets.all(30.0),
+        child: Column(
+          children: [
+            Container(
+              width: width,
+              decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  offset: Offset(10, 10),
+                  blurRadius: 10.0,
+                  spreadRadius: 4.0,
+                )
+              ]),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 12.0, right: 12),
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 60,
+                    ),
+                    Text(
+                      'Cordially\nInvited',
+                      style: TextStyle(
+                          fontSize: 30,
+                          color: widget.palette.darkMutedColor == null
+                              ? Color(0xFF1a1a1a)
+                              : widget.palette.darkMutedColor!.color,
+                          height: 0.8),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      'To attend ${widget.event.title} at  ${widget.event.venue} on ${MyDateFormat.toDate(DateTime.parse(widget.event.date))} at ${MyDateFormat.toTime(DateTime.parse(widget.event.time))}.',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 12,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 30.0, bottom: 30),
+                      child: Divider(
+                        color: Colors.grey,
+                      ),
+                    ),
+                    widget.eventInvite.message.isEmpty
+                        ? const SizedBox.shrink()
+                        : Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Invitation message:',
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.blue,
+                              ),
+                              textAlign: TextAlign.start,
+                            ),
+                          ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        widget.eventInvite.message,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 12,
+                        ),
+                        textAlign: TextAlign.start,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 60,
+                    ),
+                    SfCalendar(
+                        view: CalendarView.month,
+                        initialSelectedDate:
+                            DateTime.parse(widget.event.date.toString()),
+                        initialDisplayDate:
+                            DateTime.parse(widget.event.date.toString())),
+                  ],
                 ),
               ),
-        eventInvite.message.isEmpty
-            ? SizedBox.shrink()
-            : Container(
-                width: width,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 12.0, right: 12),
-                  child: RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: 'Invitation message:',
+            ),
+            const SizedBox(
+              height: 5,
+            ),
+            widget.from.startsWith('Activity')
+                ? Container(
+                    width: width,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.white,
+                        elevation: 0.0,
+                        onPrimary: Colors.blue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5.0),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 5.0, vertical: 2),
+                        child: Text(
+                          'View event flier',
                           style: TextStyle(
-                            fontSize: 12,
                             color: Colors.blue,
-                          ),
-                        ),
-                        TextSpan(
-                          text: '\n${eventInvite.message}',
-                          style: TextStyle(
                             fontSize: 12,
-                            color: Colors.black,
                           ),
+                          textAlign: TextAlign.center,
                         ),
-                      ],
+                      ),
+                      onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => AllEvenEnlarged(
+                                    exploreLocation: 'No',
+                                    feed: 1,
+                                    askCount: 0,
+                                    currentUserId: Provider.of<UserData>(
+                                            context,
+                                            listen: false)
+                                        .currentUserId!,
+                                    event: widget.event,
+
+                                    user: Provider.of<UserData>(context,
+                                            listen: false)
+                                        .user!,
+                                    // eventList: widget.eventList,
+                                  ))),
                     ),
-                    textAlign: TextAlign.start,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ),
-        Padding(
-          padding: const EdgeInsets.only(top: 30.0, bottom: 30),
-          child: Divider(
-            color: Colors.grey,
-          ),
+                  )
+                : const SizedBox.shrink(),
+          ],
         ),
-        Container(
-          width: width,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 12.0, right: 12),
-            child: RichText(
-              textScaleFactor: MediaQuery.of(context).textScaleFactor,
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Invitation Status:   ',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  TextSpan(
-                    text: eventInvite.attendeeStatus.startsWith('Reject')
-                        ? 'Rejected'
-                        : "${eventInvite.attendeeStatus.isEmpty ? 'Pending' : 'Accepted'}  ",
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: eventInvite.attendeeStatus.startsWith('Reject')
-                          ? Colors.red
-                          : Colors.black,
-                    ),
-                  ),
-                  TextSpan(
-                    text: '\nInvitee name:   ',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  TextSpan(
-                    text: "${eventInvite.inviteeName} ",
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.black,
-                    ),
-                  ),
-                  TextSpan(
-                    text: '\nAttendee name:   ',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  TextSpan(
-                    text: "${eventInvite.anttendeeName} ",
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.black,
-                    ),
-                  ),
-                  TextSpan(
-                    text: '\nInvitation number:   ',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  TextSpan(
-                    text: "${eventInvite.requestNumber} ",
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 30.0, bottom: 30),
-          child: Divider(
-            color: Colors.grey,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 12.0, right: 12),
-          child: Text(
-            eventInvite.attendeeStatus.isEmpty
-                ? 'Your invitation request has be sent to the organizer of this event. '
-                : eventInvite.attendeeStatus.startsWith('Reject')
-                    ? 'Your invitation request has been rejected.'
-                    : 'Your attendee number must much the event\s organiser\s account number in order to attend this event. You should show this account number at the entrance of the event',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 12,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        const SizedBox(
-          height: 60,
-        ),
-      ],
+      ),
     );
   }
 
@@ -397,19 +393,19 @@ class InviteAvailable extends StatelessWidget {
     final width = MediaQuery.of(context).size.width;
 
     final List<String> datePartition =
-        MyDateFormat.toDate(DateTime.parse(event.date)).split(" ");
+        MyDateFormat.toDate(DateTime.parse(widget.event.date)).split(" ");
     final List<String> timePartition =
-        MyDateFormat.toTime(DateTime.parse(event.time)).split(" ");
+        MyDateFormat.toTime(DateTime.parse(widget.event.time)).split(" ");
     return Scaffold(
-      backgroundColor: palette.darkMutedColor == null
+      backgroundColor: widget.palette.darkMutedColor == null
           ? Color(0xFF1a1a1a)
-          : palette.darkMutedColor!.color,
+          : widget.palette.darkMutedColor!.color,
       appBar: AppBar(
         automaticallyImplyLeading: true,
         elevation: 0,
-        backgroundColor: palette.darkMutedColor == null
+        backgroundColor: widget.palette.darkMutedColor == null
             ? Color(0xFF1a1a1a)
-            : palette.darkMutedColor!.color,
+            : widget.palette.darkMutedColor!.color,
       ),
       body: ListView(
         children: <Widget>[
@@ -426,9 +422,9 @@ class InviteAvailable extends StatelessWidget {
                     padding: const EdgeInsets.all(10.0),
                     child: Icon(
                       Icons.event_available,
-                      color: palette.darkMutedColor == null
+                      color: widget.palette.darkMutedColor == null
                           ? Color(0xFF1a1a1a)
-                          : palette.darkMutedColor!.color,
+                          : widget.palette.darkMutedColor!.color,
                       size: 20.0,
                     ),
                   ),
@@ -442,67 +438,71 @@ class InviteAvailable extends StatelessWidget {
               ],
             ),
           ),
-          ShakeTransition(
-            child: new Material(
-              color: Colors.transparent,
-              child: Padding(
-                padding: const EdgeInsets.all(30.0),
-                child: Container(
-                  width: width,
-                  decoration: BoxDecoration(color: Colors.white, boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      offset: Offset(10, 10),
-                      blurRadius: 10.0,
-                      spreadRadius: 4.0,
-                    )
-                  ]),
-                  child: eventInvite.invited &&
-                          eventInvite.attendeeStatus.isEmpty
-                      ? _unAnsweredWidget(context)
-                      : Column(
+          widget.eventInvite.invited! &&
+                  widget.eventInvite.attendeeStatus.isEmpty
+              ? _unAnsweredWidget(context, width)
+              : ShakeTransition(
+                  child: new Material(
+                    color: Colors.transparent,
+                    child: Padding(
+                      padding: const EdgeInsets.all(30.0),
+                      child: Container(
+                        width: width,
+                        decoration:
+                            BoxDecoration(color: Colors.white, boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            offset: Offset(10, 10),
+                            blurRadius: 10.0,
+                            spreadRadius: 4.0,
+                          )
+                        ]),
+                        child: Column(
                           children: [
                             const SizedBox(
                               height: 60,
                             ),
-                            eventInvite.attendNumber.length <= 3
-                                ? SizedBox.shrink()
-                                : Text(
-                                    eventInvite.attendNumber,
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        color: palette.darkMutedColor == null
-                                            ? Color(0xFF1a1a1a)
-                                            : palette.darkMutedColor!.color,
-                                        fontWeight: FontWeight.bold),
-                                    textAlign: TextAlign.center,
-                                  ),
+                            widget.eventInvite.validated!
+                                ? Padding(
+                                    padding: const EdgeInsets.only(right: 30.0),
+                                    child: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Icon(
+                                        Icons.check_circle,
+                                        color: Colors.blue,
+                                        size: 20.0,
+                                      ),
+                                    ),
+                                  )
+                                : const SizedBox.shrink(),
                             const SizedBox(
                               height: 10,
                             ),
-                            eventInvite.attendeeStatus.startsWith('Reject') ||
-                                    eventInvite.attendeeStatus.isEmpty
+                            widget.eventInvite.attendeeStatus
+                                        .startsWith('Reject') ||
+                                    widget.eventInvite.attendeeStatus.isEmpty
                                 ? Text(
-                                    eventInvite.attendeeStatus
+                                    widget.eventInvite.attendeeStatus
                                             .startsWith('Reject')
                                         ? 'Invitation\nRejected'
                                         : 'Invitation\nRequested',
                                     style: TextStyle(
                                         fontSize: 30,
-                                        color: palette.darkMutedColor == null
+                                        color: widget.palette.darkMutedColor ==
+                                                null
                                             ? Color(0xFF1a1a1a)
-                                            : palette.darkMutedColor!.color,
+                                            : widget
+                                                .palette.darkMutedColor!.color,
                                         height: 0.8),
                                     textAlign: TextAlign.start,
                                   )
                                 : Container(
-                                    width: eventInvite.attendNumber.length <= 3
-                                        ? 150
-                                        : 100,
                                     decoration: BoxDecoration(
-                                        color: palette.darkMutedColor == null
+                                        color: widget.palette.darkMutedColor ==
+                                                null
                                             ? Color(0xFF1a1a1a)
-                                            : palette.darkMutedColor!.color,
+                                            : widget
+                                                .palette.darkMutedColor!.color,
                                         boxShadow: [
                                           BoxShadow(
                                             color: Colors.black26,
@@ -511,13 +511,17 @@ class InviteAvailable extends StatelessWidget {
                                             spreadRadius: 4.0,
                                           )
                                         ]),
-                                    child: Text(
-                                      eventInvite.attendNumber,
-                                      style: TextStyle(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10.0, horizontal: 20),
+                                      child: Text(
+                                        widget.eventInvite.attendNumber,
+                                        style: TextStyle(
                                           fontSize: 80,
                                           color: Colors.white,
-                                          fontWeight: FontWeight.w100),
-                                      textAlign: TextAlign.center,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
                                     ),
                                   ),
                             const SizedBox(height: 40),
@@ -539,6 +543,26 @@ class InviteAvailable extends StatelessWidget {
                                   text: TextSpan(
                                     children: [
                                       TextSpan(
+                                        text: widget.eventInvite.validated!
+                                            ? 'Entrance Status:   '
+                                            : '',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: widget.eventInvite.validated!
+                                            ? 'Validated\n'
+                                            : '',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: widget.eventInvite.validated!
+                                              ? Colors.blue
+                                              : Colors.grey,
+                                        ),
+                                      ),
+                                      TextSpan(
                                         text: 'Invitation Status:   ',
                                         style: TextStyle(
                                           fontSize: 12,
@@ -546,13 +570,14 @@ class InviteAvailable extends StatelessWidget {
                                         ),
                                       ),
                                       TextSpan(
-                                        text: eventInvite.attendeeStatus
+                                        text: widget.eventInvite.attendeeStatus
                                                 .startsWith('Reject')
                                             ? 'Rejected'
-                                            : "${eventInvite.attendeeStatus.isEmpty ? 'Pending' : 'Accepted'}  ",
+                                            : "${widget.eventInvite.attendeeStatus.isEmpty ? 'Pending' : 'Accepted'}  ",
                                         style: TextStyle(
                                           fontSize: 12,
-                                          color: eventInvite.attendeeStatus
+                                          color: widget
+                                                  .eventInvite.attendeeStatus
                                                   .startsWith('Reject')
                                               ? Colors.red
                                               : Colors.black,
@@ -566,7 +591,8 @@ class InviteAvailable extends StatelessWidget {
                                         ),
                                       ),
                                       TextSpan(
-                                        text: "${eventInvite.anttendeeName} ",
+                                        text:
+                                            "${widget.eventInvite.anttendeeName} ",
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: Colors.black,
@@ -581,7 +607,7 @@ class InviteAvailable extends StatelessWidget {
                                       ),
                                       TextSpan(
                                         text:
-                                            "${eventInvite.anttendeeprofileHandle} ",
+                                            "${widget.eventInvite.anttendeeprofileHandle} ",
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: Colors.black,
@@ -595,21 +621,25 @@ class InviteAvailable extends StatelessWidget {
                                         ),
                                       ),
                                       TextSpan(
-                                        text: "${eventInvite.attendNumber} ",
+                                        text:
+                                            "${widget.eventInvite.attendNumber} ",
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: Colors.black,
                                         ),
                                       ),
                                       TextSpan(
-                                        text: '\nInvitation request number:   ',
+                                        text: widget.eventInvite.invited!
+                                            ? '\nInvitation number:   '
+                                            : '\nInvitation request number:   ',
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: Colors.grey,
                                         ),
                                       ),
                                       TextSpan(
-                                        text: "${eventInvite.requestNumber} ",
+                                        text:
+                                            "${widget.eventInvite.requestNumber} ",
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: Colors.black,
@@ -620,8 +650,9 @@ class InviteAvailable extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            eventInvite.attendeeStatus.startsWith('Reject') ||
-                                    eventInvite.attendeeStatus.isEmpty
+                            widget.eventInvite.attendeeStatus
+                                        .startsWith('Reject') ||
+                                    widget.eventInvite.attendeeStatus.isEmpty
                                 ? const SizedBox.shrink()
                                 : Padding(
                                     padding: const EdgeInsets.only(
@@ -630,8 +661,9 @@ class InviteAvailable extends StatelessWidget {
                                       color: Colors.grey,
                                     ),
                                   ),
-                            eventInvite.attendeeStatus.startsWith('Reject') ||
-                                    eventInvite.attendeeStatus.isEmpty
+                            widget.eventInvite.attendeeStatus
+                                        .startsWith('Reject') ||
+                                    widget.eventInvite.attendeeStatus.isEmpty
                                 ? const SizedBox.shrink()
                                 : Container(
                                     height: 150,
@@ -642,7 +674,7 @@ class InviteAvailable extends StatelessWidget {
                                             : Color(0xFFeff0f2),
                                         image: DecorationImage(
                                           image: CachedNetworkImageProvider(
-                                              event.imageUrl),
+                                              widget.event.imageUrl),
                                           fit: BoxFit.cover,
                                         )),
                                     child: Container(
@@ -655,8 +687,9 @@ class InviteAvailable extends StatelessWidget {
                                             Colors.black.withOpacity(.4),
                                           ])),
                                     )),
-                            eventInvite.attendeeStatus.startsWith('Reject') ||
-                                    eventInvite.attendeeStatus.isEmpty
+                            widget.eventInvite.attendeeStatus
+                                        .startsWith('Reject') ||
+                                    widget.eventInvite.attendeeStatus.isEmpty
                                 ? const SizedBox.shrink()
                                 : Padding(
                                     padding: const EdgeInsets.only(
@@ -665,11 +698,12 @@ class InviteAvailable extends StatelessWidget {
                                       color: Colors.grey,
                                     ),
                                   ),
-                            eventInvite.attendeeStatus.startsWith('Reject') ||
-                                    eventInvite.attendeeStatus.isEmpty
+                            widget.eventInvite.attendeeStatus
+                                        .startsWith('Reject') ||
+                                    widget.eventInvite.attendeeStatus.isEmpty
                                 ? const SizedBox.shrink()
                                 : Text(
-                                    event.title.toUpperCase(),
+                                    widget.event.title.toUpperCase(),
                                     style: TextStyle(
                                       fontSize: 20,
                                       color: Colors.black,
@@ -677,20 +711,23 @@ class InviteAvailable extends StatelessWidget {
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
-                            eventInvite.attendeeStatus.startsWith('Reject') ||
-                                    eventInvite.attendeeStatus.isEmpty
+                            widget.eventInvite.attendeeStatus
+                                        .startsWith('Reject') ||
+                                    widget.eventInvite.attendeeStatus.isEmpty
                                 ? const SizedBox.shrink()
                                 : SizedBox(height: 20),
-                            eventInvite.attendeeStatus.startsWith('Reject') ||
-                                    eventInvite.attendeeStatus.isEmpty
+                            widget.eventInvite.attendeeStatus
+                                        .startsWith('Reject') ||
+                                    widget.eventInvite.attendeeStatus.isEmpty
                                 ? const SizedBox.shrink()
                                 : Container(
                                     height: 1.0,
                                     width: 200,
                                     color: Colors.black,
                                   ),
-                            eventInvite.attendeeStatus.startsWith('Reject') ||
-                                    eventInvite.attendeeStatus.isEmpty
+                            widget.eventInvite.attendeeStatus
+                                        .startsWith('Reject') ||
+                                    widget.eventInvite.attendeeStatus.isEmpty
                                 ? const SizedBox.shrink()
                                 : Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -784,8 +821,9 @@ class InviteAvailable extends StatelessWidget {
                                       ),
                                     ],
                                   ),
-                            eventInvite.attendeeStatus.startsWith('Reject') ||
-                                    eventInvite.attendeeStatus.isEmpty
+                            widget.eventInvite.attendeeStatus
+                                        .startsWith('Reject') ||
+                                    widget.eventInvite.attendeeStatus.isEmpty
                                 ? const SizedBox.shrink()
                                 : Padding(
                                     padding: const EdgeInsets.only(
@@ -794,56 +832,27 @@ class InviteAvailable extends StatelessWidget {
                                       color: Colors.grey,
                                     ),
                                   ),
-                            eventInvite.attendeeStatus.startsWith('Reject') ||
-                                    eventInvite.attendeeStatus.isEmpty
-                                ? const SizedBox.shrink()
-                                : Container(
-                                    width: width,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 12.0, right: 12),
-                                      child: RichText(
-                                        textScaleFactor: MediaQuery.of(context)
-                                            .textScaleFactor,
-                                        text: TextSpan(
-                                          children: [
-                                            TextSpan(
-                                              text:
-                                                  'Number of invitation requests:   ',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                            TextSpan(
-                                              text: "${attendeeRequesCount} ",
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                            eventInvite.attendeeStatus.startsWith('Reject') ||
-                                    eventInvite.attendeeStatus.isEmpty
+                            widget.eventInvite.attendeeStatus
+                                        .startsWith('Reject') ||
+                                    widget.eventInvite.attendeeStatus.isEmpty
                                 ? const SizedBox.shrink()
                                 : const SizedBox(
                                     height: 10,
                                   ),
-                            eventInvite.attendeeStatus.startsWith('Reject') ||
-                                    eventInvite.attendeeStatus.isEmpty
+                            widget.eventInvite.attendeeStatus
+                                        .startsWith('Reject') ||
+                                    widget.eventInvite.attendeeStatus.isEmpty
                                 ? const SizedBox.shrink()
                                 : GestureDetector(
                                     onTap: () => Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (_) => EventAttendees(
-                                                  palette: palette,
-                                                  event: event,
+                                                  dontShowAnswerWidget: true,
+                                                  palette: widget.palette,
+                                                  event: widget.event,
                                                   from: 'Accepted',
+                                                  showAppBar: true,
                                                 ))),
                                     child: Container(
                                       width: width,
@@ -858,14 +867,15 @@ class InviteAvailable extends StatelessWidget {
                                             children: [
                                               TextSpan(
                                                 text:
-                                                    'Number of people attending:   ',
+                                                    'The number of people attending:   ',
                                                 style: TextStyle(
                                                   fontSize: 12,
                                                   color: Colors.grey,
                                                 ),
                                               ),
                                               TextSpan(
-                                                text: "${inviteCount} ",
+                                                text:
+                                                    "${widget.inviteCount.toString()} ",
                                                 style: TextStyle(
                                                   fontSize: 12,
                                                   color: Colors.black,
@@ -895,12 +905,12 @@ class InviteAvailable extends StatelessWidget {
                               padding:
                                   const EdgeInsets.only(left: 12.0, right: 12),
                               child: Text(
-                                eventInvite.attendeeStatus.isEmpty
-                                    ? 'Your invitation request has be sent to the organizer of this event. '
-                                    : eventInvite.attendeeStatus
+                                widget.eventInvite.attendeeStatus.isEmpty
+                                    ? 'Your invitation request has been sent to the organizer of this event. Your request must be accepted before you can attend this event.'
+                                    : widget.eventInvite.attendeeStatus
                                             .startsWith('Reject')
                                         ? 'Your invitation request has been rejected.'
-                                        : 'Your attendee number must much the event\s organiser\s account number in order to attend this event. You should show this account number at the entrance of the event',
+                                        : 'Your entrance number also known as attendee number is ${widget.eventInvite.attendNumber}. This number would be validated at the entrance of this event before you can enter. This number is uniqe. Have fun attending this event.',
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 12,
@@ -913,12 +923,12 @@ class InviteAvailable extends StatelessWidget {
                             )
                           ],
                         ),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ),
-          eventInvite.invited
-              ? eventInvite.attendeeStatus.isNotEmpty
+          widget.eventInvite.invited!
+              ? widget.eventInvite.attendeeStatus.isNotEmpty
                   ? SizedBox.shrink()
                   : Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 30.0),
@@ -949,7 +959,7 @@ class InviteAvailable extends StatelessWidget {
                                 ),
                               ),
                               onPressed: () => _showSelectImageDialog2(
-                                  context, 'Accepted', eventInvite),
+                                  context, 'Accepted', widget.eventInvite),
                             ),
                           ),
                           Container(
@@ -976,13 +986,13 @@ class InviteAvailable extends StatelessWidget {
                                 ),
                               ),
                               onPressed: () => _showSelectImageDialog2(
-                                  context, 'Rejected', eventInvite),
+                                  context, 'Rejected', widget.eventInvite),
                             ),
                           ),
                         ],
                       ),
                     )
-              : eventInvite.attendeeStatus.isNotEmpty
+              : widget.eventInvite.attendeeStatus.isNotEmpty
                   ? SizedBox.shrink()
                   : Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 30.0),
@@ -1010,7 +1020,7 @@ class InviteAvailable extends StatelessWidget {
                             ),
                           ),
                           onPressed: () => _showSelectImageDialog2(
-                              context, 'Cancel', eventInvite),
+                              context, 'Cancel', widget.eventInvite),
                         ),
                       ),
                     ),

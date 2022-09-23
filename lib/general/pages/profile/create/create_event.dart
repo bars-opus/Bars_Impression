@@ -35,8 +35,13 @@ class _CreateEventState extends State<CreateEvent> {
   String _country = '';
   String _virtualVenue = '';
   String _ticketSite = '';
+  String _clossingDay = '';
   bool _isVirtual = false;
   bool _isPrivate = false;
+  bool _isFree = false;
+  bool _isCashPayment = false;
+  bool _showOnExplorePage = false;
+  bool _showToFollowers = false;
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +71,11 @@ class _CreateEventState extends State<CreateEvent> {
       event: null,
       isVirtual: _isVirtual,
       isPrivate: _isPrivate,
+      isFree: _isFree,
+      isCashPayment: _isCashPayment,
+      showOnExplorePage: _showOnExplorePage,
+      showToFollowers: _showToFollowers,
+      clossingDay: _clossingDay,
     );
   }
 }

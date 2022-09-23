@@ -77,25 +77,41 @@ class _ChatDetailsState extends State<ChatDetails> {
         });
   }
 
+
   _androidDialog(BuildContext parentContext) {
     return showDialog(
         context: parentContext,
         builder: (context) {
           return SimpleDialog(
             title: Text(
-              'Are you sure you want to block ${widget.user.userName}?',
+               'Are you sure you want to block ${widget.user.userName}?',
+              style: TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
             ),
             children: <Widget>[
-              SimpleDialogOption(
-                child: const Text('Block'),
-                onPressed: () {
-                  Navigator.pop(context);
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                   'Block',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.blue),
+                    textAlign: TextAlign.center,
+                  ),
+                  onPressed: () {
+                Navigator.pop(context);
                   _blockOrUnBlock();
-                },
+                  },
+                ),
               ),
-              SimpleDialogOption(
-                child: const Text('cancel'),
-                onPressed: () => Navigator.pop(context),
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'Cancel',
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
               ),
             ],
           );

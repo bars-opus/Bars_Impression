@@ -124,13 +124,14 @@ class _InviteSearchState extends State<InviteSearch>
         });
   }
 
-  _buildEventBuilder() {
+  _buildFollowerBuilder() {
     return Padding(
       padding: const EdgeInsets.only(top: 30.0),
       child: NotificationListener<ScrollNotification>(
         onNotification: _handleScrollNotification,
         child: Scrollbar(
-          child: CustomScrollView(slivers: [
+          controller: _hideButtonController,
+          child: CustomScrollView(controller: _hideButtonController, slivers: [
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
@@ -139,7 +140,7 @@ class _InviteSearchState extends State<InviteSearch>
                     future: DatabaseService.getUserWithId(user.id),
                     builder: (BuildContext context, AsyncSnapshot snapshot) {
                       if (!snapshot.hasData) {
-                        return FollowerUserSchimmerSkeleton();
+                        return const SizedBox.shrink();
                       }
                       AccountHolder user = snapshot.data;
                       return widget.currentUserId == user.id
@@ -247,7 +248,7 @@ class _InviteSearchState extends State<InviteSearch>
               child: Container(
                   // ignore: unnecessary_null_comparison
                   child: _users == null
-                      ? _buildEventBuilder()
+                      ? _buildFollowerBuilder()
                       //  Center(
                       //     child: NoContents(
                       //         title: "Searh for users. ",
@@ -373,9 +374,9 @@ class _InviteSearchState extends State<InviteSearch>
         //                 height: 30.0,
         //               ),
         //               Expanded(
-        //                 child: _buildEventBuilder(),
+        //                 child: _buildFollowerBuilder(),
         //                 //  widget.followingCount > 0
-        //                 //     ? _buildEventBuilder()
+        //                 //     ? _buildFollowerBuilder()
         //                 //     : _userList.length > 0
         //                 //         ? Expanded(
         //                 //             child: Center(
@@ -391,7 +392,7 @@ class _InviteSearchState extends State<InviteSearch>
         //               )
         //             ],
         //           ),
-        //         ),
+        //         ),s
         //       ),
         //     ),
         //   ),

@@ -91,6 +91,16 @@ class _DjsState extends State<Djs> with AutomaticKeepAliveClientMixin {
     }
     _hasNext = false;
     _isFectchingUser = false;
+     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        duration: const Duration(milliseconds: 800),
+        backgroundColor:
+            ConfigBloc().darkModeOn ? Colors.grey[800] :  Color(0xFFf2f2f2),
+        content: SizedBox(
+            height: 15,
+            child: Text(
+              'Loading...',
+              style: TextStyle(color: Colors.blue, fontSize: 12),
+            ))));
     return _hasNext;
   }
 

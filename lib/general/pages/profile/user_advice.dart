@@ -333,13 +333,11 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                                               fontSize: 12,
                                               text: userAdvice.content,
                                             )
-                                          : 
-                                       
-                                           HyperLinkText(
-                  from: 'Advice',
-                  text:   userAdvice.content,
-                ),
-                                            )
+                                          : HyperLinkText(
+                                              from: 'Advice',
+                                              text: userAdvice.content,
+                                            ),
+                                    )
                                   : widget.user.hideAdvice!
                                       ? BarsTextStrikeThrough(
                                           fontSize: 12,
@@ -352,10 +350,11 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                                                   fontSize: 12,
                                                   text: userAdvice.content,
                                                 )
-                                              :  HyperLinkText(
-                  from: 'Advice',
-                  text:   userAdvice.content,
-                ),),
+                                              : HyperLinkText(
+                                                  from: 'Advice',
+                                                  text: userAdvice.content,
+                                                ),
+                                        ),
                               Text(
                                   timeago.format(
                                     userAdvice.timestamp.toDate(),

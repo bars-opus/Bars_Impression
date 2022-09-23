@@ -26,8 +26,13 @@ class Event {
   final String reportConfirmed;
   final String blurHash;
   final String ticketSite;
+  final String clossingDay;
   final bool isVirtual;
+  final bool isFree;
   final bool isPrivate;
+  final bool isCashPayment;
+  final bool showToFollowers;
+  final bool showOnExplorePage;
 
   Event({
     required this.id,
@@ -57,6 +62,11 @@ class Event {
     required this.isVirtual,
     required this.isPrivate,
     required this.blurHash,
+    required this.isFree,
+    required this.isCashPayment,
+    required this.showOnExplorePage,
+    required this.showToFollowers,
+    required this.clossingDay,
   });
 
   factory Event.fromDoc(DocumentSnapshot doc) {
@@ -87,6 +97,11 @@ class Event {
       reportConfirmed: doc['reportConfirmed'],
       isVirtual: doc['isVirtual'] ?? false,
       isPrivate: doc['isPrivate'] ?? false,
+      isFree: doc['isFree'] ?? false,
+      isCashPayment: doc['isCashPayment'] ?? false,
+      showToFollowers: doc['showToFollowers'] ?? false,
+      showOnExplorePage: doc['showOnExplorePage'] ?? false,
+      clossingDay: doc['clossingDay'] ?? '',
       blurHash: doc['blurHash'] ?? '',
     );
   }

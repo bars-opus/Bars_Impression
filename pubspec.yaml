@@ -76,6 +76,10 @@ dependencies:
   blurhash: ^1.0.0
   store_redirect: ^2.0.1
   syncfusion_flutter_calendar: ^20.2.48
+  google_sign_in: ^5.4.1
+  sign_in_with_apple: ^4.1.0
+  firebase_dynamic_links: ^4.3.8
+
   # rate_my_app: ^1.1.0
 
 flutter_icons:

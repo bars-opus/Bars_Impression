@@ -12,6 +12,7 @@ class EventEnlargedWidget extends StatefulWidget {
   final VoidCallback onPressedCalendar;
   final VoidCallback onPressedEventticketSite;
   final VoidCallback onPressedPreviousEvent;
+  final VoidCallback onPressedPeople;
   final VoidCallback onPressedAsk;
 
   EventEnlargedWidget({
@@ -26,6 +27,7 @@ class EventEnlargedWidget extends StatefulWidget {
     required this.onPressedPreviousEvent,
     required this.onPressedAsk,
     required this.onPressedCalendar,
+    required this.onPressedPeople,
   });
 
   @override
@@ -34,6 +36,7 @@ class EventEnlargedWidget extends StatefulWidget {
 
 class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
   late DateTime _date;
+  late DateTime _closingDate;
   late DateTime _toDaysDate;
   int _different = 0;
   bool _displayWarning = false;
@@ -50,14 +53,18 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
 
   _countDown() async {
     DateTime date = DateTime.parse(widget.event.date);
+    DateTime clossingDate = DateTime.parse(widget.event.clossingDay);
     final toDayDate = DateTime.now();
+
     var different = date.difference(toDayDate).inDays;
 
     setState(() {
       _different = different;
       _date = date;
       _toDaysDate = toDayDate;
+      _closingDate = clossingDate;
     });
+    return _date;
   }
 
   _setContentWarning() {
@@ -172,12 +179,55 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                     ),
                   ),
                 ),
+                Positioned(
+                  top: 70,
+                  left: MediaQuery.of(context).size.width / 2 - 20,
+                  child: widget.event.isPrivate
+                      ? RichText(
+                          textScaleFactor:
+                              MediaQuery.of(context).textScaleFactor,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                  text: "P",
+                                  style: TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white)),
+                              TextSpan(
+                                  text: "rivate",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12.0,
+                                      color: Colors.white)),
+                            ],
+                          ))
+                      : RichText(
+                          textScaleFactor:
+                              MediaQuery.of(context).textScaleFactor,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                  text: "P",
+                                  style: TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white)),
+                              TextSpan(
+                                  text: "ublic",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12.0,
+                                      color: Colors.white)),
+                            ],
+                          )),
+                ),
                 Padding(
                   padding: const EdgeInsets.only(
                       top: 130.0, left: 10.0, right: 10.0),
                   child: Container(
                     child: SingleChildScrollView(
-                      child: _toDaysDate.isAfter(_date)
+                      child: _toDaysDate.isAfter(_closingDate)
                           ? EventCompletedWidget(
                               date: widget.event.date,
                               onPressed: widget.onPressedPreviousEvent,
@@ -188,6 +238,46 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                             )
                           : Column(
                               children: <Widget>[
+                                widget.event.authorId ==
+                                        Provider.of<UserData>(context)
+                                            .currentUserId!
+                                    ? Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 20,
+                                            right: 30,
+                                            bottom: 40,
+                                            left: 30.0),
+                                        child: Center(
+                                          child: Container(
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            child: TextButton(
+                                              style: ElevatedButton.styleFrom(
+                                                primary: Colors.white,
+                                                onPrimary: Colors.blue,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          3.0),
+                                                ),
+                                              ),
+                                              onPressed: widget.onPressedAttend,
+                                              child: Material(
+                                                color: Colors.transparent,
+                                                child: Text(
+                                                  'Go to your dashboard',
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    : SizedBox.shrink(),
                                 ShakeTransition(
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -791,18 +881,6 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                         onPressed: widget
                                                             .onPressedLocationMap,
                                                       ))),
-                                        ShakeTransition(
-                                            child: Material(
-                                                color: Colors.transparent,
-                                                child: IconButton(
-                                                  icon: Icon(
-                                                    MdiIcons.car,
-                                                    color: Colors.white,
-                                                  ),
-                                                  iconSize: 30.0,
-                                                  onPressed:
-                                                      widget.onPressedAttend,
-                                                ))),
                                         IconButton(
                                           icon: Icon(
                                             Icons.event_available,
@@ -811,52 +889,76 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                           ),
                                           onPressed: widget.onPressedCalendar,
                                         ),
-                                        Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 50.0, top: 70),
-                                            child: Align(
-                                                alignment:
-                                                    Alignment.bottomCenter,
-                                                child: ShakeTransition(
-                                                  axis: Axis.vertical,
-                                                  child: Container(
-                                                    width: 150.0,
-                                                    child: OutlinedButton(
-                                                      style: OutlinedButton
-                                                          .styleFrom(
-                                                        primary: Colors.blue,
-                                                        side: BorderSide(
-                                                            width: 1.0,
-                                                            color:
-                                                                Colors.white),
-                                                        shape:
-                                                            RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      20.0),
-                                                        ),
-                                                      ),
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(10.0),
-                                                        child: Text(
-                                                          'Ask more',
-                                                          style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontSize: 14.0,
+                                        widget.event.guess.isEmpty ||
+                                                widget.event.artist.isEmpty
+                                            ? const SizedBox.shrink()
+                                            : IconButton(
+                                                icon: Icon(
+                                                  Icons.account_circle,
+                                                  color: Colors.white,
+                                                  size: 30.0,
+                                                ),
+                                                onPressed:
+                                                    widget.onPressedPeople,
+                                              ),
+                                        widget.event.authorId ==
+                                                Provider.of<UserData>(context)
+                                                    .currentUserId!
+                                            ? SizedBox.shrink()
+                                            : Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 10.0, top: 70),
+                                                child: Align(
+                                                    alignment:
+                                                        Alignment.bottomCenter,
+                                                    child: ShakeTransition(
+                                                      axis: Axis.vertical,
+                                                      child: Container(
+                                                        width: 150.0,
+                                                        child: OutlinedButton(
+                                                          style: OutlinedButton
+                                                              .styleFrom(
+                                                            primary:
+                                                                Colors.blue,
+                                                            side: BorderSide(
+                                                                width: 1.0,
+                                                                color: Colors
+                                                                    .white),
+                                                            shape:
+                                                                RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          20.0),
+                                                            ),
                                                           ),
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(10.0),
+                                                            child: Text(
+                                                              'Attend',
+                                                              style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontSize: 14.0,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          onPressed: widget
+                                                              .onPressedAttend,
                                                         ),
                                                       ),
-                                                      onPressed:
-                                                          widget.onPressedAsk,
-                                                    ),
-                                                  ),
-                                                ))),
+                                                    ))),
+                                        widget.event.authorId ==
+                                                Provider.of<UserData>(context)
+                                                    .currentUserId!
+                                            ? const SizedBox(height: 70)
+                                            : SizedBox.shrink(),
                                         Padding(
                                             padding: const EdgeInsets.only(
-                                                bottom: 50.0, top: 70),
+                                              bottom: 70.0,
+                                            ),
                                             child: Align(
                                                 alignment:
                                                     Alignment.bottomCenter,
@@ -930,7 +1032,7 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                       ),
                                                     ],
                                                   ),
-                                                  textAlign: TextAlign.left,
+                                                  textAlign: TextAlign.center,
                                                 ),
                                               ),
                                               Padding(
@@ -1081,6 +1183,17 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                         ),
                                         SizedBox(
                                           height: 100,
+                                        ),
+                                        Text(
+                                          "This event would be completed on\n${MyDateFormat.toDate(DateTime.parse(widget.event.clossingDay))}",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 12.0,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        SizedBox(
+                                          height: 70,
                                         ),
                                       ],
                                     ),

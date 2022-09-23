@@ -148,7 +148,7 @@ class _EventPageState extends State<EventPage>
         length: 6,
         child: Scaffold(
             backgroundColor:
-                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
             appBar: PreferredSize(
               preferredSize:
                   Size.fromHeight(MediaQuery.of(context).size.height),

@@ -39,7 +39,12 @@ class _EditEventState extends State<EditEvent> {
       triller: widget.event.triller,
       event: widget.event,
       isVirtual: widget.event.isVirtual,
-      isPrivate: widget.event.isVirtual, 
+      isPrivate: widget.event.isVirtual,
+      isFree: widget.event.isFree,
+      isCashPayment: widget.event.isCashPayment,
+      showOnExplorePage: widget.event.showOnExplorePage,
+      showToFollowers: widget.event.showToFollowers,
+      clossingDay: widget.event.clossingDay,
     );
   }
 }

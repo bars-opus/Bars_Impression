@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/scheduler.dart';
 
 // ignore: must_be_immutable
 class SetUpBrand extends StatefulWidget {
@@ -11,7 +12,7 @@ class SetUpBrand extends StatefulWidget {
 class _SetUpBrandState extends State<SetUpBrand> {
   final _formKey = GlobalKey<FormState>();
   String _userName = '';
-  bool _isLoading = false;
+  // bool _isLoading = false;
   File? _profileImage;
   String _profileHandle = '';
   String _bio = '';
@@ -31,6 +32,9 @@ class _SetUpBrandState extends State<SetUpBrand> {
       text: _userName,
     );
     selectedValue = _profileHandle.isEmpty ? values.last : _profileHandle;
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      Provider.of<UserData>(context, listen: false).setIsLoading(false);
+    });
   }
 
   @override
@@ -71,7 +75,9 @@ class _SetUpBrandState extends State<SetUpBrand> {
   }
 
   _validate() async {
-    if (_formKey.currentState!.validate() & !_isLoading) {
+    if (_formKey.currentState!.validate() &
+        !Provider.of<UserData>(context, listen: false).isLoading) {
+      Provider.of<UserData>(context, listen: false).setIsLoading(true);
       _formKey.currentState?.save();
       final QuerySnapshot result = await FirebaseFirestore.instance
           .collection('users')
@@ -81,7 +87,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
       final List<DocumentSnapshot> documents = result.docs;
 
       if (documents.length > 0) {
-        print(_userName + ' exists');
+        Provider.of<UserData>(context, listen: false).setIsLoading(false);
         final double width = Responsive.isDesktop(context)
             ? 600.0
             : MediaQuery.of(context).size.width;
@@ -124,7 +130,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
         FocusScope.of(context).unfocus();
 
         try {
-          usersRef.doc(currentUserId).update({
+          await usersRef.doc(currentUserId).update({
             'userName': _userName,
           });
           animateToPage();
@@ -172,52 +178,25 @@ class _SetUpBrandState extends State<SetUpBrand> {
         }
       }
     }
+    Provider.of<UserData>(context, listen: false).setIsLoading(false);
   }
 
   _submitProfileImage(AccountHolder user) async {
-    final double width = Responsive.isDesktop(context)
-        ? 600.0
-        : MediaQuery.of(context).size.width;
+    // final double width = Responsive.isDesktop(context)
+    //     ? 600.0
+    //     : MediaQuery.of(context).size.width;
     String currentUserId =
         Provider.of<UserData>(context, listen: false).currentUserId!;
-    if (_formKey.currentState!.validate() && !_isLoading) {
+    if (_formKey.currentState!.validate() &&
+        !Provider.of<UserData>(context, listen: false).isLoading) {
+      Provider.of<UserData>(context, listen: false).setIsLoading(true);
       _formKey.currentState?.save();
       FocusScope.of(context).unfocus();
       animateToPage();
-      Flushbar(
-        maxWidth: MediaQuery.of(context).size.width,
-        backgroundColor: Color(0xFF1a1a1a),
-        margin: EdgeInsets.all(8),
-        showProgressIndicator: true,
-        progressIndicatorBackgroundColor: Color(0xFF1a1a1a),
-        progressIndicatorValueColor: AlwaysStoppedAnimation(Colors.blue),
-        flushbarPosition: FlushbarPosition.TOP,
-        boxShadows: [
-          BoxShadow(
-            color: Colors.black,
-            offset: Offset(0.0, 2.0),
-            blurRadius: 3.0,
-          )
-        ],
-        titleText: Text(
-          "Setting up brand",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: width > 800 ? 22 : 14,
-          ),
-        ),
-        messageText: Text(
-          "Just a moment...",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: width > 800 ? 20 : 12,
-          ),
-        ),
-        duration: Duration(seconds: 3),
-      )..show(context);
-      setState(() {
-        _isLoading = true;
-      });
+
+      // setState(() {
+      //   _isLoading = true;
+      // });
 
       String _profileImageUrl = '';
       if (_profileImage == null) {
@@ -230,7 +209,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
       }
 
       try {
-        usersRef.doc(currentUserId).update({
+        await usersRef.doc(currentUserId).update({
           'profileImageUrl': _profileImageUrl,
           'bio': Provider.of<UserData>(context, listen: false).post6,
         });
@@ -279,9 +258,10 @@ class _SetUpBrandState extends State<SetUpBrand> {
             size: 30.0,
             color: Colors.blue,
           ),
-          duration: Duration(seconds: 3),
+          duration: Duration(seconds: 2),
           leftBarIndicatorColor: Colors.blue,
         )..show(context);
+        Provider.of<UserData>(context, listen: false).setIsLoading(false);
       } catch (e) {
         final double width = Responsive.isDesktop(context)
             ? 600.0
@@ -324,20 +304,19 @@ class _SetUpBrandState extends State<SetUpBrand> {
           leftBarIndicatorColor: Colors.blue,
         )..show(context);
       }
-      setState(() {
-        _isLoading = false;
-      });
+      Provider.of<UserData>(context, listen: false).setIsLoading(false);
     }
   }
 
   _submitProfileHandle() async {
+    Provider.of<UserData>(context, listen: false).setIsLoading(true);
     String currentUserId =
         Provider.of<UserData>(context, listen: false).currentUserId!;
     if (_profileHandle.isEmpty) {
       _profileHandle = 'Fan';
     }
     try {
-      usersRef.doc(currentUserId).update({
+      await usersRef.doc(currentUserId).update({
         'profileHandle': _profileHandle,
       });
       animateToPage();
@@ -383,6 +362,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
         leftBarIndicatorColor: Colors.blue,
       )..show(context);
     }
+    Provider.of<UserData>(context, listen: false).setIsLoading(false);
   }
 
   static const values = <String>[
@@ -637,9 +617,10 @@ class _SetUpBrandState extends State<SetUpBrand> {
                             padding: const EdgeInsets.all(12.0),
                             child: Column(
                               children: [
-                                _isLoading
+                                Provider.of<UserData>(context, listen: false)
+                                        .isLoading
                                     ? SizedBox(
-                                        height: 2.0,
+                                        height: 1.0,
                                         child: LinearProgressIndicator(
                                           backgroundColor: Colors.grey[100],
                                           valueColor: AlwaysStoppedAnimation(
@@ -758,23 +739,10 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                                 ),
                                               ),
                                             ),
-                                            _isLoading
-                                                ? Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            top: 30.0),
-                                                    child: SizedBox(
-                                                      height: 2.0,
-                                                      child:
-                                                          LinearProgressIndicator(
-                                                        backgroundColor:
-                                                            Colors.transparent,
-                                                        valueColor:
-                                                            AlwaysStoppedAnimation(
-                                                                Colors.blue),
-                                                      ),
-                                                    ),
-                                                  )
+                                            Provider.of<UserData>(context,
+                                                        listen: false)
+                                                    .isLoading
+                                                ? const SizedBox.shrink()
                                                 : FadeAnimation(
                                                     0.5,
                                                     Align(
@@ -819,13 +787,13 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                                       ),
                                                     ),
                                                   ),
-                                            SizedBox(
+                                            const SizedBox(
                                               height: 50.0,
                                             ),
                                           ],
                                         )
                                       ]),
-                                )
+                                ),
                               ],
                             )),
                       ),
@@ -836,6 +804,21 @@ class _SetUpBrandState extends State<SetUpBrand> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
+                              Provider.of<UserData>(context, listen: false)
+                                      .isLoading
+                                  ? Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 20.0),
+                                      child: SizedBox(
+                                        height: 1.0,
+                                        child: LinearProgressIndicator(
+                                          backgroundColor: Colors.grey[100],
+                                          valueColor: AlwaysStoppedAnimation(
+                                              Colors.blue),
+                                        ),
+                                      ),
+                                    )
+                                  : SizedBox.shrink(),
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: ElevatedButton(
@@ -848,7 +831,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                     ),
                                   ),
                                   onPressed: () {
-                                    animateToPage();
+                                    _submitProfileHandle();
                                   },
                                   child: Text(
                                     'Skip',
@@ -880,6 +863,9 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   buildRadios(),
+                                  const SizedBox(
+                                    height: 50.0,
+                                  ),
                                 ],
                               ),
                             ],
@@ -893,6 +879,21 @@ class _SetUpBrandState extends State<SetUpBrand> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                Provider.of<UserData>(context, listen: false)
+                                        .isLoading
+                                    ? Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 10.0),
+                                        child: SizedBox(
+                                          height: 1.0,
+                                          child: LinearProgressIndicator(
+                                            backgroundColor: Colors.grey[100],
+                                            valueColor: AlwaysStoppedAnimation(
+                                                Colors.blue),
+                                          ),
+                                        ),
+                                      )
+                                    : const SizedBox.shrink(),
                                 Align(
                                   alignment: Alignment.centerRight,
                                   child: ElevatedButton(
@@ -929,7 +930,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                 Align(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
-                                    'Set \nAvatar',
+                                    'Set\nPhoto',
                                     style: TextStyle(
                                         color: Colors.blue,
                                         fontSize: 20.0,
@@ -1021,19 +1022,9 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                     ),
                                   ),
                                 ),
-                                _isLoading
-                                    ? Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 60.0),
-                                        child: SizedBox(
-                                          height: 1.0,
-                                          child: LinearProgressIndicator(
-                                            backgroundColor: Colors.transparent,
-                                            valueColor: AlwaysStoppedAnimation(
-                                                Colors.blue),
-                                          ),
-                                        ),
-                                      )
+                                Provider.of<UserData>(context, listen: false)
+                                        .isLoading
+                                    ? const SizedBox.shrink()
                                     : FadeAnimation(
                                         0.5,
                                         Align(

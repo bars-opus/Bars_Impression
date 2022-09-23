@@ -949,10 +949,17 @@ class EventViewWidget extends StatelessWidget {
                               color: ConfigBloc().darkModeOn
                                   ? Colors.white
                                   : Colors.black)),
+                      TextSpan(
+                          text: event.isPrivate ? '\nPrivate' : '\nPublic',
+                          style: TextStyle(
+                              fontSize: 10,
+                              color: ConfigBloc().darkModeOn
+                                  ? Colors.white
+                                  : Colors.black)),
                     ],
                   ),
                   overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
+                  maxLines: 2,
                 ),
                 Text(
                     timeago.format(

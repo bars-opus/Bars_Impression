@@ -17,7 +17,7 @@ class Fans extends StatefulWidget {
 class _FansState extends State<Fans> with AutomaticKeepAliveClientMixin {
   List<AccountHolder> _userList = [];
   final _userSnapshot = <DocumentSnapshot>[];
- int limit = 5;
+  int limit = 5;
   bool _hasNext = true;
   bool _isFectchingUser = false;
   late ScrollController _hideButtonController;
@@ -91,6 +91,16 @@ class _FansState extends State<Fans> with AutomaticKeepAliveClientMixin {
     }
     _hasNext = false;
     _isFectchingUser = false;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        duration: const Duration(milliseconds: 800),
+        backgroundColor:
+            ConfigBloc().darkModeOn ? Colors.grey[800] :  Color(0xFFf2f2f2),
+        content: SizedBox(
+            height: 15,
+            child: Text(
+              'Loading...',
+              style: TextStyle(color: Colors.blue, fontSize: 12),
+            ))));
     return _hasNext;
   }
 
@@ -141,15 +151,15 @@ class _FansState extends State<Fans> with AutomaticKeepAliveClientMixin {
           ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
       body: _userList.length > 0
           ? Padding(
-            padding: const EdgeInsets.only(top: 20.0),
-            child: RefreshIndicator(
+              padding: const EdgeInsets.only(top: 20.0),
+              child: RefreshIndicator(
                 backgroundColor: Colors.white,
                 onRefresh: () async {
                   _setupUsers();
                 },
                 child: _buildUser(),
               ),
-          )
+            )
           : _userList.length == 0
               ? Center(
                   child: SizedBox.shrink(),

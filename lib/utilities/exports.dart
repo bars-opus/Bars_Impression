@@ -265,21 +265,36 @@ export 'package:bars/utilities/verification_info.dart';
 export 'package:bars/widgets/info/user_banned.dart';
 export 'package:bars/utilities/about_us.dart';
 export 'package:bars/utilities/tagged_user.dart';
-export 'package:bars/general/pages/event/event_attend.dart';
 export 'package:bars/general/models/invite_model.dart';
-export 'package:bars/general/pages/event/event_attendees.dart';
-export 'package:bars/general/pages/event/event_dashboard.dart';
-export 'package:bars/general/pages/event/send_event_invitation.dart';
-export 'package:bars/general/pages/event/invitation_message.dart';
-export 'package:bars/general/pages/event/invite_search.dart';
-export 'package:bars/general/pages/event/event_invites.dart';
-export 'package:bars/general/pages/event/events_atteding.dart';
-export 'package:bars/general/pages/event/event_invite_available.dart';
-export 'package:bars/widgets/events_attending_widget.dart';
+export 'package:bars/general/pages/event/invitation&requests/event_invite_available.dart';
+export 'package:bars/general/pages/event/invitation&requests/events_feed_attending_widget.dart';
 export 'package:syncfusion_flutter_calendar/calendar.dart';
-export 'package:bars/general/pages/event/event_calender.dart';
-
-
+export 'package:bars/general/pages/event/invitation&requests/activity_event_invitation.dart';
+export 'package:bars/general/pages/event/invitation&requests/event_attendee_request_answere_widget.dart';
+export 'package:bars/widgets/buttons/event_invitation_card.dart';
+export 'package:bars/general/pages/event/invitation&requests/event_attendees.dart';
+export 'package:bars/general/pages/event/invitation&requests/event_invites.dart';
+export 'package:bars/general/pages/event/invitation&requests/invite_search.dart';
+export 'package:bars/general/pages/event/invitation&requests/event_attend.dart';
+export 'package:bars/general/pages/event/invitation&requests/event_calender.dart';
+export 'package:bars/general/pages/event/invitation&requests/event_dashboard.dart';
+export 'package:bars/general/pages/event/invitation&requests/event_people.dart';
+export 'package:bars/general/pages/event/invitation&requests/event_public_invite.dart';
+export 'package:bars/general/pages/event/invitation&requests/event_public_invite_available.dart';
+export 'package:bars/general/pages/event/invitation&requests/send_event_invitation.dart';
+export 'package:bars/general/pages/event/invitation&requests/events_atteding.dart';
+export 'package:bars/general/pages/profile/edit/profile_content_settings.dart';
+export 'package:bars/widgets/info/fetching_next_content.dart';
+export 'package:bars/utilities/error_user.dart';
+export 'package:bars/widgets/info/events_feed_attending_deleted.dart';
+export 'package:bars/widgets/focus_more_content_button.dart';
+export 'package:bars/general/pages/chats/send_to_chat.dart';
+export 'package:bars/widgets/buttons/sign_in_with_button.dart';
+export 'package:bars/auth_screens/login_screen_options.dart';
+export 'package:bars/utilities/view_sent_content.dart';
+export 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+export 'package:bars/general/pages/event/invitation&requests/event_invitation_notification.dart';
+export 'package:bars/general/pages/event/invitation&requests/event_attendee_validate_widget.dart';
 // discover user
 export 'package:bars/general/pages/discover/discover_page/account_categories/artists.dart';
 export 'package:bars/general/pages/discover/discover_page/account_categories/battle_rappers.dart';
@@ -297,6 +312,8 @@ export 'package:bars/general/pages/discover/discover_page/account_categories/pro
 export 'package:bars/general/pages/discover/discover_page/account_categories/record_labels.dart';
 export 'package:bars/general/pages/discover/discover_page/account_categories/video_vixens.dart';
 export 'package:bars/general/pages/forum_and_blog/forum/forum_feed.dart';
+export 'package:bars/general/pages/event/invitation&requests/event_attendees_validated.dart';
+export 'package:bars/general/pages/event/invitation&requests/validate_event_attendees.dart';
 // discover user import userLocation
 export 'package:bars/general/pages/discover/discover_user_location/account_categories/artists_location.dart';
 export 'package:bars/general/pages/discover/discover_user_location/account_categories/battle_rappers_location.dart';

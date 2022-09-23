@@ -7,8 +7,12 @@ class ActivityEvent {
   final String seen;
   final String eventImageUrl;
   final String eventTitle;
-  final String ask;
-  final Timestamp timestamp;
+  final String commonId;
+  final String toUserId;
+  final String? ask;
+  final String? eventInviteType;
+
+  final Timestamp? timestamp;
 
   ActivityEvent({
     required this.id,
@@ -18,7 +22,10 @@ class ActivityEvent {
     required this.eventImageUrl,
     required this.eventTitle,
     required this.ask,
+    required this.eventInviteType,
     required this.timestamp,
+    required this.commonId,
+    required this.toUserId,
   });
 
   factory ActivityEvent.fromDoc(DocumentSnapshot doc) {
@@ -29,6 +36,9 @@ class ActivityEvent {
       eventImageUrl: doc['eventImageUrl'],
       seen: doc['seen'],
       eventTitle: doc['eventTitle'],
+      eventInviteType: doc['eventInviteType'],
+      commonId: doc['commonId'],
+      toUserId: doc['toUserId'],
       ask: doc['ask'],
       timestamp: doc['timestamp'],
     );

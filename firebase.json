@@ -4,5 +4,15 @@
       "npm --prefix \"$RESOURCE_DIR\" run lint"
     ],
     "source": "functions"
+  },
+  "hosting": {
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "appAssociation": "AUTO",
+"rewrites": [ { "source": "/barsImpression/**", "dynamicLinks": true } ]
+    
   }
 }

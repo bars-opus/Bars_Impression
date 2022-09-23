@@ -1,5 +1,7 @@
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
 
 class ProfileSettings extends StatefulWidget {
   final AccountHolder user;
@@ -71,22 +73,61 @@ class _ProfileSettingsState extends State<ProfileSettings> {
         });
   }
 
+  // _androidDialog(BuildContext parentContext) {
+  //   return showDialog(
+  //       context: parentContext,
+  //       builder: (context) {
+  //         return SimpleDialog(
+  //           title: Text('Are you sure you want to log out of this account?'),
+  //           children: <Widget>[
+  //             SimpleDialogOption(
+  //               child: Text('Log Out'),
+  //               onPressed: () {
+  //                 _logOutUser(context);
+  //               },
+  //             ),
+  //             SimpleDialogOption(
+  //               child: Text('cancel'),
+  //               onPressed: () => Navigator.pop(context),
+  //             ),
+  //           ],
+  //         );
+  //       });
+  // }
+
   _androidDialog(BuildContext parentContext) {
     return showDialog(
         context: parentContext,
         builder: (context) {
           return SimpleDialog(
-            title: Text('Are you sure you want to log out of this account?'),
+            title: Text(
+              'Are you sure you want to log out of this account?',
+              style: TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
             children: <Widget>[
-              SimpleDialogOption(
-                child: Text('Log Out'),
-                onPressed: () {
-                  _logOutUser(context);
-                },
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'Log Out',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.blue),
+                    textAlign: TextAlign.center,
+                  ),
+                  onPressed: () {
+                    _logOutUser(context);
+                  },
+                ),
               ),
-              SimpleDialogOption(
-                child: Text('cancel'),
-                onPressed: () => Navigator.pop(context),
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'Cancel',
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
               ),
             ],
           );
@@ -121,6 +162,8 @@ class _ProfileSettingsState extends State<ProfileSettings> {
         ),
         duration: Duration(seconds: 3),
       )..show(context);
+      final googleSignIn = GoogleSignIn();
+      googleSignIn.disconnect();
       await _auth.signOut();
       Navigator.pushReplacementNamed(context, WelcomeScreen.id);
     } catch (e) {
@@ -159,8 +202,6 @@ class _ProfileSettingsState extends State<ProfileSettings> {
       print(e.toString());
     }
   }
-
- 
 
   Future<void> _sendMail(String url) async {
     final double width = Responsive.isDesktop(
@@ -371,7 +412,59 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                         },
                                       ),
                                     ),
-                              Divider(color: Colors.grey),
+                            ],
+                          ),
+                        )),
+                  ),
+                  Container(
+                    color: Colors.grey,
+                    height: 0.5,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              right: 10.0, top: 10, bottom: 10, left: 30),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              // GestureDetector(
+                              //   onTap: () => Navigator.push(
+                              //       context,
+                              //       MaterialPageRoute(
+                              //         builder: (_) => ProfileContentSettings(
+                              //           user: widget.user,
+                              //         ),
+                              //       )),
+                              //   child: IntroInfo(
+                              //     titleColor: ConfigBloc().darkModeOn
+                              //         ? Color(0xFFf2f2f2)
+                              //         : Color(0xFF1a1a1a),
+                              //     title: 'Content Settings',
+                              //     onPressed: () => Navigator.push(
+                              //         context,
+                              //         MaterialPageRoute(
+                              //           builder: (_) => ProfileContentSettings(
+                              //             user: widget.user,
+                              //           ),
+                              //         )),
+                              //     subTitle:
+                              //         "Control the privacy settings of your contents",
+                              //     icon: Icon(
+                              //       Icons.arrow_forward_ios_outlined,
+                              //       size: 20,
+                              //       color: ConfigBloc().darkModeOn
+                              //           ? Colors.white
+                              //           : Colors.black,
+                              //     ),
+                              //   ),
+                              // ),
+                              // Divider(color: Colors.grey),
                               GestureDetector(
                                 onTap: () => Navigator.push(
                                     context,

@@ -127,7 +127,7 @@ class _IntroState extends State<Intro> {
                             child: WelcomeInfo(
                               title: 'Meet people',
                               subTitle:
-                                  "Discover and get to know the best music creatives from artists, dancers, battle rappers, video vixens, cover art designers, brand influencers, producers, video directors, DJs, photographers, bloggers, and record labels.  People in the music industry can connect for business and collaborations.",
+                                  "Discover and get discovered. Get to know the best music creatives from artists, dancers, battle rappers, video vixens, cover art designers, brand influencers, producers, video directors, DJs, photographers, bloggers, and record labels.  People in the music industry can connect for business and collaborations.",
                               icon: Icon(
                                 Icons.people_outline,
                                 size: 40,

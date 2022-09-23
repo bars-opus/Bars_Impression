@@ -1,13 +1,17 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ActivityEventScreen extends StatefulWidget {
   static final id = 'ActivityEventScreen';
   final String currentUserId;
+  final String from;
   final int activityEventCount;
   ActivityEventScreen(
-      {required this.currentUserId, required this.activityEventCount});
+      {required this.currentUserId,
+      required this.from,
+      required this.activityEventCount});
 
   @override
   _ActivityEventScreenState createState() => _ActivityEventScreenState();
@@ -16,8 +20,7 @@ class ActivityEventScreen extends StatefulWidget {
 class _ActivityEventScreenState extends State<ActivityEventScreen>
     with AutomaticKeepAliveClientMixin {
   List<ActivityEvent> _activitiesEvent = [];
-  int _askCount = 0;
-  bool _isLoading = false;
+  // int _askCount = 0;
   final _activitySnapshot = <DocumentSnapshot>[];
   int limit = 10;
   bool _hasNext = true;
@@ -27,14 +30,21 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
   @override
   void initState() {
     super.initState();
-    _setupActivities();
+    widget.from.startsWith('Home')
+        ? _setupInvitaionActivities()
+        : _setupActivities();
     _hideButtonController = ScrollController();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      Provider.of<UserData>(context, listen: false).setIsLoading(false);
+    });
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {
     if (notification is ScrollEndNotification) {
       if (_hideButtonController.position.extentAfter == 0) {
-        _loadMoreActivities();
+        widget.from.startsWith('Home')
+            ? _loadMoreInvitationActivities()
+            : _loadMoreActivities();
       }
     }
     return false;
@@ -51,6 +61,27 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
         .doc(widget.currentUserId)
         .collection('userActivitiesEvent')
         .orderBy('timestamp', descending: true)
+        .limit(limit)
+        .get();
+    List<ActivityEvent> activities =
+        userFeedSnapShot.docs.map((doc) => ActivityEvent.fromDoc(doc)).toList();
+    _activitySnapshot.addAll((userFeedSnapShot.docs));
+    if (mounted) {
+      setState(() {
+        _hasNext = false;
+        _activitiesEvent = activities;
+      });
+    }
+    return activities;
+  }
+
+  _setupInvitaionActivities() async {
+    QuerySnapshot userFeedSnapShot = await activitiesEventRef
+        .doc(widget.currentUserId)
+        .collection('userActivitiesEvent')
+        .where('seen', isEqualTo: '')
+        .where('eventInviteType', isEqualTo: 'Invitation')
+        .where('ask', isEqualTo: '')
         .limit(limit)
         .get();
     List<ActivityEvent> activities =
@@ -90,6 +121,33 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
     return _hasNext;
   }
 
+  _loadMoreInvitationActivities() async {
+    if (_isFectchingUser) return;
+    _isFectchingUser = true;
+    QuerySnapshot userFeedSnapShot = await activitiesEventRef
+        .doc(widget.currentUserId)
+        .collection('userActivitiesEvent')
+        .where('eventInviteType', isEqualTo: 'Invitation')
+        .where('seen', isEqualTo: '')
+        .where('ask', isEqualTo: '')
+        .limit(limit)
+        .startAfterDocument(_activitySnapshot.last)
+        .get();
+    List<ActivityEvent> moreusers =
+        userFeedSnapShot.docs.map((doc) => ActivityEvent.fromDoc(doc)).toList();
+    if (_activitySnapshot.length < limit) _hasNext = false;
+    List<ActivityEvent> activities = _activitiesEvent..addAll(moreusers);
+    _activitySnapshot.addAll((userFeedSnapShot.docs));
+    if (mounted) {
+      setState(() {
+        _activitiesEvent = activities;
+      });
+    }
+    _hasNext = false;
+    _isFectchingUser = false;
+    return _hasNext;
+  }
+
   _submit(activiitiesEvent) async {
     ActivityEvent activityEvent = ActivityEvent(
       id: activiitiesEvent.id,
@@ -100,6 +158,9 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
       eventImageUrl: activiitiesEvent.eventImageUrl,
       ask: activiitiesEvent.ask,
       timestamp: activiitiesEvent.timestamp,
+      eventInviteType: '',
+      commonId: activiitiesEvent.commonId,
+      toUserId: activiitiesEvent.toUserId,
     );
     print('sumiting');
     try {
@@ -110,63 +171,89 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
   }
 
   _buildActivity(ActivityEvent activityEvent) {
-    return FutureBuilder(
-      future: DatabaseService.getUserWithId(activityEvent.fromUserId),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (!snapshot.hasData) {
-          return SizedBox.shrink();
-        }
-        AccountHolder user = snapshot.data;
-        return ActivityImageTile(
-          seen: activityEvent.seen,
-          verified: user.verified!,
-          profileImageUrl: user.profileImageUrl!,
-          activityIndicator: "asked about:  ",
-          activityTitle: activityEvent.eventTitle,
-          activityContent: activityEvent.ask,
-          activityImage: activityEvent.eventImageUrl,
-          activityTime: timeago.format(
-            activityEvent.timestamp.toDate(),
-          ),
-          userName: user.userName!,
-          onPressed: () async {
-            setState(() {
-              _isLoading = true;
-            });
-            String currentUserId =
-                Provider.of<UserData>(context, listen: false).currentUserId!;
-            Event event = await DatabaseService.getUserEvent(
-              currentUserId,
-              activityEvent.eventId,
-            );
-            DatabaseService.numAsks(event.id).listen((askCount) {
-              if (mounted) {
-                setState(() {
-                  _askCount = askCount;
-                });
+    return activityEvent.ask!.isEmpty
+        ? FutureBuilder(
+            future: DatabaseService.getEventInviteWithId(
+                activityEvent.eventId, activityEvent.toUserId),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (!snapshot.hasData) {
+                return SizedBox.shrink();
               }
-            });
-            activityEvent.seen != 'seen'
-                ? _submit(activityEvent)
-                : SizedBox.shrink();
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => AsksScreen(
-                  event: event,
-                  ask: null,
-                  askCount: _askCount,
-                  currentUserId: widget.currentUserId,
+              EventInvite invite = snapshot.data;
+              return activityEvent.eventInviteType!.startsWith('Invitation')
+                  ? EventInvitationActivityCard(
+                      invite: invite,
+                      activityEvent: activityEvent,
+                    )
+                  : EventAttendeeRequestAnswereWidget(
+                      invite: invite,
+                      palette: null,
+                      activityEvent: activityEvent,
+                    );
+            })
+        : FutureBuilder(
+            future: DatabaseService.getUserWithId(activityEvent.fromUserId),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (!snapshot.hasData) {
+                return SizedBox.shrink();
+              }
+              AccountHolder user = snapshot.data;
+              return ActivityImageTile(
+                seen: activityEvent.seen,
+                verified: user.verified!,
+                profileImageUrl: user.profileImageUrl!,
+                activityIndicator: activityEvent.eventInviteType!
+                        .startsWith('AttendRequest')
+                    ? 'Invitation Request\n'
+                    : activityEvent.eventInviteType!.startsWith('InvestRespond')
+                        ? 'Invitation Respond\n'
+                        : "asked about:  ",
+                activityTitle: activityEvent.eventTitle,
+                activityContent: activityEvent.ask!,
+                activityImage: activityEvent.eventImageUrl,
+                activityTime: timeago.format(
+                  activityEvent.timestamp!.toDate(),
                 ),
-              ),
-            );
-            setState(() {
-              _isLoading = false;
-            });
-          },
-        );
-      },
+                userName: user.userName!,
+                onPressed: () {
+                  _goToAskSCreen(activityEvent);
+                },
+              );
+            },
+          );
+  }
+
+  _goToAskSCreen(ActivityEvent activityEvent) async {
+    Provider.of<UserData>(context, listen: false).setIsLoading(true);
+    String currentUserId =
+        Provider.of<UserData>(context, listen: false).currentUserId!;
+    Event event = await DatabaseService.getUserEvent(
+      currentUserId,
+      activityEvent.eventId,
     );
+    DatabaseService.numAsks(event.id).listen((askCount) {
+      if (mounted) {
+        setState(() {
+          // _askCount = askCount;
+        });
+      }
+    });
+    activityEvent.seen != 'seen' ? _submit(activityEvent) : SizedBox.shrink();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AsksScreen(
+          event: event,
+          ask: null,
+          // askCount: _askCount,
+          currentUserId: widget.currentUserId,
+        ),
+      ),
+    );
+    // setState(() {
+    //   _isLoading = false;
+    // });
+    Provider.of<UserData>(context, listen: false).setIsLoading(false);
   }
 
   bool get wantKeepAlive => true;
@@ -202,7 +289,7 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
                     ),
                   ),
                 ),
-          _isLoading
+          Provider.of<UserData>(context, listen: false).isLoading
               ? Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Shimmer.fromColors(
@@ -224,7 +311,11 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
           ),
           Expanded(
             child: RefreshIndicator(
-              onRefresh: () => _setupActivities(),
+              onRefresh: () {
+                return widget.from.startsWith('Home')
+                    ? _setupInvitaionActivities()
+                    : _setupActivities();
+              },
               child: NotificationListener<ScrollNotification>(
                 onNotification: _handleScrollNotification,
                 child: Scrollbar(

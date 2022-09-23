@@ -587,7 +587,7 @@ class _ExplorePostsState extends State<ExplorePosts> {
                       SizedBox(height: 5),
                       BarsTextFooter(
                         text: timeago.format(
-                          post.timestamp.toDate(),
+                          post.timestamp!.toDate(),
                         ),
                       ),
                       SizedBox(height: 20),

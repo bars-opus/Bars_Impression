@@ -361,19 +361,78 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                                                 menuItems: [
                                                   FocusedMenuItem(
                                                       title: Container(
-                                                        width: width / 2,
-                                                        child: Text(
-                                                          widget.post.authorId ==
-                                                                  widget
-                                                                      .currentUserId
-                                                              ? 'Edit mood punched'
-                                                              : 'Go to ${widget.author.name}\' profile ',
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          textScaleFactor:
-                                                              MediaQuery.of(
-                                                                      context)
-                                                                  .textScaleFactor,
+                                                        width: width - 40,
+                                                        child: Center(
+                                                          child: Text(
+                                                            'Send ',
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            textScaleFactor:
+                                                                MediaQuery.of(
+                                                                        context)
+                                                                    .textScaleFactor,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      onPressed: () {
+                                                        Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder: (_) =>
+                                                                    SendToChats(
+                                                                      currentUserId:
+                                                                          widget
+                                                                              .currentUserId,
+                                                                      userId:
+                                                                          '',
+                                                                      sendContentType:
+                                                                          'Mood Punched',
+                                                                      event:
+                                                                          null,
+                                                                      forum:
+                                                                          null,
+                                                                      post: widget
+                                                                          .post,
+                                                                      user:
+                                                                          null, sendContentId:  widget.post.id!,
+                                                                    )));
+                                                      }),
+                                                  FocusedMenuItem(
+                                                      title: Container(
+                                                        width: width - 40,
+                                                        child: Center(
+                                                          child: Text(
+                                                            'Share ',
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            textScaleFactor:
+                                                                MediaQuery.of(
+                                                                        context)
+                                                                    .textScaleFactor,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      onPressed: _setImage),
+                                                  FocusedMenuItem(
+                                                      title: Container(
+                                                        width: width - 40,
+                                                        child: Center(
+                                                          child: Text(
+                                                            widget.post.authorId ==
+                                                                    widget
+                                                                        .currentUserId
+                                                                ? 'Edit mood punched'
+                                                                : 'Report',
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            textScaleFactor:
+                                                                MediaQuery.of(
+                                                                        context)
+                                                                    .textScaleFactor,
+                                                          ),
                                                         ),
                                                       ),
                                                       onPressed: () => widget
@@ -398,69 +457,6 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                                                               context,
                                                               MaterialPageRoute(
                                                                   builder: (_) =>
-                                                                      ProfileScreen(
-                                                                        currentUserId:
-                                                                            Provider.of<UserData>(context).currentUserId!,
-                                                                        userId: widget
-                                                                            .author
-                                                                            .id!,
-                                                                      )))),
-                                                  FocusedMenuItem(
-                                                      title: Container(
-                                                        width: width / 2,
-                                                        child: Text(
-                                                          'Go to punchline ',
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          textScaleFactor:
-                                                              MediaQuery.of(
-                                                                      context)
-                                                                  .textScaleFactor,
-                                                        ),
-                                                      ),
-                                                      onPressed: () => Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (_) => PunchWidget(
-                                                                  currentUserId:
-                                                                      widget
-                                                                          .currentUserId,
-                                                                  post: widget
-                                                                      .post,
-                                                                  author: widget
-                                                                      .author)))),
-                                                  FocusedMenuItem(
-                                                      title: Container(
-                                                        width: width / 2,
-                                                        child: Text(
-                                                          'Change mood punch state ',
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          textScaleFactor:
-                                                              MediaQuery.of(
-                                                                      context)
-                                                                  .textScaleFactor,
-                                                        ),
-                                                      ),
-                                                      onPressed: _setImage),
-                                                  FocusedMenuItem(
-                                                      title: Container(
-                                                        width: width / 2,
-                                                        child: Text(
-                                                          'Report',
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          textScaleFactor:
-                                                              MediaQuery.of(
-                                                                      context)
-                                                                  .textScaleFactor,
-                                                        ),
-                                                      ),
-                                                      onPressed: () =>
-                                                          Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                  builder: (_) =>
                                                                       ReportContentPage(
                                                                         parentContentId: widget
                                                                             .post
@@ -476,15 +472,18 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                                                                       )))),
                                                   FocusedMenuItem(
                                                       title: Container(
-                                                        width: width / 2,
-                                                        child: Text(
-                                                          'Suggestion Box',
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          textScaleFactor:
-                                                              MediaQuery.of(
-                                                                      context)
-                                                                  .textScaleFactor,
+                                                        width: width - 40,
+                                                        child: Center(
+                                                          child: Text(
+                                                            'Suggestion Box',
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            textScaleFactor:
+                                                                MediaQuery.of(
+                                                                        context)
+                                                                    .textScaleFactor,
+                                                          ),
                                                         ),
                                                       ),
                                                       onPressed: () =>
@@ -503,353 +502,340 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                                                                   .textScaleFactor
                                                                   .clamp(0.5,
                                                                       1.5)),
-                                                  child: Padding(
-                                                    padding: EdgeInsets.all(10),
+                                                  child: ShakeTransition(
                                                     child: Padding(
                                                       padding:
-                                                          const EdgeInsets.all(
-                                                              10.0),
-                                                      child: buildBlur(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(30),
-                                                        child: Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        30),
-                                                            color: ConfigBloc()
-                                                                    .darkModeOn
-                                                                ? Color(0xFF1f2022)
-                                                                    .withOpacity(
-                                                                        0.6)
-                                                                : Colors.white
-                                                                    .withOpacity(
-                                                                        0.2),
-                                                          ),
-                                                          height: Responsive
-                                                                  .isDesktop(
-                                                                      context)
-                                                              ? 400
-                                                              : 300,
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(30.0),
-                                                            child:
-                                                                SingleChildScrollView(
-                                                              child: Column(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .start,
-                                                                children: <
-                                                                    Widget>[
-                                                                  Container(
-                                                                    padding: const EdgeInsets
-                                                                            .symmetric(
-                                                                        horizontal:
-                                                                            16.0,
-                                                                        vertical:
-                                                                            0.0),
-                                                                    child:
-                                                                        Stack(
-                                                                      children: [
-                                                                        GestureDetector(
-                                                                          onTap: () => Navigator.push(
-                                                                              context,
-                                                                              MaterialPageRoute(
-                                                                                  builder: (_) => ProfileScreen(
-                                                                                        currentUserId: widget.currentUserId,
-                                                                                        userId: widget.post.authorId,
-                                                                                      ))),
-                                                                          child:
-                                                                              Container(
-                                                                            width:
-                                                                                width,
-                                                                            height:
-                                                                                55,
+                                                          EdgeInsets.all(10),
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(10.0),
+                                                        child: buildBlur(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(30),
+                                                          child: Container(
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          30),
+                                                              color: ConfigBloc()
+                                                                      .darkModeOn
+                                                                  ? Color(0xFF1f2022)
+                                                                      .withOpacity(
+                                                                          0.6)
+                                                                  : Colors.white
+                                                                      .withOpacity(
+                                                                          0.2),
+                                                            ),
+                                                            height: Responsive
+                                                                    .isDesktop(
+                                                                        context)
+                                                                ? 400
+                                                                : 300,
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .all(
+                                                                      30.0),
+                                                              child:
+                                                                  SingleChildScrollView(
+                                                                child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .start,
+                                                                  children: <
+                                                                      Widget>[
+                                                                    Container(
+                                                                      padding: const EdgeInsets
+                                                                              .symmetric(
+                                                                          horizontal:
+                                                                              16.0,
+                                                                          vertical:
+                                                                              0.0),
+                                                                      child:
+                                                                          Stack(
+                                                                        children: [
+                                                                          GestureDetector(
+                                                                            onTap: () => Navigator.push(
+                                                                                context,
+                                                                                MaterialPageRoute(
+                                                                                    builder: (_) => ProfileScreen(
+                                                                                          currentUserId: widget.currentUserId,
+                                                                                          userId: widget.post.authorId,
+                                                                                        ))),
                                                                             child:
-                                                                                ListView(
-                                                                              scrollDirection: Axis.horizontal,
-                                                                              children: <Widget>[
-                                                                                Material(
-                                                                                  color: Colors.transparent,
-                                                                                  child: Container(
-                                                                                      child: Row(children: <Widget>[
-                                                                                    Hero(
-                                                                                      tag: 'author' + widget.post.id.toString(),
-                                                                                      child: CircleAvatar(
-                                                                                        radius: 25.0,
-                                                                                        backgroundColor: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
-                                                                                        backgroundImage: widget.author.profileImageUrl!.isEmpty
-                                                                                            ? AssetImage(
-                                                                                                ConfigBloc().darkModeOn ? 'assets/images/user_placeholder.png' : 'assets/images/user_placeholder2.png',
-                                                                                              ) as ImageProvider
-                                                                                            : CachedNetworkImageProvider(widget.author.profileImageUrl!),
-                                                                                      ),
-                                                                                    ),
-                                                                                    const SizedBox(
-                                                                                      width: 8.0,
-                                                                                    ),
-                                                                                    Column(
-                                                                                      mainAxisAlignment: MainAxisAlignment.start,
-                                                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                      children: <Widget>[
-                                                                                        Stack(
-                                                                                          alignment: Alignment.bottomRight,
-                                                                                          children: [
-                                                                                            Padding(
-                                                                                              padding: const EdgeInsets.only(right: 12.0),
-                                                                                              child: Text("${widget.author.userName}", style: const TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold)),
-                                                                                            ),
-                                                                                            widget.author.verified!.isEmpty
-                                                                                                ? SizedBox.shrink()
-                                                                                                : Positioned(
-                                                                                                    top: 3,
-                                                                                                    right: 0,
-                                                                                                    child: Icon(
-                                                                                                      MdiIcons.checkboxMarkedCircle,
-                                                                                                      size: 11,
-                                                                                                      color: Colors.blue,
-                                                                                                    ),
-                                                                                                  ),
-                                                                                          ],
+                                                                                Container(
+                                                                              width: width,
+                                                                              height: 55,
+                                                                              child: ListView(
+                                                                                scrollDirection: Axis.horizontal,
+                                                                                children: <Widget>[
+                                                                                  Material(
+                                                                                    color: Colors.transparent,
+                                                                                    child: Container(
+                                                                                        child: Row(children: <Widget>[
+                                                                                      Hero(
+                                                                                        tag: 'author' + widget.post.id.toString(),
+                                                                                        child: CircleAvatar(
+                                                                                          radius: 25.0,
+                                                                                          backgroundColor: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+                                                                                          backgroundImage: widget.author.profileImageUrl!.isEmpty
+                                                                                              ? AssetImage(
+                                                                                                  ConfigBloc().darkModeOn ? 'assets/images/user_placeholder.png' : 'assets/images/user_placeholder2.png',
+                                                                                                ) as ImageProvider
+                                                                                              : CachedNetworkImageProvider(widget.author.profileImageUrl!),
                                                                                         ),
-                                                                                        RichText(
-                                                                                          textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                                                                                          text: TextSpan(
+                                                                                      ),
+                                                                                      const SizedBox(
+                                                                                        width: 8.0,
+                                                                                      ),
+                                                                                      Column(
+                                                                                        mainAxisAlignment: MainAxisAlignment.start,
+                                                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                        children: <Widget>[
+                                                                                          Stack(
+                                                                                            alignment: Alignment.bottomRight,
                                                                                             children: [
-                                                                                              TextSpan(text: "${widget.author.profileHandle!}\n", style: const TextStyle(fontSize: 10, color: Colors.white)),
-                                                                                              TextSpan(text: "${widget.author.company}", style: const TextStyle(fontSize: 10, color: Colors.white)),
+                                                                                              Padding(
+                                                                                                padding: const EdgeInsets.only(right: 12.0),
+                                                                                                child: Text("${widget.author.userName}", style: const TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold)),
+                                                                                              ),
+                                                                                              widget.author.verified!.isEmpty
+                                                                                                  ? SizedBox.shrink()
+                                                                                                  : Positioned(
+                                                                                                      top: 3,
+                                                                                                      right: 0,
+                                                                                                      child: Icon(
+                                                                                                        MdiIcons.checkboxMarkedCircle,
+                                                                                                        size: 11,
+                                                                                                        color: Colors.blue,
+                                                                                                      ),
+                                                                                                    ),
                                                                                             ],
                                                                                           ),
-                                                                                          overflow: TextOverflow.ellipsis,
-                                                                                        ),
-                                                                                      ],
-                                                                                    ),
-                                                                                  ])),
-                                                                                ),
-                                                                              ],
+                                                                                          RichText(
+                                                                                            textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                                                                                            text: TextSpan(
+                                                                                              children: [
+                                                                                                TextSpan(text: "${widget.author.profileHandle!}\n", style: const TextStyle(fontSize: 10, color: Colors.white)),
+                                                                                                TextSpan(text: "${widget.author.company}", style: const TextStyle(fontSize: 10, color: Colors.white)),
+                                                                                              ],
+                                                                                            ),
+                                                                                            overflow: TextOverflow.ellipsis,
+                                                                                          ),
+                                                                                        ],
+                                                                                      ),
+                                                                                    ])),
+                                                                                  ),
+                                                                                ],
+                                                                              ),
                                                                             ),
                                                                           ),
-                                                                        ),
-                                                                        _heartAnim
-                                                                            ? Container(
-                                                                                height: Responsive.isDesktop(context) ? 400 : 300,
-                                                                                child: Padding(
-                                                                                  padding: const EdgeInsets.only(bottom: 60.0),
-                                                                                  child: Center(
-                                                                                    child: Animator(
-                                                                                        duration: Duration(milliseconds: 300),
-                                                                                        tween: Tween(begin: 0.5, end: 1.4),
-                                                                                        curve: Curves.elasticOut,
-                                                                                        builder: (context, anim2, child) => Transform.scale(
-                                                                                              scale: anim2.value as double,
-                                                                                              child: const Icon(
-                                                                                                Icons.favorite,
-                                                                                                size: 200.0,
-                                                                                                color: Colors.white,
-                                                                                              ),
-                                                                                            )),
+                                                                          _heartAnim
+                                                                              ? Container(
+                                                                                  height: Responsive.isDesktop(context) ? 400 : 300,
+                                                                                  child: Padding(
+                                                                                    padding: const EdgeInsets.only(bottom: 60.0),
+                                                                                    child: Center(
+                                                                                      child: Animator(
+                                                                                          duration: Duration(milliseconds: 300),
+                                                                                          tween: Tween(begin: 0.5, end: 1.4),
+                                                                                          curve: Curves.elasticOut,
+                                                                                          builder: (context, anim2, child) => Transform.scale(
+                                                                                                scale: anim2.value as double,
+                                                                                                child: const Icon(
+                                                                                                  Icons.favorite,
+                                                                                                  size: 200.0,
+                                                                                                  color: Colors.white,
+                                                                                                ),
+                                                                                              )),
+                                                                                    ),
                                                                                   ),
-                                                                                ),
-                                                                              )
-                                                                            : SizedBox.shrink(),
-                                                                      ],
+                                                                                )
+                                                                              : SizedBox.shrink(),
+                                                                        ],
+                                                                      ),
                                                                     ),
-                                                                  ),
-                                                                  const SizedBox(
-                                                                      height:
-                                                                          10),
-                                                                  GestureDetector(
-                                                                    onTap: () => Navigator.push(
-                                                                        context,
-                                                                        MaterialPageRoute(
-                                                                            builder: (_) => PunchWidget(
-                                                                                currentUserId: widget.currentUserId,
-                                                                                post: widget.post,
-                                                                                author: widget.author))),
-                                                                    child:
-                                                                        Container(
-                                                                      width:
-                                                                          width,
-                                                                      decoration: BoxDecoration(
-                                                                          color: Colors
-                                                                              .transparent,
-                                                                          borderRadius:
-                                                                              BorderRadius.circular(10)),
+                                                                    const SizedBox(
+                                                                        height:
+                                                                            10),
+                                                                    GestureDetector(
+                                                                      onTap: () => Navigator.push(
+                                                                          context,
+                                                                          MaterialPageRoute(
+                                                                              builder: (_) => PunchWidget(currentUserId: widget.currentUserId, post: widget.post, author: widget.author))),
                                                                       child:
-                                                                          Padding(
-                                                                        padding:
-                                                                            const EdgeInsets.all(0.0),
-                                                                        child:
-                                                                            Hero(
-                                                                          tag: 'punch' +
-                                                                              widget.post.id.toString(),
-                                                                          child:
-                                                                              Material(
+                                                                          Container(
+                                                                        width:
+                                                                            width,
+                                                                        decoration: BoxDecoration(
                                                                             color:
                                                                                 Colors.transparent,
+                                                                            borderRadius: BorderRadius.circular(10)),
+                                                                        child:
+                                                                            Padding(
+                                                                          padding:
+                                                                              const EdgeInsets.all(0.0),
+                                                                          child:
+                                                                              Hero(
+                                                                            tag:
+                                                                                'punch' + widget.post.id.toString(),
                                                                             child:
-                                                                                SingleChildScrollView(
-                                                                              child: Text(
-                                                                                '" ${widget.post.punch} " '.toLowerCase(),
-                                                                                maxLines: 5,
-                                                                                style: const TextStyle(
-                                                                                  fontSize: 14,
-                                                                                  color: Colors.white,
+                                                                                Material(
+                                                                              color: Colors.transparent,
+                                                                              child: SingleChildScrollView(
+                                                                                child: Text(
+                                                                                  '" ${widget.post.punch} " '.toLowerCase(),
+                                                                                  maxLines: 5,
+                                                                                  style: const TextStyle(
+                                                                                    fontSize: 14,
+                                                                                    color: Colors.white,
+                                                                                  ),
+                                                                                  overflow: TextOverflow.ellipsis,
                                                                                 ),
-                                                                                overflow: TextOverflow.ellipsis,
                                                                               ),
                                                                             ),
                                                                           ),
                                                                         ),
                                                                       ),
                                                                     ),
-                                                                  ),
-                                                                  const SizedBox(
-                                                                    height: 10,
-                                                                  ),
-                                                                  Hero(
-                                                                    tag: 'artist' +
-                                                                        widget
-                                                                            .post
-                                                                            .id
-                                                                            .toString(),
-                                                                    child:
-                                                                        Material(
-                                                                      color: Colors
-                                                                          .transparent,
-                                                                      child:
-                                                                          Text(
-                                                                        '${widget.post.artist} ',
-                                                                        style:
-                                                                            TextStyle(
-                                                                          color:
-                                                                              Colors.white,
-                                                                          fontSize: width > 500 && width < 800
-                                                                              ? 16
-                                                                              : width > 800
-                                                                                  ? 20
-                                                                                  : 14,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                  const SizedBox(
+                                                                    const SizedBox(
                                                                       height:
-                                                                          7.0),
-                                                                  Hero(
-                                                                    tag: 'artist2' +
-                                                                        widget
-                                                                            .post
-                                                                            .id
-                                                                            .toString(),
-                                                                    child:
-                                                                        Material(
-                                                                      color: Colors
-                                                                          .transparent,
+                                                                          10,
+                                                                    ),
+                                                                    Hero(
+                                                                      tag: 'artist' +
+                                                                          widget
+                                                                              .post
+                                                                              .id
+                                                                              .toString(),
                                                                       child:
-                                                                          Container(
-                                                                        decoration:
-                                                                            BoxDecoration(
-                                                                          color:
-                                                                              Colors.white,
-                                                                        ),
-                                                                        height:
-                                                                            1.0,
+                                                                          Material(
+                                                                        color: Colors
+                                                                            .transparent,
                                                                         child:
                                                                             Text(
                                                                           '${widget.post.artist} ',
                                                                           style:
                                                                               TextStyle(
+                                                                            color:
+                                                                                Colors.white,
                                                                             fontSize: width > 500 && width < 800
                                                                                 ? 16
                                                                                 : width > 800
                                                                                     ? 20
                                                                                     : 14,
                                                                           ),
-                                                                          textAlign:
-                                                                              TextAlign.center,
                                                                         ),
                                                                       ),
                                                                     ),
-                                                                  ),
-                                                                  const SizedBox(
-                                                                      height:
-                                                                          5),
-                                                                  BarsTextFooter(
-                                                                    text: timeago
-                                                                        .format(
-                                                                      widget
-                                                                          .post
-                                                                          .timestamp
-                                                                          .toDate(),
-                                                                    ),
-                                                                  ),
-                                                                  const SizedBox(
-                                                                      height:
-                                                                          20),
-                                                                  GestureDetector(
-                                                                    onTap: () => Navigator.push(
-                                                                        context,
-                                                                        MaterialPageRoute(
-                                                                            builder: (_) => PunchWidget(
-                                                                                currentUserId: widget.currentUserId,
-                                                                                post: widget.post,
-                                                                                author: widget.author))),
-                                                                    child:
-                                                                        Stack(
-                                                                      alignment:
-                                                                          Alignment
-                                                                              .bottomLeft,
-                                                                      children: [
-                                                                        Positioned(
-                                                                          left:
-                                                                              0.0,
-                                                                          top:
-                                                                              0.0,
-                                                                          child:
-                                                                              Container(
-                                                                            height:
-                                                                                10,
-                                                                            width:
-                                                                                10,
+                                                                    const SizedBox(
+                                                                        height:
+                                                                            7.0),
+                                                                    Hero(
+                                                                      tag: 'artist2' +
+                                                                          widget
+                                                                              .post
+                                                                              .id
+                                                                              .toString(),
+                                                                      child:
+                                                                          Material(
+                                                                        color: Colors
+                                                                            .transparent,
+                                                                        child:
+                                                                            Container(
+                                                                          decoration:
+                                                                              BoxDecoration(
                                                                             color:
-                                                                                Colors.blue,
+                                                                                Colors.white,
+                                                                          ),
+                                                                          height:
+                                                                              1.0,
+                                                                          child:
+                                                                              Text(
+                                                                            '${widget.post.artist} ',
+                                                                            style:
+                                                                                TextStyle(
+                                                                              fontSize: width > 500 && width < 800
+                                                                                  ? 16
+                                                                                  : width > 800
+                                                                                      ? 20
+                                                                                      : 14,
+                                                                            ),
+                                                                            textAlign:
+                                                                                TextAlign.center,
                                                                           ),
                                                                         ),
-                                                                        Padding(
-                                                                          padding:
-                                                                              const EdgeInsets.only(left: 20.0),
-                                                                          child:
-                                                                              Hero(
-                                                                            tag:
-                                                                                'caption' + widget.post.id.toString(),
+                                                                      ),
+                                                                    ),
+                                                                    const SizedBox(
+                                                                        height:
+                                                                            5),
+                                                                    BarsTextFooter(
+                                                                      text: timeago
+                                                                          .format(
+                                                                        widget
+                                                                            .post
+                                                                            .timestamp
+                                                                            !.toDate(),
+                                                                      ),
+                                                                    ),
+                                                                    const SizedBox(
+                                                                        height:
+                                                                            20),
+                                                                    GestureDetector(
+                                                                      onTap: () => Navigator.push(
+                                                                          context,
+                                                                          MaterialPageRoute(
+                                                                              builder: (_) => PunchWidget(currentUserId: widget.currentUserId, post: widget.post, author: widget.author))),
+                                                                      child:
+                                                                          Stack(
+                                                                        alignment:
+                                                                            Alignment.bottomLeft,
+                                                                        children: [
+                                                                          Positioned(
+                                                                            left:
+                                                                                0.0,
+                                                                            top:
+                                                                                0.0,
                                                                             child:
-                                                                                Material(
-                                                                              color: Colors.transparent,
-                                                                              child: SingleChildScrollView(
-                                                                                child: Text(
-                                                                                  '${widget.post.caption} '.toLowerCase(),
-                                                                                  style: TextStyle(
-                                                                                    fontSize: 12,
-                                                                                    color: Colors.white,
+                                                                                Container(
+                                                                              height: 10,
+                                                                              width: 10,
+                                                                              color: Colors.blue,
+                                                                            ),
+                                                                          ),
+                                                                          Padding(
+                                                                            padding:
+                                                                                const EdgeInsets.only(left: 20.0),
+                                                                            child:
+                                                                                Hero(
+                                                                              tag: 'caption' + widget.post.id.toString(),
+                                                                              child: Material(
+                                                                                color: Colors.transparent,
+                                                                                child: SingleChildScrollView(
+                                                                                  child: Text(
+                                                                                    '${widget.post.caption} '.toLowerCase(),
+                                                                                    style: TextStyle(
+                                                                                      fontSize: 12,
+                                                                                      color: Colors.white,
+                                                                                    ),
                                                                                   ),
                                                                                 ),
                                                                               ),
                                                                             ),
                                                                           ),
-                                                                        ),
-                                                                      ],
+                                                                        ],
+                                                                      ),
                                                                     ),
-                                                                  ),
-                                                                ],
+                                                                  ],
+                                                                ),
                                                               ),
                                                             ),
                                                           ),

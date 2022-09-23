@@ -167,6 +167,9 @@ class ActivityImageTile extends StatelessWidget {
             onTap: onPressed,
           ),
         ),
+        const Divider(
+          color: Colors.grey,
+        )
       ],
     );
   }

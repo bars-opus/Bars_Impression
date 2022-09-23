@@ -19,13 +19,15 @@ class SendEventInviation extends StatefulWidget {
 
 class _SendEventInviationState extends State<SendEventInviation> {
   int _attendeeRequesCount = 0;
-  int _inviteCount = 0;
+  String _message = '';
+
+  // int _inviteCount = 0;
 
   @override
   void initState() {
     super.initState();
     _setUpAttendeeRequest();
-    _setUpAttendee();
+    // _setUpAttendee();
   }
 
   _setUpAttendeeRequest() async {
@@ -39,16 +41,17 @@ class _SendEventInviationState extends State<SendEventInviation> {
     });
   }
 
-  _setUpAttendee() async {
-    DatabaseService.numEventAttendee(widget.event.id, 'Accepted')
-        .listen((inviteCount) {
-      if (mounted) {
-        setState(() {
-          _inviteCount = inviteCount;
-        });
-      }
-    });
-  }
+
+  // _setUpAttendee() async {
+  //   DatabaseService.numEventAttendee(widget.event.id, 'Accepted')
+  //       .listen((inviteCount) {
+  //     if (mounted) {
+  //       setState(() {
+  //         _inviteCount = inviteCount;
+  //       });
+  //     }
+  //   });
+  // }
 
   _showSelectImageDialog2() {
     return Platform.isIOS ? _iosBottomSheet2() : _androidDialog2(context);
@@ -100,22 +103,33 @@ class _SendEventInviationState extends State<SendEventInviation> {
           return SimpleDialog(
             title: Text(
               'Are you sure you want to send invitation?',
-              style: TextStyle(
-                fontSize: 16,
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-              ),
+              style: TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
             ),
             children: <Widget>[
-              SimpleDialogOption(
-                child: Text('send'),
-                onPressed: () {
-                  Navigator.pop(context);
-                  _checkUser();
-                },
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'send',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.blue),
+                    textAlign: TextAlign.center,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _checkUser();
+                  },
+                ),
               ),
-              SimpleDialogOption(
-                child: Text('cancel'),
-                onPressed: () => Navigator.pop(context),
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'Cancel',
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
               ),
             ],
           );
@@ -167,10 +181,14 @@ class _SendEventInviationState extends State<SendEventInviation> {
 
     try {
       DatabaseService.sendEventInvite(
-          event: widget.event,
-          user: widget.user,
-          requestNumber: _requestNumber.toString(),
-          message: '');
+        event: widget.event,
+        user: widget.user,
+        requestNumber: _requestNumber.toString(),
+        message: _message,
+        eventDate: DateTime.parse(widget.event.date),
+        currentUserId:
+            Provider.of<UserData>(context, listen: false).currentUserId!,
+      );
       Navigator.pop(context);
       Flushbar(
         margin: EdgeInsets.all(8),
@@ -184,14 +202,14 @@ class _SendEventInviationState extends State<SendEventInviation> {
         flushbarPosition: FlushbarPosition.TOP,
         flushbarStyle: FlushbarStyle.FLOATING,
         titleText: Text(
-          'Request Sent!!',
+          'Invite Sent!!',
           style: TextStyle(
             color: Colors.white,
             fontSize: width > 800 ? 22 : 14,
           ),
         ),
         messageText: Text(
-          "Your inviation request has been sent succesfully",
+          "Your inviation  has been sent successfully",
           style: TextStyle(
             color: Colors.white,
             fontSize: width > 800 ? 20 : 12,
@@ -360,7 +378,7 @@ class _SendEventInviationState extends State<SendEventInviation> {
                             padding:
                                 const EdgeInsets.only(left: 12.0, right: 12),
                             child: Text(
-                              'You can add a special ivitationmessage before snding the invite to ${widget.user.userName}',
+                              'You can add a special invitation message before sending the invite to ${widget.user.userName}',
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 12,
@@ -375,7 +393,7 @@ class _SendEventInviationState extends State<SendEventInviation> {
                               labelText: 'Message',
                               hintText: "short ivitation message",
                               initialValue: '',
-                              onSavedText: (_) {},
+                              onSavedText: (input) => _message = input,
                               onValidateText: () {},
                             ),
                           ),
@@ -434,20 +452,6 @@ class _SendEventInviationState extends State<SendEventInviation> {
                                         color: Colors.black,
                                       ),
                                     ),
-                                    TextSpan(
-                                      text: '\nInvitation request number:   ',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text: " ",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.black,
-                                      ),
-                                    ),
                                   ],
                                 ),
                               ),
@@ -464,7 +468,8 @@ class _SendEventInviationState extends State<SendEventInviation> {
                             padding:
                                 const EdgeInsets.only(left: 12.0, right: 12),
                             child: Text(
-                              'Your attendee number must much the event\s organiser\s account number in order to attend this event. You should show this account number at the entrance of the event',
+                              'The invitation sent must be accepted by ${widget.user.userName} before ${widget.user.userName} can attend this event. ${widget.user.userName} is not obliged to accept your invitation.',
+                              // 'Your attendee number must much the event\s organiser\s account number in order to attend this event. You should show this account number at the entrance of the event',
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 12,

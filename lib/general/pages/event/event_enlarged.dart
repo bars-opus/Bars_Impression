@@ -1,3 +1,4 @@
+
 import 'package:bars/utilities/exports.dart';
 
 class AllEvenEnlarged extends StatefulWidget {
@@ -52,19 +53,29 @@ class _AllEvenEnlargedState extends State<AllEvenEnlarged> {
                       askCount: widget.askCount,
                     )),
           )
-        : Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (_) => AttendEvent(
-                      event: widget.event,
-                      currentUserId: widget.currentUserId,
-                      palette: _paletteGenerator,
-                    )),
-          );
+        : widget.event.isPrivate
+            ? Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => AttendEvent(
+                          event: widget.event,
+                          currentUserId: widget.currentUserId,
+                          palette: _paletteGenerator,
+                        )),
+              )
+            : Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => EventPublicInvite(
+                          event: widget.event,
+                          palette: _paletteGenerator,
+                         
+                        )),
+              );
   }
 
   Future<void> _generatePalette2(
-    context,
+    context, String from
   ) async {
     PaletteGenerator _paletteGenerator =
         await PaletteGenerator.fromImageProvider(
@@ -72,6 +83,15 @@ class _AllEvenEnlargedState extends State<AllEvenEnlarged> {
       size: Size(1110, 150),
       maximumColorCount: 20,
     );
+    from.startsWith('People')? Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (_) => EventPeople(
+                event: widget.event,
+                palette: _paletteGenerator,
+              )),
+    ):
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -126,8 +146,8 @@ class _AllEvenEnlargedState extends State<AllEvenEnlarged> {
                               // author: widget.author,
                               user: widget.user,
                             ))),
-                imageHero: 'image' + widget.event.id.toString(),
-                titleHero: 'title' + widget.event.id.toString(),
+                imageHero: 'image ${widget.event.id.toString()}',
+                titleHero:  'title ${widget.event.id.toString()}',
                 onPressedLocationMap: _launchMap,
                 onPressedEventticketSite: () {
                   Navigator.push(
@@ -150,7 +170,7 @@ class _AllEvenEnlargedState extends State<AllEvenEnlarged> {
                   context,
                   MaterialPageRoute(
                       builder: (_) => AsksScreen(
-                            askCount: widget.askCount,
+                            // askCount: widget.askCount,
                             event: widget.event,
                             // author: widget.author,
                             ask: null,
@@ -158,7 +178,7 @@ class _AllEvenEnlargedState extends State<AllEvenEnlarged> {
                           )),
                 ),
                 event: widget.event,
-                onPressedCalendar: () => _generatePalette2(context),
+                onPressedCalendar: () => _generatePalette2(context,''), onPressedPeople:  () => _generatePalette2(context, 'People'),
               ),
               Positioned(
                 top: 55,

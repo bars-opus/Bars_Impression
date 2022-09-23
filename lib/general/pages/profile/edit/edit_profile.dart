@@ -76,6 +76,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       });
 
       String _profileImageUrl = '';
+
       if (_profileImage == null) {
         _profileImageUrl = widget.user.profileImageUrl!;
       } else {
@@ -84,12 +85,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           _profileImage!,
         );
       }
+
       try {
         usersRef
             .doc(
           widget.user.id,
         )
             .update({
+          // 'blurHash': '',
           'name': _name,
           'profileImageUrl': _profileImageUrl,
           'bio': _bio,
@@ -187,7 +190,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return ResponsiveScaffold(
       child: Scaffold(
           backgroundColor:
-              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
           appBar: AppBar(
             iconTheme: IconThemeData(
               color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
@@ -195,7 +198,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             automaticallyImplyLeading: index != 0 ? false : true,
             elevation: 0,
             backgroundColor:
-                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
             title: Text(
               'Edit Profile',
               style: TextStyle(

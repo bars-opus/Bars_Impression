@@ -48,7 +48,7 @@ class _MessageImageState extends State<MessageImage> {
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: CachedNetworkImageProvider(
-                              widget.message.imageUrl),
+                              widget.message.mediaUrl),
                           fit: BoxFit.cover,
                         ),
                       ),

@@ -1,6 +1,8 @@
 import 'package:bars/services/address_service.dart';
+import 'package:bars/services/auth_create_user_credentials.dart';
 import 'package:bars/services/places_service.dart';
 import 'package:bars/utilities/exports.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class UserData extends ChangeNotifier {
   String? currentUserId;
@@ -15,6 +17,9 @@ class UserData extends ChangeNotifier {
   late String _post8;
   late String _post9;
   late String _post10;
+  late String _post11;
+  late String _post12;
+  late String _post13;
   late AccountHolder? _user;
   late int _messageCount;
   late int _chatCount;
@@ -23,9 +28,19 @@ class UserData extends ChangeNotifier {
   late int _eventTab;
   late bool _showEventTab;
   late bool _showUsersTab;
+  late bool _bool1;
+  late bool _bool2;
+  late bool _bool3;
+  late bool _bool4;
+  late bool _bool5;
+  late bool _bool6;
+  late bool _isLoading;
   late File? _postImage;
   late File? _image;
   late List? _message;
+
+  late PendingDynamicLinkData? _dynamicLink;
+  late String _availableDynamicLink;
 
   final placesService = PlacesService();
   final addressService = AddressService();
@@ -45,10 +60,23 @@ class UserData extends ChangeNotifier {
     _post8 = ' ';
     _post9 = ' ';
     _post10 = ' ';
+    _post11 = ' ';
+    _post12 = ' ';
+    _post13 = ' ';
+    _availableDynamicLink = ' ';
+
     _user = null;
     _messageCount = 0;
     _showEventTab = true;
     _showUsersTab = true;
+    _bool1 = false;
+    _bool2 = false;
+    _bool3 = false;
+    _bool4 = false;
+    _bool5 = false;
+    _bool6 = false;
+    _isLoading = false;
+    _isLoading = false;
     _chatCount = 0;
     _notificaitonTab = 0;
     _usersTab = 0;
@@ -56,6 +84,7 @@ class UserData extends ChangeNotifier {
     _postImage = null;
     _image = null;
     _message = [];
+    _dynamicLink = null;
   }
   String get navigationBar => _navigationBar;
   String get post1 => _post1;
@@ -68,17 +97,29 @@ class UserData extends ChangeNotifier {
   String get post8 => _post8;
   String get post9 => _post9;
   String get post10 => _post10;
+  String get post11 => _post11;
+  String get post12 => _post12;
+  String get post13 => _post13;
+  String get availableDynamicLink => _availableDynamicLink;
   int get chatCount => _chatCount;
   int get notificaitonTab => _notificaitonTab;
   int get usersTab => _usersTab;
   int get eventTab => _eventTab;
   bool get showEventTab => _showEventTab;
   bool get showUsersTab => _showUsersTab;
+  bool get bool1 => _bool1;
+  bool get bool2 => _bool2;
+  bool get bool3 => _bool3;
+  bool get bool4 => _bool4;
+  bool get bool5 => _bool5;
+  bool get bool6 => _bool6;
+  bool get isLoading => _isLoading;
   File? get postImage => _postImage;
   File? get image => _image;
   AccountHolder? get user => _user;
   int get messageCount => _messageCount;
   List? get message => _message;
+  PendingDynamicLinkData? get dynamicLink => _dynamicLink;
 
   void setnavigationBar(String navigationBar) {
     _navigationBar = navigationBar;
@@ -135,6 +176,26 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setPost11(String post11) {
+    _post11 = post11;
+    notifyListeners();
+  }
+
+  void setPost12(String post12) {
+    _post12 = post12;
+    notifyListeners();
+  }
+
+  void setPost13(String post13) {
+    _post13 = post13;
+    notifyListeners();
+  }
+
+  void setAvailableDynamicLink(String availableDynamicLink) {
+    _availableDynamicLink = availableDynamicLink;
+    notifyListeners();
+  }
+
   void setChatCount(int chatCount) {
     _chatCount = chatCount;
     notifyListeners();
@@ -170,6 +231,41 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setBool1(bool bool1) {
+    _bool1 = bool1;
+    notifyListeners();
+  }
+
+  void setBool2(bool bool2) {
+    _bool2 = bool2;
+    notifyListeners();
+  }
+
+  void setBool3(bool bool3) {
+    _bool3 = bool3;
+    notifyListeners();
+  }
+
+  void setBool4(bool bool4) {
+    _bool4 = bool4;
+    notifyListeners();
+  }
+
+  void setBool5(bool bool5) {
+    _bool5 = bool5;
+    notifyListeners();
+  }
+
+  void setBool6(bool bool6) {
+    _bool6 = bool6;
+    notifyListeners();
+  }
+
+  void setIsLoading(bool isLoading) {
+    _isLoading = isLoading;
+    notifyListeners();
+  }
+
   void setShowEventTab(bool showEventTab) {
     _showEventTab = showEventTab;
     notifyListeners();
@@ -190,6 +286,11 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setDynamicLink(PendingDynamicLinkData dynamicLink) async {
+    _dynamicLink = dynamicLink;
+    notifyListeners();
+  }
+
   searchPlaces(String searchTerm) async {
     searchResults = await placesService.getAutocomplete(searchTerm);
     notifyListeners();
@@ -199,4 +300,27 @@ class UserData extends ChangeNotifier {
     addressSearchResults = await addressService.getAutocomplete(searchTerm);
     notifyListeners();
   }
+
+  final googleSignIn = GoogleSignIn();
+  GoogleSignInAccount? _googleUser;
+  GoogleSignInAccount get googelUser => _googleUser!;
+
+  Future googleLogin() async {
+    final signedGoogleUser = await googleSignIn.signIn();
+    if (signedGoogleUser == null) return;
+    _googleUser = signedGoogleUser;
+    final googleAuth = await signedGoogleUser.authentication;
+    final newUserCredential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+    UserCredential userCredential =
+        await FirebaseAuth.instance.signInWithCredential(newUserCredential);
+
+    if (userCredential.additionalUserInfo!.isNewUser) {
+      return AuthCreateUserCredentials();
+    }
+  }
+
+  notifyListeners();
 }

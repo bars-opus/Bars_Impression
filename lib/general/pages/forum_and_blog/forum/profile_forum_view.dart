@@ -47,30 +47,20 @@ class _ProfileForumViewState extends State<ProfileForumView> {
       onPressed: () {},
       menuItems: [
         FocusedMenuItem(
-          title: Text(
-            'Your thought on this topic',
-            overflow: TextOverflow.ellipsis,
-            textScaleFactor: MediaQuery.of(context).textScaleFactor,
+          title: Container(
+            width: width - 40,
+            child: Center(
+              child: Text(
+                widget.forum.authorId == widget.currentUserId
+                    ? 'Edit forum'
+                    : "Go to ${widget.author.userName}\' profile ",
+                overflow: TextOverflow.ellipsis,
+                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              ),
+            ),
           ),
-          onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => ThoughtsScreen(
-                        feed: 'Profile',
-                        forum: widget.forum,
-                        author: widget.author,
-                        thoughtCount: _thoughtCount,
-                        currentUserId: widget.currentUserId,
-                      ))),
-        ),
-        widget.forum.authorId == widget.currentUserId
-            ? FocusedMenuItem(
-                title: Text(
-                  'Edit forum',
-                  overflow: TextOverflow.ellipsis,
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                ),
-                onPressed: () => Navigator.push(
+          onPressed: () => widget.forum.authorId == widget.currentUserId
+              ? Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => EditForum(
@@ -78,22 +68,102 @@ class _ProfileForumViewState extends State<ProfileForumView> {
                       currentUserId: widget.currentUserId,
                     ),
                   ),
-                ),
-              )
-            : FocusedMenuItem(
-                title: Text(
-                  "Go to ${widget.author.userName}'s profile",
+                )
+              : Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => ProfileScreen(
+                            currentUserId: widget.currentUserId,
+                            userId: widget.forum.authorId,
+                          ))),
+        ),
+        FocusedMenuItem(
+            title: Container(
+              width: width - 40,
+              child: Center(
+                child: Text(
+                  'Send ',
                   overflow: TextOverflow.ellipsis,
                   textScaleFactor: MediaQuery.of(context).textScaleFactor,
                 ),
-                onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => ProfileScreen(
-                              currentUserId: widget.currentUserId,
-                              userId: widget.forum.authorId,
-                            ))),
               ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => SendToChats(
+                            sendContentId: widget.forum.id,
+                            currentUserId: widget.currentUserId,
+                            userId: '',
+                            sendContentType: 'Forum',
+                            event: null,
+                            post: null,
+                            forum: widget.forum,
+                            user: null,
+                          )));
+            }),
+        FocusedMenuItem(
+            title: Container(
+              width: width - 40,
+              child: Center(
+                child: Text(
+                  'Share ',
+                  overflow: TextOverflow.ellipsis,
+                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                ),
+              ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => SendToChats(
+                            currentUserId: widget.currentUserId,
+                            userId: '',
+                            sendContentType: 'Forum',
+                            event: null,
+                            post: null,
+                            forum: widget.forum,
+                            user: null,
+                            sendContentId: widget.forum.id,
+                          )));
+            }),
+        FocusedMenuItem(
+            title: Container(
+              width: width - 40,
+              child: Center(
+                child: Text(
+                  'Report',
+                  overflow: TextOverflow.ellipsis,
+                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                ),
+              ),
+            ),
+            onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => ReportContentPage(
+                          parentContentId: widget.forum.id,
+                          repotedAuthorId: widget.forum.authorId,
+                          contentType: 'forum',
+                          contentId: widget.forum.id,
+                        )))),
+        FocusedMenuItem(
+            title: Container(
+              width: width - 40,
+              child: Center(
+                child: Center(
+                  child: Text(
+                    'Suggestion Box',
+                    overflow: TextOverflow.ellipsis,
+                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  ),
+                ),
+              ),
+            ),
+            onPressed: () => Navigator.push(
+                context, MaterialPageRoute(builder: (_) => SuggestionBox()))),
       ],
       child: MediaQuery(
         data: MediaQuery.of(context).copyWith(

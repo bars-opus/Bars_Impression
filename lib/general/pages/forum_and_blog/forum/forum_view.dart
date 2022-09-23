@@ -39,42 +39,77 @@ class _ForumViewState extends State<ForumView> {
     });
   }
 
+  // _dynamicLink() async {
+  //   final dynamicLinkParams = DynamicLinkParameters(
+  //     socialMetaTagParameters: SocialMetaTagParameters(
+  //       imageUrl: Uri.parse(
+  //           'https://firebasestorage.googleapis.com/v0/b/bars-5e3e5.appspot.com/o/barsLauncherforfirebase.png?alt=media&token=be7d907e-30fa-475b-86ca-ab9eaaa34837'),
+  //       title: 'Forum',
+  //       description: widget.forum.title,
+  //     ),
+  //     link: Uri.parse('https://www.barsopus.com/forum_${widget.forum.id}'),
+  //     uriPrefix: 'https://barsimpression.page.link',
+  //     androidParameters:
+  //         AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
+  //     iosParameters: IOSParameters(
+  //       bundleId: 'com.bars-Opus.barsImpression',
+  //       appStoreId: '1610868894',
+  //     ),
+  //   );
+  //   var link =
+  //       await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+
+  //   Share.share(link.shortUrl.toString());
+  // }
+
+  _dynamicLink() async {
+    final dynamicLinkParams = await DynamicLinkParameters(
+      socialMetaTagParameters: await SocialMetaTagParameters(
+        title: 'Forum',
+        description: widget.forum.title,
+      ),
+      link: Uri.parse('https://www.barsopus.com/forum_${widget.forum.id}'),
+      uriPrefix: 'https://barsopus.com/barsImpression/',
+      androidParameters:
+          AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
+      iosParameters: IOSParameters(
+        bundleId: 'com.bars-Opus.barsImpression',
+        appStoreId: '1610868894',
+      ),
+    );
+    var link =
+        await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+
+    Share.share(link.shortUrl.toString());
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     return FocusedMenuHolder(
-      menuWidth: width,
-      menuOffset: 10,
       blurBackgroundColor:
           ConfigBloc().darkModeOn ? Colors.grey[900] : Colors.white10,
       openWithTap: false,
       onPressed: () {},
+      menuWidth: width,
+      menuItemExtent: 60,
+      menuOffset: 10,
       menuItems: [
         FocusedMenuItem(
-          title: Text(
-            'Your thought on this topic',
-            overflow: TextOverflow.ellipsis,
-            textScaleFactor: MediaQuery.of(context).textScaleFactor,
+          title: Container(
+            width: width - 40,
+            child: Center(
+              child: Text(
+                widget.forum.authorId == widget.currentUserId
+                    ? 'Edit forum'
+                    : "Go to ${widget.author.userName}\' profile ",
+                overflow: TextOverflow.ellipsis,
+                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              ),
+            ),
           ),
-          onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => ThoughtsScreen(
-                        forum: widget.forum,
-                        feed: widget.feed,
-                        author: widget.author,
-                        thoughtCount: _thoughtCount,
-                        currentUserId: widget.currentUserId,
-                      ))),
-        ),
-        widget.forum.authorId == widget.currentUserId
-            ? FocusedMenuItem(
-                title: Text(
-                  'Edit forum',
-                  overflow: TextOverflow.ellipsis,
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                ),
-                onPressed: () => Navigator.push(
+          onPressed: () => widget.forum.authorId == widget.currentUserId
+              ? Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => EditForum(
@@ -82,29 +117,62 @@ class _ForumViewState extends State<ForumView> {
                       currentUserId: widget.currentUserId,
                     ),
                   ),
-                ),
-              )
-            : FocusedMenuItem(
-                title: Text(
-                  "Go to ${widget.author.userName}\' profile ",
+                )
+              : Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => ProfileScreen(
+                            currentUserId: widget.currentUserId,
+                            userId: widget.forum.authorId,
+                          ))),
+        ),
+        FocusedMenuItem(
+            title: Container(
+              width: width - 40,
+              child: Center(
+                child: Text(
+                  'Send ',
                   overflow: TextOverflow.ellipsis,
                   textScaleFactor: MediaQuery.of(context).textScaleFactor,
                 ),
-                onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => ProfileScreen(
-                              currentUserId: widget.currentUserId,
-                              userId: widget.forum.authorId,
-                            ))),
               ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => SendToChats(
+                            sendContentId: widget.forum.id,
+                            currentUserId: widget.currentUserId,
+                            userId: '',
+                            sendContentType: 'Forum',
+                            event: null,
+                            post: null,
+                            forum: widget.forum,
+                            user: null,
+                          )));
+            }),
         FocusedMenuItem(
             title: Container(
-              width: width / 2,
-              child: Text(
-                'Report',
-                overflow: TextOverflow.ellipsis,
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              width: width - 40,
+              child: Center(
+                child: Text(
+                  'Share ',
+                  overflow: TextOverflow.ellipsis,
+                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                ),
+              ),
+            ),
+            onPressed: () => _dynamicLink()),
+        FocusedMenuItem(
+            title: Container(
+              width: width - 40,
+              child: Center(
+                child: Text(
+                  'Report',
+                  overflow: TextOverflow.ellipsis,
+                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                ),
               ),
             ),
             onPressed: () => Navigator.push(
@@ -118,11 +186,15 @@ class _ForumViewState extends State<ForumView> {
                         )))),
         FocusedMenuItem(
             title: Container(
-              width: width / 2,
-              child: Text(
-                'Suggestion Box',
-                overflow: TextOverflow.ellipsis,
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              width: width - 40,
+              child: Center(
+                child: Center(
+                  child: Text(
+                    'Suggestion Box',
+                    overflow: TextOverflow.ellipsis,
+                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  ),
+                ),
               ),
             ),
             onPressed: () => Navigator.push(

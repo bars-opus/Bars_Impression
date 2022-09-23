@@ -29,8 +29,7 @@ class BarsTextTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return 
-     Text(
+    return Text(
       text,
       style: TextStyle(
         fontSize: 16,
@@ -97,5 +96,38 @@ class BarsTextStrikeThrough extends StatelessWidget {
       ),
       maxLines: 5,
     );
+  }
+}
+
+class BarsTextConfirm extends StatelessWidget {
+  final String text;
+  final String subText;
+
+  BarsTextConfirm({
+    required this.text,
+    required this.subText,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return RichText(
+        textScaleFactor: MediaQuery.of(context).textScaleFactor,
+        text: TextSpan(children: [
+          TextSpan(
+            text: text,
+            style: TextStyle(
+              fontSize: 12.0,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+            ),
+          ),
+          TextSpan(
+            text: "\n${subText}",
+            style: TextStyle(
+              fontSize: 16.0,
+              color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+            ),
+          )
+        ]));
   }
 }

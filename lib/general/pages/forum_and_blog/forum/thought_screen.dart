@@ -408,7 +408,7 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                           ),
                         ),
                       ),
-                      thought.count! > 0
+                      thought.count! == 0
                           ? Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 20.0),
@@ -886,7 +886,7 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                                                                   timeago
                                                                       .format(
                                                                     widget.forum
-                                                                        .timestamp
+                                                                        .timestamp!
                                                                         .toDate(),
                                                                   ),
                                                                   style:
@@ -994,7 +994,7 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                                         ),
                                       );
                                     }
-                                    return _thoughtCount == 0
+                                    return widget.thoughtCount == 0
                                         ? Expanded(
                                             child: Center(
                                               child: NoContents(

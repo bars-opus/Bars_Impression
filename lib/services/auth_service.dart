@@ -81,9 +81,19 @@ class AuthService {
           'hideAdvice': false,
           'noBooking': false,
           'disabledAccount': false,
+          'disableContentSharing': false,
+          'disableMoodPunchReaction': false,
+          'disableMoodPunchVibe': false,
+          'dontShowContentOnExplorePage': false,
+          'specialtyTags': '',
+          'blurHash': '',
           'professionalPicture1': '',
           'professionalPicture2': '',
           'professionalPicture3': '',
+          'professionalVideo1': '',
+          'professionalVideo2': '',
+          'professionalVideo3': '',
+          'genreTags': '',
         });
         Provider.of<UserData>(context, listen: false).currentUserId =
             signedInHandler.uid;

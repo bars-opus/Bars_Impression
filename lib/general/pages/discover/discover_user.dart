@@ -59,7 +59,7 @@ class _DiscoverUserState extends State<DiscoverUser>
                                           onPressed: () => Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (_) => HomeScreen(),
+                                              builder: (_) => ConfigPage(),
                                             ),
                                           ),
                                         ),

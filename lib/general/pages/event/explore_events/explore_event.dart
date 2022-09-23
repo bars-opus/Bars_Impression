@@ -964,13 +964,13 @@ class ExploreEventEnlarged extends StatefulWidget {
   final int feed;
   final String exploreLocation;
 
-  ExploreEventEnlarged(
-      {required this.currentUserId,
-      required this.user,
-      required this.askCount,
-      required this.feed,
-      required this.exploreLocation,
-      required this.event,
+  ExploreEventEnlarged({
+    required this.currentUserId,
+    required this.user,
+    required this.askCount,
+    required this.feed,
+    required this.exploreLocation,
+    required this.event,
   });
 
   @override
@@ -1112,6 +1112,51 @@ class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
                                     time: widget.event.time,
                                   )
                                 : Column(children: <Widget>[
+                                    widget.event.isPrivate
+                                        ? RichText(
+                                            textScaleFactor:
+                                                MediaQuery.of(context)
+                                                    .textScaleFactor,
+                                            text: TextSpan(
+                                              children: [
+                                                TextSpan(
+                                                    text: "P",
+                                                    style: TextStyle(
+                                                        fontSize: 14.0,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white)),
+                                                TextSpan(
+                                                    text: "rivate",
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 12.0,
+                                                        color: Colors.white)),
+                                              ],
+                                            ))
+                                        : RichText(
+                                            textScaleFactor:
+                                                MediaQuery.of(context)
+                                                    .textScaleFactor,
+                                            text: TextSpan(
+                                              children: [
+                                                TextSpan(
+                                                    text: "P",
+                                                    style: TextStyle(
+                                                        fontSize: 14.0,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white)),
+                                                TextSpan(
+                                                    text: "ublic",
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 12.0,
+                                                        color: Colors.white)),
+                                              ],
+                                            )),
                                     ShakeTransition(
                                       child: Tooltip(
                                         padding: EdgeInsets.all(20.0),

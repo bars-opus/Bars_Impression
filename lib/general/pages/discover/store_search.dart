@@ -172,22 +172,22 @@ class _StoreSearchState extends State<StoreSearch> {
                               padding: const EdgeInsets.only(top: 30.0),
                               child: Scrollbar(
                                 child: CustomScrollView(
-                                  physics:
-                                      const AlwaysScrollableScrollPhysics(),
-                                  slivers: [
-                                    SliverList(
-                                      delegate: SliverChildBuilderDelegate(
-                                        (context, index) {
-                                          AccountHolder? user =
-                                              AccountHolder.fromDoc(
-                                                  snapshot.data!.docs[index]);
-                                          return _buildUserTile(user);
-                                        },
-                                        childCount: snapshot.data!.docs.length,
+                                    physics:
+                                        const AlwaysScrollableScrollPhysics(),
+                                    slivers: [
+                                      SliverList(
+                                        delegate: SliverChildBuilderDelegate(
+                                          (context, index) {
+                                            AccountHolder? user =
+                                                AccountHolder.fromDoc(
+                                                    snapshot.data!.docs[index]);
+                                            return _buildUserTile(user);
+                                          },
+                                          childCount:
+                                              snapshot.data!.docs.length,
+                                        ),
                                       ),
-                                    ),
-                                  ]
-                                ),
+                                    ]),
                               ),
                             );
                           })),

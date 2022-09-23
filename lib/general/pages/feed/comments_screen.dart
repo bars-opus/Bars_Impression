@@ -7,7 +7,7 @@ import 'package:timeago/timeago.dart' as timeago;
 
 class CommentsScreen extends StatefulWidget {
   final Post post;
-  final int? commentCount;
+  // final int commentCount;
   final int likeCount;
   final int dislikeCount;
   final String currentUserId;
@@ -15,7 +15,7 @@ class CommentsScreen extends StatefulWidget {
 
   CommentsScreen(
       {required this.post,
-      required this.commentCount,
+      // required this.commentCount,
       required this.likeCount,
       required this.dislikeCount,
       required this.currentUserId,
@@ -63,7 +63,7 @@ class _CommentsScreenState extends State<CommentsScreen>
     DatabaseService.numComments(widget.post.id).listen((commentCount) {
       if (mounted) {
         setState(() {
-          _commentCount = commentCount;
+          _commentCount = commentCount ;
         });
       }
     });
@@ -398,7 +398,7 @@ class _CommentsScreenState extends State<CommentsScreen>
                                 ),
                                 Text(
                                     timeago.format(
-                                      widget.post.timestamp.toDate(),
+                                      widget.post.timestamp!.toDate(),
                                     ),
                                     style: TextStyle(
                                       fontSize: 10,

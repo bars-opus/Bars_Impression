@@ -136,7 +136,7 @@ class ForumViewWidget extends StatelessWidget {
                   ),
                   BarsTextFooter(
                     text: timeago.format(
-                      forum.timestamp.toDate(),
+                      forum.timestamp!.toDate(),
                     ),
                   )
                 ],

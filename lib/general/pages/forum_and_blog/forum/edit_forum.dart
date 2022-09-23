@@ -17,6 +17,7 @@ class _EditForumState extends State<EditForum> {
   String _title = '';
   String _subTitle = '';
   bool _isLoading = false;
+  bool _isPrivate = false;
 
   _showSelectImageDialog() {
     return Platform.isIOS ? _iosBottomSheet() : _androidDialog(context);
@@ -66,18 +67,35 @@ class _EditForumState extends State<EditForum> {
         context: parentContext,
         builder: (context) {
           return SimpleDialog(
-            title: Text('Are you sure you want to delete this Forum?'),
+            title: Text(
+              'Are you sure you want to delete this Forum?',
+              style: TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
             children: <Widget>[
-              SimpleDialogOption(
-                child: Text('delete'),
-                onPressed: () {
-                  Navigator.pop(context);
-                  _deletePost();
-                },
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'Delete',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.blue),
+                    textAlign: TextAlign.center,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _deletePost();
+                  },
+                ),
               ),
-              SimpleDialogOption(
-                child: Text('cancel'),
-                onPressed: () => Navigator.pop(context),
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'Cancel',
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
               ),
             ],
           );
@@ -119,7 +137,7 @@ class _EditForumState extends State<EditForum> {
         size: 30.0,
         color: Colors.blue,
       ),
-      duration: Duration(seconds: 3),
+      duration: Duration(seconds: 2),
       leftBarIndicatorColor: Colors.blue,
     )..show(context);
   }
@@ -142,6 +160,8 @@ class _EditForumState extends State<EditForum> {
         timestamp: widget.forum.timestamp,
         report: '',
         reportConfirmed: '',
+        isPrivate: _isPrivate,
+        linkedContentId: '',
       );
       try {
         DatabaseService.editForum(
@@ -179,7 +199,7 @@ class _EditForumState extends State<EditForum> {
             size: 30.0,
             color: Colors.blue,
           ),
-          duration: Duration(seconds: 3),
+          duration: Duration(seconds: 2),
           leftBarIndicatorColor: Colors.blue,
         )..show(context);
       } catch (e) {

@@ -31,17 +31,27 @@ class AccountHolder {
   final String? professionalPicture1;
   final String? professionalPicture2;
   final String? professionalPicture3;
+  final String? professionalVideo1;
+  final String? professionalVideo2;
+  final String? professionalVideo3;
   final bool? hideUploads;
   final bool? disableChat;
   final bool? privateAccount;
   final bool? enableBookingOnChat;
   final bool? disableAdvice;
+  final bool? disableContentSharing;
+  final bool? disableMoodPunchReaction;
+  final bool? disableMoodPunchVibe;
+  final bool? dontShowContentOnExplorePage;
+  final String? specialtyTags;
+  final String? genreTags;
   final String? report;
   final String? reportConfirmed;
   final bool? hideAdvice;
   final bool? noBooking;
   final bool? disabledAccount;
   final String? androidNotificationToken;
+  final String? blurHash;
   final Timestamp? timestamp;
 
   AccountHolder({
@@ -83,10 +93,20 @@ class AccountHolder {
     required this.report,
     required this.reportConfirmed,
     required this.hideAdvice,
+     required this.genreTags,
     required this.noBooking,
     required this.disabledAccount,
     required this.androidNotificationToken,
     required this.timestamp,
+    required this.disableContentSharing,
+    required this.disableMoodPunchReaction,
+    required this.disableMoodPunchVibe,
+    required this.dontShowContentOnExplorePage,
+    required this.specialtyTags,
+    required this.professionalVideo1,
+    required this.professionalVideo2,
+    required this.professionalVideo3,
+    required this.blurHash,
   });
 
   factory AccountHolder.fromDoc(DocumentSnapshot doc) {
@@ -121,18 +141,28 @@ class AccountHolder {
       professionalPicture1: doc['professionalPicture1'] ?? '',
       professionalPicture2: doc['professionalPicture2'] ?? '',
       professionalPicture3: doc['professionalPicture3'] ?? '',
+      professionalVideo1: doc['professionalVideo1'] ?? '',
+      professionalVideo2: doc['professionalVideo2'] ?? '',
+      professionalVideo3: doc['professionalVideo3'] ?? '',
       report: doc['report'] ?? '',
       reportConfirmed: doc['reportConfirmed'] ?? '',
+      blurHash: doc['blurHash'] ?? '',
+      specialtyTags: doc['specialtyTags'] ?? '',
       hideUploads: doc['hideUploads'] ?? false,
       privateAccount: doc['privateAccount'] ?? false,
       disableAdvice: doc['disableAdvice'] ?? false,
       disableChat: doc['disableChat'] ?? false,
+      disableContentSharing: doc['disableContentSharing'] ?? false,
+      disableMoodPunchReaction: doc['disableMoodPunchReaction'] ?? false,
+      disableMoodPunchVibe: doc['disableMoodPunchVibe'] ?? false,
+      dontShowContentOnExplorePage:
+          doc['dontShowContentOnExplorePage'] ?? false,
       enableBookingOnChat: doc['enableBookingOnChat'] ?? false,
       hideAdvice: doc['hideAdvice'] ?? false,
       noBooking: doc['noBooking'] ?? false,
       disabledAccount: doc['disabledAccount'] ?? false,
       androidNotificationToken: doc['androidNotificationToken'] ?? '',
-      timestamp: doc['timestamp'],
+      timestamp: doc['timestamp'], genreTags: doc['genreTags'] ?? '',
     );
   }
 }

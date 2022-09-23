@@ -27,6 +27,8 @@ class EventView extends StatefulWidget {
 class _EventViewState extends State<EventView> {
   int _askCount = 0;
   late DateTime _date;
+  late DateTime _closingDate;
+
   late DateTime _toDaysDate;
 
   void initState() {
@@ -47,11 +49,58 @@ class _EventViewState extends State<EventView> {
 
   _countDown() async {
     DateTime date = DateTime.parse(widget.event.date);
+    DateTime clossingDate = DateTime.parse(widget.event.clossingDay);
+
     final toDayDate = DateTime.now();
     setState(() {
       _date = date;
       _toDaysDate = toDayDate;
+      _closingDate = clossingDate;
     });
+  }
+
+  // _dynamicLink() async {
+  //   final dynamicLinkParams = DynamicLinkParameters(
+  //     socialMetaTagParameters: SocialMetaTagParameters(
+  //       imageUrl: Uri.parse(
+  //           'https://firebasestorage.googleapis.com/v0/b/bars-5e3e5.appspot.com/o/barsLauncherforfirebase.png?alt=media&token=be7d907e-30fa-475b-86ca-ab9eaaa34837'),
+  //       title: 'Event',
+  //       description: widget.event.title,
+  //     ),
+  //     link: Uri.parse('https://www.barsopus.com/event_${widget.event.id}'),
+  //     uriPrefix: 'https://barsimpression.page.link',
+  //     androidParameters:
+  //         AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
+  //     iosParameters: IOSParameters(
+  //       bundleId: 'com.bars-Opus.barsImpression',
+  //       appStoreId: '1610868894',
+  //     ),
+  //   );
+  //   var link =
+  //       await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+
+  //   Share.share(link.shortUrl.toString());
+  // }
+
+  _dynamicLink() async {
+    final dynamicLinkParams = await DynamicLinkParameters(
+      socialMetaTagParameters: await SocialMetaTagParameters(
+        title: 'Event',
+        description: widget.event.title,
+      ),
+      link: Uri.parse('https://www.barsopus.com/event_${widget.event.id}'),
+      uriPrefix: 'https://barsopus.com/barsImpression/',
+      androidParameters:
+          AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
+      iosParameters: IOSParameters(
+        bundleId: 'com.bars-Opus.barsImpression',
+        appStoreId: '1610868894',
+      ),
+    );
+    var link =
+        await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+
+    Share.share(link.shortUrl.toString());
   }
 
   @override
@@ -65,32 +114,19 @@ class _EventViewState extends State<EventView> {
       openWithTap: false,
       onPressed: () {},
       menuItems: [
-        FocusedMenuItem(
-            title: Text(
-              'Enlarge Event',
-              overflow: TextOverflow.ellipsis,
-              textScaleFactor: MediaQuery.of(context).textScaleFactor,
-            ),
-            onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => AllEvenEnlarged(
-                          exploreLocation: widget.exploreLocation,
-                          feed: widget.feed,
-                          askCount: _askCount,
-                          currentUserId: widget.currentUserId,
-                          event: widget.event,
-                          user: widget.user,
-                          // eventList: widget.eventList,
-                        )))),
         widget.event.authorId == widget.currentUserId
             ? FocusedMenuItem(
-                title: Text(
-                  'Edit event',
-                  overflow: TextOverflow.ellipsis,
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                title: Container(
+                  width: width - 40,
+                  child: Center(
+                    child: Text(
+                      'Edit event',
+                      overflow: TextOverflow.ellipsis,
+                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    ),
+                  ),
                 ),
-                onPressed: () => _toDaysDate.isAfter(_date)
+                onPressed: () => _toDaysDate.isAfter(_closingDate)
                     ? Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -110,10 +146,15 @@ class _EventViewState extends State<EventView> {
                       ),
               )
             : FocusedMenuItem(
-                title: Text(
-                  "Go to ${widget.author.userName}'s profile",
-                  overflow: TextOverflow.ellipsis,
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                title: Container(
+                  width: width - 40,
+                  child: Center(
+                    child: Text(
+                      "Go to ${widget.author.userName}'s profile",
+                      overflow: TextOverflow.ellipsis,
+                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    ),
+                  ),
                 ),
                 onPressed: () => Navigator.push(
                     context,
@@ -125,11 +166,51 @@ class _EventViewState extends State<EventView> {
               ),
         FocusedMenuItem(
             title: Container(
-              width: width / 2,
-              child: Text(
-                'Report',
-                overflow: TextOverflow.ellipsis,
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              width: width - 40,
+              child: Center(
+                child: Text(
+                  'Send ',
+                  overflow: TextOverflow.ellipsis,
+                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                ),
+              ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => SendToChats(
+                            currentUserId: widget.currentUserId,
+                            userId: '',
+                            sendContentType: 'Event',
+                            event: widget.event,
+                            post: null,
+                            forum: null,
+                            user: null,
+                            sendContentId: widget.event.id,
+                          )));
+            }),
+        FocusedMenuItem(
+            title: Container(
+              width: width - 40,
+              child: Center(
+                child: Text(
+                  'Share ',
+                  overflow: TextOverflow.ellipsis,
+                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                ),
+              ),
+            ),
+            onPressed: () => _dynamicLink()),
+        FocusedMenuItem(
+            title: Container(
+              width: width - 40,
+              child: Center(
+                child: Text(
+                  'Report',
+                  overflow: TextOverflow.ellipsis,
+                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                ),
               ),
             ),
             onPressed: () => Navigator.push(
@@ -143,11 +224,13 @@ class _EventViewState extends State<EventView> {
                         )))),
         FocusedMenuItem(
             title: Container(
-              width: width / 2,
-              child: Text(
-                'Suggestion Box',
-                overflow: TextOverflow.ellipsis,
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              width: width - 40,
+              child: Center(
+                child: Text(
+                  'Suggestion Box',
+                  overflow: TextOverflow.ellipsis,
+                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                ),
               ),
             ),
             onPressed: () => Navigator.push(
@@ -164,7 +247,7 @@ class _EventViewState extends State<EventView> {
               SlidableAction(
                 onPressed: (_) {
                   widget.currentUserId == widget.author.id!
-                      ? _toDaysDate.isAfter(_date)
+                      ? _toDaysDate.isAfter(_closingDate)
                           ? Navigator.push(
                               context,
                               MaterialPageRoute(

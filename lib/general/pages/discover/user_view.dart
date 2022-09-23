@@ -353,6 +353,47 @@ class _UserViewState extends State<UserView> {
         ));
   }
 
+//   _dynamicLink() async {
+//     final dynamicLinkParams = DynamicLinkParameters(
+//       socialMetaTagParameters: SocialMetaTagParameters(
+//          imageUrl: Uri.parse(
+//             'https://firebasestorage.googleapis.com/v0/b/bars-5e3e5.appspot.com/o/barsLauncherforfirebase.png?alt=media&token=be7d907e-30fa-475b-86ca-ab9eaaa34837'),
+//         title: widget.user.userName,
+//         description: widget.user.bio,
+//       ),
+//       link: Uri.parse('https://www.barsopus.com/user_${widget.user.id}'),
+//       uriPrefix: 'https://barsimpression.page.link',
+//       androidParameters:
+//           AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
+//       iosParameters: IOSParameters(bundleId: 'com.bars-Opus.barsImpression', appStoreId: '1610868894',
+// ),
+//     );
+//     var link =
+//         await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+
+//     Share.share(link.shortUrl.toString());
+//   }
+  _dynamicLink() async {
+    final dynamicLinkParams = await DynamicLinkParameters(
+      socialMetaTagParameters: await SocialMetaTagParameters(
+        title: widget.user.userName,
+        description: widget.user.bio,
+      ),
+      link: Uri.parse('https://www.barsopus.com/user_${widget.user.id}'),
+      uriPrefix: 'https://barsopus.com/barsImpression/',
+      androidParameters:
+          AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
+      iosParameters: IOSParameters(
+        bundleId: 'com.bars-Opus.barsImpression',
+        appStoreId: '1610868894',
+      ),
+    );
+    var link =
+        await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+
+    Share.share(link.shortUrl.toString());
+  }
+
   _userOthers() {
     final width = MediaQuery.of(context).size.width;
     return FocusedMenuHolder(
@@ -365,10 +406,12 @@ class _UserViewState extends State<UserView> {
         menuItems: [
           FocusedMenuItem(
               title: Container(
-                width: width / 2,
-                child: Text(
-                  'Go to ${widget.user.userName}\' profile ',
-                  overflow: TextOverflow.ellipsis,
+                width: width - 40,
+                child: Center(
+                  child: Text(
+                    'Go to ${widget.user.userName}\' profile ',
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
               onPressed: () => Navigator.push(
@@ -380,54 +423,51 @@ class _UserViewState extends State<UserView> {
                             userId: widget.userId,
                           )))),
           FocusedMenuItem(
-            title: Text(
-              'Go to Booking Page',
-            ),
-            onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => ProfessionalProfile(
-                          exploreLocation: widget.exploreLocation,
-                          currentUserId:
-                              Provider.of<UserData>(context).currentUserId!,
-                          user: widget.user,
-                          userId: widget.user.id!,
-                        ))),
-          ),
-          FocusedMenuItem(
-            title: Text(
-              'Rate me here',
-            ),
-            onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => ProfileRating(
-                          user: widget.user,
-                          currentUserId: widget.currentUserId,
-                        ))),
-          ),
-          FocusedMenuItem(
-            title: Container(
-              width: width / 2,
-              child: Text(
-                'Leave an advice for ${widget.user.userName}',
-                overflow: TextOverflow.ellipsis,
+              title: Container(
+                width: width - 40,
+                child: Center(
+                  child: Text(
+                    'Send ',
+                    overflow: TextOverflow.ellipsis,
+                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  ),
+                ),
               ),
-            ),
-            onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => UserAdviceScreen(
-                          currentUserId: widget.currentUserId,
-                          user: widget.user,
-                        ))),
-          ),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => SendToChats(
+                              sendContentId: widget.user.id!,
+                              currentUserId: widget.currentUserId,
+                              userId: '',
+                              sendContentType: 'User',
+                              event: null,
+                              post: null,
+                              forum: null,
+                              user: widget.user,
+                            )));
+              }),
           FocusedMenuItem(
               title: Container(
-                width: width / 2,
-                child: const Text(
-                  'Report',
-                  overflow: TextOverflow.ellipsis,
+                width: width - 40,
+                child: Center(
+                  child: Text(
+                    'Share ',
+                    overflow: TextOverflow.ellipsis,
+                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  ),
+                ),
+              ),
+              onPressed: () => _dynamicLink()),
+          FocusedMenuItem(
+              title: Container(
+                width: width - 40,
+                child: Center(
+                  child: const Text(
+                    'Report',
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
               onPressed: () => Navigator.push(
@@ -441,10 +481,12 @@ class _UserViewState extends State<UserView> {
                           )))),
           FocusedMenuItem(
               title: Container(
-                width: width / 2,
-                child: const Text(
-                  'Suggestion Box',
-                  overflow: TextOverflow.ellipsis,
+                width: width - 40,
+                child: Center(
+                  child: const Text(
+                    'Suggestion Box',
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
               onPressed: () => Navigator.push(

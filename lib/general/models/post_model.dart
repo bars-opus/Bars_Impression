@@ -14,7 +14,11 @@ class Post {
   final String reportConfirmed;
   final String report;
   final String blurHash;
-  final Timestamp timestamp;
+  final String peopleTagged;
+  final bool disbleSharing;
+  final bool disableReaction;
+  final bool disableVibe;
+  final Timestamp? timestamp;
 
   Post({
     required this.id,
@@ -31,6 +35,10 @@ class Post {
     required this.timestamp,
     required this.blurHash,
     required this.reportConfirmed,
+    required this.peopleTagged,
+    required this.disbleSharing,
+    required this.disableReaction,
+    required this.disableVibe,
   });
 
   factory Post.fromDoc(DocumentSnapshot doc) {
@@ -48,6 +56,10 @@ class Post {
       reportConfirmed: doc['reportConfirmed'],
       report: doc['report'] ?? '',
       blurHash: doc['blurHash'] ?? '',
+      peopleTagged: doc['peopleTagged'],
+      disbleSharing: doc['disbleSharing'] ?? '',
+      disableReaction: doc['disableReaction'] ?? '',
+      disableVibe: doc['disableVibe'] ?? '',
       timestamp: doc['timestamp'],
     );
   }

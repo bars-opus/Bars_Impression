@@ -13,33 +13,125 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentTab = 0;
+  // int _activityEventCount = 0;
+
+  // int _currentTab = 0;
   int _updateAppVersion = Platform.isIOS ? 6 : 6;
-  late PageController _pageController;
+  // late PageController _pageController;
   String notificationMsg = '';
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController();
+    // _pageController = PageController();
     LocalNotificationService.initilize();
     _configureNotification();
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      _setUpUser();
-    });
+    // _setDynamicLink();
+
+    // SchedulerBinding.instance.addPostFrameCallback((_) {
+    //   // _setUpUser();
+    //   _setUpInvitesActivities();
+    //   // _sett();
+    // });
   }
 
-  _setUpUser() async {
-    final String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId!;
-    AccountHolder profileUser =
-        await DatabaseService.getUserWithId(currentUserId);
-    if (mounted) {
-      setState(() {
-        Provider.of<UserData>(context, listen: false).setUser(profileUser);
-      });
-    }
-  }
+  // _setDynamicLink() async {
+  //   final PendingDynamicLinkData? initialLink =
+  //       await FirebaseDynamicLinks.instance.getInitialLink();
+  //   initialLink == null
+  //       ? () {}
+  //       : Provider.of<UserData>(context, listen: false)
+  //           .setDynamicLink(initialLink);
+  //   if (Provider.of<UserData>(context, listen: false).dynamicLink != null) {
+  //     Provider.of<UserData>(context, listen: false).setAvailableDynamicLink(
+  //         Provider.of<UserData>(context, listen: false).dynamicLink!.link.path);
+  //   }
+  // }
+
+  // 'disableContentSharing': false;
+  // 'disableMoodPunchReaction': false,
+  // 'disableMoodPunchVibe': false,
+  // 'dontShowContentOnExplorePage': false,
+  // 'specialtyTags': '',
+  // 'professionalVideo1': '',
+  // 'professionalVideo2': '',
+  // 'professionalVideo3': '',
+
+  // _sett() async {
+  //   QuerySnapshot activitySnapShot = await usersRef
+  //       // .doc(currentUserId)
+  //       // .collection('userActivities')
+  //       // .where('postId', isEqualTo: post.id)
+  //       .get();
+
+  //   activitySnapShot.docs.forEach((doc) {
+  //     if (doc.exists) {
+  //       doc.reference.set({
+  //         'name': '',
+  //         'email': '',
+  //         'timestamp': Timestamp.fromDate(DateTime.now()),
+  //         'verified': '',
+  //         'userName': '',
+  //         'profileImageUrl': '',
+  //         'bio': '',
+  //         'favouritePunchline': '',
+  //         'favouriteArtist': '',
+  //         'favouriteSong': '',
+  //         'favouriteAlbum': '',
+  //         'company': '',
+  //         'country': '',
+  //         'city': '',
+  //         'continent': '',
+  //         'skills': '',
+  //         'performances': '',
+  //         'collaborations': '',
+  //         'awards': '',
+  //         'management': '',
+  //         'contacts': '',
+  //         'profileHandle': '',
+  //         'report': '',
+  //         'score': 0,
+  //         'reportConfirmed': '',
+  //         'website': '',
+  //         'otherSites1': '',
+  //         'otherSites2': '',
+  //         'mail': '',
+  //         'privateAccount': false,
+  //         'androidNotificationToken': '',
+  //         'hideUploads': false,
+  //         'disableAdvice': false,
+  //         'disableChat': false,
+  //         'enableBookingOnChat': false,
+  //         'hideAdvice': false,
+  //         'noBooking': false,
+  //         'disabledAccount': false,
+  //         'disableContentSharing': false,
+  //         'disableMoodPunchReaction': false,
+  //         'disableMoodPunchVibe': false,
+  //         'dontShowContentOnExplorePage': false,
+  //         'specialtyTags': '',
+  //         'professionalPicture1': '',
+  //         'professionalPicture2': '',
+  //         'professionalPicture3': '',
+  //         'professionalVideo1': '',
+  //         'professionalVideo2': '',
+  //         'professionalVideo3': '',
+  //       });
+  //     }
+  //   });
+  // }
+
+  // _setUpUser() async {
+  //   final String currentUserId =
+  //       Provider.of<UserData>(context, listen: false).currentUserId!;
+  //   AccountHolder profileUser =
+  //       await DatabaseService.getUserWithId(currentUserId);
+  //   if (mounted) {
+  //     setState(() {
+  //       Provider.of<UserData>(context, listen: false).setUser(profileUser);
+  //     });
+  //   }
+  // }
 
   _configureNotification() async {
     final String currentUserId =
@@ -94,6 +186,502 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(
+          textScaleFactor:
+              MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.3)),
+      child: FutureBuilder(
+          future: DatabaseService.getUpdateInfo(),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (!snapshot.hasData) {
+              return PostSchimmerSkeleton();
+            }
+            UpdateApp _updateApp = snapshot.data;
+            // int? version = Platform.isIOS
+            //     ? _updateApp.updateVersionIos
+            //     : _updateApp.updateVersionAndroid;
+            return NestedScrollView(
+                headerSliverBuilder: (context, innerBoxScrolled) => [],
+                body: Responsive.isDesktop(context)
+                    ? HomeDesktop()
+                    : HomeMobile(
+                        updateApp: _updateApp,
+                        updateAppVersion: _updateAppVersion,
+                      )
+                // _updateApp == null
+
+                //     ?
+                // _updateAppVersion < version! &&
+                //         _updateApp.displayFullUpdate!
+                //     ? UpdateAppInfo(
+                //         updateNote: _updateApp.updateNote!,
+                //       )
+                //     :
+
+                // : SizedBox.shrink(),
+                );
+          }),
+    );
+  }
+}
+
+class HomeMobile extends StatefulWidget {
+  final UpdateApp updateApp;
+  final int updateAppVersion;
+
+  const HomeMobile(
+      {Key? key, required this.updateApp, required this.updateAppVersion})
+      : super(key: key);
+
+  @override
+  State<HomeMobile> createState() => _HomeMobileState();
+}
+
+class _HomeMobileState extends State<HomeMobile> {
+  FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
+  int _activityEventCount = 0;
+  int _currentTab = 0;
+  late PageController _pageController;
+  String notificationMsg = '';
+  int _version = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+    int? version = Platform.isIOS
+        ? widget.updateApp.updateVersionIos
+        : widget.updateApp.updateVersionAndroid;
+    _version = version!;
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _setUpInvitesActivities();
+      initDynamicLinks();
+    });
+  }
+
+  Future<void> initDynamicLinks() async {
+    // final PendingDynamicLinkData? data = await dynamicLinks.getInitialLink();
+
+    // final Uri? deepLink = data?.link;
+    dynamicLinks.onLink.listen((dynamicLinkData) {
+      // if (deepLink != null) {
+      final List<String> link = dynamicLinkData.link.path.toString().split("_");
+
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (_) => ViewSentContent(
+                  contentId: link[1],
+                  contentType: link[0].endsWith('punched')
+                      ? 'Mood Punched'
+                      : link[0].endsWith('forum')
+                          ? 'Forum'
+                          : link[0].endsWith('event')
+                              ? 'Event'
+                              : link[0].endsWith('user')
+                                  ? 'User'
+                                  : '')));
+      // }
+    }).onError((error) {});
+  }
+
+  // void inintDynamicLinks() async {
+  //   final PendingDynamicLinkData? data = await dynamicLinks.getInitialLink();
+
+  //   final Uri? deepLink = data?.link;
+
+  //   if (deepLink != null) {
+  //     // ignore: unawaited_futures
+  //     final List<String> link = deepLink.toString().split("_");
+
+  //     Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //             builder: (_) => ViewSentContent(
+  //                 contentId: link[1],
+  //                 contentType: link[0].endsWith('punched')
+  //                     ? 'Mood Punched'
+  //                     : link[0].endsWith('forum')
+  //                         ? 'Forum'
+  //                         : link[0].endsWith('event')
+  //                             ? 'Event'
+  //                             : link[0].endsWith('user')
+  //                                 ? 'User'
+  //                                 : '')));
+
+  //     // Navigator.push(
+  //     //     context,
+  //     //     MaterialPageRoute(
+  //     //         builder: (_) => ViewSentContent(
+  //     //             contentId: deepLink.path, contentType: 'Mood Punched')));
+  //   }
+  // }
+
+  _setUpInvitesActivities() async {
+    final String currentUserId =
+        Provider.of<UserData>(context, listen: false).currentUserId!;
+    DatabaseService.numEventInviteActivities(currentUserId)
+        .listen((activityEventCount) {
+      if (mounted) {
+        setState(() {
+          _activityEventCount = activityEventCount;
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final String currentUserId = Provider.of<UserData>(context).currentUserId!;
+    final double width = Responsive.isDesktop(
+      context,
+    )
+        ? 600.0
+        : MediaQuery.of(context).size.width;
+
+    // return
+    //  FutureBuilder(
+    //     future: DatabaseService.getUserWithId(currentUserId),
+    //     builder: (BuildContext context, AsyncSnapshot snapshot) {
+    //       if (!snapshot.hasData) {
+    //         return PostSchimmerSkeleton();
+    //       }
+
+    //       AccountHolder _user = snapshot.data;
+    //       SchedulerBinding.instance.addPostFrameCallback((_) {
+    //         Provider.of<UserData>(context, listen: false).setUser(_user);
+    //       });
+    AccountHolder _user = Provider.of<UserData>(context, listen: false).user!;
+    return widget.updateAppVersion < _version &&
+            widget.updateApp.displayFullUpdate!
+        ? UpdateAppInfo(
+            updateNote: widget.updateApp.updateNote!,
+          )
+        : Scaffold(
+            body: Container(
+              width: width,
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    offset: Offset(0, 10),
+                    blurRadius: 8.0,
+                    spreadRadius: 2.0,
+                  )
+                ],
+              ),
+              child: _user.disabledAccount!
+                  ? reActivateAccount(user: _user)
+                  : Stack(
+                      alignment: FractionalOffset.center,
+                      children: [
+                        Container(
+                          height: double.infinity,
+                          width: double.infinity,
+                          child: PageView(
+                            physics: NeverScrollableScrollPhysics(),
+                            controller: _pageController,
+                            children: <Widget>[
+                              FeedScreenSliver(
+                                currentUserId: currentUserId,
+                              ),
+                              ForumFeed(
+                                currentUserId: currentUserId,
+                              ),
+                              EventsFeed(
+                                currentUserId: currentUserId,
+                              ),
+                              DiscoverUser(
+                                currentUserId: currentUserId,
+                                isWelcome: false,
+                              ),
+                              ProfileScreen(
+                                currentUserId: currentUserId,
+                                userId: currentUserId,
+                              ),
+                            ],
+                            onPageChanged: (int index) {
+                              setState(() {
+                                _currentTab = index;
+                              });
+                            },
+                          ),
+                        ),
+                        Positioned(
+                            bottom: 7,
+                            child: GestureDetector(
+                                child: UpdateInfoMini(
+                              updateNote: widget.updateApp.updateNote!,
+                              showinfo: widget.updateAppVersion < _version
+                                  ? true
+                                  : false,
+                              displayMiniUpdate:
+                                  widget.updateApp.displayMiniUpdate!,
+                              onPressed: () {
+                                StoreRedirect.redirect(
+                                  androidAppId: "com.barsOpus.barsImpression",
+                                  iOSAppId: "1610868894",
+                                );
+                              },
+                            ))),
+                        Positioned(bottom: 7, child: NoConnection()),
+                        Positioned(
+                          bottom: 7,
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: AnimatedContainer(
+                              curve: Curves.easeInOut,
+                              duration: Duration(milliseconds: 800),
+                              height: _activityEventCount != 0 ? 80.0 : 0.0,
+                              width: width - 10,
+                              decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Material(
+                                  color: Colors.transparent,
+                                  child: ListTile(
+                                    leading: Padding(
+                                      padding: const EdgeInsets.only(top: 8.0),
+                                      child: Icon(
+                                        Icons.info,
+                                        color: Colors.black,
+                                        size: 25.0,
+                                      ),
+                                    ),
+                                    trailing: IconButton(
+                                      icon: Icon(Icons.event_available),
+                                      iconSize: 25.0,
+                                      color: Colors.black,
+                                      onPressed: () {},
+                                    ),
+                                    title: Text(
+                                        '${_activityEventCount.toString()}  Event Invitations',
+                                        style: TextStyle(
+                                          fontSize: 14.0,
+                                          color: Colors.black,
+                                        )),
+                                    subtitle: Text(
+                                      'You have ${_activityEventCount.toString()} new event invititation activities you have not seen.',
+                                      style: TextStyle(
+                                        fontSize: 11.0,
+                                        color: Colors.black,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              ActivityEventInvitation(
+                                            currentUserId:
+                                                Provider.of<UserData>(context,
+                                                        listen: false)
+                                                    .currentUserId!,
+                                            count: _activityEventCount,
+                                          ),
+                                        )),
+                                  )),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+            ),
+            bottomNavigationBar: _user.disabledAccount!
+                ? SizedBox.shrink()
+                : Container(
+                    child: Wrap(
+                      children: [
+                        CupertinoTabBar(
+                          backgroundColor: ConfigBloc().darkModeOn
+                              ? Color(0xFF1a1a1a)
+                              : Colors.white,
+                          currentIndex: _currentTab,
+                          onTap: (int index) {
+                            setState(() {
+                              _currentTab = index;
+                            });
+
+                            _pageController.animateToPage(
+                              index,
+                              duration: Duration(milliseconds: 10),
+                              curve: Curves.easeIn,
+                            );
+                          },
+                          activeColor: ConfigBloc().darkModeOn
+                              ? Colors.white
+                              : Colors.black,
+                          items: [
+                            BottomNavigationBarItem(
+                              icon: Column(
+                                children: [
+                                  Padding(
+                                      padding: const EdgeInsets.only(top: 0.0),
+                                      child: AnimatedContainer(
+                                        duration: Duration(milliseconds: 500),
+                                        height: 2,
+                                        curve: Curves.easeInOut,
+                                        width: 30.0,
+                                        decoration: BoxDecoration(
+                                          color: _currentTab == 0
+                                              ? Colors.blue
+                                              : Colors.transparent,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                      )),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 1.0),
+                                    child: Icon(
+                                      MdiIcons.home,
+                                      size: 25.0,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              label: 'Home',
+                            ),
+                            BottomNavigationBarItem(
+                              icon: Column(
+                                children: [
+                                  Padding(
+                                      padding: const EdgeInsets.only(top: 0.0),
+                                      child: AnimatedContainer(
+                                        duration: Duration(milliseconds: 500),
+                                        height: 2,
+                                        curve: Curves.easeInOut,
+                                        width: 30.0,
+                                        decoration: BoxDecoration(
+                                          color: _currentTab == 1
+                                              ? Colors.blue
+                                              : Colors.transparent,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                      )),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 1.0),
+                                    child: Icon(Icons.forum, size: 25.0),
+                                  ),
+                                ],
+                              ),
+                              label: 'Forum',
+                            ),
+                            BottomNavigationBarItem(
+                              icon: Column(
+                                children: [
+                                  Padding(
+                                      padding: const EdgeInsets.only(top: 0.0),
+                                      child: AnimatedContainer(
+                                        duration: Duration(milliseconds: 500),
+                                        height: 2,
+                                        curve: Curves.easeInOut,
+                                        width: 30.0,
+                                        decoration: BoxDecoration(
+                                          color: _currentTab == 2
+                                              ? Colors.blue
+                                              : Colors.transparent,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                      )),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 1.0),
+                                    child: Icon(Icons.event, size: 25.0),
+                                  ),
+                                ],
+                              ),
+                              label: 'Event',
+                            ),
+                            BottomNavigationBarItem(
+                              icon: Column(
+                                children: [
+                                  Padding(
+                                      padding: const EdgeInsets.only(top: 0.0),
+                                      child: AnimatedContainer(
+                                        duration: Duration(milliseconds: 500),
+                                        height: 2,
+                                        curve: Curves.easeInOut,
+                                        width: 30.0,
+                                        decoration: BoxDecoration(
+                                          color: _currentTab == 3
+                                              ? Colors.blue
+                                              : Colors.transparent,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                      )),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 1.0),
+                                    child: Icon(Icons.search, size: 25.0),
+                                  ),
+                                ],
+                              ),
+                              label: 'Discover',
+                            ),
+                            BottomNavigationBarItem(
+                              icon: Column(
+                                children: [
+                                  Padding(
+                                      padding: const EdgeInsets.only(top: 0.0),
+                                      child: AnimatedContainer(
+                                        duration: Duration(milliseconds: 500),
+                                        height: 2,
+                                        curve: Curves.easeInOut,
+                                        width: 30.0,
+                                        decoration: BoxDecoration(
+                                          color: _currentTab == 4
+                                              ? Colors.blue
+                                              : Colors.transparent,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                      )),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 1.0),
+                                    child:
+                                        Icon(Icons.account_circle, size: 25.0),
+                                  ),
+                                ],
+                              ),
+                              label: 'Profile',
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+          );
+    // });
+  }
+}
+
+class HomeDesktop extends StatefulWidget {
+  const HomeDesktop({Key? key}) : super(key: key);
+
+  @override
+  State<HomeDesktop> createState() => _HomeDesktopState();
+}
+
+class _HomeDesktopState extends State<HomeDesktop> {
+  late PageController _pageController;
+
+  String notificationMsg = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+    LocalNotificationService.initilize();
+
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      // _sett();
+    });
+  }
+
   _aboutBars() {
     showAboutDialog(
       context: context,
@@ -141,7 +729,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         messageText: Text(
-          'Could luanch mail',
+          'Could\'nt luanch mail',
           style: TextStyle(
             color: Colors.white,
             fontSize: width > 800 ? 20 : 12,
@@ -161,627 +749,280 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final String currentUserId = Provider.of<UserData>(context).currentUserId!;
-    final double width = Responsive.isDesktop(
-      context,
-    )
-        ? 600.0
-        : MediaQuery.of(context).size.width;
-    return MediaQuery(
-      data: MediaQuery.of(context).copyWith(
-          textScaleFactor:
-              MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.3)),
-      child: FutureBuilder(
-          future: DatabaseService.getUpdateInfo(),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (!snapshot.hasData) {
-              return PostSchimmerSkeleton();
-            }
-            UpdateApp _updateApp = snapshot.data;
-            int? version = Platform.isIOS
-                ? _updateApp.updateVersionIos
-                : _updateApp.updateVersionAndroid;
-            return NestedScrollView(
-                headerSliverBuilder: (context, innerBoxScrolled) => [],
-                body: Responsive.isDesktop(context)
-                    ? Scaffold(
-                        backgroundColor: ConfigBloc().darkModeOn
-                            ? Color(0xFF1f2022)
-                            : Color(0xFFf2f2f2),
-                        body: Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: ConfigBloc().darkModeOn
-                                      ? Color(0xFF1a1a1a)
-                                      : Colors.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      offset: Offset(0, 5),
-                                      blurRadius: 8.0,
-                                      spreadRadius: 2.0,
-                                    )
-                                  ],
-                                ),
-                                width: 300,
-                                child: SafeArea(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(20),
-                                        child: UserWebsite(
-                                          iconSize: 35,
-                                          padding: 5,
-                                          raduis: 100,
-                                          arrowColor: Colors.transparent,
-                                          title: '  Home',
-                                          icon: MdiIcons.home,
-                                          textColor: _currentTab != 0
-                                              ? Colors.grey
-                                              : ConfigBloc().darkModeOn
-                                                  ? Color(0xFFf2f2f2)
-                                                  : Color(0xFF1a1a1a),
-                                          iconColor: _currentTab != 0
-                                              ? Colors.grey
-                                              : ConfigBloc().darkModeOn
-                                                  ? Color(0xFFf2f2f2)
-                                                  : Color(0xFF1a1a1a),
-                                          onPressed: () {
-                                            _pageController.animateToPage(
-                                              _currentTab = 0,
-                                              duration:
-                                                  Duration(milliseconds: 500),
-                                              curve: Curves.easeInOut,
-                                            );
-                                          },
-                                          containerColor: null,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(20),
-                                        child: UserWebsite(
-                                            containerColor: null,
-                                            iconSize: 35,
-                                            padding: 5,
-                                            raduis: 100,
-                                            arrowColor: Colors.transparent,
-                                            title: '  Forum',
-                                            icon: Icons.forum,
-                                            textColor: _currentTab != 1
-                                                ? Colors.grey
-                                                : ConfigBloc().darkModeOn
-                                                    ? Color(0xFFf2f2f2)
-                                                    : Color(0xFF1a1a1a),
-                                            iconColor: _currentTab != 1
-                                                ? Colors.grey
-                                                : ConfigBloc().darkModeOn
-                                                    ? Color(0xFFf2f2f2)
-                                                    : Color(0xFF1a1a1a),
-                                            onPressed: () {
-                                              _pageController.animateToPage(
-                                                _currentTab = 1,
-                                                duration:
-                                                    Duration(milliseconds: 500),
-                                                curve: Curves.easeInOut,
-                                              );
-                                            }),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(20),
-                                        child: UserWebsite(
-                                            containerColor: null,
-                                            iconSize: 35,
-                                            padding: 5,
-                                            raduis: 100,
-                                            arrowColor: Colors.transparent,
-                                            title: '  Event',
-                                            icon: Icons.forum,
-                                            textColor: _currentTab != 2
-                                                ? Colors.grey
-                                                : ConfigBloc().darkModeOn
-                                                    ? Color(0xFFf2f2f2)
-                                                    : Color(0xFF1a1a1a),
-                                            iconColor: _currentTab != 2
-                                                ? Colors.grey
-                                                : ConfigBloc().darkModeOn
-                                                    ? Color(0xFFf2f2f2)
-                                                    : Color(0xFF1a1a1a),
-                                            onPressed: () {
-                                              _pageController.animateToPage(
-                                                _currentTab = 2,
-                                                duration:
-                                                    Duration(milliseconds: 500),
-                                                curve: Curves.easeInOut,
-                                              );
-                                            }),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(20),
-                                        child: UserWebsite(
-                                            containerColor: null,
-                                            iconSize: 35,
-                                            padding: 5,
-                                            raduis: 100,
-                                            arrowColor: Colors.transparent,
-                                            title: '  Discover',
-                                            icon: Icons.search,
-                                            textColor: _currentTab != 3
-                                                ? Colors.grey
-                                                : ConfigBloc().darkModeOn
-                                                    ? Color(0xFFf2f2f2)
-                                                    : Color(0xFF1a1a1a),
-                                            iconColor: _currentTab != 3
-                                                ? Colors.grey
-                                                : ConfigBloc().darkModeOn
-                                                    ? Color(0xFFf2f2f2)
-                                                    : Color(0xFF1a1a1a),
-                                            onPressed: () {
-                                              _pageController.animateToPage(
-                                                _currentTab = 3,
-                                                duration:
-                                                    Duration(milliseconds: 500),
-                                                curve: Curves.easeInOut,
-                                              );
-                                            }),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(20),
-                                        child: UserWebsite(
-                                            containerColor: null,
-                                            iconSize: 35,
-                                            padding: 5,
-                                            raduis: 100,
-                                            arrowColor: Colors.transparent,
-                                            title: '  Profile',
-                                            icon: Icons.account_circle,
-                                            textColor: _currentTab != 4
-                                                ? Colors.grey
-                                                : ConfigBloc().darkModeOn
-                                                    ? Color(0xFFf2f2f2)
-                                                    : Color(0xFF1a1a1a),
-                                            iconColor: _currentTab != 4
-                                                ? Colors.grey
-                                                : ConfigBloc().darkModeOn
-                                                    ? Color(0xFFf2f2f2)
-                                                    : Color(0xFF1a1a1a),
-                                            onPressed: () {
-                                              _pageController.animateToPage(
-                                                _currentTab = 4,
-                                                duration:
-                                                    Duration(milliseconds: 500),
-                                                curve: Curves.easeInOut,
-                                              );
-                                            }),
-                                      ),
-                                      Divider(color: Colors.grey),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 30.0, left: 30, bottom: 30),
-                                        child: Text(
-                                          'Bars \nImpression',
-                                          style: TextStyle(
-                                              fontSize: 30,
-                                              fontWeight: FontWeight.bold,
-                                              color: ConfigBloc().darkModeOn
-                                                  ? Colors.white
-                                                  : Colors.black),
-                                        ),
-                                      ),
-                                      Divider(color: Colors.grey),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 30.0, left: 30),
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        SuggestionBox()));
-                                          },
-                                          child: Text(
-                                            'Suggestion Box',
-                                            style:
-                                                TextStyle(color: Colors.blue),
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 30.0, left: 30),
-                                        child: GestureDetector(
-                                          onTap: _aboutBars,
-                                          child: Text(
-                                            'App Infomation',
-                                            style:
-                                                TextStyle(color: Colors.blue),
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 30.0, left: 30),
-                                        child: GestureDetector(
-                                          onTap: () => setState(() {
-                                            _sendMail(
-                                                'mailto:support@barsopus.com');
-                                          }),
-                                          child: Text(
-                                            'Contact us',
-                                            style:
-                                                TextStyle(color: Colors.blue),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 30,
-                              ),
-                              Container(
-                                width: 600,
-                                decoration: BoxDecoration(
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      offset: Offset(0, 10),
-                                      blurRadius: 8.0,
-                                      spreadRadius: 2.0,
-                                    )
-                                  ],
-                                ),
-                                child: PageView(
-                                  physics: NeverScrollableScrollPhysics(),
-                                  controller: _pageController,
-                                  children: <Widget>[
-                                    FeedScreenSliver(
-                                      currentUserId: currentUserId,
-                                    ),
-                                    ForumFeed(
-                                      currentUserId: currentUserId,
-                                    ),
-                                    EventsFeed(
-                                      currentUserId: currentUserId,
-                                    ),
-                                    DiscoverUser(
-                                      isWelcome: false,
-                                      currentUserId: currentUserId,
-                                    ),
-                                    ProfileScreen(
-                                      currentUserId: currentUserId,
-                                      userId: currentUserId,
-                                    ),
-                                  ],
-                                  onPageChanged: (int index) {
-                                    setState(() {
-                                      _currentTab = index;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    :
-                    // _updateApp == null
-
-                    //     ?
-                    _updateAppVersion < version! &&
-                            _updateApp.displayFullUpdate!
-                        ? UpdateAppInfo(
-                            updateNote: _updateApp.updateNote!,
-                          )
-                        : Scaffold(
-                            body: Container(
-                              width: width,
-                              decoration: BoxDecoration(
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    offset: Offset(0, 10),
-                                    blurRadius: 8.0,
-                                    spreadRadius: 2.0,
-                                  )
-                                ],
-                              ),
-                              child: Provider.of<UserData>(context,
-                                          listen: false)
-                                      .user!
-                                      .disabledAccount!
-                                  ? ReActivateAccount(
-                                      user: Provider.of<UserData>(context,
-                                              listen: false)
-                                          .user!)
-                                  : Stack(
-                                      children: [
-                                        Container(
-                                          height: double.infinity,
-                                          width: double.infinity,
-                                          child: PageView(
-                                            physics:
-                                                NeverScrollableScrollPhysics(),
-                                            controller: _pageController,
-                                            children: <Widget>[
-                                              FeedScreenSliver(
-                                                currentUserId: currentUserId,
-                                              ),
-                                              ForumFeed(
-                                                currentUserId: currentUserId,
-                                              ),
-                                              EventsFeed(
-                                                currentUserId: currentUserId,
-                                              ),
-                                              DiscoverUser(
-                                                currentUserId: currentUserId,
-                                                isWelcome: false,
-                                              ),
-                                              ProfileScreen(
-                                                currentUserId: currentUserId,
-                                                userId: currentUserId,
-                                              ),
-                                            ],
-                                            onPageChanged: (int index) {
-                                              setState(() {
-                                                _currentTab = index;
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                        Positioned(
-                                            bottom: 7,
-                                            child: GestureDetector(
-                                                child: UpdateInfoMini(
-                                              updateNote:
-                                                  _updateApp.updateNote!,
-                                              showinfo:
-                                                  _updateAppVersion < version
-                                                      ? true
-                                                      : false,
-                                              displayMiniUpdate:
-                                                  _updateApp.displayMiniUpdate!,
-                                              onPressed: () {
-                                                StoreRedirect.redirect(
-                                                  androidAppId:
-                                                      "com.barsOpus.barsImpression",
-                                                  iOSAppId: "1610868894",
-                                                );
-                                              },
-                                            ))),
-                                        Positioned(
-                                            bottom: 7, child: NoConnection()),
-                                      ],
-                                    ),
+    int _currentTab = 0;
+    return Scaffold(
+      backgroundColor:
+          ConfigBloc().darkModeOn ? Color(0xFF1f2022) : Color(0xFFf2f2f2),
+      body: Container(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Provider.of<UserData>(context, listen: false).user == null
+                ? const SizedBox.shrink()
+                : Container(
+                    decoration: BoxDecoration(
+                      color: ConfigBloc().darkModeOn
+                          ? Color(0xFF1a1a1a)
+                          : Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          offset: Offset(0, 5),
+                          blurRadius: 8.0,
+                          spreadRadius: 2.0,
+                        )
+                      ],
+                    ),
+                    width: 300,
+                    child: SafeArea(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: UserWebsite(
+                              iconSize: 35,
+                              padding: 5,
+                              raduis: 100,
+                              arrowColor: Colors.transparent,
+                              title: '  Home',
+                              icon: MdiIcons.home,
+                              textColor: _currentTab != 0
+                                  ? Colors.grey
+                                  : ConfigBloc().darkModeOn
+                                      ? Color(0xFFf2f2f2)
+                                      : Color(0xFF1a1a1a),
+                              iconColor: _currentTab != 0
+                                  ? Colors.grey
+                                  : ConfigBloc().darkModeOn
+                                      ? Color(0xFFf2f2f2)
+                                      : Color(0xFF1a1a1a),
+                              onPressed: () {
+                                _pageController.animateToPage(
+                                  _currentTab = 0,
+                                  duration: Duration(milliseconds: 500),
+                                  curve: Curves.easeInOut,
+                                );
+                              },
+                              containerColor: null,
                             ),
-                            bottomNavigationBar: Provider.of<UserData>(context,
-                                        listen: false)
-                                    .user!
-                                    .disabledAccount!
-                                ? SizedBox.shrink()
-                                : Container(
-                                    child: Wrap(
-                                      children: [
-                                        CupertinoTabBar(
-                                          backgroundColor:
-                                              ConfigBloc().darkModeOn
-                                                  ? Color(0xFF1a1a1a)
-                                                  : Colors.white,
-                                          currentIndex: _currentTab,
-                                          onTap: (int index) {
-                                            setState(() {
-                                              _currentTab = index;
-                                            });
-
-                                            _pageController.animateToPage(
-                                              index,
-                                              duration:
-                                                  Duration(milliseconds: 10),
-                                              curve: Curves.easeIn,
-                                            );
-                                          },
-                                          activeColor: ConfigBloc().darkModeOn
-                                              ? Colors.white
-                                              : Colors.black,
-                                          items: [
-                                            BottomNavigationBarItem(
-                                              icon: Column(
-                                                children: [
-                                                  Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              top: 0.0),
-                                                      child: AnimatedContainer(
-                                                        duration: Duration(
-                                                            milliseconds: 500),
-                                                        height: 2,
-                                                        curve: Curves.easeInOut,
-                                                        width: 30.0,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: _currentTab ==
-                                                                  0
-                                                              ? Colors.blue
-                                                              : Colors
-                                                                  .transparent,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(10),
-                                                        ),
-                                                      )),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            top: 1.0),
-                                                    child: Icon(
-                                                      MdiIcons.home,
-                                                      size: 25.0,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              label: 'Home',
-                                            ),
-                                            BottomNavigationBarItem(
-                                              icon: Column(
-                                                children: [
-                                                  Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              top: 0.0),
-                                                      child: AnimatedContainer(
-                                                        duration: Duration(
-                                                            milliseconds: 500),
-                                                        height: 2,
-                                                        curve: Curves.easeInOut,
-                                                        width: 30.0,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: _currentTab ==
-                                                                  1
-                                                              ? Colors.blue
-                                                              : Colors
-                                                                  .transparent,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(10),
-                                                        ),
-                                                      )),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            top: 1.0),
-                                                    child: Icon(Icons.forum,
-                                                        size: 25.0),
-                                                  ),
-                                                ],
-                                              ),
-                                              label: 'Forum',
-                                            ),
-                                            BottomNavigationBarItem(
-                                              icon: Column(
-                                                children: [
-                                                  Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              top: 0.0),
-                                                      child: AnimatedContainer(
-                                                        duration: Duration(
-                                                            milliseconds: 500),
-                                                        height: 2,
-                                                        curve: Curves.easeInOut,
-                                                        width: 30.0,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: _currentTab ==
-                                                                  2
-                                                              ? Colors.blue
-                                                              : Colors
-                                                                  .transparent,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(10),
-                                                        ),
-                                                      )),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            top: 1.0),
-                                                    child: Icon(Icons.event,
-                                                        size: 25.0),
-                                                  ),
-                                                ],
-                                              ),
-                                              label: 'Event',
-                                            ),
-                                            BottomNavigationBarItem(
-                                              icon: Column(
-                                                children: [
-                                                  Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              top: 0.0),
-                                                      child: AnimatedContainer(
-                                                        duration: Duration(
-                                                            milliseconds: 500),
-                                                        height: 2,
-                                                        curve: Curves.easeInOut,
-                                                        width: 30.0,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: _currentTab ==
-                                                                  3
-                                                              ? Colors.blue
-                                                              : Colors
-                                                                  .transparent,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(10),
-                                                        ),
-                                                      )),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            top: 1.0),
-                                                    child: Icon(Icons.search,
-                                                        size: 25.0),
-                                                  ),
-                                                ],
-                                              ),
-                                              label: 'Discover',
-                                            ),
-                                            BottomNavigationBarItem(
-                                              icon: Column(
-                                                children: [
-                                                  Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              top: 0.0),
-                                                      child: AnimatedContainer(
-                                                        duration: Duration(
-                                                            milliseconds: 500),
-                                                        height: 2,
-                                                        curve: Curves.easeInOut,
-                                                        width: 30.0,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: _currentTab ==
-                                                                  4
-                                                              ? Colors.blue
-                                                              : Colors
-                                                                  .transparent,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(10),
-                                                        ),
-                                                      )),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            top: 1.0),
-                                                    child: Icon(
-                                                        Icons.account_circle,
-                                                        size: 25.0),
-                                                  ),
-                                                ],
-                                              ),
-                                              label: 'Profile',
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                          )
-                // : SizedBox.shrink(),
-                );
-          }),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: UserWebsite(
+                                containerColor: null,
+                                iconSize: 35,
+                                padding: 5,
+                                raduis: 100,
+                                arrowColor: Colors.transparent,
+                                title: '  Forum',
+                                icon: Icons.forum,
+                                textColor: _currentTab != 1
+                                    ? Colors.grey
+                                    : ConfigBloc().darkModeOn
+                                        ? Color(0xFFf2f2f2)
+                                        : Color(0xFF1a1a1a),
+                                iconColor: _currentTab != 1
+                                    ? Colors.grey
+                                    : ConfigBloc().darkModeOn
+                                        ? Color(0xFFf2f2f2)
+                                        : Color(0xFF1a1a1a),
+                                onPressed: () {
+                                  _pageController.animateToPage(
+                                    _currentTab = 1,
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.easeInOut,
+                                  );
+                                }),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: UserWebsite(
+                                containerColor: null,
+                                iconSize: 35,
+                                padding: 5,
+                                raduis: 100,
+                                arrowColor: Colors.transparent,
+                                title: '  Event',
+                                icon: Icons.forum,
+                                textColor: _currentTab != 2
+                                    ? Colors.grey
+                                    : ConfigBloc().darkModeOn
+                                        ? Color(0xFFf2f2f2)
+                                        : Color(0xFF1a1a1a),
+                                iconColor: _currentTab != 2
+                                    ? Colors.grey
+                                    : ConfigBloc().darkModeOn
+                                        ? Color(0xFFf2f2f2)
+                                        : Color(0xFF1a1a1a),
+                                onPressed: () {
+                                  _pageController.animateToPage(
+                                    _currentTab = 2,
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.easeInOut,
+                                  );
+                                }),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: UserWebsite(
+                                containerColor: null,
+                                iconSize: 35,
+                                padding: 5,
+                                raduis: 100,
+                                arrowColor: Colors.transparent,
+                                title: '  Discover',
+                                icon: Icons.search,
+                                textColor: _currentTab != 3
+                                    ? Colors.grey
+                                    : ConfigBloc().darkModeOn
+                                        ? Color(0xFFf2f2f2)
+                                        : Color(0xFF1a1a1a),
+                                iconColor: _currentTab != 3
+                                    ? Colors.grey
+                                    : ConfigBloc().darkModeOn
+                                        ? Color(0xFFf2f2f2)
+                                        : Color(0xFF1a1a1a),
+                                onPressed: () {
+                                  _pageController.animateToPage(
+                                    _currentTab = 3,
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.easeInOut,
+                                  );
+                                }),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: UserWebsite(
+                                containerColor: null,
+                                iconSize: 35,
+                                padding: 5,
+                                raduis: 100,
+                                arrowColor: Colors.transparent,
+                                title: '  Profile',
+                                icon: Icons.account_circle,
+                                textColor: _currentTab != 4
+                                    ? Colors.grey
+                                    : ConfigBloc().darkModeOn
+                                        ? Color(0xFFf2f2f2)
+                                        : Color(0xFF1a1a1a),
+                                iconColor: _currentTab != 4
+                                    ? Colors.grey
+                                    : ConfigBloc().darkModeOn
+                                        ? Color(0xFFf2f2f2)
+                                        : Color(0xFF1a1a1a),
+                                onPressed: () {
+                                  _pageController.animateToPage(
+                                    _currentTab = 4,
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.easeInOut,
+                                  );
+                                }),
+                          ),
+                          Divider(color: Colors.grey),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                top: 30.0, left: 30, bottom: 30),
+                            child: Text(
+                              'Bars \nImpression',
+                              style: TextStyle(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold,
+                                  color: ConfigBloc().darkModeOn
+                                      ? Colors.white
+                                      : Colors.black),
+                            ),
+                          ),
+                          Divider(color: Colors.grey),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 30.0, left: 30),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => SuggestionBox()));
+                              },
+                              child: Text(
+                                'Suggestion Box',
+                                style: TextStyle(color: Colors.blue),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 30.0, left: 30),
+                            child: GestureDetector(
+                              onTap: _aboutBars,
+                              child: Text(
+                                'App Infomation',
+                                style: TextStyle(color: Colors.blue),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 30.0, left: 30),
+                            child: GestureDetector(
+                              onTap: () => setState(() {
+                                _sendMail('mailto:support@barsopus.com');
+                              }),
+                              child: Text(
+                                'Contact us',
+                                style: TextStyle(color: Colors.blue),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+            SizedBox(
+              width: 30,
+            ),
+            Container(
+              width: 600,
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    offset: Offset(0, 10),
+                    blurRadius: 8.0,
+                    spreadRadius: 2.0,
+                  )
+                ],
+              ),
+              child: PageView(
+                physics: NeverScrollableScrollPhysics(),
+                controller: _pageController,
+                children: <Widget>[
+                  FeedScreenSliver(
+                    currentUserId: currentUserId,
+                  ),
+                  ForumFeed(
+                    currentUserId: currentUserId,
+                  ),
+                  EventsFeed(
+                    currentUserId: currentUserId,
+                  ),
+                  DiscoverUser(
+                    isWelcome: false,
+                    currentUserId: currentUserId,
+                  ),
+                  ProfileScreen(
+                    currentUserId: currentUserId,
+                    userId: currentUserId,
+                  ),
+                ],
+                onPageChanged: (int index) {
+                  setState(() {
+                    _currentTab = index;
+                  });
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

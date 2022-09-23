@@ -1,0 +1,409 @@
+import 'package:bars/utilities/exports.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+
+class BarsGoogleAuthService {
+  // static final _auth = FirebaseAuth.instance;
+  static final _auth = FirebaseAuth.instance;
+  static final _firestore = FirebaseFirestore.instance;
+
+  static googleSignUpUser(BuildContext context, String from) async {
+    try {
+      await Provider.of<UserData>(context, listen: false).googleLogin();
+
+      Flushbar(
+        maxWidth: MediaQuery.of(context).size.width,
+        backgroundColor: Color(0xFF1a1a1a),
+        margin: EdgeInsets.all(8),
+        showProgressIndicator: true,
+        progressIndicatorBackgroundColor: Color(0xFF1a1a1a),
+        progressIndicatorValueColor: AlwaysStoppedAnimation(Colors.blue),
+        flushbarPosition: FlushbarPosition.TOP,
+        boxShadows: [
+          BoxShadow(
+            color: Colors.black,
+            offset: Offset(0.0, 2.0),
+            blurRadius: 3.0,
+          )
+        ],
+        titleText: Text(
+          from.startsWith("Register") ? 'Registering account' : 'Signing In',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        messageText: Text(
+          "Please wait...",
+          style: TextStyle(color: Colors.white),
+        ),
+        duration: Duration(seconds: 3),
+      )..show(context);
+
+      //
+      // ;
+
+      final signedInHandler = FirebaseAuth.instance.currentUser!;
+
+      // UserCredential userCredential =
+      //     await FirebaseAuth.instance.signInWithCredential(authCredential);
+      // if (userCredential.additionalUserInfo!.isNewUser) {
+      //   return Navigator.push(
+      //     context,
+      //     MaterialPageRoute(builder: (context) => SignUpNewUser()),
+      //   );
+      // }
+
+      // UserCredential authResult = await _auth.createUserWithEmailAndPassword(
+      //   email: email,
+      //   password: password,
+      // );
+      // User? signedInHandler = authResult.user;
+
+      // ignore: unnecessary_null_comparison
+      if (signedInHandler != null) {
+        _firestore.collection('/users').doc(signedInHandler.uid).set({
+          'name': signedInHandler.displayName,
+          'email': signedInHandler.email,
+          'timestamp': Timestamp.fromDate(DateTime.now()),
+          'verified': '',
+          'userName': '',
+          'profileImageUrl': '',
+          'bio': '',
+          'favouritePunchline': '',
+          'favouriteArtist': '',
+          'favouriteSong': '',
+          'favouriteAlbum': '',
+          'company': '',
+          'country': '',
+          'city': '',
+          'continent': '',
+          'skills': '',
+          'performances': '',
+          'collaborations': '',
+          'awards': '',
+          'management': '',
+          'contacts': '',
+          'profileHandle': '',
+          'report': '',
+          'score': 0,
+          'reportConfirmed': '',
+          'website': '',
+          'otherSites1': '',
+          'otherSites2': '',
+          'mail': '',
+          'privateAccount': false,
+          'androidNotificationToken': '',
+          'hideUploads': false,
+          'disableAdvice': false,
+          'disableChat': false,
+          'enableBookingOnChat': false,
+          'hideAdvice': false,
+          'noBooking': false,
+          'disabledAccount': false,
+          'disableContentSharing': false,
+          'disableMoodPunchReaction': false,
+          'disableMoodPunchVibe': false,
+          'dontShowContentOnExplorePage': false,
+          'specialtyTags': '',
+          'blurHash': '',
+          'professionalPicture1': '',
+          'professionalPicture2': '',
+          'professionalPicture3': '',
+          'professionalVideo1': '',
+          'professionalVideo2': '',
+          'professionalVideo3': '',
+          'genreTags': '',
+        });
+
+        Provider.of<UserData>(context, listen: false).currentUserId =
+            signedInHandler.uid;
+        Provider.of<UserData>(context, listen: false).setPost1(
+          signedInHandler.email!,
+        );
+        Provider.of<UserData>(context, listen: false)
+            .setPost3(signedInHandler.displayName!);
+        followersRef
+            .doc(signedInHandler.uid)
+            .collection('userFollowers')
+            .doc(signedInHandler.uid)
+            .set({
+          'uid': signedInHandler.uid,
+        });
+        Provider.of<UserData>(context, listen: false).setShowUsersTab(true);
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => TipScreen()),
+            (Route<dynamic> route) => false);
+        return Flushbar(
+          maxWidth: MediaQuery.of(context).size.width,
+          backgroundColor: Colors.white,
+          margin: EdgeInsets.all(8),
+          flushbarPosition: FlushbarPosition.TOP,
+          flushbarStyle: FlushbarStyle.FLOATING,
+          titleText: Text(
+            'Registration Successful',
+            style: TextStyle(
+              color: Colors.black,
+            ),
+          ),
+          icon: Icon(
+            MdiIcons.checkCircleOutline,
+            size: 30.0,
+            color: Colors.blue,
+          ),
+          messageText: RichText(
+            textScaleFactor: MediaQuery.of(context).textScaleFactor,
+            text: TextSpan(children: [
+              TextSpan(
+                  text:
+                      "We have put together some tips to help you understand certain features of Bars Impression and to use this platform effectively.",
+                  style: TextStyle(fontSize: 14, color: Colors.black)),
+            ]),
+          ),
+          isDismissible: false,
+          leftBarIndicatorColor: Colors.blue,
+        )..show(context);
+      }
+    } catch (e) {
+      //   String error = e.toString();
+      //   String result = error.contains(']')
+      //       ? error.substring(error.lastIndexOf(']') + 1)
+      //       : error;
+      //   Flushbar(
+      //     maxWidth: MediaQuery.of(context).size.width,
+      //     margin: EdgeInsets.all(8),
+      //     flushbarPosition: FlushbarPosition.TOP,
+      //     flushbarStyle: FlushbarStyle.FLOATING,
+      //     boxShadows: [
+      //       BoxShadow(
+      //         color: Colors.black,
+      //         offset: Offset(0.0, 2.0),
+      //         blurRadius: 3.0,
+      //       )
+      //     ],
+      //     titleText: Text(
+      //       'Sign up failed',
+      //       style: TextStyle(color: Colors.white),
+      //     ),
+      //     messageText: Container(
+      //         child: Text(
+      //       result.toString(),
+      //       style: TextStyle(color: Colors.white),
+      //     )),
+      //     icon: Icon(Icons.error_outline, size: 28.0, color: Colors.blue),
+      //     mainButton: OutlinedButton(
+      //       style: OutlinedButton.styleFrom(
+      //         primary: Colors.transparent,
+      //         side: BorderSide(width: 1.0, color: Colors.transparent),
+      //       ),
+      //       onPressed: () => Navigator.pop(context),
+      //       child: Text("Ok",
+      //           style: TextStyle(
+      //             color: Colors.blue,
+      //           )),
+      //     ),
+      //     leftBarIndicatorColor: Colors.blue,
+      //   )..show(context);
+      //   print(e.toString());
+    }
+  }
+
+  static appleSignUpUser(BuildContext context, String from) async {
+    try {
+      Flushbar(
+        maxWidth: MediaQuery.of(context).size.width,
+        backgroundColor: Color(0xFF1a1a1a),
+        margin: EdgeInsets.all(8),
+        showProgressIndicator: true,
+        progressIndicatorBackgroundColor: Color(0xFF1a1a1a),
+        progressIndicatorValueColor: AlwaysStoppedAnimation(Colors.blue),
+        flushbarPosition: FlushbarPosition.TOP,
+        boxShadows: [
+          BoxShadow(
+            color: Colors.black,
+            offset: Offset(0.0, 2.0),
+            blurRadius: 3.0,
+          )
+        ],
+        titleText: Text(
+          from.startsWith("Register") ? 'Registering account' : 'Signing In',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        messageText: Text(
+          "Please wait...",
+          style: TextStyle(color: Colors.white),
+        ),
+        duration: Duration(seconds: 3),
+      )..show(context);
+
+      final appleIdCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+      // final OAuthProvider   oAuthProvider = new OAuthProvider(providerId: 'apple.com');
+      final OAuthProvider oAuthProvider = new OAuthProvider('apple.com');
+      // final credential = oAuthProvider.getCredential(
+      //   idToken: appleIdCredential.identityToken,
+      //   accessToken: appleIdCredential.authorizationCode,
+      // );
+      final credential = oAuthProvider.credential(
+        idToken: appleIdCredential.identityToken,
+        accessToken: appleIdCredential.authorizationCode,
+      );
+      await _auth.signInWithCredential(credential);
+      //
+      // ;
+
+      final signedInHandler = FirebaseAuth.instance.currentUser!;
+
+      // UserCredential authResult = await _auth.createUserWithEmailAndPassword(
+      //   email: email,
+      //   password: password,
+      // );
+      // User? signedInHandler = authResult.user;
+
+      // ignore: unnecessary_null_comparison
+      if (signedInHandler != null) {
+        _firestore.collection('/users').doc(signedInHandler.uid).set({
+          'name': signedInHandler.displayName,
+          'email': signedInHandler.email,
+          'timestamp': Timestamp.fromDate(DateTime.now()),
+          'verified': '',
+          'userName': '',
+          'profileImageUrl': '',
+          'bio': '',
+          'favouritePunchline': '',
+          'favouriteArtist': '',
+          'favouriteSong': '',
+          'favouriteAlbum': '',
+          'company': '',
+          'country': '',
+          'city': '',
+          'continent': '',
+          'skills': '',
+          'performances': '',
+          'collaborations': '',
+          'awards': '',
+          'management': '',
+          'contacts': '',
+          'profileHandle': '',
+          'report': '',
+          'score': 0,
+          'reportConfirmed': '',
+          'website': '',
+          'otherSites1': '',
+          'otherSites2': '',
+          'mail': '',
+          'privateAccount': false,
+          'androidNotificationToken': '',
+          'hideUploads': false,
+          'disableAdvice': false,
+          'disableChat': false,
+          'enableBookingOnChat': false,
+          'hideAdvice': false,
+          'noBooking': false,
+          'disabledAccount': false,
+          'disableContentSharing': false,
+          'disableMoodPunchReaction': false,
+          'disableMoodPunchVibe': false,
+          'dontShowContentOnExplorePage': false,
+          'specialtyTags': '',
+          'blurHash': '',
+          'professionalPicture1': '',
+          'professionalPicture2': '',
+          'professionalPicture3': '',
+          'professionalVideo1': '',
+          'professionalVideo2': '',
+          'professionalVideo3': '',
+          'genreTags': '',
+        });
+        Provider.of<UserData>(context, listen: false).currentUserId =
+            signedInHandler.uid;
+        followersRef
+            .doc(signedInHandler.uid)
+            .collection('userFollowers')
+            .doc(signedInHandler.uid)
+            .set({
+          'uid': signedInHandler.uid,
+        });
+        Provider.of<UserData>(context, listen: false).setShowUsersTab(true);
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => TipScreen()),
+            (Route<dynamic> route) => false);
+        return Flushbar(
+          maxWidth: MediaQuery.of(context).size.width,
+          backgroundColor: Colors.white,
+          margin: EdgeInsets.all(8),
+          flushbarPosition: FlushbarPosition.TOP,
+          flushbarStyle: FlushbarStyle.FLOATING,
+          titleText: Text(
+            'Registration Successful',
+            style: TextStyle(
+              color: Colors.black,
+            ),
+          ),
+          icon: Icon(
+            MdiIcons.checkCircleOutline,
+            size: 30.0,
+            color: Colors.blue,
+          ),
+          messageText: RichText(
+            textScaleFactor: MediaQuery.of(context).textScaleFactor,
+            text: TextSpan(children: [
+              TextSpan(
+                  text:
+                      "We have put together some tips to help you understand certain features of Bars Impression and to use this platform effectively.",
+                  style: TextStyle(fontSize: 14, color: Colors.black)),
+            ]),
+          ),
+          isDismissible: false,
+          leftBarIndicatorColor: Colors.blue,
+        )..show(context);
+      }
+    } catch (e) {
+      //   String error = e.toString();
+      //   String result = error.contains(']')
+      //       ? error.substring(error.lastIndexOf(']') + 1)
+      //       : error;
+      //   Flushbar(
+      //     maxWidth: MediaQuery.of(context).size.width,
+      //     margin: EdgeInsets.all(8),
+      //     flushbarPosition: FlushbarPosition.TOP,
+      //     flushbarStyle: FlushbarStyle.FLOATING,
+      //     boxShadows: [
+      //       BoxShadow(
+      //         color: Colors.black,
+      //         offset: Offset(0.0, 2.0),
+      //         blurRadius: 3.0,
+      //       )
+      //     ],
+      //     titleText: Text(
+      //       'Sign up failed',
+      //       style: TextStyle(color: Colors.white),
+      //     ),
+      //     messageText: Container(
+      //         child: Text(
+      //       result.toString(),
+      //       style: TextStyle(color: Colors.white),
+      //     )),
+      //     icon: Icon(Icons.error_outline, size: 28.0, color: Colors.blue),
+      //     mainButton: OutlinedButton(
+      //       style: OutlinedButton.styleFrom(
+      //         primary: Colors.transparent,
+      //         side: BorderSide(width: 1.0, color: Colors.transparent),
+      //       ),
+      //       onPressed: () => Navigator.pop(context),
+      //       child: Text("Ok",
+      //           style: TextStyle(
+      //             color: Colors.blue,
+      //           )),
+      //     ),
+      //     leftBarIndicatorColor: Colors.blue,
+      //   )..show(context);
+      //   print(e.toString());
+    }
+  }
+}

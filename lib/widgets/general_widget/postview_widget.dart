@@ -140,6 +140,27 @@ class _PostViewWidgetState extends State<PostViewWidget> {
         ),
       );
 
+  _dynamicLink() async {
+    final dynamicLinkParams = await DynamicLinkParameters(
+      socialMetaTagParameters: await SocialMetaTagParameters(
+        title: 'MoodPunched',
+        description: widget.post.punch,
+      ),
+      link: Uri.parse('https://www.barsopus.com/moopunched_${widget.post.id}'),
+      uriPrefix: 'https://barsopus.com/barsImpression/',
+      androidParameters:
+          AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
+      iosParameters: IOSParameters(
+        bundleId: 'com.bars-Opus.barsImpression',
+        appStoreId: '1610868894',
+      ),
+    );
+    var link =
+        await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+
+    Share.share(link.shortUrl.toString());
+  }
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -326,26 +347,148 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                           ),
                                           child: FocusedMenuHolder(
                                             menuWidth: width,
+                                            menuItemExtent: 60,
                                             menuOffset: 10,
                                             blurBackgroundColor:
                                                 Colors.transparent,
                                             openWithTap: false,
                                             onPressed: () {},
                                             menuItems: [
+                                              // FocusedMenuItem(
+                                              //     title:
+                                              //     onPressed: () {}),
+                                              // FocusedMenuItem(
+                                              //     title: Container(
+                                              //       width: width / 2,
+                                              //       child: Text(
+                                              //         widget.post.authorId ==
+                                              //                 widget
+                                              //                     .currentUserId
+                                              //             ? 'Edit mood punched'
+                                              //             : 'Go to ${widget.author.name}\' profile ',
+                                              //         overflow:
+                                              //             TextOverflow.ellipsis,
+                                              //         textScaleFactor:
+                                              //             MediaQuery.of(context)
+                                              //                 .textScaleFactor,
+                                              //       ),
+                                              //     ),
+                                              //     onPressed: () => widget
+                                              //                 .post.authorId ==
+                                              //             widget.currentUserId
+                                              //         ? Navigator.push(
+                                              //             context,
+                                              //             MaterialPageRoute(
+                                              //               builder: (_) =>
+                                              //                   EditPost(
+                                              //                 post: widget.post,
+                                              //                 currentUserId: widget
+                                              //                     .currentUserId,
+                                              //               ),
+                                              //             ),
+                                              //           )
+                                              //         : Navigator.push(
+                                              //             context,
+                                              //             MaterialPageRoute(
+                                              //                 builder: (_) =>
+                                              //                     ProfileScreen(
+                                              //                       currentUserId:
+                                              //                           Provider.of<UserData>(context)
+                                              //                               .currentUserId!,
+                                              //                       userId: widget
+                                              //                           .author
+                                              //                           .id!,
+                                              //                     )))),
                                               FocusedMenuItem(
                                                   title: Container(
-                                                    width: width / 2,
-                                                    child: Text(
-                                                      widget.post.authorId ==
-                                                              widget
-                                                                  .currentUserId
-                                                          ? 'Edit mood punched'
-                                                          : 'Go to ${widget.author.name}\' profile ',
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      textScaleFactor:
-                                                          MediaQuery.of(context)
-                                                              .textScaleFactor,
+                                                    width: width - 40,
+                                                    child: Center(
+                                                      child: Text(
+                                                        'Send ',
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        textScaleFactor:
+                                                            MediaQuery.of(
+                                                                    context)
+                                                                .textScaleFactor,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  onPressed: () {
+                                                    // Provider.of<UserData>(
+                                                    //         context,
+                                                    //         listen: false)
+                                                    //     .setPost12(
+                                                    //         widget.post.id!);
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (_) =>
+                                                                SendToChats(
+                                                                  currentUserId:
+                                                                      widget
+                                                                          .currentUserId,
+                                                                  userId: '',
+                                                                  sendContentType:
+                                                                      'Mood Punched',
+                                                                  event: null,
+                                                                  post: widget
+                                                                      .post,
+                                                                  forum: null,
+                                                                  user: null,
+                                                                  sendContentId:
+                                                                      widget
+                                                                          .post
+                                                                          .id!,
+                                                                )));
+                                                  }),
+                                              FocusedMenuItem(
+                                                  title: Container(
+                                                    width: width - 40,
+                                                    child: Center(
+                                                      child: Text(
+                                                        'Share ',
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        textScaleFactor:
+                                                            MediaQuery.of(
+                                                                    context)
+                                                                .textScaleFactor,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  onPressed: () =>
+                                                      _dynamicLink()),
+                                              // FocusedMenuItem(
+                                              //     title: Container(
+                                              //       width: width / 2,
+                                              //       child: Text(
+                                              //         'Send ',
+                                              //         overflow:
+                                              //             TextOverflow.ellipsis,
+                                              //         textScaleFactor:
+                                              //             MediaQuery.of(context)
+                                              //                 .textScaleFactor,
+                                              //       ),
+                                              //     ),
+                                              //     onPressed: _setImage),
+                                              FocusedMenuItem(
+                                                  title: Container(
+                                                    width: width - 40,
+                                                    child: Center(
+                                                      child: Text(
+                                                        widget.post.authorId ==
+                                                                widget
+                                                                    .currentUserId
+                                                            ? 'Edit mood punched'
+                                                            : 'Report',
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        textScaleFactor:
+                                                            MediaQuery.of(
+                                                                    context)
+                                                                .textScaleFactor,
+                                                      ),
                                                     ),
                                                   ),
                                                   onPressed: () => widget
@@ -363,65 +506,6 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                           ),
                                                         )
                                                       : Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (_) =>
-                                                                  ProfileScreen(
-                                                                    currentUserId:
-                                                                        Provider.of<UserData>(context)
-                                                                            .currentUserId!,
-                                                                    userId: widget
-                                                                        .author
-                                                                        .id!,
-                                                                  )))),
-                                              FocusedMenuItem(
-                                                  title: Container(
-                                                    width: width / 2,
-                                                    child: Text(
-                                                      'Go to punchline ',
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      textScaleFactor:
-                                                          MediaQuery.of(context)
-                                                              .textScaleFactor,
-                                                    ),
-                                                  ),
-                                                  onPressed: () => Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (_) => PunchWidget(
-                                                              currentUserId: widget
-                                                                  .currentUserId,
-                                                              post: widget.post,
-                                                              author: widget
-                                                                  .author)))),
-                                              FocusedMenuItem(
-                                                  title: Container(
-                                                    width: width / 2,
-                                                    child: Text(
-                                                      'Change mood punch state ',
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      textScaleFactor:
-                                                          MediaQuery.of(context)
-                                                              .textScaleFactor,
-                                                    ),
-                                                  ),
-                                                  onPressed: _setImage),
-                                              FocusedMenuItem(
-                                                  title: Container(
-                                                    width: width / 2,
-                                                    child: Text(
-                                                      'Report',
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      textScaleFactor:
-                                                          MediaQuery.of(context)
-                                                              .textScaleFactor,
-                                                    ),
-                                                  ),
-                                                  onPressed: () =>
-                                                      Navigator.push(
                                                           context,
                                                           MaterialPageRoute(
                                                               builder: (_) =>
@@ -443,14 +527,17 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                                   )))),
                                               FocusedMenuItem(
                                                   title: Container(
-                                                    width: width / 2,
-                                                    child: Text(
-                                                      'Suggestion Box',
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      textScaleFactor:
-                                                          MediaQuery.of(context)
-                                                              .textScaleFactor,
+                                                    width: width - 40,
+                                                    child: Center(
+                                                      child: Text(
+                                                        'Suggestion Box',
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        textScaleFactor:
+                                                            MediaQuery.of(
+                                                                    context)
+                                                                .textScaleFactor,
+                                                      ),
                                                     ),
                                                   ),
                                                   onPressed: () => Navigator.push(
@@ -752,7 +839,7 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                                 text: timeago
                                                                     .format(
                                                                   widget.post
-                                                                      .timestamp
+                                                                      .timestamp!
                                                                       .toDate(),
                                                                 ),
                                                               ),

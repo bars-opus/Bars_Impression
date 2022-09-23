@@ -92,6 +92,16 @@ class _MakeUpArtistsState extends State<MakeUpArtists>
     }
     _hasNext = false;
     _isFectchingUser = false;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        duration: const Duration(milliseconds: 800),
+        backgroundColor:
+            ConfigBloc().darkModeOn ? Colors.grey[800] :  Color(0xFFf2f2f2),
+        content: SizedBox(
+            height: 15,
+            child: Text(
+              'Loading...',
+              style: TextStyle(color: Colors.blue, fontSize: 12),
+            ))));
     return _hasNext;
   }
 
@@ -141,16 +151,16 @@ class _MakeUpArtistsState extends State<MakeUpArtists>
       backgroundColor:
           ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
       body: _userList.length > 0
-          ?Padding(
-            padding: const EdgeInsets.only(top: 20.0),
-            child: RefreshIndicator(
+          ? Padding(
+              padding: const EdgeInsets.only(top: 20.0),
+              child: RefreshIndicator(
                 backgroundColor: Colors.white,
                 onRefresh: () async {
                   _setupUsers();
                 },
                 child: _buildUser(),
               ),
-          )
+            )
           : _userList.length == 0
               ? Center(
                   child: SizedBox.shrink(),

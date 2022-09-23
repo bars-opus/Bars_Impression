@@ -16,7 +16,7 @@ class ActivityAdviceScreen extends StatefulWidget {
 class _ActivityAdviceScreenState extends State<ActivityAdviceScreen>
     with AutomaticKeepAliveClientMixin {
   List<ActivityAdvice> _activitiesAdvice = [];
-  bool _isLoading = false;
+  // bool _isLoading = false;
   final _activitySnapshot = <DocumentSnapshot>[];
   int limit = 10;
   bool _hasNext = true;
@@ -128,9 +128,10 @@ class _ActivityAdviceScreenState extends State<ActivityAdviceScreen>
           ),
           userName: user.userName!,
           onPressed: () async {
-            setState(() {
-              _isLoading = true;
-            });
+            // setState(() {
+            //   _isLoading = true;
+            // });
+            Provider.of<UserData>(context, listen: false).setIsLoading(true);
             String currentUserId =
                 Provider.of<UserData>(context, listen: false).currentUserId!;
             AccountHolder user =
@@ -148,9 +149,10 @@ class _ActivityAdviceScreenState extends State<ActivityAdviceScreen>
                 ),
               ),
             );
-            setState(() {
-              _isLoading = false;
-            });
+            // setState(() {
+            //   _isLoading = false;
+            // });
+            Provider.of<UserData>(context, listen: false).setIsLoading(false);
           },
         );
       },
@@ -190,7 +192,7 @@ class _ActivityAdviceScreenState extends State<ActivityAdviceScreen>
                     ),
                   ),
                 ),
-          _isLoading
+          Provider.of<UserData>(context, listen: false).isLoading
               ? Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Shimmer.fromColors(

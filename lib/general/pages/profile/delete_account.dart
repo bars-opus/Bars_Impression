@@ -94,23 +94,39 @@ class _DeleteAccountState extends State<DeleteAccount> {
         context: parentContext,
         builder: (context) {
           return SimpleDialog(
-            title: Text(from.startsWith('deactivate')
-                ? 'Are you sure you want to deactivate  your account?'
-                : 'Are you sure you want to delete  your account?'),
+            title: Text(
+              from.startsWith('deactivate')
+                  ? 'Are you sure you want to deactivate  your account?'
+                  : 'Are you sure you want to delete  your account?',
+              style: TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
             children: <Widget>[
-              SimpleDialogOption(
-                child: Text(
-                    from.startsWith('deactivate') ? 'deactivate' : 'delete'),
-                onPressed: () {
-                  Navigator.pop(context);
-                  from.startsWith('deactivate')
-                      ? _deActivate()
-                      : _reauthenticate();
-                },
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'Delete',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.blue),
+                    textAlign: TextAlign.center,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    from.startsWith('deactivate')
+                        ? _deActivate()
+                        : _reauthenticate();
+                  },
+                ),
               ),
-              SimpleDialogOption(
-                child: Text('cancel'),
-                onPressed: () => Navigator.pop(context),
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'Cancel',
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
               ),
             ],
           );
@@ -323,7 +339,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
   void _deleteAccount() async {
     final String currentUserId =
         Provider.of<UserData>(context, listen: false).currentUserId!;
-
+    FocusScope.of(context).unfocus();
     try {
       forumsRef
           .doc(currentUserId)
@@ -564,7 +580,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
         });
       });
 
-      usersRef.doc(currentUserId).get().then((doc) {
+      usersRef.doc(_auth.currentUser!.uid).get().then((doc) {
         if (doc.exists) {
           doc.reference.delete();
         }

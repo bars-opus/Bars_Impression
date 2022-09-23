@@ -65,23 +65,23 @@ exports.onFollowUser = functions.firestore
    }
  });
 
- // blog+blogFeed
- const followedUserBlogsRef = admin
- .firestore()
- .collection('blogs')
- .doc(userId)
- .collection('userBlogs');
-const userBlogFeedRef = admin
- .firestore()
- .collection('blogFeeds')
- .doc(followerId)
- .collection('userBlogFeed');
-const followedUserBlogsSnapshot = await followedUserBlogsRef.get();
-followedUserBlogsSnapshot.forEach(doc => {
- if (doc.exists) {
-   userBlogFeedRef.doc(doc.id).set(doc.data());
- }
-});
+//  // blog+blogFeed
+//  const followedUserBlogsRef = admin
+//  .firestore()
+//  .collection('blogs')
+//  .doc(userId)
+//  .collection('userBlogs');
+// const userBlogFeedRef = admin
+//  .firestore()
+//  .collection('blogFeeds')
+//  .doc(followerId)
+//  .collection('userBlogFeed');
+// const followedUserBlogsSnapshot = await followedUserBlogsRef.get();
+// followedUserBlogsSnapshot.forEach(doc => {
+//  if (doc.exists) {
+//    userBlogFeedRef.doc(doc.id).set(doc.data());
+//  }
+// });
 
   });
 
@@ -133,19 +133,19 @@ userEventsSnapshot.forEach(doc => {
   }
 });
 
- // blog+feed 
- const userBlogFeedRef = admin
- .firestore()
- .collection('blogFeeds')
- .doc(followerId)
- .collection('userBlogFeed')
- .where('authorId', '==', userId);
-const userBlogsSnapshot = await userBlogFeedRef.get();
-userBlogsSnapshot.forEach(doc => {
- if (doc.exists) {
-   doc.ref.delete();
- }
-});
+//  // blog+feed 
+//  const userBlogFeedRef = admin
+//  .firestore()
+//  .collection('blogFeeds')
+//  .doc(followerId)
+//  .collection('userBlogFeed')
+//  .where('authorId', '==', userId);
+// const userBlogsSnapshot = await userBlogFeedRef.get();
+// userBlogsSnapshot.forEach(doc => {
+//  if (doc.exists) {
+//    doc.ref.delete();
+//  }
+// });
     
   });
 
@@ -170,30 +170,33 @@ exports.onUploadPost = functions.firestore
         .doc(postId)
         .set(snapshot.data());
     });
-  });
-
-
-  exports.allPosts = functions.firestore
-  .document('/posts/{userId}/userPosts/{postId}')
-  .onCreate(async (snapshot, context) => {
-    console.log(snapshot.data());
-    const userId = context.params.userId;
-    const postId = context.params.postId;
     admin.firestore().collection('allPosts')
     .doc(postId)
     .set(snapshot.data());
-  
-  })
+  });
 
-  exports.deleteAllPosts = functions.firestore
-  .document('/posts/{userId}/userPosts/{postId}')
-  .onDelete(async (snapshot, context) => {
-    console.log(snapshot.data());
-    const userId = context.params.userId;
-    const postId = context.params.postId;
-    admin.firestore().collection('allPosts')
-    .doc(postId).delete();
-  })
+
+  // exports.allPosts = functions.firestore
+  // .document('/posts/{userId}/userPosts/{postId}')
+  // .onCreate(async (snapshot, context) => {
+  //   console.log(snapshot.data());
+  //   const userId = context.params.userId;
+  //   const postId = context.params.postId;
+  //   admin.firestore().collection('allPosts')
+  //   .doc(postId)
+  //   .set(snapshot.data());
+  
+  // })
+
+  // exports.deleteAllPosts = functions.firestore
+  // .document('/posts/{userId}/userPosts/{postId}')
+  // .onDelete(async (snapshot, context) => {
+  //   console.log(snapshot.data());
+  //   const userId = context.params.userId;
+  //   const postId = context.params.postId;
+  //   admin.firestore().collection('allPosts')
+  //   .doc(postId).delete();
+  // })
 
   exports.onDeleteFeedPost = functions.firestore
   .document('/posts/{userId}/userPosts/{postId}')
@@ -218,6 +221,8 @@ exports.onUploadPost = functions.firestore
       postDoc.ref.delete();
     }
   })
+  admin.firestore().collection('allPosts')
+  .doc(postId).delete();
 });
 
 
@@ -243,39 +248,42 @@ exports.onUploadForum = functions.firestore
       .doc(forumId)
       .set(snapshot.data());
   });
-});
-
-exports.allForums = functions.firestore
-.document('/forums/{userId}/userForums/{forumId}')
-.onCreate(async (snapshot, context) => {
-  console.log(snapshot.data());
-  const userId = context.params.userId;
-  const forumId = context.params.forumId;
   admin.firestore().collection('allForums')
   .doc(forumId)
   .set(snapshot.data());
+});
 
-})
+// exports.allForums = functions.firestore
+// .document('/forums/{userId}/userForums/{forumId}')
+// .onCreate(async (snapshot, context) => {
+//   console.log(snapshot.data());
+//   const userId = context.params.userId;
+//   const forumId = context.params.forumId;
+//   admin.firestore().collection('allForums')
+//   .doc(forumId)
+//   .set(snapshot.data());
 
-exports.deleteAllForums = functions.firestore
-.document('/forums/{userId}/userForums/{forumId}')
-  .onDelete(async (snapshot, context) => {
-    console.log(snapshot.data());
-    const userId = context.params.userId;
-    const forumId = context.params.forumId;
-    admin.firestore().collection('allForums')
-    .doc(forumId).delete();
-  })
+// })
 
-exports.deleteUserForums = functions.firestore
-.document('/forums/{userId}/userForums/{forumId}')
-  .onDelete(async (snapshot, context) => {
-    console.log(snapshot.data());
-    const userId = context.params.userId;
-    const forumId = context.params.forumId;
-    admin.firestore().collection('allForums')
-    .doc(forumId).delete();
-  })
+// exports.deleteAllForums = functions.firestore
+// .document('/forums/{userId}/userForums/{forumId}')
+//   .onDelete(async (snapshot, context) => {
+//     console.log(snapshot.data());
+//     const userId = context.params.userId;
+//     const forumId = context.params.forumId;
+//     admin.firestore().collection('allForums')
+//     .doc(forumId).delete();
+//   })
+
+// exports.deleteUserForums = functions.firestore
+// .document('/forums/{userId}/userForums/{forumId}')
+//   .onDelete(async (snapshot, context) => {
+//     console.log(snapshot.data());
+//     const userId = context.params.userId;
+//     const forumId = context.params.forumId;
+//     admin.firestore().collection('allForums')
+//     .doc(forumId).delete();
+//   })
 
 
   exports.onDeleteFeedForums = functions.firestore
@@ -301,80 +309,81 @@ exports.deleteUserForums = functions.firestore
       forumDoc.ref.delete();
     }
   })
-
+  admin.firestore().collection('allForums')
+  .doc(forumId).delete();
 });
 
 
 
-exports.onUploadBlog = functions.firestore
-.document('/blogs/{userId}/userBlogs/{blogId}')
-.onCreate(async (snapshot, context) => {
-  console.log(snapshot.data());
-  const userId = context.params.userId;
-  const blogId = context.params.blogId;
-  const userFollowersRef = admin
-    .firestore()
-    .collection('followers')
-    .doc(userId)
-    .collection('userFollowers');
-  const userFollowersSnapshot = await userFollowersRef.get();
-  userFollowersSnapshot.forEach(doc => {
-    admin
-      .firestore()
-      .collection('blogFeeds')
-      .doc(doc.id)
-      .collection('userBlogFeed')
-      .doc(blogId)
-      .set(snapshot.data());
-  });
-});
+// exports.onUploadBlog = functions.firestore
+// .document('/blogs/{userId}/userBlogs/{blogId}')
+// .onCreate(async (snapshot, context) => {
+//   console.log(snapshot.data());
+//   const userId = context.params.userId;
+//   const blogId = context.params.blogId;
+//   const userFollowersRef = admin
+//     .firestore()
+//     .collection('followers')
+//     .doc(userId)
+//     .collection('userFollowers');
+//   const userFollowersSnapshot = await userFollowersRef.get();
+//   userFollowersSnapshot.forEach(doc => {
+//     admin
+//       .firestore()
+//       .collection('blogFeeds')
+//       .doc(doc.id)
+//       .collection('userBlogFeed')
+//       .doc(blogId)
+//       .set(snapshot.data());
+//   });
+// });
 
-exports.allBlogs = functions.firestore
-.document('/blogs/{userId}/userBlogs/{blogId}')
-.onCreate(async (snapshot, context) => {
-  console.log(snapshot.data());
-  const userId = context.params.userId;
-  const blogId = context.params.blogId;
-  admin.firestore().collection('allBlogs')
-  .doc(blogId)
-  .set(snapshot.data());
+// exports.allBlogs = functions.firestore
+// .document('/blogs/{userId}/userBlogs/{blogId}')
+// .onCreate(async (snapshot, context) => {
+//   console.log(snapshot.data());
+//   const userId = context.params.userId;
+//   const blogId = context.params.blogId;
+//   admin.firestore().collection('allBlogs')
+//   .doc(blogId)
+//   .set(snapshot.data());
 
-})
+// })
 
-exports.deleteAllBlogs = functions.firestore
-.document('/blogs/{userId}/userBlogs/{blogId}')
-  .onDelete(async (snapshot, context) => {
-    console.log(snapshot.data());
-    const userId = context.params.userId;
-    const blogId = context.params.blogId;
-    admin.firestore().collection('allBlogs')
-    .doc(blogId).delete();
-  })
+// exports.deleteAllBlogs = functions.firestore
+// .document('/blogs/{userId}/userBlogs/{blogId}')
+//   .onDelete(async (snapshot, context) => {
+//     console.log(snapshot.data());
+//     const userId = context.params.userId;
+//     const blogId = context.params.blogId;
+//     admin.firestore().collection('allBlogs')
+//     .doc(blogId).delete();
+//   })
 
-  exports.onDeleteFeedBlogss = functions.firestore
-  .document('/blogs/{userId}/userBlogs/{blogId}')
-.onDelete(async (snapshot, context) => {
-  const userId = context.params.userId;
-  const blogId = context.params.blogId;
-  console.log(snapshot.data());
-  const userFollowersRef = admin
-    .firestore()
-    .collection('followers')
-    .doc(userId)
-    .collection('userFollowers');
-  const userFollowersSnapshot = await userFollowersRef.get();
-  userFollowersSnapshot.forEach(async userDoc => {
-    const blogRef = admin
-      .firestore()
-      .collection('blogFeeds')
-      .doc(userDoc.id)
-      .collection('userBlogFeed')
-    const blogDoc = await blogRef.doc(blogId).get();
-    if (blogDoc.exists) {
-      blogDoc.ref.delete();
-    }
-  })
-});
+//   exports.onDeleteFeedBlogss = functions.firestore
+//   .document('/blogs/{userId}/userBlogs/{blogId}')
+// .onDelete(async (snapshot, context) => {
+//   const userId = context.params.userId;
+//   const blogId = context.params.blogId;
+//   console.log(snapshot.data());
+//   const userFollowersRef = admin
+//     .firestore()
+//     .collection('followers')
+//     .doc(userId)
+//     .collection('userFollowers');
+//   const userFollowersSnapshot = await userFollowersRef.get();
+//   userFollowersSnapshot.forEach(async userDoc => {
+//     const blogRef = admin
+//       .firestore()
+//       .collection('blogFeeds')
+//       .doc(userDoc.id)
+//       .collection('userBlogFeed')
+//     const blogDoc = await blogRef.doc(blogId).get();
+//     if (blogDoc.exists) {
+//       blogDoc.ref.delete();
+//     }
+//   })
+// });
 
 
   
@@ -399,29 +408,32 @@ exports.onUploadEvent = functions.firestore
       .doc(eventId)
       .set(snapshot.data());
   });
-});
-
-exports.allEvents = functions.firestore
-.document('/events/{userId}/userEvents/{eventId}')
-.onCreate(async (snapshot, context) => {
-  console.log(snapshot.data());
-  const userId = context.params.userId;
-  const eventId = context.params.eventId;
   admin.firestore().collection('allEvents')
   .doc(eventId)
   .set(snapshot.data());
+});
 
-})
+// exports.allEvents = functions.firestore
+// .document('/events/{userId}/userEvents/{eventId}')
+// .onCreate(async (snapshot, context) => {
+//   console.log(snapshot.data());
+//   const userId = context.params.userId;
+//   const eventId = context.params.eventId;
+//   admin.firestore().collection('allEvents')
+//   .doc(eventId)
+//   .set(snapshot.data());
 
-exports.deleteAllEvents = functions.firestore
-.document('/events/{userId}/userEvents/{eventId}')
-  .onDelete(async (snapshot, context) => {
-    console.log(snapshot.data());
-    const userId = context.params.userId;
-    const eventId = context.params.eventId;
-    admin.firestore().collection('allEvents')
-    .doc(eventId).delete();
-  })
+// })
+
+// exports.deleteAllEvents = functions.firestore
+// .document('/events/{userId}/userEvents/{eventId}')
+//   .onDelete(async (snapshot, context) => {
+//     console.log(snapshot.data());
+//     const userId = context.params.userId;
+//     const eventId = context.params.eventId;
+//     admin.firestore().collection('allEvents')
+//     .doc(eventId).delete();
+//   })
 
   exports.onDeleteFeedEvent = functions.firestore
   .document('/events/{userId}/userEvents/{eventId}')
@@ -446,7 +458,9 @@ exports.deleteAllEvents = functions.firestore
       eventDoc.ref.delete();
     }
   })
-
+  admin.firestore().collection('allEvents')
+  .doc(eventId).delete();
+  
 });
 
 exports.onUpdatePost = functions.firestore
@@ -485,40 +499,40 @@ exports.onUpdatePost = functions.firestore
 
 
 
-exports.onUpdateBlog = functions.firestore
-.document('/blogs/{userId}/userBlogs/{blogId}')
-.onUpdate(async (snapshot, context) => {
-  const userId = context.params.userId;
-  const blogId = context.params.blogId;
-  const newBlogData = snapshot.after.data();
-  console.log(newBlogData);
-  const userFollowersRef = admin
-    .firestore()
-    .collection('followers')
-    .doc(userId)
-    .collection('userFollowers');
-  const userFollowersSnapshot = await userFollowersRef.get();
-  userFollowersSnapshot.forEach(async userDoc => {
-    const blogRef = admin
-    .firestore()
-    .collection('blogFeeds')
-    .doc(userDoc.id)
-    .collection('userBlogFeed')
-    const blogDoc = await blogRef.doc(blogId).get();
-    if (blogDoc.exists) {
-      blogDoc.ref.update(newBlogData);
-    }
-  })
+// exports.onUpdateBlog = functions.firestore
+// .document('/blogs/{userId}/userBlogs/{blogId}')
+// .onUpdate(async (snapshot, context) => {
+//   const userId = context.params.userId;
+//   const blogId = context.params.blogId;
+//   const newBlogData = snapshot.after.data();
+//   console.log(newBlogData);
+//   const userFollowersRef = admin
+//     .firestore()
+//     .collection('followers')
+//     .doc(userId)
+//     .collection('userFollowers');
+//   const userFollowersSnapshot = await userFollowersRef.get();
+//   userFollowersSnapshot.forEach(async userDoc => {
+//     const blogRef = admin
+//     .firestore()
+//     .collection('blogFeeds')
+//     .doc(userDoc.id)
+//     .collection('userBlogFeed')
+//     const blogDoc = await blogRef.doc(blogId).get();
+//     if (blogDoc.exists) {
+//       blogDoc.ref.update(newBlogData);
+//     }
+//   })
   
 
-  const allBlogsRef = admin
-  .firestore()
-  .collection('allBlogs')
-  const blogDoc = await allBlogsRef.doc(blogId).get();
-  if (blogDoc.exists) {
-    blogDoc.ref.update(newBlogData);
-  }
-});
+//   const allBlogsRef = admin
+//   .firestore()
+//   .collection('allBlogs')
+//   const blogDoc = await allBlogsRef.doc(blogId).get();
+//   if (blogDoc.exists) {
+//     blogDoc.ref.update(newBlogData);
+//   }
+// });
 
 exports.onUpdateForum = functions.firestore
 .document('/forums/{userId}/userForums/{forumId}')
@@ -585,6 +599,7 @@ exports.onUpdateEvent = functions.firestore
   if (eventDoc.exists) {
     eventDoc.ref.update(newEventData);
   }
+  
 });
 
 
@@ -640,43 +655,6 @@ exports.onCreateActivityNotification = functions.firestore
 });
 
 
-
-exports.onCreateActivityBlogNotification = functions.firestore
-.document('/activitiesBlog/{userId}/userActivitiesBlog/{userActivitiesBlogId}')
-.onCreate(async (snapshot, context) => {
-  console.log('activity notification created', snapshot.data());
-  const userId = context.params.userId;
-  const userActivitiesBlogId = context.params.userActivitiesBlogId;
-  const createdActivityItem = snapshot.data();
-  const usersRef = admin.firestore().doc(`users/${userId}`);
-  const doc = await usersRef.get();
-  const androidNotificationToken = doc.data().androidNotificationToken;
- 
-  if(androidNotificationToken){
-   sendNotification(androidNotificationToken, createdActivityItem )
-  } else {
-    console.log('no notification token');
-  }
-  function sendNotification(androidNotificationToken, userActivitiesBlog)
- {
-    body = ` ${userActivitiesBlog.blogComment} `
-    title = `New blog comment  `
-   const message = {
-    notification: {body: body, title: title},
-    token: androidNotificationToken,
-    data: {recipient: userId},
-   };
-    admin
-   .messaging()
-   .send(message)
-   .then(response => {
-     return console.log('message sent', response);
-   }).catch(error =>{
-    console.log('error sending message', error);
-   })
- }
-
-});
 
 exports.onCreateActivityForumNotification = functions.firestore
 .document('/activitiesForum/{userId}/userActivitiesForum/{userActivitiesForumId}')
@@ -735,8 +713,24 @@ exports.onCreateActivityEventNotification = functions.firestore
   }
   function sendNotification(androidNotificationToken, userActivitiesEvent)
  {
-    body = ` ${userActivitiesEvent.ask} `
-    title = `New event question  `
+    // body = ` ${userActivitiesEvent.ask} `
+    // title = `New event question  `
+    let body;
+    switch (userActivitiesEvent.ask){
+     case null:
+       body = ` ${userActivitiesEvent.eventInviteType} `
+       break;
+      
+       default: body = ` ${userActivitiesEvent.ask} `
+    }
+    let title;
+    switch (userActivitiesEvent.ask){
+     case null:
+       title = `New event invitation`
+       break;
+      
+       default: title =  `New event question  `
+    }
   
    const message = {
     notification: {body: body, title: title},

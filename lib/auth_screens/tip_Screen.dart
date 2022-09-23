@@ -16,6 +16,7 @@ class _TipScreenState extends State<TipScreen> {
       body: Padding(
         padding: const EdgeInsets.all(30.0),
         child: ListView(children: [
+          SizedBox(height: 100),
           Center(
             child: ShakeTransition(
               child: Text('Tips',

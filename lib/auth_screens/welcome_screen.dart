@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/scheduler.dart';
 
 class WelcomeScreen extends StatefulWidget {
   static final id = 'Welcome_screen';
@@ -48,6 +49,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           );
         }
       }
+    });
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      Provider.of<UserData>(context, listen: false).setIsLoading(false);
     });
   }
 
@@ -199,7 +203,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           onPressed: () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => LoginScreen(),
+                                builder: (_) => LoginScreenOptions(
+                                  from: 'Sign in',
+                                ),
                               )),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -236,8 +242,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           onPressed: () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => SignpsScreen(),
+                                builder: (_) => AcceptTerms(),
                               )),
+
+                          //  Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //       builder: (_) => SignpsScreen(),
+                          //     )),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(

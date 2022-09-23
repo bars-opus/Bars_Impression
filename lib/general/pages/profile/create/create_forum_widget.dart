@@ -76,7 +76,7 @@ class CreateForumWidget extends StatelessWidget {
                   ),
                   ContentField(
                     labelText: 'Summary',
-                    hintText: "Enter a summary of your blog",
+                    hintText: "Enter a summary of your forum",
                     initialValue: initialSubTitle,
                     onSavedText: onSavedSubTitle,
                     onValidateText: onValidatesubTitle,

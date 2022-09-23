@@ -41,6 +41,9 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
   int _index = 0;
   bool _isLoading = false;
   bool _showSheet = false;
+  // bool _disableMoodPunchReaction = false;
+  // bool _disableMoodPunchVibe = false;
+  // bool _disableContentSharing = false;
   int _show = 0;
   String selectedValue = '';
   String _hashTag = '';
@@ -62,6 +65,19 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
       Provider.of<UserData>(context, listen: false).setPost4(widget.caption);
       Provider.of<UserData>(context, listen: false).setPost5(widget.hashTag);
       Provider.of<UserData>(context, listen: false).setPostImage(null);
+      Provider.of<UserData>(context, listen: false).setPostImage(null);
+      // Provider.of<UserData>(context, listen: false).setBool1(
+      //     Provider.of<UserData>(context, listen: false)
+      //         .user!
+      //         .disableContentSharing!);
+      // Provider.of<UserData>(context, listen: false).setBool2(
+      //     Provider.of<UserData>(context, listen: false)
+      //         .user!
+      //         .disableMoodPunchReaction!);
+      // Provider.of<UserData>(context, listen: false).setBool3(
+      //     Provider.of<UserData>(context, listen: false)
+      //         .user!
+      //         .disableMoodPunchVibe!);
     });
 
     _pageController = PageController(
@@ -134,18 +150,35 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
         context: parentContext,
         builder: (context) {
           return SimpleDialog(
-            title: Text('Are you sure you want to delete this mood punched?'),
+            title: Text(
+              'Are you sure you want to delete this  mood punched?',
+              style: TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
             children: <Widget>[
-              SimpleDialogOption(
-                child: Text('delete'),
-                onPressed: () {
-                  Navigator.pop(context);
-                  _deletePost();
-                },
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'Delete',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.blue),
+                    textAlign: TextAlign.center,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _deletePost();
+                  },
+                ),
               ),
-              SimpleDialogOption(
-                child: Text('cancel'),
-                onPressed: () => Navigator.pop(context),
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'Cancel',
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
               ),
             ],
           );
@@ -185,7 +218,9 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
               ),
             ),
             messageText: Text(
-              e.toString(),
+              e.contains(']')
+                  ? e.substring(e.lastIndexOf(']') + 1).toString()
+                  : e.toString(),
               style: TextStyle(
                 color: Colors.white,
                 fontSize: width > 800 ? 20 : 12,
@@ -231,13 +266,14 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
         size: 28.0,
         color: Colors.blue,
       ),
-      duration: Duration(seconds: 3),
+      duration: Duration(seconds: 2),
       leftBarIndicatorColor: Colors.blue,
     )..show(context);
   }
 
   _submitEdit() async {
-    if (_formKey.currentState!.validate() & !_isLoading) {
+    if (_formKey.currentState!.validate() &
+        !Provider.of<UserData>(context, listen: false).isLoading) {
       _formKey.currentState?.save();
       String _imageUrl = widget.post!.imageUrl;
       Post post = Post(
@@ -255,6 +291,10 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
         timestamp: widget.post!.timestamp,
         report: '',
         reportConfirmed: '',
+        disableReaction: false,
+        disableVibe: false,
+        disbleSharing: false,
+        peopleTagged: '',
       );
       try {
         DatabaseService.editPunch(post);
@@ -292,7 +332,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
             size: 30.0,
             color: Colors.blue,
           ),
-          duration: Duration(seconds: 3),
+          duration: Duration(seconds: 2),
           leftBarIndicatorColor: Colors.blue,
         )..show(context);
       } catch (e) {
@@ -341,49 +381,50 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
   }
 
   _submitCreate() async {
-    if (_formKey.currentState!.validate() && !_isLoading) {
+    if (_formKey.currentState!.validate() &&
+        !Provider.of<UserData>(context, listen: false).isLoading) {
       _formKey.currentState?.save();
 
       setState(() {
         _isLoading = true;
       });
-      final double width = Responsive.isDesktop(context)
-          ? 600.0
-          : MediaQuery.of(context).size.width;
+      // final double width = Responsive.isDesktop(context)
+      // ? 600.0
+      // : MediaQuery.of(context).size.width;
       FocusScope.of(context).unfocus();
-      Flushbar(
-        margin: EdgeInsets.all(8),
-        boxShadows: [
-          BoxShadow(
-            color: Colors.black,
-            offset: Offset(0.0, 2.0),
-            blurRadius: 3.0,
-          )
-        ],
-        flushbarPosition: FlushbarPosition.TOP,
-        flushbarStyle: FlushbarStyle.FLOATING,
-        titleText: Text(
-          'Punching mood',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: width > 800 ? 22 : 14,
-          ),
-        ),
-        messageText: Text(
-          "Please wait...",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: width > 800 ? 20 : 12,
-          ),
-        ),
-        icon: Icon(
-          Icons.info_outline,
-          size: 28.0,
-          color: Colors.blue,
-        ),
-        duration: Duration(seconds: 3),
-        leftBarIndicatorColor: Colors.blue,
-      )..show(context);
+      // Flushbar(
+      //   margin: EdgeInsets.all(8),
+      //   boxShadows: [
+      //     BoxShadow(
+      //       color: Colors.black,
+      //       offset: Offset(0.0, 2.0),
+      //       blurRadius: 3.0,
+      //     )
+      //   ],
+      //   flushbarPosition: FlushbarPosition.TOP,
+      //   flushbarStyle: FlushbarStyle.FLOATING,
+      //   titleText: Text(
+      //     'Punching mood',
+      //     style: TextStyle(
+      //       color: Colors.white,
+      //       fontSize: width > 800 ? 22 : 14,
+      //     ),
+      //   ),
+      //   messageText: Text(
+      //     "Please wait...",
+      //     style: TextStyle(
+      //       color: Colors.white,
+      //       fontSize: width > 800 ? 20 : 12,
+      //     ),
+      //   ),
+      //   icon: Icon(
+      //     Icons.info_outline,
+      //     size: 28.0,
+      //     color: Colors.blue,
+      //   ),
+      //   duration: Duration(seconds: 3),
+      //   leftBarIndicatorColor: Colors.blue,
+      // )..show(context);
 
       String imageUrl = await StorageService.uploadPost(
           Provider.of<UserData>(context, listen: false).postImage!);
@@ -408,6 +449,10 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
         authorId: Provider.of<UserData>(context, listen: false).currentUserId!,
         timestamp: Timestamp.fromDate(DateTime.now()),
         id: '',
+        disableReaction: false,
+        disableVibe: false,
+        disbleSharing: false,
+        peopleTagged: '',
       );
       try {
         DatabaseService.createPost(post);
@@ -447,7 +492,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
             size: 30.0,
             color: Colors.blue,
           ),
-          duration: Duration(seconds: 3),
+          duration: Duration(seconds: 2),
           leftBarIndicatorColor: Colors.blue,
         )..show(context);
       } catch (e) {
@@ -775,18 +820,23 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                                                 _show = 3;
                                               });
                                             },
-                                            child: Text(
-                                              '#',
-                                              style: TextStyle(
-                                                  color: _hashTag.isEmpty
-                                                      ? Colors.grey
-                                                      : Colors.blue,
-                                                  fontSize:
-                                                      Responsive.isDesktop(
-                                                              context)
-                                                          ? 30
-                                                          : 25,
-                                                  fontWeight: FontWeight.bold),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Text(
+                                                '#',
+                                                style: TextStyle(
+                                                    color: _hashTag.isEmpty
+                                                        ? Colors.grey
+                                                        : Colors.blue,
+                                                    fontSize:
+                                                        Responsive.isDesktop(
+                                                                context)
+                                                            ? 30
+                                                            : 25,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
                                             ),
                                           ),
                                         ],
@@ -1208,6 +1258,24 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                                       : _pop();
                                 }),
                           ),
+                    // Provider.of<UserData>(context, listen: false).isLoading
+                    //     ? SizedBox.shrink()
+                    //     : Positioned(
+                    //         top: 35,
+                    //         right: 5,
+                    //         child: IconButton(
+                    //           icon: Icon(
+                    //             Icons.more_vert_outlined,
+                    //             color: Colors.white,
+                    //           ),
+                    //           onPressed: () {
+                    //             setState(() {
+                    //               _showSheet = true;
+                    //               _show = 4;
+                    //             });
+                    //           },
+                    //         ),
+                    //       ),
                     _isLoading
                         ? SizedBox.shrink()
                         : Positioned(
@@ -1526,20 +1594,79 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                                           ),
                                         ],
                                       )
-                                    : Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          DirectionWidget(
-                                            fontSize: null,
-                                            text: _user!.name! +
-                                                ", select a hashtag that goes with your mood.",
+                                    : _show == 3
+                                        ? Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              DirectionWidget(
+                                                fontSize: null,
+                                                text: _user!.name! +
+                                                    ", select a hashtag that goes with your mood.",
+                                              ),
+                                              buildRadios(),
+                                            ],
+                                          )
+                                        : Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              DirectionWidget(
+                                                fontSize: null,
+                                                text: "More",
+                                              ),
+                                              SettingSwitch(
+                                                title: 'Disable sharing',
+                                                subTitle:
+                                                    'Other users can\'t share this mood punched.',
+                                                value: Provider.of<UserData>(
+                                                        context,
+                                                        listen: false)
+                                                    .bool1,
+                                                onChanged: (value) =>
+                                                    Provider.of<UserData>(
+                                                            context,
+                                                            listen: false)
+                                                        .setBool1(value),
+                                              ),
+                                              Divider(color: Colors.grey),
+                                              SettingSwitch(
+                                                title:
+                                                    'Disable mood punch reaction',
+                                                subTitle:
+                                                    'Other users can\'t react (dope or ???) to this mood punched.',
+                                                value: Provider.of<UserData>(
+                                                        context,
+                                                        listen: false)
+                                                    .bool2,
+                                                onChanged: (value) =>
+                                                    Provider.of<UserData>(
+                                                            context,
+                                                            listen: false)
+                                                        .setBool2(value),
+                                              ),
+                                              Divider(color: Colors.grey),
+                                              SettingSwitch(
+                                                title:
+                                                    'Disable mood punch vibes',
+                                                subTitle:
+                                                    'Other users can\'t vibe with this mood punch.',
+                                                value: Provider.of<UserData>(
+                                                        context,
+                                                        listen: false)
+                                                    .bool3,
+                                                onChanged: (value) =>
+                                                    Provider.of<UserData>(
+                                                            context,
+                                                            listen: false)
+                                                        .setBool3(value),
+                                              ),
+                                            ],
                                           ),
-                                          buildRadios(),
-                                        ],
-                                      ),
                           ),
                         ),
                       ),
