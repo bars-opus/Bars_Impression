@@ -7,7 +7,6 @@ import 'package:timeago/timeago.dart' as timeago;
 
 class CommentsScreen extends StatefulWidget {
   final Post post;
-  // final int commentCount;
   final int likeCount;
   final int dislikeCount;
   final String currentUserId;
@@ -15,7 +14,6 @@ class CommentsScreen extends StatefulWidget {
 
   CommentsScreen(
       {required this.post,
-      // required this.commentCount,
       required this.likeCount,
       required this.dislikeCount,
       required this.currentUserId,
@@ -116,7 +114,11 @@ class _CommentsScreenState extends State<CommentsScreen>
                       ? Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => ProfileScreen(
+                              builder: (_) => author.userName!.isEmpty
+                                  ? UserNotFound(
+                                      userName: 'User',
+                                    )
+                                  :  ProfileScreen(
                                     currentUserId:
                                         Provider.of<UserData>(context)
                                             .currentUserId!,

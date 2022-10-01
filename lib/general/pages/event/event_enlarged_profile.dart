@@ -116,7 +116,7 @@ class _AllEvenEnlargedProfileState extends State<AllEvenEnlargedProfile> {
                               user: widget.user,
                             ))),
                 imageHero: 'image ${widget.event.id.toString()}',
-                titleHero:  'title ${widget.event.id.toString()}',
+                titleHero: 'title ${widget.event.id.toString()}',
                 onPressedLocationMap: _launchMap,
                 onPressedEventticketSite: () {
                   Navigator.push(
@@ -139,7 +139,6 @@ class _AllEvenEnlargedProfileState extends State<AllEvenEnlargedProfile> {
                   context,
                   MaterialPageRoute(
                       builder: (_) => AsksScreen(
-                            // askCount: widget.askCount!,
                             event: widget.event,
                             ask: null,
                             currentUserId: widget.currentUserId,

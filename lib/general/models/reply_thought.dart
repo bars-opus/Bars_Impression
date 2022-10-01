@@ -5,6 +5,8 @@ class ReplyThought {
   final String content;
   final String authorId;
   final String report;
+  final String mediaType;
+  final String mediaUrl;
   final String reportConfirmed;
   final Timestamp timestamp;
 
@@ -12,6 +14,8 @@ class ReplyThought {
     required this.id,
     required this.content,
     required this.authorId,
+    required this.mediaType,
+    required this.mediaUrl,
     required this.report,
     required this.reportConfirmed,
     required this.timestamp,
@@ -22,6 +26,8 @@ class ReplyThought {
       id: doc.id,
       content: doc['content'],
       authorId: doc['authorId'],
+      mediaUrl: doc['mediaUrl'] ?? '',
+      mediaType: doc['mediaType'] ?? '',
       report: doc['report'] ?? '',
       reportConfirmed: doc['reportConfirmed'] ?? '',
       timestamp: doc['timestamp'],

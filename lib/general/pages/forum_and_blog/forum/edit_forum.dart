@@ -161,7 +161,7 @@ class _EditForumState extends State<EditForum> {
         report: '',
         reportConfirmed: '',
         isPrivate: _isPrivate,
-        linkedContentId: '',
+        linkedContentId: '', mediaType: '', mediaUrl: '',
       );
       try {
         DatabaseService.editForum(

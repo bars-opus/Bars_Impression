@@ -245,7 +245,13 @@ class _EventsFeedState extends State<EventsFeed>
                     children: <Widget>[
                       _invites.length == 0
                           ? SizedBox.shrink()
-                          : Container(height: 80, child: _buildInviteBuilder()),
+                          : Container(
+                              height: Responsive.isDesktop(
+                                context,
+                              )
+                                  ? 100
+                                  : 80,
+                              child: _buildInviteBuilder()),
                       Divider(
                         color: Colors.grey,
                         thickness: .1,

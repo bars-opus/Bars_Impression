@@ -226,6 +226,37 @@ class _PunchWidgetState extends State<PunchWidget> {
         ),
       );
 
+  _dynamicLink() async {
+    var linkUrl = await Uri.parse(widget.post.imageUrl);
+
+    final dynamicLinkParams = await DynamicLinkParameters(
+      socialMetaTagParameters: await SocialMetaTagParameters(
+        imageUrl: linkUrl,
+        title: 'MoodPunched',
+        description: widget.post.punch,
+      ),
+      link: Uri.parse('https://www.barsopus.com/moopunched_${widget.post.id}'),
+      uriPrefix: 'https://barsopus.com/barsImpression/',
+      androidParameters:
+          AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
+      iosParameters: IOSParameters(
+        bundleId: 'com.bars-Opus.barsImpression',
+        appStoreId: '1610868894',
+      ),
+    );
+
+    if (Platform.isIOS) {
+      var link =
+          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
+
+      Share.share(link.toString());
+    } else {
+      var link =
+          await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+      Share.share(link.shortUrl.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     int _point = _dbLikeCount - _dbDisLikeCount;
@@ -386,12 +417,54 @@ class _PunchWidgetState extends State<PunchWidget> {
                   menuItems: [
                     FocusedMenuItem(
                         title: Container(
-                          width: width / 2,
-                          child: Text(
-                            widget.post.authorId == widget.currentUserId
-                                ? 'Edit mood punched'
-                                : 'Go to ${widget.author.name}\' profile ',
-                            overflow: TextOverflow.ellipsis,
+                          width: width - 40,
+                          child: Center(
+                            child: Text(
+                              'Send ',
+                              overflow: TextOverflow.ellipsis,
+                              textScaleFactor:
+                                  MediaQuery.of(context).textScaleFactor,
+                            ),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => SendToChats(
+                                        currentUserId: widget.currentUserId,
+                                        userId: '',
+                                        sendContentType: 'Mood Punched',
+                                        event: null,
+                                        post: widget.post,
+                                        forum: null,
+                                        user: null,
+                                        sendContentId: widget.post.id!,
+                                      )));
+                        }),
+                    FocusedMenuItem(
+                        title: Container(
+                          width: width - 40,
+                          child: Center(
+                            child: Text(
+                              'Share ',
+                              overflow: TextOverflow.ellipsis,
+                              textScaleFactor:
+                                  MediaQuery.of(context).textScaleFactor,
+                            ),
+                          ),
+                        ),
+                        onPressed: () => _dynamicLink()),
+                    FocusedMenuItem(
+                        title: Container(
+                          width: width - 40,
+                          child: Center(
+                            child: Text(
+                              widget.post.authorId == widget.currentUserId
+                                  ? 'Edit mood punched'
+                                  : 'Go to ${widget.author.name}\' profile ',
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         ),
                         onPressed: () =>
@@ -416,10 +489,12 @@ class _PunchWidgetState extends State<PunchWidget> {
                                             )))),
                     FocusedMenuItem(
                         title: Container(
-                          width: width / 2,
-                          child: Text(
-                            'Report',
-                            overflow: TextOverflow.ellipsis,
+                          width: width - 40,
+                          child: Center(
+                            child: Text(
+                              'Report',
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         ),
                         onPressed: () => Navigator.push(
@@ -433,10 +508,12 @@ class _PunchWidgetState extends State<PunchWidget> {
                                     )))),
                     FocusedMenuItem(
                         title: Container(
-                          width: width / 2,
-                          child: Text(
-                            'Suggestion Box',
-                            overflow: TextOverflow.ellipsis,
+                          width: width - 40,
+                          child: Center(
+                            child: Text(
+                              'Suggestion Box',
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         ),
                         onPressed: () => Navigator.push(
@@ -454,61 +531,54 @@ class _PunchWidgetState extends State<PunchWidget> {
                         ),
                       ),
                     ),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Hero(
-                          tag: 'punch' + widget.post.id.toString(),
-                          child: Material(
-                              color: Colors.transparent,
-                              child: ProfainTextCheck(
-                                color: Colors.blue,
-                                fontSize: 20,
-                                from: '',
-                                text: widget.post.punch.toLowerCase(),
-                              )
-
-                              // Text(
-                              //   '" ${widget.post.punch} " '.toLowerCase(),
-                              //   style: TextStyle(
-                              //     fontSize: 20,
-                              //     color: Colors.blue,
-                              //   ),
-                              //   textAlign: TextAlign.center,
-                              // ),
-                              ),
-                        ),
-                        _thumbAnim
-                            ? Animator(
-                                duration: Duration(milliseconds: 300),
-                                tween: Tween(begin: 0.5, end: 1.4),
-                                curve: Curves.elasticOut,
-                                builder: (context, anim2, child) =>
-                                    Transform.scale(
-                                      scale: anim2.value as double,
-                                      child: const Icon(
-                                        Icons.thumb_down,
-                                        size: 150.0,
-                                        color: Colors.grey,
-                                      ),
-                                    ))
-                            : SizedBox.shrink(),
-                        _heartAnim
-                            ? Animator(
-                                duration: Duration(milliseconds: 300),
-                                tween: Tween(begin: 0.5, end: 1.4),
-                                curve: Curves.elasticOut,
-                                builder: (context, anim2, child) =>
-                                    Transform.scale(
-                                      scale: anim2.value as double,
-                                      child: const Icon(
-                                        Icons.favorite,
-                                        size: 150.0,
-                                        color: Colors.pink,
-                                      ),
-                                    ))
-                            : SizedBox.shrink(),
-                      ],
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Hero(
+                            tag: 'punch' + widget.post.id.toString(),
+                            child: Material(
+                                color: Colors.transparent,
+                                child: ProfainTextCheck(
+                                  color: Colors.blue,
+                                  fontSize: 20,
+                                  from: '',
+                                  text: widget.post.punch.toLowerCase(),
+                                )),
+                          ),
+                          _thumbAnim
+                              ? Animator(
+                                  duration: Duration(milliseconds: 300),
+                                  tween: Tween(begin: 0.5, end: 1.4),
+                                  curve: Curves.elasticOut,
+                                  builder: (context, anim2, child) =>
+                                      Transform.scale(
+                                        scale: anim2.value as double,
+                                        child: const Icon(
+                                          Icons.thumb_down,
+                                          size: 150.0,
+                                          color: Colors.grey,
+                                        ),
+                                      ))
+                              : SizedBox.shrink(),
+                          _heartAnim
+                              ? Animator(
+                                  duration: Duration(milliseconds: 300),
+                                  tween: Tween(begin: 0.5, end: 1.4),
+                                  curve: Curves.elasticOut,
+                                  builder: (context, anim2, child) =>
+                                      Transform.scale(
+                                        scale: anim2.value as double,
+                                        child: const Icon(
+                                          Icons.favorite,
+                                          size: 150.0,
+                                          color: Colors.pink,
+                                        ),
+                                      ))
+                              : SizedBox.shrink(),
+                        ],
+                      ),
                     ),
                   ),
                 ),

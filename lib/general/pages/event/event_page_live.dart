@@ -28,111 +28,113 @@ class _EventPageLiveState extends State<EventPageLive>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return MediaQuery(
-      data: MediaQuery.of(context).copyWith(
-          textScaleFactor:
-              MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.3)),
-      child: DefaultTabController(
-        length: 6,
-        child: Scaffold(
-            backgroundColor:
-                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-            appBar: AppBar(
-              elevation: 0.0,
-              iconTheme: new IconThemeData(
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-              ),
-              leading: IconButton(
-                icon: Icon(
-                    Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                onPressed: _pop,
-              ),
+    return ResponsiveScaffold(
+      child: MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+            textScaleFactor:
+                MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.3)),
+        child: DefaultTabController(
+          length: 6,
+          child: Scaffold(
               backgroundColor:
                   ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-              centerTitle: true,
-              title: Text(
-                'Events In ${widget.liveCity}',
-                style: TextStyle(
-                    color:
+              appBar: AppBar(
+                elevation: 0.0,
+                iconTheme: new IconThemeData(
+                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                ),
+                leading: IconButton(
+                  icon: Icon(
+                      Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
+                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                  onPressed: _pop,
+                ),
+                backgroundColor:
+                    ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+                centerTitle: true,
+                title: Text(
+                  'Events In ${widget.liveCity}',
+                  style: TextStyle(
+                      color:
+                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
+                ),
+                bottom: TabBar(
+                    labelColor:
                         ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
+                    indicatorSize: TabBarIndicatorSize.label,
+                    indicatorColor: Colors.blue,
+                    onTap: (int index) {
+                      Provider.of<UserData>(context, listen: false)
+                          .setEventTab(index);
+                    },
+                    unselectedLabelColor: Colors.grey,
+                    isScrollable: true,
+                    labelPadding:
+                        EdgeInsets.symmetric(horizontal: 20, vertical: 10.0),
+                    indicatorWeight: 2.0,
+                    tabs: <Widget>[
+                      const Text(
+                        'All',
+                      ),
+                      const Text(
+                        'Festival',
+                      ),
+                      const Text(
+                        'Award',
+                      ),
+                      const Text('Tour'),
+                      const Text(
+                        'Album Launch',
+                      ),
+                      const Text(
+                        'Others',
+                      ),
+                    ]),
               ),
-              bottom: TabBar(
-                  labelColor:
-                      ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                  indicatorSize: TabBarIndicatorSize.label,
-                  indicatorColor: Colors.blue,
-                  onTap: (int index) {
-                    Provider.of<UserData>(context, listen: false)
-                        .setEventTab(index);
-                  },
-                  unselectedLabelColor: Colors.grey,
-                  isScrollable: true,
-                  labelPadding:
-                      EdgeInsets.symmetric(horizontal: 20, vertical: 10.0),
-                  indicatorWeight: 2.0,
-                  tabs: <Widget>[
-                    const Text(
-                      'All',
-                    ),
-                    const Text(
-                      'Festival',
-                    ),
-                    const Text(
-                      'Award',
-                    ),
-                    const Text('Tour'),
-                    const Text(
-                      'Album Launch',
-                    ),
-                    const Text(
-                      'Others',
-                    ),
-                  ]),
-            ),
-            body: TabBarView(
-              physics: const NeverScrollableScrollPhysics(),
-              children: <Widget>[
-                EventsAllLiveCity(
-                  currentUserId: widget.currentUserId,
-                  user: widget.user,
-                  liveCity: widget.liveCity,
-                  liveCountry: widget.liveCountry,
-                ),
-                FestivalEventsLiveCity(
-                  currentUserId: widget.currentUserId,
-                  user: widget.user,
-                  liveCity: widget.liveCity,
-                  liveCountry: widget.liveCountry,
-                ),
-                AwardEventsLiveCity(
-                  currentUserId: widget.currentUserId,
-                  user: widget.user,
-                  liveCity: widget.liveCity,
-                  liveCountry: widget.liveCountry,
-                ),
-                ToursEventsLiveCity(
-                  currentUserId: widget.currentUserId,
-                  user: widget.user,
-                  liveCity: widget.liveCity,
-                  liveCountry: widget.liveCountry,
-                ),
-                AlbumLaunchesLiveCity(
-                  currentUserId: widget.currentUserId,
-                  user: widget.user,
-                  liveCity: widget.liveCity,
-                  liveCountry: widget.liveCountry,
-                ),
-                OtherEventsLiveCity(
-                  currentUserId: widget.currentUserId,
-                  user: widget.user,
-                  liveCity: widget.liveCity,
-                  liveCountry: widget.liveCountry,
-                ),
-              ],
-            )),
+              body: TabBarView(
+                physics: const NeverScrollableScrollPhysics(),
+                children: <Widget>[
+                  EventsAllLiveCity(
+                    currentUserId: widget.currentUserId,
+                    user: widget.user,
+                    liveCity: widget.liveCity,
+                    liveCountry: widget.liveCountry,
+                  ),
+                  FestivalEventsLiveCity(
+                    currentUserId: widget.currentUserId,
+                    user: widget.user,
+                    liveCity: widget.liveCity,
+                    liveCountry: widget.liveCountry,
+                  ),
+                  AwardEventsLiveCity(
+                    currentUserId: widget.currentUserId,
+                    user: widget.user,
+                    liveCity: widget.liveCity,
+                    liveCountry: widget.liveCountry,
+                  ),
+                  ToursEventsLiveCity(
+                    currentUserId: widget.currentUserId,
+                    user: widget.user,
+                    liveCity: widget.liveCity,
+                    liveCountry: widget.liveCountry,
+                  ),
+                  AlbumLaunchesLiveCity(
+                    currentUserId: widget.currentUserId,
+                    user: widget.user,
+                    liveCity: widget.liveCity,
+                    liveCountry: widget.liveCountry,
+                  ),
+                  OtherEventsLiveCity(
+                    currentUserId: widget.currentUserId,
+                    user: widget.user,
+                    liveCity: widget.liveCity,
+                    liveCountry: widget.liveCountry,
+                  ),
+                ],
+              )),
+        ),
       ),
     );
   }

@@ -89,6 +89,36 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
     Provider.of<UserData>(context, listen: false).setPost9('');
   }
 
+  _dynamicLink() async {
+    var linkUrl = await Uri.parse(widget.event.imageUrl);
+
+    final dynamicLinkParams = await DynamicLinkParameters(
+      socialMetaTagParameters: await SocialMetaTagParameters(
+        imageUrl: linkUrl,
+        title: 'Event',
+        description: widget.event.title,
+      ),
+      link: Uri.parse('https://www.barsopus.com/event_${widget.event.id}'),
+      uriPrefix: 'https://barsopus.com/barsImpression/',
+      androidParameters:
+          AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
+      iosParameters: IOSParameters(
+        bundleId: 'com.bars-Opus.barsImpression',
+        appStoreId: '1610868894',
+      ),
+    );
+    if (Platform.isIOS) {
+      var link =
+          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
+
+      Share.share(link.toString());
+    } else {
+      var link =
+          await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+      Share.share(link.shortUrl.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -97,7 +127,10 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
         MyDateFormat.toDate(DateTime.parse(widget.event.date)).split(" ");
     final List<String> timePartition =
         MyDateFormat.toTime(DateTime.parse(widget.event.time)).split(" ");
-
+    final width = Responsive.isDesktop(context)
+        ? 600.0
+        : MediaQuery.of(context).size.width;
+    // final height = MediaQuery.of(context).size.height;
     return ResponsiveScaffold(
       child: Center(
         child: _displayWarning == true
@@ -181,7 +214,7 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                 ),
                 Positioned(
                   top: 70,
-                  left: MediaQuery.of(context).size.width / 2 - 20,
+                  left: width / 2 - 20,
                   child: widget.event.isPrivate
                       ? RichText(
                           textScaleFactor:
@@ -1009,31 +1042,67 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                 padding: const EdgeInsets.only(
                                                   bottom: 3,
                                                 ),
-                                                child: RichText(
-                                                  textScaleFactor:
-                                                      MediaQuery.of(context)
-                                                          .textScaleFactor,
-                                                  text: TextSpan(
-                                                    children: [
-                                                      TextSpan(
-                                                        text: _different
-                                                            .toString(),
-                                                        style: TextStyle(
-                                                          fontSize: 18,
-                                                          color: Colors.white,
+                                                child: _different < 1
+                                                    ? RichText(
+                                                        textScaleFactor:
+                                                            MediaQuery.of(
+                                                                    context)
+                                                                .textScaleFactor,
+                                                        text: TextSpan(
+                                                          children: [
+                                                            TextSpan(
+                                                              text:
+                                                                  'Ongoing...',
+                                                              style: TextStyle(
+                                                                fontSize: 18,
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            ),
+                                                            TextSpan(
+                                                              text:
+                                                                  '\nThis event is still in progress.\nIt would be completed on\n${MyDateFormat.toDate(DateTime.parse(widget.event.clossingDay))}.\nAttend, meet and explore.',
+                                                              style: TextStyle(
+                                                                fontSize: 12,
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
-                                                      ),
-                                                      TextSpan(
-                                                        text: '\nDays\nMore',
-                                                        style: TextStyle(
-                                                          fontSize: 12,
-                                                          color: Colors.white,
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                      )
+                                                    : RichText(
+                                                        textScaleFactor:
+                                                            MediaQuery.of(
+                                                                    context)
+                                                                .textScaleFactor,
+                                                        text: TextSpan(
+                                                          children: [
+                                                            TextSpan(
+                                                              text: _different
+                                                                  .toString(),
+                                                              style: TextStyle(
+                                                                fontSize: 18,
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            ),
+                                                            TextSpan(
+                                                              text:
+                                                                  '\nDays\nMore',
+                                                              style: TextStyle(
+                                                                fontSize: 12,
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
+                                                        textAlign:
+                                                            TextAlign.center,
                                                       ),
-                                                    ],
-                                                  ),
-                                                  textAlign: TextAlign.center,
-                                                ),
                                               ),
                                               Padding(
                                                 padding:
@@ -1095,79 +1164,131 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                 ),
                                               ),
                                             ]),
-                                        SizedBox(
-                                          height: 50,
+                                        const SizedBox(
+                                          height: 70,
                                         ),
                                         Row(
-                                          mainAxisAlignment: widget.event
-                                                      .ticketSite.isEmpty ||
-                                                  widget.event.previousEvent
-                                                      .isEmpty
-                                              ? MainAxisAlignment.center
-                                              : MainAxisAlignment.spaceEvenly,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
                                             widget.event.previousEvent.isEmpty
                                                 ? SizedBox.shrink()
-                                                : ShakeTransition(
-                                                    axis: Axis.vertical,
-                                                    child: OutlinedButton(
-                                                      style: OutlinedButton
-                                                          .styleFrom(
-                                                        primary: Colors.white,
-                                                        side: BorderSide(
-                                                            width: 1.0,
-                                                            color: Colors
-                                                                .transparent),
+                                                : GestureDetector(
+                                                    onTap: widget
+                                                        .onPressedPreviousEvent,
+                                                    child: Text(
+                                                      'Previous Event',
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 12.0,
                                                       ),
-                                                      child: Text(
-                                                        'Previous Event',
-                                                        style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 12.0,
-                                                        ),
-                                                      ),
-                                                      onPressed: widget
-                                                          .onPressedPreviousEvent,
                                                     ),
                                                   ),
                                             widget.event.ticketSite.isEmpty ||
                                                     widget.event.previousEvent
                                                         .isEmpty
                                                 ? SizedBox.shrink()
-                                                : Container(
-                                                    height: 20,
-                                                    width: 1,
-                                                    color: Colors.white,
+                                                : Padding(
+                                                    padding: const EdgeInsets
+                                                            .symmetric(
+                                                        horizontal: 8.0),
+                                                    child: Container(
+                                                      width: 1,
+                                                      height: 30,
+                                                      color: Colors.white,
+                                                    ),
                                                   ),
                                             widget.event.ticketSite.isEmpty
                                                 ? SizedBox.shrink()
-                                                : ShakeTransition(
-                                                    child: OutlinedButton(
-                                                      style: OutlinedButton
-                                                          .styleFrom(
-                                                        primary: Colors.white,
-                                                        side: BorderSide(
-                                                            width: 1.0,
-                                                            color: Colors
-                                                                .transparent),
+                                                : GestureDetector(
+                                                    onTap: widget
+                                                        .onPressedEventticketSite,
+                                                    child: Text(
+                                                      ' Event Ticket ',
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 12.0,
                                                       ),
-                                                      child: Text(
-                                                        'Event Ticket ',
-                                                        style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 12.0,
-                                                        ),
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                      ),
-                                                      onPressed: widget
-                                                          .onPressedEventticketSite,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
                                                     ),
                                                   ),
                                           ],
                                         ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                          "This event would be completed on\n${MyDateFormat.toDate(DateTime.parse(widget.event.clossingDay))}",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 12.0,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            SendToChats(
+                                                              currentUserId: Provider.of<
+                                                                          UserData>(
+                                                                      context,
+                                                                      listen:
+                                                                          false)
+                                                                  .currentUserId!,
+                                                              userId: '',
+                                                              sendContentType:
+                                                                  'Event',
+                                                              event:
+                                                                  widget.event,
+                                                              post: null,
+                                                              forum: null,
+                                                              user: null,
+                                                              sendContentId:
+                                                                  widget
+                                                                      .event.id,
+                                                            )));
+                                              },
+                                              child: Text(
+                                                'Send     ',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 12),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8.0),
+                                              child: Container(
+                                                width: 1,
+                                                height: 30,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            GestureDetector(
+                                              onTap: () => _dynamicLink(),
+                                              child: Text(
+                                                '    Share',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 12),
+                                              ),
+                                            )
+                                          ],
+                                        ),
                                         SizedBox(
-                                          height: 50,
+                                          height: 200,
                                         ),
                                         Material(
                                           color: Colors.transparent,
@@ -1181,19 +1302,8 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                 Navigator.pop(context),
                                           ),
                                         ),
-                                        SizedBox(
-                                          height: 100,
-                                        ),
-                                        Text(
-                                          "This event would be completed on\n${MyDateFormat.toDate(DateTime.parse(widget.event.clossingDay))}",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 12.0,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        SizedBox(
-                                          height: 70,
+                                        const SizedBox(
+                                          height: 200,
                                         ),
                                       ],
                                     ),

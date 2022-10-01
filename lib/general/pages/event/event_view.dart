@@ -7,13 +7,11 @@ class EventView extends StatefulWidget {
   final Event event;
   final AccountHolder author;
   final AccountHolder? user;
-  // final List<Event> eventList;
   final int feed;
   final String exploreLocation;
 
   EventView(
       {required this.currentUserId,
-      //  required  this.eventList,
       required this.feed,
       required this.exploreLocation,
       required this.user,
@@ -28,6 +26,7 @@ class _EventViewState extends State<EventView> {
   int _askCount = 0;
   late DateTime _date;
   late DateTime _closingDate;
+  int _different = 0;
 
   late DateTime _toDaysDate;
 
@@ -56,35 +55,16 @@ class _EventViewState extends State<EventView> {
       _date = date;
       _toDaysDate = toDayDate;
       _closingDate = clossingDate;
+      _different = date.difference(toDayDate).inDays;
     });
   }
 
-  // _dynamicLink() async {
-  //   final dynamicLinkParams = DynamicLinkParameters(
-  //     socialMetaTagParameters: SocialMetaTagParameters(
-  //       imageUrl: Uri.parse(
-  //           'https://firebasestorage.googleapis.com/v0/b/bars-5e3e5.appspot.com/o/barsLauncherforfirebase.png?alt=media&token=be7d907e-30fa-475b-86ca-ab9eaaa34837'),
-  //       title: 'Event',
-  //       description: widget.event.title,
-  //     ),
-  //     link: Uri.parse('https://www.barsopus.com/event_${widget.event.id}'),
-  //     uriPrefix: 'https://barsimpression.page.link',
-  //     androidParameters:
-  //         AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
-  //     iosParameters: IOSParameters(
-  //       bundleId: 'com.bars-Opus.barsImpression',
-  //       appStoreId: '1610868894',
-  //     ),
-  //   );
-  //   var link =
-  //       await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
-
-  //   Share.share(link.shortUrl.toString());
-  // }
-
   _dynamicLink() async {
+    var linkUrl = await Uri.parse(widget.event.imageUrl);
+
     final dynamicLinkParams = await DynamicLinkParameters(
       socialMetaTagParameters: await SocialMetaTagParameters(
+        imageUrl: linkUrl,
         title: 'Event',
         description: widget.event.title,
       ),
@@ -97,10 +77,16 @@ class _EventViewState extends State<EventView> {
         appStoreId: '1610868894',
       ),
     );
-    var link =
-        await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+    if (Platform.isIOS) {
+      var link =
+          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
 
-    Share.share(link.shortUrl.toString());
+      Share.share(link.toString());
+    } else {
+      var link =
+          await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+      Share.share(link.shortUrl.toString());
+    }
   }
 
   @override
@@ -159,10 +145,14 @@ class _EventViewState extends State<EventView> {
                 onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (_) => ProfileScreen(
-                              currentUserId: widget.currentUserId,
-                              userId: widget.event.authorId,
-                            ))),
+                        builder: (_) => widget.author.userName!.isEmpty
+                            ? UserNotFound(
+                                userName: 'User',
+                              )
+                            : ProfileScreen(
+                                currentUserId: widget.currentUserId,
+                                userId: widget.event.authorId,
+                              ))),
               ),
         FocusedMenuItem(
             title: Container(
@@ -247,12 +237,13 @@ class _EventViewState extends State<EventView> {
               SlidableAction(
                 onPressed: (_) {
                   widget.currentUserId == widget.author.id!
-                      ? _toDaysDate.isAfter(_closingDate)
+                      ? _toDaysDate.isAfter(_date)
                           ? Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (_) => EventCompleted(
-                                    date: DateFormat.yMMMMEEEEd().format(_date),
+                                    date: DateFormat.yMMMMEEEEd()
+                                        .format(_closingDate),
                                     event: widget.event,
                                     currentUserId: widget.currentUserId),
                               ),
@@ -268,10 +259,14 @@ class _EventViewState extends State<EventView> {
                       : Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => ProfileScreen(
-                                    currentUserId: widget.currentUserId,
-                                    userId: widget.event.authorId,
-                                  )));
+                              builder: (_) => widget.author.userName!.isEmpty
+                                  ? UserNotFound(
+                                      userName: 'User',
+                                    )
+                                  : ProfileScreen(
+                                      currentUserId: widget.currentUserId,
+                                      userId: widget.event.authorId,
+                                    )));
                 },
                 backgroundColor: ConfigBloc().darkModeOn
                     ? Color(0xFF1f2022)
@@ -302,11 +297,12 @@ class _EventViewState extends State<EventView> {
                               currentUserId: widget.currentUserId,
                               event: widget.event,
                               user: widget.user,
-                              // eventList: widget.eventList,
                             ))),
                 imageHero: 'image ${widget.event.id.toString()}',
                 askCount: NumberFormat.compact().format(_askCount),
                 titleHero: 'title ${widget.event.id.toString()}',
+                difference: _different,
+                completed: _toDaysDate.isAfter(_closingDate) ? true : false,
               ),
               Positioned(
                 top: 1,
@@ -322,7 +318,6 @@ class _EventViewState extends State<EventView> {
                                 currentUserId: widget.currentUserId,
                                 event: widget.event,
                                 user: widget.user,
-                                // eventList: widget.eventList,
                               ))),
                   child: Hero(
                     tag: 'type' + widget.event.id.toString(),
@@ -342,19 +337,19 @@ class _EventViewState extends State<EventView> {
                           ),
                           child: Text(
                             widget.event.type.startsWith('F')
-                                ? 'FE'
+                                ? 'F\nE'
                                 : widget.event.type.startsWith('Al')
-                                    ? 'AL'
+                                    ? 'A\nL'
                                     : widget.event.type.startsWith('Aw')
-                                        ? 'AW'
+                                        ? 'A\nW'
                                         : widget.event.type.startsWith('O')
-                                            ? 'OT'
+                                            ? 'O\nT'
                                             : widget.event.type.startsWith('T')
-                                                ? 'TO'
+                                                ? 'T\nO'
                                                 : '',
                             style: TextStyle(
                               color: Colors.blue,
-                              fontSize: width > 800 ? 16 : 10,
+                              fontSize: 10,
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -368,7 +363,6 @@ class _EventViewState extends State<EventView> {
                                         currentUserId: widget.currentUserId,
                                         event: widget.event,
                                         user: widget.user,
-                                        // eventList: widget.eventList,
                                       ))),
                         ),
                       ),

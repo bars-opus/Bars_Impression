@@ -85,12 +85,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
   int index = 0;
   int showDatePicker = 0;
   int showTimePicker = 0;
-  // bool _isLoading = false;
-  // bool _isVirtual = false;
-  // bool _isPhysical = false;
-  // bool _isPrivate = false;
-  // bool _isPublic = false;
-  // bool _isFree = false;
   bool _isfetchingAddress = false;
   int eventTypeIndex = 0;
   int showEventTypePicker = 0;
@@ -394,6 +388,8 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
         showOnExplorePage: Provider.of<UserData>(context, listen: false).bool5,
         showToFollowers: Provider.of<UserData>(context, listen: false).bool6,
         clossingDay: Provider.of<UserData>(context, listen: false).post13,
+        mediaType: '',
+        mediaUrl: '',
       );
 
       try {
@@ -481,9 +477,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
   }
 
   _reverseGeocoding() async {
-    // setState(() {
-    //   _isLoading = true;
-    // });
     Provider.of<UserData>(context, listen: false).setIsLoading(true);
     try {
       List<Location> locations = await locationFromAddress(
@@ -501,9 +494,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
       });
     } catch (e) {}
     Provider.of<UserData>(context, listen: false).addressSearchResults = [];
-    // setState(() {
-    //   _isLoading = false;
-    // });
     Provider.of<UserData>(context, listen: false).setIsLoading(false);
     animateToPage();
   }
@@ -514,44 +504,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
       _formKey.currentState?.save();
       FocusScope.of(context).unfocus();
       animateToPage();
-
-      // setState(() {
-      //   _isLoading = true;
-      // });
       Provider.of<UserData>(context, listen: false).setIsLoading(true);
-      // final double width = Responsive.isDesktop(context)
-      //     ? 600.0
-      //     : MediaQuery.of(context).size.width;
-      // FocusScope.of(context).unfocus();
-      // Flushbar(
-      //   maxWidth: MediaQuery.of(context).size.width,
-      //   backgroundColor: Color(0xFF1a1a1a),
-      //   margin: EdgeInsets.all(8),
-      //   showProgressIndicator: true,
-      //   progressIndicatorBackgroundColor: Color(0xFF1a1a1a),
-      //   progressIndicatorValueColor: AlwaysStoppedAnimation(Colors.blue),
-      //   flushbarPosition: FlushbarPosition.TOP,
-      //   boxShadows: [
-      //     BoxShadow(
-      //       color: Colors.black,
-      //       offset: Offset(0.0, 2.0),
-      //       blurRadius: 3.0,
-      //     )
-      //   ],
-      //   titleText: Text(
-      //     'Creating event',
-      //     style: TextStyle(
-      //       color: Colors.white,
-      //       fontSize: width > 800 ? 22 : 14,
-      //     ),
-      //   ),
-      //   messageText: Text(
-      //     "Please wait...",
-      //     style: TextStyle(
-      //       color: Colors.white,
-      //       fontSize: width > 800 ? 20 : 12,
-      //     ),
-      //   ),
 
       DateTime date =
           DateTime.parse(Provider.of<UserData>(context, listen: false).post8);
@@ -621,6 +574,8 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
               Provider.of<UserData>(context, listen: false).bool5,
           showToFollowers: Provider.of<UserData>(context, listen: false).bool6,
           clossingDay: Provider.of<UserData>(context, listen: false).post13,
+          mediaType: '',
+          mediaUrl: '',
         );
         DatabaseService.createEvent(event);
         _pop();
@@ -771,16 +726,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              // Text(
-              //   'Select event type.',
-              //   style: TextStyle(
-              //     color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-              //     fontSize: 14,
-              //   ),
-              // ),
-              // SizedBox(
-              //   height: 20,
-              // ),
               buildClosingDay(),
             ],
           ),
@@ -861,16 +806,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              // Text(
-              //   'Select event type.',
-              //   style: TextStyle(
-              //     color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-              //     fontSize: 14,
-              //   ),
-              // ),
-              // SizedBox(
-              //   height: 20,
-              // ),
               buildRadios(),
             ],
           ),
@@ -941,19 +876,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
             ),
           ),
           SizedBox(height: 70),
-          // widget.isEditting
-          //     ? AlwaysWhiteButton(
-          //         onPressed: () {
-          //           Provider.of<UserData>(context, listen: false).setPost7(
-          //             MyDateFormat.toTime(DateTime.parse(widget.time)),
-          //           );
-          //           // setState(() {
-          //           //   widget.time = dayTime.toString();
-          //           // });
-          //           animateToPage();
-          //         },
-          //         buttonText: widget.isEditting ? 'Next' : "Continue")
-          //     :
           AnimatedContainer(
             duration: Duration(milliseconds: 300),
             height: minTime.isBefore(dayTime) ? 0.0 : null,
@@ -1098,38 +1020,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
     );
   }
 
-  // _isVirtualEvent() {
-  //   setState(() {
-  //     _isVirtual = true;
-  //     widget.isVirtual = true;
-  //     _isPhysical = false;
-  //   });
-  // }
-
-  // _isPhysicalEvent() {
-  //   setState(() {
-  //     _isPhysical = true;
-  //     _isVirtual = false;
-  //     widget.isVirtual = false;
-  //   });
-  // }
-
-  // _isPrivateEvent() {
-  //   setState(() {
-  //     _isPrivate = true;
-  //     widget.isPrivate = true;
-  //     _isPublic = false;
-  //   });
-  // }
-
-  // _isPublicEvent() {
-  //   setState(() {
-  //     _isPublic = true;
-  //     _isPrivate = false;
-  //     widget.isPrivate = false;
-  //   });
-  // }
-
   _validate() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState?.save();
@@ -1271,25 +1161,23 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                   : Color(0xFFf2f2f2),
           title: Material(
             color: Colors.transparent,
-            child:
-                // _isLoading
-                Provider.of<UserData>(context, listen: false).isLoading
-                    ? Text(
-                        '',
-                      )
-                    : Text(
-                        _indexx == 10
-                            ? ''
-                            : widget.isEditting
-                                ? 'Edit Event'
-                                : 'Create Event',
-                        style: TextStyle(
-                            color: ConfigBloc().darkModeOn
-                                ? Colors.white
-                                : Colors.black,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
-                      ),
+            child: Provider.of<UserData>(context, listen: false).isLoading
+                ? Text(
+                    '',
+                  )
+                : Text(
+                    _indexx == 10
+                        ? ''
+                        : widget.isEditting
+                            ? 'Edit Event'
+                            : 'Create Event',
+                    style: TextStyle(
+                        color: ConfigBloc().darkModeOn
+                            ? Colors.white
+                            : Colors.black,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
+                  ),
           ),
           centerTitle: true,
         ),
@@ -1313,60 +1201,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                       child: Column(
                         children: [
                           SizedBox(height: 10),
-                          // Container(
-                          //   child: DecisionContainer(
-                          //     questions:
-                          //         'You can create an event where people can attend or you can also create a virtual event that can be hosted on virtual platforms, where people can interact with you. Are You Creating A you creating a physical event or a virtual event?',
-                          //     answer1: 'Virtual Event',
-                          //     answer2: 'Physical Event',eve
-                          //     onPressed1: _isVirtualEvent,
-                          //     onPressed2: _isPhysicalEvent,
-                          //     isPicked1: _isVirtual,
-                          //     isPicked2: _isPhysical,
-                          //   ),
-                          // ),
-                          // AnimatedContainer(
-                          //   duration: Duration(milliseconds: 300),
-                          //   height: _isVirtual || _isPhysical ? 130 : 0.0,
-                          //   width: double.infinity,
-                          //   curve: Curves.bounceInOut,
-                          //   child: Center(
-                          //     child: Padding(
-                          //       padding: const EdgeInsets.only(top: 70.0),
-                          //       child: AlwaysWhiteButton(
-                          //           onPressed: () {
-                          //             animateToPage();
-                          //           },
-                          //           buttonText: "Continue"),
-                          //     ),
-                          //   ),
-                          // ),
-                          // AnimatedContainer(
-                          //   duration: Duration(milliseconds: 300),
-                          //   height: _isVirtual || _isPhysical ? 0.0 : width,
-                          //   curve: Curves.bounceInOut,
-                          //   child: SingleChildScrollView(
-                          //     child: GestureDetector(
-                          //       onTap: () => Navigator.push(
-                          //           context,
-                          //           MaterialPageRoute(
-                          //               builder: (_) => FeatureInfo(
-                          //                     feature: 'Event',
-                          //                   ))),
-                          //       child: Padding(
-                          //         padding: const EdgeInsets.symmetric(
-                          //             horizontal: 30.0),
-                          //         child: PageHint(
-                          //           more: 'more',
-                          //           body:
-                          //               "Create an event where people can attend, have fun, create memories, and have unforgettable experiences.",
-                          //           title: "Create Events.",
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // )
-
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Row(
@@ -1431,16 +1265,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                               title: ".",
                             ),
                           ),
-                          // Padding(
-                          //   padding:
-                          //       const EdgeInsets.symmetric(horizontal: 30.0),
-                          //   child: PageHint(
-                          //     more: 'more',
-                          //     body:
-                          //         "Create an event where people can attend, have fun, create memories, and have unforgettable experiences.",
-                          //     title: "Create Events.",
-                          //   ),
-                          // ),
                         ],
                       ),
                     ),
@@ -1474,19 +1298,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                             ),
                           ),
                           SizedBox(height: 30),
-                          // Container(
-                          //   child: DecisionContainer(
-                          //     questions:
-                          //         'You can create a private event and invite only specifc people or you can create a general event where anybody can attend.',
-                          //     answer1: 'Private Event',
-                          //     answer2: 'Public Event',
-                          //     onPressed1: _isPrivateEvent,
-                          //     onPressed2: _isPublicEvent,
-                          //     isPicked1: _isPrivate,
-                          //     isPicked2: _isPublic,
-                          //   ),
-                          // ),
-
                           SettingSwitch(
                               title: 'Private event',
                               subTitle:
@@ -1519,7 +1330,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                           context,
                                           listen: false)
                                       .setBool5(value)),
-
                           Padding(
                             padding:
                                 const EdgeInsets.only(top: 10.0, bottom: 10),
@@ -1527,7 +1337,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                               color: Colors.grey,
                             ),
                           ),
-
                           SettingSwitch(
                               title: 'Virtual event',
                               subTitle:
@@ -1545,7 +1354,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                               color: Colors.grey,
                             ),
                           ),
-
                           Provider.of<UserData>(context, listen: false).bool4
                               ? SizedBox.shrink()
                               : SettingSwitch(
@@ -1558,15 +1366,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                   onChanged: (value) => Provider.of<UserData>(
                                           context,
                                           listen: false)
-                                      .setBool3(value)
-
-                                  // setState(
-                                  //   () {
-                                  //     _isFree = this._isFree = value;
-                                  //     widget.isFree = _isFree;
-                                  //   },
-                                  // ),
-                                  ),
+                                      .setBool3(value)),
                           Provider.of<UserData>(context, listen: false).bool4
                               ? SizedBox.shrink()
                               : Padding(
@@ -1576,7 +1376,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                     color: Colors.grey,
                                   ),
                                 ),
-
                           Provider.of<UserData>(context, listen: false).bool3
                               ? SizedBox.shrink()
                               : Container(
@@ -1590,17 +1389,8 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                       onChanged: (value) =>
                                           Provider.of<UserData>(context,
                                                   listen: false)
-                                              .setBool4(value)
-
-                                      // setState(
-                                      //   () {
-                                      //     _isFree = this._isFree = value;
-                                      //     widget.isFree = _isFree;
-                                      //   },
-                                      // ),
-                                      ),
+                                              .setBool4(value)),
                                 ),
-
                           Provider.of<UserData>(context, listen: false).bool3
                               ? SizedBox.shrink()
                               : Padding(
@@ -1626,48 +1416,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                     ),
                   ),
                 ),
-                // SingleChildScrollView(
-                //   child: Container(
-                //     child: Padding(
-                //       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                //       child: Column(
-                //         mainAxisAlignment: MainAxisAlignment.center,
-                //         crossAxisAlignment: CrossAxisAlignment.center,
-                //         children: <Widget>[
-                //           DirectionWidget(
-                //             text:
-                //                 'Select a background image for your event. The image selected should not contain any text and should be of good pixel quality. The image selected should align with the context of your event and the information already provided in the previous stages. We advise you to select a great background image. ',
-                //             fontSize: null,
-                //           ),
-                //           SizedBox(
-                //             height: 20,
-                //           ),
-                //           _displayPostImage(),
-                //           widget.imageUrl.isNotEmpty && widget.isEditting
-                //               ? Padding(
-                //                   padding: const EdgeInsets.only(top: 50.0),
-                //                   child: AlwaysWhiteButton(
-                //                       onPressed: _validate2,
-                //                       buttonText: "Next"),
-                //                 )
-                //               : Provider.of<UserData>(context, listen: false)
-                //                           .postImage ==
-                //                       null
-                //                   ? SizedBox.shrink()
-                //                   : Padding(
-                //                       padding: const EdgeInsets.only(top: 50.0),
-                //                       child: AlwaysWhiteButton(
-                //                           onPressed: _validate,
-                //                           buttonText: "Continue"),
-                //                     ),
-                //           SizedBox(
-                //             height: 70,
-                //           ),
-                //         ],
-                //       ),
-                //     ),
-                //   ),
-                // ),
                 SingleChildScrollView(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -2337,38 +2085,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                     ),
                   ),
                 ),
-
-                // SingleChildScrollView(
-                //   child: Padding(
-                //     padding: const EdgeInsets.all(20.0),
-                //     child: Column(
-                //       mainAxisAlignment: MainAxisAlignment.center,
-                //       crossAxisAlignment: CrossAxisAlignment.center,
-                //       children: [
-                //         DirectionWidget(
-                //           fontSize: null,
-                //           text:
-                //               'You can provide the following information if available for your event. The information required on this page is optional. ',
-                //         ),
-                //         ContentField(
-                //           labelText: "Name(s) of artists",
-                //           hintText: 'Artist Performing (optional)',
-                //           initialValue: widget.artist,
-                //           onSavedText: (input) => widget.artist = input,
-                //           onValidateText: (_) {},
-                //         ),
-                //         SizedBox(height: 70),
-                //         Padding(
-                //           padding: const EdgeInsets.only(bottom: 50),
-                //           child: AlwaysWhiteButton(
-                //               onPressed: _validate,
-                //               buttonText:
-                //                   widget.isEditting ? 'Next' : "Continue"),
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                // ),
                 SingleChildScrollView(
                   child: Padding(
                     padding: const EdgeInsets.all(20.0),
@@ -2444,9 +2160,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                         widget.isEditting ? 'Save' : "Create",
                                     onPressed: () => widget.isEditting
                                         ? _submitEdit()
-                                        : _showSelectImageDialog('create')
-                                    // _submitCreate,
-                                    ),
+                                        : _showSelectImageDialog('create')),
                               ),
                         widget.isEditting
                             ? Column(

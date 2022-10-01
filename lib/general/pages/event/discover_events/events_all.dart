@@ -108,6 +108,7 @@ class _EventsAllState extends State<EventsAll>
   }
 
   _buildUser() {
+   
     return NotificationListener<ScrollNotification>(
       onNotification: _handleScrollNotification,
       child: Scrollbar(

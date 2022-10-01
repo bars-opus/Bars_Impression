@@ -202,8 +202,6 @@ class _InviteSearchState extends State<InviteSearch>
                       _users = DatabaseService.searchUsers(input.toUpperCase());
                     });
                   },
-
-                  // },
                   decoration: InputDecoration(
                     contentPadding:
                         EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
@@ -249,12 +247,6 @@ class _InviteSearchState extends State<InviteSearch>
                   // ignore: unnecessary_null_comparison
                   child: _users == null
                       ? _buildFollowerBuilder()
-                      //  Center(
-                      //     child: NoContents(
-                      //         title: "Searh for users. ",
-                      //         subTitle:
-                      //             'Enter username, \ndon\'t enter a user\'s nickname.',
-                      //         icon: Icons.search))
                       : FutureBuilder<QuerySnapshot>(
                           future: _users,
                           builder: (BuildContext context,
@@ -307,96 +299,6 @@ class _InviteSearchState extends State<InviteSearch>
                           })),
             ),
           )),
-    )
-
-        // NestedScrollView(
-        //   controller: _hideButtonController,
-        //   headerSliverBuilder: (context, innerBoxScrolled) => [
-        //     SliverAppBar(
-        //       elevation: 0.0,
-        //       automaticallyImplyLeading: true,
-        //       floating: true,
-        //       snap: true,
-        //       pinned: true,
-        //       iconTheme: new IconThemeData(
-        //         color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-        //       ),
-        //       backgroundColor:
-        //           ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-        //       title: Text(
-        //         'Invtite',
-        //         style: TextStyle(
-        //             color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-        //             fontSize: 20,
-        //             fontWeight: FontWeight.bold),
-        //       ),
-        //       centerTitle: true,
-        //     ),
-        //   ],
-        //   body: MediaQuery.removePadding(
-        //     context: context,
-        //     removeTop: true,
-        //     child: Container(
-        //       color: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-        //       child: SafeArea(
-        //         child: MediaQuery(
-        //           data: MediaQuery.of(context).copyWith(
-        //               textScaleFactor:
-        //                   MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
-        //           child: Column(
-        //             mainAxisAlignment: MainAxisAlignment.start,
-        //             crossAxisAlignment: CrossAxisAlignment.start,
-        //             children: <Widget>[
-        //               AnimatedContainer(
-        //                   curve: Curves.easeInOut,
-        //                   duration: Duration(milliseconds: 800),
-        //                   height: _showInfo ? 50 : 0.0,
-        //                   width: double.infinity,
-        //                   color: Colors.blue,
-        //                   child: ShakeTransition(
-        //                     child: ListTile(
-        //                       title:
-        //                           Text('Other users can\'t see your following.',
-        //                               style: TextStyle(
-        //                                 color: Colors.white,
-        //                                 fontSize: 12,
-        //                               )),
-        //                       leading: IconButton(
-        //                         icon: Icon(Icons.info_outline_rounded),
-        //                         iconSize: 20.0,
-        //                         color:
-        //                             _showInfo ? Colors.white : Colors.transparent,
-        //                         onPressed: () => () {},
-        //                       ),
-        //                     ),
-        //                   )),
-        //               SizedBox(
-        //                 height: 30.0,
-        //               ),
-        //               Expanded(
-        //                 child: _buildFollowerBuilder(),
-        //                 //  widget.followingCount > 0
-        //                 //     ? _buildFollowerBuilder()
-        //                 //     : _userList.length > 0
-        //                 //         ? Expanded(
-        //                 //             child: Center(
-        //                 //               child: NoContents(
-        //                 //                 icon: (Icons.people_outline),
-        //                 //                 title: 'No following yet,',
-        //                 //                 subTitle:
-        //                 //                     'You are not following anybody yet, follow people to see the contents they create and connect with them for collaborations ',
-        //                 //               ),
-        //                 //             ),
-        //                 //           )
-        //                 //         : Center(child: FollowUserSchimmer()),
-        //               )
-        //             ],
-        //           ),
-        //         ),s
-        //       ),
-        //     ),
-        //   ),
-        // ),
-        );
+    ));
   }
 }

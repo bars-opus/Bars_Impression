@@ -28,6 +28,9 @@ class _IntroState extends State<Intro> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+                          const SizedBox(
+                            height: 30,
+                          ),
                           ShakeTransition(
                             child: Container(
                               height: 50,
@@ -224,6 +227,9 @@ class _IntroState extends State<Intro> {
                       ),
                     ),
                   ),
+                  const SizedBox(
+                    height: 60,
+                  )
                 ]),
           ),
         ),

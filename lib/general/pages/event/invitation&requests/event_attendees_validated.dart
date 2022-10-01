@@ -30,7 +30,6 @@ class _EventAttendeesValidatedState extends State<EventAttendeesValidated>
   @override
   void initState() {
     super.initState();
-    // widget.from.startsWith('Received') ? _setUpInviteAll() :
     _setAttendeesValidate();
     __setShowInfo();
     _hideButtonController = ScrollController();
@@ -39,7 +38,6 @@ class _EventAttendeesValidatedState extends State<EventAttendeesValidated>
   bool _handleScrollNotification(ScrollNotification notification) {
     if (notification is ScrollEndNotification) {
       if (_hideButtonController.position.extentAfter == 0) {
-        // widget.from.startsWith('Received') ? _loadMoreAll() :
         _loadAttendeesValidated();
       }
     }

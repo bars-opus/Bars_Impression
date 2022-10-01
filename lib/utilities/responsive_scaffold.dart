@@ -15,8 +15,7 @@ class ResponsiveScaffold extends StatelessWidget {
           textScaleFactor:
               MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
       child: Scaffold(
-        backgroundColor:
-            ConfigBloc().darkModeOn ? Color(0xFF1f2022) : Colors.grey[300],
+        backgroundColor: Colors.transparent,
         body: Align(
           alignment: Alignment.center,
           child: Container(

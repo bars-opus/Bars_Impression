@@ -153,12 +153,16 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                       ? Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => ProfileScreen(
-                                    currentUserId:
-                                        Provider.of<UserData>(context)
-                                            .currentUserId!,
-                                    userId: author.id!,
-                                  )))
+                              builder: (_) => author.userName!.isEmpty
+                                  ? UserNotFound(
+                                      userName: 'User',
+                                    )
+                                  : ProfileScreen(
+                                      currentUserId:
+                                          Provider.of<UserData>(context)
+                                              .currentUserId!,
+                                      userId: author.id!,
+                                    )))
                       : Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -370,10 +374,14 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                           onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (_) => ProfileScreen(
-                                        currentUserId: currentUserId,
-                                        userId: author.id!,
-                                      ))),
+                                  builder: (_) => author.userName!.isEmpty
+                                      ? UserNotFound(
+                                          userName: 'User',
+                                        )
+                                      : ProfileScreen(
+                                          currentUserId: currentUserId,
+                                          userId: author.id!,
+                                        ))),
                         ),
                       ],
                     ),

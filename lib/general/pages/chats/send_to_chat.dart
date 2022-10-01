@@ -102,6 +102,7 @@ class _SendToChatsState extends State<SendToChats> {
                         ConfigBloc().darkModeOn ? Colors.white : Colors.black,
                   ),
                   automaticallyImplyLeading: true,
+                  centerTitle: true,
                   elevation: 0,
                   backgroundColor: ConfigBloc().darkModeOn
                       ? Color(0xFF1a1a1a)
@@ -616,10 +617,7 @@ class _displayState extends State<_display> {
         });
   }
 
-
-
-
-_androidDialog(BuildContext parentContext) {
+  _androidDialog(BuildContext parentContext) {
     return showDialog(
         context: parentContext,
         builder: (context) {
@@ -640,8 +638,8 @@ _androidDialog(BuildContext parentContext) {
                     textAlign: TextAlign.center,
                   ),
                   onPressed: () {
-                     Navigator.pop(context);
-                _sendContent();
+                    Navigator.pop(context);
+                    _sendContent();
                   },
                 ),
               ),

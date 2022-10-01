@@ -140,6 +140,37 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
         ),
       );
 
+  _dynamicLink() async {
+    var linkUrl = await Uri.parse(widget.post.imageUrl);
+
+    final dynamicLinkParams = await DynamicLinkParameters(
+      socialMetaTagParameters: await SocialMetaTagParameters(
+        imageUrl: linkUrl,
+        title: 'MoodPunched',
+        description: widget.post.punch,
+      ),
+      link: Uri.parse('https://www.barsopus.com/moopunched_${widget.post.id}'),
+      uriPrefix: 'https://barsopus.com/barsImpression/',
+      androidParameters:
+          AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
+      iosParameters: IOSParameters(
+        bundleId: 'com.bars-Opus.barsImpression',
+        appStoreId: '1610868894',
+      ),
+    );
+
+    if (Platform.isIOS) {
+      var link =
+          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
+
+      Share.share(link.toString());
+    } else {
+      var link =
+          await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+      Share.share(link.shortUrl.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -353,6 +384,7 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                                               ),
                                               child: FocusedMenuHolder(
                                                 menuWidth: width,
+                                                menuItemExtent: 60,
                                                 menuOffset: 10,
                                                 blurBackgroundColor:
                                                     Colors.transparent,
@@ -390,12 +422,16 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                                                                           'Mood Punched',
                                                                       event:
                                                                           null,
-                                                                      forum:
-                                                                          null,
                                                                       post: widget
                                                                           .post,
+                                                                      forum:
+                                                                          null,
                                                                       user:
-                                                                          null, sendContentId:  widget.post.id!,
+                                                                          null,
+                                                                      sendContentId:
+                                                                          widget
+                                                                              .post
+                                                                              .id!,
                                                                     )));
                                                       }),
                                                   FocusedMenuItem(
@@ -414,7 +450,8 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                                                           ),
                                                         ),
                                                       ),
-                                                      onPressed: _setImage),
+                                                      onPressed: () =>
+                                                          _dynamicLink()),
                                                   FocusedMenuItem(
                                                       title: Container(
                                                         width: width - 40,
@@ -493,16 +530,16 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                                                                   builder: (_) =>
                                                                       SuggestionBox()))),
                                                 ],
-                                                child: MediaQuery(
-                                                  data: MediaQuery.of(context)
-                                                      .copyWith(
-                                                          textScaleFactor:
-                                                              MediaQuery.of(
-                                                                      context)
-                                                                  .textScaleFactor
-                                                                  .clamp(0.5,
-                                                                      1.5)),
-                                                  child: ShakeTransition(
+                                                child: ShakeTransition(
+                                                  child: MediaQuery(
+                                                    data: MediaQuery.of(context)
+                                                        .copyWith(
+                                                            textScaleFactor:
+                                                                MediaQuery.of(
+                                                                        context)
+                                                                    .textScaleFactor
+                                                                    .clamp(0.5,
+                                                                        1.5)),
                                                     child: Padding(
                                                       padding:
                                                           EdgeInsets.all(10),
@@ -565,14 +602,18 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                                                                             onTap: () => Navigator.push(
                                                                                 context,
                                                                                 MaterialPageRoute(
-                                                                                    builder: (_) => ProfileScreen(
-                                                                                          currentUserId: widget.currentUserId,
-                                                                                          userId: widget.post.authorId,
-                                                                                        ))),
+                                                                                    builder: (_) => widget.author.userName!.isEmpty
+                                                                                        ? UserNotFound(
+                                                                                            userName: 'User',
+                                                                                          )
+                                                                                        : ProfileScreen(
+                                                                                            currentUserId: widget.currentUserId,
+                                                                                            userId: widget.post.authorId,
+                                                                                          ))),
                                                                             child:
                                                                                 Container(
                                                                               width: width,
-                                                                              height: 55,
+                                                                              height: 65,
                                                                               child: ListView(
                                                                                 scrollDirection: Axis.horizontal,
                                                                                 children: <Widget>[
@@ -782,8 +823,8 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                                                                           .format(
                                                                         widget
                                                                             .post
-                                                                            .timestamp
-                                                                            !.toDate(),
+                                                                            .timestamp!
+                                                                            .toDate(),
                                                                       ),
                                                                     ),
                                                                     const SizedBox(

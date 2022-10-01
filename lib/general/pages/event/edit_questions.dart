@@ -163,7 +163,7 @@ class _EditQuestionState extends State<EditQuestion> {
         authorId: Provider.of<UserData>(context, listen: false).currentUserId!,
         timestamp: widget.ask.timestamp,
         report: '',
-        reportConfirmed: '',
+        reportConfirmed: '', mediaType: '', mediaUrl: '',
       );
 
       try {

@@ -1,6 +1,6 @@
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
 // import 'package:google_sign_in/google_sign_in.dart';
 
 class ProfileSettings extends StatefulWidget {
@@ -162,8 +162,8 @@ class _ProfileSettingsState extends State<ProfileSettings> {
         ),
         duration: Duration(seconds: 3),
       )..show(context);
-      final googleSignIn = GoogleSignIn();
-      googleSignIn.disconnect();
+      // final googleSignIn = GoogleSignIn();
+      // googleSignIn.disconnect();
       await _auth.signOut();
       Navigator.pushReplacementNamed(context, WelcomeScreen.id);
     } catch (e) {

@@ -311,9 +311,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
         });
   }
 
-
-
-_androidDialog(BuildContext parentContext) {
+  _androidDialog(BuildContext parentContext) {
     return showDialog(
         context: parentContext,
         builder: (context) {
@@ -334,12 +332,12 @@ _androidDialog(BuildContext parentContext) {
                     textAlign: TextAlign.center,
                   ),
                   onPressed: () {
-                     Navigator.pop(context);
-                  _handleImage();
+                    Navigator.pop(context);
+                    _handleImage();
                   },
                 ),
               ),
-               Divider(),
+              Divider(),
               Center(
                 child: SimpleDialogOption(
                   child: Text(
@@ -349,8 +347,8 @@ _androidDialog(BuildContext parentContext) {
                     textAlign: TextAlign.center,
                   ),
                   onPressed: () {
-                     Navigator.pop(context);
-                  _handleImage();
+                    Navigator.pop(context);
+                    _handleImage();
                   },
                 ),
               ),
@@ -367,7 +365,6 @@ _androidDialog(BuildContext parentContext) {
           );
         });
   }
-
 
   _displayMessageImage(ChatMessage message, String currentUserId) {
     final width = MediaQuery.of(context).size.width;
@@ -780,95 +777,11 @@ _androidDialog(BuildContext parentContext) {
                   ? CrossAxisAlignment.end
                   : CrossAxisAlignment.start,
               children: [
-                // GestureDetector(
-                //   onTap: () => Navigator.push(
-                //       context,
-                //       MaterialPageRoute(
-                //           builder: (_) => ViewSentContent(
-                //                 contentId: message.sendContentId,
-                //                 contentType: message.sendPostType,
-                //               ))),
-                //   child: Padding(
-                //     padding: const EdgeInsets.all(8.0),
-                //     child:
-                //  Row(
-                //   mainAxisAlignment: currentUserId == message.authorId
-                //       ? MainAxisAlignment.end
-                //       : MainAxisAlignment.start,
-                //   crossAxisAlignment: CrossAxisAlignment.end,
-                //   children: [
-                //     currentUserId == message.authorId
-                //         ? Text(
-                //             message.sendContentTitle,
-                //             style: TextStyle(
-                //                 color: Colors.grey,
-                //                 fontSize: 10,
-                //                 fontWeight: FontWeight.bold),
-                //             overflow: TextOverflow.ellipsis,
-                //             textScaleFactor:
-                //                 MediaQuery.of(context).textScaleFactor,
-                //           )
-                //         : SizedBox.shrink(),
-                //     currentUserId == message.authorId
-                //         ? const SizedBox(
-                //             width: 10,
-                //           )
-                //         : const SizedBox.shrink(),
-                //     Container(
-                //       width: 50,
-                //       height: 50,
-                //       decoration: BoxDecoration(
-                //           color: Colors.grey,
-                //           borderRadius: BorderRadius.circular(10)),
-                //       child: CachedNetworkImage(
-                //         imageUrl: message.mediaUrl,
-                //         height: 40.0,
-                //         width: 40.0,
-                //         fit: BoxFit.cover,
-                //       ),
-                //     ),
-                //     currentUserId != message.authorId
-                //         ? const SizedBox(
-                //             width: 10,
-                //           )
-                //         : const SizedBox.shrink(),
-                //     currentUserId != message.authorId
-                //         ? Text(
-                //             message.sendContentTitle,
-                //             style: TextStyle(
-                //                 color: Colors.grey,
-                //                 fontSize: 10,
-                //                 fontWeight: FontWeight.bold),
-                //             overflow: TextOverflow.ellipsis,
-                //             textScaleFactor:
-                //                 MediaQuery.of(context).textScaleFactor,
-                //           )
-                //         : const SizedBox.shrink(),
-                //   ],
-                // ),
-                // ),
-                // ),
                 const SizedBox(
                   height: 5,
                 ),
                 DragTarget<bool>(builder: (context, data, rejectedData) {
                   return Container(
-                    // decoration: BoxDecoration(
-                    // color: currentUserId == message.authorId
-                    //     ? Colors.teal[200]
-                    //     : Colors.white,
-                    // borderRadius: currentUserId == message.authorId
-                    //     ? BorderRadius.only(
-                    //         topLeft: Radius.circular(50.0),
-                    //         topRight: Radius.circular(50.0),
-                    //         bottomLeft: Radius.circular(50.0),
-                    //       )
-                    //     : BorderRadius.only(
-                    //         topLeft: Radius.circular(50.0),
-                    //         topRight: Radius.circular(50.0),
-                    //         bottomRight: Radius.circular(50.0),
-                    //         ),
-                    // ),
                     child: Column(
                       crossAxisAlignment: currentUserId == message.authorId
                           ? CrossAxisAlignment.end
@@ -961,7 +874,7 @@ _androidDialog(BuildContext parentContext) {
                                     child: Text(
                                       message.content,
                                       style: TextStyle(
-                                        fontSize: 14.0,
+                                        fontSize: 12.0,
                                         color: Colors.blueGrey,
                                       ),
                                       textAlign:

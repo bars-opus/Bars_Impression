@@ -410,6 +410,7 @@ class DatabaseService {
       'hashTag': post.hashTag,
       'musicLink': post.musicLink,
       'likeCount': post.likeCount,
+      'mediaType': post.mediaType,
       'report': post.report,
       'reportConfirmed': post.reportConfirmed,
       'disLikeCount': post.disLikeCount,
@@ -450,6 +451,8 @@ class DatabaseService {
       'rate': event.rate,
       'venue': event.venue,
       'theme': event.theme,
+      'mediaUrl': event..mediaUrl,
+      'mediaType': event.mediaType,
       'date': event.date,
       'dressCode': event.dressCode,
       'time': event.time,
@@ -519,6 +522,8 @@ class DatabaseService {
       'isPrivate': forum.isPrivate,
       'subTitle': forum.subTitle,
       'authorId': forum.authorId,
+      'mediaType': forum.mediaType,
+      'mediaUrl': forum.mediaUrl,
       'report': forum.report,
       'reportConfirmed': forum.reportConfirmed,
       'timestamp': forum.timestamp,
@@ -535,9 +540,11 @@ class DatabaseService {
       'title': forum.title,
       'isPrivate': forum.isPrivate,
       'subTitle': forum.subTitle,
+      'mediaType': forum.mediaType,
+      'mediaUrl': forum.mediaUrl,
       'authorId': forum.authorId,
       'timestamp': forum.timestamp,
-      'linkedContentId': forum.linkedContentId
+      'linkedContentId': forum.linkedContentId,
     });
   }
 
@@ -1179,7 +1186,8 @@ class DatabaseService {
         timeStamp: null,
         updateNote: '',
         updateVersionAndroid: null,
-        updateVersionIos: null);
+        updateVersionIos: null,
+        version: '');
   }
 
   static Future<AccountHolder> getUserWithId(String userId) async {
@@ -1240,6 +1248,7 @@ class DatabaseService {
       professionalVideo3: '',
       blurHash: '',
       genreTags: '',
+      isEmailVerified: null,
     );
   }
 
@@ -1339,7 +1348,9 @@ class DatabaseService {
         isCashPayment: false,
         showOnExplorePage: false,
         showToFollowers: false,
-        clossingDay: '');
+        clossingDay: '',
+        mediaUrl: '',
+        mediaType: '');
   }
 
   static Future<Event> getEventWithId(String eventId) async {
@@ -1379,7 +1390,9 @@ class DatabaseService {
         isCashPayment: false,
         showOnExplorePage: false,
         showToFollowers: false,
-        clossingDay: '');
+        clossingDay: '',
+        mediaType: '',
+        mediaUrl: '');
   }
 
   static Future<Verification> getVerificationUser(String? userId) async {
@@ -1421,7 +1434,9 @@ class DatabaseService {
         subTitle: '',
         timestamp: null,
         title: '',
-        linkedContentId: '');
+        linkedContentId: '',
+        mediaType: '',
+        mediaUrl: '');
   }
 
   static Future<Post> getPostWithId(String postId) async {
@@ -1448,6 +1463,7 @@ class DatabaseService {
       musicLink: '',
       peopleTagged: '',
       punch: '',
+      mediaType: '',
     );
   }
 
@@ -1544,6 +1560,8 @@ class DatabaseService {
     commentsRef.doc(post.id).collection('postComments').add({
       'content': comment,
       'authorId': currentUserId,
+      'mediaType': '',
+      'mediaUrl': '',
       'report': '',
       'reportConfirmed': reportConfirmed,
       'timestamp': Timestamp.fromDate(DateTime.now()),
@@ -1647,6 +1665,8 @@ class DatabaseService {
     replyThoughtsRef.doc(thoughtId).collection('replyThoughts').add({
       'content': replyThought,
       'reportConfirmed': reportConfirmed,
+      'mediaType': '',
+      'mediaUrl': '',
       'report': '',
       'authorId': currentUserId,
       'timestamp': Timestamp.fromDate(DateTime.now()),
@@ -1669,6 +1689,8 @@ class DatabaseService {
       required String reportConfirmed}) {
     thoughtsRef.doc(forum.id).collection('forumThoughts').add({
       'content': thought,
+      'mediaType': '',
+      'mediaUrl': '',
       'count': 0,
       'reportConfirmed': reportConfirmed,
       'report': '',
@@ -2137,6 +2159,8 @@ class DatabaseService {
     asksRef.doc(event.id).collection('eventAsks').add({
       'content': ask,
       'report': '',
+      'mediaType': '',
+      'mediaUrl': '',
       'reportConfirmed': reportConfirmed,
       'authorId': currentUserId,
       'timestamp': Timestamp.fromDate(DateTime.now()),

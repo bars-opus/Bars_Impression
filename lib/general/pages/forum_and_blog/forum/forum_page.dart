@@ -121,68 +121,70 @@ class _ForumPageState extends State<ForumPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return NestedScrollView(
-      controller: _hideButtonController,
-      headerSliverBuilder: (context, innerBoxScrolled) => [
-        SliverAppBar(
-          elevation: 0.0,
-          automaticallyImplyLeading: true,
-          floating: true,
-          snap: true,
-          iconTheme: new IconThemeData(
-            color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+    return ResponsiveScaffold(
+      child: NestedScrollView(
+        controller: _hideButtonController,
+        headerSliverBuilder: (context, innerBoxScrolled) => [
+          SliverAppBar(
+            elevation: 0.0,
+            automaticallyImplyLeading: true,
+            floating: true,
+            snap: true,
+            iconTheme: new IconThemeData(
+              color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+            ),
+            backgroundColor:
+                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+            centerTitle: true,
+            title: Text('Explore Forums',
+                style: TextStyle(
+                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                  fontWeight: FontWeight.bold,
+                )),
           ),
-          backgroundColor:
-              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-          centerTitle: true,
-          title: Text('Explore Forums',
-              style: TextStyle(
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                fontWeight: FontWeight.bold,
-              )),
-        ),
-      ],
-      body: MediaQuery(
-        data: MediaQuery.of(context).removePadding(
-          removeTop: true,
-        ),
-        child: Material(
-          child: Container(
-            color: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-            child: SafeArea(
-              child: Column(
-                children: [
-                  MediaQuery(
-                    data: MediaQuery.of(context).copyWith(
-                        textScaleFactor: MediaQuery.of(context)
-                            .textScaleFactor
-                            .clamp(0.5, 1.5)),
-                    child: Expanded(
-                      child: _forumList.length > 0
-                          ? RefreshIndicator(
-                              backgroundColor: Colors.white,
-                              onRefresh: () async {
-                                _setupForumFeed();
-                              },
-                              child: Padding(
-                                  padding: const EdgeInsets.only(top: 20),
-                                  child: _buildDisplayForum()))
-                          : _forumList.length == 0
-                              ? RefreshIndicator(
-                                  backgroundColor: Colors.white,
-                                  onRefresh: () async {
-                                    _setupForumFeed();
-                                  },
-                                  child: Center(
+        ],
+        body: MediaQuery(
+          data: MediaQuery.of(context).removePadding(
+            removeTop: true,
+          ),
+          child: Material(
+            child: Container(
+              color: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+              child: SafeArea(
+                child: Column(
+                  children: [
+                    MediaQuery(
+                      data: MediaQuery.of(context).copyWith(
+                          textScaleFactor: MediaQuery.of(context)
+                              .textScaleFactor
+                              .clamp(0.5, 1.5)),
+                      child: Expanded(
+                        child: _forumList.length > 0
+                            ? RefreshIndicator(
+                                backgroundColor: Colors.white,
+                                onRefresh: () async {
+                                  _setupForumFeed();
+                                },
+                                child: Padding(
+                                    padding: const EdgeInsets.only(top: 20),
+                                    child: _buildDisplayForum()))
+                            : _forumList.length == 0
+                                ? RefreshIndicator(
+                                    backgroundColor: Colors.white,
+                                    onRefresh: () async {
+                                      _setupForumFeed();
+                                    },
+                                    child: Center(
+                                      child: ForumSchimmer(),
+                                    ),
+                                  )
+                                : Center(
                                     child: ForumSchimmer(),
                                   ),
-                                )
-                              : Center(
-                                  child: ForumSchimmer(),
-                                ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

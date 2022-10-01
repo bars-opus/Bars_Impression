@@ -580,7 +580,6 @@ class _buildToggleButton extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (_) => Chats(
                       currentUserId: currentUserId,
-                      // activityChatCount: activityChatCount,
                       userId: '',
                     ),
                   ),

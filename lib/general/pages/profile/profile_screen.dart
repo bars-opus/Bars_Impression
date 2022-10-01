@@ -1242,53 +1242,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         });
   }
 
-  // _androidDialog2(BuildContext parentContext, AccountHolder user, String from) {
-  //   return showDialog(
-  //       context: parentContext,
-  //       builder: (context) {
-  //         return SimpleDialog(
-  //           title: Text(
-  //             from.startsWith('unfollow')
-  //                 ? 'Are you sure you want to unfollow ${user.userName}?'
-  //                 : from.startsWith('block')
-  //                     ? 'Are you sure you want to block ${user.userName}?'
-  //                     : from.startsWith('unBlock')
-  //                         ? 'Are you sure you want to unblock ${user.userName}?'
-  //                         : '',
-  //           ),
-  //           children: <Widget>[
-  //             SimpleDialogOption(
-  //                 child: Text(
-  //                   from.startsWith('unfollow')
-  //                       ? 'unFollow'
-  //                       : from.startsWith('block')
-  //                           ? 'block'
-  //                           : from.startsWith('unBlock')
-  //                               ? 'unBlock'
-  //                               : '',
-  //                 ),
-  //                 onPressed: () {
-  //                   Navigator.pop(context);
-  //                   from.startsWith('unfollow')
-  //                       ? _unfollowUser(user)
-  //                       : from.startsWith('block')
-  //                           ? _blockser(user)
-  //                           : from.startsWith('unBlock')
-  //                               ? _unBlockser(user)
-  //                               : () {};
-  //                 }),
-  //             SimpleDialogOption(
-  //               child: Text('cancel'),
-  //               onPressed: () => Navigator.pop(context),
-  //             ),
-  //           ],
-  //         );
-  //       });
-  // }
-
-
-
- _androidDialog2(BuildContext parentContext, AccountHolder user, String from ) {
+  _androidDialog2(BuildContext parentContext, AccountHolder user, String from) {
     return showDialog(
         context: parentContext,
         builder: (context) {
@@ -1309,7 +1263,7 @@ class _ProfileScreenState extends State<ProfileScreen>
               Center(
                 child: SimpleDialogOption(
                   child: Text(
-                 from.startsWith('unfollow')
+                    from.startsWith('unfollow')
                         ? 'unFollow'
                         : from.startsWith('block')
                             ? 'block'
@@ -1321,8 +1275,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                     textAlign: TextAlign.center,
                   ),
                   onPressed: () {
-                     Navigator.pop(context);
-                from.startsWith('unfollow')
+                    Navigator.pop(context);
+                    from.startsWith('unfollow')
                         ? _unfollowUser(user)
                         : from.startsWith('block')
                             ? _blockser(user)
@@ -1441,68 +1395,6 @@ class _ProfileScreenState extends State<ProfileScreen>
           );
         });
   }
-
-  // _androidDialog(BuildContext parentContext, AccountHolder user) {
-  //   return showDialog(
-  //       context: parentContext,
-  //       builder: (context) {
-  //         return SimpleDialog(
-  //           title: Text('Actions'),
-  //           children: <Widget>[
-  //             SimpleDialogOption(
-  //                 child: Text(
-  //                   'Message',
-  //                 ),
-  //                 onPressed: () {
-  //                   Navigator.pop(context);
-  //                   Navigator.push(
-  //                       context,
-  //                       MaterialPageRoute(
-  //                         builder: (_) => StartChat(
-  //                           user: user,
-  //                           currentUserId: widget.currentUserId,
-  //                         ),
-  //                       ));
-  //                 }),
-  //             SimpleDialogOption(
-  //                 child: Text(
-  //                   _isFollowing ? 'unFollow' : 'Follow',
-  //                 ),
-  //                 onPressed: () {
-  //                   Navigator.pop(context);
-  //                   _followOrUnfollow(user);
-  //                 }),
-  //             SimpleDialogOption(
-  //                 child: Text(
-  //                   _isBlockingUser ? 'unBlock' : 'Block',
-  //                 ),
-  //                 onPressed: () {
-  //                   Navigator.pop(context);
-  //                   _blockOrUnBlock(user);
-  //                 }),
-  //             SimpleDialogOption(
-  //               child: Text('Report'),
-  //               onPressed: () {
-  //                 Navigator.pop(context);
-  //                 Navigator.push(
-  //                     context,
-  //                     MaterialPageRoute(
-  //                         builder: (_) => ReportContentPage(
-  //                               parentContentId: widget.userId,
-  //                               repotedAuthorId: widget.userId,
-  //                               contentId: widget.userId,
-  //                               contentType: user.userName!,
-  //                             )));
-  //               },
-  //             ),
-  //             SimpleDialogOption(
-  //               child: Text('cancel'),
-  //               onPressed: () => Navigator.pop(context),
-  //             ),
-  //           ],
-  //         );
-  //       });
-  // }
 
   _androidDialog(BuildContext parentContext, AccountHolder user) {
     return showDialog(

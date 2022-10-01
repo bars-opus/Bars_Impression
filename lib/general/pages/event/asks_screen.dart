@@ -8,14 +8,10 @@ import 'package:flutter/rendering.dart';
 class AsksScreen extends StatefulWidget {
   final Event event;
   final Ask? ask;
-  // final int askCount;
   final String currentUserId;
 
   AsksScreen(
-      {required this.event,
-      // required this.askCount,
-      required this.ask,
-      required this.currentUserId});
+      {required this.event, required this.ask, required this.currentUserId});
 
   @override
   _AsksScreenState createState() => _AsksScreenState();
@@ -67,7 +63,7 @@ class _AsksScreenState extends State<AsksScreen> {
     DatabaseService.numAsks(widget.event.id).listen((askCount) {
       if (mounted) {
         setState(() {
-          _askCount = askCount ;
+          _askCount = askCount;
         });
       }
     });
@@ -120,12 +116,16 @@ class _AsksScreenState extends State<AsksScreen> {
                       ? Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => ProfileScreen(
-                                    currentUserId:
-                                        Provider.of<UserData>(context)
-                                            .currentUserId!,
-                                    userId: author.id!,
-                                  )))
+                              builder: (_) => author.userName!.isEmpty
+                                  ? UserNotFound(
+                                      userName: 'User',
+                                    )
+                                  : ProfileScreen(
+                                      currentUserId:
+                                          Provider.of<UserData>(context)
+                                              .currentUserId!,
+                                      userId: author.id!,
+                                    )))
                       : Navigator.push(
                           context,
                           MaterialPageRoute(

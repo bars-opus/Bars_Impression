@@ -7,7 +7,6 @@ class ExploreForumMin extends StatefulWidget {
   final Forum forum;
   final AccountHolder author;
   final String feed;
-  // final List<Forum> forumList;
 
   ExploreForumMin(
       {required this.currentUserId, required this.forum, @required required this.feed, required this.author});
@@ -41,7 +40,6 @@ class _ExploreForumMinState extends State<ExploreForumMin> {
       currentUserId: widget.currentUserId,
       forum: widget.forum,
       feed: widget.feed,
-      // showExplore: false,
       thougthCount: _thoughtCount,
     );
   }

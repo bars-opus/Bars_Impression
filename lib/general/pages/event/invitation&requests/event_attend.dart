@@ -5,6 +5,7 @@ class AttendEvent extends StatefulWidget {
   final Event event;
   final String currentUserId;
   final PaletteGenerator palette;
+
   AttendEvent({
     required this.event,
     required this.currentUserId,
@@ -105,46 +106,6 @@ class _AttendEventState extends State<AttendEvent> {
           );
         });
   }
-
-  // _androidDialog2(BuildContext parentContext, EventInvite eventInvite) {
-  //   return showDialog(
-  //       context: parentContext,
-  //       builder: (context) {
-  //         return SimpleDialog(
-  //           title: Text(
-  //             'Are you sure you want to request for an invitation?',
-  //             style: TextStyle(fontWeight: FontWeight.bold),
-  //             textAlign: TextAlign.center,
-  //           ),
-  //           children: <Widget>[
-  //             Divider(),
-  //             Center(
-  //               child: SimpleDialogOption(
-  //                 child: Text(
-  //                   'Request',
-  //                   style: TextStyle(
-  //                       fontWeight: FontWeight.bold, color: Colors.blue),
-  //                   textAlign: TextAlign.center,
-  //                 ),
-  //                 onPressed: () {
-  //                   Navigator.pop(context);
-  //                   _checkUser();
-  //                 },
-  //               ),
-  //             ),
-  //             Divider(),
-  //             Center(
-  //               child: SimpleDialogOption(
-  //                 child: Text(
-  //                   'Cancel',
-  //                 ),
-  //                 onPressed: () => Navigator.pop(context),
-  //               ),
-  //             ),
-  //           ],
-  //         );
-  //       });
-  // }
 
   _androidDialog2(BuildContext parentContext, EventInvite eventInvite) {
     return showDialog(

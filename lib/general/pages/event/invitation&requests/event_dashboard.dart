@@ -29,8 +29,10 @@ class _EventDashboardState extends State<EventDashboard> {
   int _inviteRejectedCount = 0;
   int _inviteUnAnswered = 0;
   int _attendeesValidated = 0;
+  // late DateTime _closingdate;
 
-  // int _activityEventCount = 0;
+  late DateTime _toDaysDate;
+  late DateTime _date;
 
   @override
   void initState() {
@@ -46,7 +48,6 @@ class _EventDashboardState extends State<EventDashboard> {
     widget.event.isPrivate
         ? _setUpAttendeesValidatedPrivate()
         : _setUpAttendeesValidatedPublic();
-    // _setUpactivityEventCount();
     _countDown();
   }
 
@@ -54,24 +55,16 @@ class _EventDashboardState extends State<EventDashboard> {
     DateTime date = DateTime.parse(widget.event.date);
     final toDayDate = DateTime.now();
     var different = date.difference(toDayDate).inDays;
+    // DateTime closingdate = DateTime.parse(widget.event.clossingDay);
 
     setState(() {
       _different = different;
+      _toDaysDate = toDayDate;
+      // _closingdate = closingdate;
+
+      _date = date;
     });
   }
-
-  // _setUpactivityEventCount() async {
-  //   final String currentUserId =
-  //       Provider.of<UserData>(context, listen: false).currentUserId!;
-  //   DatabaseService.numSpecificEventActivities(currentUserId, widget.event.id)
-  //       .listen((activityEventCount) {
-  //     if (mounted) {
-  //       setState(() {
-  //         _activityEventCount = activityEventCount;
-  //       });
-  //     }
-  //   });
-  // }
 
   _setUpAttendeeRequest() async {
     DatabaseService.numEventAttendeeRequest(
@@ -185,6 +178,33 @@ class _EventDashboardState extends State<EventDashboard> {
     });
   }
 
+  _dynamicLink() async {
+    final dynamicLinkParams = await DynamicLinkParameters(
+      socialMetaTagParameters: await SocialMetaTagParameters(
+        title: 'Event',
+        description: widget.event.title,
+      ),
+      link: Uri.parse('https://www.barsopus.com/event_${widget.event.id}'),
+      uriPrefix: 'https://barsopus.com/barsImpression/',
+      androidParameters:
+          AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
+      iosParameters: IOSParameters(
+        bundleId: 'com.bars-Opus.barsImpression',
+        appStoreId: '1610868894',
+      ),
+    );
+    if (Platform.isIOS) {
+      var link =
+          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
+
+      Share.share(link.toString());
+    } else {
+      var link =
+          await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+      Share.share(link.shortUrl.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -235,232 +255,251 @@ class _EventDashboardState extends State<EventDashboard> {
           const SizedBox(
             height: 30,
           ),
-          // _different != 10
-          //     ? const SizedBox.shrink()
-          //     :
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: Container(
-              width: width,
-              // height: MediaQuery.of(context).size.height,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(5.0),
-                    topLeft: Radius.circular(5.0),
-                    bottomLeft: Radius.circular(5.0),
-                    bottomRight: Radius.circular(5.0),
-                  ),
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      offset: Offset(10, 10),
-                      blurRadius: 10.0,
-                      spreadRadius: 4.0,
-                    )
-                  ]),
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  Text(
-                    'Validator.',
-                    style: TextStyle(
-                        fontSize: 20,
-                        color: widget.palette.darkMutedColor == null
-                            ? Color(0xFF1a1a1a)
-                            : widget.palette.darkMutedColor!.color,
-                        height: 0.8),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      GestureDetector(
-                        onTap: () => widget.event.isPrivate
-                            ? Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => EventAttendeesValidated(
-                                          palette: widget.palette,
-                                          event: widget.event,
-                                          from: 'Accepted',
-                                        )))
-                            : Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => EventAttendeesValidated(
-                                          palette: widget.palette,
-                                          event: widget.event,
-                                          from: '',
-                                        ))),
-                        child: RichText(
-                          textScaleFactor:
-                              MediaQuery.of(context).textScaleFactor,
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: _attendeesValidated.toString(),
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: widget.palette.darkMutedColor == null
-                                      ? Color(0xFF1a1a1a)
-                                      : widget.palette.darkMutedColor!.color,
-                                ),
-                              ),
-                              TextSpan(
-                                text: '\nValidated\nAttendees',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: widget.palette.darkMutedColor == null
-                                      ? Color(0xFF1a1a1a)
-                                      : widget.palette.darkMutedColor!.color,
-                                ),
-                              ),
-                            ],
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      Container(
-                        height: 100,
-                        width: 1,
-                        color: widget.palette.darkMutedColor == null
-                            ? Color(0xFF1a1a1a)
-                            : widget.palette.darkMutedColor!.color,
-                      ),
-                      GestureDetector(
-                        onTap: () => widget.event.isPrivate
-                            ? Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => EventAttendees(
-                                          palette: widget.palette,
-                                          event: widget.event,
-                                          from: 'Accepted',
-                                          showAppBar: true,
-                                          dontShowAnswerWidget: true,
-                                        )))
-                            : Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => EventAttendees(
-                                          showAppBar: true,
-                                          dontShowAnswerWidget: true,
-                                          palette: widget.palette,
-                                          event: widget.event,
-                                          from: '',
-                                        ))),
-                        child: RichText(
-                          textScaleFactor:
-                              MediaQuery.of(context).textScaleFactor,
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: widget.event.isPrivate
-                                    ? sum.toString()
-                                    : _attendeeUnAnswered.toString(),
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: widget.palette.darkMutedColor == null
-                                      ? Color(0xFF1a1a1a)
-                                      : widget.palette.darkMutedColor!.color,
-                                ),
-                              ),
-                              TextSpan(
-                                text: '\nExpected\nAttendees',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: widget.palette.darkMutedColor == null
-                                      ? Color(0xFF1a1a1a)
-                                      : widget.palette.darkMutedColor!.color,
-                                ),
-                              ),
-                            ],
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
+          _date.subtract(Duration(days: 3)).isBefore(_toDaysDate)
+              ? ShakeTransition(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: Container(
                       width: width,
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          primary: Colors.blue,
-                          side: BorderSide(
-                            width: 1.0,
-                            color: widget.palette.darkMutedColor == null
-                                ? Color(0xFF1a1a1a)
-                                : widget.palette.darkMutedColor!.color,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(5.0),
+                            topLeft: Radius.circular(5.0),
+                            bottomLeft: Radius.circular(5.0),
+                            bottomRight: Radius.circular(5.0),
                           ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 5.0, vertical: 2),
-                          child: Text(
-                            'Validate attendees',
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              offset: Offset(10, 10),
+                              blurRadius: 10.0,
+                              spreadRadius: 4.0,
+                            )
+                          ]),
+                      child: Column(
+                        children: [
+                          const SizedBox(
+                            height: 60,
+                          ),
+                          Text(
+                            'VALIDATOR',
                             style: TextStyle(
+                              fontSize: 20,
                               color: widget.palette.darkMutedColor == null
                                   ? Color(0xFF1a1a1a)
                                   : widget.palette.darkMutedColor!.color,
-                              fontSize: 12.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(
+                            height: 60,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              GestureDetector(
+                                onTap: () => widget.event.isPrivate
+                                    ? Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) =>
+                                                EventAttendeesValidated(
+                                                  palette: widget.palette,
+                                                  event: widget.event,
+                                                  from: 'Accepted',
+                                                )))
+                                    : Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) =>
+                                                EventAttendeesValidated(
+                                                  palette: widget.palette,
+                                                  event: widget.event,
+                                                  from: '',
+                                                ))),
+                                child: RichText(
+                                  textScaleFactor:
+                                      MediaQuery.of(context).textScaleFactor,
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: _attendeesValidated.toString(),
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color:
+                                              widget.palette.darkMutedColor ==
+                                                      null
+                                                  ? Color(0xFF1a1a1a)
+                                                  : widget.palette
+                                                      .darkMutedColor!.color,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: '\nValidated\nAttendees',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color:
+                                              widget.palette.darkMutedColor ==
+                                                      null
+                                                  ? Color(0xFF1a1a1a)
+                                                  : widget.palette
+                                                      .darkMutedColor!.color,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              Container(
+                                height: 100,
+                                width: 1,
+                                color: widget.palette.darkMutedColor == null
+                                    ? Color(0xFF1a1a1a)
+                                    : widget.palette.darkMutedColor!.color,
+                              ),
+                              GestureDetector(
+                                onTap: () => widget.event.isPrivate
+                                    ? Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) => EventAttendees(
+                                                  palette: widget.palette,
+                                                  event: widget.event,
+                                                  from: 'Accepted',
+                                                  showAppBar: true,
+                                                  dontShowAnswerWidget: true,
+                                                )))
+                                    : Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) => EventAttendees(
+                                                  showAppBar: true,
+                                                  dontShowAnswerWidget: true,
+                                                  palette: widget.palette,
+                                                  event: widget.event,
+                                                  from: '',
+                                                ))),
+                                child: RichText(
+                                  textScaleFactor:
+                                      MediaQuery.of(context).textScaleFactor,
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: widget.event.isPrivate
+                                            ? sum.toString()
+                                            : _attendeeUnAnswered.toString(),
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color:
+                                              widget.palette.darkMutedColor ==
+                                                      null
+                                                  ? Color(0xFF1a1a1a)
+                                                  : widget.palette
+                                                      .darkMutedColor!.color,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: '\nExpected\nAttendees',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color:
+                                              widget.palette.darkMutedColor ==
+                                                      null
+                                                  ? Color(0xFF1a1a1a)
+                                                  : widget.palette
+                                                      .darkMutedColor!.color,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 60,
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 30.0),
+                            child: Container(
+                              width: width,
+                              child: OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  primary: Colors.blue,
+                                  side: BorderSide(
+                                    width: 1.0,
+                                    color: widget.palette.darkMutedColor == null
+                                        ? Color(0xFF1a1a1a)
+                                        : widget.palette.darkMutedColor!.color,
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 5.0, vertical: 2),
+                                  child: Text(
+                                    'Validate attendees',
+                                    style: TextStyle(
+                                      color:
+                                          widget.palette.darkMutedColor == null
+                                              ? Color(0xFF1a1a1a)
+                                              : widget.palette.darkMutedColor!
+                                                  .color,
+                                      fontSize: 12.0,
+                                    ),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) =>
+                                              ValidateEventAttendees(
+                                                event: widget.event,
+                                                palette: widget.palette,
+                                                from: widget.event.isPrivate
+                                                    ? 'Accepted'
+                                                    : '',
+                                              )));
+                                },
+                              ),
                             ),
                           ),
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => ValidateEventAttendees(
-                                        event: widget.event,
-                                        palette: widget.palette,
-                                        from: widget.event.isPrivate
-                                            ? 'Accepted'
-                                            : '',
-                                      )));
-                        },
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: RichText(
-                      textScaleFactor: MediaQuery.of(context)
-                          .textScaleFactor
-                          .clamp(0.5, 1.5),
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                              text:
-                                  'Your validator is ready. Your validator helps you validate attendees at the entrance of the event. An attendee\'s number is unique. You must match the attendee\'s number on the ticket of the attendee to the attendee\'s number among the list of this event attendees to see if it correspond.  If the two numbers are equal, you can validate the attendee before they access the event. This helps keep trak of the people(attedees) you permit to your event..',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.black,
-                              )),
+                          Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: RichText(
+                              textScaleFactor: MediaQuery.of(context)
+                                  .textScaleFactor
+                                  .clamp(0.5, 1.5),
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                      text:
+                                          'Your validator is ready. Your validator helps you validate attendees at the entrance of the event. An attendee\'s number is unique. You must match the attendee\'s number on the ticket of the attendee to the attendee\'s number among the list of this event attendees to see if it correspond.  If the two numbers are equal, you can validate the attendee before they access the event. This helps keep track of the people(attedees) you permit to your event.',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.black,
+                                      )),
+                                ],
+                              ),
+                              textAlign: TextAlign.start,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 60,
+                          ),
                         ],
                       ),
-                      textAlign: TextAlign.start,
                     ),
                   ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                ],
-              ),
-            ),
-          ),
+                )
+              : const SizedBox.shrink(),
           ShakeTransition(
             child: new Material(
               color: Colors.transparent,
@@ -468,7 +507,6 @@ class _EventDashboardState extends State<EventDashboard> {
                 padding: const EdgeInsets.all(10.0),
                 child: Container(
                   width: width,
-                  // height: MediaQuery.of(context).size.height,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.only(
                         topRight: Radius.circular(5.0),
@@ -485,9 +523,80 @@ class _EventDashboardState extends State<EventDashboard> {
                           spreadRadius: 4.0,
                         )
                       ]),
-
                   child: Column(
                     children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Stack(
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 10.0, right: 10),
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.white,
+                                  elevation: 0.0,
+                                  onPrimary: Colors.blue,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(100.0),
+                                  ),
+                                ),
+                                child: Icon(
+                                  Icons.notifications,
+                                  color: widget.palette.darkMutedColor == null
+                                      ? Color(0xFF1a1a1a)
+                                      : widget.palette.darkMutedColor!.color,
+                                  size: 30.0,
+                                ),
+                                onPressed: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          EventInvitationNotification(
+                                        palette: widget.palette,
+                                        event: widget.event,
+                                        currentUserId:
+                                            Provider.of<UserData>(context)
+                                                .currentUserId!,
+                                        attendeeRequesCount:
+                                            _attendeeUnAnswered,
+                                        invitationRespondCount:
+                                            _inviteAcceptedCount,
+                                      ),
+                                    )),
+                              ),
+                            ),
+                            _attendeeUnAnswered == 0
+                                ? const SizedBox.shrink()
+                                : Positioned(
+                                    top: 10,
+                                    right: 16,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.only(
+                                              topRight: Radius.circular(10.0),
+                                              topLeft: Radius.circular(10.0),
+                                              bottomRight:
+                                                  Radius.circular(10.0)),
+                                          color: Colors.red),
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                          left: 8,
+                                          right: 8,
+                                          top: 3,
+                                          bottom: 3,
+                                        ),
+                                        child: Text(
+                                          NumberFormat.compact()
+                                              .format(_attendeeUnAnswered),
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                          ],
+                        ),
+                      ),
                       const SizedBox(
                         height: 30,
                       ),
@@ -498,7 +607,10 @@ class _EventDashboardState extends State<EventDashboard> {
                           text: TextSpan(
                             children: [
                               TextSpan(
-                                text: _different.toString(),
+                                text: _toDaysDate.isAfter(
+                                        DateTime.parse(widget.event.date))
+                                    ? 'Ongiong...'
+                                    : _different.toString(),
                                 style: TextStyle(
                                   fontSize: 50,
                                   color: widget.palette.darkMutedColor == null
@@ -507,7 +619,10 @@ class _EventDashboardState extends State<EventDashboard> {
                                 ),
                               ),
                               TextSpan(
-                                text: '\nDays\nMore',
+                                text: _toDaysDate.isAfter(
+                                        DateTime.parse(widget.event.date))
+                                    ? ''
+                                    : '\nDays\nMore',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: widget.palette.darkMutedColor == null
@@ -523,6 +638,46 @@ class _EventDashboardState extends State<EventDashboard> {
                       const SizedBox(
                         height: 20,
                       ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Container(
+                          width: width - 80,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: widget.palette.darkMutedColor == null
+                                  ? Color(0xFF1a1a1a)
+                                  : widget.palette.darkMutedColor!.color,
+                              elevation: 0.0,
+                              onPrimary: Colors.blue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 5.0, vertical: 2),
+                              child: Text(
+                                'Send Invite',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12.0,
+                                ),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => InviteSearch(
+                                            currentUserId: widget.currentUserId,
+                                            event: widget.event,
+                                            palette: widget.palette,
+                                          )));
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 5),
                       Container(
                         width: width,
                         child: Padding(
@@ -530,11 +685,11 @@ class _EventDashboardState extends State<EventDashboard> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(top: 8.0),
-                                  child: Container(
-                                    child: ElevatedButton(
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: Container(
+                                  width: width / 2.6,
+                                  child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
                                         primary:
                                             widget.palette.darkMutedColor ==
@@ -553,7 +708,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 5.0, vertical: 2),
                                         child: Text(
-                                          'Send Invite',
+                                          'Send to chat',
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 12.0,
@@ -564,100 +719,54 @@ class _EventDashboardState extends State<EventDashboard> {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (_) => InviteSearch(
+                                                builder: (_) => SendToChats(
                                                       currentUserId:
                                                           widget.currentUserId,
+                                                      userId: '',
+                                                      sendContentType: 'Event',
                                                       event: widget.event,
-                                                      palette: widget.palette,
+                                                      post: null,
+                                                      forum: null,
+                                                      user: null,
+                                                      sendContentId:
+                                                          widget.event.id,
                                                     )));
-                                      },
-                                    ),
-                                  ),
+                                      }),
                                 ),
                               ),
-                              const SizedBox(width: 5),
-                              Stack(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 8.0),
-                                    child: Container(
-                                      width: width / 4,
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          primary:
-                                              widget.palette.darkMutedColor ==
-                                                      null
-                                                  ? Color(0xFF1a1a1a)
-                                                  : widget.palette
-                                                      .darkMutedColor!.color,
-                                          elevation: 0.0,
-                                          onPrimary: Colors.blue,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(5.0),
-                                          ),
+                              const SizedBox(width: 2),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: Container(
+                                  width: width / 2.6,
+                                  child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        primary:
+                                            widget.palette.darkMutedColor ==
+                                                    null
+                                                ? Color(0xFF1a1a1a)
+                                                : widget.palette.darkMutedColor!
+                                                    .color,
+                                        elevation: 0.0,
+                                        onPrimary: Colors.blue,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5.0),
                                         ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 5.0, vertical: 2),
-                                          child: Icon(
-                                            Icons.notifications,
-                                            color: Colors.white,
-                                            size: 20.0,
-                                          ),
-                                        ),
-                                        onPressed: () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (_) =>
-                                                  EventInvitationNotification(
-                                                palette: widget.palette,
-                                                event: widget.event,
-                                                currentUserId:
-                                                    Provider.of<UserData>(
-                                                            context)
-                                                        .currentUserId!,
-                                                attendeeRequesCount:
-                                                    _attendeeUnAnswered,
-                                                invitationRespondCount:
-                                                    _inviteAcceptedCount,
-                                              ),
-                                            )),
                                       ),
-                                    ),
-                                  ),
-                                  _attendeeUnAnswered == 0
-                                      ? const SizedBox.shrink()
-                                      : Positioned(
-                                          top: 5,
-                                          right: 2,
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.only(
-                                                    topRight:
-                                                        Radius.circular(10.0),
-                                                    topLeft:
-                                                        Radius.circular(10.0),
-                                                    bottomRight:
-                                                        Radius.circular(10.0)),
-                                                color: Colors.red),
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                left: 8,
-                                                right: 8,
-                                                top: 3,
-                                                bottom: 3,
-                                              ),
-                                              child: Text(
-                                                NumberFormat.compact().format(
-                                                    _attendeeUnAnswered),
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                            ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 5.0, vertical: 2),
+                                        child: Text(
+                                          'Share event',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 12.0,
                                           ),
                                         ),
-                                ],
+                                      ),
+                                      onPressed: () => _dynamicLink()),
+                                ),
                               ),
                             ],
                           ),
@@ -1428,6 +1537,7 @@ class _EventDashboardState extends State<EventDashboard> {
               ),
             ),
           ),
+          const SizedBox(height: 20),
           Text(
             "This dashboard would be closed on\n${MyDateFormat.toDate(DateTime.parse(widget.event.clossingDay))} after this event is completed.",
             style: TextStyle(

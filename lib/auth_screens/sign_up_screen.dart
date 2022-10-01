@@ -23,6 +23,8 @@ class _SignpsScreenState extends State<SignpsScreen>
   String _email = '';
   String _password = '';
   bool _isHidden = true;
+  bool _isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -59,7 +61,7 @@ class _SignpsScreenState extends State<SignpsScreen>
       _formKey.currentState!.save();
       FocusScope.of(context).unfocus();
       setState(() {
-        Provider.of<UserData>(context, listen: false).setIsLoading(true);
+        _isLoading = true;
       });
       AuthService.signUpUser(
         context,
@@ -72,7 +74,7 @@ class _SignpsScreenState extends State<SignpsScreen>
       );
 
       setState(() {
-        Provider.of<UserData>(context, listen: false).setIsLoading(false);
+        _isLoading = false;
       });
     }
   }
@@ -308,11 +310,7 @@ class _SignpsScreenState extends State<SignpsScreen>
                                     SizedBox(height: 40.0),
                                     AnimatedContainer(
                                       duration: Duration(milliseconds: 300),
-                                      height: Provider.of<UserData>(context,
-                                                  listen: false)
-                                              .isLoading
-                                          ? 0.0
-                                          : 250,
+                                      height: _isLoading ? 0.0 : 250,
                                       width: double.infinity,
                                       curve: Curves.easeInOut,
                                       child: SingleChildScrollView(
@@ -428,80 +426,6 @@ class _SignpsScreenState extends State<SignpsScreen>
                                             ),
                                           )
                                         : const SizedBox.shrink(),
-                                    // Hero(
-                                    //   tag: 'Sign Up',
-                                    //   child: Container(
-                                    //     width: 250.0,
-                                    //     child: ElevatedButton(
-                                    //       style: ElevatedButton.styleFrom(
-                                    //         primary: Colors.white,
-                                    //         elevation: 20.0,
-                                    //         onPrimary: Colors.blue,
-                                    //         shape: RoundedRectangleBorder(
-                                    //           borderRadius:
-                                    //               BorderRadius.circular(20.0),
-                                    //         ),
-                                    //       ),
-                                    //       onPressed: _submit,
-                                    //       child: Padding(
-                                    //         padding: const EdgeInsets.all(8.0),
-                                    //         child: Text(
-                                    //           'Register',
-                                    //           style: TextStyle(
-                                    //             color: Colors.black,
-                                    //             fontSize: width > 800 ? 24 : 16,
-                                    //           ),
-                                    //         ),
-                                    //       ),
-                                    //     ),
-                                    //   ),
-                                    // ),
-                                    // SizedBox(height: width > 800 ? 40.0 : 20),
-                                    // FadeAnimation(
-                                    //   2,
-                                    //   Container(
-                                    //     width: 250.0,
-                                    //     child: OutlinedButton(
-                                    //       style: OutlinedButton.styleFrom(
-                                    //         primary: Colors.blue,
-                                    //         side: BorderSide(
-                                    //           width: 1.0,
-                                    //           color: Colors.white,
-                                    //         ),
-                                    //         shape: RoundedRectangleBorder(
-                                    //           borderRadius:
-                                    //               BorderRadius.circular(20.0),
-                                    //         ),
-                                    //       ),
-                                    //       child: Padding(
-                                    //         padding: const EdgeInsets.all(8.0),
-                                    //         child: Text(
-                                    //           'Back',
-                                    //           style: TextStyle(
-                                    //             color: Colors.white,
-                                    //             fontSize: width > 800 ? 24 : 16,
-                                    //           ),
-                                    //         ),
-                                    //       ),
-                                    //       onPressed: () =>
-                                    //           Navigator.pop(context),
-                                    //     ),
-                                    //   ),
-                                    // ),
-                                    // SizedBox(height: 80.0),
-                                    // FadeAnimation(
-                                    //   2,
-                                    //   GestureDetector(
-                                    //     onTap: () => Navigator.pushNamed(
-                                    //         context, Password.id),
-                                    //     child: Text('Forgot Password?',
-                                    //         style: TextStyle(
-                                    //           color: Colors.blueGrey,
-                                    //           fontSize: width > 800 ? 18 : 12,
-                                    //         ),
-                                    //         textAlign: TextAlign.right),
-                                    //   ),
-                                    // ),
                                   ],
                                 ),
                               ),

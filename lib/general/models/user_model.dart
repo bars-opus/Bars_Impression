@@ -50,6 +50,7 @@ class AccountHolder {
   final bool? hideAdvice;
   final bool? noBooking;
   final bool? disabledAccount;
+  final bool? isEmailVerified;
   final String? androidNotificationToken;
   final String? blurHash;
   final Timestamp? timestamp;
@@ -77,6 +78,7 @@ class AccountHolder {
     required this.continent,
     required this.contacts,
     required this.profileHandle,
+    required this.isEmailVerified,
     required this.website,
     required this.otherSites1,
     required this.otherSites2,
@@ -93,7 +95,7 @@ class AccountHolder {
     required this.report,
     required this.reportConfirmed,
     required this.hideAdvice,
-     required this.genreTags,
+    required this.genreTags,
     required this.noBooking,
     required this.disabledAccount,
     required this.androidNotificationToken,
@@ -160,9 +162,11 @@ class AccountHolder {
       enableBookingOnChat: doc['enableBookingOnChat'] ?? false,
       hideAdvice: doc['hideAdvice'] ?? false,
       noBooking: doc['noBooking'] ?? false,
+      isEmailVerified: doc['isEmailVerified'] ?? false,
       disabledAccount: doc['disabledAccount'] ?? false,
       androidNotificationToken: doc['androidNotificationToken'] ?? '',
-      timestamp: doc['timestamp'], genreTags: doc['genreTags'] ?? '',
+      timestamp: doc['timestamp'],
+      genreTags: doc['genreTags'] ?? '',
     );
   }
 }

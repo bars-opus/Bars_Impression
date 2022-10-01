@@ -7,7 +7,8 @@ class EventCompleted extends StatefulWidget {
   final String date;
   static final id = 'Edit_event';
 
-  EventCompleted({required this.event, required this.currentUserId, required this.date});
+  EventCompleted(
+      {required this.event, required this.currentUserId, required this.date});
 
   @override
   _EventCompletedState createState() => _EventCompletedState();
@@ -62,18 +63,35 @@ class _EventCompletedState extends State<EventCompleted> {
         context: parentContext,
         builder: (context) {
           return SimpleDialog(
-            title: Text('Are you sure you want to delete this event?'),
+            title: Text(
+              'Are you sure you want to delete this event?',
+              style: TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
             children: <Widget>[
-              SimpleDialogOption(
-                child: Text('delete'),
-                onPressed: () {
-                  Navigator.pop(context);
-                  _deleteEvent();
-                },
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'Delete',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.blue),
+                    textAlign: TextAlign.center,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _deleteEvent();
+                  },
+                ),
               ),
-              SimpleDialogOption(
-                child: Text('cancel'),
-                onPressed: () => Navigator.pop(context),
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'Cancel',
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
               ),
             ],
           );
@@ -157,7 +175,7 @@ class _EventCompletedState extends State<EventCompleted> {
         size: 28.0,
         color: Colors.blue,
       ),
-      duration: Duration(seconds: 3),
+      duration: Duration(seconds: 2),
       leftBarIndicatorColor: Colors.blue,
     )..show(context);
   }
@@ -197,7 +215,7 @@ class _EventCompletedState extends State<EventCompleted> {
                       subTitle: widget.event.title +
                           ' Which was dated on\n' +
                           widget.date +
-                          ' has been successfully completed.',
+                          ' has been successfully completed.\nAn event that is ongoing or completed can not be edited',
                       icon: Icons.done),
                   SizedBox(
                     height: 50,

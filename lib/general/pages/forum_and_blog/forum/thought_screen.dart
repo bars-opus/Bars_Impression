@@ -178,12 +178,16 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                       ? Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => ProfileScreen(
-                                    currentUserId:
-                                        Provider.of<UserData>(context)
-                                            .currentUserId!,
-                                    userId: author.id!,
-                                  )))
+                              builder: (_) => widget.author.userName!.isEmpty
+                                  ? UserNotFound(
+                                      userName: 'User',
+                                    )
+                                  : ProfileScreen(
+                                      currentUserId:
+                                          Provider.of<UserData>(context)
+                                              .currentUserId!,
+                                      userId: author.id!,
+                                    )))
                       : Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -399,12 +403,17 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                             onTap: () => Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (_) => ProfileScreen(
-                                          currentUserId:
-                                              Provider.of<UserData>(context)
-                                                  .currentUserId!,
-                                          userId: author.id!,
-                                        ))),
+                                    builder: (_) => widget
+                                            .author.userName!.isEmpty
+                                        ? UserNotFound(
+                                            userName: 'User',
+                                          )
+                                        : ProfileScreen(
+                                            currentUserId:
+                                                Provider.of<UserData>(context)
+                                                    .currentUserId!,
+                                            userId: author.id!,
+                                          ))),
                           ),
                         ),
                       ),
@@ -597,6 +606,9 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final width = Responsive.isDesktop(context)
+        ? 600.0
+        : MediaQuery.of(context).size.width;
     return _displayWarning == true
         ? Material(
             child: Stack(children: <Widget>[
@@ -672,6 +684,7 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                                                 })),
                                         child: Container(
                                           color: Colors.blue,
+                                          width: width,
                                           child: Padding(
                                             padding: const EdgeInsets.fromLTRB(
                                                 10.0, 30, 10, 0),
@@ -777,21 +790,14 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                                                 ),
                                                 Container(
                                                   height: 70,
-                                                  width: MediaQuery.of(context)
-                                                      .size
-                                                      .width,
                                                   child: Row(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment
                                                             .spaceBetween,
                                                     children: [
-                                                      SingleChildScrollView(
-                                                        child: Container(
-                                                          width: MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width -
-                                                              90,
+                                                      Expanded(
+                                                        child:
+                                                            SingleChildScrollView(
                                                           child: Column(
                                                             crossAxisAlignment:
                                                                 CrossAxisAlignment
@@ -801,29 +807,36 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                                                                 onTap: () => Navigator.push(
                                                                     context,
                                                                     MaterialPageRoute(
-                                                                        builder: (_) => ProfileScreen(
-                                                                              currentUserId: Provider.of<UserData>(context).currentUserId!,
-                                                                              userId: widget.forum.authorId,
-                                                                            ))),
+                                                                        builder: (_) => widget.author.userName!.isEmpty
+                                                                            ? UserNotFound(
+                                                                                userName: 'User',
+                                                                              )
+                                                                            : ProfileScreen(
+                                                                                currentUserId: Provider.of<UserData>(context).currentUserId!,
+                                                                                userId: widget.forum.authorId,
+                                                                              ))),
                                                                 child: RichText(
-                                                                  textScaleFactor:
-                                                                      MediaQuery.of(
-                                                                              context)
-                                                                          .textScaleFactor,
+                                                                  textScaleFactor: MediaQuery.of(
+                                                                          context)
+                                                                      .textScaleFactor
+                                                                      .clamp(
+                                                                          0.5,
+                                                                          2.0),
                                                                   text:
                                                                       TextSpan(
                                                                     children: [
                                                                       TextSpan(
-                                                                          text:
-                                                                              'created by:    ',
-                                                                          style:
-                                                                              TextStyle(
-                                                                            fontSize:
-                                                                                12,
-                                                                            color: ConfigBloc().darkModeOn
-                                                                                ? Color(0xFF1a1a1a)
-                                                                                : Color(0xFFe8f3fa),
-                                                                          )),
+                                                                        text:
+                                                                            'created by:    ',
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              12,
+                                                                          color: ConfigBloc().darkModeOn
+                                                                              ? Color(0xFF1a1a1a)
+                                                                              : Color(0xFFe8f3fa),
+                                                                        ),
+                                                                      ),
                                                                       TextSpan(
                                                                           text:
                                                                               "${widget.author.userName}  ",
@@ -847,7 +860,10 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                                                                 textScaleFactor:
                                                                     MediaQuery.of(
                                                                             context)
-                                                                        .textScaleFactor,
+                                                                        .textScaleFactor
+                                                                        .clamp(
+                                                                            0.5,
+                                                                            2.0),
                                                                 text: TextSpan(
                                                                   children: [
                                                                     TextSpan(
@@ -904,45 +920,47 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                                                           ),
                                                         ),
                                                       ),
-                                                      IconButton(
-                                                        icon: Icon(
-                                                          Icons
-                                                              .center_focus_strong,
-                                                          color: ConfigBloc()
-                                                                  .darkModeOn
-                                                              ? Colors.black
-                                                              : Colors.white,
+                                                      Container(
+                                                        width: 50,
+                                                        child: IconButton(
+                                                          icon: Icon(
+                                                            Icons
+                                                                .center_focus_strong,
+                                                            color: ConfigBloc()
+                                                                    .darkModeOn
+                                                                ? Colors.black
+                                                                : Colors.white,
+                                                          ),
+                                                          onPressed: () => Navigator.of(context).push(
+                                                              PageRouteBuilder(
+                                                                  transitionDuration:
+                                                                      const Duration(
+                                                                          milliseconds:
+                                                                              500),
+                                                                  pageBuilder:
+                                                                      (context,
+                                                                          animation,
+                                                                          _) {
+                                                                    return FadeTransition(
+                                                                      opacity:
+                                                                          animation,
+                                                                      child:
+                                                                          ExploreForums(
+                                                                        feed: widget
+                                                                            .feed,
+                                                                        currentUserId:
+                                                                            widget.currentUserId,
+                                                                        author:
+                                                                            widget.author,
+                                                                        forum: widget
+                                                                            .forum,
+                                                                        profileImage: widget
+                                                                            .author
+                                                                            .profileImageUrl!,
+                                                                      ),
+                                                                    );
+                                                                  })),
                                                         ),
-                                                        onPressed: () => Navigator.of(context).push(
-                                                            PageRouteBuilder(
-                                                                transitionDuration:
-                                                                    const Duration(
-                                                                        milliseconds:
-                                                                            500),
-                                                                pageBuilder:
-                                                                    (context,
-                                                                        animation,
-                                                                        _) {
-                                                                  return FadeTransition(
-                                                                    opacity:
-                                                                        animation,
-                                                                    child:
-                                                                        ExploreForums(
-                                                                      feed: widget
-                                                                          .feed,
-                                                                      currentUserId:
-                                                                          widget
-                                                                              .currentUserId,
-                                                                      author: widget
-                                                                          .author,
-                                                                      forum: widget
-                                                                          .forum,
-                                                                      profileImage: widget
-                                                                          .author
-                                                                          .profileImageUrl!,
-                                                                    ),
-                                                                  );
-                                                                })),
                                                       ),
                                                     ],
                                                   ),
@@ -994,7 +1012,7 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                                         ),
                                       );
                                     }
-                                    return widget.thoughtCount == 0
+                                    return _thoughtCount == 0
                                         ? Expanded(
                                             child: Center(
                                               child: NoContents(

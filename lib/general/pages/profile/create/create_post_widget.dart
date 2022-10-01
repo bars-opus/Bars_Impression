@@ -295,6 +295,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
         disableVibe: false,
         disbleSharing: false,
         peopleTagged: '',
+        mediaType: '',
       );
       try {
         DatabaseService.editPunch(post);
@@ -453,6 +454,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
         disableVibe: false,
         disbleSharing: false,
         peopleTagged: '',
+        mediaType: '',
       );
       try {
         DatabaseService.createPost(post);
@@ -1189,7 +1191,9 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                                                             textScaleFactor:
                                                                 MediaQuery.of(
                                                                         context)
-                                                                    .textScaleFactor,
+                                                                    .textScaleFactor
+                                                                    .clamp(0.5,
+                                                                        1.5),
                                                             text: TextSpan(
                                                                 children: [
                                                                   TextSpan(
@@ -1258,24 +1262,6 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                                       : _pop();
                                 }),
                           ),
-                    // Provider.of<UserData>(context, listen: false).isLoading
-                    //     ? SizedBox.shrink()
-                    //     : Positioned(
-                    //         top: 35,
-                    //         right: 5,
-                    //         child: IconButton(
-                    //           icon: Icon(
-                    //             Icons.more_vert_outlined,
-                    //             color: Colors.white,
-                    //           ),
-                    //           onPressed: () {
-                    //             setState(() {
-                    //               _showSheet = true;
-                    //               _show = 4;
-                    //             });
-                    //           },
-                    //         ),
-                    //       ),
                     _isLoading
                         ? SizedBox.shrink()
                         : Positioned(

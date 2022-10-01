@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:intl/intl.dart';
 
 class EventsFeedAttendingWidget extends StatefulWidget {
   final EventInvite invite;
@@ -17,6 +18,7 @@ class EventsFeedAttendingWidget extends StatefulWidget {
 class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
   late DateTime _date;
   late DateTime _toDaysDate;
+  late DateTime _closingdate;
   int _different = 0;
 
   @override
@@ -27,12 +29,14 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
 
   _countDown() async {
     DateTime date = DateTime.parse(widget.event.date);
+    DateTime closingdate = DateTime.parse(widget.event.clossingDay);
     final toDayDate = DateTime.now();
     var different = date.difference(toDayDate).inDays;
 
     setState(() {
       _different = different;
       _date = date;
+      _closingdate = closingdate;
       _toDaysDate = toDayDate;
     });
   }
@@ -42,23 +46,35 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: GestureDetector(
-        onTap: () => widget.event.id.isEmpty
-            ? Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => EventsAttendingDeleted(
-                          invite: widget.invite,
-                        )))
-            : Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => EventsAttending(
-                          invite: widget.invite,
+        onTap: () =>
+            _toDaysDate.isAfter(DateTime.parse(widget.event.clossingDay))
+                ? Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => EventCompleted(
+                          date: DateFormat.yMMMMEEEEd().format(_closingdate),
                           event: widget.event,
-                          date: _date,
-                          different: _different,
-                          toDaysDate: _toDaysDate,
-                        ))),
+                          currentUserId:
+                              Provider.of<UserData>(context).currentUserId!),
+                    ),
+                  )
+                : widget.event.id.isEmpty
+                    ? Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => EventsAttendingDeleted(
+                                  invite: widget.invite,
+                                )))
+                    : Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => EventsAttending(
+                                  invite: widget.invite,
+                                  event: widget.event,
+                                  date: _date,
+                                  different: _different,
+                                  toDaysDate: _toDaysDate,
+                                ))),
         child: Column(
           children: [
             Container(
@@ -138,7 +154,7 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text: _different.toString(),
+                          text: _different < 1 ? '' : _different.toString(),
                           style: TextStyle(
                             fontSize: 14,
                             color: ConfigBloc().darkModeOn
@@ -147,12 +163,22 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                           ),
                         ),
                         TextSpan(
-                          text: ' days',
+                          text: _toDaysDate.isAfter(
+                                  DateTime.parse(widget.event.clossingDay))
+                              ? 'Completed'
+                              : _different < 1
+                                  ? 'Ongoing...'
+                                  : ' days',
                           style: TextStyle(
                             fontSize: 12,
-                            color: ConfigBloc().darkModeOn
-                                ? Colors.white
-                                : Colors.black,
+                            color: _toDaysDate.isAfter(
+                                    DateTime.parse(widget.event.clossingDay))
+                                ? Colors.red
+                                : _different < 1
+                                    ? Colors.green
+                                    : ConfigBloc().darkModeOn
+                                        ? Colors.white
+                                        : Colors.black,
                           ),
                         ),
                       ],

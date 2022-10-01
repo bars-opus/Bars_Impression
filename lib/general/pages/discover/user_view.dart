@@ -353,29 +353,12 @@ class _UserViewState extends State<UserView> {
         ));
   }
 
-//   _dynamicLink() async {
-//     final dynamicLinkParams = DynamicLinkParameters(
-//       socialMetaTagParameters: SocialMetaTagParameters(
-//          imageUrl: Uri.parse(
-//             'https://firebasestorage.googleapis.com/v0/b/bars-5e3e5.appspot.com/o/barsLauncherforfirebase.png?alt=media&token=be7d907e-30fa-475b-86ca-ab9eaaa34837'),
-//         title: widget.user.userName,
-//         description: widget.user.bio,
-//       ),
-//       link: Uri.parse('https://www.barsopus.com/user_${widget.user.id}'),
-//       uriPrefix: 'https://barsimpression.page.link',
-//       androidParameters:
-//           AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
-//       iosParameters: IOSParameters(bundleId: 'com.bars-Opus.barsImpression', appStoreId: '1610868894',
-// ),
-//     );
-//     var link =
-//         await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
-
-//     Share.share(link.shortUrl.toString());
-//   }
   _dynamicLink() async {
+    var linkUrl = await Uri.parse(widget.user.profileImageUrl!);
+
     final dynamicLinkParams = await DynamicLinkParameters(
       socialMetaTagParameters: await SocialMetaTagParameters(
+        imageUrl: linkUrl,
         title: widget.user.userName,
         description: widget.user.bio,
       ),
@@ -388,10 +371,16 @@ class _UserViewState extends State<UserView> {
         appStoreId: '1610868894',
       ),
     );
-    var link =
-        await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+    if (Platform.isIOS) {
+      var link =
+          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
 
-    Share.share(link.shortUrl.toString());
+      Share.share(link.toString());
+    } else {
+      var link =
+          await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+      Share.share(link.shortUrl.toString());
+    }
   }
 
   _userOthers() {

@@ -729,6 +729,9 @@ class _ExploreEventState extends State<ExploreEvent> {
 
   @override
   Widget build(BuildContext context) {
+    final width = Responsive.isDesktop(context)
+        ? 600.0
+        : MediaQuery.of(context).size.width;
     return ResponsiveScaffold(
       child: Stack(
         children: [
@@ -789,7 +792,7 @@ class _ExploreEventState extends State<ExploreEvent> {
                           child: Align(
                             alignment: Alignment.center,
                             child: Container(
-                              width: MediaQuery.of(context).size.width / 2,
+                              width: width / 2,
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: widget.exploreLocation.endsWith('City')

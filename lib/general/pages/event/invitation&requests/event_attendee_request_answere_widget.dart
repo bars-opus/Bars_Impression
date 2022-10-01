@@ -77,18 +77,6 @@ class _EventAttendeeRequestAnswereWidgetState
   }
 
   _submit(ActivityEvent activiitiesEvent) async {
-    // ActivityEvent activityEvent = ActivityEvent(
-    //   id: activiitiesEvent.id,
-    //   fromUserId: activiitiesEvent.fromUserId,
-    //   seen: 'seen',
-    //   eventId: activiitiesEvent.eventId,
-    //   eventTitle: activiitiesEvent.eventTitle,
-    //   eventImageUrl: activiitiesEvent.eventImageUrl,
-    //   ask: activiitiesEvent.ask,
-    //   timestamp: activiitiesEvent.timestamp,
-    //   eventInviteType: '',
-    //   commonId: activiitiesEvent.commonId,
-    // );
     try {
       activitiesEventRef
           .doc(Provider.of<UserData>(context, listen: false).currentUserId!)
@@ -97,8 +85,6 @@ class _EventAttendeeRequestAnswereWidgetState
           .update({
         'seen': 'seen',
       });
-      // DatabaseService.editActivityEvent(
-      //     activityEvent, Provider.of<UserData>(context).currentUserId!);
     } catch (e) {
       print(e.toString());
     }

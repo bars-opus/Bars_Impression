@@ -7,11 +7,8 @@ class ForumView extends StatefulWidget {
   final AccountHolder author;
   final String feed;
 
-  // final List<Forum> forumList;
-
   ForumView(
       {required this.currentUserId,
-      // required this.forumList,
       required this.feed,
       required this.forum,
       required this.author});
@@ -39,32 +36,11 @@ class _ForumViewState extends State<ForumView> {
     });
   }
 
-  // _dynamicLink() async {
-  //   final dynamicLinkParams = DynamicLinkParameters(
-  //     socialMetaTagParameters: SocialMetaTagParameters(
-  //       imageUrl: Uri.parse(
-  //           'https://firebasestorage.googleapis.com/v0/b/bars-5e3e5.appspot.com/o/barsLauncherforfirebase.png?alt=media&token=be7d907e-30fa-475b-86ca-ab9eaaa34837'),
-  //       title: 'Forum',
-  //       description: widget.forum.title,
-  //     ),
-  //     link: Uri.parse('https://www.barsopus.com/forum_${widget.forum.id}'),
-  //     uriPrefix: 'https://barsimpression.page.link',
-  //     androidParameters:
-  //         AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
-  //     iosParameters: IOSParameters(
-  //       bundleId: 'com.bars-Opus.barsImpression',
-  //       appStoreId: '1610868894',
-  //     ),
-  //   );
-  //   var link =
-  //       await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
-
-  //   Share.share(link.shortUrl.toString());
-  // }
-
   _dynamicLink() async {
     final dynamicLinkParams = await DynamicLinkParameters(
       socialMetaTagParameters: await SocialMetaTagParameters(
+         imageUrl: Uri.parse(
+            'https://firebasestorage.googleapis.com/v0/b/bars-5e3e5.appspot.com/o/IMG_8574.PNG?alt=media&token=ccb4e3b1-b5dc-470f-abd0-63edb5ed549f'),
         title: 'Forum',
         description: widget.forum.title,
       ),
@@ -77,10 +53,16 @@ class _ForumViewState extends State<ForumView> {
         appStoreId: '1610868894',
       ),
     );
-    var link =
-        await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+    if (Platform.isIOS) {
+      var link =
+          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
 
-    Share.share(link.shortUrl.toString());
+      Share.share(link.toString());
+    } else {
+      var link =
+          await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+      Share.share(link.shortUrl.toString());
+    }
   }
 
   @override
@@ -121,7 +103,11 @@ class _ForumViewState extends State<ForumView> {
               : Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (_) => ProfileScreen(
+                      builder: (_) =>widget.author.userName!.isEmpty
+                                  ? UserNotFound(
+                                      userName: 'User',
+                                    )
+                                  :  ProfileScreen(
                             currentUserId: widget.currentUserId,
                             userId: widget.forum.authorId,
                           ))),

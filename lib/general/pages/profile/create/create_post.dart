@@ -1,17 +1,12 @@
 import 'package:bars/utilities/exports.dart';
 
 class CreatePost extends StatefulWidget {
-  // final AccountHolder? user;
   static final id = 'Create_posts';
-
-  // CreatePost({required this.user});
-
   @override
   _CreatePostState createState() => _CreatePostState();
 }
 
 class _CreatePostState extends State<CreatePost> {
-  // File? _image;
   String _caption = '';
   String _artist = '';
   String _punch = '';

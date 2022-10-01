@@ -64,29 +64,6 @@ class _EditAdviceState extends State<EditAdvice> {
         });
   }
 
-  // _androidDialog(BuildContext parentContext, UserAdvice advice) {
-  //   return showDialog(
-  //       context: parentContext,
-  //       builder: (context) {
-  //         return SimpleDialog(
-  //           title: Text('Are you sure you want to delete this advice'),
-  //           children: <Widget>[
-  //             SimpleDialogOption(
-  //               child: Text('delete'),
-  //               onPressed: () {
-  //                 Navigator.pop(context);
-  //                 _deleteAdvice(advice);
-  //               },
-  //             ),
-  //             SimpleDialogOption(
-  //               child: Text('cancel'),
-  //               onPressed: () => Navigator.pop(context),
-  //             ),
-  //           ],
-  //         );
-  //       });
-  // }
-
   _androidDialog(BuildContext parentContext, UserAdvice advice) {
     return showDialog(
         context: parentContext,

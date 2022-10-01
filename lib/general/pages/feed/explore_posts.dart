@@ -638,6 +638,9 @@ class _ExplorePostsState extends State<ExplorePosts> {
 
   @override
   Widget build(BuildContext context) {
+    final width = Responsive.isDesktop(context)
+        ? 600.0
+        : MediaQuery.of(context).size.width;
     return ResponsiveScaffold(
       child: Stack(
         children: [
@@ -695,7 +698,7 @@ class _ExplorePostsState extends State<ExplorePosts> {
                           child: Align(
                             alignment: Alignment.center,
                             child: Container(
-                              width: MediaQuery.of(context).size.width / 2,
+                              width: width / 2,
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: widget.feed.startsWith('All')

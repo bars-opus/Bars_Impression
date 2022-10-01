@@ -25,7 +25,7 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.270470269823-dbidgerbrmu17atp7ci9tbfdtt05brbr</string>
+				<string>com.googleusercontent.apps.270470269823-sud89kgbe7qsmasq3rb1tcqgn0sj95fg</string>
 			</array>
 		</dict>
 		<dict>
@@ -43,6 +43,12 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<string>NO</string>
+	<key>FirebaseDynamicLinksCustomDomains</key>
+	<array>
+		<string>https://barsopus.com/barsImpression/</string>
+	</array>
+	<key>FlutterDeepLinkingEnabled</key>
+	<true/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>comgooglemaps</string>
@@ -96,10 +102,5 @@
 	<false/>
 	<key>io.flutter.embedded_views_preview</key>
 	<string>YES</string>
-	<key>FirebaseDynamicLinksCustomDomains</key>
-	<array>
-		<string>https://custom.domain.io/path1</string>
-		<string>https://custom.domain.io/path2</string>
-</array>
 </dict>
 </plist>

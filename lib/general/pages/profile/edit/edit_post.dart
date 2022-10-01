@@ -21,7 +21,6 @@ class _EditPostState extends State<EditPost> {
       musicLink: widget.post.musicLink,
       isEditting: true,
       punch: widget.post.punch,
-      // user: null,
       imageUrl: widget.post.imageUrl,
       post: widget.post,
       hashTag: widget.post.hashTag,

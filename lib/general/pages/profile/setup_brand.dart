@@ -964,7 +964,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                     ),
                                     onPressed: _handleImageFromGallery,
                                     child: Text(
-                                      'Set Avatar',
+                                      'Set Photo',
                                       style: TextStyle(
                                         color: Colors.blue,
                                         fontSize: 16.0,

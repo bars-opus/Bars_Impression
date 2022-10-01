@@ -85,6 +85,7 @@ class AuthService {
           'disableMoodPunchReaction': false,
           'disableMoodPunchVibe': false,
           'dontShowContentOnExplorePage': false,
+          'isEmailVerified': false,
           'specialtyTags': '',
           'blurHash': '',
           'professionalPicture1': '',

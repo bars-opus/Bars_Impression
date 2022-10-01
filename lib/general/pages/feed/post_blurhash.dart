@@ -15,7 +15,6 @@ class PostBlurHash extends StatelessWidget {
           hash: post.blurHash.isEmpty
               ? 'LpQ0aNRkM{M{~qWBayWB4nofj[j['
               : post.blurHash,
-          // image: post.imageUrl,
           imageFit: BoxFit.cover,
         ),
         Container(

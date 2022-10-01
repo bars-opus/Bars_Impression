@@ -165,7 +165,7 @@ class _EditThoughtState extends State<EditThought> {
         timestamp: widget.thought.timestamp,
         count: null,
         report: '',
-        reportConfirmed: '',
+        reportConfirmed: '', mediaType: '', mediaUrl: '',
       );
 
       try {

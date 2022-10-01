@@ -10,7 +10,7 @@ class _AboutUsState extends State<AboutUs> {
     showAboutDialog(
         context: context,
         applicationName: 'Bars Impression',
-        applicationVersion: 'Version 1.1.8',
+        applicationVersion: 'Version 1.2.1',
         applicationIcon: Container(
           width: 40,
           height: 40,

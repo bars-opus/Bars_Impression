@@ -57,18 +57,11 @@ class _AuthCreateUserCredentialsState extends State<AuthCreateUserCredentials> {
         ),
         duration: Duration(seconds: 3),
       )..show(context);
-     
-
-      // UserCredential authResult = await _auth.createUserWithEmailAndPassword(
-      //   email: email,
-      //   password: password,
-      // );
-      // User? signedInHandler = authResult.user;
       final signedInHandler = FirebaseAuth.instance.currentUser!;
       // ignore: unnecessary_null_comparison
       if (signedInHandler != null) {
         _firestore.collection('/users').doc(signedInHandler.uid).set({
-          'name': signedInHandler.displayName,
+          'name': signedInHandler.displayName ?? '',
           'email': signedInHandler.email,
           'timestamp': Timestamp.fromDate(DateTime.now()),
           'verified': '',
@@ -110,6 +103,7 @@ class _AuthCreateUserCredentialsState extends State<AuthCreateUserCredentials> {
           'disableMoodPunchReaction': false,
           'disableMoodPunchVibe': false,
           'dontShowContentOnExplorePage': false,
+          'isEmailVerified': true,
           'specialtyTags': '',
           'blurHash': '',
           'professionalPicture1': '',

@@ -7,7 +7,7 @@ class NoConnection extends StatefulWidget {
 }
 
 class _NoConnectionState extends State<NoConnection> {
-   ConnectivityResult? oldResult;
+  ConnectivityResult? oldResult;
   bool _networkConnection = false;
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
 

@@ -29,6 +29,8 @@ class Event {
   final String clossingDay;
   final bool isVirtual;
   final bool isFree;
+  final String mediaType;
+  final String mediaUrl;
   final bool isPrivate;
   final bool isCashPayment;
   final bool showToFollowers;
@@ -41,6 +43,8 @@ class Event {
     required this.title,
     required this.rate,
     required this.venue,
+    required this.mediaType,
+    required this.mediaUrl,
     required this.date,
     required this.theme,
     required this.dressCode,
@@ -89,8 +93,10 @@ class Event {
       timestamp: doc['timestamp'],
       previousEvent: doc['previousEvent'] ?? '',
       triller: doc['triller'] ?? '',
+      mediaUrl: doc['mediaUrl'] ?? '',
+      mediaType: doc['mediaType'] ?? '',
       city: doc['city'] ?? '',
-      country: doc['country'],
+      country: doc['country'] ?? '',
       virtualVenue: doc['virtualVenue'],
       ticketSite: doc['ticketSite'],
       report: doc['report'] ?? '',

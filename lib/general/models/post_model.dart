@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Post {
   final String? id;
   final String imageUrl;
+  final String mediaType;
+
   final String caption;
   final String punch;
   final String artist;
@@ -25,6 +27,7 @@ class Post {
     required this.imageUrl,
     required this.caption,
     required this.artist,
+    required this.mediaType,
     required this.punch,
     required this.musicLink,
     required this.hashTag,
@@ -46,6 +49,7 @@ class Post {
       id: doc.id,
       imageUrl: doc['imageUrl'],
       caption: doc['caption'],
+      mediaType: doc['mediaType'] ?? '',
       artist: doc['artist'],
       punch: doc['punch'],
       musicLink: doc['musicLink'],

@@ -155,17 +155,23 @@ class _PostViewWidgetState extends State<PostViewWidget> {
         appStoreId: '1610868894',
       ),
     );
-    var link =
-        await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+    if (Platform.isIOS) {
+      var link =
+          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
 
-    Share.share(link.shortUrl.toString());
+      Share.share(link.toString());
+    } else {
+      var link =
+          await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+      Share.share(link.shortUrl.toString());
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = Responsive.isDesktop(context)
-        ? 700.0
+        ? 600.0
         : MediaQuery.of(context).size.width;
 
     return _displayWarning == true
@@ -354,51 +360,6 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                             openWithTap: false,
                                             onPressed: () {},
                                             menuItems: [
-                                              // FocusedMenuItem(
-                                              //     title:
-                                              //     onPressed: () {}),
-                                              // FocusedMenuItem(
-                                              //     title: Container(
-                                              //       width: width / 2,
-                                              //       child: Text(
-                                              //         widget.post.authorId ==
-                                              //                 widget
-                                              //                     .currentUserId
-                                              //             ? 'Edit mood punched'
-                                              //             : 'Go to ${widget.author.name}\' profile ',
-                                              //         overflow:
-                                              //             TextOverflow.ellipsis,
-                                              //         textScaleFactor:
-                                              //             MediaQuery.of(context)
-                                              //                 .textScaleFactor,
-                                              //       ),
-                                              //     ),
-                                              //     onPressed: () => widget
-                                              //                 .post.authorId ==
-                                              //             widget.currentUserId
-                                              //         ? Navigator.push(
-                                              //             context,
-                                              //             MaterialPageRoute(
-                                              //               builder: (_) =>
-                                              //                   EditPost(
-                                              //                 post: widget.post,
-                                              //                 currentUserId: widget
-                                              //                     .currentUserId,
-                                              //               ),
-                                              //             ),
-                                              //           )
-                                              //         : Navigator.push(
-                                              //             context,
-                                              //             MaterialPageRoute(
-                                              //                 builder: (_) =>
-                                              //                     ProfileScreen(
-                                              //                       currentUserId:
-                                              //                           Provider.of<UserData>(context)
-                                              //                               .currentUserId!,
-                                              //                       userId: widget
-                                              //                           .author
-                                              //                           .id!,
-                                              //                     )))),
                                               FocusedMenuItem(
                                                   title: Container(
                                                     width: width - 40,
@@ -415,11 +376,6 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                     ),
                                                   ),
                                                   onPressed: () {
-                                                    // Provider.of<UserData>(
-                                                    //         context,
-                                                    //         listen: false)
-                                                    //     .setPost12(
-                                                    //         widget.post.id!);
                                                     Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
@@ -459,19 +415,6 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                   ),
                                                   onPressed: () =>
                                                       _dynamicLink()),
-                                              // FocusedMenuItem(
-                                              //     title: Container(
-                                              //       width: width / 2,
-                                              //       child: Text(
-                                              //         'Send ',
-                                              //         overflow:
-                                              //             TextOverflow.ellipsis,
-                                              //         textScaleFactor:
-                                              //             MediaQuery.of(context)
-                                              //                 .textScaleFactor,
-                                              //       ),
-                                              //     ),
-                                              //     onPressed: _setImage),
                                               FocusedMenuItem(
                                                   title: Container(
                                                     width: width - 40,
@@ -608,10 +551,14 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                                       onTap: () => Navigator.push(
                                                                           context,
                                                                           MaterialPageRoute(
-                                                                              builder: (_) => ProfileScreen(
-                                                                                    currentUserId: widget.currentUserId,
-                                                                                    userId: widget.post.authorId,
-                                                                                  ))),
+                                                                              builder: (_) => widget.author.userName!.isEmpty
+                                                                                  ? UserNotFound(
+                                                                                      userName: 'User',
+                                                                                    )
+                                                                                  : ProfileScreen(
+                                                                                      currentUserId: widget.currentUserId,
+                                                                                      userId: widget.post.authorId,
+                                                                                    ))),
                                                                       child:
                                                                           Container(
                                                                         width:

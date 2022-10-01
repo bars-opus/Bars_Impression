@@ -70,30 +70,6 @@ class _EditCommentsState extends State<EditComments> {
         });
   }
 
-  
-  // _androidDialog(BuildContext parentContext, Comment comment) {
-  //   return showDialog(
-  //       context: parentContext,
-  //       builder: (context) {
-  //         return SimpleDialog(
-  //           title: Text('Are you sure you want to delete this vibe'),
-  //           children: <Widget>[
-  //             SimpleDialogOption(
-  //               child: Text('delete'),
-  //               onPressed: () {
-  //                 Navigator.pop(context);
-  //                 _deleteComment(comment);
-  //               },
-  //             ),
-  //             SimpleDialogOption(
-  //               child: Text('cancel'),
-  //               onPressed: () => Navigator.pop(context),
-  //             ),
-  //           ],
-  //         );
-  //       });
-  // }
-
 
 
  _androidDialog(BuildContext parentContext, Comment comment) {
@@ -188,7 +164,7 @@ class _EditCommentsState extends State<EditComments> {
         authorId: Provider.of<UserData>(context, listen: false).currentUserId!,
         timestamp: widget.comment.timestamp,
         report: '',
-        reportConfirmed: '',
+        reportConfirmed: '', mediaType: '', mediaUrl: '',
       );
 
       try {

@@ -8,6 +8,9 @@ class EventViewWidget extends StatelessWidget {
   final String currentUserId;
   final AccountHolder author;
   final String titleHero;
+  final int difference;
+  final bool completed;
+
   final String imageHero;
   final Event event;
 
@@ -21,6 +24,8 @@ class EventViewWidget extends StatelessWidget {
     required this.imageHero,
     required this.onPressedEventEnlarged,
     required this.askCount,
+    required this.difference,
+    required this.completed,
   });
   Widget buildBlur({
     required Widget child,
@@ -961,11 +966,28 @@ class EventViewWidget extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
                 ),
-                Text(
-                    timeago.format(
-                      event.timestamp!.toDate(),
-                    ),
-                    style: TextStyle(fontSize: 10, color: Colors.grey)),
+                RichText(
+                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                          text: timeago.format(event.timestamp!.toDate()),
+                          style: TextStyle(fontSize: 10, color: Colors.grey)),
+                      TextSpan(
+                          text: completed
+                              ? '\nCompleted'
+                              : difference < 1
+                                  ? '\nOngoing...'
+                                  : '\n',
+                          style: TextStyle(
+                              fontSize: 10,
+                              color: completed ? Colors.red : Colors.green)),
+                    ],
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                  textAlign: TextAlign.end,
+                ),
               ],
             ),
           ),
