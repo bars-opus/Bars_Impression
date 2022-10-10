@@ -63,9 +63,9 @@ class _ChatsState extends State<Chats> {
                         child: Center(
                           child: NoContents(
                             icon: (MdiIcons.send),
-                            title: 'No Chats',
+                            title: 'No Chats.',
                             subTitle:
-                                'Your chat and messages would appear here. ',
+                                'Your chats and messages would appear here. ',
                           ),
                         ),
                       );

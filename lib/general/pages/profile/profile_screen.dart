@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:animations/animations.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
@@ -519,6 +520,20 @@ class _ProfileScreenState extends State<ProfileScreen>
           );
   }
 
+//  Navigator.push(
+//                 context,
+//                 PageRouteBuilder(
+//                   pageBuilder: (context, animation1, animation2) =>
+//                       AllPostEnlarged(
+//                     feed: 'Profile',
+//                     currentUserId: widget.currentUserId,
+//                     post: post,
+//                     author: _profileUser,
+//                   ),
+//                   transitionDuration: Duration(seconds: 0),
+//                 ),
+//               ),
+
   Widget buildBlur({
     required Widget child,
     double sigmaX = 10,
@@ -539,18 +554,14 @@ class _ProfileScreenState extends State<ProfileScreen>
       showDuration: Duration(seconds: 10),
       padding: EdgeInsets.all(20.0),
       message: post.punch + '\n\n' + post.caption,
-      child: GestureDetector(
-          onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => AllPostEnlarged(
-                        feed: 'Profile',
-                        currentUserId: widget.currentUserId,
-                        post: post,
-                        author: _profileUser,
-                      ))),
-          child: Stack(alignment: FractionalOffset.center, children: <Widget>[
-            Stack(alignment: Alignment.center, children: <Widget>[
+      child: Stack(alignment: FractionalOffset.center, children: <Widget>[
+        OpenContainer(
+          openColor: ConfigBloc().darkModeOn ? Color(0xFF1f2022) : Colors.white,
+          closedColor:
+              ConfigBloc().darkModeOn ? Color(0xFF1f2022) : Colors.white,
+          transitionType: ContainerTransitionType.fade,
+          closedBuilder: (BuildContext _, VoidCallback openContainer) {
+            return Stack(alignment: Alignment.center, children: <Widget>[
               Container(
                 decoration: BoxDecoration(
                   color: ConfigBloc().darkModeOn
@@ -659,8 +670,19 @@ class _ProfileScreenState extends State<ProfileScreen>
                             ),
                     ]),
               )
-            ])
-          ])),
+            ]);
+          },
+          openBuilder: (BuildContext context,
+              void Function({Object? returnValue}) action) {
+            return AllPostEnlarged(
+              feed: 'Profile',
+              currentUserId: widget.currentUserId,
+              post: post,
+              author: _profileUser,
+            );
+          },
+        )
+      ]),
     ));
   }
 
@@ -1201,7 +1223,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                           : '',
               style: TextStyle(
                 fontSize: 16,
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                color: Colors.black,
               ),
             ),
             actions: <Widget>[
@@ -1309,7 +1331,7 @@ class _ProfileScreenState extends State<ProfileScreen>
               'Actions',
               style: TextStyle(
                 fontSize: 16,
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                color: Colors.black,
               ),
             ),
             actions: <Widget>[
@@ -1633,6 +1655,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                               ? Colors.blueGrey
                                               : Colors.white,
                                           onPressed: () async {
+                                            HapticFeedback.heavyImpact();
                                             ConfigBloc().add(DarkModeEvent(
                                                 !ConfigBloc().darkModeOn));
                                           }),

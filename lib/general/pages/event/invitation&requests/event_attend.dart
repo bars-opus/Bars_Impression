@@ -183,10 +183,10 @@ class _AttendEventState extends State<AttendEvent> {
             duration: Duration(seconds: 2),
             leftBarIndicatorColor: Colors.blue,
           ).show(context)
-        : _SendInvitation();
+        : _sendInvitation();
   }
 
-  _SendInvitation() {
+  _sendInvitation() {
     final double width = MediaQuery.of(context).size.width;
     int _requestNumber = _attendeeRequesCount + 1;
     try {
@@ -280,206 +280,197 @@ class _AttendEventState extends State<AttendEvent> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
 
-    return ResponsiveScaffold(
-      child: FutureBuilder(
-          future: DatabaseService.getEventAttendeee(
-              widget.event, widget.currentUserId),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (!snapshot.hasData) {
-              return Expanded(
-                child: Container(
-                  color: widget.palette.darkMutedColor == null
+    return FutureBuilder(
+        future: DatabaseService.getEventAttendeee(
+            widget.event, widget.currentUserId),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (!snapshot.hasData) {
+            return Container(
+              width: width,
+              height: MediaQuery.of(context).size.height,
+              color: widget.palette.darkMutedColor == null
+                  ? Color(0xFF1a1a1a)
+                  : widget.palette.darkMutedColor!.color,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+          EventInvite _eventInvite = snapshot.data;
+          return _eventInvite.anttendeeId.isNotEmpty ||
+                  _eventInvite.eventId.isNotEmpty
+              ? EventInviteAvailable(
+                  from: '',
+                  eventInvite: _eventInvite,
+                  event: widget.event,
+                  palette: widget.palette,
+                  inviteCount: _inviteCount,
+                )
+              : Scaffold(
+                  backgroundColor: widget.palette.darkMutedColor == null
                       ? Color(0xFF1a1a1a)
                       : widget.palette.darkMutedColor!.color,
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
-              );
-            }
-            EventInvite _eventInvite = snapshot.data;
-            return _eventInvite.anttendeeId.isNotEmpty ||
-                    _eventInvite.eventId.isNotEmpty
-                ? EventInviteAvailable(
-                    from: '',
-                    eventInvite: _eventInvite,
-                    event: widget.event,
-                    palette: widget.palette,
-                    inviteCount: _inviteCount,
-                  )
-                : Scaffold(
+                  appBar: AppBar(
+                    automaticallyImplyLeading: true,
+                    elevation: 0,
                     backgroundColor: widget.palette.darkMutedColor == null
                         ? Color(0xFF1a1a1a)
                         : widget.palette.darkMutedColor!.color,
-                    appBar: AppBar(
-                      automaticallyImplyLeading: true,
-                      elevation: 0,
-                      backgroundColor: widget.palette.darkMutedColor == null
-                          ? Color(0xFF1a1a1a)
-                          : widget.palette.darkMutedColor!.color,
-                      title: Text(
-                        'Attend Event',
-                        style: TextStyle(
-                            color: ConfigBloc().darkModeOn
-                                ? Colors.black
-                                : Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      centerTitle: true,
+                    title: Text(
+                      'Attend Event',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
                     ),
-                    body: GestureDetector(
-                      onTap: () => FocusScope.of(context).unfocus(),
-                      child: ListView(
-                        children: <Widget>[
-                          const SizedBox(height: 40),
-                          ShakeTransition(
-                            child: new Material(
-                              color: Colors.transparent,
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    right: 30.0, left: 30),
-                                child: Container(
-                                  width: width,
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black26,
-                                          offset: Offset(10, 10),
-                                          blurRadius: 10.0,
-                                          spreadRadius: 4.0,
-                                        )
-                                      ]),
-                                  child: Column(
-                                    children: [
-                                      const SizedBox(height: 50),
-                                      Text(
-                                        'Request\nInvitation',
-                                        style: TextStyle(
-                                            fontSize: 30,
-                                            color:
-                                                widget.palette.darkMutedColor ==
-                                                        null
-                                                    ? Color(0xFF1a1a1a)
-                                                    : widget.palette
-                                                        .darkMutedColor!.color,
-                                            height: 0.8),
-                                        textAlign: TextAlign.start,
-                                      ),
-                                      const SizedBox(
-                                        height: 20,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 12.0, right: 12),
-                                        child: Text(
-                                          'To attend ${widget.event.title} at  ${widget.event.venue} on ${MyDateFormat.toDate(DateTime.parse(widget.event.date))} at ${MyDateFormat.toTime(DateTime.parse(widget.event.time))}.',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 12,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 30.0, bottom: 30),
-                                        child: Divider(
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 12.0, right: 12),
-                                        child: Text(
-                                          'You can give a reason why your request should be accepted.',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 12,
-                                          ),
-                                          textAlign: TextAlign.start,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 12.0, right: 12),
-                                        child: ContentField(
-                                          labelText: 'Reason',
-                                          hintText: "Reason to attend",
-                                          initialValue: _message,
-                                          onSavedText: (input) =>
-                                              _message = input,
-                                          onValidateText: () {},
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 50),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 30.0),
-                            child: Center(
+                    centerTitle: true,
+                  ),
+                  body: GestureDetector(
+                    onTap: () => FocusScope.of(context).unfocus(),
+                    child: ListView(
+                      children: <Widget>[
+                        const SizedBox(height: 40),
+                        ShakeTransition(
+                          child: new Material(
+                            color: Colors.transparent,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(right: 30.0, left: 30),
                               child: Container(
                                 width: width,
-                                child: TextButton(
-                                  style: ElevatedButton.styleFrom(
-                                    primary: ConfigBloc().darkModeOn
-                                        ? Color(0xFF1a1a1a)
-                                        : Colors.white,
-                                    onPrimary: Colors.blue,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(3.0),
-                                    ),
-                                  ),
-                                  onPressed: () =>
-                                      _showSelectImageDialog2(_eventInvite),
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: Text(
-                                      'Request Invitation',
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black26,
+                                        offset: Offset(10, 10),
+                                        blurRadius: 10.0,
+                                        spreadRadius: 4.0,
+                                      )
+                                    ]),
+                                child: Column(
+                                  children: [
+                                    const SizedBox(height: 50),
+                                    Text(
+                                      'Request\nInvitation',
                                       style: TextStyle(
-                                        color: widget.palette.darkMutedColor ==
-                                                null
-                                            ? Color(0xFF1a1a1a)
-                                            : widget
-                                                .palette.darkMutedColor!.color,
+                                          fontSize: 30,
+                                          color:
+                                              widget.palette.darkMutedColor ==
+                                                      null
+                                                  ? Color(0xFF1a1a1a)
+                                                  : widget.palette
+                                                      .darkMutedColor!.color,
+                                          height: 0.8),
+                                      textAlign: TextAlign.start,
+                                    ),
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 12.0, right: 12),
+                                      child: Text(
+                                        'To attend ${widget.event.title} at  ${widget.event.venue} on ${MyDateFormat.toDate(DateTime.parse(widget.event.date))} at ${MyDateFormat.toTime(DateTime.parse(widget.event.time))}.',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 12,
+                                        ),
+                                        textAlign: TextAlign.center,
                                       ),
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 30.0, bottom: 30),
+                                      child: Divider(
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 12.0, right: 12),
+                                      child: Text(
+                                        'You can give a reason why your request should be accepted.',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 12,
+                                        ),
+                                        textAlign: TextAlign.start,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 12.0, right: 12),
+                                      child: ContentField(
+                                        labelText: 'Reason',
+                                        hintText: "Reason to attend",
+                                        initialValue: _message,
+                                        onSavedText: (input) =>
+                                            _message = input,
+                                        onValidateText: () {},
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 50),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                          child: Center(
+                            child: Container(
+                              width: width,
+                              child: TextButton(
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.white,
+                                  onPrimary: Colors.blue,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(3.0),
+                                  ),
+                                ),
+                                onPressed: () =>
+                                    _showSelectImageDialog2(_eventInvite),
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: Text(
+                                    'Request Invitation',
+                                    style: TextStyle(
+                                      color:
+                                          widget.palette.darkMutedColor == null
+                                              ? Color(0xFF1a1a1a)
+                                              : widget.palette.darkMutedColor!
+                                                  .color,
                                     ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 20),
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(right: 30.0, left: 30),
-                            child: Text(
-                              'This event is private. You need an invitation to attend.\ If you are interested in this event but you have not received an invitation, you can request for an invitation. Your invitation request needs to be accepted by this event organizer before you can attend this event.',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                              ),
-                              textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 20),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 30.0, left: 30),
+                          child: Text(
+                            'This event is private. You need an invitation to attend.\ If you are interested in this event but you have not received an invitation, you can request for an invitation. Your invitation request needs to be accepted by this event organizer before you can attend this event.',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
                             ),
                           ),
-                          SizedBox(height: 100),
-                        ],
-                      ),
+                        ),
+                        SizedBox(height: 100),
+                      ],
                     ),
-                  );
-          }),
-    );
+                  ),
+                );
+        });
   }
 }

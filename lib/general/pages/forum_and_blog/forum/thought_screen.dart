@@ -417,7 +417,7 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                           ),
                         ),
                       ),
-                      thought.count! == 0
+                      thought.count! != 0
                           ? Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 20.0),
@@ -668,6 +668,8 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                                                         milliseconds: 500),
                                                 pageBuilder:
                                                     (context, animation, _) {
+                                                  HapticFeedback.heavyImpact();
+
                                                   return FadeTransition(
                                                     opacity: animation,
                                                     child: ExploreForums(

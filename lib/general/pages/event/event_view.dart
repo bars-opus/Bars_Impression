@@ -56,20 +56,21 @@ class _EventViewState extends State<EventView> {
       _toDaysDate = toDayDate;
       _closingDate = clossingDate;
       _different = date.difference(toDayDate).inDays;
+      print(' event ---  999999');
     });
   }
 
   _dynamicLink() async {
-    var linkUrl = await Uri.parse(widget.event.imageUrl);
+    var linkUrl = Uri.parse(widget.event.imageUrl);
 
-    final dynamicLinkParams = await DynamicLinkParameters(
-      socialMetaTagParameters: await SocialMetaTagParameters(
+    final dynamicLinkParams = DynamicLinkParameters(
+      socialMetaTagParameters: SocialMetaTagParameters(
         imageUrl: linkUrl,
         title: 'Event',
         description: widget.event.title,
       ),
       link: Uri.parse('https://www.barsopus.com/event_${widget.event.id}'),
-      uriPrefix: 'https://barsopus.com/barsImpression/',
+      uriPrefix: 'https://barsopus.com/barsImpression',
       androidParameters:
           AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
       iosParameters: IOSParameters(
@@ -80,7 +81,6 @@ class _EventViewState extends State<EventView> {
     if (Platform.isIOS) {
       var link =
           await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
-
       Share.share(link.toString());
     } else {
       var link =
@@ -287,22 +287,39 @@ class _EventViewState extends State<EventView> {
                 currentUserId: widget.currentUserId,
                 author: widget.author,
                 event: widget.event,
-                onPressedEventEnlarged: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => AllEvenEnlarged(
-                              exploreLocation: widget.exploreLocation,
-                              feed: widget.feed,
-                              askCount: _askCount,
-                              currentUserId: widget.currentUserId,
-                              event: widget.event,
-                              user: widget.user,
-                            ))),
-                imageHero: 'image ${widget.event.id.toString()}',
-                askCount: NumberFormat.compact().format(_askCount),
+                // onPressedEventEnlarged: () => Navigator.push(
+                //   context,
+                //   PageRouteBuilder(
+                //     pageBuilder: (context, animation1, animation2) =>
+                //         AllEvenEnlarged(
+                //       exploreLocation: widget.exploreLocation,
+                //       feed: widget.feed,
+                //       askCount: _askCount,
+                //       currentUserId: widget.currentUserId,
+                //       event: widget.event,
+                //       user: widget.user,
+                //     ),
+                //     transitionDuration: Duration(seconds: 0),
+                //   ),
+                // ),
+
+                //  Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (_) => AllEvenEnlarged(
+                //               exploreLocation: widget.exploreLocation,
+                //               feed: widget.feed,
+                //               askCount: _askCount,
+                //               currentUserId: widget.currentUserId,
+                //               event: widget.event,
+                //               user: widget.user,
+                //             ))),
+                // imageHero: '',
+                askCount: _askCount,
                 titleHero: 'title ${widget.event.id.toString()}',
                 difference: _different,
                 completed: _toDaysDate.isAfter(_closingDate) ? true : false,
+                exploreLocation: widget.exploreLocation, feed: widget.feed,
               ),
               Positioned(
                 top: 1,

@@ -122,7 +122,8 @@ class _ProfessionalProfileState extends State<ProfessionalProfile> {
       child: GestureDetector(
         onLongPress: () => Navigator.of(context).push(PageRouteBuilder(
             transitionDuration: const Duration(milliseconds: 500),
-            pageBuilder: (context, animation, _) {
+            pageBuilder: (context, animation, _) {    HapticFeedback.heavyImpact();
+
               return FadeTransition(
                 opacity: animation,
                 child: UsersExpand(

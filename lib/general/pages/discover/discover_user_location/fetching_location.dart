@@ -118,8 +118,9 @@ class _FetchingLocationState extends State<FetchingLocation> {
           centerTitle: true,
         ),
         body: SingleChildScrollView(
-            child: Padding(
-          padding: const EdgeInsets.all(30.0),
+            child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height - 200,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -134,7 +135,7 @@ class _FetchingLocationState extends State<FetchingLocation> {
                   subTitle: 'Just a moment...',
                 ),
               ),
-              const SizedBox(height: 3),
+              const SizedBox(height: 10),
               SizedBox(
                   height: 1.0,
                   child: LinearProgressIndicator(

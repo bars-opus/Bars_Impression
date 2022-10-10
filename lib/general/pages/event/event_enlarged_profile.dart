@@ -159,6 +159,7 @@ class _AllEvenEnlargedProfileState extends State<AllEvenEnlargedProfile> {
                   onPressed: () => Navigator.of(context).push(PageRouteBuilder(
                       transitionDuration: const Duration(milliseconds: 500),
                       pageBuilder: (context, animation, _) {
+                        HapticFeedback.heavyImpact();
                         return FadeTransition(
                           opacity: animation,
                           child: ExploreEvent(

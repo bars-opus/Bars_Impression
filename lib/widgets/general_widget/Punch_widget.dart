@@ -227,16 +227,16 @@ class _PunchWidgetState extends State<PunchWidget> {
       );
 
   _dynamicLink() async {
-    var linkUrl = await Uri.parse(widget.post.imageUrl);
+    var linkUrl = Uri.parse(widget.post.imageUrl);
 
-    final dynamicLinkParams = await DynamicLinkParameters(
-      socialMetaTagParameters: await SocialMetaTagParameters(
+    final dynamicLinkParams = DynamicLinkParameters(
+      socialMetaTagParameters: SocialMetaTagParameters(
         imageUrl: linkUrl,
         title: 'MoodPunched',
         description: widget.post.punch,
       ),
       link: Uri.parse('https://www.barsopus.com/moopunched_${widget.post.id}'),
-      uriPrefix: 'https://barsopus.com/barsImpression/',
+      uriPrefix: 'https://barsopus.com/barsImpression',
       androidParameters:
           AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
       iosParameters: IOSParameters(
@@ -248,7 +248,6 @@ class _PunchWidgetState extends State<PunchWidget> {
     if (Platform.isIOS) {
       var link =
           await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
-
       Share.share(link.toString());
     } else {
       var link =
@@ -539,13 +538,14 @@ class _PunchWidgetState extends State<PunchWidget> {
                           Hero(
                             tag: 'punch' + widget.post.id.toString(),
                             child: Material(
-                                color: Colors.transparent,
-                                child: ProfainTextCheck(
-                                  color: Colors.blue,
-                                  fontSize: 20,
-                                  from: '',
-                                  text: widget.post.punch.toLowerCase(),
-                                )),
+                              color: Colors.transparent,
+                              child: ProfainTextCheck(
+                                color: Colors.blue,
+                                fontSize: 20,
+                                from: '',
+                                text: widget.post.punch.toLowerCase(),
+                              ),
+                            ),
                           ),
                           _thumbAnim
                               ? Animator(

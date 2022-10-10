@@ -72,14 +72,14 @@ class _EventPageLocationState extends State<EventPageLocation>
                         'All',
                       ),
                       const Text(
-                        'Festival',
+                        'Festivals',
                       ),
                       const Text(
-                        'Award',
+                        'Awards',
                       ),
-                      const Text('Tour'),
+                      const Text('Tours'),
                       const Text(
-                        'Album Launch',
+                        'Album Launches',
                       ),
                       const Text(
                         'Others',

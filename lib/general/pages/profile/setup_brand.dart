@@ -319,6 +319,16 @@ class _SetUpBrandState extends State<SetUpBrand> {
       await usersRef.doc(currentUserId).update({
         'profileHandle': _profileHandle,
       });
+      accountTypesRef
+          .doc(
+            _profileHandle,
+          )
+          .collection(_profileHandle)
+          .doc(currentUserId)
+          .set({
+        'uid': currentUserId,
+        'timestamp': Timestamp.fromDate(DateTime.now()),
+      });
       animateToPage();
     } catch (e) {
       final double width = Responsive.isDesktop(context)

@@ -183,7 +183,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                   : TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                color:  Colors.black,
               ),
             ),
             actions: <Widget>[

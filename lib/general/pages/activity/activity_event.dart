@@ -79,9 +79,8 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
     QuerySnapshot userFeedSnapShot = await activitiesEventRef
         .doc(widget.currentUserId)
         .collection('userActivitiesEvent')
+        .where('invited', isEqualTo: true)
         .where('seen', isEqualTo: '')
-        .where('eventInviteType', isEqualTo: 'Invitation')
-        .where('ask', isEqualTo: '')
         .limit(limit)
         .get();
     List<ActivityEvent> activities =
@@ -127,9 +126,8 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
     QuerySnapshot userFeedSnapShot = await activitiesEventRef
         .doc(widget.currentUserId)
         .collection('userActivitiesEvent')
-        .where('eventInviteType', isEqualTo: 'Invitation')
+        .where('invited', isEqualTo: true)
         .where('seen', isEqualTo: '')
-        .where('ask', isEqualTo: '')
         .limit(limit)
         .startAfterDocument(_activitySnapshot.last)
         .get();
@@ -161,6 +159,7 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
       eventInviteType: '',
       commonId: activiitiesEvent.commonId,
       toUserId: activiitiesEvent.toUserId,
+      invited: activiitiesEvent.invited,
     );
     print('sumiting');
     try {
@@ -180,7 +179,7 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
                 return SizedBox.shrink();
               }
               EventInvite invite = snapshot.data;
-              return activityEvent.eventInviteType!.startsWith('Invitation')
+              return activityEvent.invited!
                   ? EventInvitationActivityCard(
                       invite: invite,
                       activityEvent: activityEvent,

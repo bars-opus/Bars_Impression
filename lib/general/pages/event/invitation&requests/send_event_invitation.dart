@@ -157,10 +157,10 @@ class _SendEventInviationState extends State<SendEventInviation> {
             duration: Duration(seconds: 2),
             leftBarIndicatorColor: Colors.blue,
           ).show(context)
-        : _SendInvitation();
+        : _sendInvitation();
   }
 
-  _SendInvitation() {
+  _sendInvitation() {
     final double width = MediaQuery.of(context).size.width;
     int _requestNumber = _attendeeRequesCount + 1;
 
@@ -339,7 +339,6 @@ class _SendEventInviationState extends State<SendEventInviation> {
                           spreadRadius: 4.0,
                         )
                       ]),
-
                       child: Column(
                         children: [
                           const SizedBox(

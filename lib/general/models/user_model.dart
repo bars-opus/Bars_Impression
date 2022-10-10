@@ -44,6 +44,7 @@ class AccountHolder {
   final bool? disableMoodPunchVibe;
   final bool? dontShowContentOnExplorePage;
   final String? specialtyTags;
+  final String? subAccountType;
   final String? genreTags;
   final String? report;
   final String? reportConfirmed;
@@ -77,6 +78,7 @@ class AccountHolder {
     required this.city,
     required this.continent,
     required this.contacts,
+    required this.subAccountType,
     required this.profileHandle,
     required this.isEmailVerified,
     required this.website,
@@ -167,6 +169,7 @@ class AccountHolder {
       androidNotificationToken: doc['androidNotificationToken'] ?? '',
       timestamp: doc['timestamp'],
       genreTags: doc['genreTags'] ?? '',
+      subAccountType: doc['subAccountType'] ?? '',
     );
   }
 }

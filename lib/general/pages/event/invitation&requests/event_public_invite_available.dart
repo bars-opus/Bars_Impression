@@ -357,7 +357,7 @@ class _EventPublicInviteAvailableState
                                         palette: widget.palette,
                                         dontShowAnswerWidget: true,
                                         event: widget.event,
-                                        from: '',
+                                        answer: '',
                                       ))),
                           child: Container(
                             width: width,

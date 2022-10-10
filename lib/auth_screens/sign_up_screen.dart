@@ -56,14 +56,15 @@ class _SignpsScreenState extends State<SignpsScreen>
     });
   }
 
-  _submit() {
+  _submit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       FocusScope.of(context).unfocus();
       setState(() {
         _isLoading = true;
       });
-      AuthService.signUpUser(
+
+      await AuthService.signUpUser(
         context,
         // _name,
         Provider.of<UserData>(context, listen: false).post3,
@@ -333,7 +334,17 @@ class _SignpsScreenState extends State<SignpsScreen>
                                                               20.0),
                                                     ),
                                                   ),
-                                                  onPressed: _submit,
+                                                  onPressed:
+                                                      //  () => Navigator.of(
+                                                      //         context)
+                                                      //     .pushAndRemoveUntil(
+                                                      //         MaterialPageRoute(
+                                                      //             builder: (context) =>
+                                                      //                 SignpsScreenVerifyEmail()),
+                                                      //         (Route<dynamic>
+                                                      //                 route) =>
+                                                      //             false),
+                                                      _submit,
                                                   child: Padding(
                                                     padding:
                                                         const EdgeInsets.all(

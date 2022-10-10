@@ -85,7 +85,6 @@ class _AllHashTagPostState extends State<AllHashTagPost> {
     return _hasNext;
   }
 
-
   _setUpArtistPuchCount() async {
     final String currentUserId =
         Provider.of<UserData>(context, listen: false).currentUserId!;
@@ -147,8 +146,7 @@ class _AllHashTagPostState extends State<AllHashTagPost> {
                       text: TextSpan(
                         children: [
                           TextSpan(
-                              text:
-                                  "These are the mood punches with the hashtag:",
+                              text: "These are the mood punches with the tag:",
                               style: TextStyle(
                                 color: ConfigBloc().darkModeOn
                                     ? Colors.white
@@ -206,7 +204,6 @@ class _AllHashTagPostState extends State<AllHashTagPost> {
                                                   post: post,
                                                   author: author,
                                                   feed: 'Hashtag',
-                                                 
                                                 );
                                               },
                                             );

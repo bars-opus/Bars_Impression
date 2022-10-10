@@ -139,6 +139,8 @@ class _HomeMobileState extends State<HomeMobile> {
   }
 
   Future<void> initDynamicLinks() async {
+    FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
+    FirebaseDynamicLinks.instance.getInitialLink(); //
     dynamicLinks.onLink.listen((dynamicLinkData) {
       final List<String> link = dynamicLinkData.link.path.toString().split("_");
 
@@ -362,7 +364,7 @@ class _HomeMobileState extends State<HomeMobile> {
                                       )),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 1.0),
-                                    child: Icon(
+                                    child: const Icon(
                                       MdiIcons.home,
                                       size: 25.0,
                                     ),
@@ -391,7 +393,7 @@ class _HomeMobileState extends State<HomeMobile> {
                                       )),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 1.0),
-                                    child: Icon(Icons.forum, size: 25.0),
+                                    child: const Icon(Icons.forum, size: 25.0),
                                   ),
                                 ],
                               ),
@@ -417,7 +419,7 @@ class _HomeMobileState extends State<HomeMobile> {
                                       )),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 1.0),
-                                    child: Icon(Icons.event, size: 25.0),
+                                    child: const Icon(Icons.event, size: 25.0),
                                   ),
                                 ],
                               ),
@@ -470,7 +472,7 @@ class _HomeMobileState extends State<HomeMobile> {
                                   Padding(
                                     padding: const EdgeInsets.only(top: 1.0),
                                     child:
-                                        Icon(Icons.account_circle, size: 25.0),
+                                     const   Icon(Icons.account_circle, size: 25.0),
                                   ),
                                 ],
                               ),
@@ -482,7 +484,6 @@ class _HomeMobileState extends State<HomeMobile> {
                     ),
                   ),
           );
-    // });
   }
 }
 
@@ -514,6 +515,8 @@ class _HomeDesktopState extends State<HomeDesktop> {
         ? widget.updateApp.updateVersionIos
         : widget.updateApp.updateVersionAndroid;
     _version = version!;
+    WidgetsFlutterBinding.ensureInitialized();
+
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _setUpInvitesActivities();
       initDynamicLinks();
@@ -522,12 +525,11 @@ class _HomeDesktopState extends State<HomeDesktop> {
 
   Future<void> initDynamicLinks() async {
     FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
-    // Incoming Links Listener
+    FirebaseDynamicLinks.instance.getInitialLink();
     dynamicLinks.onLink.listen((dynamicLinkData) {
       final Uri uri = dynamicLinkData.link;
       final queryParams = uri.queryParameters;
       if (queryParams.isNotEmpty) {
-        
         print("Incoming Link :" + uri.toString());
         final List<String> link = queryParams.toString().split("_");
 
@@ -545,40 +547,9 @@ class _HomeDesktopState extends State<HomeDesktop> {
                                 : link[0].endsWith('user')
                                     ? 'User'
                                     : '')));
-      } else {
-        print("No Current Links");
-        // your code here
       }
     });
-
-    
   }
-
-  // Future<void> initDynamicLinks() async {
-  //   // final PendingDynamicLinkData? data = await dynamicLinks.getInitialLink();
-
-  //   // final Uri? deepLink = data?.link;
-  //   dynamicLinks.onLink.listen((dynamicLinkData) {
-  //     // if (deepLink != null) {
-  //     final List<String> link = dynamicLinkData.link.path.toString().split("_");
-
-  //     Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //             builder: (_) => ViewSentContent(
-  //                 contentId: link[1],
-  //                 contentType: link[0].endsWith('punched')
-  //                     ? 'Mood Punched'
-  //                     : link[0].endsWith('forum')
-  //                         ? 'Forum'
-  //                         : link[0].endsWith('event')
-  //                             ? 'Event'
-  //                             : link[0].endsWith('user')
-  //                                 ? 'User'
-  //                                 : '')));
-  //     // }
-  //   }).onError((error) {});
-  // }
 
   _setUpInvitesActivities() async {
     final String currentUserId =
@@ -625,7 +596,7 @@ class _HomeDesktopState extends State<HomeDesktop> {
           ),
         ),
         messageText: Text(
-          'Could\'nt luanch mail',
+          'Could\'nt launch mail',
           style: TextStyle(
             color: Colors.white,
             fontSize: width > 800 ? 20 : 12,
@@ -696,7 +667,7 @@ class _HomeDesktopState extends State<HomeDesktop> {
                                         raduis: 100,
                                         arrowColor: Colors.transparent,
                                         title: '  Home',
-                                        icon: MdiIcons.home,
+                                        icon:  MdiIcons.home,
                                         textColor: _currentTab != 0
                                             ? Colors.grey
                                             : ConfigBloc().darkModeOn

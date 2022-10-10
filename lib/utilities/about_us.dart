@@ -66,19 +66,6 @@ class _AboutUsState extends State<AboutUs> {
                       borderRadius: BorderRadius.circular(10),
                       child: Image.asset('assets/images/barsw.png',
                           height: 100, width: 100, fit: BoxFit.cover)),
-                  Text(
-                    'BARS',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 30.0,
-                      fontWeight: FontWeight.w100,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  Text(
-                    'IMPRESSION',
-                    style: TextStyle(fontSize: 18.0, color: Colors.white),
-                  ),
                 ],
               ),
             ),
@@ -177,7 +164,28 @@ class _AboutUsState extends State<AboutUs> {
                 ),
               ),
             ),
-            SizedBox(height: 100),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Divider(
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 100),
+            Text(
+              'BARS IMPRESSION\nfrom',
+              style: TextStyle(fontSize: 12.0, color: Colors.white),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'B A R S\nO P U S',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16.0,
+                fontWeight: FontWeight.w100,
+              ),
+              textAlign: TextAlign.center,
+            ),
           ],
         ),
       ),

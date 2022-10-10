@@ -11,7 +11,7 @@ Future<void> main() async {
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_backgroundHandler);
   Bars.prefs = await SharedPreferences.getInstance();
- 
+
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   runApp(ConfigPage());

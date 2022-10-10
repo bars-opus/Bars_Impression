@@ -235,7 +235,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
           ),
         ),
         messageText: Text(
-          'Could luanch mail',
+          'Could\'nt launch mail',
           style: TextStyle(
             color: Colors.white,
             fontSize: width > 800 ? 20 : 12,

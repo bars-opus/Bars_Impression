@@ -37,7 +37,7 @@ class _CreateForumState extends State<CreateForum> {
         authorId: Provider.of<UserData>(context, listen: false).currentUserId!,
         timestamp: Timestamp.fromDate(DateTime.now()),
         id: '',
-        isPrivate: _isPrivate, linkedContentId: '', mediaType: '', mediaUrl: '',
+        isPrivate: _isPrivate, linkedContentId: '', mediaType: '', mediaUrl: '', forumType: '',
       );
       try {
         DatabaseService.createForum(forum);

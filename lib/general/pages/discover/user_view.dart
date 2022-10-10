@@ -354,16 +354,16 @@ class _UserViewState extends State<UserView> {
   }
 
   _dynamicLink() async {
-    var linkUrl = await Uri.parse(widget.user.profileImageUrl!);
+    var linkUrl = Uri.parse(widget.user.profileImageUrl!);
 
-    final dynamicLinkParams = await DynamicLinkParameters(
-      socialMetaTagParameters: await SocialMetaTagParameters(
+    final dynamicLinkParams = DynamicLinkParameters(
+      socialMetaTagParameters: SocialMetaTagParameters(
         imageUrl: linkUrl,
         title: widget.user.userName,
         description: widget.user.bio,
       ),
       link: Uri.parse('https://www.barsopus.com/user_${widget.user.id}'),
-      uriPrefix: 'https://barsopus.com/barsImpression/',
+      uriPrefix: 'https://barsopus.com/barsImpression',
       androidParameters:
           AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
       iosParameters: IOSParameters(
@@ -374,7 +374,6 @@ class _UserViewState extends State<UserView> {
     if (Platform.isIOS) {
       var link =
           await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
-
       Share.share(link.toString());
     } else {
       var link =
@@ -525,21 +524,21 @@ class _UserViewState extends State<UserView> {
                               ),
                               child: Hero(
                                 tag: 'container1' + widget.user.id.toString(),
-                                child: CircleAvatar(
-                                  backgroundColor: ConfigBloc().darkModeOn
-                                      ? Color(0xFF1a1a1a)
-                                      : Colors.white,
-                                  radius: 25.0,
-                                  backgroundImage:
-                                      widget.user.profileImageUrl!.isEmpty
-                                          ? AssetImage(
-                                              ConfigBloc().darkModeOn
-                                                  ? 'assets/images/user_placeholder.png'
-                                                  : 'assets/images/user_placeholder2.png',
-                                            ) as ImageProvider
-                                          : CachedNetworkImageProvider(
-                                              widget.user.profileImageUrl!),
-                                ),
+                                child: widget.user.profileImageUrl!.isEmpty
+                                    ? Icon(
+                                        Icons.account_circle,
+                                        size: 50.0,
+                                        color: Colors.grey,
+                                      )
+                                    : CircleAvatar(
+                                        radius: 25.0,
+                                        backgroundColor: ConfigBloc().darkModeOn
+                                            ? Color(0xFF1a1a1a)
+                                            : Color(0xFFf2f2f2),
+                                        backgroundImage:
+                                            CachedNetworkImageProvider(
+                                                widget.user.profileImageUrl!),
+                                      ),
                               ),
                             ),
                             title: Column(

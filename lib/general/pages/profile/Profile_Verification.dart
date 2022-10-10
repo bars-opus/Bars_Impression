@@ -347,40 +347,9 @@ class _ProfileVerificationState extends State<ProfileVerification> {
         });
   }
 
-  // _androidDialog(BuildContext parentContext) {
-  //   return showDialog(
-  //       context: parentContext,
-  //       builder: (context) {
-  //         return SimpleDialog(
-  //           title: Text('Pick image'),
-  //           children: <Widget>[
-  //             SimpleDialogOption(
-  //               child: Text('Camera'),
-  //               onPressed: () {
-  //                 Navigator.pop(context);
-  //                 _handleImageCamera();
-  //               },
-  //             ),
-  //             SimpleDialogOption(
-  //               child: Text('Gallery'),
-  //               onPressed: () {
-  //                 Navigator.pop(context);
-  //                 _handleImage2();
-  //               },
-  //             ),
-  //             SimpleDialogOption(
-  //               child: Text('cancel'),
-  //               onPressed: () => Navigator.pop(context),
-  //             ),
-  //           ],
-  //         );
-  //       });
-  // }
 
 
-
-
- _androidDialog(BuildContext parentContext) {
+  _androidDialog(BuildContext parentContext) {
     return showDialog(
         context: parentContext,
         builder: (context) {
@@ -401,12 +370,12 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                     textAlign: TextAlign.center,
                   ),
                   onPressed: () {
-                     Navigator.pop(context);
-                  _handleImageCamera();
+                    Navigator.pop(context);
+                    _handleImageCamera();
                   },
                 ),
               ),
-               Divider(),
+              Divider(),
               Center(
                 child: SimpleDialogOption(
                   child: Text(
@@ -416,8 +385,8 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                     textAlign: TextAlign.center,
                   ),
                   onPressed: () {
-                     Navigator.pop(context);
-                  _handleImage2();
+                    Navigator.pop(context);
+                    _handleImage2();
                   },
                 ),
               ),
@@ -508,69 +477,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
         });
   }
 
-  // _androidDialog2(BuildContext parentContext) {
-  //   return showDialog(
-  //       context: parentContext,
-  //       builder: (context) {
-  //         return SimpleDialog(
-  //           title: RichText(
-  //             textScaleFactor: MediaQuery.of(context).textScaleFactor,
-  //             text: TextSpan(
-  //               children: [
-  //                 TextSpan(
-  //                   text: 'Account  Information\n',
-  //                   style: TextStyle(
-  //                     fontSize: 20,
-  //                     color: Colors.blue,
-  //                   ),
-  //                 ),
-  //                 TextSpan(
-  //                   text:
-  //                       'We have noticed that some information about your account has not been provided. You must provide the necessary information required for account verification.\n(bio, username, profile photo, company, contact, email, management, skills, website, or any other social media platform and 3 professional photos).\n\nRestart your verification request process after providing the information required.',
-  //                   style: TextStyle(
-  //                     color:
-  //                         ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //             textAlign: TextAlign.start,
-  //           ),
-  //           children: <Widget>[
-  //             SimpleDialogOption(
-  //               child: Text('Edit profile'),
-  //               onPressed: () {
-  //                 Navigator.pop(context);
-  //                 widget.user.profileHandle!.startsWith('Fan')
-  //                     ? Navigator.push(
-  //                         context,
-  //                         MaterialPageRoute(
-  //                           builder: (_) => EditProfileScreen(
-  //                             user: widget.user,
-  //                           ),
-  //                         ))
-  //                     : Navigator.push(
-  //                         context,
-  //                         MaterialPageRoute(
-  //                           builder: (_) => EditProfileProfessional(
-  //                             user: widget.user,
-  //                           ),
-  //                         ));
-  //               },
-  //             ),
-  //             SimpleDialogOption(
-  //               child: Text('cancel'),
-  //               onPressed: () => Navigator.pop(context),
-  //             ),
-  //           ],
-  //         );
-  //       });
-  // }
-
-
-
-  
- _androidDialog2(BuildContext parentContext) {
+  _androidDialog2(BuildContext parentContext) {
     return showDialog(
         context: parentContext,
         builder: (context) {
@@ -609,22 +516,22 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                     textAlign: TextAlign.center,
                   ),
                   onPressed: () {
-                     Navigator.pop(context);
-                 widget.user.profileHandle!.startsWith('Fan')
-                      ? Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => EditProfileScreen(
-                              user: widget.user,
-                            ),
-                          ))
-                      : Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => EditProfileProfessional(
-                              user: widget.user,
-                            ),
-                          ));
+                    Navigator.pop(context);
+                    widget.user.profileHandle!.startsWith('Fan')
+                        ? Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => EditProfileScreen(
+                                user: widget.user,
+                              ),
+                            ))
+                        : Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => EditProfileProfessional(
+                                user: widget.user,
+                              ),
+                            ));
                   },
                 ),
               ),
@@ -754,7 +661,12 @@ class _ProfileVerificationState extends State<ProfileVerification> {
           future: DatabaseService.getVerificationUser(widget.user.id!),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (!snapshot.hasData) {
-              return Expanded(
+              return Container(
+                width: width,
+                height: MediaQuery.of(context).size.height,
+                color: ConfigBloc().darkModeOn
+                    ? Color(0xFF1a1a1a)
+                    : Color(0xFFf2f2f2),
                 child: Center(
                   child: CircularProgressIndicator(),
                 ),
@@ -936,16 +848,6 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                       ),
                                     ),
                                   ),
-                                  // Padding(
-                                  //   padding: const EdgeInsets.symmetric(
-                                  //       horizontal: 55.0),
-                                  //   child: Text(
-                                  //     'Learn more.',
-                                  //     style: TextStyle(
-                                  //         color: Colors.blue, fontSize: 12),
-                                  //     textAlign: TextAlign.left,
-                                  //   ),
-                                  // ),
                                   Center(
                                     child: Padding(
                                       padding: const EdgeInsets.only(top: 70.0),

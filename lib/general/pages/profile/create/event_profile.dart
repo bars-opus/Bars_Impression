@@ -63,16 +63,16 @@ class _EventProfileViewState extends State<EventProfileView> {
   }
 
   _dynamicLink() async {
- var linkUrl = await Uri.parse(widget.event.imageUrl);
+    var linkUrl = Uri.parse(widget.event.imageUrl);
 
-    final dynamicLinkParams = await DynamicLinkParameters(
-      socialMetaTagParameters: await SocialMetaTagParameters(
+    final dynamicLinkParams = DynamicLinkParameters(
+      socialMetaTagParameters: SocialMetaTagParameters(
         imageUrl: linkUrl,
         title: 'Event',
         description: widget.event.title,
       ),
       link: Uri.parse('https://www.barsopus.com/event_${widget.event.id}'),
-      uriPrefix: 'https://barsopus.com/barsImpression/',
+      uriPrefix: 'https://barsopus.com/barsImpression',
       androidParameters:
           AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
       iosParameters: IOSParameters(
@@ -83,7 +83,6 @@ class _EventProfileViewState extends State<EventProfileView> {
     if (Platform.isIOS) {
       var link =
           await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
-
       Share.share(link.toString());
     } else {
       var link =
@@ -149,13 +148,13 @@ class _EventProfileViewState extends State<EventProfileView> {
                       context,
                       MaterialPageRoute(
                           builder: (_) => widget.author.userName!.isEmpty
-                                  ? UserNotFound(
-                                      userName: 'User',
-                                    )
-                                  :  ProfileScreen(
-                                currentUserId: widget.currentUserId,
-                                userId: widget.event.authorId,
-                              ))),
+                              ? UserNotFound(
+                                  userName: 'User',
+                                )
+                              : ProfileScreen(
+                                  currentUserId: widget.currentUserId,
+                                  userId: widget.event.authorId,
+                                ))),
                 ),
           FocusedMenuItem(
               title: Container(
@@ -258,15 +257,7 @@ class _EventProfileViewState extends State<EventProfileView> {
                       : Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => 
-                              
-                              // widget.author.userName!.isEmpty
-                              //     ? UserNotFound(
-                              //         userName: 'User',
-                              //       )
-                              //   : 
-                                
-                                 ProfileScreen(
+                              builder: (_) => ProfileScreen(
                                     currentUserId: widget.currentUserId,
                                     userId: widget.event.authorId,
                                   )));
@@ -309,20 +300,22 @@ class _EventProfileViewState extends State<EventProfileView> {
                       author: widget.author,
                       titleHero: 'title1  ${widget.event.id.toString()}',
                       event: widget.event,
-                      onPressedEventEnlarged: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => AllEvenEnlarged(
-                                    exploreLocation: widget.exploreLocation,
-                                    feed: widget.feed,
-                                    askCount: _askCount,
-                                    currentUserId: widget.currentUserId,
-                                    event: widget.event,
-                                    user: widget.user,
-                                  ))),
-                      imageHero: 'image1 ${widget.event.id.toString()}',
-                      askCount: NumberFormat.compact().format(_askCount),
+                      // onPressedEventEnlarged: () => Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: (_) => AllEvenEnlarged(
+                      //               exploreLocation: widget.exploreLocation,
+                      //               feed: widget.feed,
+                      //               askCount: _askCount,
+                      //               currentUserId: widget.currentUserId,
+                      //               event: widget.event,
+                      //               user: widget.user,
+                      //             ))),
+                      // imageHero: 'image1 ${widget.event.id.toString()}',
+                      askCount: _askCount,
                       difference: _different,
+                      exploreLocation: widget.exploreLocation,
+                      feed: widget.feed,
                     ),
                     Positioned(
                       top: 1,

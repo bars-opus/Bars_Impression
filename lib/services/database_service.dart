@@ -525,6 +525,7 @@ class DatabaseService {
       'mediaType': forum.mediaType,
       'mediaUrl': forum.mediaUrl,
       'report': forum.report,
+      'forumType': forum.forumType,
       'reportConfirmed': forum.reportConfirmed,
       'timestamp': forum.timestamp,
       'linkedContentId': forum.linkedContentId
@@ -542,9 +543,6 @@ class DatabaseService {
       'subTitle': forum.subTitle,
       'mediaType': forum.mediaType,
       'mediaUrl': forum.mediaUrl,
-      'authorId': forum.authorId,
-      'timestamp': forum.timestamp,
-      'linkedContentId': forum.linkedContentId,
     });
   }
 
@@ -1249,6 +1247,7 @@ class DatabaseService {
       blurHash: '',
       genreTags: '',
       isEmailVerified: null,
+      subAccountType: '',
     );
   }
 
@@ -1271,7 +1270,8 @@ class DatabaseService {
         seen: '',
         timestamp: null,
         commonId: '',
-        toUserId: '');
+        toUserId: '',
+        invited: null);
   }
 
   static Future<EventInvite> getEventInviteWithId(
@@ -1436,7 +1436,8 @@ class DatabaseService {
         title: '',
         linkedContentId: '',
         mediaType: '',
-        mediaUrl: '');
+        mediaUrl: '',
+        forumType: '');
   }
 
   static Future<Post> getPostWithId(String postId) async {
@@ -1889,6 +1890,7 @@ class DatabaseService {
             'fromUserId': currentUserId,
             'eventId': event.id,
             'eventInviteType': 'AttendRequest',
+            'invited': false,
             'seen': '',
             'eventImageUrl': event.imageUrl,
             'eventTitle': event.title,
@@ -1966,7 +1968,8 @@ class DatabaseService {
       'toUserId': user.id,
       'fromUserId': currentUserId,
       'eventId': event.id,
-      'eventInviteType': 'Invitation',
+      'eventInviteType': event.title,
+      'invited': true,
       'seen': '',
       'eventImageUrl': event.imageUrl,
       'eventTitle': event.title,
@@ -2170,7 +2173,6 @@ class DatabaseService {
       currentUserId: currentUserId,
       event: event,
       ask: ask,
-      eventInviteType: '',
       commonId: commonId,
     );
   }
@@ -2389,7 +2391,6 @@ class DatabaseService {
     required Event event,
     required String ask,
     required String commonId,
-    required String eventInviteType,
   }) {
     if (currentUserId != event.authorId) {
       activitiesEventRef
@@ -2398,8 +2399,10 @@ class DatabaseService {
           .doc(commonId)
           .set({
         'fromUserId': currentUserId,
+        'toUserId': event.authorId,
         'eventId': event.id,
-        'eventInviteType': eventInviteType,
+        'eventInviteType': '',
+        'invited': false,
         'seen': '',
         'eventImageUrl': event.imageUrl,
         'eventTitle': event.title,

@@ -35,6 +35,8 @@ class _PostViewWidgetState extends State<PostViewWidget> {
   }
 
   _setImage() {
+    HapticFeedback.heavyImpact();
+
     if (_displayImage) {
       if (mounted) {
         setState(() {
@@ -87,6 +89,8 @@ class _PostViewWidgetState extends State<PostViewWidget> {
   }
 
   _unLikePost() {
+    HapticFeedback.heavyImpact();
+
     DatabaseService.unlikePost(
         currentUserId: widget.currentUserId, post: widget.post);
 
@@ -98,9 +102,10 @@ class _PostViewWidgetState extends State<PostViewWidget> {
   }
 
   _likePost() {
+    HapticFeedback.heavyImpact();
+
     DatabaseService.likePost(
         currentUserId: widget.currentUserId, post: widget.post);
-    HapticFeedback.heavyImpact();
     SystemSound.play(SystemSoundType.click);
     if (mounted) {
       setState(() {
@@ -141,13 +146,14 @@ class _PostViewWidgetState extends State<PostViewWidget> {
       );
 
   _dynamicLink() async {
-    final dynamicLinkParams = await DynamicLinkParameters(
-      socialMetaTagParameters: await SocialMetaTagParameters(
+    final dynamicLinkParams = DynamicLinkParameters(
+      socialMetaTagParameters: SocialMetaTagParameters(
+        imageUrl: Uri.parse(widget.post.imageUrl),
         title: 'MoodPunched',
         description: widget.post.punch,
       ),
       link: Uri.parse('https://www.barsopus.com/moopunched_${widget.post.id}'),
-      uriPrefix: 'https://barsopus.com/barsImpression/',
+      uriPrefix: 'https://barsopus.com/barsImpression',
       androidParameters:
           AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
       iosParameters: IOSParameters(
@@ -158,7 +164,6 @@ class _PostViewWidgetState extends State<PostViewWidget> {
     if (Platform.isIOS) {
       var link =
           await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
-
       Share.share(link.toString());
     } else {
       var link =
@@ -186,6 +191,8 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                 onLongPress: () => Navigator.of(context).push(PageRouteBuilder(
                     transitionDuration: const Duration(milliseconds: 500),
                     pageBuilder: (context, animation, _) {
+                      HapticFeedback.heavyImpact();
+
                       return FadeTransition(
                         opacity: animation,
                         child: ExplorePosts(
@@ -574,18 +581,20 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                                             Material(
                                                                               color: Colors.transparent,
                                                                               child: Container(
-                                                                                  child: Row(children: <Widget>[
+                                                                                  child: Row(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
                                                                                 Hero(
                                                                                   tag: 'author' + widget.post.id.toString(),
-                                                                                  child: CircleAvatar(
-                                                                                    radius: 25.0,
-                                                                                    backgroundColor: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
-                                                                                    backgroundImage: widget.author.profileImageUrl!.isEmpty
-                                                                                        ? AssetImage(
-                                                                                            ConfigBloc().darkModeOn ? 'assets/images/user_placeholder.png' : 'assets/images/user_placeholder2.png',
-                                                                                          ) as ImageProvider
-                                                                                        : CachedNetworkImageProvider(widget.author.profileImageUrl!),
-                                                                                  ),
+                                                                                  child: widget.author.profileImageUrl!.isEmpty
+                                                                                      ? Icon(
+                                                                                          Icons.account_circle,
+                                                                                          size: 50.0,
+                                                                                          color: Colors.grey,
+                                                                                        )
+                                                                                      : CircleAvatar(
+                                                                                          radius: 25.0,
+                                                                                          backgroundColor: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+                                                                                          backgroundImage: CachedNetworkImageProvider(widget.author.profileImageUrl!),
+                                                                                        ),
                                                                                 ),
                                                                                 const SizedBox(
                                                                                   width: 8.0,

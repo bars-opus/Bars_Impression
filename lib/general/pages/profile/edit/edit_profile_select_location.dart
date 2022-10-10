@@ -527,7 +527,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                                     EditProfileInfo(
                                       editTitle: 'Choose \nLocation',
                                       info:
-                                          'Choosing a location helps us suggest users with similar interests living close to you. For instance, when you enter your city, we propose other users in your city for you on the discover page so you can connect with them for business and collaborations.',
+                                          'Choosing a location helps us suggest users with similar interests living close to you. For instance, when you enter your city, we propose other users in your city for you on the discover page so you can connect with them for business.',
                                       icon: Icons.location_on,
                                     ),
                                     Text(

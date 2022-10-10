@@ -37,18 +37,20 @@ class Authorview extends StatelessWidget {
           textScaleFactor:
               MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
       child: ListTile(
-        leading: CircleAvatar(
-          radius: 20.0,
-          backgroundColor:
-              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
-          backgroundImage: author.profileImageUrl!.isEmpty
-              ? AssetImage(
-                  ConfigBloc().darkModeOn
-                      ? 'assets/images/user_placeholder.png'
-                      : 'assets/images/user_placeholder2.png',
-                ) as ImageProvider
-              : CachedNetworkImageProvider(author.profileImageUrl!),
-        ),
+        leading: author.profileImageUrl!.isEmpty
+            ? Icon(
+                Icons.account_circle,
+                size: 45.0,
+                color: Colors.grey,
+              )
+            : CircleAvatar(
+                radius: 20.0,
+                backgroundColor: ConfigBloc().darkModeOn
+                    ? Color(0xFF1a1a1a)
+                    : Color(0xFFf2f2f2),
+                backgroundImage:
+                    CachedNetworkImageProvider(author.profileImageUrl!),
+              ),
         title: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,11 +110,10 @@ class Authorview extends StatelessWidget {
                       fontSize: 12,
                       text: content,
                     )
-                  :  HyperLinkText(
-                  from: '',
-                  text:   content,
-                ),
-
+                  : HyperLinkText(
+                      from: '',
+                      text: content,
+                    ),
             ),
             Text(
                 timeago.format(

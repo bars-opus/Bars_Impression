@@ -12,132 +12,6 @@ class EventPage extends StatefulWidget {
 
 class _EventPageState extends State<EventPage>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
-  _locationTab() {
-    final width = Responsive.isDesktop(context)
-        ? 600.0
-        : MediaQuery.of(context).size.width;
-    // ignore: unnecessary_null_comparison
-    return widget.user == null
-        ? SizedBox.shrink()
-        : FadeAnimation(
-            1,
-            Container(
-              height: 35,
-              width: width,
-              child: Align(
-                alignment: Alignment.center,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      SizedBox(width: 20),
-                      OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            primary: Colors.blue,
-                            side: BorderSide(width: 1.0, color: Colors.grey),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: Text(
-                              ' Virtual Events',
-                              style: TextStyle(
-                                color: ConfigBloc().darkModeOn
-                                    ? Colors.white
-                                    : Colors.black,
-                                fontSize: 12.0,
-                              ),
-                            ),
-                          ),
-                          onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => EventPageLocation(
-                                    locationType: 'Virtual',
-                                    currentUserId: widget.currentUserId,
-                                    user: widget.user,
-                                  ),
-                                ),
-                              )),
-                      SizedBox(width: 20),
-                      OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            primary: Colors.blue,
-                            side: BorderSide(width: 1.0, color: Colors.grey),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: Text(
-                              ' In Live Location',
-                              style: TextStyle(
-                                color: ConfigBloc().darkModeOn
-                                    ? Colors.white
-                                    : Colors.black,
-                                fontSize: 12.0,
-                              ),
-                            ),
-                          ),
-                          onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => FetchingLocation(
-                                    currentUserId: widget.currentUserId,
-                                    user: widget.user,
-                                    type: 'Events',
-                                  ),
-                                ),
-                              )),
-                      SizedBox(width: 20),
-                      Container(
-                        child: OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              primary: Colors.blue,
-                              side: BorderSide(width: 1.0, color: Colors.grey),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Text(
-                                widget.user.country!.isEmpty
-                                    ? 'In Your Country'
-                                    : 'In ' + widget.user.country!,
-                                style: TextStyle(
-                                  color: ConfigBloc().darkModeOn
-                                      ? Colors.white
-                                      : Colors.black,
-                                  fontSize: 12.0,
-                                ),
-                              ),
-                            ),
-                            onPressed: () => widget.user.country!.isEmpty
-                                ? Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => NoCity(
-                                        currentUserId: widget.currentUserId,
-                                        user: widget.user,
-                                      ),
-                                    ),
-                                  )
-                                : Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => EventPageLocation(
-                                        locationType: 'Country',
-                                        currentUserId: widget.currentUserId,
-                                        user: widget.user,
-                                      ),
-                                    ),
-                                  )),
-                      ),
-                      SizedBox(width: 20),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          );
-  }
-
   bool get wantKeepAlive => true;
 
   @override
@@ -193,7 +67,10 @@ class _EventPageState extends State<EventPage>
                                 SizedBox()
                               ],
                             ),
-                            _locationTab(),
+                            LocationTab(
+                              currentUserId: widget.currentUserId,
+                              user: widget.user,
+                            ),
                             const SizedBox(height: 20),
                             TabBar(
                                 labelColor: ConfigBloc().darkModeOn
@@ -215,14 +92,14 @@ class _EventPageState extends State<EventPage>
                                     'All',
                                   ),
                                   const Text(
-                                    'Festival',
+                                    'Festivals',
                                   ),
                                   const Text(
-                                    'Award',
+                                    'Awards',
                                   ),
-                                  const Text('Tour'),
+                                  const Text('Tours'),
                                   const Text(
-                                    'Album Launch',
+                                    'Album Launches',
                                   ),
                                   const Text(
                                     'Others',
@@ -267,5 +144,140 @@ class _EventPageState extends State<EventPage>
         ),
       ),
     );
+  }
+}
+
+class LocationTab extends StatelessWidget {
+  final String currentUserId;
+  final AccountHolder user;
+
+  const LocationTab({Key? key, required this.currentUserId, required this.user})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final width = Responsive.isDesktop(context)
+        ? 600.0
+        : MediaQuery.of(context).size.width;
+    // ignore: unnecessary_null_comparison
+    return user == null
+        ? SizedBox.shrink()
+        : FadeAnimation(
+            1,
+            Container(
+              height: 35,
+              width: width,
+              child: Align(
+                alignment: Alignment.center,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      SizedBox(width: 20),
+                      OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            primary: Colors.blue,
+                            side: BorderSide(width: 1.0, color: Colors.grey),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Text(
+                              ' Virtual Events',
+                              style: TextStyle(
+                                color: ConfigBloc().darkModeOn
+                                    ? Colors.white
+                                    : Colors.black,
+                                fontSize: 12.0,
+                              ),
+                            ),
+                          ),
+                          onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => EventPageLocation(
+                                    locationType: 'Virtual',
+                                    currentUserId: currentUserId,
+                                    user: user,
+                                  ),
+                                ),
+                              )),
+                      SizedBox(width: 20),
+                      OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            primary: Colors.blue,
+                            side: BorderSide(width: 1.0, color: Colors.grey),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Text(
+                              ' In Live Location',
+                              style: TextStyle(
+                                color: ConfigBloc().darkModeOn
+                                    ? Colors.white
+                                    : Colors.black,
+                                fontSize: 12.0,
+                              ),
+                            ),
+                          ),
+                          onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => FetchingLocation(
+                                    currentUserId: currentUserId,
+                                    user: user,
+                                    type: 'Events',
+                                  ),
+                                ),
+                              )),
+                      SizedBox(width: 20),
+                      Container(
+                        child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              primary: Colors.blue,
+                              side: BorderSide(width: 1.0, color: Colors.grey),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Text(
+                                user.country!.isEmpty
+                                    ? 'In Your Country'
+                                    : 'In ' + user.country!,
+                                style: TextStyle(
+                                  color: ConfigBloc().darkModeOn
+                                      ? Colors.white
+                                      : Colors.black,
+                                  fontSize: 12.0,
+                                ),
+                              ),
+                            ),
+                            onPressed: () => user.country!.isEmpty
+                                ? Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => NoCity(
+                                        currentUserId: currentUserId,
+                                        user: user,
+                                      ),
+                                    ),
+                                  )
+                                : Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => EventPageLocation(
+                                        locationType: 'Country',
+                                        currentUserId: currentUserId,
+                                        user: user,
+                                      ),
+                                    ),
+                                  )),
+                      ),
+                      SizedBox(width: 20),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
   }
 }

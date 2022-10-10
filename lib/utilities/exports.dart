@@ -295,6 +295,7 @@ export 'package:bars/utilities/view_sent_content.dart';
 export 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 export 'package:bars/general/pages/event/invitation&requests/event_invitation_notification.dart';
 export 'package:bars/general/pages/event/invitation&requests/event_attendee_validate_widget.dart';
+export 'package:bars/auth_screens/sign_up_verify_email.dart';
 // discover user
 export 'package:bars/general/pages/discover/discover_page/account_categories/artists.dart';
 export 'package:bars/general/pages/discover/discover_page/account_categories/battle_rappers.dart';

@@ -179,13 +179,13 @@ class _EventDashboardState extends State<EventDashboard> {
   }
 
   _dynamicLink() async {
-    final dynamicLinkParams = await DynamicLinkParameters(
-      socialMetaTagParameters: await SocialMetaTagParameters(
+    final dynamicLinkParams = DynamicLinkParameters(
+      socialMetaTagParameters: SocialMetaTagParameters(
         title: 'Event',
         description: widget.event.title,
       ),
       link: Uri.parse('https://www.barsopus.com/event_${widget.event.id}'),
-      uriPrefix: 'https://barsopus.com/barsImpression/',
+      uriPrefix: 'https://barsopus.com/barsImpression',
       androidParameters:
           AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
       iosParameters: IOSParameters(
@@ -193,15 +193,14 @@ class _EventDashboardState extends State<EventDashboard> {
         appStoreId: '1610868894',
       ),
     );
-    if (Platform.isIOS) {
-      var link =
-          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
-
-      Share.share(link.toString());
+    if (Platform.isIOS){
+var link =
+        await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
+    Share.share(link.toString());
     } else {
       var link =
-          await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
-      Share.share(link.shortUrl.toString());
+        await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+    Share.share(link.shortUrl.toString());
     }
   }
 
@@ -369,7 +368,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                             builder: (_) => EventAttendees(
                                                   palette: widget.palette,
                                                   event: widget.event,
-                                                  from: 'Accepted',
+                                                  answer: 'Accepted',
                                                   showAppBar: true,
                                                   dontShowAnswerWidget: true,
                                                 )))
@@ -381,7 +380,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                                   dontShowAnswerWidget: true,
                                                   palette: widget.palette,
                                                   event: widget.event,
-                                                  from: '',
+                                                  answer: '',
                                                 ))),
                                 child: RichText(
                                   textScaleFactor:
@@ -784,8 +783,8 @@ class _EventDashboardState extends State<EventDashboard> {
                                             dontShowAnswerWidget: true,
                                             palette: widget.palette,
                                             event: widget.event,
-                                            from: 'Accepted',
                                             showAppBar: true,
+                                            answer: 'Accepted',
                                           )))
                               : Navigator.push(
                                   context,
@@ -795,7 +794,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                             showAppBar: true,
                                             palette: widget.palette,
                                             event: widget.event,
-                                            from: '',
+                                            answer: 'Accepted',
                                           ))),
                           child: Row(
                             children: [
@@ -871,7 +870,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                                         letShowAppBar: true,
                                                         palette: widget.palette,
                                                         event: widget.event,
-                                                        from: 'Sent',
+                                                        answer: '',
                                                       ))),
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(
@@ -910,8 +909,8 @@ class _EventDashboardState extends State<EventDashboard> {
                                                   builder: (_) => EventInvites(
                                                         letShowAppBar: true,
                                                         event: widget.event,
-                                                        from: '',
                                                         palette: widget.palette,
+                                                        answer: '',
                                                       ))),
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(
@@ -954,7 +953,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                                         letShowAppBar: true,
                                                         palette: widget.palette,
                                                         event: widget.event,
-                                                        from: 'Accepted',
+                                                        answer: 'Accepted',
                                                       ))),
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(
@@ -995,7 +994,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                                         letShowAppBar: true,
                                                         palette: widget.palette,
                                                         event: widget.event,
-                                                        from: 'Rejected',
+                                                        answer: 'Rejected',
                                                       ))),
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(
@@ -1076,7 +1075,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                                         letShowAppBar: true,
                                                         palette: widget.palette,
                                                         event: widget.event,
-                                                        from: 'Sent',
+                                                        answer: 'All',
                                                       ))),
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(
@@ -1119,8 +1118,8 @@ class _EventDashboardState extends State<EventDashboard> {
                                                   builder: (_) => EventInvites(
                                                         letShowAppBar: true,
                                                         event: widget.event,
-                                                        from: '',
                                                         palette: widget.palette,
+                                                        answer: '',
                                                       ))),
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(
@@ -1169,7 +1168,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                                         letShowAppBar: true,
                                                         palette: widget.palette,
                                                         event: widget.event,
-                                                        from: 'Accepted',
+                                                        answer: 'Accepted',
                                                       ))),
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(
@@ -1218,7 +1217,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                                         letShowAppBar: true,
                                                         palette: widget.palette,
                                                         event: widget.event,
-                                                        from: 'Rejected',
+                                                        answer: 'Rejected',
                                                       ))),
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(
@@ -1297,7 +1296,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                                         showAppBar: true,
                                                         palette: widget.palette,
                                                         event: widget.event,
-                                                        from: 'Received',
+                                                        answer: 'All',
                                                       ))),
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(
@@ -1349,7 +1348,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                                         showAppBar: true,
                                                         palette: widget.palette,
                                                         event: widget.event,
-                                                        from: '',
+                                                        answer: '',
                                                       ))),
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(
@@ -1403,7 +1402,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                                         showAppBar: true,
                                                         palette: widget.palette,
                                                         event: widget.event,
-                                                        from: 'Accepted',
+                                                        answer: 'Accepted',
                                                       ))),
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(
@@ -1455,7 +1454,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                                         showAppBar: true,
                                                         palette: widget.palette,
                                                         event: widget.event,
-                                                        from: 'Rejected',
+                                                        answer: 'Rejected',
                                                       ))),
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(

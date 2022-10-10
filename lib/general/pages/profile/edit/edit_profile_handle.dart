@@ -27,6 +27,7 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
     if (_profileHandle.isEmpty) {
       _profileHandle = 'Fan';
     }
+
     try {
       widget.user.verified!.isEmpty
           ? usersRef
@@ -154,6 +155,30 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
         }).toList()),
       );
 
+  _pop() {
+    Navigator.pop(context);
+    accountTypesRef
+        .doc(widget.user.profileHandle!)
+        .collection(widget.user.profileHandle!)
+        .doc(widget.user.id)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+    accountTypesRef
+        .doc(
+          _profileHandle,
+        )
+        .collection(_profileHandle)
+        .doc(widget.user.id)
+        .set({
+      'uid': widget.user.id,
+      'timestamp': Timestamp.fromDate(DateTime.now()),
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return ResponsiveScaffold(
@@ -164,7 +189,12 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
             iconTheme: IconThemeData(
               color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
             ),
-            automaticallyImplyLeading: true,
+            leading: IconButton(
+              icon: Icon(
+                  Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
+              color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+              onPressed: _pop,
+            ),
             elevation: 0,
             backgroundColor:
                 ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
@@ -194,7 +224,7 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
                           EditProfileInfo(
                             editTitle: 'Select \nAccount Type',
                             info:
-                                'Select an account type to help other users easily identify you for business purposes. You can only select one account type at a time.',
+                                'Select an account type to help other users easily identify you for business. You can only select one account type at a time.',
                             icon: Icons.account_circle,
                           ),
                           Column(

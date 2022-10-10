@@ -169,13 +169,12 @@ class _ValidateEventAttendeesState extends State<ValidateEventAttendees>
             title: Padding(
               padding: EdgeInsets.symmetric(horizontal: 10.0),
               child: Material(
-                color: Colors.grey,
+                color: Colors.white,
                 elevation: 1.0,
                 borderRadius: BorderRadius.all(Radius.circular(30.0)),
                 child: TextField(
                   style: TextStyle(
-                    color:
-                        ConfigBloc().darkModeOn ? Colors.black : Colors.white,
+                    color: Colors.black,
                   ),
                   cursorColor: Colors.blue,
                   controller: _controller,
@@ -191,24 +190,21 @@ class _ValidateEventAttendeesState extends State<ValidateEventAttendees>
                     contentPadding:
                         EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                     border: InputBorder.none,
-                    hintText: 'Enter Attendee number',
+                    hintText: 'Attendee number',
                     prefixIcon: Icon(
                       Icons.search,
                       size: 20.0,
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.black : Colors.white,
+                      color: Colors.black,
                     ),
                     hintStyle: TextStyle(
                       fontSize: 16.0,
-                      color: Colors.white,
+                      color: Colors.grey,
                     ),
                     suffixIcon: IconButton(
                       icon: Icon(
                         Icons.clear,
                         size: 15.0,
-                        color: ConfigBloc().darkModeOn
-                            ? Colors.black
-                            : Colors.white,
+                        color: Colors.black,
                       ),
                       onPressed: _clearSearch,
                     ),

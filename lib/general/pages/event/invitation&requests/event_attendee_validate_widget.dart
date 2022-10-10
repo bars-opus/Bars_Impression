@@ -188,21 +188,20 @@ class _EventAttendeeValidateWidgetState
                       decoration: BoxDecoration(),
                       height: 60,
                       child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: ConfigBloc().darkModeOn
-                              ? Color(0xFF1a1a1a)
-                              : Color(0xFFf2f2f2),
-                          radius: 20.0,
-                          backgroundImage:
-                              widget.invite.anttendeeprofileImageUrl.isEmpty
-                                  ? AssetImage(
-                                      ConfigBloc().darkModeOn
-                                          ? 'assets/images/user_placeholder.png'
-                                          : 'assets/images/user_placeholder2.png',
-                                    ) as ImageProvider
-                                  : CachedNetworkImageProvider(
-                                      widget.invite.anttendeeprofileImageUrl),
-                        ),
+                        leading: widget.invite.anttendeeprofileImageUrl.isEmpty
+                            ? Icon(
+                                Icons.account_circle,
+                                size: 60.0,
+                                color: Colors.white,
+                              )
+                            : CircleAvatar(
+                                radius: 25.0,
+                                backgroundColor: ConfigBloc().darkModeOn
+                                    ? Color(0xFF1a1a1a)
+                                    : Color(0xFFf2f2f2),
+                                backgroundImage: CachedNetworkImageProvider(
+                                    widget.invite.anttendeeprofileImageUrl),
+                              ),
                         title: Padding(
                           padding: const EdgeInsets.only(right: 2.0),
                           child: RichText(

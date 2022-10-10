@@ -15,7 +15,7 @@ class Artists extends StatefulWidget {
 }
 
 class _ArtistsState extends State<Artists> with AutomaticKeepAliveClientMixin {
-  List<AccountHolder> _userList = [];
+  List<DocId> _userList = [];
   final _userSnapshot = <DocumentSnapshot>[];
   int limit = 5;
   bool _hasNext = true;
@@ -55,12 +55,14 @@ class _ArtistsState extends State<Artists> with AutomaticKeepAliveClientMixin {
   }
 
   _setupUsers() async {
-    QuerySnapshot userFeedSnapShot = await usersRef
-        .where('profileHandle', isEqualTo: 'Artist')
+    QuerySnapshot userFeedSnapShot = await accountTypesRef
+        .doc('Artist')
+        .collection('Artist')
+        .orderBy('timestamp', descending: true)
         .limit(limit)
         .get();
-    List<AccountHolder> users =
-        userFeedSnapShot.docs.map((doc) => AccountHolder.fromDoc(doc)).toList();
+    List<DocId> users =
+        userFeedSnapShot.docs.map((doc) => DocId.fromDoc(doc)).toList();
     _userSnapshot.addAll((userFeedSnapShot.docs));
     if (mounted) {
       setState(() {
@@ -74,15 +76,17 @@ class _ArtistsState extends State<Artists> with AutomaticKeepAliveClientMixin {
   _loadMoreUsers() async {
     if (_isFectchingUser) return;
     _isFectchingUser = true;
-    QuerySnapshot userFeedSnapShot = await usersRef
-        .where('profileHandle', isEqualTo: 'Artist')
+    QuerySnapshot userFeedSnapShot = await accountTypesRef
+        .doc('Artist')
+        .collection('Artist')
+        .orderBy('timestamp', descending: true)
         .limit(limit)
         .startAfterDocument(_userSnapshot.last)
         .get();
-    List<AccountHolder> moreusers =
-        userFeedSnapShot.docs.map((doc) => AccountHolder.fromDoc(doc)).toList();
+    List<DocId> moreusers =
+        userFeedSnapShot.docs.map((doc) => DocId.fromDoc(doc)).toList();
     if (_userSnapshot.length < limit) _hasNext = false;
-    List<AccountHolder> allusers = _userList..addAll(moreusers);
+    List<DocId> allusers = _userList..addAll(moreusers);
     _userSnapshot.addAll((userFeedSnapShot.docs));
     if (mounted) {
       setState(() {
@@ -91,16 +95,7 @@ class _ArtistsState extends State<Artists> with AutomaticKeepAliveClientMixin {
     }
     _hasNext = false;
     _isFectchingUser = false;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        duration: const Duration(milliseconds: 800),
-        backgroundColor:
-            ConfigBloc().darkModeOn ? Colors.grey[800] : Color(0xFFf2f2f2),
-        content: SizedBox(
-            height: 15,
-            child: Text(
-              'Loading...',
-              style: TextStyle(color: Colors.blue, fontSize: 12),
-            ))));
+
     return _hasNext;
   }
 
@@ -116,9 +111,9 @@ class _ArtistsState extends State<Artists> with AutomaticKeepAliveClientMixin {
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
-                  AccountHolder accountHolder = _userList[index];
+                  DocId accountHolder = _userList[index];
                   return FutureBuilder(
-                      future: DatabaseService.getUserWithId(accountHolder.id!),
+                      future: DatabaseService.getUserWithId(accountHolder.uid),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (!snapshot.hasData) {
                           return UserSchimmerSkeleton();

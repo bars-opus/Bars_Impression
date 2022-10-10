@@ -30,6 +30,9 @@ class _ViewSentContentState extends State<ViewSentContent> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(
           textScaleFactor:
@@ -63,7 +66,17 @@ class _ViewSentContentState extends State<ViewSentContent> {
                   future: DatabaseService.getForumWithId(widget.contentId),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if (!snapshot.hasData) {
-                      return PostSchimmerSkeleton();
+                      return Container(
+                        width: width,
+                        height: height,
+                        color: ConfigBloc().darkModeOn
+                            ? Color(0xFF1a1a1a)
+                            : Color(0xFFf2f2f2),
+                        child: Center(
+                            child: CircularProgressIndicator(
+                          color: Colors.blue,
+                        )),
+                      );
                     }
                     Forum _forum = snapshot.data;
                     return FutureBuilder(
@@ -71,10 +84,17 @@ class _ViewSentContentState extends State<ViewSentContent> {
                         builder:
                             (BuildContext context, AsyncSnapshot snapshot) {
                           if (!snapshot.hasData) {
-                            return Center(
-                                child: CircularProgressIndicator(
-                              color: Colors.blue,
-                            ));
+                            return Container(
+                              width: width,
+                              height: height,
+                              color: ConfigBloc().darkModeOn
+                                  ? Color(0xFF1a1a1a)
+                                  : Color(0xFFf2f2f2),
+                              child: Center(
+                                  child: CircularProgressIndicator(
+                                color: Colors.blue,
+                              )),
+                            );
                           }
                           AccountHolder _author = snapshot.data;
                           return ThoughtsScreen(
@@ -92,10 +112,17 @@ class _ViewSentContentState extends State<ViewSentContent> {
                       future: DatabaseService.getEventWithId(widget.contentId),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (!snapshot.hasData) {
-                          return Center(
-                              child: CircularProgressIndicator(
-                            color: Colors.blue,
-                          ));
+                          return Container(
+                            width: width,
+                            height: height,
+                            color: ConfigBloc().darkModeOn
+                                ? Color(0xFF1a1a1a)
+                                : Color(0xFFf2f2f2),
+                            child: Center(
+                                child: CircularProgressIndicator(
+                              color: Colors.blue,
+                            )),
+                          );
                         }
                         Event _event = snapshot.data;
                         return AllEvenEnlarged(

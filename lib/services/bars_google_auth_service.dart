@@ -136,6 +136,7 @@ class BarsGoogleAuthService {
             'professionalVideo2': '',
             'professionalVideo3': '',
             'genreTags': '',
+            'subAccountType': '',
           });
           Provider.of<UserData>(context, listen: false).currentUserId =
               signedInHandler.uid;
@@ -327,6 +328,7 @@ class BarsGoogleAuthService {
             'professionalVideo2': '',
             'professionalVideo3': '',
             'genreTags': '',
+            'subAccountType': '',
           });
           Provider.of<UserData>(context, listen: false).currentUserId =
               signedInHandler.uid;

@@ -16,7 +16,7 @@ class VideoDirectors extends StatefulWidget {
 
 class _VideoDirectorsState extends State<VideoDirectors>
     with AutomaticKeepAliveClientMixin {
-  List<AccountHolder> _userList = [];
+  List<DocId> _userList = [];
   final _userSnapshot = <DocumentSnapshot>[];
 int limit = 5;
   bool _hasNext = true;
@@ -55,13 +55,68 @@ int limit = 5;
     super.dispose();
   }
 
-  _setupUsers() async {
-    QuerySnapshot userFeedSnapShot = await usersRef
-        .where('profileHandle', isEqualTo: 'Music_Video_Director')
+  // _setupUsers() async {
+  //   QuerySnapshot userFeedSnapShot = await usersRef
+  //       .where('profileHandle', isEqualTo: 'Music_Video_Director')
+  //       .limit(limit)
+  //       .get();
+  //   List<AccountHolder> users =
+  //       userFeedSnapShot.docs.map((doc) => AccountHolder.fromDoc(doc)).toList();
+  //   _userSnapshot.addAll((userFeedSnapShot.docs));
+  //   if (mounted) {
+  //     setState(() {
+  //       _hasNext = false;
+  //       _userList = users;
+  //     });
+  //   }
+  //   return users;
+  // }
+
+  // _loadMoreUsers() async {
+  //   if (_isFectchingUser) return;
+  //   _isFectchingUser = true;
+  //   QuerySnapshot userFeedSnapShot = await usersRef
+  //       .where('profileHandle', isEqualTo: 'Music_Video_Director')
+  //       .limit(limit)
+  //       .startAfterDocument(_userSnapshot.last)
+  //       .get();
+  //   List<AccountHolder> moreusers =
+  //       userFeedSnapShot.docs.map((doc) => AccountHolder.fromDoc(doc)).toList();
+  //   if (_userSnapshot.length < limit) _hasNext = false;
+  //   List<AccountHolder> allusers = _userList..addAll(moreusers);
+  //   _userSnapshot.addAll((userFeedSnapShot.docs));
+  //   if (mounted) {
+  //     setState(() {
+  //       _userList = allusers;
+  //     });
+  //   }
+  //   _hasNext = false;
+  //   _isFectchingUser = false;
+  //    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //       duration: const Duration(milliseconds: 800),
+  //       backgroundColor:
+  //           ConfigBloc().darkModeOn ? Colors.grey[800] :  Color(0xFFf2f2f2),
+  //       content: SizedBox(
+  //           height: 15,
+  //           child: Text(
+  //             'Loading...',
+  //             style: TextStyle(color: Colors.blue, fontSize: 12),
+  //           ))));
+  //   return _hasNext;
+  // }
+
+
+
+
+ _setupUsers() async {
+    QuerySnapshot userFeedSnapShot = await accountTypesRef
+        .doc('Music_Video_Director')
+        .collection('Music_Video_Director')
+        .orderBy('timestamp', descending: true)
         .limit(limit)
         .get();
-    List<AccountHolder> users =
-        userFeedSnapShot.docs.map((doc) => AccountHolder.fromDoc(doc)).toList();
+    List<DocId> users =
+        userFeedSnapShot.docs.map((doc) => DocId.fromDoc(doc)).toList();
     _userSnapshot.addAll((userFeedSnapShot.docs));
     if (mounted) {
       setState(() {
@@ -75,15 +130,17 @@ int limit = 5;
   _loadMoreUsers() async {
     if (_isFectchingUser) return;
     _isFectchingUser = true;
-    QuerySnapshot userFeedSnapShot = await usersRef
-        .where('profileHandle', isEqualTo: 'Music_Video_Director')
+    QuerySnapshot userFeedSnapShot = await accountTypesRef
+        .doc('Music_Video_Director')
+        .collection('Music_Video_Director')
+        .orderBy('timestamp', descending: true)
         .limit(limit)
         .startAfterDocument(_userSnapshot.last)
         .get();
-    List<AccountHolder> moreusers =
-        userFeedSnapShot.docs.map((doc) => AccountHolder.fromDoc(doc)).toList();
+    List<DocId> moreusers =
+        userFeedSnapShot.docs.map((doc) => DocId.fromDoc(doc)).toList();
     if (_userSnapshot.length < limit) _hasNext = false;
-    List<AccountHolder> allusers = _userList..addAll(moreusers);
+    List<DocId> allusers = _userList..addAll(moreusers);
     _userSnapshot.addAll((userFeedSnapShot.docs));
     if (mounted) {
       setState(() {
@@ -92,20 +149,11 @@ int limit = 5;
     }
     _hasNext = false;
     _isFectchingUser = false;
-     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        duration: const Duration(milliseconds: 800),
-        backgroundColor:
-            ConfigBloc().darkModeOn ? Colors.grey[800] :  Color(0xFFf2f2f2),
-        content: SizedBox(
-            height: 15,
-            child: Text(
-              'Loading...',
-              style: TextStyle(color: Colors.blue, fontSize: 12),
-            ))));
+
     return _hasNext;
   }
 
-  _buildUser() {
+   _buildUser() {
     return NotificationListener<ScrollNotification>(
       onNotification: _handleScrollNotification,
       child: Scrollbar(
@@ -117,9 +165,9 @@ int limit = 5;
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
-                  AccountHolder accountHolder = _userList[index];
+                  DocId accountHolder = _userList[index];
                   return FutureBuilder(
-                      future: DatabaseService.getUserWithId(accountHolder.id!),
+                      future: DatabaseService.getUserWithId(accountHolder.uid),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (!snapshot.hasData) {
                           return UserSchimmerSkeleton();

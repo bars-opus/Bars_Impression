@@ -89,17 +89,49 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
     Provider.of<UserData>(context, listen: false).setPost9('');
   }
 
-  _dynamicLink() async {
-    var linkUrl = await Uri.parse(widget.event.imageUrl);
+  _dashBoard() {
+    return Padding(
+      padding:
+          const EdgeInsets.only(top: 20, right: 30, bottom: 40, left: 30.0),
+      child: Center(
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          child: TextButton(
+            style: ElevatedButton.styleFrom(
+              primary: Colors.white,
+              onPrimary: Colors.blue,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(3.0),
+              ),
+            ),
+            onPressed: widget.onPressedAttend,
+            child: Material(
+              color: Colors.transparent,
+              child: Text(
+                'Go to your dashboard',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
-    final dynamicLinkParams = await DynamicLinkParameters(
-      socialMetaTagParameters: await SocialMetaTagParameters(
+  _dynamicLink() async {
+    var linkUrl = Uri.parse(widget.event.imageUrl);
+
+    final dynamicLinkParams = DynamicLinkParameters(
+      socialMetaTagParameters: SocialMetaTagParameters(
         imageUrl: linkUrl,
         title: 'Event',
         description: widget.event.title,
       ),
       link: Uri.parse('https://www.barsopus.com/event_${widget.event.id}'),
-      uriPrefix: 'https://barsopus.com/barsImpression/',
+      uriPrefix: 'https://barsopus.com/barsImpression',
       androidParameters:
           AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
       iosParameters: IOSParameters(
@@ -110,7 +142,6 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
     if (Platform.isIOS) {
       var link =
           await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
-
       Share.share(link.toString());
     } else {
       var link =
@@ -130,7 +161,6 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
     final width = Responsive.isDesktop(context)
         ? 600.0
         : MediaQuery.of(context).size.width;
-    // final height = MediaQuery.of(context).size.height;
     return ResponsiveScaffold(
       child: Center(
         child: _displayWarning == true
@@ -152,7 +182,7 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                             : Icons.arrow_back),
                         color: ConfigBloc().darkModeOn
                             ? Color(0xFF1a1a1a)
-                            : Color(0xFFe8f3fa),
+                            : Colors.white,
                         onPressed: _pop,
                       ),
                     )
@@ -167,7 +197,7 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                     decoration: BoxDecoration(
                         color: ConfigBloc().darkModeOn
                             ? Color(0xFF1a1a1a)
-                            : Color(0xFFeff0f2),
+                            : Colors.white,
                         image: DecorationImage(
                           image:
                               CachedNetworkImageProvider(widget.event.imageUrl),
@@ -179,7 +209,6 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                               begin: Alignment.bottomRight,
                               colors: [
                             Colors.black.withOpacity(.5),
-                            // darkColor.withOpacity(.5),
                             Colors.black.withOpacity(.4),
                           ])),
                       child: ListView(
@@ -196,17 +225,18 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                 ),
                 Positioned(
                   top: 50,
-                  left: 30,
+                  left: 10,
                   child: Hero(
                     tag: widget.closeHero,
                     child: Material(
                       color: Colors.transparent,
                       child: IconButton(
                         icon: Icon(
-                          Icons.close,
+                          Platform.isIOS
+                              ? Icons.arrow_back_ios
+                              : Icons.arrow_back,
                           color: Colors.white,
                         ),
-                        iconSize: 30.0,
                         onPressed: () => Navigator.pop(context),
                       ),
                     ),
@@ -274,42 +304,10 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                 widget.event.authorId ==
                                         Provider.of<UserData>(context)
                                             .currentUserId!
-                                    ? Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 20,
-                                            right: 30,
-                                            bottom: 40,
-                                            left: 30.0),
-                                        child: Center(
-                                          child: Container(
-                                            width: MediaQuery.of(context)
-                                                .size
-                                                .width,
-                                            child: TextButton(
-                                              style: ElevatedButton.styleFrom(
-                                                primary: Colors.white,
-                                                onPrimary: Colors.blue,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          3.0),
-                                                ),
-                                              ),
-                                              onPressed: widget.onPressedAttend,
-                                              child: Material(
-                                                color: Colors.transparent,
-                                                child: Text(
-                                                  'Go to your dashboard',
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.black,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      )
+                                    ?
+                                    // await Future.delayed(Duration(seconds: 2));
+
+                                    _dashBoard()
                                     : SizedBox.shrink(),
                                 ShakeTransition(
                                   child: Row(

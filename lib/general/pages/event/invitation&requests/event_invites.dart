@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 class EventInvites extends StatefulWidget {
   static final id = 'EventInvites';
   final Event event;
-  final String from;
+  final String answer;
   final bool letShowAppBar;
 
   final PaletteGenerator palette;
@@ -12,8 +12,8 @@ class EventInvites extends StatefulWidget {
   EventInvites({
     required this.event,
     required this.palette,
-    required this.from,
     required this.letShowAppBar,
+    required this.answer,
   });
 
   @override
@@ -33,7 +33,7 @@ class _EventInvitesState extends State<EventInvites>
   @override
   void initState() {
     super.initState();
-    widget.from.startsWith('Sent') ? _setUpInvited() : _setUpInvite();
+    widget.answer.startsWith('All') ? _setUpInvited() : _setUpInvite();
     __setShowInfo();
     _hideButtonController = ScrollController();
   }
@@ -41,7 +41,7 @@ class _EventInvitesState extends State<EventInvites>
   bool _handleScrollNotification(ScrollNotification notification) {
     if (notification is ScrollEndNotification) {
       if (_hideButtonController.position.extentAfter == 0) {
-        widget.from.startsWith('Sent') ? _loadMoreAll() : _loadMoreInvite();
+        widget.answer.startsWith('All') ? _loadMoreAll() : _loadMoreInvite();
       }
     }
     return false;
@@ -69,7 +69,8 @@ class _EventInvitesState extends State<EventInvites>
     QuerySnapshot inviteSnapShot = await eventInviteRef
         .doc(widget.event.id)
         .collection('eventInvite')
-        .where('attendeeStatus', isEqualTo: widget.from)
+        .where('invited', isEqualTo: true)
+        .where('attendeeStatus', isEqualTo: widget.answer)
         .limit(limit)
         .get();
     List<EventInvite> users =
@@ -111,7 +112,8 @@ class _EventInvitesState extends State<EventInvites>
     QuerySnapshot inviteSnapShot = await eventInviteRef
         .doc(widget.event.id)
         .collection('eventInvite')
-        .where('attendeeStatus', isEqualTo: widget.from)
+        .where('invited', isEqualTo: true)
+        .where('attendeeStatus', isEqualTo: widget.answer)
         .limit(limit)
         .startAfterDocument(_inviteSnapshot.last)
         .get();
@@ -274,21 +276,20 @@ class _EventInvitesState extends State<EventInvites>
                       decoration: BoxDecoration(),
                       height: 60,
                       child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: ConfigBloc().darkModeOn
-                              ? Color(0xFF1a1a1a)
-                              : Color(0xFFf2f2f2),
-                          radius: 20.0,
-                          backgroundImage:
-                              invite.anttendeeprofileImageUrl.isEmpty
-                                  ? AssetImage(
-                                      ConfigBloc().darkModeOn
-                                          ? 'assets/images/user_placeholder.png'
-                                          : 'assets/images/user_placeholder2.png',
-                                    ) as ImageProvider
-                                  : CachedNetworkImageProvider(
-                                      invite.anttendeeprofileImageUrl),
-                        ),
+                        leading:  invite.anttendeeprofileImageUrl.isEmpty
+                            ? Icon(
+                                Icons.account_circle,
+                                size: 60.0,
+                                color: Colors.white,
+                              )
+                            : CircleAvatar(
+                                radius: 25.0,
+                                backgroundColor: ConfigBloc().darkModeOn
+                                    ? Color(0xFF1a1a1a)
+                                    : Color(0xFFf2f2f2),
+                                backgroundImage: CachedNetworkImageProvider(
+                                    invite.anttendeeprofileImageUrl),
+                              ),
                         title: Padding(
                           padding: const EdgeInsets.only(right: 2.0),
                           child: RichText(
@@ -466,18 +467,15 @@ class _EventInvitesState extends State<EventInvites>
                   snap: true,
                   pinned: true,
                   iconTheme: new IconThemeData(
-                    color:
-                        ConfigBloc().darkModeOn ? Colors.black : Colors.white,
+                    color: Colors.white,
                   ),
                   backgroundColor: widget.palette.darkMutedColor == null
                       ? Color(0xFF1a1a1a)
                       : widget.palette.darkMutedColor!.color,
                   title: Text(
-                    'Invites ${widget.from}',
+                    'Invites ${widget.answer}',
                     style: TextStyle(
-                        color: ConfigBloc().darkModeOn
-                            ? Colors.black
-                            : Colors.white,
+                        color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.bold),
                   ),

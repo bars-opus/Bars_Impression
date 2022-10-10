@@ -36,15 +36,15 @@ class _ProfileForumViewState extends State<ProfileForumView> {
   }
 
   _dynamicLink() async {
-    final dynamicLinkParams = await DynamicLinkParameters(
-      socialMetaTagParameters: await SocialMetaTagParameters(
-         imageUrl: Uri.parse(
+    final dynamicLinkParams = DynamicLinkParameters(
+      socialMetaTagParameters: SocialMetaTagParameters(
+        imageUrl: Uri.parse(
             'https://firebasestorage.googleapis.com/v0/b/bars-5e3e5.appspot.com/o/IMG_8574.PNG?alt=media&token=ccb4e3b1-b5dc-470f-abd0-63edb5ed549f'),
         title: 'Forum',
         description: widget.forum.title,
       ),
       link: Uri.parse('https://www.barsopus.com/forum_${widget.forum.id}'),
-      uriPrefix: 'https://barsopus.com/barsImpression/',
+      uriPrefix: 'https://barsopus.com/barsImpression',
       androidParameters:
           AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
       iosParameters: IOSParameters(
@@ -55,7 +55,6 @@ class _ProfileForumViewState extends State<ProfileForumView> {
     if (Platform.isIOS) {
       var link =
           await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
-
       Share.share(link.toString());
     } else {
       var link =
@@ -102,13 +101,13 @@ class _ProfileForumViewState extends State<ProfileForumView> {
                   context,
                   MaterialPageRoute(
                       builder: (_) => widget.author.userName!.isEmpty
-                                  ? UserNotFound(
-                                      userName: 'User',
-                                    )
-                                  :  ProfileScreen(
-                            currentUserId: widget.currentUserId,
-                            userId: widget.forum.authorId,
-                          ))),
+                          ? UserNotFound(
+                              userName: 'User',
+                            )
+                          : ProfileScreen(
+                              currentUserId: widget.currentUserId,
+                              userId: widget.forum.authorId,
+                            ))),
         ),
         FocusedMenuItem(
             title: Container(
@@ -189,23 +188,15 @@ class _ProfileForumViewState extends State<ProfileForumView> {
             textScaleFactor:
                 MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
         child: ForumViewWidget(
-          currentUserId: widget.currentUserId,
-          author: widget.author,
-          forum: widget.forum,
-          titleHero: 'titleProfile' + widget.forum.id.toString(),
-          subtitleHero: 'subTitleProfile' + widget.forum.id.toString(),
-          thougthCount: NumberFormat.compact().format(_thoughtCount),
-          onPressedThougthScreen: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => ThoughtsScreen(
-                        feed: widget.feed,
-                        forum: widget.forum,
-                        author: widget.author,
-                        thoughtCount: _thoughtCount,
-                        currentUserId: widget.currentUserId,
-                      ))),
-        ),
+            currentUserId: widget.currentUserId,
+            author: widget.author,
+            forum: widget.forum,
+            // titleHero: 'titleProfile' + widget.forum.id.toString(),
+            // subtitleHero: 'subTitleProfile' + widget.forum.id.toString(),
+            feed: widget.feed,
+            thoughtCount: _thoughtCount
+            // NumberFormat.compact().format(_thoughtCount),
+            ),
       ),
     );
   }

@@ -10,6 +10,7 @@ class Forum {
   final String linkedContentId;
   final String mediaType;
   final String mediaUrl;
+  final String forumType;
   final bool isPrivate;
   final Timestamp? timestamp;
 
@@ -19,6 +20,7 @@ class Forum {
       required this.subTitle,
       required this.report,
       required this.mediaType,
+      required this.forumType,
       required this.mediaUrl,
       required this.reportConfirmed,
       required this.isPrivate,
@@ -39,6 +41,7 @@ class Forum {
       linkedContentId: doc['linkedContentId'] ?? '',
       reportConfirmed: doc['reportConfirmed'] ?? '',
       timestamp: doc['timestamp'],
+      forumType: doc['forumType'] ?? '',
     );
   }
 }

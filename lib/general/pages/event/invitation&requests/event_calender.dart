@@ -96,7 +96,7 @@ class _EventCalenderState extends State<EventCalender> {
                           ),
                         ),
                         TextSpan(
-                          text: _different < 1 ? 'Ongoing...' : '\nDays\nMore',
+                          text: _different < 1 ? 'Ongoing...' : '\nDays More',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,

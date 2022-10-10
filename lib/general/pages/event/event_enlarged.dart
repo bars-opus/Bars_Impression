@@ -8,17 +8,12 @@ class AllEvenEnlarged extends StatefulWidget {
   final int feed;
   final String exploreLocation;
 
-  // final AccountHolder author;
-  // final List<Event> eventList;
-
   AllEvenEnlarged({
     required this.currentUserId,
     required this.user,
-    // required this.eventList,
     required this.askCount,
     required this.exploreLocation,
     required this.feed,
-    // required this.author,
     required this.event,
   });
 
@@ -111,6 +106,7 @@ class _AllEvenEnlargedState extends State<AllEvenEnlarged> {
             Navigator.of(context).push(PageRouteBuilder(
                 transitionDuration: const Duration(milliseconds: 500),
                 pageBuilder: (context, animation, _) {
+                  HapticFeedback.heavyImpact();
                   return FadeTransition(
                     opacity: animation,
                     child: ExploreEvent(
@@ -119,7 +115,6 @@ class _AllEvenEnlargedState extends State<AllEvenEnlarged> {
                       user: user,
                       currentUserId: widget.currentUserId,
                       askCount: widget.askCount,
-                      // author: widget.author,
                       event: widget.event,
                     ),
                   );
@@ -139,7 +134,6 @@ class _AllEvenEnlargedState extends State<AllEvenEnlarged> {
                               askCount: widget.askCount,
                               currentUserId: widget.currentUserId,
                               event: widget.event,
-                              // author: widget.author,
                               user: widget.user,
                             ))),
                 imageHero: 'image ${widget.event.id.toString()}',
@@ -181,11 +175,12 @@ class _AllEvenEnlargedState extends State<AllEvenEnlarged> {
                 child: IconButton(
                   icon: Icon(
                     Icons.center_focus_strong,
-                    color: Colors.white,
+                    color: Color.fromRGBO(255, 255, 255, 1),
                   ),
                   onPressed: () => Navigator.of(context).push(PageRouteBuilder(
                       transitionDuration: const Duration(milliseconds: 500),
-                      pageBuilder: (context, animation, _) {
+                      pageBuilder: (context, animation, _) {    HapticFeedback.heavyImpact();
+
                         return FadeTransition(
                           opacity: animation,
                           child: ExploreEvent(

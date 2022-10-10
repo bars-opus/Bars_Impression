@@ -655,6 +655,61 @@ exports.onCreateActivityNotification = functions.firestore
 });
 
 
+exports.onCreateActivityEventNotification = functions.firestore
+.document('/activitiesEvent/{userId}/userActivitiesEvent/{userActivitiesEventId}')
+.onCreate(async (snapshot, context) => {
+  console.log('activity notification created', snapshot.data());
+  const userId = context.params.userId;
+  const userActivitiesEventId = context.params.userActivitiesEventId;
+  const createdActivityItem = snapshot.data();
+  const usersRef = admin.firestore().doc(`users/${userId}`);
+  const doc = await usersRef.get();
+  const androidNotificationToken = doc.data().androidNotificationToken;
+ 
+  if(androidNotificationToken){
+   sendNotification(androidNotificationToken, createdActivityItem )
+  } else {
+    console.log('no notification token');
+  }
+  function sendNotification(androidNotificationToken, userActivitiesEvent)
+ {
+    let body;
+    switch (userActivitiesEvent.invited){
+     case false:
+       body =   ` ${userActivitiesEvent.ask} `
+       break;
+      
+       default: body = ` ${userActivitiesEvent.eventInviteType} `
+    }
+    let title;
+    switch (userActivitiesEvent.invited){
+     case false:
+       title = `New event question  `
+       break;
+      
+       default: title = `Cordially invited`
+    }
+  
+   const message = {
+    notification: {body: body, title: title},
+    token: androidNotificationToken,
+    data: {recipient: userId},
+   };
+    admin
+   .messaging()
+   .send(message)
+   .then(response => {
+     return console.log('message sent', response);
+   }).catch(error =>{
+    console.log('error sending message', error);
+   })
+ }
+
+});
+
+
+
+
 
 exports.onCreateActivityForumNotification = functions.firestore
 .document('/activitiesForum/{userId}/userActivitiesForum/{userActivitiesForumId}')
@@ -693,63 +748,6 @@ exports.onCreateActivityForumNotification = functions.firestore
  }
 
 });
-
-
-exports.onCreateActivityEventNotification = functions.firestore
-.document('/activitiesEvent/{userId}/userActivitiesEvent/{userActivitiesEventId}')
-.onCreate(async (snapshot, context) => {
-  console.log('activity notification created', snapshot.data());
-  const userId = context.params.userId;
-  const userActivitiesEventId = context.params.userActivitiesEventId;
-  const createdActivityItem = snapshot.data();
-  const usersRef = admin.firestore().doc(`users/${userId}`);
-  const doc = await usersRef.get();
-  const androidNotificationToken = doc.data().androidNotificationToken;
- 
-  if(androidNotificationToken){
-   sendNotification(androidNotificationToken, createdActivityItem )
-  } else {
-    console.log('no notification token');
-  }
-  function sendNotification(androidNotificationToken, userActivitiesEvent)
- {
-    // body = ` ${userActivitiesEvent.ask} `
-    // title = `New event question  `
-    let body;
-    switch (userActivitiesEvent.ask){
-     case null:
-       body = ` ${userActivitiesEvent.eventInviteType} `
-       break;
-      
-       default: body = ` ${userActivitiesEvent.ask} `
-    }
-    let title;
-    switch (userActivitiesEvent.ask){
-     case null:
-       title = `New event invitation`
-       break;
-      
-       default: title =  `New event question  `
-    }
-  
-   const message = {
-    notification: {body: body, title: title},
-    token: androidNotificationToken,
-    data: {recipient: userId},
-   };
-    admin
-   .messaging()
-   .send(message)
-   .then(response => {
-     return console.log('message sent', response);
-   }).catch(error =>{
-    console.log('error sending message', error);
-   })
- }
-
-});
-
-
 
 
 exports.onCreateChatMessage = functions.firestore

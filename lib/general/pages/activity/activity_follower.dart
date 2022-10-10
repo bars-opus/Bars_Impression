@@ -185,19 +185,19 @@ class _ActivityFollowerScreenState extends State<ActivityFollowerScreen>
                                   userId: activity.fromUserId,
                                 )));
                   },
-                  leading: CircleAvatar(
-                    radius: 20.0,
-                    backgroundColor: ConfigBloc().darkModeOn
-                        ? Color(0xFF1a1a1a)
-                        : Color(0xFFf2f2f2),
-                    backgroundImage: author.profileImageUrl!.isEmpty
-                        ? AssetImage(
-                            ConfigBloc().darkModeOn
-                                ? 'assets/images/user_placeholder.png'
-                                : 'assets/images/user_placeholder2.png',
-                          ) as ImageProvider
-                        : CachedNetworkImageProvider(author.profileImageUrl!),
-                  ),
+                  leading: author.profileImageUrl!.isEmpty
+                      ? Icon(
+                          Icons.account_circle,
+                          size: 60.0,
+                          color: Colors.grey,
+                        )
+                      : CircleAvatar(
+                          radius: 25.0,
+                          backgroundColor: ConfigBloc().darkModeOn
+                              ? Color(0xFF1a1a1a)
+                              : Color(0xFFf2f2f2),
+                          backgroundImage: CachedNetworkImageProvider(
+                              author.profileImageUrl!)),
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,

@@ -108,20 +108,94 @@ class _InviteSearchState extends State<InviteSearch>
   }
 
   _buildUserTile(AccountHolder user) {
-    return UserListTile(
-        user: user,
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => SendEventInviation(
-                        user: user,
-                        currentUserId:
-                            Provider.of<UserData>(context).currentUserId!,
-                        event: widget.event,
-                        palette: widget.palette,
-                      )));
-        });
+    final width = MediaQuery.of(context).size.width;
+    return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListTile(
+          leading: user.profileImageUrl!.isEmpty
+              ? Icon(
+                  Icons.account_circle,
+                  size: 60.0,
+                  color: Colors.white,
+                )
+              : CircleAvatar(
+                  radius: 25.0,
+                  backgroundColor: ConfigBloc().darkModeOn
+                      ? Color(0xFF1a1a1a)
+                      : Color(0xFFf2f2f2),
+                  backgroundImage:
+                      CachedNetworkImageProvider(user.profileImageUrl!),
+                ),
+          title: Align(
+            alignment: Alignment.topLeft,
+            child: Stack(
+              alignment: Alignment.bottomRight,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 12.0),
+                  child: Text(user.userName!,
+                      style: TextStyle(
+                        fontSize: width > 800 ? 18 : 14.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      )),
+                ),
+                user.verified!.isEmpty
+                    ? SizedBox.shrink()
+                    : Positioned(
+                        top: 3,
+                        right: 0,
+                        child: Icon(
+                          MdiIcons.checkboxMarkedCircle,
+                          size: 11,
+                          color: Colors.blue,
+                        ),
+                      ),
+              ],
+            ),
+          ),
+          subtitle: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(user.profileHandle!,
+                        style: TextStyle(
+                          fontSize: width > 800 ? 14 : 12,
+                          color: Colors.blue,
+                        )),
+                    Text(user.company!,
+                        style: TextStyle(
+                          fontSize: width > 800 ? 14 : 12,
+                          color: Colors.blueGrey,
+                        )),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    Divider(
+                      color: ConfigBloc().darkModeOn
+                          ? Colors.grey[850]
+                          : Colors.grey[350],
+                    )
+                  ],
+                ),
+              ]),
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => SendEventInviation(
+                          user: user,
+                          currentUserId:
+                              Provider.of<UserData>(context).currentUserId!,
+                          event: widget.event,
+                          palette: widget.palette,
+                        )));
+          },
+        ));
   }
 
   _buildFollowerBuilder() {
@@ -172,28 +246,27 @@ class _InviteSearchState extends State<InviteSearch>
     return ResponsiveScaffold(
         child: ResponsiveScaffold(
       child: Scaffold(
-          backgroundColor:
-              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+          backgroundColor: widget.palette.darkMutedColor == null
+              ? Color(0xFF1a1a1a)
+              : widget.palette.darkMutedColor!.color,
           appBar: AppBar(
             iconTheme: IconThemeData(
-              color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+              color: Colors.white,
             ),
             automaticallyImplyLeading: true,
             elevation: 0,
-            backgroundColor:
-                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+            backgroundColor: widget.palette.darkMutedColor == null
+                ? Color(0xFF1a1a1a)
+                : widget.palette.darkMutedColor!.color,
             title: Padding(
               padding: EdgeInsets.symmetric(horizontal: 10.0),
               child: Material(
-                color: ConfigBloc().darkModeOn
-                    ? Color(0xFFf2f2f2)
-                    : Color(0xFF1a1a1a),
+                color: Colors.white,
                 elevation: 1.0,
                 borderRadius: BorderRadius.all(Radius.circular(30.0)),
                 child: TextField(
                   style: TextStyle(
-                    color:
-                        ConfigBloc().darkModeOn ? Colors.black : Colors.white,
+                    color: Colors.black,
                   ),
                   cursorColor: Colors.blue,
                   controller: _controller,
@@ -210,8 +283,7 @@ class _InviteSearchState extends State<InviteSearch>
                     prefixIcon: Icon(
                       Icons.search,
                       size: 20.0,
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.black : Colors.white,
+                      color: Colors.black,
                     ),
                     hintStyle: TextStyle(
                       fontSize: 16.0,
@@ -221,9 +293,7 @@ class _InviteSearchState extends State<InviteSearch>
                       icon: Icon(
                         Icons.clear,
                         size: 15.0,
-                        color: ConfigBloc().darkModeOn
-                            ? Colors.black
-                            : Colors.white,
+                        color: Colors.black,
                       ),
                       onPressed: _clearSearch,
                     ),
@@ -252,7 +322,20 @@ class _InviteSearchState extends State<InviteSearch>
                           builder: (BuildContext context,
                               AsyncSnapshot<QuerySnapshot> snapshot) {
                             if (!snapshot.hasData) {
-                              return SearchUserSchimmer();
+                              return Center(
+                                child: SizedBox(
+                                  height: 250,
+                                  width: 250,
+                                  child: CircularProgressIndicator(
+                                    backgroundColor: Colors.transparent,
+                                    valueColor:
+                                        new AlwaysStoppedAnimation<Color>(
+                                      Colors.grey,
+                                    ),
+                                    strokeWidth: 1,
+                                  ),
+                                ),
+                              );
                             }
                             if (snapshot.data!.docs.length == 0) {
                               return Center(

@@ -32,7 +32,7 @@ class _EditForumState extends State<EditForum> {
               'Are you sure you want to delete this Forum?',
               style: TextStyle(
                 fontSize: 16,
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                color:  Colors.black,
               ),
             ),
             actions: <Widget>[
@@ -161,7 +161,7 @@ class _EditForumState extends State<EditForum> {
         report: '',
         reportConfirmed: '',
         isPrivate: _isPrivate,
-        linkedContentId: '', mediaType: '', mediaUrl: '',
+        linkedContentId: '', mediaType: '', mediaUrl: '', forumType: '',
       );
       try {
         DatabaseService.editForum(

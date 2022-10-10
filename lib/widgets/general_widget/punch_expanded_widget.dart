@@ -36,6 +36,8 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
   }
 
   _setImage() {
+    HapticFeedback.heavyImpact();
+
     if (_displayImage) {
       if (mounted) {
         setState(() {
@@ -88,6 +90,8 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
   }
 
   _unLikePost() {
+    HapticFeedback.heavyImpact();
+
     DatabaseService.unlikePost(
         currentUserId: widget.currentUserId, post: widget.post);
     if (mounted) {
@@ -98,9 +102,10 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
   }
 
   _likePost() {
+    HapticFeedback.heavyImpact();
+
     DatabaseService.likePost(
         currentUserId: widget.currentUserId, post: widget.post);
-    HapticFeedback.heavyImpact();
     SystemSound.play(SystemSoundType.click);
     if (mounted) {
       setState(() {
@@ -141,16 +146,16 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
       );
 
   _dynamicLink() async {
-    var linkUrl = await Uri.parse(widget.post.imageUrl);
+    var linkUrl = Uri.parse(widget.post.imageUrl);
 
-    final dynamicLinkParams = await DynamicLinkParameters(
-      socialMetaTagParameters: await SocialMetaTagParameters(
+    final dynamicLinkParams = DynamicLinkParameters(
+      socialMetaTagParameters: SocialMetaTagParameters(
         imageUrl: linkUrl,
         title: 'MoodPunched',
         description: widget.post.punch,
       ),
       link: Uri.parse('https://www.barsopus.com/moopunched_${widget.post.id}'),
-      uriPrefix: 'https://barsopus.com/barsImpression/',
+      uriPrefix: 'https://barsopus.com/barsImpression',
       androidParameters:
           AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
       iosParameters: IOSParameters(
@@ -162,7 +167,6 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
     if (Platform.isIOS) {
       var link =
           await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
-
       Share.share(link.toString());
     } else {
       var link =
@@ -211,6 +215,8 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                             transitionDuration:
                                 const Duration(milliseconds: 500),
                             pageBuilder: (context, animation, _) {
+                              HapticFeedback.heavyImpact();
+
                               return FadeTransition(
                                 opacity: animation,
                                 child: ExplorePosts(
@@ -226,39 +232,37 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                         ),
-                        child: ClipRRect(
-                          child: GestureDetector(
-                            onDoubleTap: _setImage,
-                            child: Container(
-                              height: height,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: ConfigBloc().darkModeOn
-                                    ? Color(0xFF1a1a1a)
-                                    : Color(0xFFeff0f2),
-                                image: DecorationImage(
-                                  image: CachedNetworkImageProvider(
-                                      widget.post.imageUrl),
-                                  fit: BoxFit.cover,
-                                ),
+                        child: GestureDetector(
+                          onDoubleTap: _setImage,
+                          child: Container(
+                            height: height,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: ConfigBloc().darkModeOn
+                                  ? Color(0xFF1a1a1a)
+                                  : Color(0xFFeff0f2),
+                              image: DecorationImage(
+                                image: CachedNetworkImageProvider(
+                                    widget.post.imageUrl),
+                                fit: BoxFit.cover,
                               ),
-                              child: _displayImage == false
-                                  ? GestureDetector(
-                                      onDoubleTap: _setImage,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          gradient: LinearGradient(
-                                            begin: Alignment.bottomRight,
-                                            colors: [
-                                              Colors.black.withOpacity(.6),
-                                              Colors.black.withOpacity(.6),
-                                            ],
-                                          ),
+                            ),
+                            child: _displayImage == false
+                                ? GestureDetector(
+                                    onDoubleTap: _setImage,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment.bottomRight,
+                                          colors: [
+                                            Colors.black.withOpacity(.6),
+                                            Colors.black.withOpacity(.6),
+                                          ],
                                         ),
                                       ),
-                                    )
-                                  : const SizedBox.shrink(),
-                            ),
+                                    ),
+                                  )
+                                : const SizedBox.shrink(),
                           ),
                         ),
                       ),
@@ -530,353 +534,368 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                                                                   builder: (_) =>
                                                                       SuggestionBox()))),
                                                 ],
-                                                child: ShakeTransition(
-                                                  child: MediaQuery(
-                                                    data: MediaQuery.of(context)
-                                                        .copyWith(
-                                                            textScaleFactor:
-                                                                MediaQuery.of(
-                                                                        context)
-                                                                    .textScaleFactor
-                                                                    .clamp(0.5,
-                                                                        1.5)),
+                                                child: MediaQuery(
+                                                  data: MediaQuery.of(context)
+                                                      .copyWith(
+                                                          textScaleFactor:
+                                                              MediaQuery.of(
+                                                                      context)
+                                                                  .textScaleFactor
+                                                                  .clamp(0.5,
+                                                                      1.5)),
+                                                  child: Padding(
+                                                    padding: EdgeInsets.all(10),
                                                     child: Padding(
                                                       padding:
-                                                          EdgeInsets.all(10),
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(10.0),
-                                                        child: buildBlur(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(30),
-                                                          child: Container(
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          30),
-                                                              color: ConfigBloc()
-                                                                      .darkModeOn
-                                                                  ? Color(0xFF1f2022)
-                                                                      .withOpacity(
-                                                                          0.6)
-                                                                  : Colors.white
-                                                                      .withOpacity(
-                                                                          0.2),
-                                                            ),
-                                                            height: Responsive
-                                                                    .isDesktop(
-                                                                        context)
-                                                                ? 400
-                                                                : 300,
-                                                            child: Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                          .all(
-                                                                      30.0),
-                                                              child:
-                                                                  SingleChildScrollView(
-                                                                child: Column(
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .start,
-                                                                  children: <
-                                                                      Widget>[
-                                                                    Container(
-                                                                      padding: const EdgeInsets
-                                                                              .symmetric(
-                                                                          horizontal:
-                                                                              16.0,
-                                                                          vertical:
-                                                                              0.0),
-                                                                      child:
-                                                                          Stack(
-                                                                        children: [
-                                                                          GestureDetector(
-                                                                            onTap: () => Navigator.push(
-                                                                                context,
-                                                                                MaterialPageRoute(
-                                                                                    builder: (_) => widget.author.userName!.isEmpty
-                                                                                        ? UserNotFound(
-                                                                                            userName: 'User',
-                                                                                          )
-                                                                                        : ProfileScreen(
-                                                                                            currentUserId: widget.currentUserId,
-                                                                                            userId: widget.post.authorId,
-                                                                                          ))),
+                                                          const EdgeInsets.all(
+                                                              10.0),
+                                                      child: buildBlur(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(30),
+                                                        child: Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        30),
+                                                            color: ConfigBloc()
+                                                                    .darkModeOn
+                                                                ? Color(0xFF1f2022)
+                                                                    .withOpacity(
+                                                                        0.6)
+                                                                : Colors.white
+                                                                    .withOpacity(
+                                                                        0.2),
+                                                          ),
+                                                          height: Responsive
+                                                                  .isDesktop(
+                                                                      context)
+                                                              ? 400
+                                                              : 300,
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(30.0),
+                                                            child:
+                                                                SingleChildScrollView(
+                                                              child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .start,
+                                                                children: <
+                                                                    Widget>[
+                                                                  Container(
+                                                                    padding: const EdgeInsets
+                                                                            .symmetric(
+                                                                        horizontal:
+                                                                            16.0,
+                                                                        vertical:
+                                                                            0.0),
+                                                                    child:
+                                                                        Stack(
+                                                                      children: [
+                                                                        GestureDetector(
+                                                                          onTap: () => Navigator.push(
+                                                                              context,
+                                                                              MaterialPageRoute(
+                                                                                  builder: (_) => widget.author.userName!.isEmpty
+                                                                                      ? UserNotFound(
+                                                                                          userName: 'User',
+                                                                                        )
+                                                                                      : ProfileScreen(
+                                                                                          currentUserId: widget.currentUserId,
+                                                                                          userId: widget.post.authorId,
+                                                                                        ))),
+                                                                          child:
+                                                                              Container(
+                                                                            width:
+                                                                                width,
+                                                                            height:
+                                                                                65,
                                                                             child:
-                                                                                Container(
-                                                                              width: width,
-                                                                              height: 65,
-                                                                              child: ListView(
-                                                                                scrollDirection: Axis.horizontal,
-                                                                                children: <Widget>[
-                                                                                  Material(
-                                                                                    color: Colors.transparent,
-                                                                                    child: Container(
-                                                                                        child: Row(children: <Widget>[
-                                                                                      Hero(
-                                                                                        tag: 'author' + widget.post.id.toString(),
-                                                                                        child: CircleAvatar(
-                                                                                          radius: 25.0,
-                                                                                          backgroundColor: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
-                                                                                          backgroundImage: widget.author.profileImageUrl!.isEmpty
-                                                                                              ? AssetImage(
-                                                                                                  ConfigBloc().darkModeOn ? 'assets/images/user_placeholder.png' : 'assets/images/user_placeholder2.png',
-                                                                                                ) as ImageProvider
-                                                                                              : CachedNetworkImageProvider(widget.author.profileImageUrl!),
-                                                                                        ),
-                                                                                      ),
-                                                                                      const SizedBox(
-                                                                                        width: 8.0,
-                                                                                      ),
-                                                                                      Column(
-                                                                                        mainAxisAlignment: MainAxisAlignment.start,
-                                                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                        children: <Widget>[
-                                                                                          Stack(
-                                                                                            alignment: Alignment.bottomRight,
-                                                                                            children: [
-                                                                                              Padding(
-                                                                                                padding: const EdgeInsets.only(right: 12.0),
-                                                                                                child: Text("${widget.author.userName}", style: const TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold)),
-                                                                                              ),
-                                                                                              widget.author.verified!.isEmpty
-                                                                                                  ? SizedBox.shrink()
-                                                                                                  : Positioned(
-                                                                                                      top: 3,
-                                                                                                      right: 0,
-                                                                                                      child: Icon(
-                                                                                                        MdiIcons.checkboxMarkedCircle,
-                                                                                                        size: 11,
-                                                                                                        color: Colors.blue,
-                                                                                                      ),
+                                                                                ListView(
+                                                                              scrollDirection: Axis.horizontal,
+                                                                              children: <Widget>[
+                                                                                Material(
+                                                                                  color: Colors.transparent,
+                                                                                  child: Container(
+                                                                                      child: Row(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
+                                                                                    Hero(
+                                                                                      tag: 'author' + widget.post.id.toString(),
+                                                                                      child: widget.author.profileImageUrl!.isEmpty
+                                                                                          ? Icon(
+                                                                                              Icons.account_circle,
+                                                                                              size: 50.0,
+                                                                                              color: Colors.grey,
+                                                                                            )
+                                                                                          : CircleAvatar(
+                                                                                              radius: 25.0,
+                                                                                              backgroundColor: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+                                                                                              backgroundImage: CachedNetworkImageProvider(widget.author.profileImageUrl!),
+                                                                                            ),
+                                                                                    ),
+                                                                                    const SizedBox(
+                                                                                      width: 8.0,
+                                                                                    ),
+                                                                                    Column(
+                                                                                      mainAxisAlignment: MainAxisAlignment.start,
+                                                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                      children: <Widget>[
+                                                                                        Stack(
+                                                                                          alignment: Alignment.bottomRight,
+                                                                                          children: [
+                                                                                            Padding(
+                                                                                              padding: const EdgeInsets.only(right: 12.0),
+                                                                                              child: Text("${widget.author.userName}", style: const TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold)),
+                                                                                            ),
+                                                                                            widget.author.verified!.isEmpty
+                                                                                                ? SizedBox.shrink()
+                                                                                                : Positioned(
+                                                                                                    top: 3,
+                                                                                                    right: 0,
+                                                                                                    child: Icon(
+                                                                                                      MdiIcons.checkboxMarkedCircle,
+                                                                                                      size: 11,
+                                                                                                      color: Colors.blue,
                                                                                                     ),
+                                                                                                  ),
+                                                                                          ],
+                                                                                        ),
+                                                                                        RichText(
+                                                                                          textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                                                                                          text: TextSpan(
+                                                                                            children: [
+                                                                                              TextSpan(text: "${widget.author.profileHandle!}\n", style: const TextStyle(fontSize: 10, color: Colors.white)),
+                                                                                              TextSpan(text: "${widget.author.company}", style: const TextStyle(fontSize: 10, color: Colors.white)),
                                                                                             ],
                                                                                           ),
-                                                                                          RichText(
-                                                                                            textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                                                                                            text: TextSpan(
-                                                                                              children: [
-                                                                                                TextSpan(text: "${widget.author.profileHandle!}\n", style: const TextStyle(fontSize: 10, color: Colors.white)),
-                                                                                                TextSpan(text: "${widget.author.company}", style: const TextStyle(fontSize: 10, color: Colors.white)),
-                                                                                              ],
-                                                                                            ),
-                                                                                            overflow: TextOverflow.ellipsis,
-                                                                                          ),
-                                                                                        ],
-                                                                                      ),
-                                                                                    ])),
-                                                                                  ),
-                                                                                ],
-                                                                              ),
+                                                                                          overflow: TextOverflow.ellipsis,
+                                                                                        ),
+                                                                                      ],
+                                                                                    ),
+                                                                                  ])),
+                                                                                ),
+                                                                              ],
                                                                             ),
                                                                           ),
-                                                                          _heartAnim
-                                                                              ? Container(
-                                                                                  height: Responsive.isDesktop(context) ? 400 : 300,
-                                                                                  child: Padding(
-                                                                                    padding: const EdgeInsets.only(bottom: 60.0),
-                                                                                    child: Center(
-                                                                                      child: Animator(
-                                                                                          duration: Duration(milliseconds: 300),
-                                                                                          tween: Tween(begin: 0.5, end: 1.4),
-                                                                                          curve: Curves.elasticOut,
-                                                                                          builder: (context, anim2, child) => Transform.scale(
-                                                                                                scale: anim2.value as double,
-                                                                                                child: const Icon(
-                                                                                                  Icons.favorite,
-                                                                                                  size: 200.0,
-                                                                                                  color: Colors.white,
-                                                                                                ),
-                                                                                              )),
-                                                                                    ),
+                                                                        ),
+                                                                        _heartAnim
+                                                                            ? Container(
+                                                                                height: Responsive.isDesktop(context) ? 400 : 300,
+                                                                                child: Padding(
+                                                                                  padding: const EdgeInsets.only(bottom: 60.0),
+                                                                                  child: Center(
+                                                                                    child: Animator(
+                                                                                        duration: Duration(milliseconds: 300),
+                                                                                        tween: Tween(begin: 0.5, end: 1.4),
+                                                                                        curve: Curves.elasticOut,
+                                                                                        builder: (context, anim2, child) => Transform.scale(
+                                                                                              scale: anim2.value as double,
+                                                                                              child: const Icon(
+                                                                                                Icons.favorite,
+                                                                                                size: 200.0,
+                                                                                                color: Colors.white,
+                                                                                              ),
+                                                                                            )),
                                                                                   ),
-                                                                                )
-                                                                              : SizedBox.shrink(),
-                                                                        ],
-                                                                      ),
+                                                                                ),
+                                                                              )
+                                                                            : SizedBox.shrink(),
+                                                                      ],
                                                                     ),
-                                                                    const SizedBox(
-                                                                        height:
-                                                                            10),
-                                                                    GestureDetector(
-                                                                      onTap: () => Navigator.push(
-                                                                          context,
-                                                                          MaterialPageRoute(
-                                                                              builder: (_) => PunchWidget(currentUserId: widget.currentUserId, post: widget.post, author: widget.author))),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                      height:
+                                                                          10),
+                                                                  GestureDetector(
+                                                                    onTap: () => Navigator.push(
+                                                                        context,
+                                                                        MaterialPageRoute(
+                                                                            builder: (_) => PunchWidget(
+                                                                                currentUserId: widget.currentUserId,
+                                                                                post: widget.post,
+                                                                                author: widget.author))),
+                                                                    child:
+                                                                        Container(
+                                                                      width:
+                                                                          width,
+                                                                      decoration: BoxDecoration(
+                                                                          color: Colors
+                                                                              .transparent,
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(10)),
                                                                       child:
-                                                                          Container(
-                                                                        width:
-                                                                            width,
-                                                                        decoration: BoxDecoration(
+                                                                          Padding(
+                                                                        padding:
+                                                                            const EdgeInsets.all(0.0),
+                                                                        child:
+                                                                            Hero(
+                                                                          tag: 'punch' +
+                                                                              widget.post.id.toString(),
+                                                                          child:
+                                                                              Material(
                                                                             color:
                                                                                 Colors.transparent,
-                                                                            borderRadius: BorderRadius.circular(10)),
-                                                                        child:
-                                                                            Padding(
-                                                                          padding:
-                                                                              const EdgeInsets.all(0.0),
-                                                                          child:
-                                                                              Hero(
-                                                                            tag:
-                                                                                'punch' + widget.post.id.toString(),
                                                                             child:
-                                                                                Material(
-                                                                              color: Colors.transparent,
-                                                                              child: SingleChildScrollView(
-                                                                                child: Text(
-                                                                                  '" ${widget.post.punch} " '.toLowerCase(),
-                                                                                  maxLines: 5,
-                                                                                  style: const TextStyle(
-                                                                                    fontSize: 14,
-                                                                                    color: Colors.white,
-                                                                                  ),
-                                                                                  overflow: TextOverflow.ellipsis,
+                                                                                SingleChildScrollView(
+                                                                              child: Text(
+                                                                                '" ${widget.post.punch} " '.toLowerCase(),
+                                                                                maxLines: 5,
+                                                                                style: const TextStyle(
+                                                                                  fontSize: 14,
+                                                                                  color: Colors.white,
                                                                                 ),
+                                                                                overflow: TextOverflow.ellipsis,
                                                                               ),
                                                                             ),
                                                                           ),
                                                                         ),
                                                                       ),
                                                                     ),
-                                                                    const SizedBox(
-                                                                      height:
-                                                                          10,
-                                                                    ),
-                                                                    Hero(
-                                                                      tag: 'artist' +
-                                                                          widget
-                                                                              .post
-                                                                              .id
-                                                                              .toString(),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    height: 10,
+                                                                  ),
+                                                                  Hero(
+                                                                    tag: 'artist' +
+                                                                        widget
+                                                                            .post
+                                                                            .id
+                                                                            .toString(),
+                                                                    child:
+                                                                        Material(
+                                                                      color: Colors
+                                                                          .transparent,
                                                                       child:
-                                                                          Material(
-                                                                        color: Colors
-                                                                            .transparent,
+                                                                          Text(
+                                                                        '${widget.post.artist} ',
+                                                                        style:
+                                                                            TextStyle(
+                                                                          color:
+                                                                              Colors.white,
+                                                                          fontSize: width > 500 && width < 800
+                                                                              ? 16
+                                                                              : width > 800
+                                                                                  ? 20
+                                                                                  : 14,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                      height:
+                                                                          7.0),
+                                                                  Hero(
+                                                                    tag: 'artist2' +
+                                                                        widget
+                                                                            .post
+                                                                            .id
+                                                                            .toString(),
+                                                                    child:
+                                                                        Material(
+                                                                      color: Colors
+                                                                          .transparent,
+                                                                      child:
+                                                                          Container(
+                                                                        decoration:
+                                                                            BoxDecoration(
+                                                                          color:
+                                                                              Colors.white,
+                                                                        ),
+                                                                        height:
+                                                                            1.0,
                                                                         child:
                                                                             Text(
                                                                           '${widget.post.artist} ',
                                                                           style:
                                                                               TextStyle(
-                                                                            color:
-                                                                                Colors.white,
                                                                             fontSize: width > 500 && width < 800
                                                                                 ? 16
                                                                                 : width > 800
                                                                                     ? 20
                                                                                     : 14,
                                                                           ),
+                                                                          textAlign:
+                                                                              TextAlign.center,
                                                                         ),
                                                                       ),
                                                                     ),
-                                                                    const SizedBox(
-                                                                        height:
-                                                                            7.0),
-                                                                    Hero(
-                                                                      tag: 'artist2' +
-                                                                          widget
-                                                                              .post
-                                                                              .id
-                                                                              .toString(),
-                                                                      child:
-                                                                          Material(
-                                                                        color: Colors
-                                                                            .transparent,
-                                                                        child:
-                                                                            Container(
-                                                                          decoration:
-                                                                              BoxDecoration(
-                                                                            color:
-                                                                                Colors.white,
-                                                                          ),
-                                                                          height:
-                                                                              1.0,
+                                                                  ),
+                                                                  const SizedBox(
+                                                                      height:
+                                                                          5),
+                                                                  BarsTextFooter(
+                                                                    text: timeago
+                                                                        .format(
+                                                                      widget
+                                                                          .post
+                                                                          .timestamp!
+                                                                          .toDate(),
+                                                                    ),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                      height:
+                                                                          20),
+                                                                  GestureDetector(
+                                                                    onTap: () => Navigator.push(
+                                                                        context,
+                                                                        MaterialPageRoute(
+                                                                            builder: (_) => PunchWidget(
+                                                                                currentUserId: widget.currentUserId,
+                                                                                post: widget.post,
+                                                                                author: widget.author))),
+                                                                    child:
+                                                                        Stack(
+                                                                      alignment:
+                                                                          Alignment
+                                                                              .bottomLeft,
+                                                                      children: [
+                                                                        Positioned(
+                                                                          left:
+                                                                              0.0,
+                                                                          top:
+                                                                              0.0,
                                                                           child:
-                                                                              Text(
-                                                                            '${widget.post.artist} ',
-                                                                            style:
-                                                                                TextStyle(
-                                                                              fontSize: width > 500 && width < 800
-                                                                                  ? 16
-                                                                                  : width > 800
-                                                                                      ? 20
-                                                                                      : 14,
-                                                                            ),
-                                                                            textAlign:
-                                                                                TextAlign.center,
+                                                                              Container(
+                                                                            height:
+                                                                                10,
+                                                                            width:
+                                                                                10,
+                                                                            color:
+                                                                                Colors.blue,
                                                                           ),
                                                                         ),
-                                                                      ),
-                                                                    ),
-                                                                    const SizedBox(
-                                                                        height:
-                                                                            5),
-                                                                    BarsTextFooter(
-                                                                      text: timeago
-                                                                          .format(
-                                                                        widget
-                                                                            .post
-                                                                            .timestamp!
-                                                                            .toDate(),
-                                                                      ),
-                                                                    ),
-                                                                    const SizedBox(
-                                                                        height:
-                                                                            20),
-                                                                    GestureDetector(
-                                                                      onTap: () => Navigator.push(
-                                                                          context,
-                                                                          MaterialPageRoute(
-                                                                              builder: (_) => PunchWidget(currentUserId: widget.currentUserId, post: widget.post, author: widget.author))),
-                                                                      child:
-                                                                          Stack(
-                                                                        alignment:
-                                                                            Alignment.bottomLeft,
-                                                                        children: [
-                                                                          Positioned(
-                                                                            left:
-                                                                                0.0,
-                                                                            top:
-                                                                                0.0,
+                                                                        Padding(
+                                                                          padding:
+                                                                              const EdgeInsets.only(left: 20.0),
+                                                                          child:
+                                                                              Hero(
+                                                                            tag:
+                                                                                'caption' + widget.post.id.toString(),
                                                                             child:
-                                                                                Container(
-                                                                              height: 10,
-                                                                              width: 10,
-                                                                              color: Colors.blue,
-                                                                            ),
-                                                                          ),
-                                                                          Padding(
-                                                                            padding:
-                                                                                const EdgeInsets.only(left: 20.0),
-                                                                            child:
-                                                                                Hero(
-                                                                              tag: 'caption' + widget.post.id.toString(),
-                                                                              child: Material(
-                                                                                color: Colors.transparent,
-                                                                                child: SingleChildScrollView(
-                                                                                  child: Text(
-                                                                                    '${widget.post.caption} '.toLowerCase(),
-                                                                                    style: TextStyle(
-                                                                                      fontSize: 12,
-                                                                                      color: Colors.white,
-                                                                                    ),
+                                                                                Material(
+                                                                              color: Colors.transparent,
+                                                                              child: SingleChildScrollView(
+                                                                                child: Text(
+                                                                                  '${widget.post.caption} '.toLowerCase(),
+                                                                                  style: TextStyle(
+                                                                                    fontSize: 12,
+                                                                                    color: Colors.white,
                                                                                   ),
                                                                                 ),
                                                                               ),
                                                                             ),
                                                                           ),
-                                                                        ],
-                                                                      ),
+                                                                        ),
+                                                                      ],
                                                                     ),
-                                                                  ],
-                                                                ),
+                                                                  ),
+                                                                ],
                                                               ),
                                                             ),
                                                           ),

@@ -269,7 +269,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
               'Pick image',
               style: TextStyle(
                 fontSize: 16,
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                color:  Colors.black,
               ),
             ),
             actions: <Widget>[

@@ -242,19 +242,20 @@ class _ActivityScreenState extends State<ActivityScreen>
                         Provider.of<UserData>(context, listen: false)
                             .setIsLoading(false);
                       },
-                leading: CircleAvatar(
-                  radius: 20.0,
-                  backgroundColor: ConfigBloc().darkModeOn
-                      ? Color(0xFF1a1a1a)
-                      : Color(0xFFf2f2f2),
-                  backgroundImage: user.profileImageUrl!.isEmpty
-                      ? AssetImage(
-                          ConfigBloc().darkModeOn
-                              ? 'assets/images/user_placeholder.png'
-                              : 'assets/images/user_placeholder2.png',
-                        ) as ImageProvider
-                      : CachedNetworkImageProvider(user.profileImageUrl!),
-                ),
+                leading: user.profileImageUrl!.isEmpty
+                    ? Icon(
+                        Icons.account_circle,
+                        size: 60.0,
+                        color: Colors.grey,
+                      )
+                    : CircleAvatar(
+                        radius: 25.0,
+                        backgroundColor: ConfigBloc().darkModeOn
+                            ? Color(0xFF1a1a1a)
+                            : Color(0xFFf2f2f2),
+                        backgroundImage:
+                            CachedNetworkImageProvider(user.profileImageUrl!),
+                      ),
                 // ignore: unnecessary_null_comparison
                 title: activity.comment != null
                     ? Column(
