@@ -94,7 +94,7 @@ class _EventPageLiveState extends State<EventPageLive>
                     ]),
               ),
               body: TabBarView(
-                physics: const AlwaysScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 children: <Widget>[
                   EventsAllLiveCity(
                     currentUserId: widget.currentUserId,

@@ -1,5 +1,4 @@
 import 'package:bars/utilities/exports.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
@@ -10,9 +9,9 @@ Future<void> _backgroundHandler(RemoteMessage message) async {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await FirebaseAppCheck.instance.activate();
   FirebaseMessaging.onBackgroundMessage(_backgroundHandler);
   Bars.prefs = await SharedPreferences.getInstance();
+
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   runApp(ConfigPage());

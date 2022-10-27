@@ -26,7 +26,9 @@ class _CreateForumState extends State<CreateForum> {
       setState(() {
         _isLoading = true;
       });
+    
 
+    
       Forum forum = Forum(
         title: _title,
         subTitle: _subTitle,
@@ -35,11 +37,7 @@ class _CreateForumState extends State<CreateForum> {
         authorId: Provider.of<UserData>(context, listen: false).currentUserId!,
         timestamp: Timestamp.fromDate(DateTime.now()),
         id: '',
-        isPrivate: _isPrivate,
-        linkedContentId: '',
-        mediaType: '',
-        mediaUrl: '',
-        forumType: '', authorName: widget.user.userName!,
+        isPrivate: _isPrivate, linkedContentId: '', mediaType: '', mediaUrl: '', forumType: '',
       );
       try {
         DatabaseService.createForum(forum);
@@ -120,6 +118,7 @@ class _CreateForumState extends State<CreateForum> {
         print(e.toString());
       }
 
+
       setState(() {
         _title = '';
         _subTitle = '';
@@ -156,7 +155,7 @@ class _CreateForumState extends State<CreateForum> {
                       ? 'The title is too short (more than 30 characters)'
                       : null,
           onPressedSubmite: () => _submit(),
-          deletWidget: const SizedBox.shrink(),
+          deletWidget: SizedBox.shrink(),
           loadingWidget: _isLoading
               ? Padding(
                   padding: const EdgeInsets.only(bottom: 10.0),
@@ -168,7 +167,7 @@ class _CreateForumState extends State<CreateForum> {
                     ),
                   ),
                 )
-              : const SizedBox.shrink(),
+              : SizedBox.shrink(),
           pageHint: GestureDetector(
             onTap: () => Navigator.push(
                 context,

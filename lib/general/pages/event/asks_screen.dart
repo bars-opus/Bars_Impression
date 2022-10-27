@@ -69,148 +69,130 @@ class _AsksScreenState extends State<AsksScreen> {
     });
   }
 
-  _viewProfessionalProfile(Ask ask) async {
-    AccountHolder user = await DatabaseService.getUserWithId(ask.authorId);
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (_) => ProfileProfessionalProfile(
-                  currentUserId: Provider.of<UserData>(context).currentUserId!,
-                  // user: widget.post.authorId,
-                  userId: ask.authorId, user: user,
-                )));
-  }
-
-  _buildAsk(
-    Ask ask,
-  ) {
+  _buildAsk(Ask ask, AccountHolder author) {
     final width = MediaQuery.of(context).size.width;
     final String currentUserId = Provider.of<UserData>(context).currentUserId!;
-    // return FutureBuilder(
-    //   future: DatabaseService.getUserWithId(ask.authorId),
-    //   builder: (BuildContext context, AsyncSnapshot snapshot) {
-    //     if (!snapshot.hasData) {
-    //       return const SizedBox.shrink();
-    //     }
-    //     AccountHolder author = snapshot.data;
-    return FocusedMenuHolder(
-      menuWidth: width,
-      menuOffset: 1,
-      blurBackgroundColor:
-          ConfigBloc().darkModeOn ? Colors.grey[900] : Colors.red[50],
-      openWithTap: false,
-      onPressed: () {},
-      menuItems: [
-        FocusedMenuItem(
-            title: Container(
-              width: width / 2,
-              child: Text(
-                currentUserId == ask.authorId
-                    ? 'Edit  your question'
-                    : ask.authorProfileHanlde.startsWith('Fan') ||
-                            ask.authorProfileHanlde.isEmpty
-                        ? 'view profile '
-                        : 'view booking page ',
-                overflow: TextOverflow.ellipsis,
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+    return FutureBuilder(
+      future: DatabaseService.getUserWithId(ask.authorId),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (!snapshot.hasData) {
+          return SizedBox.shrink();
+        }
+        AccountHolder author = snapshot.data;
+        return FocusedMenuHolder(
+          menuWidth: width,
+          menuOffset: 1,
+          blurBackgroundColor:
+              ConfigBloc().darkModeOn ? Colors.grey[900] : Colors.red[50],
+          openWithTap: false,
+          onPressed: () {},
+          menuItems: [
+            FocusedMenuItem(
+              title: Container(
+                width: width / 2,
+                child: Text(
+                  currentUserId == author.id!
+                      ? 'Edit  your question'
+                      : author.profileHandle!.startsWith('Fan') ||
+                              author.profileHandle!.isEmpty
+                          ? 'Go to ${author.userName}\' profile '
+                          : 'Go to ${author.userName}\' booking page ',
+                  overflow: TextOverflow.ellipsis,
+                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                ),
               ),
-            ),
-            onPressed: () => currentUserId == ask.authorId
-                ? Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => EditQuestion(
-                          ask: ask,
-                          currentUserId: widget.currentUserId,
-                          event: widget.event),
-                    ),
-                  )
-                : ask.authorProfileHanlde.startsWith('Fan') ||
-                        ask.authorProfileHanlde.isEmpty
-                    ? Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => ask.authorName.isEmpty
-                                ? UserNotFound(
-                                    userName: 'User',
-                                  )
-                                : ProfileScreen(
+              onPressed: () => currentUserId == author.id!
+                  ? Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => EditQuestion(
+                            ask: ask,
+                            currentUserId: widget.currentUserId,
+                            event: widget.event),
+                      ),
+                    )
+                  : author.profileHandle!.startsWith('Fan') ||
+                          author.profileHandle!.isEmpty
+                      ? Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => author.userName!.isEmpty
+                                  ? UserNotFound(
+                                      userName: 'User',
+                                    )
+                                  : ProfileScreen(
+                                      currentUserId:
+                                          Provider.of<UserData>(context)
+                                              .currentUserId!,
+                                      userId: author.id!,
+                                    )))
+                      : Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => ProfileProfessionalProfile(
                                     currentUserId:
                                         Provider.of<UserData>(context)
                                             .currentUserId!,
-                                    userId: ask.authorId,
-                                  )))
-                    : _viewProfessionalProfile(ask)
-            // Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //         builder: (_) => ProfileProfessionalProfile(
-            //               currentUserId: Provider.of<UserData>(context)
-            //                   .currentUserId!,
-            //               user: author,
-            //               userId: ask.authorId,
-            //             ))),
+                                    user: author,
+                                    userId: author.id!,
+                                  ))),
             ),
-        FocusedMenuItem(
-            title: Container(
-              width: width / 2,
-              child: Text(
-                'Report',
-                overflow: TextOverflow.ellipsis,
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
-              ),
-            ),
-            onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => ReportContentPage(
-                          contentId: ask.id,
-                          contentType: 'question',
-                          parentContentId: widget.event.id,
-                          repotedAuthorId: widget.event.authorId,
-                        )))),
-      ],
-      child: Slidable(
-        startActionPane: ActionPane(
-          motion: const ScrollMotion(),
-          children: [
-            SlidableAction(
-              onPressed: (_) {
-                currentUserId == ask.authorId
-                    ? Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => EditQuestion(
-                              ask: ask,
-                              currentUserId: widget.currentUserId,
-                              event: widget.event),
-                        ),
-                      )
-                    : const SizedBox.shrink();
-              },
-              backgroundColor: Color(0xFFFF2D55),
-              foregroundColor:
-                  ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-              icon: currentUserId == ask.authorId ? Icons.edit : null,
-              label: currentUserId == ask.authorId ? 'Edit question' : '',
-            ),
+            FocusedMenuItem(
+                title: Container(
+                  width: width / 2,
+                  child: Text(
+                    'Report',
+                    overflow: TextOverflow.ellipsis,
+                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  ),
+                ),
+                onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => ReportContentPage(
+                              contentId: ask.id,
+                              contentType: 'question',
+                              parentContentId: widget.event.id,
+                              repotedAuthorId: widget.event.authorId,
+                            )))),
           ],
-        ),
-        child: Authorview(
-          report: ask.report,
-          content: ask.content,
-          timestamp: ask.timestamp,
-          authorId: ask.authorId,
-          profileHandle: ask.authorProfileHanlde,
-          userName: ask.authorName,
-          profileImageUrl: ask.authorProfileImageUrl,
-          verified: ask.authorVerification,
-          from: '',
-        ),
-      ),
+          child: Slidable(
+            startActionPane: ActionPane(
+              motion: const ScrollMotion(),
+              children: [
+                SlidableAction(
+                  onPressed: (_) {
+                    currentUserId == author.id!
+                        ? Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => EditQuestion(
+                                  ask: ask,
+                                  currentUserId: widget.currentUserId,
+                                  event: widget.event),
+                            ),
+                          )
+                        : SizedBox.shrink();
+                  },
+                  backgroundColor: Color(0xFFFF2D55),
+                  foregroundColor: ConfigBloc().darkModeOn
+                      ? Color(0xFF1a1a1a)
+                      : Colors.white,
+                  icon: currentUserId == author.id! ? Icons.edit : null,
+                  label: currentUserId == author.id! ? 'Edit question' : '',
+                ),
+              ],
+            ),
+            child: Authorview(
+              report: ask.report,
+              content: ask.content,
+              author: author,
+              timestamp: ask.timestamp,
+            ),
+          ),
+        );
+      },
     );
-    //   },
-    // );
   }
 
   _buildAskTF() {
@@ -278,8 +260,6 @@ class _AsksScreenState extends State<AsksScreen> {
                             .isNotEmpty) {
                           DatabaseService.askAboutEvent(
                             currentUserId: currentUserId!,
-                            user: Provider.of<UserData>(context, listen: false)
-                                .user!,
                             event: widget.event,
                             reportConfirmed: '',
                             ask: _askController.text,
@@ -426,7 +406,7 @@ class _AsksScreenState extends State<AsksScreen> {
                                   text: TextSpan(
                                     children: [
                                       TextSpan(
-                                          text: widget.event.authorName,
+                                          text: 'See event ceator',
                                           style: TextStyle(
                                             fontSize: 12,
                                             color: ConfigBloc().darkModeOn
@@ -506,22 +486,19 @@ class _AsksScreenState extends State<AsksScreen> {
                                           (context, index) {
                                             Ask ask = Ask.fromDoc(
                                                 snapshot.data.docs[index]);
-                                            return _buildAsk(
-                                              ask,
-                                            );
-                                            // FutureBuilder(
-                                            //     future: DatabaseService
-                                            //         .getUserWithId(
-                                            //             ask.authorId),
-                                            //     builder: (BuildContext context,
-                                            //         AsyncSnapshot snapshot) {
-                                            //       if (!snapshot.hasData) {
-                                            //         return FollowerUserSchimmerSkeleton();
-                                            //       }
-                                            //       AccountHolder author =
-                                            //           snapshot.data;
-                                            //       return _buildAsk(ask, author);
-                                            //     });
+                                            return FutureBuilder(
+                                                future: DatabaseService
+                                                    .getUserWithId(
+                                                        ask.authorId),
+                                                builder: (BuildContext context,
+                                                    AsyncSnapshot snapshot) {
+                                                  if (!snapshot.hasData) {
+                                                    return FollowerUserSchimmerSkeleton();
+                                                  }
+                                                  AccountHolder author =
+                                                      snapshot.data;
+                                                  return _buildAsk(ask, author);
+                                                });
                                           },
                                           childCount: snapshot.data.docs.length,
                                         ),
@@ -530,9 +507,7 @@ class _AsksScreenState extends State<AsksScreen> {
                                   ));
                           },
                         ),
-                        _isBlockedUser
-                            ? const SizedBox.shrink()
-                            : _buildAskTF(),
+                        _isBlockedUser ? SizedBox.shrink() : _buildAskTF(),
                       ],
                     ),
                   ),

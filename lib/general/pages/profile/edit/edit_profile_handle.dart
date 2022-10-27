@@ -157,26 +157,26 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
 
   _pop() {
     Navigator.pop(context);
-    // accountTypesRef
-    //     .doc(widget.user.profileHandle!)
-    //     .collection(widget.user.profileHandle!)
-    //     .doc(widget.user.id)
-    //     .get()
-    //     .then((doc) {
-    //   if (doc.exists) {
-    //     doc.reference.delete();
-    //   }
-    // });
-    // accountTypesRef
-    //     .doc(
-    //       _profileHandle,
-    //     )
-    //     .collection(_profileHandle)
-    //     .doc(widget.user.id)
-    //     .set({
-    //   'uid': widget.user.id,
-    //   'timestamp': Timestamp.fromDate(DateTime.now()),
-    // });
+    accountTypesRef
+        .doc(widget.user.profileHandle!)
+        .collection(widget.user.profileHandle!)
+        .doc(widget.user.id)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+    accountTypesRef
+        .doc(
+          _profileHandle,
+        )
+        .collection(_profileHandle)
+        .doc(widget.user.id)
+        .set({
+      'uid': widget.user.id,
+      'timestamp': Timestamp.fromDate(DateTime.now()),
+    });
   }
 
   @override

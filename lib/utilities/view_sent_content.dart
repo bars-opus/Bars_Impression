@@ -34,92 +34,53 @@ class _ViewSentContentState extends State<ViewSentContent> {
     final width = MediaQuery.of(context).size.width;
 
     return MediaQuery(
-        data: MediaQuery.of(context).copyWith(
-            textScaleFactor:
-                MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.3)),
-        child: widget.contentType.startsWith('Mood Punched')
-            ? FutureBuilder(
-                future: DatabaseService.getPostWithId(widget.contentId),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  if (!snapshot.hasData) {
-                    return PostSchimmerSkeleton();
-                  }
-                  Post _post = snapshot.data;
-                  return FutureBuilder(
-                      future: DatabaseService.getUserWithId(_post.authorId),
-                      builder: (BuildContext context, AsyncSnapshot snapshot) {
-                        if (!snapshot.hasData) {
-                          return PostSchimmerSkeleton();
-                        }
-                        AccountHolder _author = snapshot.data;
-                        return AllPostEnlarged(
-                            currentUserId:
-                                Provider.of<UserData>(context, listen: false)
-                                    .currentUserId!,
-                            post: _post,
-                            feed: 'All',
-                         );
-                      });
-                })
-            : widget.contentType.startsWith('Forum')
-                ? FutureBuilder(
-                    future: DatabaseService.getForumWithId(widget.contentId),
+      data: MediaQuery.of(context).copyWith(
+          textScaleFactor:
+              MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.3)),
+      child: widget.contentType.startsWith('Mood Punched')
+          ? FutureBuilder(
+              future: DatabaseService.getPostWithId(widget.contentId),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (!snapshot.hasData) {
+                  return PostSchimmerSkeleton();
+                }
+                Post _post = snapshot.data;
+                return FutureBuilder(
+                    future: DatabaseService.getUserWithId(_post.authorId),
                     builder: (BuildContext context, AsyncSnapshot snapshot) {
                       if (!snapshot.hasData) {
-                        return Container(
-                          width: width,
-                          height: height,
-                          color: ConfigBloc().darkModeOn
-                              ? Color(0xFF1a1a1a)
-                              : Color(0xFFf2f2f2),
-                          child: Center(
-                              child: CircularProgressIndicator(
-                            color: Colors.blue,
-                          )),
-                        );
+                        return PostSchimmerSkeleton();
                       }
-                      Forum _forum = snapshot.data;
-                      return ThoughtsScreen(
-                          feed: '',
-                          forum: _forum,
-                          // author: _author,
-                          thoughtCount: _thoughtCount,
+                      AccountHolder _author = snapshot.data;
+                      return AllPostEnlarged(
                           currentUserId:
                               Provider.of<UserData>(context, listen: false)
-                                  .currentUserId!);
-                      // FutureBuilder(
-                      //     future:
-                      //         DatabaseService.getUserWithId(_forum.authorId),
-                      //     builder:
-                      //         (BuildContext context, AsyncSnapshot snapshot) {
-                      //       if (!snapshot.hasData) {
-                      //         return Container(
-                      //           width: width,
-                      //           height: height,
-                      //           color: ConfigBloc().darkModeOn
-                      //               ? Color(0xFF1a1a1a)
-                      //               : Color(0xFFf2f2f2),
-                      //           child: Center(
-                      //               child: CircularProgressIndicator(
-                      //             color: Colors.blue,
-                      //           )),
-                      //         );
-                      //       }
-                      //       AccountHolder _author = snapshot.data;
-                      //       return ThoughtsScreen(
-                      //           feed: '',
-                      //           forum: _forum,
-                      //           // author: _author,
-                      //           thoughtCount: _thoughtCount,
-                      //           currentUserId: Provider.of<UserData>(context,
-                      //                   listen: false)
-                      //               .currentUserId!);
-                      //     });
-                    })
-                : widget.contentType.startsWith('Event')
-                    ? FutureBuilder(
-                        future:
-                            DatabaseService.getEventWithId(widget.contentId),
+                                  .currentUserId!,
+                          post: _post,
+                          feed: 'All',
+                          author: _author);
+                    });
+              })
+          : widget.contentType.startsWith('Forum')
+              ? FutureBuilder(
+                  future: DatabaseService.getForumWithId(widget.contentId),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    if (!snapshot.hasData) {
+                      return Container(
+                        width: width,
+                        height: height,
+                        color: ConfigBloc().darkModeOn
+                            ? Color(0xFF1a1a1a)
+                            : Color(0xFFf2f2f2),
+                        child: Center(
+                            child: CircularProgressIndicator(
+                          color: Colors.blue,
+                        )),
+                      );
+                    }
+                    Forum _forum = snapshot.data;
+                    return FutureBuilder(
+                        future: DatabaseService.getUserWithId(_forum.authorId),
                         builder:
                             (BuildContext context, AsyncSnapshot snapshot) {
                           if (!snapshot.hasData) {
@@ -135,24 +96,54 @@ class _ViewSentContentState extends State<ViewSentContent> {
                               )),
                             );
                           }
-                          Event _event = snapshot.data;
-                          return AllEvenEnlarged(
-                            exploreLocation: 'No',
-                            feed: 1,
-                            askCount: 0,
-                            currentUserId:
-                                Provider.of<UserData>(context, listen: false)
-                                    .currentUserId!,
-                            event: _event,
-                           
+                          AccountHolder _author = snapshot.data;
+                          return ThoughtsScreen(
+                              feed: '',
+                              forum: _forum,
+                              author: _author,
+                              thoughtCount: _thoughtCount,
+                              currentUserId:
+                                  Provider.of<UserData>(context, listen: false)
+                                      .currentUserId!);
+                        });
+                  })
+              : widget.contentType.startsWith('Event')
+                  ? FutureBuilder(
+                      future: DatabaseService.getEventWithId(widget.contentId),
+                      builder: (BuildContext context, AsyncSnapshot snapshot) {
+                        if (!snapshot.hasData) {
+                          return Container(
+                            width: width,
+                            height: height,
+                            color: ConfigBloc().darkModeOn
+                                ? Color(0xFF1a1a1a)
+                                : Color(0xFFf2f2f2),
+                            child: Center(
+                                child: CircularProgressIndicator(
+                              color: Colors.blue,
+                            )),
                           );
-                        })
-                    : widget.contentType.startsWith('User')
-                        ? ProfileScreen(
-                            currentUserId:
-                                Provider.of<UserData>(context).currentUserId!,
-                            userId: widget.contentId,
-                          )
-                        : const SizedBox.shrink());
+                        }
+                        Event _event = snapshot.data;
+                        return AllEvenEnlarged(
+                          exploreLocation: 'No',
+                          feed: 1,
+                          askCount: 0,
+                          currentUserId:
+                              Provider.of<UserData>(context, listen: false)
+                                  .currentUserId!,
+                          event: _event,
+                          user: Provider.of<UserData>(context, listen: false)
+                              .user!,
+                        );
+                      })
+                  : widget.contentType.startsWith('User')
+                      ? ProfileScreen(
+                          currentUserId:
+                              Provider.of<UserData>(context).currentUserId!,
+                          userId: widget.contentId,
+                        )
+                      : const SizedBox.shrink(),
+    );
   }
 }

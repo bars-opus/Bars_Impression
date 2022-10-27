@@ -100,10 +100,6 @@ class _ActivityFollowerScreenState extends State<ActivityFollowerScreen>
       userId: activiities.userId,
       seen: 'seen',
       timestamp: activiities.timestamp,
-      authorName: activiities.authorName,
-      authorProfileHanlde: activiities.authorProfileHanlde,
-      authorVerification: activiities.authorVerification,
-      authorProfileImageUrl: activiities.authorProfileImageUrl,
     );
     print('sumiting');
     try {
@@ -117,166 +113,167 @@ class _ActivityFollowerScreenState extends State<ActivityFollowerScreen>
   }
 
   _buildActivity(ActivityFollower activity) {
-    // return FutureBuilder(
-    //     future: DatabaseService.getUserWithId(activity.fromUserId),
-    //     builder: (BuildContext context, AsyncSnapshot snapshot) {
-    //       if (!snapshot.hasData) {
-    //         return const SizedBox.shrink();
-    //       }
-    //       AccountHolder author = snapshot.data;
+    return FutureBuilder(
+        future: DatabaseService.getUserWithId(activity.fromUserId),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (!snapshot.hasData) {
+            return SizedBox.shrink();
+          }
+          AccountHolder author = snapshot.data;
 
-    return Column(
-      children: [
-        Container(
-          decoration: ConfigBloc().darkModeOn
-              ? BoxDecoration(
-                  color: activity.seen == 'seen'
-                      ? Colors.transparent
-                      : Color(0xFF2B2B28),
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                      BoxShadow(
+          return Column(
+            children: [
+              Container(
+                decoration: ConfigBloc().darkModeOn
+                    ? BoxDecoration(
                         color: activity.seen == 'seen'
                             ? Colors.transparent
-                            : Colors.black45,
-                        offset: Offset(4.0, 4.0),
-                        blurRadius: 5.0,
-                        spreadRadius: 1.0,
-                      ),
-                      BoxShadow(
-                        color: activity.seen == 'seen'
-                            ? Colors.transparent
-                            : Colors.black45,
-                        offset: Offset(-4.0, -4.0),
-                        blurRadius: 5.0,
-                        spreadRadius: 1.0,
-                      )
-                    ])
-              : BoxDecoration(
-                  color: activity.seen == 'seen'
-                      ? Colors.transparent
-                      : Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                      BoxShadow(
-                        color: activity.seen == 'seen'
-                            ? Colors.transparent
-                            : Colors.grey[500]!,
-                        offset: Offset(4.0, 4.0),
-                        blurRadius: 15.0,
-                        spreadRadius: 1.0,
-                      ),
-                      BoxShadow(
+                            : Color(0xFF2B2B28),
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                            BoxShadow(
+                              color: activity.seen == 'seen'
+                                  ? Colors.transparent
+                                  : Colors.black45,
+                              offset: Offset(4.0, 4.0),
+                              blurRadius: 5.0,
+                              spreadRadius: 1.0,
+                            ),
+                            BoxShadow(
+                              color: activity.seen == 'seen'
+                                  ? Colors.transparent
+                                  : Colors.black45,
+                              offset: Offset(-4.0, -4.0),
+                              blurRadius: 5.0,
+                              spreadRadius: 1.0,
+                            )
+                          ])
+                    : BoxDecoration(
                         color: activity.seen == 'seen'
                             ? Colors.transparent
                             : Colors.white,
-                        offset: Offset(-4.0, -4.0),
-                        blurRadius: 15.0,
-                        spreadRadius: 1.0,
-                      )
-                    ]),
-          child: ListTile(
-            onTap: () async {
-              activity.seen != 'seen'
-                  ? _submit(activity)
-                  : const SizedBox.shrink();
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => ProfileScreen(
-                            currentUserId:
-                                Provider.of<UserData>(context).currentUserId!,
-                            userId: activity.fromUserId,
-                          )));
-            },
-            leading: activity.authorProfileImageUrl.isEmpty
-                ? Icon(
-                    Icons.account_circle,
-                    size: 60.0,
-                    color: Colors.grey,
-                  )
-                : CircleAvatar(
-                    radius: 25.0,
-                    backgroundColor: ConfigBloc().darkModeOn
-                        ? Color(0xFF1a1a1a)
-                        : Color(0xFFf2f2f2),
-                    backgroundImage: CachedNetworkImageProvider(
-                        activity.authorProfileImageUrl)),
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Stack(
-                      alignment: Alignment.centerRight,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 12.0),
-                          child: Text(
-                            activity.authorName,
-                            style: TextStyle(
-                              fontSize: 12.0,
-                              fontWeight: activity.seen == 'seen'
-                                  ? FontWeight.normal
-                                  : FontWeight.bold,
-                              color: ConfigBloc().darkModeOn
-                                  ? Colors.white
-                                  : Colors.black,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                            BoxShadow(
+                              color: activity.seen == 'seen'
+                                  ? Colors.transparent
+                                  : Colors.grey[500]!,
+                              offset: Offset(4.0, 4.0),
+                              blurRadius: 15.0,
+                              spreadRadius: 1.0,
                             ),
-                          ),
-                        ),
-                        activity.authorVerification.isEmpty
-                            ? const SizedBox.shrink()
-                            : Positioned(
-                                top: 0,
-                                right: 0,
-                                child: Icon(
-                                  MdiIcons.checkboxMarkedCircle,
-                                  size: 11,
-                                  color: Colors.blue,
+                            BoxShadow(
+                              color: activity.seen == 'seen'
+                                  ? Colors.transparent
+                                  : Colors.white,
+                              offset: Offset(-4.0, -4.0),
+                              blurRadius: 15.0,
+                              spreadRadius: 1.0,
+                            )
+                          ]),
+                child: ListTile(
+                  onTap: () async {
+                    activity.seen != 'seen'
+                        ? _submit(activity)
+                        : SizedBox.shrink();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => ProfileScreen(
+                                  currentUserId: Provider.of<UserData>(context)
+                                      .currentUserId!,
+                                  userId: activity.fromUserId,
+                                )));
+                  },
+                  leading: author.profileImageUrl!.isEmpty
+                      ? Icon(
+                          Icons.account_circle,
+                          size: 60.0,
+                          color: Colors.grey,
+                        )
+                      : CircleAvatar(
+                          radius: 25.0,
+                          backgroundColor: ConfigBloc().darkModeOn
+                              ? Color(0xFF1a1a1a)
+                              : Color(0xFFf2f2f2),
+                          backgroundImage: CachedNetworkImageProvider(
+                              author.profileImageUrl!)),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Stack(
+                            alignment: Alignment.centerRight,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(right: 12.0),
+                                child: Text(
+                                  author.userName!,
+                                  style: TextStyle(
+                                    fontSize: 12.0,
+                                    fontWeight: activity.seen == 'seen'
+                                        ? FontWeight.normal
+                                        : FontWeight.bold,
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
                                 ),
                               ),
-                      ],
-                    ),
-                    RichText(
-                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                                text: "${activity.authorProfileHanlde}\n",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.blueGrey,
-                                )),
-                            TextSpan(
-                                text: 'Started following you',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: activity.seen != 'seen'
-                                      ? Color(0xFFD38B41)
-                                      : Colors.grey,
-                                ))
-                          ],
-                        )),
-                  ],
+                              author.verified!.isEmpty
+                                  ? SizedBox.shrink()
+                                  : Positioned(
+                                      top: 0,
+                                      right: 0,
+                                      child: Icon(
+                                        MdiIcons.checkboxMarkedCircle,
+                                        size: 11,
+                                        color: Colors.blue,
+                                      ),
+                                    ),
+                            ],
+                          ),
+                          RichText(
+                              textScaleFactor:
+                                  MediaQuery.of(context).textScaleFactor,
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                      text: "${author.profileHandle!}\n",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.blueGrey,
+                                      )),
+                                  TextSpan(
+                                      text: 'Started following you',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: activity.seen != 'seen'
+                                            ? Color(0xFFD38B41)
+                                            : Colors.grey,
+                                      ))
+                                ],
+                              )),
+                        ],
+                      ),
+                    ],
+                  ),
+                  subtitle: Text(
+                      timeago.format(
+                        activity.timestamp.toDate(),
+                      ),
+                      style: TextStyle(fontSize: 10, color: Colors.grey)),
                 ),
-              ],
-            ),
-            subtitle: Text(
-                timeago.format(
-                  activity.timestamp.toDate(),
-                ),
-                style: TextStyle(fontSize: 10, color: Colors.grey)),
-          ),
-        ),
-        const Divider(
-          color: Colors.grey,
-        )
-      ],
-    );
-    // });
+              ),
+              const Divider(
+                color: Colors.grey,
+              )
+            ],
+          );
+        });
   }
 
   bool get wantKeepAlive => true;
@@ -294,7 +291,7 @@ class _ActivityFollowerScreenState extends State<ActivityFollowerScreen>
             height: 5,
           ),
           widget.activityFollowerCount == 0
-              ? const SizedBox.shrink()
+              ? SizedBox.shrink()
               : Row(
                   children: [
                     Padding(
@@ -335,7 +332,7 @@ class _ActivityFollowerScreenState extends State<ActivityFollowerScreen>
                     )),
                   ),
                 )
-              : const SizedBox.shrink(),
+              : SizedBox.shrink(),
           SizedBox(
             height: 20.0,
           ),

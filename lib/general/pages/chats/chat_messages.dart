@@ -30,7 +30,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   bool _isBlockedUser = false;
   bool _isBlockingUser = false;
   int _chatMessageCount = 0;
-  bool _isLoading = false;
+  // bool _isLoading = false;
   bool _restrictChat = false;
   late ScrollController _hideButtonController;
   late ScrollController _hideAppBarController;
@@ -155,7 +155,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     )
         ? 600.0
         : MediaQuery.of(context).size.width;
-    HapticFeedback.mediumImpact();
     DatabaseService.deleteMessage(
         currentUserId: widget.currentUserId,
         userId: widget.user.id!,
@@ -233,7 +232,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   }
 
   _showSelectImageDialog() {
-    HapticFeedback.heavyImpact();
     return Platform.isIOS ? _iosBottomSheet() : _androidDialog(context);
   }
 
@@ -271,7 +269,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
               'Pick image',
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.black,
+                color:  Colors.black,
               ),
             ),
             actions: <Widget>[
@@ -536,7 +534,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                   height: 5,
                 ),
                 message.replyingMessage.isEmpty
-                    ? const SizedBox.shrink()
+                    ? SizedBox.shrink()
                     : _repliedMessageContent(message, currentUserId),
                 DragTarget<bool>(builder: (context, data, rejectedData) {
                   return Container(
@@ -1024,7 +1022,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     final width = MediaQuery.of(context).size.width;
 
     return Provider.of<UserData>(context).postImage == null
-        ? const SizedBox.shrink()
+        ? SizedBox.shrink()
         : ShakeTransition(
             curve: Curves.easeOutBack,
             axis: Axis.vertical,
@@ -1039,7 +1037,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _isLoading
+                      Provider.of<UserData>(context, listen: false).isLoading
                           ? Padding(
                               padding:
                                   const EdgeInsets.only(bottom: 10.0, top: 5),
@@ -1052,7 +1050,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                 ),
                               ),
                             )
-                          : const SizedBox.shrink(),
+                          : SizedBox.shrink(),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: Row(
@@ -1067,7 +1065,10 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                       .setPostImage(null);
                                 }),
                             Text(
-                              _isLoading ? "Sending message" : "Ready to send",
+                              Provider.of<UserData>(context, listen: false)
+                                      .isLoading
+                                  ? "Sending message"
+                                  : "Ready to send",
                               style: TextStyle(
                                 fontSize: 12.0,
                                 color: Colors.white,
@@ -1082,9 +1083,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                           height: width / 2,
                           width: width,
                           image: FileImage(File(
-                              Provider.of<UserData>(context, listen: false)
-                                  .postImage!
-                                  .path)),
+                              Provider.of<UserData>(context).postImage!.path)),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -1166,8 +1165,8 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
               children: [
                 _displayIsReplying(),
                 _displayImage(),
-                _isLoading
-                    ? const SizedBox.shrink()
+                Provider.of<UserData>(context, listen: false).isLoading
+                    ? SizedBox.shrink()
                     : Material(
                         color: Colors.white,
                         elevation: 10.0,
@@ -1185,7 +1184,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                                   listen: false)
                                               .messageCount <
                                           1
-                                      ? const SizedBox.shrink()
+                                      ? SizedBox.shrink()
                                       : GestureDetector(
                                           onTap: _showSelectImageDialog,
                                           child: Icon(
@@ -1193,7 +1192,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                             color: Colors.grey,
                                           ),
                                         )
-                                  : const SizedBox.shrink(),
+                                  : SizedBox.shrink(),
                               SizedBox(width: 10.0),
                               Expanded(
                                 child: TextField(
@@ -1250,8 +1249,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                                     .disabledColor,
                                       ),
                                       onPressed: () {
-                                        HapticFeedback.mediumImpact();
-
                                         // Provider.of<UserData>(context,
                                         //                 listen: false)
                                         //             .messageCount <
@@ -1283,7 +1280,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     HapticFeedback.mediumImpact();
     if (Provider.of<UserData>(context, listen: false).post9.isNotEmpty) {
       DatabaseService.firstChatMessage(
-        author: Provider.of<UserData>(context, listen: false).user!,
         currentUserId: widget.currentUserId,
         userId: widget.user.id!,
         messageInitiator: currentUser.userName!,
@@ -1312,10 +1308,10 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   }
 
   _submitMessageWithImage() async {
-    setState(() {
-      _isLoading = true;
-    });
-
+    // setState(() {
+    //   _isLoading = true;
+    // });
+    Provider.of<UserData>(context, listen: false).setIsLoading(true);
     String imageUrl = await StorageService.uploadMessageImage(
         Provider.of<UserData>(context, listen: false).postImage!);
     HapticFeedback.mediumImpact();
@@ -1335,7 +1331,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
       message: _adviceControler.text.isEmpty ? "Image" : _adviceControler.text,
       sendContentId: '',
       sendPostType: '',
-      author: Provider.of<UserData>(context, listen: false).user!,
     );
     _adviceControler.clear();
     Provider.of<UserData>(context, listen: false).setPost9('');
@@ -1343,9 +1338,9 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
       _isAdvicingUser = false;
       _isreplying = false;
       imageUrl = '';
-      _isLoading = false;
+      // _isLoading = false;
     });
-
+    Provider.of<UserData>(context, listen: false).setIsLoading(false);
     Provider.of<UserData>(context, listen: false).setPostImage(null);
     Provider.of<UserData>(context, listen: false).setPost8('');
     Provider.of<UserData>(context, listen: false).setPost7('');
@@ -1355,7 +1350,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     HapticFeedback.mediumImpact();
     if (Provider.of<UserData>(context, listen: false).post9.isNotEmpty) {
       DatabaseService.chatMessage(
-        author: Provider.of<UserData>(context, listen: false).user!,
         currentUserId: widget.currentUserId,
         userId: widget.user.id!,
         mediaUrl: '',
@@ -1531,8 +1525,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                                     ),
                                                     widget.user.verified!
                                                             .isEmpty
-                                                        ? const SizedBox
-                                                            .shrink()
+                                                        ? SizedBox.shrink()
                                                         : Positioned(
                                                             top: 3,
                                                             right: 0,
@@ -1575,7 +1568,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                   ),
                                 ),
                                 widget.chat == null
-                                    ? const SizedBox.shrink()
+                                    ? SizedBox.shrink()
                                     : AnimatedContainer(
                                         duration: Duration(milliseconds: 500),
                                         height: _isBlockedUser ||
@@ -1717,7 +1710,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                             listen: false)
                                         .user!
                                         .disableChat!
-                                ? const SizedBox.shrink()
+                                ? SizedBox.shrink()
                                 : _buildUserAdvice(),
                           ],
                         )),
@@ -1737,7 +1730,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                               color: Colors.pink,
                             ),
                           ))
-                  : const SizedBox.shrink()
+                  : SizedBox.shrink(),
             ],
           ),
         ),

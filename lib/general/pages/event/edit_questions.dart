@@ -156,8 +156,6 @@ class _EditQuestionState extends State<EditQuestion> {
   _submit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState?.save();
-      AccountHolder user = Provider.of<UserData>(context, listen: false).user!;
-
       Ask ask = Ask(
         id: widget.ask.id,
         content: _content,
@@ -167,10 +165,6 @@ class _EditQuestionState extends State<EditQuestion> {
         reportConfirmed: '',
         mediaType: '',
         mediaUrl: '',
-        authorName: user.userName!,
-        authorProfileHanlde: user.profileHandle!,
-        authorProfileImageUrl: user.profileImageUrl!,
-        authorVerification: '',
       );
 
       try {
@@ -331,7 +325,7 @@ class _EditQuestionState extends State<EditQuestion> {
                               width: 10.0,
                             ),
                             Text(
-                              'Save',
+                              'Save Edit',
                               style: TextStyle(
                                 fontSize: 16.0,
                                 fontWeight: FontWeight.bold,

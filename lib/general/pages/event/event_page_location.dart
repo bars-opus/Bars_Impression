@@ -87,7 +87,7 @@ class _EventPageLocationState extends State<EventPageLocation>
                     ]),
               ),
               body: TabBarView(
-                physics: const AlwaysScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 children: <Widget>[
                   EventsAllLocation(
                     locationType: widget.locationType,

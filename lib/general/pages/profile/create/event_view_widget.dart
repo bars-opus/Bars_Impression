@@ -8,7 +8,7 @@ import 'package:timeago/timeago.dart' as timeago;
 class EventViewWidget extends StatelessWidget {
   final int askCount;
   final String currentUserId;
-  // final AccountHolder author;
+  final AccountHolder author;
   final String titleHero;
   final int difference;
   final bool completed;
@@ -21,7 +21,7 @@ class EventViewWidget extends StatelessWidget {
   // final VoidCallback onPressedEventEnlarged;
 
   EventViewWidget({
-    // required this.author,
+    required this.author,
     required this.currentUserId,
     required this.event,
     required this.titleHero,
@@ -860,37 +860,30 @@ class EventViewWidget extends StatelessWidget {
                     text: TextSpan(
                       children: [
                         TextSpan(
-                            text: event.isPrivate ? 'Private' : 'Public',
+                            text: 'Asks:    ',
                             style: TextStyle(
-                                fontSize: 10,
-                                color: ConfigBloc().darkModeOn
-                                    ? Colors.white
-                                    : Colors.black)),
-                        TextSpan(
-                            text: '\nAsks: ',
-                            style: TextStyle(
-                                fontSize: 10,
+                                fontSize: 12,
                                 color: ConfigBloc().darkModeOn
                                     ? Colors.white
                                     : Colors.black)),
                         TextSpan(
                             text: NumberFormat.compact().format(askCount),
-                            style: TextStyle(  
+                            style: TextStyle(
                                 fontSize: 12,
                                 color: ConfigBloc().darkModeOn
                                     ? Colors.white
                                     : Colors.black)),
                         TextSpan(
-                            text: '\n${event.authorName}',
+                            text: event.isPrivate ? '\nPrivate' : '\nPublic',
                             style: TextStyle(
-                                fontSize: 12,
+                                fontSize: 10,
                                 color: ConfigBloc().darkModeOn
                                     ? Colors.white
                                     : Colors.black)),
                       ],
                     ),
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 4,
+                    maxLines: 2,
                   ),
                   RichText(
                     textScaleFactor: MediaQuery.of(context).textScaleFactor,
@@ -934,7 +927,7 @@ class EventViewWidget extends StatelessWidget {
           askCount: askCount,
           currentUserId: currentUserId,
           event: event,
-          // user: author,
+          user: author,
         );
       },
     );

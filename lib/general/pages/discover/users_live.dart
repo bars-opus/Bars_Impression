@@ -132,105 +132,90 @@ class _UserLiveState extends State<UserLive> {
                     liveCity: widget.liveCity,
                     liveCountry: widget.liveCountry,
                     exploreLocation: 'Live',
-                    profileHandle: 'Artist',
                   ),
-                  ArtistsLive(
+                  ProducersLive(
                     currentUserId: widget.currentUserId,
                     liveCity: widget.liveCity,
                     liveCountry: widget.liveCountry,
                     exploreLocation: 'Live',
-                    profileHandle: 'Producer',
                   ),
-                  ArtistsLive(
+                  DesignersLive(
                     currentUserId: widget.currentUserId,
                     liveCity: widget.liveCity,
                     liveCountry: widget.liveCountry,
                     exploreLocation: 'Live',
-                    profileHandle: 'Cover_Art_Designer',
                   ),
-                  ArtistsLive(
+                  VideoDirectorsLive(
                     currentUserId: widget.currentUserId,
                     liveCity: widget.liveCity,
                     liveCountry: widget.liveCountry,
                     exploreLocation: 'Live',
-                    profileHandle: 'Music_Video_Director',
                   ),
-                  ArtistsLive(
+                  DjsLive(
                     currentUserId: widget.currentUserId,
                     liveCity: widget.liveCity,
                     liveCountry: widget.liveCountry,
                     exploreLocation: 'Live',
-                    profileHandle: 'DJ',
                   ),
-                  ArtistsLive(
+                  BattleRappersLive(
                     currentUserId: widget.currentUserId,
                     liveCity: widget.liveCity,
                     liveCountry: widget.liveCountry,
                     exploreLocation: 'Live',
-                    profileHandle: 'Battle_Rapper',
                   ),
-                  ArtistsLive(
+                  PhotographersLive(
                     currentUserId: widget.currentUserId,
                     liveCity: widget.liveCity,
                     liveCountry: widget.liveCountry,
                     exploreLocation: 'Live',
-                    profileHandle: 'Photographer',
                   ),
-                  ArtistsLive(
+                  DancersLive(
                     currentUserId: widget.currentUserId,
                     liveCity: widget.liveCity,
                     liveCountry: widget.liveCountry,
                     exploreLocation: 'Live',
-                    profileHandle: 'Dancer',
                   ),
-                  ArtistsLive(
+                  VideoVixensLive(
                     currentUserId: widget.currentUserId,
                     liveCity: widget.liveCity,
                     liveCountry: widget.liveCountry,
                     exploreLocation: 'Live',
-                    profileHandle: 'Video_Vixen',
                   ),
-                  ArtistsLive(
+                  MakeUpArtistsLive(
                     currentUserId: widget.currentUserId,
                     liveCity: widget.liveCity,
                     liveCountry: widget.liveCountry,
                     exploreLocation: 'Live',
-                    profileHandle: 'Makeup_Artist',
                   ),
-                  ArtistsLive(
+                  RecordLabelsLive(
                     currentUserId: widget.currentUserId,
                     liveCity: widget.liveCity,
                     liveCountry: widget.liveCountry,
                     exploreLocation: 'Live',
-                    profileHandle: 'Record_Label',
                   ),
-                  ArtistsLive(
+                  BrandInfluencersLive(
                     currentUserId: widget.currentUserId,
                     liveCity: widget.liveCity,
                     liveCountry: widget.liveCountry,
                     exploreLocation: 'Live',
-                    profileHandle: 'Brand_Influencer',
                   ),
-                  ArtistsLive(
+                  BloggersLive(
                     currentUserId: widget.currentUserId,
                     liveCity: widget.liveCity,
                     liveCountry: widget.liveCountry,
                     exploreLocation: 'Live',
-                    profileHandle: 'Blogger',
                   ),
-                  ArtistsLive(
+                  MCHostsLive(
                     currentUserId: widget.currentUserId,
                     liveCity: widget.liveCity,
                     liveCountry: widget.liveCountry,
                     exploreLocation: 'Live',
-                    profileHandle: 'MC(Host)',
                   ),
-                  ArtistsLive(
+                  FansLive(
                     currentUserId: widget.currentUserId,
                     liveCity: widget.liveCity,
                     liveCountry: widget.liveCountry,
                     exploreLocation: 'Live',
-                    profileHandle: 'Fan',
                   ),
                 ],
               )),

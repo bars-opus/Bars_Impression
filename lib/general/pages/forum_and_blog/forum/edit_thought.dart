@@ -159,8 +159,6 @@ class _EditThoughtState extends State<EditThought> {
   _submit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState?.save();
-      AccountHolder user = Provider.of<UserData>(context, listen: false).user!;
-
       Thought thought = Thought(
         id: widget.thought.id,
         content: _content,
@@ -171,10 +169,6 @@ class _EditThoughtState extends State<EditThought> {
         reportConfirmed: '',
         mediaType: '',
         mediaUrl: '',
-        authorName: user.userName!,
-        authorProfileHanlde: user.profileHandle!,
-        authorProfileImageUrl: user.profileImageUrl!,
-        authorVerification: '',
       );
 
       try {
@@ -337,7 +331,7 @@ class _EditThoughtState extends State<EditThought> {
                               width: 10.0,
                             ),
                             Text(
-                              'Save',
+                              'Save Edit',
                               style: TextStyle(
                                 fontSize: 16.0,
                                 fontWeight: FontWeight.bold,

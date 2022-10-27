@@ -1,23 +1,24 @@
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/rendering.dart';
 
-class Artists extends StatefulWidget {
-  static final id = 'Artists';
+class VideoDirectors extends StatefulWidget {
+  static final id = 'VideoDirectors';
   final String currentUserId;
   final String exploreLocation;
 
-  Artists({
+  VideoDirectors({
     required this.currentUserId,
     required this.exploreLocation,
   });
   @override
-  _ArtistsState createState() => _ArtistsState();
+  _VideoDirectorsState createState() => _VideoDirectorsState();
 }
 
-class _ArtistsState extends State<Artists> with AutomaticKeepAliveClientMixin {
+class _VideoDirectorsState extends State<VideoDirectors>
+    with AutomaticKeepAliveClientMixin {
   List<DocId> _userList = [];
   final _userSnapshot = <DocumentSnapshot>[];
-  int limit = 5;
+int limit = 5;
   bool _hasNext = true;
   bool _isFectchingUser = false;
   late ScrollController _hideButtonController;
@@ -26,7 +27,7 @@ class _ArtistsState extends State<Artists> with AutomaticKeepAliveClientMixin {
   void initState() {
     super.initState();
     _setupUsers();
-    _hideButtonController = ScrollController();
+      _hideButtonController = ScrollController();
     _hideButtonController.addListener(() {
       if (_hideButtonController.position.userScrollDirection ==
           ScrollDirection.forward) {
@@ -54,10 +55,63 @@ class _ArtistsState extends State<Artists> with AutomaticKeepAliveClientMixin {
     super.dispose();
   }
 
-  _setupUsers() async {
+  // _setupUsers() async {
+  //   QuerySnapshot userFeedSnapShot = await usersRef
+  //       .where('profileHandle', isEqualTo: 'Music_Video_Director')
+  //       .limit(limit)
+  //       .get();
+  //   List<AccountHolder> users =
+  //       userFeedSnapShot.docs.map((doc) => AccountHolder.fromDoc(doc)).toList();
+  //   _userSnapshot.addAll((userFeedSnapShot.docs));
+  //   if (mounted) {
+  //     setState(() {
+  //       _hasNext = false;
+  //       _userList = users;
+  //     });
+  //   }
+  //   return users;
+  // }
+
+  // _loadMoreUsers() async {
+  //   if (_isFectchingUser) return;
+  //   _isFectchingUser = true;
+  //   QuerySnapshot userFeedSnapShot = await usersRef
+  //       .where('profileHandle', isEqualTo: 'Music_Video_Director')
+  //       .limit(limit)
+  //       .startAfterDocument(_userSnapshot.last)
+  //       .get();
+  //   List<AccountHolder> moreusers =
+  //       userFeedSnapShot.docs.map((doc) => AccountHolder.fromDoc(doc)).toList();
+  //   if (_userSnapshot.length < limit) _hasNext = false;
+  //   List<AccountHolder> allusers = _userList..addAll(moreusers);
+  //   _userSnapshot.addAll((userFeedSnapShot.docs));
+  //   if (mounted) {
+  //     setState(() {
+  //       _userList = allusers;
+  //     });
+  //   }
+  //   _hasNext = false;
+  //   _isFectchingUser = false;
+  //    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //       duration: const Duration(milliseconds: 800),
+  //       backgroundColor:
+  //           ConfigBloc().darkModeOn ? Colors.grey[800] :  Color(0xFFf2f2f2),
+  //       content: SizedBox(
+  //           height: 15,
+  //           child: Text(
+  //             'Loading...',
+  //             style: TextStyle(color: Colors.blue, fontSize: 12),
+  //           ))));
+  //   return _hasNext;
+  // }
+
+
+
+
+ _setupUsers() async {
     QuerySnapshot userFeedSnapShot = await accountTypesRef
-        .doc('Artist')
-        .collection('Artist')
+        .doc('Music_Video_Director')
+        .collection('Music_Video_Director')
         .orderBy('timestamp', descending: true)
         .limit(limit)
         .get();
@@ -77,8 +131,8 @@ class _ArtistsState extends State<Artists> with AutomaticKeepAliveClientMixin {
     if (_isFectchingUser) return;
     _isFectchingUser = true;
     QuerySnapshot userFeedSnapShot = await accountTypesRef
-        .doc('Artist')
-        .collection('Artist')
+        .doc('Music_Video_Director')
+        .collection('Music_Video_Director')
         .orderBy('timestamp', descending: true)
         .limit(limit)
         .startAfterDocument(_userSnapshot.last)
@@ -99,7 +153,7 @@ class _ArtistsState extends State<Artists> with AutomaticKeepAliveClientMixin {
     return _hasNext;
   }
 
-  _buildUser() {
+   _buildUser() {
     return NotificationListener<ScrollNotification>(
       onNotification: _handleScrollNotification,
       child: Scrollbar(
@@ -146,15 +200,15 @@ class _ArtistsState extends State<Artists> with AutomaticKeepAliveClientMixin {
           ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
       body: _userList.length > 0
           ? Padding(
-              padding: const EdgeInsets.only(top: 20.0),
-              child: RefreshIndicator(
+            padding: const EdgeInsets.only(top: 20.0),
+            child: RefreshIndicator(
                 backgroundColor: Colors.white,
                 onRefresh: () async {
                   _setupUsers();
                 },
                 child: _buildUser(),
               ),
-            )
+          )
           : _userList.length == 0
               ? Center(
                   child: SizedBox.shrink(),

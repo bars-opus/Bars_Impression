@@ -290,15 +290,6 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
         disbleSharing: false,
         peopleTagged: '',
         mediaType: '',
-        authorHandleType:
-            Provider.of<UserData>(context, listen: false).user!.profileHandle!,
-        authorIdProfileImageUrl: Provider.of<UserData>(context, listen: false)
-            .user!
-            .profileImageUrl!,
-        authorName:
-            Provider.of<UserData>(context, listen: false).user!.userName!,
-        authorVerification:
-            Provider.of<UserData>(context, listen: false).user!.verified!,
       );
       try {
         DatabaseService.editPunch(post);
@@ -423,15 +414,6 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
         disbleSharing: false,
         peopleTagged: '',
         mediaType: '',
-        authorHandleType:
-            Provider.of<UserData>(context, listen: false).user!.profileHandle!,
-        authorIdProfileImageUrl: Provider.of<UserData>(context, listen: false)
-            .user!
-            .profileImageUrl!,
-        authorName:
-            Provider.of<UserData>(context, listen: false).user!.userName!,
-        authorVerification:
-            Provider.of<UserData>(context, listen: false).user!.verified!,
       );
       try {
         DatabaseService.createPost(post);
@@ -512,8 +494,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
             size: 28.0,
             color: Colors.blue,
           ),
-          isDismissible: false,
-          // duration: Duration(seconds: 3),
+          duration: Duration(seconds: 3),
           leftBarIndicatorColor: Colors.blue,
         )..show(context);
       }
@@ -880,8 +861,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                                                         color: Colors.white,
                                                         size: 80,
                                                       ),
-                                                      onPressed: () =>
-                                                          _handleImage(),
+                                                      onPressed: _handleImage,
                                                     )),
                                               )
                                             : Padding(
@@ -1180,7 +1160,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                                                                     _showSelectImageDialog),
                                                           ),
                                                         )
-                                                      : const SizedBox.shrink()
+                                                      : const SizedBox.shrink(),
                                                 ],
                                               ),
                                       ]),
@@ -1200,7 +1180,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                           ),
                         ]),
                     _isLoading
-                        ? const SizedBox.shrink()
+                        ? SizedBox.shrink()
                         : Positioned(
                             top: 35,
                             left: 5,
@@ -1261,7 +1241,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                                 ),
                     ),
                     _isLoading
-                        ? const SizedBox.shrink()
+                        ? SizedBox.shrink()
                         : Positioned(
                             top: 40,
                             right: 5,
@@ -1488,15 +1468,14 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                                                         color: Colors.grey))),
                                       ),
                                       _users == null
-                                          ? const SizedBox.shrink()
+                                          ? SizedBox.shrink()
                                           : FutureBuilder<QuerySnapshot>(
                                               future: _users,
                                               builder: (BuildContext context,
                                                   AsyncSnapshot<QuerySnapshot>
                                                       snapshot) {
                                                 if (!snapshot.hasData) {
-                                                  return const SizedBox
-                                                      .shrink();
+                                                  return SizedBox.shrink();
                                                 }
                                                 if (snapshot
                                                         .data!.docs.length ==
@@ -2452,7 +2431,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
 //                               crossAxisAlignment: CrossAxisAlignment.center,
 //                               children: <Widget>[
 //                                 _show != 0 || _isLoading
-//                                     ? const SizedBox.shrink()
+//                                     ? SizedBox.shrink()
 //                                     : Row(
 //                                         mainAxisAlignment:
 //                                             MainAxisAlignment.spaceEvenly,
@@ -2522,7 +2501,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
 //                                         ],
 //                                       ),
 //                                 _isLoading
-//                                     ? const SizedBox.shrink()
+//                                     ? SizedBox.shrink()
 //                                     : Padding(
 //                                         padding: EdgeInsets.all(10),
 //                                         child: Padding(
@@ -2757,7 +2736,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
 //                                         ],
 //                                       )
 //                                     : _isLoading
-//                                         ? const SizedBox.shrink()
+//                                         ? SizedBox.shrink()
 //                                         : SingleChildScrollView(
 //                                             child: Column(
 //                                               children: [
@@ -2919,13 +2898,13 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
 //                                         icon: (Icons.mood),
 //                                         title: 'Punching mood',
 //                                       )
-//                                     : const SizedBox.shrink()
+//                                     : SizedBox.shrink(),
 //                               ]),
 //                         ),
 //                       ),
 //                     ]),
 //                     _isLoading
-//                         ? const SizedBox.shrink()
+//                         ? SizedBox.shrink()
 //                         : Positioned(
 //                             top: 35,
 //                             left: 5,
@@ -2941,7 +2920,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
 //                                 }),
 //                           ),
 //                     _isLoading
-//                         ? const SizedBox.shrink()
+//                         ? SizedBox.shrink()
 //                         : Positioned(
 //                             top: 40,
 //                             right: 5,
@@ -3110,14 +3089,14 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
 //                                                         color: Colors.grey))),
 //                                       ),
 //                                       _users == null
-//                                           ? const SizedBox.shrink()
+//                                           ? SizedBox.shrink()
 //                                           : FutureBuilder<QuerySnapshot>(
 //                                               future: _users,
 //                                               builder: (BuildContext context,
 //                                                   AsyncSnapshot<QuerySnapshot>
 //                                                       snapshot) {
 //                                                 if (!snapshot.hasData) {
-//                                                   return const SizedBox.shrink();
+//                                                   return SizedBox.shrink();
 //                                                 }
 //                                                 if (snapshot
 //                                                         .data!.docs.length ==

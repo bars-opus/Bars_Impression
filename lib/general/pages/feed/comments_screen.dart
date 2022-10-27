@@ -57,156 +57,145 @@ class _CommentsScreenState extends State<CommentsScreen>
     });
   }
 
-  _setUpComments() {
+  _setUpComments() async {
     DatabaseService.numComments(widget.post.id).listen((commentCount) {
       if (mounted) {
         setState(() {
-          _commentCount = commentCount;
+          _commentCount = commentCount ;
         });
       }
     });
   }
 
-  _viewProfessionalProfile() async {
-    AccountHolder user =
-        await DatabaseService.getUserWithId(widget.post.authorId);
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (_) => ProfileProfessionalProfile(
-                  currentUserId: Provider.of<UserData>(context).currentUserId!,
-                  // user: widget.post.authorId,
-                  userId: widget.comment!.authorId, user: user,
-                )));
-  }
-
-  _buildComment(
-    Comment comment,
-  ) {
+  _buildComment(Comment comment, AccountHolder author) {
     final width = MediaQuery.of(context).size.width;
     final String currentUserId = Provider.of<UserData>(context).currentUserId!;
-    // return
-
-    // FutureBuilder(
-    //   future: DatabaseService.getUserWithId(comment.authorId),
-    //   builder: (BuildContext context, AsyncSnapshot snapshot) {
-    //     if (!snapshot.hasData) {
-    //       return const SizedBox.shrink();
-    //     }
-    //     AccountHolder author = snapshot.data;
-    return FocusedMenuHolder(
-      menuWidth: width,
-      menuOffset: 1,
-      blurBackgroundColor:
-          ConfigBloc().darkModeOn ? Colors.grey[900] : Colors.cyan[50],
-      openWithTap: false,
-      onPressed: () {},
-      menuItems: [
-        FocusedMenuItem(
-            title: Container(
-              width: width / 2,
-              child: Text(
-                currentUserId == comment.authorId
-                    ? 'Edit your vibe'
-                    : comment.authorProfileHanlde.startsWith('Fan') ||
-                            comment.authorProfileHanlde.isEmpty
-                        ? 'view profile '
-                        : 'view booking page ',
-                overflow: TextOverflow.ellipsis,
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+    return FutureBuilder(
+      future: DatabaseService.getUserWithId(comment.authorId),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (!snapshot.hasData) {
+          return SizedBox.shrink();
+        }
+        AccountHolder author = snapshot.data;
+        return FocusedMenuHolder(
+          menuWidth: width,
+          menuOffset: 1,
+          blurBackgroundColor:
+              ConfigBloc().darkModeOn ? Colors.grey[900] : Colors.cyan[50],
+          openWithTap: false,
+          onPressed: () {},
+          menuItems: [
+            FocusedMenuItem(
+              title: Container(
+                width: width / 2,
+                child: Text(
+                  currentUserId == author.id!
+                      ? 'Edit your vibe'
+                      : author.profileHandle!.startsWith('Fan') ||
+                              author.profileHandle!.isEmpty
+                          ? 'Go to ${author.userName}\' profile '
+                          : 'Go to ${author.userName}\' booking page ',
+                  overflow: TextOverflow.ellipsis,
+                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                ),
               ),
-            ),
-            onPressed: () => currentUserId == comment.authorId
-                ? Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => EditComments(
-                          comment: comment,
-                          currentUserId: widget.currentUserId,
-                          post: widget.post),
-                    ),
-                  )
-                : comment.authorProfileHanlde.startsWith('Fan') ||
-                        comment.authorProfileHanlde.isEmpty
-                    ? Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => comment.authorName.isEmpty
-                                ? UserNotFound(
-                                    userName: 'User',
-                                  )
-                                : ProfileScreen(
-                                    currentUserId:
-                                        Provider.of<UserData>(context)
-                                            .currentUserId!,
-                                    userId: comment.authorId,
-                                  )))
-                    : _viewProfessionalProfile),
-        FocusedMenuItem(
-            title: Container(
-              width: width / 2,
-              child: Text(
-                'Report',
-                overflow: TextOverflow.ellipsis,
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
-              ),
-            ),
-            onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => ReportContentPage(
-                          parentContentId: widget.post.id,
-                          repotedAuthorId: widget.post.authorId,
-                          contentId: comment.id,
-                          contentType: 'vibe',
-                        )))),
-      ],
-      child: MediaQuery(
-        data: MediaQuery.of(context).copyWith(
-            textScaleFactor:
-                MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
-        child: Slidable(
-          startActionPane: ActionPane(
-            motion: const ScrollMotion(),
-            children: [
-              SlidableAction(
-                onPressed: (_) {
-                  currentUserId == comment.authorId
+              onPressed: () => currentUserId == author.id!
+                  ? Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => EditComments(
+                            comment: comment,
+                            currentUserId: widget.currentUserId,
+                            post: widget.post),
+                      ),
+                    )
+                  : author.profileHandle!.startsWith('Fan') ||
+                          author.profileHandle!.isEmpty
                       ? Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => EditComments(
-                                comment: comment,
-                                currentUserId: widget.currentUserId,
-                                post: widget.post),
-                          ),
-                        )
-                      : const SizedBox.shrink();
-                },
-                backgroundColor: Colors.cyan[800]!,
-                foregroundColor:
-                    ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-                icon: currentUserId == comment.authorId ? Icons.edit : null,
-                label:
-                    currentUserId == comment.authorId ? 'Edit your vibe' : '',
+                              builder: (_) => author.userName!.isEmpty
+                                  ? UserNotFound(
+                                      userName: 'User',
+                                    )
+                                  :  ProfileScreen(
+                                    currentUserId:
+                                        Provider.of<UserData>(context)
+                                            .currentUserId!,
+                                    userId: author.id!,
+                                  )))
+                      : Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => ProfileProfessionalProfile(
+                                    currentUserId:
+                                        Provider.of<UserData>(context)
+                                            .currentUserId!,
+                                    user: author,
+                                    userId: author.id!,
+                                  ))),
+            ),
+            FocusedMenuItem(
+                title: Container(
+                  width: width / 2,
+                  child: Text(
+                    'Report',
+                    overflow: TextOverflow.ellipsis,
+                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  ),
+                ),
+                onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => ReportContentPage(
+                              parentContentId: widget.post.id,
+                              repotedAuthorId: widget.post.authorId,
+                              contentId: comment.id,
+                              contentType: 'vibe',
+                            )))),
+          ],
+          child: MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+                textScaleFactor:
+                    MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
+            child: Slidable(
+              startActionPane: ActionPane(
+                motion: const ScrollMotion(),
+                children: [
+                  SlidableAction(
+                    onPressed: (_) {
+                      currentUserId == author.id!
+                          ? Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => EditComments(
+                                    comment: comment,
+                                    currentUserId: widget.currentUserId,
+                                    post: widget.post),
+                              ),
+                            )
+                          : SizedBox.shrink();
+                    },
+                    backgroundColor: Colors.cyan[800]!,
+                    foregroundColor: ConfigBloc().darkModeOn
+                        ? Color(0xFF1a1a1a)
+                        : Colors.white,
+                    icon: currentUserId == author.id! ? Icons.edit : null,
+                    label: currentUserId == author.id! ? 'Edit your vibe' : '',
+                  ),
+                ],
               ),
-            ],
+              child: Authorview(
+                report: comment.report,
+                content: comment.content,
+                author: author,
+                timestamp: comment.timestamp,
+              ),
+            ),
           ),
-          child: Authorview(
-            report: comment.report,
-            content: comment.content,
-            timestamp: comment.timestamp,
-            authorId: '',
-            profileHandle: comment.authorProfileHanlde,
-            profileImageUrl: comment.authorProfileImageUrl,
-            verified: comment.authorVerification,
-            userName: comment.authorName, from: 'Comment',
-          ),
-        ),
-      ),
+        );
+      },
     );
-    //   },
-    // );
   }
 
   _buildCommentTF() {
@@ -282,8 +271,6 @@ class _CommentsScreenState extends State<CommentsScreen>
                             post: widget.post,
                             comment: _commentController.text,
                             reportConfirmed: '',
-                            user: Provider.of<UserData>(context, listen: false)
-                                .user!,
                           );
                           _commentController.clear();
                           Provider.of<UserData>(context, listen: false)
@@ -493,26 +480,23 @@ class _CommentsScreenState extends State<CommentsScreen>
                                                   Comment comment =
                                                       Comment.fromDoc(snapshot
                                                           .data.docs[index]);
-                                                  return _buildComment(
-                                                    comment,
-                                                  );
-                                                  // FutureBuilder(
-                                                  //     future: DatabaseService
-                                                  //         .getUserWithId(
-                                                  //             comment.authorId),
-                                                  //     builder:
-                                                  //         (BuildContext context,
-                                                  //             AsyncSnapshot
-                                                  //                 snapshot) {
-                                                  //       if (!snapshot.hasData) {
-                                                  //         return FollowerUserSchimmerSkeleton();
-                                                  //       }
-                                                  //       AccountHolder author =
-                                                  //           snapshot.data;
+                                                  return FutureBuilder(
+                                                      future: DatabaseService
+                                                          .getUserWithId(
+                                                              comment.authorId),
+                                                      builder:
+                                                          (BuildContext context,
+                                                              AsyncSnapshot
+                                                                  snapshot) {
+                                                        if (!snapshot.hasData) {
+                                                          return FollowerUserSchimmerSkeleton();
+                                                        }
+                                                        AccountHolder author =
+                                                            snapshot.data;
 
-                                                  //       return _buildComment(
-                                                  //           comment, author);
-                                                  //     });
+                                                        return _buildComment(
+                                                            comment, author);
+                                                      });
                                                 },
                                                 childCount:
                                                     snapshot.data.docs.length,

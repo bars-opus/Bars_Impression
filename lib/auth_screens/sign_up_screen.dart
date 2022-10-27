@@ -436,7 +436,7 @@ class _SignpsScreenState extends State<SignpsScreen>
                                                       Colors.white),
                                             ),
                                           )
-                                        : const SizedBox.shrink()
+                                        : const SizedBox.shrink(),
                                   ],
                                 ),
                               ),

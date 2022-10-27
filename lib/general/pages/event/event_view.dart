@@ -5,18 +5,18 @@ import 'package:intl/intl.dart';
 class EventView extends StatefulWidget {
   final String currentUserId;
   final Event event;
-  // final AccountHolder author;
+  final AccountHolder author;
   final AccountHolder? user;
   final int feed;
   final String exploreLocation;
 
-  EventView({
-    required this.currentUserId,
-    required this.feed,
-    required this.exploreLocation,
-    required this.user,
-    required this.event,
-  });
+  EventView(
+      {required this.currentUserId,
+      required this.feed,
+      required this.exploreLocation,
+      required this.user,
+      required this.event,
+      required this.author});
 
   @override
   _EventViewState createState() => _EventViewState();
@@ -136,7 +136,7 @@ class _EventViewState extends State<EventView> {
                   width: width - 40,
                   child: Center(
                     child: Text(
-                      "View profile",
+                      "Go to ${widget.author.userName}'s profile",
                       overflow: TextOverflow.ellipsis,
                       textScaleFactor: MediaQuery.of(context).textScaleFactor,
                     ),
@@ -145,17 +145,14 @@ class _EventViewState extends State<EventView> {
                 onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (_) =>
-
-                            //  widget.author.userName!.isEmpty
-                            //     ? UserNotFound(
-                            //         userName: 'User',
-                            //       )
-                            //     :
-                            ProfileScreen(
-                              currentUserId: widget.currentUserId,
-                              userId: widget.event.authorId,
-                            ))),
+                        builder: (_) => widget.author.userName!.isEmpty
+                            ? UserNotFound(
+                                userName: 'User',
+                              )
+                            : ProfileScreen(
+                                currentUserId: widget.currentUserId,
+                                userId: widget.event.authorId,
+                              ))),
               ),
         FocusedMenuItem(
             title: Container(
@@ -233,113 +230,165 @@ class _EventViewState extends State<EventView> {
         data: MediaQuery.of(context).copyWith(
             textScaleFactor:
                 MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
-        child: Stack(
-          children: [
-            EventViewWidget(
-              currentUserId: widget.currentUserId,
-              // author: widget.author,
-              event: widget.event,
-              // onPressedEventEnlarged: () => Navigator.push(
-              //   context,
-              //   PageRouteBuilder(
-              //     pageBuilder: (context, animation1, animation2) =>
-              //         AllEvenEnlarged(
-              //       exploreLocation: widget.exploreLocation,
-              //       feed: widget.feed,
-              //       askCount: _askCount,
-              //       currentUserId: widget.currentUserId,
-              //       event: widget.event,
-              //       user: widget.user,
-              //     ),
-              //     transitionDuration: Duration(seconds: 0),
-              //   ),
-              // ),
-
-              //  Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (_) => AllEvenEnlarged(
-              //               exploreLocation: widget.exploreLocation,
-              //               feed: widget.feed,
-              //               askCount: _askCount,
-              //               currentUserId: widget.currentUserId,
-              //               event: widget.event,
-              //               user: widget.user,
-              //             ))),
-              // imageHero: '',
-              askCount: _askCount,
-              titleHero: 'title ${widget.event.id.toString()}',
-              difference: _different,
-              completed: _toDaysDate.isAfter(_closingDate) ? true : false,
-              exploreLocation: widget.exploreLocation, feed: widget.feed,
-            ),
-            Positioned(
-              top: 1,
-              right: 10,
-              child: GestureDetector(
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => AllEvenEnlarged(
-                              exploreLocation: widget.exploreLocation,
-                              feed: widget.feed,
-                              askCount: _askCount,
-                              currentUserId: widget.currentUserId,
-                              event: widget.event,
-                              // user: widget.user,
-                            ))),
-                child: Hero(
-                  tag: 'type' + widget.event.id.toString(),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: Container(
-                      width: 35.0,
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          primary: widget.event.report.isNotEmpty
-                              ? Colors.grey
-                              : Colors.blue,
-                          side: BorderSide(width: 1.0, color: Colors.blue),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
-                        ),
-                        child: Text(
-                          widget.event.type.startsWith('F')
-                              ? 'F\nE'
-                              : widget.event.type.startsWith('Al')
-                                  ? 'A\nL'
-                                  : widget.event.type.startsWith('Aw')
-                                      ? 'A\nW'
-                                      : widget.event.type.startsWith('O')
-                                          ? 'O\nT'
-                                          : widget.event.type.startsWith('T')
-                                              ? 'T\nO'
-                                              : '',
-                          style: TextStyle(
-                            color: Colors.blue,
-                            fontSize: 10,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => AllEvenEnlarged(
-                                      exploreLocation: widget.exploreLocation,
-                                      feed: widget.feed,
-                                      askCount: _askCount,
+        child: Slidable(
+          startActionPane: ActionPane(
+            motion: const DrawerMotion(),
+            children: [
+              SlidableAction(
+                onPressed: (_) {
+                  widget.currentUserId == widget.author.id!
+                      ? _toDaysDate.isAfter(_date)
+                          ? Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => EventCompleted(
+                                    date: DateFormat.yMMMMEEEEd()
+                                        .format(_closingDate),
+                                    event: widget.event,
+                                    currentUserId: widget.currentUserId),
+                              ),
+                            )
+                          : Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => EditEvent(
+                                    event: widget.event,
+                                    currentUserId: widget.currentUserId),
+                              ),
+                            )
+                      : Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => widget.author.userName!.isEmpty
+                                  ? UserNotFound(
+                                      userName: 'User',
+                                    )
+                                  : ProfileScreen(
                                       currentUserId: widget.currentUserId,
-                                      event: widget.event,
-                                      // user: widget.user,
-                                    ))),
+                                      userId: widget.event.authorId,
+                                    )));
+                },
+                backgroundColor: ConfigBloc().darkModeOn
+                    ? Color(0xFF1f2022)
+                    : Color(0xFFf2f2f2),
+                foregroundColor: Colors.grey,
+                icon: widget.currentUserId == widget.author.id!
+                    ? Icons.edit
+                    : Icons.account_circle,
+                label: widget.currentUserId == widget.author.id!
+                    ? 'Edit event'
+                    : 'Profile page ',
+              ),
+            ],
+          ),
+          child: Stack(
+            children: [
+              EventViewWidget(
+                currentUserId: widget.currentUserId,
+                author: widget.author,
+                event: widget.event,
+                // onPressedEventEnlarged: () => Navigator.push(
+                //   context,
+                //   PageRouteBuilder(
+                //     pageBuilder: (context, animation1, animation2) =>
+                //         AllEvenEnlarged(
+                //       exploreLocation: widget.exploreLocation,
+                //       feed: widget.feed,
+                //       askCount: _askCount,
+                //       currentUserId: widget.currentUserId,
+                //       event: widget.event,
+                //       user: widget.user,
+                //     ),
+                //     transitionDuration: Duration(seconds: 0),
+                //   ),
+                // ),
+
+                //  Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (_) => AllEvenEnlarged(
+                //               exploreLocation: widget.exploreLocation,
+                //               feed: widget.feed,
+                //               askCount: _askCount,
+                //               currentUserId: widget.currentUserId,
+                //               event: widget.event,
+                //               user: widget.user,
+                //             ))),
+                // imageHero: '',
+                askCount: _askCount,
+                titleHero: 'title ${widget.event.id.toString()}',
+                difference: _different,
+                completed: _toDaysDate.isAfter(_closingDate) ? true : false,
+                exploreLocation: widget.exploreLocation, feed: widget.feed,
+              ),
+              Positioned(
+                top: 1,
+                right: 10,
+                child: GestureDetector(
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => AllEvenEnlarged(
+                                exploreLocation: widget.exploreLocation,
+                                feed: widget.feed,
+                                askCount: _askCount,
+                                currentUserId: widget.currentUserId,
+                                event: widget.event,
+                                user: widget.user,
+                              ))),
+                  child: Hero(
+                    tag: 'type' + widget.event.id.toString(),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Container(
+                        width: 35.0,
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            primary: widget.event.report.isNotEmpty
+                                ? Colors.grey
+                                : Colors.blue,
+                            side: BorderSide(width: 1.0, color: Colors.blue),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                          ),
+                          child: Text(
+                            widget.event.type.startsWith('F')
+                                ? 'F\nE'
+                                : widget.event.type.startsWith('Al')
+                                    ? 'A\nL'
+                                    : widget.event.type.startsWith('Aw')
+                                        ? 'A\nW'
+                                        : widget.event.type.startsWith('O')
+                                            ? 'O\nT'
+                                            : widget.event.type.startsWith('T')
+                                                ? 'T\nO'
+                                                : '',
+                            style: TextStyle(
+                              color: Colors.blue,
+                              fontSize: 10,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => AllEvenEnlarged(
+                                        exploreLocation: widget.exploreLocation,
+                                        feed: widget.feed,
+                                        askCount: _askCount,
+                                        currentUserId: widget.currentUserId,
+                                        event: widget.event,
+                                        user: widget.user,
+                                      ))),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );

@@ -28,7 +28,6 @@ class _FetchingLocationState extends State<FetchingLocation> {
   }
 
   _getCurrentLocation() async {
-    await Future.delayed(Duration(seconds: 2));
     LocationPermission permission;
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
@@ -96,8 +95,6 @@ class _FetchingLocationState extends State<FetchingLocation> {
   Widget build(BuildContext context) {
     return ResponsiveScaffold(
       child: Scaffold(
-        extendBodyBehindAppBar: true,
-        extendBody: true,
         backgroundColor:
             ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
         appBar: AppBar(
@@ -108,42 +105,48 @@ class _FetchingLocationState extends State<FetchingLocation> {
           elevation: 0,
           backgroundColor:
               ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(30.0),
-          child: Container(
-            height: MediaQuery.of(context).size.height,
-            width: double.infinity,
-            child: Center(
-              child: Column(
-                children: [
-                  AvatarGlow(
-                    animate: true,
-                    showTwoGlows: true,
-                    shape: BoxShape.circle,
-                    glowColor: Colors.green,
-                    endRadius: MediaQuery.of(context).size.width,
-                    duration: const Duration(milliseconds: 2000),
-                    repeatPauseDuration: const Duration(milliseconds: 1000),
-                    child: NoContents(
-                      icon: (Icons.location_on),
-                      title: '\nFetching Live Location',
-                      subTitle: 'Just a moment...',
-                      color: Colors.green,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 1.0,
-                    child: LinearProgressIndicator(
-                      backgroundColor: Colors.transparent,
-                      valueColor: AlwaysStoppedAnimation(Colors.green),
-                    ),
-                  ),
-                ],
-              ),
+          title: Material(
+            color: Colors.transparent,
+            child: Text(
+              '',
+              style: TextStyle(
+                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
             ),
           ),
+          centerTitle: true,
         ),
+        body: SingleChildScrollView(
+            child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height - 200,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Shimmer.fromColors(
+                period: Duration(milliseconds: 1000),
+                baseColor: Colors.grey,
+                highlightColor: Colors.blue,
+                child: NoContents(
+                  icon: (Icons.location_on),
+                  title: 'Fetching Live Location',
+                  subTitle: 'Just a moment...',
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                  height: 1.0,
+                  child: LinearProgressIndicator(
+                    backgroundColor: ConfigBloc().darkModeOn
+                        ? Color(0xFF1a1a1a)
+                        : Colors.grey[100],
+                    valueColor: AlwaysStoppedAnimation(Colors.blue),
+                  ))
+            ],
+          ),
+        )),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:intl/intl.dart';
 
 class ProfileForumView extends StatefulWidget {
   final String currentUserId;
@@ -188,7 +189,7 @@ class _ProfileForumViewState extends State<ProfileForumView> {
                 MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
         child: ForumViewWidget(
             currentUserId: widget.currentUserId,
-            // author: widget.author,
+            author: widget.author,
             forum: widget.forum,
             // titleHero: 'titleProfile' + widget.forum.id.toString(),
             // subtitleHero: 'subTitleProfile' + widget.forum.id.toString(),

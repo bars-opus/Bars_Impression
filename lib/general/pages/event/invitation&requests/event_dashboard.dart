@@ -193,14 +193,14 @@ class _EventDashboardState extends State<EventDashboard> {
         appStoreId: '1610868894',
       ),
     );
-    if (Platform.isIOS) {
-      var link =
-          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
-      Share.share(link.toString());
+    if (Platform.isIOS){
+var link =
+        await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
+    Share.share(link.toString());
     } else {
       var link =
-          await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
-      Share.share(link.shortUrl.toString());
+        await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+    Share.share(link.shortUrl.toString());
     }
   }
 
@@ -282,7 +282,7 @@ class _EventDashboardState extends State<EventDashboard> {
                             height: 60,
                           ),
                           Text(
-                            'CHECK-IN\nVALIDATOR',
+                            'VALIDATOR',
                             style: TextStyle(
                               fontSize: 20,
                               color: widget.palette.darkMutedColor == null
@@ -365,8 +365,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                     ? Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (_) =>
-                                                EventAttendeesRequested(
+                                            builder: (_) => EventAttendees(
                                                   palette: widget.palette,
                                                   event: widget.event,
                                                   answer: 'Accepted',
@@ -376,8 +375,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                     : Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (_) =>
-                                                EventAttendeesRequested(
+                                            builder: (_) => EventAttendees(
                                                   showAppBar: true,
                                                   dontShowAnswerWidget: true,
                                                   palette: widget.palette,
@@ -777,16 +775,27 @@ class _EventDashboardState extends State<EventDashboard> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 30.0),
                         child: GestureDetector(
-                          onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => EventAttendeesAll(
-                                        dontShowAnswerWidget: true,
-                                        palette: widget.palette,
-                                        event: widget.event,
-                                        showAppBar: true,
-                                        answer: 'Accepted',
-                                      ))),
+                          onTap: () => widget.event.isPrivate
+                              ? Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => EventAttendees(
+                                            dontShowAnswerWidget: true,
+                                            palette: widget.palette,
+                                            event: widget.event,
+                                            showAppBar: true,
+                                            answer: 'Accepted',
+                                          )))
+                              : Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => EventAttendees(
+                                            dontShowAnswerWidget: true,
+                                            showAppBar: true,
+                                            palette: widget.palette,
+                                            event: widget.event,
+                                            answer: 'Accepted',
+                                          ))),
                           child: Row(
                             children: [
                               Padding(
@@ -857,8 +866,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                           onTap: () => Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      EventAttendeesInvited(
+                                                  builder: (_) => EventInvites(
                                                         letShowAppBar: true,
                                                         palette: widget.palette,
                                                         event: widget.event,
@@ -878,18 +886,14 @@ class _EventDashboardState extends State<EventDashboard> {
                                                         _inviteCount.toString(),
                                                     style: TextStyle(
                                                       fontSize: 20,
-                                                      color: _inviteCount < 1
-                                                          ? Colors.grey
-                                                          : Colors.blue,
+                                                      color: Colors.blue,
                                                     ),
                                                   ),
                                                   TextSpan(
                                                     text: '\nInvitations\nsent',
                                                     style: TextStyle(
                                                       fontSize: 12,
-                                                      color: _inviteCount < 1
-                                                          ? Colors.grey
-                                                          : Colors.blue,
+                                                      color: Colors.blue,
                                                     ),
                                                   ),
                                                 ],
@@ -902,8 +906,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                           onTap: () => Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      EventAttendeesInvited(
+                                                  builder: (_) => EventInvites(
                                                         letShowAppBar: true,
                                                         event: widget.event,
                                                         palette: widget.palette,
@@ -923,10 +926,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                                         .toString(),
                                                     style: TextStyle(
                                                       fontSize: 20,
-                                                      color:
-                                                          _inviteUnAnswered < 1
-                                                              ? Colors.grey
-                                                              : Colors.blue,
+                                                      color: Colors.blue,
                                                     ),
                                                   ),
                                                   TextSpan(
@@ -934,10 +934,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                                         '\nInvitations\nunanswered\n(pending)',
                                                     style: TextStyle(
                                                       fontSize: 12,
-                                                      color:
-                                                          _inviteUnAnswered < 1
-                                                              ? Colors.grey
-                                                              : Colors.blue,
+                                                      color: Colors.blue,
                                                     ),
                                                   ),
                                                 ],
@@ -952,8 +949,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                           onTap: () => Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      EventAttendeesInvited(
+                                                  builder: (_) => EventInvites(
                                                         letShowAppBar: true,
                                                         palette: widget.palette,
                                                         event: widget.event,
@@ -973,11 +969,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                                         .toString(),
                                                     style: TextStyle(
                                                       fontSize: 20,
-                                                      color:
-                                                          _inviteAcceptedCount <
-                                                                  1
-                                                              ? Colors.grey
-                                                              : Colors.blue,
+                                                      color: Colors.blue,
                                                     ),
                                                   ),
                                                   TextSpan(
@@ -985,11 +977,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                                         '\nInvitations\naccepted',
                                                     style: TextStyle(
                                                       fontSize: 12,
-                                                      color:
-                                                          _inviteAcceptedCount <
-                                                                  1
-                                                              ? Colors.grey
-                                                              : Colors.blue,
+                                                      color: Colors.blue,
                                                     ),
                                                   ),
                                                 ],
@@ -1002,8 +990,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                           onTap: () => Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      EventAttendeesInvited(
+                                                  builder: (_) => EventInvites(
                                                         letShowAppBar: true,
                                                         palette: widget.palette,
                                                         event: widget.event,
@@ -1023,11 +1010,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                                         .toString(),
                                                     style: TextStyle(
                                                       fontSize: 20,
-                                                      color:
-                                                          _inviteRejectedCount <
-                                                                  1
-                                                              ? Colors.grey
-                                                              : Colors.blue,
+                                                      color: Colors.blue,
                                                     ),
                                                   ),
                                                   TextSpan(
@@ -1035,11 +1018,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                                         '\nInvitations\nrejected',
                                                     style: TextStyle(
                                                       fontSize: 12,
-                                                      color:
-                                                          _inviteRejectedCount <
-                                                                  1
-                                                              ? Colors.grey
-                                                              : Colors.blue,
+                                                      color: Colors.blue,
                                                     ),
                                                   ),
                                                 ],
@@ -1092,8 +1071,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                           onTap: () => Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      EventAttendeesInvited(
+                                                  builder: (_) => EventInvites(
                                                         letShowAppBar: true,
                                                         palette: widget.palette,
                                                         event: widget.event,
@@ -1137,8 +1115,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                           onTap: () => Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      EventAttendeesInvited(
+                                                  builder: (_) => EventInvites(
                                                         letShowAppBar: true,
                                                         event: widget.event,
                                                         palette: widget.palette,
@@ -1187,8 +1164,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                           onTap: () => Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      EventAttendeesInvited(
+                                                  builder: (_) => EventInvites(
                                                         letShowAppBar: true,
                                                         palette: widget.palette,
                                                         event: widget.event,
@@ -1237,8 +1213,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                           onTap: () => Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      EventAttendeesInvited(
+                                                  builder: (_) => EventInvites(
                                                         letShowAppBar: true,
                                                         palette: widget.palette,
                                                         event: widget.event,
@@ -1315,7 +1290,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (_) =>
-                                                      EventAttendeesRequested(
+                                                      EventAttendees(
                                                         dontShowAnswerWidget:
                                                             false,
                                                         showAppBar: true,
@@ -1367,7 +1342,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (_) =>
-                                                      EventAttendeesRequested(
+                                                      EventAttendees(
                                                         dontShowAnswerWidget:
                                                             false,
                                                         showAppBar: true,
@@ -1421,7 +1396,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (_) =>
-                                                      EventAttendeesRequested(
+                                                      EventAttendees(
                                                         dontShowAnswerWidget:
                                                             false,
                                                         showAppBar: true,
@@ -1473,7 +1448,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (_) =>
-                                                      EventAttendeesRequested(
+                                                      EventAttendees(
                                                         dontShowAnswerWidget:
                                                             false,
                                                         showAppBar: true,
@@ -1542,7 +1517,7 @@ class _EventDashboardState extends State<EventDashboard> {
                             children: [
                               TextSpan(
                                   text:
-                                      'Every attendee of this event would be given an check-in number also known as an attendee number. An event organizer should validate each attendee by checking if the check-in number they have corresponds to the check-in number you have among your people attending list. Your validator would be ready 3 days before this event.',
+                                      'Every attendee of this event would be given an entrance number also known as an attendee number. An event organizer should validate each attendee by checking if the entrance number they have corresponds to the entrance number you have among your people attending list. Your validator would be ready 3 days before this event.',
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: Colors.black,

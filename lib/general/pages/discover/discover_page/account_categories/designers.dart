@@ -1,20 +1,21 @@
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/rendering.dart';
 
-class Artists extends StatefulWidget {
-  static final id = 'Artists';
+class Designers extends StatefulWidget {
+  static final id = 'Designers';
   final String currentUserId;
   final String exploreLocation;
 
-  Artists({
+  Designers({
     required this.currentUserId,
     required this.exploreLocation,
   });
   @override
-  _ArtistsState createState() => _ArtistsState();
+  _DesignersState createState() => _DesignersState();
 }
 
-class _ArtistsState extends State<Artists> with AutomaticKeepAliveClientMixin {
+class _DesignersState extends State<Designers>
+    with AutomaticKeepAliveClientMixin {
   List<DocId> _userList = [];
   final _userSnapshot = <DocumentSnapshot>[];
   int limit = 5;
@@ -54,10 +55,61 @@ class _ArtistsState extends State<Artists> with AutomaticKeepAliveClientMixin {
     super.dispose();
   }
 
-  _setupUsers() async {
+  // _setupUsers() async {
+  //   QuerySnapshot userFeedSnapShot = await usersRef
+  //       .where('profileHandle', isEqualTo: 'Cover_Art_Designer')
+  //       .limit(limit)
+  //       .get();
+  //   List<AccountHolder> users =
+  //       userFeedSnapShot.docs.map((doc) => AccountHolder.fromDoc(doc)).toList();
+  //   _userSnapshot.addAll((userFeedSnapShot.docs));
+  //   if (mounted) {
+  //     setState(() {
+  //       _hasNext = false;
+  //       _userList = users;
+  //     });
+  //   }
+  //   return users;
+  // }
+
+  // _loadMoreUsers() async {
+  //   if (_isFectchingUser) return;
+  //   _isFectchingUser = true;
+  //   QuerySnapshot userFeedSnapShot = await usersRef
+  //       .where('profileHandle', isEqualTo: 'Cover_Art_Designer')
+  //       .limit(limit)
+  //       .startAfterDocument(_userSnapshot.last)
+  //       .get();
+  //   List<AccountHolder> moreusers =
+  //       userFeedSnapShot.docs.map((doc) => AccountHolder.fromDoc(doc)).toList();
+  //   if (_userSnapshot.length < limit) _hasNext = false;
+  //   List<AccountHolder> allusers = _userList..addAll(moreusers);
+  //   _userSnapshot.addAll((userFeedSnapShot.docs));
+  //   if (mounted) {
+  //     setState(() {
+  //       _userList = allusers;
+  //     });
+  //   }
+  //   _hasNext = false;
+  //   _isFectchingUser = false;
+  //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //       duration: const Duration(milliseconds: 800),
+  //       backgroundColor:
+  //           ConfigBloc().darkModeOn ? Colors.grey[800] :  Color(0xFFf2f2f2),
+  //       content: SizedBox(
+  //           height: 15,
+  //           child: Text(
+  //             'Loading...',
+  //             style: TextStyle(color: Colors.blue, fontSize: 12),
+  //           ))));
+  //   return _hasNext;
+  // }
+
+
+ _setupUsers() async {
     QuerySnapshot userFeedSnapShot = await accountTypesRef
-        .doc('Artist')
-        .collection('Artist')
+        .doc('Cover_Art_Designer')
+        .collection('Cover_Art_Designer')
         .orderBy('timestamp', descending: true)
         .limit(limit)
         .get();
@@ -77,8 +129,8 @@ class _ArtistsState extends State<Artists> with AutomaticKeepAliveClientMixin {
     if (_isFectchingUser) return;
     _isFectchingUser = true;
     QuerySnapshot userFeedSnapShot = await accountTypesRef
-        .doc('Artist')
-        .collection('Artist')
+        .doc('Cover_Art_Designer')
+        .collection('Cover_Art_Designer')
         .orderBy('timestamp', descending: true)
         .limit(limit)
         .startAfterDocument(_userSnapshot.last)
@@ -99,7 +151,7 @@ class _ArtistsState extends State<Artists> with AutomaticKeepAliveClientMixin {
     return _hasNext;
   }
 
-  _buildUser() {
+    _buildUser() {
     return NotificationListener<ScrollNotification>(
       onNotification: _handleScrollNotification,
       child: Scrollbar(

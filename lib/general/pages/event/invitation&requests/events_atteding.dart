@@ -118,84 +118,50 @@ class _EventsAttendingState extends State<EventsAttending> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Container(
-                        decoration: BoxDecoration(
-                            // color: Colors.white,
-                            border: Border.all(width: .3, color: Colors.white),
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 10.0, horizontal: 10),
-                          child: RichText(
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          RichText(
                             textScaleFactor:
                                 MediaQuery.of(context).textScaleFactor,
                             text: TextSpan(
                               children: [
                                 TextSpan(
-                                  text: widget.different.toString(),
+                                  text: widget.different < 1
+                                      ? 'Ongoing...'
+                                      : widget.different.toString(),
                                   style: TextStyle(
-                                    fontSize: 60,
+                                    fontSize: widget.different < 1 ? 30 : 50,
                                     color: Colors.white,
                                   ),
+                                ),
+                                TextSpan(
+                                  text: widget.different < 1
+                                      ? '\nThis event is still in progress.\nIt would be completed on\n${MyDateFormat.toDate(DateTime.parse(widget.event.clossingDay))}.\nAttend, meet and explore.'
+                                      : '\nDays\nMore',
+                                  style: TextStyle(
+                                      fontSize: widget.different < 1 ? 12 : 16,
+                                      fontWeight: widget.different < 1
+                                          ? FontWeight.normal
+                                          : FontWeight.bold,
+                                      color: Colors.white,
+                                      height: 1),
                                 ),
                               ],
                             ),
                             textAlign: TextAlign.center,
                           ),
-                        ),
+                        ],
                       ),
-
-                      RichText(
-                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: '\nDays More',
-                              style: TextStyle(
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                        textAlign: TextAlign.center,
+                      const SizedBox(
+                        height: 30,
                       ),
-                      // RichText(
-                      //   textScaleFactor:
-                      //       MediaQuery.of(context).textScaleFactor,
-                      //   text: TextSpan(
-                      //     children: [
-                      //       TextSpan(
-                      //         text: widget.different < 1
-                      //             ? 'Ongoing...'
-                      //             : widget.different.toString(),
-                      //         style: TextStyle(
-                      //           fontSize: widget.different < 1 ? 30 : 50,
-                      //           color: Colors.white,
-                      //         ),
-                      //       ),
-                      //       TextSpan(
-                      //         text: widget.different < 1
-                      //             ? '\nThis event is still in progress.\nIt would be completed on\n${MyDateFormat.toDate(DateTime.parse(widget.event.clossingDay))}.\nAttend, meet and explore.'
-                      //             : '\nDays\nMore',
-                      //         style: TextStyle(
-                      //             fontSize: widget.different < 1 ? 12 : 16,
-                      //             fontWeight: widget.different < 1
-                      //                 ? FontWeight.normal
-                      //                 : FontWeight.bold,
-                      //             color: Colors.white,
-                      //             height: 1),
-                      //       ),
-                      //     ],
-                      //   ),
-                      //   textAlign: TextAlign.center,
-                      // ),
-                      Divider(),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12.0),
-                        child: Container(
-                          color: Colors.white,
-                          height: .3,
-                        ),
+                      const Divider(
+                        color: Colors.white,
+                      ),
+                      const SizedBox(
+                        height: 30,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -250,15 +216,8 @@ class _EventsAttendingState extends State<EventsAttending> {
                           ),
                         ],
                       ),
-                      // const SizedBox(
-                      //   height: 40,
-                      // ),
-                      // const Divider(
-                      //   color: Colors.white,
-                      // ),
-
                       const SizedBox(
-                        height: 40,
+                        height: 10,
                       ),
                       ShakeTransition(
                         child: Container(
@@ -380,9 +339,9 @@ class _EventsAttendingState extends State<EventsAttending> {
                                                   listen: false)
                                               .currentUserId!,
                                           event: widget.event,
-                                          // user: Provider.of<UserData>(context,
-                                          //         listen: false)
-                                          //     .user!,
+                                          user: Provider.of<UserData>(context,
+                                                  listen: false)
+                                              .user!,
                                         )))),
                       ),
                     ],

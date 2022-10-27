@@ -6,13 +6,13 @@ import 'package:bars/utilities/exports.dart';
 class FeedGrid extends StatefulWidget {
   final String currentUserId;
   final Post post;
-  // final AccountHolder author;
+  final AccountHolder author;
   final String feed;
 
   FeedGrid({
     required this.currentUserId,
     required this.post,
-    // required this.author,
+    required this.author,
     required this.feed,
   });
 
@@ -39,8 +39,8 @@ class _FeedGridState extends State<FeedGrid> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     return OpenContainer(
-      openColor: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-      closedColor: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+      openColor: ConfigBloc().darkModeOn ? Color(0xFF1f2022) : Colors.white,
+      closedColor: ConfigBloc().darkModeOn ? Color(0xFF1f2022) : Colors.white,
       transitionType: ContainerTransitionType.fade,
       closedBuilder: (BuildContext _, VoidCallback openContainer) {
         return GridTile(
@@ -184,8 +184,8 @@ class _FeedGridState extends State<FeedGrid> {
         return AllPostEnlarged(
             currentUserId: widget.currentUserId,
             post: widget.post,
-            feed: widget.feed, 
-     );
+            feed: widget.feed,
+            author: widget.author);
       },
     );
   }

@@ -3,40 +3,30 @@ import 'package:timeago/timeago.dart' as timeago;
 
 // ignore: must_be_immutable
 class Authorview extends StatelessWidget {
-  final String userName;
-  final String profileHandle;
-  final String profileImageUrl;
-  final String verified;
-  final String authorId;
+  final AccountHolder author;
   final String report;
   final String content;
-  final String from;
   final Timestamp timestamp;
 
   Authorview({
+    required this.author,
     required this.content,
     required this.report,
     required this.timestamp,
-    required this.userName,
-    required this.profileHandle,
-    required this.profileImageUrl,
-    required this.verified,
-    required this.authorId,
-    required this.from,
   });
 
-  // RandomColor _randomColor = RandomColor();
-  // final List<ColorHue> _hueType = <ColorHue>[
-  //   ColorHue.green,
-  //   ColorHue.red,
-  //   ColorHue.pink,
-  //   ColorHue.purple,
-  //   ColorHue.blue,
-  //   ColorHue.yellow,
-  //   ColorHue.orange
-  // ];
+  RandomColor _randomColor = RandomColor();
+  final List<ColorHue> _hueType = <ColorHue>[
+    ColorHue.green,
+    ColorHue.red,
+    ColorHue.pink,
+    ColorHue.purple,
+    ColorHue.blue,
+    ColorHue.yellow,
+    ColorHue.orange
+  ];
 
-  // ColorSaturation _colorSaturation = ColorSaturation.random;
+  ColorSaturation _colorSaturation = ColorSaturation.random;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +37,7 @@ class Authorview extends StatelessWidget {
           textScaleFactor:
               MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
       child: ListTile(
-        leading: profileImageUrl.isEmpty
+        leading: author.profileImageUrl!.isEmpty
             ? Icon(
                 Icons.account_circle,
                 size: 45.0,
@@ -58,7 +48,8 @@ class Authorview extends StatelessWidget {
                 backgroundColor: ConfigBloc().darkModeOn
                     ? Color(0xFF1a1a1a)
                     : Color(0xFFf2f2f2),
-                backgroundImage: CachedNetworkImageProvider(profileImageUrl),
+                backgroundImage:
+                    CachedNetworkImageProvider(author.profileImageUrl!),
               ),
         title: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -70,7 +61,7 @@ class Authorview extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(right: 12.0),
                   child: Text(
-                    userName,
+                    author.userName!,
                     style: TextStyle(
                       fontSize: 12.0,
                       fontWeight: FontWeight.bold,
@@ -79,8 +70,8 @@ class Authorview extends StatelessWidget {
                     ),
                   ),
                 ),
-                verified.isEmpty
-                    ? const SizedBox.shrink()
+                author.verified!.isEmpty
+                    ? SizedBox.shrink()
                     : Positioned(
                         top: 0,
                         right: 0,
@@ -92,7 +83,7 @@ class Authorview extends StatelessWidget {
                       ),
               ],
             ),
-            Text(profileHandle,
+            Text(author.profileHandle!,
                 style: TextStyle(
                   fontSize: 10.0,
                   fontWeight: FontWeight.bold,
@@ -104,9 +95,10 @@ class Authorview extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: 2.0),
               child: Container(
-                color: from.startsWith('Comment')
-                    ? Colors.cyan[800]
-                    : Color(0xFFFF2D55),
+                color: _randomColor.randomColor(
+                  colorHue: ColorHue.multiple(colorHues: _hueType),
+                  colorSaturation: _colorSaturation,
+                ),
                 height: 1.0,
                 width: 50.0,
               ),
@@ -139,20 +131,13 @@ class Authorview extends StatelessWidget {
                 : Divider(),
           ],
         ),
-        onTap: () => authorId.isEmpty
-            ? Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => UserNotFound(
-                          userName: 'user',
-                        )))
-            : Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => ProfileScreen(
-                          currentUserId: currentUserId,
-                          userId: authorId,
-                        ))),
+        onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => ProfileScreen(
+                      currentUserId: currentUserId,
+                      userId: author.id!,
+                    ))),
       ),
     );
   }

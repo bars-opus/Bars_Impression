@@ -155,7 +155,6 @@ class _EditCommentsState extends State<EditComments> {
   _submit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState?.save();
-      AccountHolder user = Provider.of<UserData>(context, listen: false).user!;
       Comment comment = Comment(
         id: widget.comment.id,
         content: _content,
@@ -165,10 +164,6 @@ class _EditCommentsState extends State<EditComments> {
         reportConfirmed: '',
         mediaType: '',
         mediaUrl: '',
-        authorName: user.userName!,
-        authorProfileHanlde: user.profileHandle!,
-        authorProfileImageUrl: user.profileImageUrl!,
-        authorVerification: '',
       );
 
       try {

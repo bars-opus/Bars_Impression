@@ -352,7 +352,7 @@ class _EventPublicInviteAvailableState
                           onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (_) => EventAttendeesRequested(
+                                  builder: (_) => EventAttendees(
                                         showAppBar: true,
                                         palette: widget.palette,
                                         dontShowAnswerWidget: true,

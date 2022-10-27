@@ -328,7 +328,7 @@ class _SignpsScreenVerifyEmailState extends State<SignpsScreenVerifyEmail>
                                                       Colors.white),
                                             ),
                                           )
-                                        : const SizedBox.shrink()
+                                        : const SizedBox.shrink(),
                                   ],
                                 ),
                               ),

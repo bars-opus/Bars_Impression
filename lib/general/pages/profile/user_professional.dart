@@ -122,8 +122,7 @@ class _ProfessionalProfileState extends State<ProfessionalProfile> {
       child: GestureDetector(
         onLongPress: () => Navigator.of(context).push(PageRouteBuilder(
             transitionDuration: const Duration(milliseconds: 500),
-            pageBuilder: (context, animation, _) {
-              HapticFeedback.heavyImpact();
+            pageBuilder: (context, animation, _) {    HapticFeedback.heavyImpact();
 
               return FadeTransition(
                 opacity: animation,
@@ -158,7 +157,21 @@ class _ProfessionalProfileState extends State<ProfessionalProfile> {
                   );
                 })),
           ),
-         
+          profileWidget: IconButton(
+            icon: Icon(
+              Icons.account_circle,
+              color: Color(0xFF1a1a1a),
+              size: 25.0,
+            ),
+            onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => ProfileScreen(
+                          currentUserId:
+                              Provider.of<UserData>(context).currentUserId!,
+                          userId: widget.userId,
+                        ))),
+          ),
           currentUserId: currentUserId,
           onPressedRating: () => Navigator.push(
               context,

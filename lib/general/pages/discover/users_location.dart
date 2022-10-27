@@ -121,89 +121,74 @@ class _UsersLocationState extends State<UsersLocation> {
                     currentUserId: widget.currentUserId,
                     user: widget.user,
                     locationType: widget.locationType,
-                    profileHandle: 'Artist',
                   ),
-                  ArtistsLocation(
+                  ProducersLocation(
                     locationType: widget.locationType,
-                    profileHandle: 'Producer',
                     currentUserId: widget.currentUserId,
                     user: widget.user,
                   ),
-                  ArtistsLocation(
+                  DesignersLocation(
                     locationType: widget.locationType,
-                    profileHandle: 'Cover_Art_Designer',
                     currentUserId: widget.currentUserId,
                     user: widget.user,
                   ),
-                  ArtistsLocation(
+                  VideoDirectorsLocation(
                     locationType: widget.locationType,
-                    profileHandle: 'Music_Video_Director',
                     currentUserId: widget.currentUserId,
                     user: widget.user,
                   ),
-                  ArtistsLocation(
+                  DjsLocation(
                     locationType: widget.locationType,
-                    profileHandle: 'DJ',
                     currentUserId: widget.currentUserId,
                     user: widget.user,
                   ),
-                  ArtistsLocation(
+                  BattleRappersLocation(
                     locationType: widget.locationType,
-                    profileHandle: 'Battle_Rapper',
                     currentUserId: widget.currentUserId,
                     user: widget.user,
                   ),
-                  ArtistsLocation(
+                  PhotographersLocation(
                     locationType: widget.locationType,
-                    profileHandle: 'Photographer',
                     currentUserId: widget.currentUserId,
                     user: widget.user,
                   ),
-                  ArtistsLocation(
+                  DancersLocation(
                     locationType: widget.locationType,
-                    profileHandle: 'Dancer',
                     currentUserId: widget.currentUserId,
                     user: widget.user,
                   ),
-                  ArtistsLocation(
+                  VideoVixensLocation(
                     locationType: widget.locationType,
-                    profileHandle: 'Video_Vixen',
                     currentUserId: widget.currentUserId,
                     user: widget.user,
                   ),
-                  ArtistsLocation(
+                  MakeUpArtistsLocation(
                     locationType: widget.locationType,
-                    profileHandle: 'Makeup_Artist',
                     currentUserId: widget.currentUserId,
                     user: widget.user,
                   ),
-                  ArtistsLocation(
+                  RecordLabelsLocation(
                     locationType: widget.locationType,
-                    profileHandle: 'Record_Label',
                     currentUserId: widget.currentUserId,
                     user: widget.user,
                   ),
-                  ArtistsLocation(
+                  BrandInfluencersLocation(
                     locationType: widget.locationType,
-                    profileHandle: 'Brand_Influencer',
                     currentUserId: widget.currentUserId,
                     user: widget.user,
                   ),
-                  ArtistsLocation(
+                  BloggersLocation(
                     locationType: widget.locationType,
-                    profileHandle: 'Blogger',
                     currentUserId: widget.currentUserId,
                     user: widget.user,
                   ),
-                  ArtistsLocation(
+                  MCHostsLocation(
                     locationType: widget.locationType,
-                    profileHandle: 'MC(Host)',
                     currentUserId: widget.currentUserId,
                     user: widget.user,
                   ),
-                  ArtistsLocation(
+                  FansLocation(
                     locationType: widget.locationType,
-                    profileHandle: 'Fan',
                     currentUserId: widget.currentUserId,
                     user: widget.user,
                   ),

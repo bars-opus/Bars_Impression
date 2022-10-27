@@ -353,7 +353,7 @@ class _EventPublicInviteState extends State<EventPublicInvite> {
                                   child: Text(
                                     _eventInvite.anttendeeId.isNotEmpty
                                         ? 'You would be attending ${widget.event.title} at  ${widget.event.venue} on ${MyDateFormat.toDate(DateTime.parse(widget.event.date))} at ${MyDateFormat.toTime(DateTime.parse(widget.event.time))}.'
-                                        : 'This event would be added to the list of events you would be attending. This event is public and you do not need an invitation to attend this event ',
+                                        : 'This event would be added to the list of events you would be attening. This event is public and you do not need an invitation to attend this event ',
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 12,
@@ -372,8 +372,7 @@ class _EventPublicInviteState extends State<EventPublicInvite> {
                                   onTap: () => Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (_) =>
-                                              EventAttendeesRequested(
+                                          builder: (_) => EventAttendees(
                                                 palette: widget.palette,
                                                 showAppBar: true,
                                                 event: widget.event,
@@ -474,6 +473,15 @@ class _EventPublicInviteState extends State<EventPublicInvite> {
                               context,
                               _eventInvite.anttendeeId.isNotEmpty ? 'Stop' : '',
                               _eventInvite),
+                        ),
+                      ),
+                      const SizedBox(height: 50),
+                      Center(
+                        child: IconButton(
+                          icon: Icon(Icons.close),
+                          iconSize: 30.0,
+                          color: Colors.white,
+                          onPressed: () => Navigator.pop(context),
                         ),
                       ),
                       const SizedBox(

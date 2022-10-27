@@ -347,6 +347,8 @@ class _ProfileVerificationState extends State<ProfileVerification> {
         });
   }
 
+
+
   _androidDialog(BuildContext parentContext) {
     return showDialog(
         context: parentContext,
@@ -694,7 +696,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                               ? Color(0xFFf2f2f2)
                               : Color(0xFF1a1a1a)),
                       leading: _index == 7
-                          ? const SizedBox.shrink()
+                          ? SizedBox.shrink()
                           : IconButton(
                               icon: Icon(Platform.isIOS
                                   ? Icons.arrow_back_ios
@@ -937,7 +939,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                   SizedBox(height: 10),
                                   _govIdType.isEmpty
                                       ? buildConfirmBrandAuthenticity()
-                                      : const SizedBox.shrink(),
+                                      : SizedBox.shrink(),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 30.0),
                                     child: Center(
@@ -946,7 +948,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                   ),
                                   Provider.of<UserData>(context).postImage ==
                                           null
-                                      ? const SizedBox.shrink()
+                                      ? SizedBox.shrink()
                                       : Center(
                                           child: Padding(
                                             padding: const EdgeInsets.only(

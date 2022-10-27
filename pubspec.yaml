@@ -78,12 +78,9 @@ dependencies:
   syncfusion_flutter_calendar: ^20.2.48
   google_sign_in: ^5.4.1
   sign_in_with_apple: ^4.1.0
-  percent_indicator: ^4.2.2
   firebase_dynamic_links: ^4.3.8
   animations: ^2.0.7
-  firebase_app_check: ^0.0.9+1
-  async: ^2.7.0
-  currency_picker: ^2.0.12
+
   # rate_my_app: ^1.1.0
 
 flutter_icons:
