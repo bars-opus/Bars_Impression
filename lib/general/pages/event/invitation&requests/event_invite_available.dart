@@ -389,13 +389,13 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                                             listen: false)
                                         .currentUserId!,
                                     event: widget.event,
-                                    user: Provider.of<UserData>(context,
-                                            listen: false)
-                                        .user!,
+                                    // user: Provider.of<UserData>(context,
+                                    //         listen: false)
+                                    //     .user!,
                                   ))),
                     ),
                   )
-                : const SizedBox.shrink(),
+                : const SizedBox.shrink()
           ],
         ),
       ),
@@ -588,7 +588,7 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                                     children: [
                                       TextSpan(
                                         text: widget.eventInvite.validated!
-                                            ? 'Entrance Status:   '
+                                            ? 'Check-in Status:   '
                                             : '',
                                         style: TextStyle(
                                           fontSize: 12,
@@ -658,7 +658,7 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                                         ),
                                       ),
                                       TextSpan(
-                                        text: '\nAttendee number:   ',
+                                        text: '\nCheck-in number:   ',
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: Colors.grey,
@@ -891,7 +891,7 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                                     onTap: () => Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (_) => EventAttendees(
+                                            builder: (_) => EventAttendeesAll(
                                                   dontShowAnswerWidget: true,
                                                   palette: widget.palette,
                                                   event: widget.event,
@@ -954,7 +954,7 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                                     : widget.eventInvite.attendeeStatus
                                             .startsWith('Reject')
                                         ? 'Your invitation request has been rejected.'
-                                        : 'Your entrance number also known as your attendee number is ${widget.eventInvite.attendNumber}. This number would be validated at the entrance of this event before you can enter. This number is unique. Have fun attending this event.',
+                                        : 'Your check-in number also known as your attendee number is ${widget.eventInvite.attendNumber}. This number would be validated at the entrance of this event before you can enter. This number is unique. Have fun attending this event.',
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 12,
@@ -973,7 +973,7 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                 ),
           widget.eventInvite.invited!
               ? widget.eventInvite.attendeeStatus.isNotEmpty
-                  ? SizedBox.shrink()
+                  ? const SizedBox.shrink()
                   : Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 30.0),
                       child: Row(
@@ -1037,7 +1037,7 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                       ),
                     )
               : widget.eventInvite.attendeeStatus.isNotEmpty
-                  ? SizedBox.shrink()
+                  ? const SizedBox.shrink()
                   : Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 30.0),
                       child: Container(

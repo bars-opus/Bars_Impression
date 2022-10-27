@@ -123,14 +123,14 @@ class EventInvitationNotification extends StatelessWidget {
               body: TabBarView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 children: <Widget>[
-                  EventAttendees(
+                  EventAttendeesRequested(
                     palette: palette,
                     dontShowAnswerWidget: false,
                     event: event,
                     answer: 'All',
                     showAppBar: false,
                   ),
-                  EventInvites(
+                  EventAttendeesInvited(
                     palette: palette,
                     event: event,
                     letShowAppBar: false,

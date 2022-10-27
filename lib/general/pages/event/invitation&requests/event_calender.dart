@@ -152,7 +152,7 @@ class _EventCalenderState extends State<EventCalender> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 5.0, vertical: 2),
                           child: Text(
-                            'View invitation',
+                            'Attend',
                             style: TextStyle(
                               color: Colors.blue,
                               fontSize: 12,
@@ -163,18 +163,14 @@ class _EventCalenderState extends State<EventCalender> {
                         onPressed: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => AttendEvent(
+                              builder: (_) => EventRate(
                                     event: widget.event,
-                                    currentUserId: Provider.of<UserData>(
-                                            context,
-                                            listen: false)
-                                        .currentUserId!,
                                     palette: widget.palette,
                                   )),
                         ),
                       ),
                     )
-                  : SizedBox.shrink(),
+                  : const SizedBox.shrink(),
               widget.event.isPrivate
                   ? widget.event.authorId ==
                           Provider.of<UserData>(context, listen: false)

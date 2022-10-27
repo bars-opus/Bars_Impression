@@ -1,3 +1,4 @@
+import 'package:bars/general/pages/event/discover_events/eventTypesAll.dart';
 import 'package:bars/utilities/exports.dart';
 
 class EventPage extends StatefulWidget {
@@ -113,31 +114,36 @@ class _EventPageState extends State<EventPage>
                 ),
               ),
               body: TabBarView(
-                physics: const NeverScrollableScrollPhysics(),
+                physics: const AlwaysScrollableScrollPhysics(),
                 children: <Widget>[
                   EventsAll(
                     currentUserId: widget.currentUserId,
                     user: widget.user,
                   ),
-                  FestivalEvents(
+                  EventTypesAll(
                     currentUserId: widget.currentUserId,
                     user: widget.user,
+                    types: 'Festival',
                   ),
-                  AwardEvents(
+                  EventTypesAll(
                     currentUserId: widget.currentUserId,
                     user: widget.user,
+                    types: 'Award',
                   ),
-                  ToursEvents(
+                  EventTypesAll(
                     currentUserId: widget.currentUserId,
                     user: widget.user,
+                    types: 'Tour',
                   ),
-                  AlbumLaunches(
+                  EventTypesAll(
                     currentUserId: widget.currentUserId,
                     user: widget.user,
+                    types: 'Album_Launch',
                   ),
-                  OtherEvents(
+                  EventTypesAll(
                     currentUserId: widget.currentUserId,
                     user: widget.user,
+                    types: 'Others',
                   ),
                 ],
               )),
@@ -161,7 +167,7 @@ class LocationTab extends StatelessWidget {
         : MediaQuery.of(context).size.width;
     // ignore: unnecessary_null_comparison
     return user == null
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : FadeAnimation(
             1,
             Container(

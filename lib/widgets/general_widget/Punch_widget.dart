@@ -6,10 +6,12 @@ import 'package:intl/intl.dart';
 class PunchWidget extends StatefulWidget {
   final String currentUserId;
   final Post post;
-  final AccountHolder author;
+  // final AccountHolder author;
 
-  PunchWidget(
-      {required this.currentUserId, required this.post, required this.author});
+  PunchWidget({
+    required this.currentUserId,
+    required this.post,
+  });
 
   @override
   _PunchWidgetState createState() => _PunchWidgetState();
@@ -168,7 +170,8 @@ class _PunchWidgetState extends State<PunchWidget> {
 
   _likePost() {
     DatabaseService.likePost(
-        currentUserId: widget.currentUserId, post: widget.post);
+        user: Provider.of<UserData>(context, listen: false).user!,
+        post: widget.post);
     if (mounted) {
       setState(() {
         _isLiked = true;
@@ -461,7 +464,7 @@ class _PunchWidgetState extends State<PunchWidget> {
                             child: Text(
                               widget.post.authorId == widget.currentUserId
                                   ? 'Edit mood punched'
-                                  : 'Go to ${widget.author.name}\' profile ',
+                                  : 'View profile ',
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -484,7 +487,7 @@ class _PunchWidgetState extends State<PunchWidget> {
                                               currentUserId:
                                                   Provider.of<UserData>(context)
                                                       .currentUserId!,
-                                              userId: widget.author.id!,
+                                              userId: widget.post.authorId,
                                             )))),
                     FocusedMenuItem(
                         title: Container(
@@ -561,7 +564,7 @@ class _PunchWidgetState extends State<PunchWidget> {
                                           color: Colors.grey,
                                         ),
                                       ))
-                              : SizedBox.shrink(),
+                              : const SizedBox.shrink(),
                           _heartAnim
                               ? Animator(
                                   duration: Duration(milliseconds: 300),
@@ -576,7 +579,7 @@ class _PunchWidgetState extends State<PunchWidget> {
                                           color: Colors.pink,
                                         ),
                                       ))
-                              : SizedBox.shrink(),
+                              : const SizedBox.shrink()
                         ],
                       ),
                     ),
@@ -631,7 +634,7 @@ class _PunchWidgetState extends State<PunchWidget> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       _isBlockedUser
-                          ? SizedBox.shrink()
+                          ? const SizedBox.shrink()
                           : Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.start,

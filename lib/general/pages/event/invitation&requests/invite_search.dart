@@ -141,7 +141,7 @@ class _InviteSearchState extends State<InviteSearch>
                       )),
                 ),
                 user.verified!.isEmpty
-                    ? SizedBox.shrink()
+                    ? const SizedBox.shrink()
                     : Positioned(
                         top: 3,
                         right: 0,
@@ -218,7 +218,7 @@ class _InviteSearchState extends State<InviteSearch>
                       }
                       AccountHolder user = snapshot.data;
                       return widget.currentUserId == user.id
-                          ? SizedBox.shrink()
+                          ? const SizedBox.shrink()
                           : _buildUserTile(user);
                     },
                   );

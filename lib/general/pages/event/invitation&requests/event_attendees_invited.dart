@@ -1,15 +1,15 @@
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/cupertino.dart';
 
-class EventInvites extends StatefulWidget {
-  static final id = 'EventInvites';
+class EventAttendeesInvited extends StatefulWidget {
+  static final id = 'EventAttendeesInvited';
   final Event event;
   final String answer;
   final bool letShowAppBar;
 
   final PaletteGenerator palette;
 
-  EventInvites({
+  EventAttendeesInvited({
     required this.event,
     required this.palette,
     required this.letShowAppBar,
@@ -17,10 +17,10 @@ class EventInvites extends StatefulWidget {
   });
 
   @override
-  _EventInvitesState createState() => _EventInvitesState();
+  _EventAttendeesInvitedState createState() => _EventAttendeesInvitedState();
 }
 
-class _EventInvitesState extends State<EventInvites>
+class _EventAttendeesInvitedState extends State<EventAttendeesInvited>
     with AutomaticKeepAliveClientMixin {
   List<EventInvite> _inviteList = [];
   final _inviteSnapshot = <DocumentSnapshot>[];
@@ -276,7 +276,7 @@ class _EventInvitesState extends State<EventInvites>
                       decoration: BoxDecoration(),
                       height: 60,
                       child: ListTile(
-                        leading:  invite.anttendeeprofileImageUrl.isEmpty
+                        leading: invite.anttendeeprofileImageUrl.isEmpty
                             ? Icon(
                                 Icons.account_circle,
                                 size: 60.0,
@@ -522,7 +522,7 @@ class _EventInvitesState extends State<EventInvites>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     _inviteList.length == 0
-                        ? SizedBox.shrink()
+                        ? const SizedBox.shrink()
                         : Expanded(child: _buildEventBuilder())
                   ],
                 ),

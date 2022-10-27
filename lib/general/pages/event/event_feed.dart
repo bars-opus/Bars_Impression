@@ -138,25 +138,34 @@ class _EventsFeedState extends State<EventsFeed>
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   Event event = _events[index];
-                  return FutureBuilder(
-                      future: DatabaseService.getUserWithId(event.authorId),
-                      builder: (BuildContext context, AsyncSnapshot snapshot) {
-                        if (!snapshot.hasData) {
-                          return EventSchimmerBlurHash(
-                            event: event,
-                          );
-                        }
-                        AccountHolder author = snapshot.data;
-                        return EventView(
-                          exploreLocation: 'No',
-                          feed: 1,
-                          currentUserId: widget.currentUserId,
-                          event: event,
-                          user: user,
-                          author: author,
-                          // eventList: _events,
-                        );
-                      });
+                  return EventView(
+                    exploreLocation: 'No',
+                    feed: 1,
+                    currentUserId: widget.currentUserId,
+                    event: event,
+                    user: user,
+                    // author: author,
+                    // eventList: _events,
+                  );
+                  // FutureBuilder(
+                  //     future: DatabaseService.getUserWithId(event.authorId),
+                  //     builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  //       if (!snapshot.hasData) {
+                  //         return EventSchimmerBlurHash(
+                  //           event: event,
+                  //         );
+                  //       }
+                  //       AccountHolder author = snapshot.data;
+                  //       return EventView(
+                  //         exploreLocation: 'No',
+                  //         feed: 1,
+                  //         currentUserId: widget.currentUserId,
+                  //         event: event,
+                  //         user: user,
+                  //         // author: author,
+                  //         // eventList: _events,
+                  //       );
+                  //     });
                 },
                 childCount: _events.length,
               ),
@@ -177,7 +186,7 @@ class _EventsFeedState extends State<EventsFeed>
                 future: DatabaseService.getInviteEventWithId(invite),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (!snapshot.hasData) {
-                    return SizedBox.shrink();
+                    return const SizedBox.shrink();
                   }
                   Event event = snapshot.data;
                   return EventsFeedAttendingWidget(
@@ -218,7 +227,7 @@ class _EventsFeedState extends State<EventsFeed>
                   ? const SizedBox.shrink()
                   // ignore: unnecessary_null_comparison
                   : user == null
-                      ? SizedBox.shrink()
+                      ? const SizedBox.shrink()
                       : _display(
                           user: user,
                         ),
@@ -231,74 +240,71 @@ class _EventsFeedState extends State<EventsFeed>
         removeTop: true,
         child: Container(
           color: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-          child: SafeArea(
-            // ignore: unnecessary_null_comparison
-            child: user == null
-                ? NoContents(
-                    icon: (Icons.error),
-                    title: 'Sorry',
-                    subTitle: 'We run into a prblem please refresh your app',
-                  )
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      _invites.length == 0
-                          ? SizedBox.shrink()
-                          : Container(
-                              height: Responsive.isDesktop(
-                                context,
-                              )
-                                  ? 100
-                                  : 80,
-                              child: _buildInviteBuilder()),
-                      Divider(
-                        color: Colors.grey,
-                        thickness: .1,
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Expanded(
-                        child: _events.length > 0
-                            ? RefreshIndicator(
-                                backgroundColor: Colors.white,
-                                onRefresh: () async {
-                                  _setupEventFeed();
-                                  _setUpFeedCount();
-                                  _setUpInvites();
-                                },
-                                child: _buildEventBuilder(user))
-                            : _feedCount.isNegative
-                                ? RefreshIndicator(
-                                    backgroundColor: Colors.white,
-                                    onRefresh: () async {
-                                      _setupEventFeed();
-                                      _setUpFeedCount();
-                                      _setUpInvites();
-                                    },
-                                    child: SingleChildScrollView(
-                                        child: NoFeed(
-                                      title: "Set up your event feed. ",
-                                      subTitle:
-                                          'Your event feed contains events by people you follow. You can set up your feed by exploring events and following people by tapping on the button below. You can also discover people based on account types you are interested in by tapping on the discover icon on the bottom navigation bar.',
-                                      buttonText: 'Explore Events',
-                                      onPressed: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => EventPage(
-                                            currentUserId: widget.currentUserId,
-                                            user: user,
-                                          ),
+          child: user == null
+              ? NoContents(
+                  icon: (Icons.error),
+                  title: 'Sorry',
+                  subTitle: 'We run into a prblem please refresh your app',
+                )
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    _invites.length == 0
+                        ? const SizedBox.shrink()
+                        : Container(
+                            height: Responsive.isDesktop(
+                              context,
+                            )
+                                ? 100
+                                : 80,
+                            child: _buildInviteBuilder()),
+                    Divider(
+                      color: Colors.grey,
+                      thickness: .1,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Expanded(
+                      child: _events.length > 0
+                          ? RefreshIndicator(
+                              backgroundColor: Colors.white,
+                              onRefresh: () async {
+                                _setupEventFeed();
+                                _setUpFeedCount();
+                                _setUpInvites();
+                              },
+                              child: _buildEventBuilder(user))
+                          : _feedCount.isNegative
+                              ? RefreshIndicator(
+                                  backgroundColor: Colors.white,
+                                  onRefresh: () async {
+                                    _setupEventFeed();
+                                    _setUpFeedCount();
+                                    _setUpInvites();
+                                  },
+                                  child: SingleChildScrollView(
+                                      child: NoFeed(
+                                    title: "Set up your event feed. ",
+                                    subTitle:
+                                        'Your event feed contains events by people you follow. You can set up your feed by exploring events and following people by tapping on the button below. You can also discover people based on account types you are interested in by tapping on the discover icon on the bottom navigation bar.',
+                                    buttonText: 'Explore Events',
+                                    onPressed: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => EventPage(
+                                          currentUserId: widget.currentUserId,
+                                          user: user,
                                         ),
                                       ),
-                                    )),
-                                  )
-                                : Center(child: EventSchimmer()),
-                      )
-                    ],
-                  ),
-          ),
+                                    ),
+                                  )),
+                                )
+                              : Center(child: EventSchimmer()),
+                    )
+                  ],
+                ),
         ),
       ),
     );

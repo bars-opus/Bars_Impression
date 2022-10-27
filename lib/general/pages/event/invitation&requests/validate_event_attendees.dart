@@ -190,7 +190,7 @@ class _ValidateEventAttendeesState extends State<ValidateEventAttendees>
                     contentPadding:
                         EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                     border: InputBorder.none,
-                    hintText: 'Attendee number',
+                    hintText: 'check-in number',
                     prefixIcon: Icon(
                       Icons.search,
                       size: 20.0,
@@ -253,7 +253,7 @@ class _ValidateEventAttendeesState extends State<ValidateEventAttendees>
                                             color: Colors.blueGrey)),
                                     TextSpan(
                                         text:
-                                            '\nCheck attendee number  and try again.'),
+                                            '\nCheck check-in number  and try again.'),
                                   ],
                                   style: TextStyle(
                                       fontSize: 14, color: Colors.grey),

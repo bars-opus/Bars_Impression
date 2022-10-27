@@ -160,6 +160,10 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
       commonId: activiitiesEvent.commonId,
       toUserId: activiitiesEvent.toUserId,
       invited: activiitiesEvent.invited,
+      authorName: activiitiesEvent.authorName,
+      authorProfileHanlde: activiitiesEvent.authorProfileHanlde,
+      authorVerification: activiitiesEvent.authorVerification,
+      authorProfileImageUrl: activiitiesEvent.authorProfileImageUrl,
     );
     print('sumiting');
     try {
@@ -176,7 +180,7 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
                 activityEvent.eventId, activityEvent.toUserId),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (!snapshot.hasData) {
-                return SizedBox.shrink();
+                return const SizedBox.shrink();
               }
               EventInvite invite = snapshot.data;
               return activityEvent.invited!
@@ -190,36 +194,39 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
                       activityEvent: activityEvent,
                     );
             })
-        : FutureBuilder(
-            future: DatabaseService.getUserWithId(activityEvent.fromUserId),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (!snapshot.hasData) {
-                return SizedBox.shrink();
-              }
-              AccountHolder user = snapshot.data;
-              return ActivityImageTile(
-                seen: activityEvent.seen,
-                verified: user.verified!,
-                profileImageUrl: user.profileImageUrl!,
-                activityIndicator: activityEvent.eventInviteType!
-                        .startsWith('AttendRequest')
+        :
+
+        // FutureBuilder(
+        //     future: DatabaseService.getUserWithId(activityEvent.fromUserId),
+        //     builder: (BuildContext context, AsyncSnapshot snapshot) {
+        //       if (!snapshot.hasData) {
+        //         return const SizedBox.shrink();
+        //       }
+        //       AccountHolder user = snapshot.data;
+        //       return
+        ActivityImageTile(
+            seen: activityEvent.seen,
+            verified: activityEvent.authorVerification,
+            profileImageUrl: activityEvent.authorProfileImageUrl,
+            activityIndicator:
+                activityEvent.eventInviteType!.startsWith('AttendRequest')
                     ? 'Invitation Request\n'
                     : activityEvent.eventInviteType!.startsWith('InvestRespond')
                         ? 'Invitation Respond\n'
                         : "asked about:  ",
-                activityTitle: activityEvent.eventTitle,
-                activityContent: activityEvent.ask!,
-                activityImage: activityEvent.eventImageUrl,
-                activityTime: timeago.format(
-                  activityEvent.timestamp!.toDate(),
-                ),
-                userName: user.userName!,
-                onPressed: () {
-                  _goToAskSCreen(activityEvent);
-                },
-              );
+            activityTitle: activityEvent.eventTitle,
+            activityContent: activityEvent.ask!,
+            activityImage: activityEvent.eventImageUrl,
+            activityTime: timeago.format(
+              activityEvent.timestamp!.toDate(),
+            ),
+            userName: activityEvent.authorName,
+            onPressed: () {
+              _goToAskSCreen(activityEvent);
             },
           );
+    //   },
+    // );
   }
 
   _goToAskSCreen(ActivityEvent activityEvent) async {
@@ -237,7 +244,9 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
         });
       }
     });
-    activityEvent.seen != 'seen' ? _submit(activityEvent) : SizedBox.shrink();
+    activityEvent.seen != 'seen'
+        ? _submit(activityEvent)
+        : const SizedBox.shrink();
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -267,7 +276,7 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           widget.activityEventCount == 0
-              ? SizedBox.shrink()
+              ? const SizedBox.shrink()
               : Padding(
                   padding: const EdgeInsets.only(left: 20.0),
                   child: Container(
@@ -304,7 +313,7 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
                     )),
                   ),
                 )
-              : SizedBox.shrink(),
+              : const SizedBox.shrink(),
           SizedBox(
             height: 20.0,
           ),

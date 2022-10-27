@@ -180,7 +180,6 @@ export 'package:bars/general/pages/forum_and_blog/forum/forum_schimmer.dart';
 export 'package:bars/general/pages/discover/discover_user.dart';
 export 'package:bars/general/pages/discover/users_location.dart';
 export 'package:bars/general/pages/discover/no_City.dart';
-export 'package:bars/general/pages/discover/store_search.dart';
 export 'package:bars/general/pages/discover/user_schimmer.dart';
 export 'package:bars/general/pages/discover/users_live.dart';
 export 'package:bars/services/database_service.dart';
@@ -221,7 +220,7 @@ export 'package:bars/widgets/info/user_notFount.dart';
 export 'package:bars/general/pages/profile/edit/edit_profile_name.dart';
 export 'package:bars/widgets/info/edit_profile_info.dart';
 export 'package:bars/general/pages/profile/setup_brand.dart';
-export 'package:bars/general/models/reply_thought.dart';
+export 'package:bars/general/models/reply_thought_model.dart';
 export 'package:bars/general/models/activity_followers_model.dart';
 export 'package:bars/general/models/chat_model.dart';
 export 'package:bars/general/models/chat_message_model.dart';
@@ -272,8 +271,8 @@ export 'package:syncfusion_flutter_calendar/calendar.dart';
 export 'package:bars/general/pages/event/invitation&requests/activity_event_invitation.dart';
 export 'package:bars/general/pages/event/invitation&requests/event_attendee_request_answere_widget.dart';
 export 'package:bars/widgets/buttons/event_invitation_card.dart';
-export 'package:bars/general/pages/event/invitation&requests/event_attendees.dart';
-export 'package:bars/general/pages/event/invitation&requests/event_invites.dart';
+export 'package:bars/general/pages/event/invitation&requests/event_attendees_requested.dart';
+export 'package:bars/general/pages/event/invitation&requests/event_attendees_invited.dart';
 export 'package:bars/general/pages/event/invitation&requests/invite_search.dart';
 export 'package:bars/general/pages/event/invitation&requests/event_attend.dart';
 export 'package:bars/general/pages/event/invitation&requests/event_calender.dart';
@@ -296,66 +295,26 @@ export 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 export 'package:bars/general/pages/event/invitation&requests/event_invitation_notification.dart';
 export 'package:bars/general/pages/event/invitation&requests/event_attendee_validate_widget.dart';
 export 'package:bars/auth_screens/sign_up_verify_email.dart';
+export 'package:bars/widgets/pafe_feature-widget.dart';
+export 'package:bars/general/pages/event/invitation&requests/event_attendees_all.dart';
+export 'package:bars/general/pages/event/invitation&requests/event_rate.dart';
+
 // discover user
 export 'package:bars/general/pages/discover/discover_page/account_categories/artists.dart';
-export 'package:bars/general/pages/discover/discover_page/account_categories/battle_rappers.dart';
-export 'package:bars/general/pages/discover/discover_page/account_categories/bloggers.dart';
-export 'package:bars/general/pages/discover/discover_page/account_categories/brand_influencers.dart';
-export 'package:bars/general/pages/discover/discover_page/account_categories/dancers.dart';
-export 'package:bars/general/pages/discover/discover_page/account_categories/designers.dart';
-export 'package:bars/general/pages/discover/discover_page/account_categories/directors.dart';
-export 'package:bars/general/pages/discover/discover_page/account_categories/djs.dart';
-export 'package:bars/general/pages/discover/discover_page/account_categories/fans.dart';
-export 'package:bars/general/pages/discover/discover_page/account_categories/makeUp_artists.dart';
-export 'package:bars/general/pages/discover/discover_page/account_categories/mc_hosts.dart';
-export 'package:bars/general/pages/discover/discover_page/account_categories/photographers.dart';
-export 'package:bars/general/pages/discover/discover_page/account_categories/producer.dart';
-export 'package:bars/general/pages/discover/discover_page/account_categories/record_labels.dart';
-export 'package:bars/general/pages/discover/discover_page/account_categories/video_vixens.dart';
 export 'package:bars/general/pages/forum_and_blog/forum/forum_feed.dart';
 export 'package:bars/general/pages/event/invitation&requests/event_attendees_validated.dart';
 export 'package:bars/general/pages/event/invitation&requests/validate_event_attendees.dart';
 // discover user import userLocation
 export 'package:bars/general/pages/discover/discover_user_location/account_categories/artists_location.dart';
-export 'package:bars/general/pages/discover/discover_user_location/account_categories/battle_rappers_location.dart';
-export 'package:bars/general/pages/discover/discover_user_location/account_categories/bloggers_location.dart';
-export 'package:bars/general/pages/discover/discover_user_location/account_categories/brand_influencers_location.dart';
-export 'package:bars/general/pages/discover/discover_user_location/account_categories/dancers_location.dart';
-export 'package:bars/general/pages/discover/discover_user_location/account_categories/designers_location.dart';
-export 'package:bars/general/pages/discover/discover_user_location/account_categories/directors_location.dart';
-export 'package:bars/general/pages/discover/discover_user_location/account_categories/djs_location.dart';
-export 'package:bars/general/pages/discover/discover_user_location/account_categories/fans_location.dart';
-export 'package:bars/general/pages/discover/discover_user_location/account_categories/makeUp_artists_location.dart';
-export 'package:bars/general/pages/discover/discover_user_location/account_categories/mc_hosts_location.dart';
-export 'package:bars/general/pages/discover/discover_user_location/account_categories/photographers_location.dart';
-export 'package:bars/general/pages/discover/discover_user_location/account_categories/producer_location.dart';
-export 'package:bars/general/pages/discover/discover_user_location/account_categories/record_labels_location.dart';
-export 'package:bars/general/pages/discover/discover_user_location/account_categories/video_vixens_location.dart';
-
+export 'package:bars/general/pages/discover/discover_page/account_categories/fans.dart';
 // discover user import live users
 export 'package:bars/general/pages/discover/discover_live/account_categories/artists_live.dart';
-export 'package:bars/general/pages/discover/discover_live/account_categories/battle_rappers_live.dart';
-export 'package:bars/general/pages/discover/discover_live/account_categories/bloggers_live.dart';
-export 'package:bars/general/pages/discover/discover_live/account_categories/brand_influencers_live.dart';
-export 'package:bars/general/pages/discover/discover_live/account_categories/dancers_live.dart';
-export 'package:bars/general/pages/discover/discover_live/account_categories/designers_live.dart';
-export 'package:bars/general/pages/discover/discover_live/account_categories/directors_live.dart';
-export 'package:bars/general/pages/discover/discover_live/account_categories/djs_live.dart';
-export 'package:bars/general/pages/discover/discover_live/account_categories/fans_live.dart';
-export 'package:bars/general/pages/discover/discover_live/account_categories/makeUp_artists_live.dart';
-export 'package:bars/general/pages/discover/discover_live/account_categories/mc_hosts_live.dart';
-export 'package:bars/general/pages/discover/discover_live/account_categories/photographers_live.dart';
-export 'package:bars/general/pages/discover/discover_live/account_categories/producer_live.dart';
-export 'package:bars/general/pages/discover/discover_live/account_categories/record_labels_live.dart';
-export 'package:bars/general/pages/discover/discover_live/account_categories/video_vixens_live.dart';
-
 //event page
 export 'package:bars/general/pages/event/event_page_location.dart';
 //discover events
 export 'package:bars/general/pages/event/discover_events/events_albumLaunches.dart';
 export 'package:bars/general/pages/event/discover_events/events_all.dart';
 export 'package:bars/general/pages/event/discover_events/events_awards.dart';
-export 'package:bars/general/pages/event/discover_events/events_festivals.dart';
 export 'package:bars/general/pages/event/discover_events/events_others.dart';
 export 'package:bars/general/pages/event/discover_events/events_tours.dart';
 //event page location
@@ -372,3 +331,9 @@ export 'package:bars/general/pages/event/discover_events_live_City/events_awards
 export 'package:bars/general/pages/event/discover_events_live_City/events_festivals_live.dart';
 export 'package:bars/general/pages/event/discover_events_live_City/events_others_live.dart';
 export 'package:bars/general/pages/event/discover_events_live_City/events_tours_live.dart';
+export 'package:bars/widgets/info/direction_widget_white.dart';
+//
+export 'package:bars/general/pages/discover/seach/store_search%20_event.dart';
+export 'package:bars/general/pages/discover/seach/store_search%20_forum.dart';
+export 'package:bars/general/pages/discover/seach/store_search%20_post.dart';
+export 'package:bars/general/pages/discover/seach/store_search%20_user.dart';

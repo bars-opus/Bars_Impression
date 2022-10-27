@@ -61,12 +61,12 @@ class _HomeScreenState extends State<HomeScreen> {
     FirebaseMessaging.onMessage.listen((event) {
       final String recipientId = event.data['recipient'];
       if (recipientId == currentUserId) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            "${event.notification!.title}: " + "${event.notification!.body}",
-            overflow: TextOverflow.ellipsis,
-          ),
-        ));
+        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        //   content: Text(
+        //     "${event.notification!.title}: " + "${event.notification!.body}",
+        //     overflow: TextOverflow.ellipsis,
+        //   ),
+        // ));
         LocalNotificationService.showNotificationOnForeground(event);
         setState(() {
           notificationMsg =
@@ -320,7 +320,7 @@ class _HomeMobileState extends State<HomeMobile> {
                     ),
             ),
             bottomNavigationBar: _user.disabledAccount!
-                ? SizedBox.shrink()
+                ? const SizedBox.shrink()
                 : Container(
                     child: Wrap(
                       children: [
@@ -471,8 +471,8 @@ class _HomeMobileState extends State<HomeMobile> {
                                       )),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 1.0),
-                                    child:
-                                     const   Icon(Icons.account_circle, size: 25.0),
+                                    child: const Icon(Icons.account_circle,
+                                        size: 25.0),
                                   ),
                                 ],
                               ),
@@ -667,7 +667,7 @@ class _HomeDesktopState extends State<HomeDesktop> {
                                         raduis: 100,
                                         arrowColor: Colors.transparent,
                                         title: '  Home',
-                                        icon:  MdiIcons.home,
+                                        icon: MdiIcons.home,
                                         textColor: _currentTab != 0
                                             ? Colors.grey
                                             : ConfigBloc().darkModeOn

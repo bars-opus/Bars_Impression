@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:animations/animations.dart';
 import 'package:bars/utilities/exports.dart';
+import 'package:bars/widgets/general_widget/punch_expanded_profile_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
@@ -265,7 +266,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   _followUser(AccountHolder user) async {
     DatabaseService.followUser(
       currentUserId: widget.currentUserId,
-      userId: user.id!,
+      user: user,
     );
 
     if (mounted) {
@@ -296,7 +297,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             child: Column(
               children: <Widget>[
                 user.userName!.isEmpty
-                    ? SizedBox.shrink()
+                    ? const SizedBox.shrink()
                     : user.score!.isNegative
                         ? _displayBannnedUploadNote(user)
                         : Wrap(
@@ -431,7 +432,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     ),
                                   ),
                                 )
-                              : SizedBox.shrink(),
+                              : const SizedBox.shrink(),
                           SizedBox(
                             height: 30.0,
                           ),
@@ -458,7 +459,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                         repeatPauseDuration:
                                             const Duration(milliseconds: 3000),
                                         child: Container())
-                                    : SizedBox.shrink(),
+                                    : const SizedBox.shrink(),
                                 Container(
                                     width: 200,
                                     color: Colors.transparent,
@@ -480,7 +481,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                           ),
                         ],
                       )
-                    : SizedBox.shrink(),
+                    : const SizedBox.shrink()
               ],
             ))
         : Padding(
@@ -645,7 +646,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       SizedBox(height: 3.0),
                       SizedBox(height: 2.0),
                       post.report.isNotEmpty
-                          ? SizedBox.shrink()
+                          ? const SizedBox.shrink()
                           : Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 16.0),
@@ -674,11 +675,11 @@ class _ProfileScreenState extends State<ProfileScreen>
           },
           openBuilder: (BuildContext context,
               void Function({Object? returnValue}) action) {
-            return AllPostEnlarged(
+            return PunchExpandedProfileWidget(
+              author: _profileUser,
               feed: 'Profile',
               currentUserId: widget.currentUserId,
               post: post,
-              author: _profileUser,
             );
           },
         )
@@ -1114,7 +1115,6 @@ class _ProfileScreenState extends State<ProfileScreen>
         feed: 4,
         currentUserId: widget.currentUserId,
         event: event,
-        author: _profileUser,
         user: _profileUser,
       ));
     });
@@ -1194,6 +1194,35 @@ class _ProfileScreenState extends State<ProfileScreen>
         '${user.name}, your rating is less than -10, for this reason, you cannot be able to upload anything on this platform until your rating is a positive number.',
         style: TextStyle(color: Colors.red),
         textAlign: TextAlign.center);
+  }
+
+  _dynamicLink() async {
+    var linkUrl = Uri.parse(_profileUser.profileImageUrl!);
+
+    final dynamicLinkParams = DynamicLinkParameters(
+      socialMetaTagParameters: SocialMetaTagParameters(
+        imageUrl: linkUrl,
+        title: _profileUser.userName,
+        description: _profileUser.bio,
+      ),
+      link: Uri.parse('https://www.barsopus.com/user_${_profileUser.id}'),
+      uriPrefix: 'https://barsopus.com/barsImpression',
+      androidParameters:
+          AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
+      iosParameters: IOSParameters(
+        bundleId: 'com.bars-Opus.barsImpression',
+        appStoreId: '1610868894',
+      ),
+    );
+    if (Platform.isIOS) {
+      var link =
+          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
+      Share.share(link.toString());
+    } else {
+      var link =
+          await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+      Share.share(link.shortUrl.toString());
+    }
   }
 
   _showSelectImageDialog(AccountHolder user) {
@@ -1364,6 +1393,14 @@ class _ProfileScreenState extends State<ProfileScreen>
                           ))),
               CupertinoActionSheetAction(
                   child: Text(
+                    'Share',
+                    style: TextStyle(
+                      color: Colors.blue,
+                    ),
+                  ),
+                  onPressed: () => _dynamicLink()),
+              CupertinoActionSheetAction(
+                  child: Text(
                     _isFollowing ? 'unFollow' : 'Follow',
                     style: TextStyle(
                       color: Colors.blue,
@@ -1449,6 +1486,16 @@ class _ProfileScreenState extends State<ProfileScreen>
                         ));
                   },
                 ),
+              ),
+              Center(
+                child: SimpleDialogOption(
+                    child: Text(
+                      'Share',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.blue),
+                      textAlign: TextAlign.center,
+                    ),
+                    onPressed: () => _dynamicLink()),
               ),
               Divider(),
               Center(
@@ -1692,7 +1739,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 _setUpEvents();
                                 _setUpPossitiveRated();
                                 _setUpNegativeRated();
-                                _setUpProfileUser();
+                                // _setUpProfileUser();
                               },
                               child: ListView(children: <Widget>[
                                 Container(
@@ -1737,7 +1784,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                               ),
                                             ),
                                             user.verified!.isEmpty
-                                                ? SizedBox.shrink()
+                                                ? const SizedBox.shrink()
                                                 : Positioned(
                                                     top: 5,
                                                     right: 0,
@@ -1825,7 +1872,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                             user.profileHandle!
                                                         .startsWith('F') ||
                                                     user.profileHandle!.isEmpty
-                                                ? SizedBox.shrink()
+                                                ? const SizedBox.shrink()
                                                 : Text(
                                                     user.company!,
                                                     style: TextStyle(
@@ -1840,7 +1887,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                             user.profileHandle!
                                                         .startsWith('F') ||
                                                     user.profileHandle!.isEmpty
-                                                ? SizedBox.shrink()
+                                                ? const SizedBox.shrink()
                                                 : Row(
                                                     crossAxisAlignment:
                                                         CrossAxisAlignment
@@ -1855,14 +1902,14 @@ class _ProfileScreenState extends State<ProfileScreen>
                                             user.profileHandle!
                                                         .startsWith('F') ||
                                                     user.profileHandle!.isEmpty
-                                                ? SizedBox.shrink()
+                                                ? const SizedBox.shrink()
                                                 : SizedBox(
                                                     height: 10.0,
                                                   ),
                                             user.profileHandle!
                                                         .startsWith('F') ||
                                                     user.profileHandle!.isEmpty
-                                                ? SizedBox.shrink()
+                                                ? const SizedBox.shrink()
                                                 : Row(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment
@@ -2063,7 +2110,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 ),
                                 ConfigBloc().darkModeOn
                                     ? Divider(color: Colors.white)
-                                    : SizedBox.shrink(),
+                                    : const SizedBox.shrink(),
                                 SizedBox(
                                   height: 30.0,
                                 ),

@@ -1,17 +1,16 @@
 import 'package:bars/utilities/exports.dart';
-import 'package:intl/intl.dart';
 
 class ForumView extends StatefulWidget {
   final String currentUserId;
   final Forum forum;
-  final AccountHolder author;
+  // final AccountHolder author;
   final String feed;
 
   ForumView(
       {required this.currentUserId,
       required this.feed,
       required this.forum,
-      required this.author});
+  });
 
   @override
   _ForumViewState createState() => _ForumViewState();
@@ -83,7 +82,7 @@ class _ForumViewState extends State<ForumView> {
               child: Text(
                 widget.forum.authorId == widget.currentUserId
                     ? 'Edit forum'
-                    : "Go to ${widget.author.userName}\' profile ",
+                    : "View profile ",
                 overflow: TextOverflow.ellipsis,
                 textScaleFactor: MediaQuery.of(context).textScaleFactor,
               ),
@@ -102,11 +101,14 @@ class _ForumViewState extends State<ForumView> {
               : Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (_) => widget.author.userName!.isEmpty
-                          ? UserNotFound(
-                              userName: 'User',
-                            )
-                          : ProfileScreen(
+                      builder: (_) => 
+                      
+                      // widget.author.userName!.isEmpty
+                      //     ? UserNotFound(
+                      //         userName: 'User',
+                      //       )
+                      //     : 
+                          ProfileScreen(
                               currentUserId: widget.currentUserId,
                               userId: widget.forum.authorId,
                             ))),
@@ -191,7 +193,7 @@ class _ForumViewState extends State<ForumView> {
                 MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
         child: ForumViewWidget(
           currentUserId: widget.currentUserId,
-          author: widget.author,
+          // author: widget.author,
          
           // onPressedThougthScreen: () => Navigator.push(
           //     context,

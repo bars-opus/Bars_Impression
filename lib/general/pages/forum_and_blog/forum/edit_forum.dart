@@ -32,7 +32,7 @@ class _EditForumState extends State<EditForum> {
               'Are you sure you want to delete this Forum?',
               style: TextStyle(
                 fontSize: 16,
-                color:  Colors.black,
+                color: Colors.black,
               ),
             ),
             actions: <Widget>[
@@ -161,7 +161,10 @@ class _EditForumState extends State<EditForum> {
         report: '',
         reportConfirmed: '',
         isPrivate: _isPrivate,
-        linkedContentId: '', mediaType: '', mediaUrl: '', forumType: '',
+        linkedContentId: '',
+        mediaType: '',
+        mediaUrl: '',
+        forumType: '', authorName: Provider.of<UserData>(context, listen: false).user!.userName!,
       );
       try {
         DatabaseService.editForum(
@@ -251,11 +254,11 @@ class _EditForumState extends State<EditForum> {
       key: _formKey,
       child: CreateForumWidget(
         title: _title,
-        pageHint: SizedBox.shrink(),
+        pageHint: const SizedBox.shrink(),
         subTitle: _subTitle,
         onSavedSubTitle: (input) => _subTitle = input,
         appBarTitle: 'Edit Forum',
-        buttonText: 'Save Edit',
+        buttonText: 'Save',
         initialSubTitle: _subTitle,
         initialTitle: _title,
         onSavedTitle: (input) => _title = input,
@@ -285,7 +288,7 @@ class _EditForumState extends State<EditForum> {
                   ),
                 ),
               )
-            : SizedBox.shrink(),
+            : const SizedBox.shrink(),
         deletWidget: Column(
           children: [
             SizedBox(

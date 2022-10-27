@@ -193,14 +193,14 @@ class _EventDashboardState extends State<EventDashboard> {
         appStoreId: '1610868894',
       ),
     );
-    if (Platform.isIOS){
-var link =
-        await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
-    Share.share(link.toString());
+    if (Platform.isIOS) {
+      var link =
+          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
+      Share.share(link.toString());
     } else {
       var link =
-        await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
-    Share.share(link.shortUrl.toString());
+          await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+      Share.share(link.shortUrl.toString());
     }
   }
 
@@ -282,7 +282,7 @@ var link =
                             height: 60,
                           ),
                           Text(
-                            'VALIDATOR',
+                            'CHECK-IN\nVALIDATOR',
                             style: TextStyle(
                               fontSize: 20,
                               color: widget.palette.darkMutedColor == null
@@ -365,7 +365,8 @@ var link =
                                     ? Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (_) => EventAttendees(
+                                            builder: (_) =>
+                                                EventAttendeesRequested(
                                                   palette: widget.palette,
                                                   event: widget.event,
                                                   answer: 'Accepted',
@@ -375,7 +376,8 @@ var link =
                                     : Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (_) => EventAttendees(
+                                            builder: (_) =>
+                                                EventAttendeesRequested(
                                                   showAppBar: true,
                                                   dontShowAnswerWidget: true,
                                                   palette: widget.palette,
@@ -775,27 +777,16 @@ var link =
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 30.0),
                         child: GestureDetector(
-                          onTap: () => widget.event.isPrivate
-                              ? Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => EventAttendees(
-                                            dontShowAnswerWidget: true,
-                                            palette: widget.palette,
-                                            event: widget.event,
-                                            showAppBar: true,
-                                            answer: 'Accepted',
-                                          )))
-                              : Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => EventAttendees(
-                                            dontShowAnswerWidget: true,
-                                            showAppBar: true,
-                                            palette: widget.palette,
-                                            event: widget.event,
-                                            answer: 'Accepted',
-                                          ))),
+                          onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => EventAttendeesAll(
+                                        dontShowAnswerWidget: true,
+                                        palette: widget.palette,
+                                        event: widget.event,
+                                        showAppBar: true,
+                                        answer: 'Accepted',
+                                      ))),
                           child: Row(
                             children: [
                               Padding(
@@ -866,7 +857,8 @@ var link =
                                           onTap: () => Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (_) => EventInvites(
+                                                  builder: (_) =>
+                                                      EventAttendeesInvited(
                                                         letShowAppBar: true,
                                                         palette: widget.palette,
                                                         event: widget.event,
@@ -886,14 +878,18 @@ var link =
                                                         _inviteCount.toString(),
                                                     style: TextStyle(
                                                       fontSize: 20,
-                                                      color: Colors.blue,
+                                                      color: _inviteCount < 1
+                                                          ? Colors.grey
+                                                          : Colors.blue,
                                                     ),
                                                   ),
                                                   TextSpan(
                                                     text: '\nInvitations\nsent',
                                                     style: TextStyle(
                                                       fontSize: 12,
-                                                      color: Colors.blue,
+                                                      color: _inviteCount < 1
+                                                          ? Colors.grey
+                                                          : Colors.blue,
                                                     ),
                                                   ),
                                                 ],
@@ -906,7 +902,8 @@ var link =
                                           onTap: () => Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (_) => EventInvites(
+                                                  builder: (_) =>
+                                                      EventAttendeesInvited(
                                                         letShowAppBar: true,
                                                         event: widget.event,
                                                         palette: widget.palette,
@@ -926,7 +923,10 @@ var link =
                                                         .toString(),
                                                     style: TextStyle(
                                                       fontSize: 20,
-                                                      color: Colors.blue,
+                                                      color:
+                                                          _inviteUnAnswered < 1
+                                                              ? Colors.grey
+                                                              : Colors.blue,
                                                     ),
                                                   ),
                                                   TextSpan(
@@ -934,7 +934,10 @@ var link =
                                                         '\nInvitations\nunanswered\n(pending)',
                                                     style: TextStyle(
                                                       fontSize: 12,
-                                                      color: Colors.blue,
+                                                      color:
+                                                          _inviteUnAnswered < 1
+                                                              ? Colors.grey
+                                                              : Colors.blue,
                                                     ),
                                                   ),
                                                 ],
@@ -949,7 +952,8 @@ var link =
                                           onTap: () => Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (_) => EventInvites(
+                                                  builder: (_) =>
+                                                      EventAttendeesInvited(
                                                         letShowAppBar: true,
                                                         palette: widget.palette,
                                                         event: widget.event,
@@ -969,7 +973,11 @@ var link =
                                                         .toString(),
                                                     style: TextStyle(
                                                       fontSize: 20,
-                                                      color: Colors.blue,
+                                                      color:
+                                                          _inviteAcceptedCount <
+                                                                  1
+                                                              ? Colors.grey
+                                                              : Colors.blue,
                                                     ),
                                                   ),
                                                   TextSpan(
@@ -977,7 +985,11 @@ var link =
                                                         '\nInvitations\naccepted',
                                                     style: TextStyle(
                                                       fontSize: 12,
-                                                      color: Colors.blue,
+                                                      color:
+                                                          _inviteAcceptedCount <
+                                                                  1
+                                                              ? Colors.grey
+                                                              : Colors.blue,
                                                     ),
                                                   ),
                                                 ],
@@ -990,7 +1002,8 @@ var link =
                                           onTap: () => Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (_) => EventInvites(
+                                                  builder: (_) =>
+                                                      EventAttendeesInvited(
                                                         letShowAppBar: true,
                                                         palette: widget.palette,
                                                         event: widget.event,
@@ -1010,7 +1023,11 @@ var link =
                                                         .toString(),
                                                     style: TextStyle(
                                                       fontSize: 20,
-                                                      color: Colors.blue,
+                                                      color:
+                                                          _inviteRejectedCount <
+                                                                  1
+                                                              ? Colors.grey
+                                                              : Colors.blue,
                                                     ),
                                                   ),
                                                   TextSpan(
@@ -1018,7 +1035,11 @@ var link =
                                                         '\nInvitations\nrejected',
                                                     style: TextStyle(
                                                       fontSize: 12,
-                                                      color: Colors.blue,
+                                                      color:
+                                                          _inviteRejectedCount <
+                                                                  1
+                                                              ? Colors.grey
+                                                              : Colors.blue,
                                                     ),
                                                   ),
                                                 ],
@@ -1071,7 +1092,8 @@ var link =
                                           onTap: () => Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (_) => EventInvites(
+                                                  builder: (_) =>
+                                                      EventAttendeesInvited(
                                                         letShowAppBar: true,
                                                         palette: widget.palette,
                                                         event: widget.event,
@@ -1115,7 +1137,8 @@ var link =
                                           onTap: () => Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (_) => EventInvites(
+                                                  builder: (_) =>
+                                                      EventAttendeesInvited(
                                                         letShowAppBar: true,
                                                         event: widget.event,
                                                         palette: widget.palette,
@@ -1164,7 +1187,8 @@ var link =
                                           onTap: () => Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (_) => EventInvites(
+                                                  builder: (_) =>
+                                                      EventAttendeesInvited(
                                                         letShowAppBar: true,
                                                         palette: widget.palette,
                                                         event: widget.event,
@@ -1213,7 +1237,8 @@ var link =
                                           onTap: () => Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (_) => EventInvites(
+                                                  builder: (_) =>
+                                                      EventAttendeesInvited(
                                                         letShowAppBar: true,
                                                         palette: widget.palette,
                                                         event: widget.event,
@@ -1290,7 +1315,7 @@ var link =
                                               context,
                                               MaterialPageRoute(
                                                   builder: (_) =>
-                                                      EventAttendees(
+                                                      EventAttendeesRequested(
                                                         dontShowAnswerWidget:
                                                             false,
                                                         showAppBar: true,
@@ -1342,7 +1367,7 @@ var link =
                                               context,
                                               MaterialPageRoute(
                                                   builder: (_) =>
-                                                      EventAttendees(
+                                                      EventAttendeesRequested(
                                                         dontShowAnswerWidget:
                                                             false,
                                                         showAppBar: true,
@@ -1396,7 +1421,7 @@ var link =
                                               context,
                                               MaterialPageRoute(
                                                   builder: (_) =>
-                                                      EventAttendees(
+                                                      EventAttendeesRequested(
                                                         dontShowAnswerWidget:
                                                             false,
                                                         showAppBar: true,
@@ -1448,7 +1473,7 @@ var link =
                                               context,
                                               MaterialPageRoute(
                                                   builder: (_) =>
-                                                      EventAttendees(
+                                                      EventAttendeesRequested(
                                                         dontShowAnswerWidget:
                                                             false,
                                                         showAppBar: true,
@@ -1517,7 +1542,7 @@ var link =
                             children: [
                               TextSpan(
                                   text:
-                                      'Every attendee of this event would be given an entrance number also known as an attendee number. An event organizer should validate each attendee by checking if the entrance number they have corresponds to the entrance number you have among your people attending list. Your validator would be ready 3 days before this event.',
+                                      'Every attendee of this event would be given an check-in number also known as an attendee number. An event organizer should validate each attendee by checking if the check-in number they have corresponds to the check-in number you have among your people attending list. Your validator would be ready 3 days before this event.',
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: Colors.black,

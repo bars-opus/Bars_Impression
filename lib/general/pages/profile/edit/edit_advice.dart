@@ -154,6 +154,8 @@ class _EditAdviceState extends State<EditAdvice> {
   _submit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState?.save();
+      AccountHolder user = Provider.of<UserData>(context, listen: false).user!;
+
       UserAdvice advice = UserAdvice(
         id: widget.advice.id,
         content: _content,
@@ -161,13 +163,16 @@ class _EditAdviceState extends State<EditAdvice> {
         timestamp: widget.advice.timestamp,
         report: '',
         reportConfirmed: '',
+        authorName: user.userName!,
+        authorProfileHanlde: user.profileHandle!,
+        authorProfileImageUrl: user.profileImageUrl!,
+        authorVerification: '',
       );
 
       try {
         HapticFeedback.heavyImpact();
         Navigator.pop(context);
         DatabaseService.editAdvice(advice, widget.user);
-        final double width = MediaQuery.of(context).size.width;
       } catch (e) {
         final double width = MediaQuery.of(context).size.width;
         String error = e.toString();
@@ -310,7 +315,7 @@ class _EditAdviceState extends State<EditAdvice> {
                               width: 10.0,
                             ),
                             Text(
-                              'Save Edit',
+                              'Save',
                               style: TextStyle(
                                 fontSize: 16.0,
                                 fontWeight: FontWeight.bold,
