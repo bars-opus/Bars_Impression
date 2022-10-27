@@ -319,6 +319,16 @@ class _SetUpBrandState extends State<SetUpBrand> {
       await usersRef.doc(currentUserId).update({
         'profileHandle': _profileHandle,
       });
+      accountTypesRef
+          .doc(
+            _profileHandle,
+          )
+          .collection(_profileHandle)
+          .doc(currentUserId)
+          .set({
+        'uid': currentUserId,
+        'timestamp': Timestamp.fromDate(DateTime.now()),
+      });
       animateToPage();
     } catch (e) {
       final double width = Responsive.isDesktop(context)
@@ -451,7 +461,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
                   : Color(0xFF1a1a1a)),
           automaticallyImplyLeading: true,
           leading: _index == 4
-              ? SizedBox.shrink()
+              ? const SizedBox.shrink()
               : IconButton(
                   icon: Icon(
                       Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
@@ -627,7 +637,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                               Colors.blue),
                                         ),
                                       )
-                                    : SizedBox.shrink(),
+                                    : const SizedBox.shrink(),
                                 Padding(
                                   padding: const EdgeInsets.all(30.0),
                                   child: Column(
@@ -818,31 +828,34 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                         ),
                                       ),
                                     )
-                                  : SizedBox.shrink(),
+                                  : const SizedBox.shrink(),
                               Align(
-                                alignment: Alignment.centerRight,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Colors.blue,
-                                    elevation: 0.0,
-                                    onPrimary: Colors.blue,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20.0),
+                                  alignment: Alignment.centerRight,
+                                  child: ShakeTransition(
+                                    curve: Curves.easeOutBack,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        primary: Colors.blue,
+                                        elevation: 0.0,
+                                        onPrimary: Colors.blue,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        _submitProfileHandle();
+                                      },
+                                      child: Text(
+                                        'Skip',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                  onPressed: () {
-                                    _submitProfileHandle();
-                                  },
-                                  child: Text(
-                                    'Skip',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
+                                  )),
                               Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
@@ -964,7 +977,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                     ),
                                     onPressed: _handleImageFromGallery,
                                     child: Text(
-                                      'Set Avatar',
+                                      'Set Photo',
                                       style: TextStyle(
                                         color: Colors.blue,
                                         fontSize: 16.0,

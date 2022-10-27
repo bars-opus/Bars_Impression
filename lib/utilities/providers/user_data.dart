@@ -20,7 +20,13 @@ class UserData extends ChangeNotifier {
   late String _post11;
   late String _post12;
   late String _post13;
+
+  late int _int1;
+
+  late String _post14;
   late AccountHolder? _user;
+
+  late AccountHolder? _author;
   late int _messageCount;
   late int _chatCount;
   late int _notificaitonTab;
@@ -38,6 +44,7 @@ class UserData extends ChangeNotifier {
   late File? _postImage;
   late File? _image;
   late List? _message;
+  late List? _event;
 
   late PendingDynamicLinkData? _dynamicLink;
   late String _availableDynamicLink;
@@ -46,6 +53,7 @@ class UserData extends ChangeNotifier {
   final addressService = AddressService();
 
   List<PlaceSearch>? searchResults;
+
   List<AddressSearch>? addressSearchResults;
 
   UserData() {
@@ -63,8 +71,10 @@ class UserData extends ChangeNotifier {
     _post11 = ' ';
     _post12 = ' ';
     _post13 = ' ';
+    _post14 = ' ';
+    _int1 = 0;
     _availableDynamicLink = ' ';
-
+    _author = null;
     _user = null;
     _messageCount = 0;
     _showEventTab = true;
@@ -84,6 +94,8 @@ class UserData extends ChangeNotifier {
     _postImage = null;
     _image = null;
     _message = [];
+    _event = [];
+
     _dynamicLink = null;
   }
   String get navigationBar => _navigationBar;
@@ -100,6 +112,9 @@ class UserData extends ChangeNotifier {
   String get post11 => _post11;
   String get post12 => _post12;
   String get post13 => _post13;
+  String get post14 => _post14;
+
+  int get int1 => _int1;
   String get availableDynamicLink => _availableDynamicLink;
   int get chatCount => _chatCount;
   int get notificaitonTab => _notificaitonTab;
@@ -117,8 +132,12 @@ class UserData extends ChangeNotifier {
   File? get postImage => _postImage;
   File? get image => _image;
   AccountHolder? get user => _user;
+
+  AccountHolder? get author => _author;
   int get messageCount => _messageCount;
   List? get message => _message;
+
+  List? get event => _event;
   PendingDynamicLinkData? get dynamicLink => _dynamicLink;
 
   void setnavigationBar(String navigationBar) {
@@ -191,6 +210,16 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setPost14(String post14) {
+    _post14 = post14;
+    notifyListeners();
+  }
+
+  void setInt1(int int1) {
+    _int1 = int1;
+    notifyListeners();
+  }
+
   void setAvailableDynamicLink(String availableDynamicLink) {
     _availableDynamicLink = availableDynamicLink;
     notifyListeners();
@@ -203,6 +232,11 @@ class UserData extends ChangeNotifier {
 
   void setUser(AccountHolder user) {
     _user = user;
+    notifyListeners();
+  }
+
+  void setAuthor(AccountHolder author) {
+    _author = author;
     notifyListeners();
   }
 
@@ -283,6 +317,11 @@ class UserData extends ChangeNotifier {
 
   void chatMessage(List message) async {
     _message = message;
+    notifyListeners();
+  }
+
+  void eventList(List event) async {
+    _event = event;
     notifyListeners();
   }
 

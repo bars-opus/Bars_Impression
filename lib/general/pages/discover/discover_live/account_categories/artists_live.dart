@@ -5,6 +5,7 @@ class ArtistsLive extends StatefulWidget {
   final String currentUserId;
   final String liveCity;
   final String liveCountry;
+  final String profileHandle;
   final String exploreLocation;
 
   ArtistsLive({
@@ -12,6 +13,7 @@ class ArtistsLive extends StatefulWidget {
     required this.liveCity,
     required this.liveCountry,
     required this.exploreLocation,
+    required this.profileHandle,
   });
   @override
   _ArtistsLiveState createState() => _ArtistsLiveState();
@@ -21,7 +23,7 @@ class _ArtistsLiveState extends State<ArtistsLive>
     with AutomaticKeepAliveClientMixin {
   List<AccountHolder> _userList = [];
   final _userSnapshot = <DocumentSnapshot>[];
- int limit = 5;
+  int limit = 5;
   bool _hasNext = true;
   bool _isFectchingUser = false;
   late ScrollController _hideButtonController;
@@ -29,7 +31,7 @@ class _ArtistsLiveState extends State<ArtistsLive>
   @override
   void initState() {
     super.initState();
-    
+
     _setupUsers();
     _hideButtonController = ScrollController();
   }
@@ -51,13 +53,15 @@ class _ArtistsLiveState extends State<ArtistsLive>
 
   _setupUsers() async {
     QuerySnapshot userFeedSnapShot = await usersRef
-        .where('profileHandle', isEqualTo: 'Artist')
+        .where('profileHandle', isEqualTo: widget.profileHandle)
         .where('city', isEqualTo: widget.liveCity)
         .where('country', isEqualTo: widget.liveCountry)
         .limit(limit)
         .get();
-    List<AccountHolder> users =
-        userFeedSnapShot.docs.map((doc) => AccountHolder.fromDoc(doc)).toList();
+    List<AccountHolder> users = userFeedSnapShot.docs
+        .map((doc) => AccountHolder.fromDoc(doc))
+        .toList()
+      ..shuffle();
     _userSnapshot.addAll((userFeedSnapShot.docs));
     if (mounted) {
       setState(() {
@@ -72,14 +76,16 @@ class _ArtistsLiveState extends State<ArtistsLive>
     if (_isFectchingUser) return;
     _isFectchingUser = true;
     QuerySnapshot userFeedSnapShot = await usersRef
-        .where('profileHandle', isEqualTo: 'Artist')
+        .where('profileHandle', isEqualTo: widget.profileHandle)
         .where('city', isEqualTo: widget.liveCity)
         .where('country', isEqualTo: widget.liveCountry)
         .limit(limit)
         .startAfterDocument(_userSnapshot.last)
         .get();
-    List<AccountHolder> moreusers =
-        userFeedSnapShot.docs.map((doc) => AccountHolder.fromDoc(doc)).toList();
+    List<AccountHolder> moreusers = userFeedSnapShot.docs
+        .map((doc) => AccountHolder.fromDoc(doc))
+        .toList()
+      ..shuffle();
     if (_userSnapshot.length < limit) _hasNext = false;
     List<AccountHolder> allusers = _userList..addAll(moreusers);
     _userSnapshot.addAll((userFeedSnapShot.docs));
@@ -151,7 +157,7 @@ class _ArtistsLiveState extends State<ArtistsLive>
           : _userList.length == 0
               ? Center(
                   child: NoUsersDicovered(
-                    title: 'Music\nArtists',
+                    title: 'Music\n${widget.profileHandle}',
                   ),
                 )
               : Center(

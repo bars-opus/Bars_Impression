@@ -5,12 +5,11 @@ import 'package:bars/utilities/exports.dart';
 class ExploreForumMin extends StatefulWidget {
   final String currentUserId;
   final Forum forum;
-  final AccountHolder author;
+  // final AccountHolder author;
   final String feed;
-  // final List<Forum> forumList;
 
   ExploreForumMin(
-      {required this.currentUserId, required this.forum, @required required this.feed, required this.author});
+      {required this.currentUserId, required this.forum, @required required this.feed, });
 
   @override
   _ExploreForumMinState createState() => _ExploreForumMinState();
@@ -37,11 +36,10 @@ class _ExploreForumMinState extends State<ExploreForumMin> {
   @override
   Widget build(BuildContext context) {
     return ExploreForumsMinWidget(
-      author: widget.author,
+      // author: widget.author,
       currentUserId: widget.currentUserId,
       forum: widget.forum,
       feed: widget.feed,
-      // showExplore: false,
       thougthCount: _thoughtCount,
     );
   }

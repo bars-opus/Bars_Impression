@@ -21,6 +21,24 @@ class EventInviteAvailable extends StatefulWidget {
 }
 
 class _EventInviteAvailableState extends State<EventInviteAvailable> {
+  int _different = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _countDown();
+  }
+
+  _countDown() async {
+    final DateTime date = DateTime.parse(widget.event.date);
+    final toDayDate = DateTime.now();
+    var different = date.difference(toDayDate).inDays;
+
+    setState(() {
+      _different = different;
+    });
+  }
+
   _showSelectImageDialog2(
       BuildContext context, String from, EventInvite eventInvite) {
     return Platform.isIOS
@@ -134,9 +152,7 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
 
   _answereInvitation(String from, EventInvite eventInvite) async {
     final double width = MediaQuery.of(context).size.width;
-    // int _requestNumber = _attendeeRequesCount + 1;
-
-    DatabaseService.numEventAttendee(eventInvite.eventId, 'Accepted')
+    DatabaseService.numEventAttendee(eventInvite.eventId, from)
         .listen((attendeeNumber) {
       Provider.of<UserData>(
         context,
@@ -373,15 +389,13 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                                             listen: false)
                                         .currentUserId!,
                                     event: widget.event,
-
-                                    user: Provider.of<UserData>(context,
-                                            listen: false)
-                                        .user!,
-                                    // eventList: widget.eventList,
+                                    // user: Provider.of<UserData>(context,
+                                    //         listen: false)
+                                    //     .user!,
                                   ))),
                     ),
                   )
-                : const SizedBox.shrink(),
+                : const SizedBox.shrink()
           ],
         ),
       ),
@@ -438,6 +452,36 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
               ],
             ),
           ),
+          _different < 1
+              ? RichText(
+                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Ongoing...',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                        ),
+                      ),
+                      TextSpan(
+                        text:
+                            '\nThis event is in progress. It would be completed on ${MyDateFormat.toDate(DateTime.parse(widget.event.clossingDay))}. Attend, meet and explore.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  textAlign: TextAlign.center,
+                )
+              : const SizedBox.shrink(),
+          _different < 1
+              ? const SizedBox(
+                  height: 10,
+                )
+              : const SizedBox.shrink(),
           widget.eventInvite.invited! &&
                   widget.eventInvite.attendeeStatus.isEmpty
               ? _unAnsweredWidget(context, width)
@@ -544,7 +588,7 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                                     children: [
                                       TextSpan(
                                         text: widget.eventInvite.validated!
-                                            ? 'Entrance Status:   '
+                                            ? 'Check-in Status:   '
                                             : '',
                                         style: TextStyle(
                                           fontSize: 12,
@@ -614,7 +658,7 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                                         ),
                                       ),
                                       TextSpan(
-                                        text: '\nAttendee number:   ',
+                                        text: '\nCheck-in number:   ',
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: Colors.grey,
@@ -847,11 +891,11 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                                     onTap: () => Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (_) => EventAttendees(
+                                            builder: (_) => EventAttendeesAll(
                                                   dontShowAnswerWidget: true,
                                                   palette: widget.palette,
                                                   event: widget.event,
-                                                  from: 'Accepted',
+                                                  answer: 'Accepted',
                                                   showAppBar: true,
                                                 ))),
                                     child: Container(
@@ -910,7 +954,7 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                                     : widget.eventInvite.attendeeStatus
                                             .startsWith('Reject')
                                         ? 'Your invitation request has been rejected.'
-                                        : 'Your entrance number also known as attendee number is ${widget.eventInvite.attendNumber}. This number would be validated at the entrance of this event before you can enter. This number is uniqe. Have fun attending this event.',
+                                        : 'Your check-in number also known as your attendee number is ${widget.eventInvite.attendNumber}. This number would be validated at the entrance of this event before you can enter. This number is unique. Have fun attending this event.',
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 12,
@@ -929,7 +973,7 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                 ),
           widget.eventInvite.invited!
               ? widget.eventInvite.attendeeStatus.isNotEmpty
-                  ? SizedBox.shrink()
+                  ? const SizedBox.shrink()
                   : Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 30.0),
                       child: Row(
@@ -993,7 +1037,7 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                       ),
                     )
               : widget.eventInvite.attendeeStatus.isNotEmpty
-                  ? SizedBox.shrink()
+                  ? const SizedBox.shrink()
                   : Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 30.0),
                       child: Container(

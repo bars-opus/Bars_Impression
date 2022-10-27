@@ -47,6 +47,9 @@ final userInviteRef = _firestore.collection('userInvites');
 final usersBlockedRef = _firestore.collection('usersBlocked');
 final userBlockingRef = _firestore.collection('usersBlocking');
 final verificationRef = _firestore.collection('_VerificationRequest');
+final accountTypesRef = _firestore.collection('userAccountTypes');
+final eventTypesRef = _firestore.collection('eventTypes');
+
 final surveysRef = _firestore.collection('_surveys');
 final suggestionsRef = _firestore.collection('_suggestions');
 final reportContentsRef = _firestore.collection('_reportedContents');

@@ -128,7 +128,7 @@ class _BlockedAccountsState extends State<BlockedAccounts>
                     AccountHolder user = snapshot.data;
                     return Provider.of<UserData>(context).currentUserId ==
                             user.id
-                        ? SizedBox.shrink()
+                        ? const SizedBox.shrink()
                         : _buildUserTile(user);
                   },
                 );

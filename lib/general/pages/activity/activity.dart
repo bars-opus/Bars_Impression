@@ -105,6 +105,10 @@ class _ActivityScreenState extends State<ActivityScreen>
       seen: 'seen',
       comment: activiities.comment,
       timestamp: activiities.timestamp,
+      authorName: activiities.authorName,
+      authorProfileHanlde: activiities.authorProfileHanlde,
+      authorVerification: activiities.authorVerification,
+      authorProfileImageUrl: activiities.authorProfileImageUrl,
     );
     try {
       DatabaseService.editActivity(activity, widget.currentUserId);
@@ -114,302 +118,302 @@ class _ActivityScreenState extends State<ActivityScreen>
   }
 
   _buildActivity(Activity activity) {
-    return FutureBuilder(
-      future: DatabaseService.getUserWithId(activity.fromUserId!),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (!snapshot.hasData) {
-          return SizedBox.shrink();
-        }
-        AccountHolder user = snapshot.data;
-        return Column(
-          children: [
-            Container(
-              decoration: ConfigBloc().darkModeOn
-                  ? BoxDecoration(
-                      color: activity.seen == 'seen'
-                          ? Colors.transparent
-                          : Color(0xFF2B2B28),
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: [
-                          BoxShadow(
-                            color: activity.seen == 'seen'
-                                ? Colors.transparent
-                                : Colors.black45,
-                            offset: Offset(4.0, 4.0),
-                            blurRadius: 5.0,
-                            spreadRadius: 1.0,
-                          ),
-                          BoxShadow(
-                            color: activity.seen == 'seen'
-                                ? Colors.transparent
-                                : Colors.black45,
-                            offset: Offset(-4.0, -4.0),
-                            blurRadius: 5.0,
-                            spreadRadius: 1.0,
-                          )
-                        ])
-                  : BoxDecoration(
-                      color: activity.seen == 'seen'
-                          ? Colors.transparent
-                          : Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: [
-                          BoxShadow(
-                            color: activity.seen == 'seen'
-                                ? Colors.transparent
-                                : Colors.grey[500]!,
-                            offset: Offset(4.0, 4.0),
-                            blurRadius: 15.0,
-                            spreadRadius: 1.0,
-                          ),
-                          BoxShadow(
-                            color: activity.seen == 'seen'
-                                ? Colors.transparent
-                                : Colors.white,
-                            offset: Offset(-4.0, -4.0),
-                            blurRadius: 15.0,
-                            spreadRadius: 1.0,
-                          )
-                        ]),
-              child: ListTile(
-                onTap: activity.comment != null
-                    ? () async {
-                        // setState(() {
-                        //   _isLoadingContent = true;
-                        // });
-                        Provider.of<UserData>(context, listen: false)
-                            .setIsLoading(true);
-                        String currentUserId =
-                            Provider.of<UserData>(context, listen: false)
-                                .currentUserId!;
-                        Post post = await DatabaseService.getUserPost(
-                          currentUserId,
-                          activity.postId!,
-                        );
-                        activity.seen != 'seen'
-                            ? _submit(activity)
-                            : SizedBox.shrink();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => CommentsScreen(
-                              post: post,
-                              likeCount: post.likeCount,
-                              dislikeCount: post.disLikeCount,
-                              comment: null,
-                              currentUserId: widget.currentUserId,
-                            ),
-                          ),
-                        );
-                        // setState(() {
-                        //   _isLoadingContent = false;
-                        // });
-                        Provider.of<UserData>(context, listen: false)
-                            .setIsLoading(false);
-                      }
-                    : () async {
-                        // setState(() {
-                        //   _isLoadingContent = true;
-                        // });
-                        Provider.of<UserData>(context, listen: false)
-                            .setIsLoading(true);
-                        String currentUserId =
-                            Provider.of<UserData>(context, listen: false)
-                                .currentUserId!;
-                        Post post = await DatabaseService.getUserPost(
-                          currentUserId,
-                          activity.postId!,
-                        );
-                        AccountHolder user =
-                            await DatabaseService.getUserWithId(post.authorId);
-                        activity.seen != 'seen'
-                            ? _submit(activity)
-                            : SizedBox.shrink();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => AllPostEnlarged(
-                              currentUserId: widget.currentUserId,
-                              post: post,
-                              author: user,
-                              feed: '',
-                            ),
-                          ),
-                        );
-                        // setState(() {
-                        //   _isLoadingContent = false;
-                        // });
-                        Provider.of<UserData>(context, listen: false)
-                            .setIsLoading(false);
-                      },
-                leading: CircleAvatar(
-                  radius: 20.0,
-                  backgroundColor: ConfigBloc().darkModeOn
-                      ? Color(0xFF1a1a1a)
-                      : Color(0xFFf2f2f2),
-                  backgroundImage: user.profileImageUrl!.isEmpty
-                      ? AssetImage(
-                          ConfigBloc().darkModeOn
-                              ? 'assets/images/user_placeholder.png'
-                              : 'assets/images/user_placeholder2.png',
-                        ) as ImageProvider
-                      : CachedNetworkImageProvider(user.profileImageUrl!),
-                ),
-                // ignore: unnecessary_null_comparison
-                title: activity.comment != null
-                    ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Stack(
-                            alignment: Alignment.centerRight,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(right: 12.0),
-                                child: Text(
-                                  user.userName!,
-                                  style: TextStyle(
-                                    fontSize: 12.0,
-                                    fontWeight: activity.seen == 'seen'
-                                        ? FontWeight.normal
-                                        : FontWeight.bold,
-                                    color: ConfigBloc().darkModeOn
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                ),
-                              ),
-                              user.verified!.isEmpty
-                                  ? SizedBox.shrink()
-                                  : Positioned(
-                                      top: 0,
-                                      right: 0,
-                                      child: Icon(
-                                        MdiIcons.checkboxMarkedCircle,
-                                        size: 11,
-                                        color: Colors.blue,
-                                      ),
-                                    ),
-                            ],
-                          ),
-                          RichText(
-                            textScaleFactor:
-                                MediaQuery.of(context).textScaleFactor,
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                    text: "vibed:",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: ConfigBloc().darkModeOn
-                                          ? Colors.white
-                                          : Colors.black,
-                                    )),
-                                TextSpan(
-                                  text: ' ${activity.comment}',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: activity.seen != ''
-                                        ? Colors.grey
-                                        : Colors.blue,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            maxLines: 4,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
+    // return FutureBuilder(
+    //   future: DatabaseService.getUserWithId(activity.fromUserId!),
+    //   builder: (BuildContext context, AsyncSnapshot snapshot) {
+    //     if (!snapshot.hasData) {
+    //       return const SizedBox.shrink();
+    //     }
+    //     AccountHolder user = snapshot.data;
+    return Column(
+      children: [
+        Container(
+          decoration: ConfigBloc().darkModeOn
+              ? BoxDecoration(
+                  color: activity.seen == 'seen'
+                      ? Colors.transparent
+                      : Color(0xFF2B2B28),
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                      BoxShadow(
+                        color: activity.seen == 'seen'
+                            ? Colors.transparent
+                            : Colors.black45,
+                        offset: Offset(4.0, 4.0),
+                        blurRadius: 5.0,
+                        spreadRadius: 1.0,
+                      ),
+                      BoxShadow(
+                        color: activity.seen == 'seen'
+                            ? Colors.transparent
+                            : Colors.black45,
+                        offset: Offset(-4.0, -4.0),
+                        blurRadius: 5.0,
+                        spreadRadius: 1.0,
                       )
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    ])
+              : BoxDecoration(
+                  color: activity.seen == 'seen'
+                      ? Colors.transparent
+                      : Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                      BoxShadow(
+                        color: activity.seen == 'seen'
+                            ? Colors.transparent
+                            : Colors.grey[500]!,
+                        offset: Offset(4.0, 4.0),
+                        blurRadius: 15.0,
+                        spreadRadius: 1.0,
+                      ),
+                      BoxShadow(
+                        color: activity.seen == 'seen'
+                            ? Colors.transparent
+                            : Colors.white,
+                        offset: Offset(-4.0, -4.0),
+                        blurRadius: 15.0,
+                        spreadRadius: 1.0,
+                      )
+                    ]),
+          child: ListTile(
+            onTap: activity.comment != null
+                ? () async {
+                    // setState(() {
+                    //   _isLoadingContent = true;
+                    // });
+                    Provider.of<UserData>(context, listen: false)
+                        .setIsLoading(true);
+                    String currentUserId =
+                        Provider.of<UserData>(context, listen: false)
+                            .currentUserId!;
+                    Post post = await DatabaseService.getUserPost(
+                      currentUserId,
+                      activity.postId!,
+                    );
+                    activity.seen != 'seen'
+                        ? _submit(activity)
+                        : const SizedBox.shrink();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CommentsScreen(
+                          post: post,
+                          likeCount: post.likeCount,
+                          dislikeCount: post.disLikeCount,
+                          comment: null,
+                          currentUserId: widget.currentUserId,
+                        ),
+                      ),
+                    );
+                    // setState(() {
+                    //   _isLoadingContent = false;
+                    // });
+                    Provider.of<UserData>(context, listen: false)
+                        .setIsLoading(false);
+                  }
+                : () async {
+                    // setState(() {
+                    //   _isLoadingContent = true;
+                    // });
+                    Provider.of<UserData>(context, listen: false)
+                        .setIsLoading(true);
+                    String currentUserId =
+                        Provider.of<UserData>(context, listen: false)
+                            .currentUserId!;
+                    Post post = await DatabaseService.getUserPost(
+                      currentUserId,
+                      activity.postId!,
+                    );
+                    // AccountHolder user =
+                    //     await DatabaseService.getUserWithId(post.authorId);
+                    activity.seen != 'seen'
+                        ? _submit(activity)
+                        : const SizedBox.shrink();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => AllPostEnlarged(
+                          currentUserId: widget.currentUserId,
+                          post: post,
+                          // author: user,
+                          feed: '',
+                        ),
+                      ),
+                    );
+                    // setState(() {
+                    //   _isLoadingContent = false;
+                    // });
+                    Provider.of<UserData>(context, listen: false)
+                        .setIsLoading(false);
+                  },
+            leading: activity.authorProfileImageUrl.isEmpty
+                ? Icon(
+                    Icons.account_circle,
+                    size: 60.0,
+                    color: Colors.grey,
+                  )
+                : CircleAvatar(
+                    radius: 25.0,
+                    backgroundColor: ConfigBloc().darkModeOn
+                        ? Color(0xFF1a1a1a)
+                        : Color(0xFFf2f2f2),
+                    backgroundImage: CachedNetworkImageProvider(
+                        activity.authorProfileImageUrl),
+                  ),
+            // ignore: unnecessary_null_comparison
+            title: activity.comment != null
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Stack(
+                        alignment: Alignment.centerRight,
                         children: [
-                          Stack(
-                            alignment: Alignment.centerRight,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(right: 12.0),
-                                child: Text(
-                                  user.userName!,
-                                  style: TextStyle(
-                                    fontSize: 12.0,
-                                    fontWeight: activity.seen == 'seen'
-                                        ? FontWeight.normal
-                                        : FontWeight.bold,
-                                    color: ConfigBloc().darkModeOn
-                                        ? Colors.white
-                                        : Colors.black,
+                          Padding(
+                            padding: const EdgeInsets.only(right: 12.0),
+                            child: Text(
+                              activity.authorName,
+                              style: TextStyle(
+                                fontSize: 12.0,
+                                fontWeight: activity.seen == 'seen'
+                                    ? FontWeight.normal
+                                    : FontWeight.bold,
+                                color: ConfigBloc().darkModeOn
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
+                            ),
+                          ),
+                          activity.authorVerification.isEmpty
+                              ? const SizedBox.shrink()
+                              : Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: Icon(
+                                    MdiIcons.checkboxMarkedCircle,
+                                    size: 11,
+                                    color: Colors.blue,
                                   ),
                                 ),
-                              ),
-                              user.verified!.isEmpty
-                                  ? SizedBox.shrink()
-                                  : Positioned(
-                                      top: 0,
-                                      right: 0,
-                                      child: Icon(
-                                        MdiIcons.checkboxMarkedCircle,
-                                        size: 11,
-                                        color: Colors.blue,
-                                      ),
-                                    ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              RichText(
-                                  textScaleFactor:
-                                      MediaQuery.of(context).textScaleFactor,
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                          text: 'liked your punch',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: activity.seen != 'seen'
-                                                ? Colors.pink
-                                                : Colors.grey,
-                                          ))
-                                    ],
-                                  )),
-                              SizedBox(
-                                width: 10.0,
-                              ),
-                              Container(
-                                  height: 30,
-                                  child: activity.seen != 'seen'
-                                      ? CircularButton(
-                                          color: Colors.pink,
-                                          icon: Icon(Icons.favorite,
-                                              color: Colors.white),
-                                          onPressed: () {},
-                                        )
-                                      : SizedBox.shrink()),
-                            ],
-                          ),
                         ],
                       ),
-                subtitle: Text(
-                    timeago.format(
-                      activity.timestamp!.toDate(),
-                    ),
-                    style: TextStyle(fontSize: 10, color: Colors.grey)),
-                trailing: CachedNetworkImage(
-                  imageUrl: activity.postImageUrl!,
-                  height: 40.0,
-                  width: 40.0,
-                  fit: BoxFit.cover,
+                      RichText(
+                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                                text: "vibed:",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: ConfigBloc().darkModeOn
+                                      ? Colors.white
+                                      : Colors.black,
+                                )),
+                            TextSpan(
+                              text: ' ${activity.comment}',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: activity.seen != ''
+                                    ? Colors.grey
+                                    : Colors.blue,
+                              ),
+                            ),
+                          ],
+                        ),
+                        maxLines: 4,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Stack(
+                        alignment: Alignment.centerRight,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 12.0),
+                            child: Text(
+                              activity.authorName,
+                              style: TextStyle(
+                                fontSize: 12.0,
+                                fontWeight: activity.seen == 'seen'
+                                    ? FontWeight.normal
+                                    : FontWeight.bold,
+                                color: ConfigBloc().darkModeOn
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
+                            ),
+                          ),
+                          activity.authorVerification.isEmpty
+                              ? const SizedBox.shrink()
+                              : Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: Icon(
+                                    MdiIcons.checkboxMarkedCircle,
+                                    size: 11,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          RichText(
+                              textScaleFactor:
+                                  MediaQuery.of(context).textScaleFactor,
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                      text: 'liked your punch',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: activity.seen != 'seen'
+                                            ? Colors.pink
+                                            : Colors.grey,
+                                      ))
+                                ],
+                              )),
+                          SizedBox(
+                            width: 10.0,
+                          ),
+                          Container(
+                              height: 30,
+                              child: activity.seen != 'seen'
+                                  ? CircularButton(
+                                      color: Colors.pink,
+                                      icon: Icon(Icons.favorite,
+                                          color: Colors.white),
+                                      onPressed: () {},
+                                    )
+                                  : const SizedBox.shrink()),
+                        ],
+                      ),
+                    ],
+                  ),
+            subtitle: Text(
+                timeago.format(
+                  activity.timestamp!.toDate(),
                 ),
-              ),
+                style: TextStyle(fontSize: 10, color: Colors.grey)),
+            trailing: CachedNetworkImage(
+              imageUrl: activity.postImageUrl!,
+              height: 40.0,
+              width: 40.0,
+              fit: BoxFit.cover,
             ),
-            const Divider(
-              color: Colors.grey,
-            )
-          ],
-        );
-      },
+          ),
+        ),
+        const Divider(
+          color: Colors.grey,
+        )
+      ],
     );
+    //   },
+    // );
   }
 
   bool get wantKeepAlive => true;
@@ -427,7 +431,7 @@ class _ActivityScreenState extends State<ActivityScreen>
             height: 5,
           ),
           widget.activityCount == 0
-              ? SizedBox.shrink()
+              ? const SizedBox.shrink()
               : Row(
                   children: [
                     Padding(
@@ -467,7 +471,7 @@ class _ActivityScreenState extends State<ActivityScreen>
                     )),
                   ),
                 )
-              : SizedBox.shrink(),
+              : const SizedBox.shrink(),
           SizedBox(
             height: 20.0,
           ),

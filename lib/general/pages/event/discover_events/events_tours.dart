@@ -5,8 +5,8 @@ class ToursEvents extends StatefulWidget {
   final String currentUserId;
   final AccountHolder user;
   ToursEvents({
-   required  this.currentUserId,
-   required  this.user,
+    required this.currentUserId,
+    required this.user,
   });
   @override
   _ToursEventsState createState() => _ToursEventsState();
@@ -19,7 +19,7 @@ class _ToursEventsState extends State<ToursEvents>
   int limit = 10;
   bool _hasNext = true;
   bool _isFetchingEvent = false;
-late  ScrollController _hideButtonController;
+  late ScrollController _hideButtonController;
 
   @override
   void initState() {
@@ -44,8 +44,12 @@ late  ScrollController _hideButtonController;
   }
 
   _setupEventFeed() async {
-    QuerySnapshot eventFeedSnapShot =
-        await allEventsRef.where('type', isEqualTo: 'Tour').limit(limit).get();
+    QuerySnapshot eventFeedSnapShot = await eventTypesRef
+        .doc('Tour')
+        .collection('Tour')
+        .orderBy('timestamp', descending: true)
+        .limit(limit)
+        .get();
     List<Event> events =
         eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
     _eventSnapshot.addAll((eventFeedSnapShot.docs));
@@ -62,8 +66,10 @@ late  ScrollController _hideButtonController;
     if (_isFetchingEvent) return;
     _isFetchingEvent = true;
     _hasNext = true;
-    QuerySnapshot eventFeedSnapShot = await allEventsRef
-        .where('type', isEqualTo: 'Tour')
+    QuerySnapshot eventFeedSnapShot = await eventTypesRef
+        .doc('Tour')
+        .collection('Tour')
+        .orderBy('timestamp', descending: true)
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();
@@ -88,7 +94,7 @@ late  ScrollController _hideButtonController;
       feed: 3,
       currentUserId: widget.currentUserId,
       event: event,
-      author: author,      user: widget.user,
+    user: widget.user,
 
       // eventList: _events,
     );
@@ -111,7 +117,9 @@ late  ScrollController _hideButtonController;
                       future: DatabaseService.getUserWithId(event.authorId),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (!snapshot.hasData) {
-                          return EventSchimmerBlurHash(event: event,);
+                          return EventSchimmerBlurHash(
+                            event: event,
+                          );
                         }
                         AccountHolder author = snapshot.data;
 
@@ -145,7 +153,7 @@ late  ScrollController _hideButtonController;
                     child: _buildUser()))
             : _events.length == 0
                 ? Center(
-                    child:  EventSchimmer(),
+                    child: EventSchimmer(),
                   )
                 : Center(
                     child: EventSchimmer(),

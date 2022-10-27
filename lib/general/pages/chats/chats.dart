@@ -18,10 +18,7 @@ class Chats extends StatefulWidget {
 }
 
 class _ChatsState extends State<Chats> {
-  @override
-  void initState() {
-    super.initState();
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -63,9 +60,9 @@ class _ChatsState extends State<Chats> {
                         child: Center(
                           child: NoContents(
                             icon: (MdiIcons.send),
-                            title: 'No Chats',
+                            title: 'No Chats.',
                             subTitle:
-                                'Your chat and messages would appear here. ',
+                                'Your chats and messages would appear here. ',
                           ),
                         ),
                       );
@@ -295,7 +292,7 @@ class _display extends StatelessWidget {
                               ),
                             ),
                             author.verified!.isEmpty
-                                ? SizedBox.shrink()
+                                ? const SizedBox.shrink()
                                 : Positioned(
                                     top: 3,
                                     right: 0,
@@ -313,7 +310,7 @@ class _display extends StatelessWidget {
                         Wrap(
                           children: [
                             chats.mediaType.isEmpty
-                                ? SizedBox.shrink()
+                                ? const SizedBox.shrink()
                                 : Icon(
                                     MdiIcons.image,
                                     size: 20,

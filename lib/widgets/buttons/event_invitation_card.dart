@@ -36,7 +36,7 @@ class EventInvitationActivityCard extends StatelessWidget {
         future: DatabaseService.getInviteEventWithId(invite),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (!snapshot.hasData) {
-            return SizedBox.shrink();
+            return const SizedBox.shrink();
           }
 
           Event event = snapshot.data;

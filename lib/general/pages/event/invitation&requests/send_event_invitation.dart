@@ -21,13 +21,10 @@ class _SendEventInviationState extends State<SendEventInviation> {
   int _attendeeRequesCount = 0;
   String _message = '';
 
-  // int _inviteCount = 0;
-
   @override
   void initState() {
     super.initState();
     _setUpAttendeeRequest();
-    // _setUpAttendee();
   }
 
   _setUpAttendeeRequest() async {
@@ -40,18 +37,6 @@ class _SendEventInviationState extends State<SendEventInviation> {
       }
     });
   }
-
-
-  // _setUpAttendee() async {
-  //   DatabaseService.numEventAttendee(widget.event.id, 'Accepted')
-  //       .listen((inviteCount) {
-  //     if (mounted) {
-  //       setState(() {
-  //         _inviteCount = inviteCount;
-  //       });
-  //     }
-  //   });
-  // }
 
   _showSelectImageDialog2() {
     return Platform.isIOS ? _iosBottomSheet2() : _androidDialog2(context);
@@ -172,10 +157,10 @@ class _SendEventInviationState extends State<SendEventInviation> {
             duration: Duration(seconds: 2),
             leftBarIndicatorColor: Colors.blue,
           ).show(context)
-        : _SendInvitation();
+        : _sendInvitation();
   }
 
-  _SendInvitation() {
+  _sendInvitation() {
     final double width = MediaQuery.of(context).size.width;
     int _requestNumber = _attendeeRequesCount + 1;
 
@@ -186,8 +171,7 @@ class _SendEventInviationState extends State<SendEventInviation> {
         requestNumber: _requestNumber.toString(),
         message: _message,
         eventDate: DateTime.parse(widget.event.date),
-        currentUserId:
-            Provider.of<UserData>(context, listen: false).currentUserId!,
+        currentUser: Provider.of<UserData>(context, listen: false).user!,
       );
       Navigator.pop(context);
       Flushbar(
@@ -345,7 +329,6 @@ class _SendEventInviationState extends State<SendEventInviation> {
                     ),
                     child: Container(
                       width: width,
-                      // height: MediaQuery.of(context).size.height,
                       decoration:
                           BoxDecoration(color: Colors.white, boxShadow: [
                         BoxShadow(
@@ -355,7 +338,6 @@ class _SendEventInviationState extends State<SendEventInviation> {
                           spreadRadius: 4.0,
                         )
                       ]),
-
                       child: Column(
                         children: [
                           const SizedBox(
@@ -469,7 +451,6 @@ class _SendEventInviationState extends State<SendEventInviation> {
                                 const EdgeInsets.only(left: 12.0, right: 12),
                             child: Text(
                               'The invitation sent must be accepted by ${widget.user.userName} before ${widget.user.userName} can attend this event. ${widget.user.userName} is not obliged to accept your invitation.',
-                              // 'Your attendee number must much the event\s organiser\s account number in order to attend this event. You should show this account number at the entrance of the event',
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 12,

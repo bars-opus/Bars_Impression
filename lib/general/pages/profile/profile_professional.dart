@@ -121,8 +121,7 @@ class _ProfileProfessionalProfileState
     return UserProfessionalViewWidget(
       workHero: 'work' + widget.user.id.toString(),
       containerHero1: 'container1' + widget.user.id.toString(),
-      exploreWidget: SizedBox.shrink(),
-      profileWidget: SizedBox.shrink(),
+      exploreWidget: const SizedBox.shrink(),
       user: widget.user,
       point: _point,
       userTotal: _total,

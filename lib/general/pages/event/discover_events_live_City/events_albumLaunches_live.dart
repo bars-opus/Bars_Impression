@@ -98,7 +98,7 @@ class _AlbumLaunchesLiveCityState extends State<AlbumLaunchesLiveCity>
       feed: 3,
       currentUserId: widget.currentUserId,
       event: event,
-      author: author,
+      
       // eventList: _events,
             user: widget.user,
 

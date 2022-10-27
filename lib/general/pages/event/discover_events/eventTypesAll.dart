@@ -1,25 +1,27 @@
 import 'package:bars/utilities/exports.dart';
 
-class FestivalEvents extends StatefulWidget {
-  static final id = 'FestivalEvents';
+class EventTypesAll extends StatefulWidget {
+  static final id = 'EventTypesAll';
   final String currentUserId;
   final AccountHolder? user;
-  FestivalEvents({
+  final String types;
+  EventTypesAll({
     required this.currentUserId,
     required this.user,
+    required this.types,
   });
   @override
-  _FestivalEventsState createState() => _FestivalEventsState();
+  _EventTypesAllState createState() => _EventTypesAllState();
 }
 
-class _FestivalEventsState extends State<FestivalEvents>
+class _EventTypesAllState extends State<EventTypesAll>
     with AutomaticKeepAliveClientMixin {
   List<Event> _events = [];
   final _eventSnapshot = <DocumentSnapshot>[];
-  int limit = 10;
+  int limit = 3;
   bool _hasNext = true;
   bool _isFetchingEvent = false;
- late ScrollController _hideButtonController;
+  late ScrollController _hideButtonController;
 
   @override
   void initState() {
@@ -45,11 +47,13 @@ class _FestivalEventsState extends State<FestivalEvents>
 
   _setupEventFeed() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
-        .where('type', isEqualTo: 'Festival')
+        .where('type', isEqualTo: widget.types)
         .limit(limit)
         .get();
-    List<Event> events =
-        eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
+    List<Event> events = eventFeedSnapShot.docs
+        .map((doc) => Event.fromDoc(doc))
+        .toList()
+      ..shuffle();
     _eventSnapshot.addAll((eventFeedSnapShot.docs));
     if (mounted) {
       setState(() {
@@ -65,12 +69,14 @@ class _FestivalEventsState extends State<FestivalEvents>
     _isFetchingEvent = true;
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
-        .where('type', isEqualTo: 'Festival')
+        .where('type', isEqualTo: widget.types)
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();
-    List<Event> moreevents =
-        eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
+    List<Event> moreevents = eventFeedSnapShot.docs
+        .map((doc) => Event.fromDoc(doc))
+        .toList()
+      ..shuffle();
     if (_eventSnapshot.length < limit) _hasNext = false;
     List<Event> allevents = _events..addAll(moreevents);
     _eventSnapshot.addAll((eventFeedSnapShot.docs));
@@ -84,17 +90,17 @@ class _FestivalEventsState extends State<FestivalEvents>
     return _hasNext;
   }
 
-  _displayEvents(Event event, AccountHolder author) {
-    return EventView(
-      exploreLocation: '',
-      feed: 3,
-      currentUserId: widget.currentUserId,
-      event: event,
-      author: author,
-      // eventList: _events, 
-      user: widget.user,
-    );
-  }
+  // _displayEvents(Event event, AccountHolder author) {
+  //   return EventView(
+  //     exploreLocation: '',
+  //     feed: 3,
+  //     currentUserId: widget.currentUserId,
+  //     event: event,
+  //     author: author,
+  //     // eventList: _events,
+  //     user: widget.user,
+  //   );
+  // }
 
   _buildUser() {
     return NotificationListener<ScrollNotification>(
@@ -109,16 +115,14 @@ class _FestivalEventsState extends State<FestivalEvents>
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   Event event = _events[index];
-                  return FutureBuilder(
-                      future: DatabaseService.getUserWithId(event.authorId),
-                      builder: (BuildContext context, AsyncSnapshot snapshot) {
-                        if (!snapshot.hasData) {
-                          return EventSchimmerBlurHash(event: event,);
-                        }
-                        AccountHolder author = snapshot.data;
-
-                        return _displayEvents(event, author);
-                      });
+                  return EventView(
+                    exploreLocation: ' ',
+                    currentUserId: widget.currentUserId,
+                    event: event,
+                    feed: 2,
+                    // author: author,
+                    user: widget.user!,
+                  );
                 },
                 childCount: _events.length,
               ),
@@ -147,7 +151,7 @@ class _FestivalEventsState extends State<FestivalEvents>
                     child: _buildUser()))
             : _events.length == 0
                 ? Center(
-                    child:  EventSchimmer(),
+                    child: EventSchimmer(),
                   )
                 : Center(
                     child: EventSchimmer(),

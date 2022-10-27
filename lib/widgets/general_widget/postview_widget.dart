@@ -6,14 +6,14 @@ import 'package:timeago/timeago.dart' as timeago;
 class PostViewWidget extends StatefulWidget {
   final String currentUserId;
   final Post post;
-  final AccountHolder author;
+  // final AccountHolder author;
   final List<Post> postList;
 
-  PostViewWidget(
-      {required this.currentUserId,
-      required this.post,
-      required this.postList,
-      required this.author});
+  PostViewWidget({
+    required this.currentUserId,
+    required this.post,
+    required this.postList,
+  });
 
   @override
   _PostViewWidgetState createState() => _PostViewWidgetState();
@@ -27,14 +27,19 @@ class _PostViewWidgetState extends State<PostViewWidget> {
   bool _isLiked = false;
   bool _isDisLiked = false;
   bool _heartAnim = false;
+  // late Future<AccountHolder> dataFuture;
 
   @override
   void initState() {
     super.initState();
+
     _displayWarning = widget.post.report.isNotEmpty ? true : false;
+    // dataFuture = runner(widget.post.authorId);
   }
 
   _setImage() {
+    HapticFeedback.heavyImpact();
+
     if (_displayImage) {
       if (mounted) {
         setState(() {
@@ -87,6 +92,8 @@ class _PostViewWidgetState extends State<PostViewWidget> {
   }
 
   _unLikePost() {
+    HapticFeedback.heavyImpact();
+
     DatabaseService.unlikePost(
         currentUserId: widget.currentUserId, post: widget.post);
 
@@ -98,9 +105,11 @@ class _PostViewWidgetState extends State<PostViewWidget> {
   }
 
   _likePost() {
-    DatabaseService.likePost(
-        currentUserId: widget.currentUserId, post: widget.post);
     HapticFeedback.heavyImpact();
+
+    DatabaseService.likePost(
+        user: Provider.of<UserData>(context, listen: false).user!,
+        post: widget.post);
     SystemSound.play(SystemSoundType.click);
     if (mounted) {
       setState(() {
@@ -141,13 +150,14 @@ class _PostViewWidgetState extends State<PostViewWidget> {
       );
 
   _dynamicLink() async {
-    final dynamicLinkParams = await DynamicLinkParameters(
-      socialMetaTagParameters: await SocialMetaTagParameters(
+    final dynamicLinkParams = DynamicLinkParameters(
+      socialMetaTagParameters: SocialMetaTagParameters(
+        imageUrl: Uri.parse(widget.post.imageUrl),
         title: 'MoodPunched',
         description: widget.post.punch,
       ),
       link: Uri.parse('https://www.barsopus.com/moopunched_${widget.post.id}'),
-      uriPrefix: 'https://barsopus.com/barsImpression/',
+      uriPrefix: 'https://barsopus.com/barsImpression',
       androidParameters:
           AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
       iosParameters: IOSParameters(
@@ -155,17 +165,39 @@ class _PostViewWidgetState extends State<PostViewWidget> {
         appStoreId: '1610868894',
       ),
     );
-    var link =
-        await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+    if (Platform.isIOS) {
+      var link =
+          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
+      Share.share(link.toString());
+    } else {
+      var link =
+          await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+      Share.share(link.shortUrl.toString());
+    }
+  }
 
-    Share.share(link.shortUrl.toString());
+  Future<AccountHolder> runner(String authorId) async {
+    return DatabaseService.getUserWithId(authorId);
+  }
+
+  _viewProfessionalProfile() async {
+    AccountHolder user =
+        await DatabaseService.getUserWithId(widget.post.authorId);
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (_) => ProfileProfessionalProfile(
+                  currentUserId: Provider.of<UserData>(context).currentUserId!,
+                  // user: widget.post.authorId,
+                  userId: widget.post.authorId, user: user,
+                )));
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = Responsive.isDesktop(context)
-        ? 700.0
+        ? 600.0
         : MediaQuery.of(context).size.width;
 
     return _displayWarning == true
@@ -174,12 +206,27 @@ class _PostViewWidgetState extends State<PostViewWidget> {
             onPressed: _setContentWarning,
             imageUrl: widget.post.imageUrl,
           )
-        : Stack(alignment: FractionalOffset.center, children: <Widget>[
+        :
+
+        //  FutureBuilder<AccountHolder>(
+        //     future: dataFuture,
+        //     // DatabaseService.getUserWithId(widget.post.authorId),
+        //     builder: (BuildContext context, AsyncSnapshot snapshot) {
+        //       if (!snapshot.hasData) {
+        //         return PostEnlargedBlurharsh(
+        //           post: widget.post,
+        //         );
+        //       }
+        //       AccountHolder _author = snapshot.data;
+        // return
+        Stack(alignment: FractionalOffset.center, children: <Widget>[
             Stack(children: <Widget>[
               GestureDetector(
                 onLongPress: () => Navigator.of(context).push(PageRouteBuilder(
                     transitionDuration: const Duration(milliseconds: 500),
                     pageBuilder: (context, animation, _) {
+                      HapticFeedback.heavyImpact();
+
                       return FadeTransition(
                         opacity: animation,
                         child: ExplorePosts(
@@ -199,35 +246,34 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                       child: GestureDetector(
                         onDoubleTap: _setImage,
                         child: Container(
-                          height: height,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: ConfigBloc().darkModeOn
-                                ? Color(0xFF1a1a1a)
-                                : Color(0xFFeff0f2),
-                            image: DecorationImage(
-                              image: CachedNetworkImageProvider(
-                                  widget.post.imageUrl),
-                              fit: BoxFit.cover,
+                            height: height,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: ConfigBloc().darkModeOn
+                                  ? Color(0xFF1a1a1a)
+                                  : Color(0xFFeff0f2),
+                              image: DecorationImage(
+                                image: CachedNetworkImageProvider(
+                                    widget.post.imageUrl),
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                          ),
-                          child: _displayImage == false
-                              ? GestureDetector(
-                                  onDoubleTap: _setImage,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.bottomRight,
-                                        colors: [
-                                          Colors.black.withOpacity(.6),
-                                          Colors.black.withOpacity(.6),
-                                        ],
+                            child: _displayImage == false
+                                ? GestureDetector(
+                                    onDoubleTap: _setImage,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment.bottomRight,
+                                          colors: [
+                                            Colors.black.withOpacity(.6),
+                                            Colors.black.withOpacity(.6),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                )
-                              : const SizedBox.shrink(),
-                        ),
+                                  )
+                                : const SizedBox.shrink()),
                       ),
                     ),
                   ),
@@ -293,7 +339,7 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                               SlidableAction(
                                                 onPressed: (_) {
                                                   widget.currentUserId ==
-                                                          widget.author.id!
+                                                          widget.post.authorId
                                                       ? Navigator.push(
                                                           context,
                                                           MaterialPageRoute(
@@ -305,40 +351,28 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                             ),
                                                           ),
                                                         )
-                                                      : widget.author
-                                                              .profileHandle!
+                                                      : widget.post
+                                                              .authorHandleType
                                                               .startsWith('Fan')
                                                           ? () {}
-                                                          : Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                  builder: (_) =>
-                                                                      ProfileProfessionalProfile(
-                                                                        currentUserId:
-                                                                            Provider.of<UserData>(context).currentUserId!,
-                                                                        user: widget
-                                                                            .author,
-                                                                        userId: widget
-                                                                            .author
-                                                                            .id!,
-                                                                      )));
+                                                          : _viewProfessionalProfile();
                                                 },
                                                 backgroundColor:
                                                     Colors.transparent,
                                                 foregroundColor: Colors.white,
                                                 icon: widget.currentUserId ==
-                                                        widget.author.id!
+                                                        widget.post.authorId
                                                     ? Icons.edit
-                                                    : widget.author
-                                                            .profileHandle!
+                                                    : widget.post
+                                                            .authorHandleType
                                                             .startsWith('Fan')
                                                         ? null
                                                         : Icons.work,
                                                 label: widget.currentUserId ==
-                                                        widget.author.id!
+                                                        widget.post.authorId
                                                     ? 'Edit mood'
-                                                    : widget.author
-                                                            .profileHandle!
+                                                    : widget.post
+                                                            .authorHandleType
                                                             .startsWith('Fan')
                                                         ? ' '
                                                         : 'Booking page ',
@@ -354,51 +388,6 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                             openWithTap: false,
                                             onPressed: () {},
                                             menuItems: [
-                                              // FocusedMenuItem(
-                                              //     title:
-                                              //     onPressed: () {}),
-                                              // FocusedMenuItem(
-                                              //     title: Container(
-                                              //       width: width / 2,
-                                              //       child: Text(
-                                              //         widget.post.authorId ==
-                                              //                 widget
-                                              //                     .currentUserId
-                                              //             ? 'Edit mood punched'
-                                              //             : 'Go to ${widget.author.name}\' profile ',
-                                              //         overflow:
-                                              //             TextOverflow.ellipsis,
-                                              //         textScaleFactor:
-                                              //             MediaQuery.of(context)
-                                              //                 .textScaleFactor,
-                                              //       ),
-                                              //     ),
-                                              //     onPressed: () => widget
-                                              //                 .post.authorId ==
-                                              //             widget.currentUserId
-                                              //         ? Navigator.push(
-                                              //             context,
-                                              //             MaterialPageRoute(
-                                              //               builder: (_) =>
-                                              //                   EditPost(
-                                              //                 post: widget.post,
-                                              //                 currentUserId: widget
-                                              //                     .currentUserId,
-                                              //               ),
-                                              //             ),
-                                              //           )
-                                              //         : Navigator.push(
-                                              //             context,
-                                              //             MaterialPageRoute(
-                                              //                 builder: (_) =>
-                                              //                     ProfileScreen(
-                                              //                       currentUserId:
-                                              //                           Provider.of<UserData>(context)
-                                              //                               .currentUserId!,
-                                              //                       userId: widget
-                                              //                           .author
-                                              //                           .id!,
-                                              //                     )))),
                                               FocusedMenuItem(
                                                   title: Container(
                                                     width: width - 40,
@@ -415,11 +404,6 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                     ),
                                                   ),
                                                   onPressed: () {
-                                                    // Provider.of<UserData>(
-                                                    //         context,
-                                                    //         listen: false)
-                                                    //     .setPost12(
-                                                    //         widget.post.id!);
                                                     Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
@@ -459,19 +443,6 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                   ),
                                                   onPressed: () =>
                                                       _dynamicLink()),
-                                              // FocusedMenuItem(
-                                              //     title: Container(
-                                              //       width: width / 2,
-                                              //       child: Text(
-                                              //         'Send ',
-                                              //         overflow:
-                                              //             TextOverflow.ellipsis,
-                                              //         textScaleFactor:
-                                              //             MediaQuery.of(context)
-                                              //                 .textScaleFactor,
-                                              //       ),
-                                              //     ),
-                                              //     onPressed: _setImage),
                                               FocusedMenuItem(
                                                   title: Container(
                                                     width: width - 40,
@@ -608,7 +579,13 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                                       onTap: () => Navigator.push(
                                                                           context,
                                                                           MaterialPageRoute(
-                                                                              builder: (_) => ProfileScreen(
+                                                                              builder: (_) =>
+                                                                                  // _author.userName!.isEmpty
+                                                                                  //     ? UserNotFound(
+                                                                                  //         userName: 'User',
+                                                                                  //       )
+                                                                                  //     :
+                                                                                  ProfileScreen(
                                                                                     currentUserId: widget.currentUserId,
                                                                                     userId: widget.post.authorId,
                                                                                   ))),
@@ -627,18 +604,20 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                                             Material(
                                                                               color: Colors.transparent,
                                                                               child: Container(
-                                                                                  child: Row(children: <Widget>[
+                                                                                  child: Row(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
                                                                                 Hero(
                                                                                   tag: 'author' + widget.post.id.toString(),
-                                                                                  child: CircleAvatar(
-                                                                                    radius: 25.0,
-                                                                                    backgroundColor: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
-                                                                                    backgroundImage: widget.author.profileImageUrl!.isEmpty
-                                                                                        ? AssetImage(
-                                                                                            ConfigBloc().darkModeOn ? 'assets/images/user_placeholder.png' : 'assets/images/user_placeholder2.png',
-                                                                                          ) as ImageProvider
-                                                                                        : CachedNetworkImageProvider(widget.author.profileImageUrl!),
-                                                                                  ),
+                                                                                  child: widget.post.authorIdProfileImageUrl.isEmpty
+                                                                                      ? Icon(
+                                                                                          Icons.account_circle,
+                                                                                          size: 50.0,
+                                                                                          color: Colors.grey,
+                                                                                        )
+                                                                                      : CircleAvatar(
+                                                                                          radius: 25.0,
+                                                                                          backgroundColor: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+                                                                                          backgroundImage: CachedNetworkImageProvider(widget.post.authorIdProfileImageUrl),
+                                                                                        ),
                                                                                 ),
                                                                                 const SizedBox(
                                                                                   width: 8.0,
@@ -652,10 +631,10 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                                                       children: [
                                                                                         Padding(
                                                                                           padding: const EdgeInsets.only(right: 12.0),
-                                                                                          child: Text("${widget.author.userName}", style: const TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold)),
+                                                                                          child: Text("${widget.post.authorName}", style: const TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold)),
                                                                                         ),
-                                                                                        widget.author.verified!.isEmpty
-                                                                                            ? SizedBox.shrink()
+                                                                                        widget.post.authorVerification.isEmpty
+                                                                                            ? const SizedBox.shrink()
                                                                                             : Positioned(
                                                                                                 top: 3,
                                                                                                 right: 0,
@@ -671,8 +650,8 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                                                       textScaleFactor: MediaQuery.of(context).textScaleFactor,
                                                                                       text: TextSpan(
                                                                                         children: [
-                                                                                          TextSpan(text: "${widget.author.profileHandle!}\n", style: const TextStyle(fontSize: 10, color: Colors.white)),
-                                                                                          TextSpan(text: "${widget.author.company}", style: const TextStyle(fontSize: 10, color: Colors.white)),
+                                                                                          TextSpan(text: "${widget.post.authorHandleType}\n", style: const TextStyle(fontSize: 10, color: Colors.white)),
+                                                                                          // TextSpan(text: "${widget.post.company}", style: const TextStyle(fontSize: 10, color: Colors.white)),
                                                                                         ],
                                                                                       ),
                                                                                       overflow: TextOverflow.ellipsis,
@@ -721,10 +700,9 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                                     context,
                                                                     MaterialPageRoute(
                                                                         builder: (_) => PunchWidget(
-                                                                            currentUserId:
-                                                                                widget.currentUserId,
-                                                                            post: widget.post,
-                                                                            author: widget.author))),
+                                                                              currentUserId: widget.currentUserId,
+                                                                              post: widget.post,
+                                                                            ))),
                                                                 child:
                                                                     Container(
                                                                   width: width,
@@ -850,10 +828,9 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                                     context,
                                                                     MaterialPageRoute(
                                                                         builder: (_) => PunchWidget(
-                                                                            currentUserId:
-                                                                                widget.currentUserId,
-                                                                            post: widget.post,
-                                                                            author: widget.author))),
+                                                                              currentUserId: widget.currentUserId,
+                                                                              post: widget.post,
+                                                                            ))),
                                                                 child: Stack(
                                                                   alignment:
                                                                       Alignment
@@ -961,8 +938,9 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                         ),
                       ),
                     )
-                  : SizedBox.shrink(),
+                  : const SizedBox.shrink()
             ]),
           ]);
+    // });
   }
 }

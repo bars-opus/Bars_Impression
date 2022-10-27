@@ -119,7 +119,7 @@ class NotificationNotFan extends StatelessWidget {
                   Row(
                     children: [
                       activityEventCount == 0
-                          ? SizedBox.shrink()
+                          ? const SizedBox.shrink()
                           : Container(
                               height: 10.0,
                               width: 10.0,

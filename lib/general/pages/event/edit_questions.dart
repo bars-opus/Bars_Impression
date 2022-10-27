@@ -16,9 +16,7 @@ class EditQuestion extends StatefulWidget {
 
 class _EditQuestionState extends State<EditQuestion> {
   final _formKey = GlobalKey<FormState>();
-
   String _content = '';
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -44,7 +42,7 @@ class _EditQuestionState extends State<EditQuestion> {
               'Are you sure you want to delete this question?',
               style: TextStyle(
                 fontSize: 16,
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                color: Colors.black,
               ),
             ),
             actions: <Widget>[
@@ -115,6 +113,7 @@ class _EditQuestionState extends State<EditQuestion> {
   }
 
   _deleteAsk(Ask ask) {
+    HapticFeedback.heavyImpact();
     DatabaseService.deleteAsk(
         currentUserId: widget.currentUserId, ask: ask, event: widget.event);
     Navigator.pop(context);
@@ -157,6 +156,8 @@ class _EditQuestionState extends State<EditQuestion> {
   _submit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState?.save();
+      AccountHolder user = Provider.of<UserData>(context, listen: false).user!;
+
       Ask ask = Ask(
         id: widget.ask.id,
         content: _content,
@@ -164,46 +165,18 @@ class _EditQuestionState extends State<EditQuestion> {
         timestamp: widget.ask.timestamp,
         report: '',
         reportConfirmed: '',
+        mediaType: '',
+        mediaUrl: '',
+        authorName: user.userName!,
+        authorProfileHanlde: user.profileHandle!,
+        authorProfileImageUrl: user.profileImageUrl!,
+        authorVerification: '',
       );
 
       try {
+        HapticFeedback.heavyImpact();
         Navigator.pop(context);
         DatabaseService.editAsk(ask, widget.event);
-        Navigator.pop(context);
-        final double width = MediaQuery.of(context).size.width;
-        Flushbar(
-          margin: EdgeInsets.all(8),
-          boxShadows: [
-            BoxShadow(
-              color: Colors.black,
-              offset: Offset(0.0, 2.0),
-              blurRadius: 3.0,
-            )
-          ],
-          flushbarPosition: FlushbarPosition.TOP,
-          flushbarStyle: FlushbarStyle.FLOATING,
-          titleText: Text(
-            'Done!!',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: width > 800 ? 22 : 14,
-            ),
-          ),
-          messageText: Text(
-            "Edited succesfully. Refesh question page",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: width > 800 ? 20 : 12,
-            ),
-          ),
-          icon: Icon(
-            Icons.info_outline,
-            size: 28.0,
-            color: Colors.blue,
-          ),
-          duration: Duration(seconds: 2),
-          leftBarIndicatorColor: Colors.blue,
-        )..show(context);
       } catch (e) {
         final double width = MediaQuery.of(context).size.width;
         String error = e.toString();
@@ -250,22 +223,20 @@ class _EditQuestionState extends State<EditQuestion> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+      backgroundColor: Color(0xFFFF2D55),
       appBar: AppBar(
         iconTheme: IconThemeData(
-          color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+          color: ConfigBloc().darkModeOn ? Colors.black : Colors.white,
         ),
         automaticallyImplyLeading: true,
         elevation: 0,
-        backgroundColor:
-            ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+        backgroundColor: Color(0xFFFF2D55),
         title: Material(
           color: Colors.transparent,
           child: Text(
             'Edit Question',
             style: TextStyle(
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                color: ConfigBloc().darkModeOn ? Colors.black : Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.bold),
           ),
@@ -279,73 +250,73 @@ class _EditQuestionState extends State<EditQuestion> {
             onTap: () => FocusScope.of(context).unfocus(),
             child: SingleChildScrollView(
               child: Container(
+                height: MediaQuery.of(context).size.height,
                 child: Column(
                   children: <Widget>[
-                    _isLoading
-                        ? Padding(
-                            padding: const EdgeInsets.only(bottom: 10.0),
-                            child: SizedBox(
-                              height: 2.0,
-                              child: LinearProgressIndicator(
-                                backgroundColor: Colors.grey[100],
-                                valueColor: AlwaysStoppedAnimation(Colors.blue),
-                              ),
-                            ),
-                          )
-                        : SizedBox.shrink(),
                     SizedBox(
                       height: 20.0,
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 30.0, vertical: 10.0),
-                      child: Hero(
-                        tag: 'title' + widget.ask.id.toString(),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: TextFormField(
-                            keyboardType: TextInputType.multiline,
-                            maxLines: null,
-                            initialValue: _content,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: ConfigBloc().darkModeOn
-                                  ? Colors.white
-                                  : Colors.black,
-                            ),
-                            decoration: InputDecoration(
-                                hintText: "ask more to know more",
-                                hintStyle: TextStyle(
-                                  fontSize: 14.0,
+                      padding: const EdgeInsets.all(12.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: ConfigBloc().darkModeOn
+                                ? Color(0xFF1a1a1a)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 30.0, vertical: 10.0),
+                          child: Hero(
+                            tag: 'title' + widget.ask.id.toString(),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: TextFormField(
+                                keyboardType: TextInputType.multiline,
+                                maxLines: null,
+                                autofocus: true,
+                                initialValue: _content,
+                                style: TextStyle(
+                                  fontSize: 16,
                                   color: ConfigBloc().darkModeOn
                                       ? Colors.white
-                                      : Colors.grey,
+                                      : Colors.black,
                                 ),
-                                labelText: 'Ask',
-                                labelStyle: TextStyle(
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey,
-                                ),
-                                enabledBorder: new UnderlineInputBorder(
-                                    borderSide:
-                                        new BorderSide(color: Colors.grey))),
-                            validator: (input) => input!.trim().length < 1
-                                ? "Ask field can't be empty"
-                                : null,
-                            onChanged: (input) => _content = input,
+                                decoration: InputDecoration(
+                                    hintText: "ask more to know more",
+                                    hintStyle: TextStyle(
+                                      fontSize: 14.0,
+                                      color: Colors.grey,
+                                    ),
+                                    labelText: 'Ask',
+                                    labelStyle: TextStyle(
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey,
+                                    ),
+                                    enabledBorder: new UnderlineInputBorder(
+                                        borderSide: new BorderSide(
+                                            color: Colors.transparent))),
+                                validator: (input) => input!.trim().length < 1
+                                    ? "Ask field can't be empty"
+                                    : null,
+                                onChanged: (input) => _content = input,
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 50.0,
+                    const SizedBox(
+                      height: 10.0,
                     ),
                     Container(
                       width: 250.0,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          primary: Color(0xFFFF2D55),
+                          primary: ConfigBloc().darkModeOn
+                              ? Color(0xFF1a1a1a)
+                              : Colors.white,
                           elevation: 20.0,
                           onPrimary: Colors.blue,
                           shape: RoundedRectangleBorder(
@@ -360,28 +331,30 @@ class _EditQuestionState extends State<EditQuestion> {
                               width: 10.0,
                             ),
                             Text(
-                              'Save Edit',
+                              'Save',
                               style: TextStyle(
                                 fontSize: 16.0,
                                 fontWeight: FontWeight.bold,
                                 color: ConfigBloc().darkModeOn
-                                    ? Colors.black
-                                    : Colors.white,
+                                    ? Colors.white
+                                    : Colors.black,
                               ),
                             ),
                           ],
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 40.0,
+                    const SizedBox(
+                      height: 70.0,
                     ),
                     InkWell(
                       borderRadius: BorderRadius.circular(10),
                       onTap: () => _showSelectImageDialog(widget.ask),
                       child: Ink(
                         decoration: BoxDecoration(
-                          color: Color(0xFFFF2D55),
+                          color: ConfigBloc().darkModeOn
+                              ? Color(0xFF1a1a1a)
+                              : Colors.white,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Container(
@@ -391,46 +364,16 @@ class _EditQuestionState extends State<EditQuestion> {
                             icon: Icon(Icons.delete_forever),
                             iconSize: 25,
                             color: ConfigBloc().darkModeOn
-                                ? Colors.black
-                                : Colors.white,
+                                ? Colors.white
+                                : Colors.black,
                             onPressed: () => _showSelectImageDialog(widget.ask),
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 50.0,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 50.0, right: 50),
-                      child: Text(
-                        "Refresh your page to see effect of your question edited or deleted",
-                        style: TextStyle(color: Colors.grey, fontSize: 12.0),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 5.0,
-                    ),
-                    Text(
-                      "Ask field can't be empty.",
-                      style: TextStyle(color: Colors.blueGrey, fontSize: 12.0),
-                    ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20.0,
                     ),
-                    _isLoading
-                        ? Padding(
-                            padding: const EdgeInsets.only(bottom: 10.0),
-                            child: SizedBox(
-                              height: 2.0,
-                              child: LinearProgressIndicator(
-                                backgroundColor: Colors.grey[100],
-                                valueColor: AlwaysStoppedAnimation(Colors.blue),
-                              ),
-                            ),
-                          )
-                        : SizedBox.shrink(),
                   ],
                 ),
               ),

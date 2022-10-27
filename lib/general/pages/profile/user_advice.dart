@@ -16,18 +16,18 @@ class UserAdviceScreen extends StatefulWidget {
 }
 
 class _UserAdviceScreenState extends State<UserAdviceScreen> {
-  RandomColor _randomColor = RandomColor();
-  final List<ColorHue> _hueType = <ColorHue>[
-    ColorHue.green,
-    ColorHue.red,
-    ColorHue.pink,
-    ColorHue.purple,
-    ColorHue.blue,
-    ColorHue.yellow,
-    ColorHue.orange
-  ];
+  // RandomColor _randomColor = RandomColor();
+  // final List<ColorHue> _hueType = <ColorHue>[
+  //   ColorHue.green,
+  //   ColorHue.red,
+  //   ColorHue.pink,
+  //   ColorHue.purple,
+  //   ColorHue.blue,
+  //   ColorHue.yellow,
+  //   ColorHue.orange
+  // ];
 
-  ColorSaturation _colorSaturation = ColorSaturation.random;
+  // ColorSaturation _colorSaturation = ColorSaturation.random;
 
   final TextEditingController _adviceControler = TextEditingController();
   bool _isAdvicingUser = false;
@@ -107,226 +107,262 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
     });
   }
 
-  _buildBlogComment(UserAdvice userAdvice, AccountHolder author) {
+  _viewProfessionalProfile(UserAdvice userAdvice) async {
+    AccountHolder user =
+        await DatabaseService.getUserWithId(userAdvice.authorId);
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (_) => ProfileProfessionalProfile(
+                  currentUserId: Provider.of<UserData>(context).currentUserId!,
+                  // user: widget.post.authorId,
+                  userId: userAdvice.authorId, user: user,
+                )));
+  }
+
+  _buildBlogComment(
+    UserAdvice userAdvice,
+  ) {
     final width = MediaQuery.of(context).size.width;
     final String currentUserId = Provider.of<UserData>(context).currentUserId!;
-    return FutureBuilder(
-      future: DatabaseService.getUserWithId(userAdvice.authorId),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (!snapshot.hasData) {
-          return SizedBox.shrink();
-        }
-        AccountHolder author = snapshot.data;
-        return FocusedMenuHolder(
-          menuWidth: width,
-          menuOffset: 1,
-          blurBackgroundColor: Colors.white10,
-          openWithTap: false,
-          onPressed: () {},
-          menuItems: [
-            FocusedMenuItem(
-              title: Container(
-                width: width / 2,
-                child: Text(
-                  currentUserId == author.id!
-                      ? 'Edit your advice'
-                      : author.profileHandle!.startsWith('Fan') ||
-                              author.profileHandle!.isEmpty
-                          ? 'Go to ${author.userName}\' profile '
-                          : 'Go to ${author.userName}\' booking page ',
-                  overflow: TextOverflow.ellipsis,
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                ),
+    // return
+    // FutureBuilder(
+    //   future: DatabaseService.getUserWithId(userAdvice.authorId),
+    //   builder: (BuildContext context, AsyncSnapshot snapshot) {
+    //     if (!snapshot.hasData) {
+    //       return const SizedBox.shrink();
+    //     }
+    //     AccountHolder author = snapshot.data;
+    return FocusedMenuHolder(
+      menuWidth: width,
+      menuOffset: 1,
+      blurBackgroundColor: Colors.white10,
+      openWithTap: false,
+      onPressed: () {},
+      menuItems: [
+        FocusedMenuItem(
+            title: Container(
+              width: width / 2,
+              child: Text(
+                currentUserId == userAdvice.authorId
+                    ? 'Edit your advice'
+                    : userAdvice.authorProfileHanlde.startsWith('Fan') ||
+                            userAdvice.authorProfileHanlde.isEmpty
+                        ? 'View profile '
+                        : 'View booking page ',
+                overflow: TextOverflow.ellipsis,
+                textScaleFactor: MediaQuery.of(context).textScaleFactor,
               ),
-              onPressed: () => currentUserId == author.id!
-                  ? Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => EditAdvice(
-                            advice: userAdvice,
-                            currentUserId: widget.currentUserId,
-                            user: widget.user),
-                      ),
-                    )
-                  : author.profileHandle!.startsWith('Fan') ||
-                          author.profileHandle!.isEmpty
+            ),
+            onPressed: () => currentUserId == userAdvice.authorId
+                ? Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => EditAdvice(
+                          advice: userAdvice,
+                          currentUserId: widget.currentUserId,
+                          user: widget.user),
+                    ),
+                  )
+                : userAdvice.authorProfileHanlde.startsWith('Fan') ||
+                        userAdvice.authorProfileHanlde.isEmpty
+                    ? Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) =>
+                                // author.userName!.isEmpty
+                                //     ? UserNotFound(
+                                //         userName: 'User',
+                                //       )
+                                //     :
+                                ProfileScreen(
+                                  currentUserId: Provider.of<UserData>(context)
+                                      .currentUserId!,
+                                  userId: userAdvice.authorId,
+                                )))
+                    : _viewProfessionalProfile(userAdvice)
+
+            // Navigator.push(
+            //     context,
+            //     MaterialPageRoute(
+            //         builder: (_) => ProfileProfessionalProfile(
+            //               currentUserId: Provider.of<UserData>(context)
+            //                   .currentUserId!,
+            //               user: author,
+            //               userId: userAdvice.authorId,
+            //             ))),
+            ),
+        FocusedMenuItem(
+            title: Container(
+              width: width / 2,
+              child: Text(
+                'Report',
+                overflow: TextOverflow.ellipsis,
+                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              ),
+            ),
+            onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => ReportContentPage(
+                          parentContentId: widget.user.id,
+                          repotedAuthorId: userAdvice.authorId,
+                          contentId: userAdvice.id,
+                          contentType: 'advice',
+                        )))),
+      ],
+      child: MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+            textScaleFactor:
+                MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
+        child: Slidable(
+          startActionPane: ActionPane(
+            motion: const ScrollMotion(),
+            children: [
+              SlidableAction(
+                onPressed: (_) {
+                  currentUserId == userAdvice.authorId
                       ? Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => ProfileScreen(
-                                    currentUserId:
-                                        Provider.of<UserData>(context)
-                                            .currentUserId!,
-                                    userId: author.id!,
-                                  )))
-                      : Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => ProfileProfessionalProfile(
-                                    currentUserId:
-                                        Provider.of<UserData>(context)
-                                            .currentUserId!,
-                                    user: author,
-                                    userId: author.id!,
-                                  ))),
-            ),
-            FocusedMenuItem(
-                title: Container(
-                  width: width / 2,
-                  child: Text(
-                    'Report',
-                    overflow: TextOverflow.ellipsis,
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                  ),
-                ),
-                onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => ReportContentPage(
-                              parentContentId: widget.user.id,
-                              repotedAuthorId: userAdvice.authorId,
-                              contentId: userAdvice.id,
-                              contentType: 'advice',
-                            )))),
-          ],
-          child: MediaQuery(
-            data: MediaQuery.of(context).copyWith(
-                textScaleFactor:
-                    MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
-            child: Slidable(
-              startActionPane: ActionPane(
-                motion: const ScrollMotion(),
-                children: [
-                  SlidableAction(
-                    onPressed: (_) {
-                      currentUserId == author.id!
-                          ? Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => EditAdvice(
-                                    advice: userAdvice,
-                                    currentUserId: widget.currentUserId,
-                                    user: widget.user),
-                              ),
-                            )
-                          : SizedBox.shrink();
-                    },
-                    backgroundColor: Color(0xFF1a1a1a),
-                    foregroundColor: Colors.white,
-                    icon: currentUserId == author.id! ? Icons.edit : null,
-                    label:
-                        currentUserId == author.id! ? 'Edit your advice' : '',
-                  ),
-                ],
+                            builder: (_) => EditAdvice(
+                                advice: userAdvice,
+                                currentUserId: widget.currentUserId,
+                                user: widget.user),
+                          ),
+                        )
+                      : const SizedBox.shrink();
+                },
+                backgroundColor: Color(0xFF1a1a1a),
+                foregroundColor: Colors.white,
+                icon: currentUserId == userAdvice.authorId ? Icons.edit : null,
+                label: currentUserId == userAdvice.authorId
+                    ? 'Edit your advice'
+                    : '',
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Padding(
-                  padding: currentUserId == author.id!
-                      ? const EdgeInsets.only(left: 30.0)
-                      : const EdgeInsets.only(right: 30.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: currentUserId == author.id!
-                            ? Colors.white
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(5.0),
-                        ),
-                        border: Border.all(
-                          color: ConfigBloc().darkModeOn
-                              ? Colors.grey[800]!
-                              : Colors.grey[400]!,
-                          width: 1,
-                        )),
-                    child: Column(
-                      crossAxisAlignment: currentUserId == author.id!
-                          ? CrossAxisAlignment.end
-                          : CrossAxisAlignment.start,
-                      children: [
-                        ListTile(
-                          leading: currentUserId == author.id!
-                              ? SizedBox.shrink()
-                              : CircleAvatar(
-                                  radius: 20.0,
-                                  backgroundColor: ConfigBloc().darkModeOn
-                                      ? Color(0xFF1a1a1a)
-                                      : Color(0xFFf2f2f2),
-                                  backgroundImage:
-                                      author.profileImageUrl!.isEmpty
-                                          ? AssetImage(
-                                              ConfigBloc().darkModeOn
-                                                  ? 'assets/images/user_placeholder.png'
-                                                  : 'assets/images/user_placeholder2.png',
-                                            ) as ImageProvider
-                                          : CachedNetworkImageProvider(
-                                              author.profileImageUrl!),
-                                ),
-                          title: Column(
-                            crossAxisAlignment: currentUserId == author.id!
-                                ? CrossAxisAlignment.end
-                                : CrossAxisAlignment.start,
-                            children: <Widget>[
-                              currentUserId == author.id!
-                                  ? Text(
-                                      'Me',
-                                      style: TextStyle(
-                                        fontSize: 12.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Padding(
+              padding: currentUserId == userAdvice.authorId
+                  ? const EdgeInsets.only(left: 30.0)
+                  : const EdgeInsets.only(right: 30.0),
+              child: Container(
+                decoration: BoxDecoration(
+                    color: currentUserId == userAdvice.authorId
+                        ? Colors.white
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(5.0),
+                    ),
+                    border: Border.all(
+                      color: ConfigBloc().darkModeOn
+                          ? Colors.grey[800]!
+                          : Colors.grey[400]!,
+                      width: 1,
+                    )),
+                child: Column(
+                  crossAxisAlignment: currentUserId == userAdvice.authorId
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
+                  children: [
+                    ListTile(
+                      leading: currentUserId == userAdvice.authorId
+                          ? const SizedBox.shrink()
+                          : CircleAvatar(
+                              radius: 20.0,
+                              backgroundColor: ConfigBloc().darkModeOn
+                                  ? Color(0xFF1a1a1a)
+                                  : Color(0xFFf2f2f2),
+                              backgroundImage:
+                                  userAdvice.authorProfileImageUrl.isEmpty
+                                      ? AssetImage(
+                                          ConfigBloc().darkModeOn
+                                              ? 'assets/images/user_placeholder.png'
+                                              : 'assets/images/user_placeholder2.png',
+                                        ) as ImageProvider
+                                      : CachedNetworkImageProvider(
+                                          userAdvice.authorProfileImageUrl),
+                            ),
+                      title: Column(
+                        crossAxisAlignment: currentUserId == userAdvice.authorId
+                            ? CrossAxisAlignment.end
+                            : CrossAxisAlignment.start,
+                        children: <Widget>[
+                          currentUserId == userAdvice.authorId
+                              ? Text(
+                                  'Me',
+                                  style: TextStyle(
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                )
+                              : Stack(
+                                  alignment: Alignment.centerRight,
+                                  children: [
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 12.0),
+                                      child: Text(
+                                        userAdvice.authorName,
+                                        style: TextStyle(
+                                          fontSize: 12.0,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
                                       ),
-                                    )
-                                  : Stack(
-                                      alignment: Alignment.centerRight,
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              right: 12.0),
-                                          child: Text(
-                                            author.userName!,
-                                            style: TextStyle(
-                                              fontSize: 12.0,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black,
+                                    ),
+                                    userAdvice.authorVerification.isEmpty
+                                        ? const SizedBox.shrink()
+                                        : Positioned(
+                                            top: 0,
+                                            right: 0,
+                                            child: Icon(
+                                              MdiIcons.checkboxMarkedCircle,
+                                              size: 11,
+                                              color: Colors.blue,
                                             ),
                                           ),
-                                        ),
-                                        author.verified!.isEmpty
-                                            ? SizedBox.shrink()
-                                            : Positioned(
-                                                top: 0,
-                                                right: 0,
-                                                child: Icon(
-                                                  MdiIcons.checkboxMarkedCircle,
-                                                  size: 11,
-                                                  color: Colors.blue,
-                                                ),
-                                              ),
-                                      ],
-                                    ),
-                              Text(author.profileHandle!,
-                                  style: TextStyle(
-                                    fontSize: 10.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.blueGrey,
-                                  )),
-                              SizedBox(
-                                height: 5.0,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 2.0),
-                                child: Container(
-                                  color: _randomColor.randomColor(
-                                    colorHue:
-                                        ColorHue.multiple(colorHues: _hueType),
-                                    colorSaturation: _colorSaturation,
-                                  ),
-                                  height: 1.0,
-                                  width: 50.0,
+                                  ],
                                 ),
-                              ),
-                              widget.user.id == currentUserId
-                                  ? Material(
+                          Text(userAdvice.authorProfileHanlde,
+                              style: TextStyle(
+                                fontSize: 10.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blueGrey,
+                              )),
+                          SizedBox(
+                            height: 5.0,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 2.0),
+                            child: Container(
+                              color: Colors.black38,
+                              height: 1.0,
+                              width: 50.0,
+                            ),
+                          ),
+                          widget.user.id == currentUserId
+                              ? Material(
+                                  color: Colors.transparent,
+                                  child: userAdvice.report.isNotEmpty
+                                      ? BarsTextStrikeThrough(
+                                          fontSize: 12,
+                                          text: userAdvice.content,
+                                        )
+                                      : HyperLinkText(
+                                          from: 'Advice',
+                                          text: userAdvice.content,
+                                        ),
+                                )
+                              : widget.user.hideAdvice!
+                                  ? BarsTextStrikeThrough(
+                                      fontSize: 12,
+                                      text: '*********************',
+                                    )
+                                  : Material(
                                       color: Colors.transparent,
                                       child: userAdvice.report.isNotEmpty
                                           ? BarsTextStrikeThrough(
@@ -337,54 +373,43 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                                               from: 'Advice',
                                               text: userAdvice.content,
                                             ),
-                                    )
-                                  : widget.user.hideAdvice!
-                                      ? BarsTextStrikeThrough(
-                                          fontSize: 12,
-                                          text: '*********************',
-                                        )
-                                      : Material(
-                                          color: Colors.transparent,
-                                          child: userAdvice.report.isNotEmpty
-                                              ? BarsTextStrikeThrough(
-                                                  fontSize: 12,
-                                                  text: userAdvice.content,
-                                                )
-                                              : HyperLinkText(
-                                                  from: 'Advice',
-                                                  text: userAdvice.content,
-                                                ),
-                                        ),
-                              Text(
-                                  timeago.format(
-                                    userAdvice.timestamp.toDate(),
-                                  ),
-                                  style: TextStyle(
-                                      fontSize: 10, color: Colors.grey)),
-                              SizedBox(height: 10.0),
-                              SizedBox(
-                                height: 5.0,
+                                    ),
+                          Text(
+                              timeago.format(
+                                userAdvice.timestamp.toDate(),
                               ),
-                            ],
+                              style:
+                                  TextStyle(fontSize: 10, color: Colors.grey)),
+                          SizedBox(height: 10.0),
+                          SizedBox(
+                            height: 5.0,
                           ),
-                          onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => ProfileScreen(
-                                        currentUserId: currentUserId,
-                                        userId: author.id!,
-                                      ))),
-                        ),
-                      ],
+                        ],
+                      ),
+                      onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) =>
+                                  // author.userName!.isEmpty
+                                  //     ? UserNotFound(
+                                  //         userName: 'User',
+                                  //       )
+                                  //     :
+                                  ProfileScreen(
+                                    currentUserId: currentUserId,
+                                    userId: userAdvice.authorId,
+                                  ))),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
+    //   },
+    // );
   }
 
   _buildUserAdvice() {
@@ -455,7 +480,9 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                               .post9
                               .isNotEmpty) {
                             DatabaseService.userAdvice(
-                              currentUserId: currentUserId,
+                              currentUser:
+                                  Provider.of<UserData>(context, listen: false)
+                                      .user!,
                               user: widget.user,
                               reportConfirmed: '',
                               advice: _adviceControler.text.trim(),
@@ -529,6 +556,9 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
                                             Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment
@@ -557,44 +587,15 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                                                 ),
                                               ],
                                             ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 30.0, top: 20),
-                                              child: Row(
-                                                children: [
-                                                  Container(
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      shape: BoxShape.circle,
-                                                    ),
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              10.0),
-                                                      child: Icon(
-                                                        Icons.message,
-                                                        color:
-                                                            Color(0xFF1a1a1a),
-                                                        size: 20.0,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 10),
-                                                  Text(
-                                                    widget.user.id ==
-                                                            widget.currentUserId
-                                                        ? 'Advices \nFor You'
-                                                        : '${widget.user.userName}\'s \nAdvices',
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 16.0,
-                                                        height: 1),
-                                                  ),
-                                                ],
-                                              ),
+                                            const SizedBox(
+                                              height: 10,
                                             ),
-                                            SizedBox(
-                                              height: 20,
+                                            PageFeatureWidget(
+                                              heroTag: '',
+                                              title: widget.user.id ==
+                                                      widget.currentUserId
+                                                  ? 'Advices \nFor You'
+                                                  : '${widget.user.userName}\'s \nAdvices',
                                             ),
                                           ],
                                         ),
@@ -639,7 +640,7 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                                                 ),
                                               ),
                                             )
-                                          : SizedBox.shrink(),
+                                          : const SizedBox.shrink(),
                                       StreamBuilder(
                                         stream: userAdviceRef
                                             .doc(widget.user.id)
@@ -689,27 +690,31 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                                                                       snapshot
                                                                           .data
                                                                           .docs[index]);
-                                                              return FutureBuilder(
-                                                                  future: DatabaseService
-                                                                      .getUserWithId(
-                                                                          userAdvice
-                                                                              .authorId),
-                                                                  builder: (BuildContext
-                                                                          context,
-                                                                      AsyncSnapshot
-                                                                          snapshot) {
-                                                                    if (!snapshot
-                                                                        .hasData) {
-                                                                      return FollowerUserSchimmerSkeleton();
-                                                                    }
-                                                                    AccountHolder
-                                                                        author =
-                                                                        snapshot
-                                                                            .data;
-                                                                    return _buildBlogComment(
-                                                                        userAdvice,
-                                                                        author);
-                                                                  });
+                                                              return _buildBlogComment(
+                                                                userAdvice,
+                                                              );
+
+                                                              //  FutureBuilder(
+                                                              //     future: DatabaseService
+                                                              //         .getUserWithId(
+                                                              //             userAdvice
+                                                              //                 .authorId),
+                                                              //     builder: (BuildContext
+                                                              //             context,
+                                                              //         AsyncSnapshot
+                                                              //             snapshot) {
+                                                              //       if (!snapshot
+                                                              //           .hasData) {
+                                                              //         return FollowerUserSchimmerSkeleton();
+                                                              //       }
+                                                              //       AccountHolder
+                                                              //           author =
+                                                              //           snapshot
+                                                              //               .data;
+                                                              //       return _buildBlogComment(
+                                                              //           userAdvice,
+                                                              //           author);
+                                                              //     });
                                                             },
                                                             childCount: snapshot
                                                                 .data
@@ -734,7 +739,7 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                                               ),
                                             )
                                           : _isBlockedUser
-                                              ? SizedBox.shrink()
+                                              ? const SizedBox.shrink()
                                               : _buildUserAdvice(),
                                     ],
                                   ),

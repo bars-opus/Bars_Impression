@@ -77,14 +77,13 @@ class _ChatDetailsState extends State<ChatDetails> {
         });
   }
 
-
   _androidDialog(BuildContext parentContext) {
     return showDialog(
         context: parentContext,
         builder: (context) {
           return SimpleDialog(
             title: Text(
-               'Are you sure you want to block ${widget.user.userName}?',
+              'Are you sure you want to block ${widget.user.userName}?',
               style: TextStyle(fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
@@ -93,14 +92,14 @@ class _ChatDetailsState extends State<ChatDetails> {
               Center(
                 child: SimpleDialogOption(
                   child: Text(
-                   'Block',
+                    'Block',
                     style: TextStyle(
                         fontWeight: FontWeight.bold, color: Colors.blue),
                     textAlign: TextAlign.center,
                   ),
                   onPressed: () {
-                Navigator.pop(context);
-                  _blockOrUnBlock();
+                    Navigator.pop(context);
+                    _blockOrUnBlock();
                   },
                 ),
               ),
@@ -293,7 +292,7 @@ class _ChatDetailsState extends State<ChatDetails> {
                             ),
                           ),
                           widget.user.verified!.isEmpty
-                              ? SizedBox.shrink()
+                              ? const SizedBox.shrink()
                               : Positioned(
                                   top: 5,
                                   right: 0,
@@ -370,6 +369,7 @@ class _ChatDetailsState extends State<ChatDetails> {
                                               currentUserId:
                                                   widget.currentUserId,
                                               userIsCall: 1,
+                                              from: 'Booking',
                                             ))),
                                 child: Material(
                                   color: Colors.transparent,

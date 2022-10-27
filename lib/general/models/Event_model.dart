@@ -16,6 +16,7 @@ class Event {
   final String host;
   final String artist;
   final String authorId;
+  final String authorName;
   final Timestamp? timestamp;
   final String previousEvent;
   final String triller;
@@ -29,6 +30,8 @@ class Event {
   final String clossingDay;
   final bool isVirtual;
   final bool isFree;
+  final String mediaType;
+  final String mediaUrl;
   final bool isPrivate;
   final bool isCashPayment;
   final bool showToFollowers;
@@ -41,6 +44,8 @@ class Event {
     required this.title,
     required this.rate,
     required this.venue,
+    required this.mediaType,
+    required this.mediaUrl,
     required this.date,
     required this.theme,
     required this.dressCode,
@@ -67,6 +72,7 @@ class Event {
     required this.showOnExplorePage,
     required this.showToFollowers,
     required this.clossingDay,
+    required this.authorName,
   });
 
   factory Event.fromDoc(DocumentSnapshot doc) {
@@ -89,8 +95,10 @@ class Event {
       timestamp: doc['timestamp'],
       previousEvent: doc['previousEvent'] ?? '',
       triller: doc['triller'] ?? '',
+      mediaUrl: doc['mediaUrl'] ?? '',
+      mediaType: doc['mediaType'] ?? '',
       city: doc['city'] ?? '',
-      country: doc['country'],
+      country: doc['country'] ?? '',
       virtualVenue: doc['virtualVenue'],
       ticketSite: doc['ticketSite'],
       report: doc['report'] ?? '',
@@ -103,6 +111,7 @@ class Event {
       showOnExplorePage: doc['showOnExplorePage'] ?? false,
       clossingDay: doc['clossingDay'] ?? '',
       blurHash: doc['blurHash'] ?? '',
+      authorName: doc['authorName'] ?? '',
     );
   }
 }

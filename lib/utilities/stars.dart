@@ -5,9 +5,8 @@ class Stars extends StatefulWidget {
   final int score;
 
   const Stars({
-   
     required this.score,
-  }) ;
+  });
 
   @override
   _StarsState createState() => _StarsState();
@@ -23,7 +22,7 @@ class _StarsState extends State<Stars> {
             borderColor: Colors.grey,
             size: 25,
             filledIconData: Icons.star,
-            halfFilledIconData: Icons.star_half,
+            halfFilledIconData: Icons.bar_chart,
             defaultIconData: Icons.star_border,
             starCount: 5,
             allowHalfRating: false,
@@ -60,8 +59,8 @@ class _StarsState extends State<Stars> {
                         rating: 3,
                         color: Colors.yellow[900],
                         borderColor: Colors.grey,
-                        size: 25,
-                        filledIconData: Icons.star,
+                        size: 20,
+                        filledIconData: Icons.linear_scale,
                         halfFilledIconData: Icons.star_half,
                         defaultIconData: Icons.star_border,
                         starCount: 5,

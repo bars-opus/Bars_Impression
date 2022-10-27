@@ -63,10 +63,11 @@ class _AcceptTermsState extends State<AcceptTerms>
     return AnimatedBuilder(
         animation: animationController,
         builder: (BuildContext context, Widget? child) {
-          return ResponsiveScaffold(
-            child: Scaffold(
-              backgroundColor: Color(0xFF1a1a1a),
-              body: Container(
+          return Scaffold(
+            backgroundColor: Color(0xFF1a1a1a),
+            body: Align(
+              alignment: Alignment.center,
+              child: Container(
                 width: width,
                 child: GestureDetector(
                   onTap: () => FocusScope.of(context).unfocus(),
@@ -88,7 +89,7 @@ class _AcceptTermsState extends State<AcceptTerms>
                                   ),
                                 ),
                               )
-                            : SizedBox.shrink(),
+                            : const SizedBox.shrink(),
                         Form(
                           key: _formKey,
                           child: AutofillGroup(

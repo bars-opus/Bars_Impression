@@ -44,8 +44,10 @@ class _OtherEventsState extends State<OtherEvents>
   }
 
   _setupEventFeed() async {
-    QuerySnapshot eventFeedSnapShot = await allEventsRef
-        .where('type', isEqualTo: 'Others')
+    QuerySnapshot eventFeedSnapShot = await eventTypesRef
+        .doc('Others')
+        .collection('Others')
+        .orderBy('timestamp', descending: true)
         .limit(limit)
         .get();
     List<Event> events =
@@ -64,8 +66,10 @@ class _OtherEventsState extends State<OtherEvents>
     if (_isFetchingEvent) return;
     _isFetchingEvent = true;
     _hasNext = true;
-    QuerySnapshot eventFeedSnapShot = await allEventsRef
-        .where('type', isEqualTo: 'Others')
+    QuerySnapshot eventFeedSnapShot = await eventTypesRef
+        .doc('Others')
+        .collection('Others')
+        .orderBy('timestamp', descending: true)
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();
@@ -90,7 +94,7 @@ class _OtherEventsState extends State<OtherEvents>
       feed: 3,
       currentUserId: widget.currentUserId,
       event: event,
-      author: author, user: widget.user,
+    user: widget.user,
 
       // eventList: _events,
     );

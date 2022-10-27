@@ -174,27 +174,28 @@ class _AllArtistPostsState extends State<AllArtistPosts> {
               child: SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
-                  child:   MediaQuery(
+                  child: MediaQuery(
                     data: MediaQuery.of(context).copyWith(
                         textScaleFactor: MediaQuery.of(context)
                             .textScaleFactor
-                            .clamp(0.5, 1.5)),    child: Column(
+                            .clamp(0.5, 1.5)),
+                    child: Column(
                       children: <Widget>[
                         widget.artistPunch == 0
-                            ? SizedBox.shrink()
+                            ? const SizedBox.shrink()
                             : FutureBuilder<QuerySnapshot>(
                                 future: _users,
                                 builder: (BuildContext context,
                                     AsyncSnapshot<QuerySnapshot> snapshot) {
                                   if (!snapshot.hasData) {
-                                    return SizedBox.shrink();
+                                    return const SizedBox.shrink();
                                   }
                                   if (snapshot.data!.docs.length == 0) {
                                     return Center(
                                       child: RichText(
-                                          textScaleFactor: MediaQuery.of(context)
-                            .textScaleFactor
-                            .clamp(0.5, 1.5),
+                                        textScaleFactor: MediaQuery.of(context)
+                                            .textScaleFactor
+                                            .clamp(0.5, 1.5),
                                         text: TextSpan(
                                           children: [
                                             TextSpan(
@@ -215,7 +216,8 @@ class _AllArtistPostsState extends State<AllArtistPosts> {
                                     );
                                   }
                                   return Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       RichText(
@@ -266,12 +268,13 @@ class _AllArtistPostsState extends State<AllArtistPosts> {
                                         child: Container(
                                           height: width / 3.8,
                                           child: ListView.builder(
-                                            itemCount: snapshot.data!.docs.length,
+                                            itemCount:
+                                                snapshot.data!.docs.length,
                                             itemBuilder: (BuildContext context,
                                                 int index) {
                                               AccountHolder? user =
-                                                  AccountHolder.fromDoc(
-                                                      snapshot.data!.docs[index]);
+                                                  AccountHolder.fromDoc(snapshot
+                                                      .data!.docs[index]);
                                               return _buildUserTile(user);
                                             },
                                           ),
@@ -310,27 +313,34 @@ class _AllArtistPostsState extends State<AllArtistPosts> {
                                                       SliverChildBuilderDelegate(
                                                     (context, index) {
                                                       Post post = _posts[index];
-                                                      return FutureBuilder(
-                                                        future: DatabaseService
-                                                            .getUserWithId(
-                                                                post.authorId),
-                                                        builder:
-                                                            (BuildContext context,
-                                                                AsyncSnapshot
-                                                                    snapshot) {
-                                                          if (!snapshot.hasData) {
-                                                            return GridSchimmerSkeleton();
-                                                          }
-                                                          AccountHolder author =
-                                                              snapshot.data;
-                                                          return FeedGrid(
+                                                      return  FeedGrid(
                                                               currentUserId: widget
                                                                   .currentUserId,
                                                               post: post,
-                                                              author: author,
                                                               feed: 'Artist');
-                                                        },
-                                                      );
+                                                      
+                                                      // FutureBuilder(
+                                                      //   future: DatabaseService
+                                                      //       .getUserWithId(
+                                                      //           post.authorId),
+                                                      //   builder: (BuildContext
+                                                      //           context,
+                                                      //       AsyncSnapshot
+                                                      //           snapshot) {
+                                                      //     if (!snapshot
+                                                      //         .hasData) {
+                                                      //       return GridSchimmerSkeleton();
+                                                      //     }
+                                                      //     AccountHolder author =
+                                                      //         snapshot.data;
+                                                      //     return FeedGrid(
+                                                      //         currentUserId: widget
+                                                      //             .currentUserId,
+                                                      //         post: post,
+                                                      //         author: author,
+                                                      //         feed: 'Artist');
+                                                      //   },
+                                                      // );
                                                     },
                                                     childCount: _posts.length,
                                                   ),

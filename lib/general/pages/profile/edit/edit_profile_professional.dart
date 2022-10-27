@@ -1,5 +1,7 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:bars/widgets/info/direction_widget_with_icon.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:flutter/scheduler.dart';
 
 class EditProfileProfessional extends StatefulWidget {
   final AccountHolder user;
@@ -15,38 +17,96 @@ class EditProfileProfessional extends StatefulWidget {
 
 class _EditProfileProfessionalState extends State<EditProfileProfessional> {
   final _formKey = GlobalKey<FormState>();
-  String _company = '';
-  String _skills = '';
-  String _performances = '';
-  String _collaborations = '';
-  String _awards = '';
-  String _management = '';
-  String _contacts = '';
-  String _profileHandle = '';
-  String _website = '';
-  String _otherSites1 = '';
-  String _otherSites2 = '';
-  String _mail = '';
+  // String   Provider.of<UserData>(context, listen: false).post1 = '';
+  // String   Provider.of<UserData>(context, listen: false).post2 = '';
+  // String   Provider.of<UserData>(context, listen: false).post3 = '';
+  // String   Provider.of<UserData>(context, listen: false).post4 = '';
+  // String   Provider.of<UserData>(context, listen: false).post5 = '';
+  // String   Provider.of<UserData>(context, listen: false).post6 = '';
+  // String   Provider.of<UserData>(context, listen: false).post7 = '';
+  // String _profileHandle = '';
+  // String   Provider.of<UserData>(context, listen: false).post9 = '';
+  // int _indexx = 0;
+
+  // String   Provider.of<UserData>(context, listen: false).post10 = '';
+  // String   Provider.of<UserData>(context, listen: false).post11 = '';
+  // String   Provider.of<UserData>(context, listen: false).post12 = '';
   File? _professionalPicture1;
   File? _professionalPicture2;
   File? _professionalPicture3;
   bool _isLoading = false;
+  late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
-    _company = widget.user.company!;
-    _skills = widget.user.skills!;
-    _performances = widget.user.performances!;
-    _collaborations = widget.user.collaborations!;
-    _awards = widget.user.awards!;
-    _management = widget.user.management!;
-    _contacts = widget.user.contacts!;
-    _profileHandle = widget.user.profileHandle!;
-    _website = widget.user.website!;
-    _otherSites1 = widget.user.otherSites1!;
-    _otherSites2 = widget.user.otherSites2!;
-    _mail = widget.user.mail!;
+    //   Provider.of<UserData>(context, listen: false).post1 = widget.user.company!;
+    //   Provider.of<UserData>(context, listen: false).post2 = widget.user.skills!;
+    //   Provider.of<UserData>(context, listen: false).post3 = widget.user.performances!;
+    //   Provider.of<UserData>(context, listen: false).post4 = widget.user.collaborations!;
+    //   Provider.of<UserData>(context, listen: false).post5 = widget.user.awards!;
+    //   Provider.of<UserData>(context, listen: false).post6 = widget.user.management!;
+    //   Provider.of<UserData>(context, listen: false).post7 = widget.user.contacts!;
+    // _profileHandle = widget.user.profileHandle!;
+    //   Provider.of<UserData>(context, listen: false).post9 = widget.user.website!;
+    //   Provider.of<UserData>(context, listen: false).post10 = widget.user.otherSites1!;
+    //   Provider.of<UserData>(context, listen: false).post11 = widget.user.otherSites2!;
+    //   Provider.of<UserData>(context, listen: false).post12 = widget.user.mail!;
+
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      Provider.of<UserData>(context, listen: false).setInt1(0);
+      Provider.of<UserData>(context, listen: false).setPostImage(null);
+      Provider.of<UserData>(context, listen: false)
+          .setPost1(widget.user.company!);
+      Provider.of<UserData>(context, listen: false)
+          .setPost2(widget.user.skills!);
+      Provider.of<UserData>(context, listen: false)
+          .setPost3(widget.user.performances!);
+      Provider.of<UserData>(context, listen: false)
+          .setPost4(widget.user.collaborations!);
+      Provider.of<UserData>(context, listen: false)
+          .setPost5(widget.user.awards!);
+      Provider.of<UserData>(context, listen: false)
+          .setPost6(widget.user.management!);
+      Provider.of<UserData>(context, listen: false)
+          .setPost7(widget.user.contacts!);
+      Provider.of<UserData>(context, listen: false)
+          .setPost8(widget.user.profileHandle!);
+      Provider.of<UserData>(context, listen: false)
+          .setPost9(widget.user.website!);
+      Provider.of<UserData>(context, listen: false)
+          .setPost10(widget.user.otherSites1!);
+      Provider.of<UserData>(context, listen: false)
+          .setPost11(widget.user.otherSites2!);
+      Provider.of<UserData>(context, listen: false)
+          .setPost12(widget.user.mail!);
+    });
+    _pageController = PageController(
+      initialPage: 0,
+    );
+  }
+
+  _validate() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState?.save();
+      animateToPage();
+    }
+  }
+
+  animateToPage() {
+    _pageController.animateToPage(
+      Provider.of<UserData>(context, listen: false).int1 + 1,
+      duration: Duration(milliseconds: 800),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  animateBack() {
+    _pageController.animateToPage(
+      Provider.of<UserData>(context, listen: false).int1 - 1,
+      duration: Duration(milliseconds: 800),
+      curve: Curves.easeInOut,
+    );
   }
 
   _submit() async {
@@ -96,20 +156,20 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
           widget.user.id,
         )
             .update({
-          'company': _company,
-          'skills': _skills,
-          'performances': _performances,
-          'collaborations': _collaborations,
-          'awards': _awards,
-          'management': _management,
-          'contacts': _contacts,
-          'website': _website,
-          'otherSites1': _otherSites1,
-          'otherSites2': _otherSites2,
+          'company': Provider.of<UserData>(context, listen: false).post1,
+          'skills': Provider.of<UserData>(context, listen: false).post2,
+          'performances': Provider.of<UserData>(context, listen: false).post3,
+          'collaborations': Provider.of<UserData>(context, listen: false).post4,
+          'awards': Provider.of<UserData>(context, listen: false).post5,
+          'management': Provider.of<UserData>(context, listen: false).post6,
+          'contacts': Provider.of<UserData>(context, listen: false).post7,
+          'website': Provider.of<UserData>(context, listen: false).post9,
+          'otherSites1': Provider.of<UserData>(context, listen: false).post10,
+          'otherSites2': Provider.of<UserData>(context, listen: false).post11,
           'professionalPicture1': _professionalPicture1Url,
           'professionalPicture2': _professionalPicture2Url,
           'professionalPicture3': _professionalPicture3Url,
-          'mail': _mail,
+          'mail': Provider.of<UserData>(context, listen: false).post12,
         });
       } catch (e) {
         final double width = Responsive.isDesktop(context)
@@ -421,11 +481,42 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     }
   }
 
+  setNull() {
+    Provider.of<UserData>(context, listen: false).setPostImage(null);
+    Provider.of<UserData>(context, listen: false).setInt1(0);
+    Provider.of<UserData>(context, listen: false).setPost1('');
+    Provider.of<UserData>(context, listen: false).setPost2('');
+    Provider.of<UserData>(context, listen: false).setPost3('');
+    Provider.of<UserData>(context, listen: false).setPost4('');
+    Provider.of<UserData>(context, listen: false).setPost5('');
+    Provider.of<UserData>(context, listen: false).setPost6('');
+    Provider.of<UserData>(context, listen: false).setPost7('');
+    Provider.of<UserData>(context, listen: false).setPost8('');
+    Provider.of<UserData>(context, listen: false).setPost9('');
+    Provider.of<UserData>(context, listen: false).setPost10('');
+    Provider.of<UserData>(context, listen: false).setPost11('');
+    Provider.of<UserData>(context, listen: false).setPost12('');
+    Provider.of<UserData>(context, listen: false).setPost13('');
+    Provider.of<UserData>(context, listen: false).setBool1(false);
+    Provider.of<UserData>(context, listen: false).setBool2(false);
+    Provider.of<UserData>(context, listen: false).setBool3(false);
+    Provider.of<UserData>(context, listen: false).setBool4(false);
+    Provider.of<UserData>(context, listen: false).setBool5(false);
+    Provider.of<UserData>(context, listen: false).setBool6(false);
+    Provider.of<UserData>(context, listen: false).addressSearchResults = [];
+  }
+
+  _pop() {
+    Navigator.pop(context);
+
+    setNull();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final double width = Responsive.isDesktop(context)
-        ? 600.0
-        : MediaQuery.of(context).size.width;
+    // final double width = Responsive.isDesktop(context)
+    // ? 600.0
+    // : MediaQuery.of(context).size.width;
     return ResponsiveScaffold(
       child: Scaffold(
           backgroundColor:
@@ -434,7 +525,6 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
             iconTheme: IconThemeData(
               color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
             ),
-            automaticallyImplyLeading: true,
             elevation: 0,
             backgroundColor:
                 ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
@@ -445,21 +535,37 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                   fontSize: 20,
                   fontWeight: FontWeight.bold),
             ),
+            leading: IconButton(
+                icon: Icon(
+                    Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
+                onPressed: () {
+                  Provider.of<UserData>(context, listen: false).int1 != 0
+                      ? animateBack()
+                      : _pop();
+                }),
             centerTitle: true,
           ),
           body: SafeArea(
             child: GestureDetector(
               onTap: () => FocusScope.of(context).unfocus(),
-              child: SingleChildScrollView(
-                child: Center(
-                  child: Container(
-                      child: Form(
-                          key: _formKey,
+              child: Form(
+                key: _formKey,
+                child: PageView(
+                    controller: _pageController,
+                    physics: AlwaysScrollableScrollPhysics(),
+                    onPageChanged: (int index) {
+                      // setState(() {
+                      //   _indexx = index;
+                      // });
+                      Provider.of<UserData>(context, listen: false)
+                          .setInt1(index);
+                    },
+                    children: [
+                      SingleChildScrollView(
+                        child: Center(
                           child: Padding(
-                            padding: const EdgeInsets.all(30.0),
+                            padding: const EdgeInsets.all(20.0),
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 EditProfileInfo(
                                   editTitle: 'Booking \nportfolio',
@@ -472,7 +578,9 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                   maxLines: null,
                                   textCapitalization:
                                       TextCapitalization.sentences,
-                                  initialValue: _company,
+                                  initialValue: Provider.of<UserData>(context,
+                                          listen: false)
+                                      .post1,
                                   style: TextStyle(
                                     fontSize: 12.0,
                                     color: ConfigBloc().darkModeOn
@@ -498,7 +606,10 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                   validator: (input) => input!.trim().length < 1
                                       ? 'Please enter a valid  company name'
                                       : null,
-                                  onSaved: (input) => _company = input!,
+                                  onSaved: (input) => Provider.of<UserData>(
+                                          context,
+                                          listen: false)
+                                      .setPost1(input!),
                                 ),
                                 SizedBox(
                                   height: 10.0,
@@ -516,7 +627,9 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                   maxLines: null,
                                   textCapitalization:
                                       TextCapitalization.sentences,
-                                  initialValue: _skills,
+                                  initialValue: Provider.of<UserData>(context,
+                                          listen: false)
+                                      .post2,
                                   style: TextStyle(
                                     fontSize: 12.0,
                                     color: ConfigBloc().darkModeOn
@@ -543,7 +656,10 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                   validator: (input) => input!.trim().length < 1
                                       ? 'Please enter some skills'
                                       : null,
-                                  onSaved: (input) => _skills = input!,
+                                  onSaved: (input) => Provider.of<UserData>(
+                                          context,
+                                          listen: false)
+                                      .setPost2(input!),
                                 ),
                                 SizedBox(
                                   height: 10,
@@ -553,25 +669,34 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                   style: TextStyle(
                                       color: Colors.grey, fontSize: 12),
                                 ),
-                                _profileHandle.startsWith('M') ||
-                                        _profileHandle.startsWith("B") ||
-                                        _profileHandle.startsWith("V") ||
-                                        _profileHandle.startsWith("P")
-                                    ? SizedBox.shrink()
+                                widget.user.profileHandle!.startsWith('M') ||
+                                        widget.user.profileHandle!
+                                            .startsWith("B") ||
+                                        widget.user.profileHandle!
+                                            .startsWith("V") ||
+                                        widget.user.profileHandle!
+                                            .startsWith("P")
+                                    ? const SizedBox.shrink()
                                     : SizedBox(
                                         height: 20.0,
                                       ),
-                                _profileHandle.startsWith('M') ||
-                                        _profileHandle.startsWith("B") ||
-                                        _profileHandle.startsWith("V") ||
-                                        _profileHandle.startsWith("P")
-                                    ? SizedBox.shrink()
+                                widget.user.profileHandle!.startsWith('M') ||
+                                        widget.user.profileHandle!
+                                            .startsWith("B") ||
+                                        widget.user.profileHandle!
+                                            .startsWith("V") ||
+                                        widget.user.profileHandle!
+                                            .startsWith("P")
+                                    ? const SizedBox.shrink()
                                     : TextFormField(
                                         keyboardType: TextInputType.multiline,
                                         maxLines: null,
                                         textCapitalization:
                                             TextCapitalization.sentences,
-                                        initialValue: _performances,
+                                        initialValue: Provider.of<UserData>(
+                                                context,
+                                                listen: false)
+                                            .post3,
                                         style: TextStyle(
                                           fontSize: 12.0,
                                           color: ConfigBloc().darkModeOn
@@ -602,19 +727,27 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                             ? 'Please, enter at least three performances/exhibitions'
                                             : null,
                                         onSaved: (input) =>
-                                            _performances = input!,
+                                            Provider.of<UserData>(context,
+                                                    listen: false)
+                                                .setPost3(input!),
                                       ),
-                                _profileHandle.startsWith('M') ||
-                                        _profileHandle.startsWith("B") ||
-                                        _profileHandle.startsWith("V") ||
-                                        _profileHandle.startsWith("P")
-                                    ? SizedBox.shrink()
+                                widget.user.profileHandle!.startsWith('M') ||
+                                        widget.user.profileHandle!
+                                            .startsWith("B") ||
+                                        widget.user.profileHandle!
+                                            .startsWith("V") ||
+                                        widget.user.profileHandle!
+                                            .startsWith("P")
+                                    ? const SizedBox.shrink()
                                     : SizedBox(height: 10),
-                                _profileHandle.startsWith('M') ||
-                                        _profileHandle.startsWith("B") ||
-                                        _profileHandle.startsWith("V") ||
-                                        _profileHandle.startsWith("P")
-                                    ? SizedBox.shrink()
+                                widget.user.profileHandle!.startsWith('M') ||
+                                        widget.user.profileHandle!
+                                            .startsWith("B") ||
+                                        widget.user.profileHandle!
+                                            .startsWith("V") ||
+                                        widget.user.profileHandle!
+                                            .startsWith("P")
+                                    ? const SizedBox.shrink()
                                     : Text(
                                         "Enter any event or ceremony you've performed at based on your account type, for example, BET 2019, World Art exhibition.",
                                         style: TextStyle(
@@ -628,7 +761,9 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                   maxLines: null,
                                   textCapitalization:
                                       TextCapitalization.sentences,
-                                  initialValue: _collaborations,
+                                  initialValue: Provider.of<UserData>(context,
+                                          listen: false)
+                                      .post4,
                                   style: TextStyle(
                                     fontSize: 12.0,
                                     color: ConfigBloc().darkModeOn
@@ -654,7 +789,10 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                   validator: (input) => input!.trim().length < 1
                                       ? 'Please, enter some collaborations/projects.'
                                       : null,
-                                  onSaved: (input) => _collaborations = input!,
+                                  onSaved: (input) => Provider.of<UserData>(
+                                          context,
+                                          listen: false)
+                                      .setPost4(input!),
                                 ),
                                 SizedBox(height: 10),
                                 Text(
@@ -662,19 +800,22 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                   style: TextStyle(
                                       color: Colors.grey, fontSize: 12),
                                 ),
-                                _profileHandle.startsWith('V')
-                                    ? SizedBox.shrink()
+                                widget.user.profileHandle!.startsWith('V')
+                                    ? const SizedBox.shrink()
                                     : SizedBox(
                                         height: 20.0,
                                       ),
-                                _profileHandle.startsWith('V')
-                                    ? SizedBox.shrink()
+                                widget.user.profileHandle!.startsWith('V')
+                                    ? const SizedBox.shrink()
                                     : TextFormField(
                                         keyboardType: TextInputType.multiline,
                                         maxLines: null,
                                         textCapitalization:
                                             TextCapitalization.sentences,
-                                        initialValue: _awards,
+                                        initialValue: Provider.of<UserData>(
+                                                context,
+                                                listen: false)
+                                            .post5,
                                         style: TextStyle(
                                           fontSize: 12.0,
                                           color: ConfigBloc().darkModeOn
@@ -699,476 +840,529 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                               color: Colors.grey),
                                           labelText: 'Awards',
                                         ),
-                                        onSaved: (input) => _awards = input!,
+                                        onSaved: (input) =>
+                                            Provider.of<UserData>(context,
+                                                    listen: false)
+                                                .setPost5(input!),
                                       ),
-                                _profileHandle.startsWith('V')
-                                    ? SizedBox.shrink()
+                                widget.user.profileHandle!.startsWith('V')
+                                    ? const SizedBox.shrink()
                                     : SizedBox(height: 10),
-                                _profileHandle.startsWith('V')
-                                    ? SizedBox.shrink()
+                                widget.user.profileHandle!.startsWith('V')
+                                    ? const SizedBox.shrink()
                                     : Text(
                                         "Please enter any awards, prizes or plaques received. For example (6 BETs, 2 Grammys, 9 AFRIMAS ).",
                                         style: TextStyle(
                                             color: Colors.grey, fontSize: 12),
                                       ),
-                                SizedBox(
-                                  height: 30.0,
+                                const SizedBox(
+                                  height: 50,
                                 ),
-                                Divider(color: Colors.grey),
-                                SizedBox(
-                                  height: 30.0,
+                                Center(
+                                  child: AlwaysWhiteButton(
+                                      onPressed: _validate,
+                                      buttonText: "Continue"),
                                 ),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Icon(
-                                          Icons.email,
-                                          color: Colors.blue,
-                                          size: 20.0,
-                                        ),
-                                        SizedBox(
-                                          width: 10.0,
-                                        ),
-                                        Text(
-                                          'Booking Contact',
-                                          style: TextStyle(
-                                              color: Colors.blue, fontSize: 14),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 10.0,
-                                    ),
-                                    Text(
+                                const SizedBox(
+                                  height: 70,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      SingleChildScrollView(
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Column(
+                              children: [
+                                DirectionWidgetWithIcon(
+                                  text:
                                       'Enter your booking and management information. You can only add one phone number with an email.',
-                                      style: TextStyle(
-                                        color: ConfigBloc().darkModeOn
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
+                                  fontSize: null,
+                                  icon: Icon(
+                                    Icons.email,
+                                    color: Color.fromRGBO(33, 150, 243, 1),
+                                  ),
+                                  title: 'Booking Contact',
+                                ),
+                                // Row(
+                                //   mainAxisAlignment: MainAxisAlignment.start,
+                                //   children: <Widget>[
+                                //     Icon(
+                                //       Icons.email,
+                                //       color: Colors.blue,
+                                //       size: 20.0,
+                                //     ),
+                                //     SizedBox(
+                                //       width: 10.0,
+                                //     ),
+                                //     Text(
+                                //       'Booking Contact',
+                                //       style: TextStyle(
+                                //           color: Colors.blue, fontSize: 14),
+                                //     ),
+                                //   ],
+                                // ),
+                                // SizedBox(
+                                //   height: 10.0,
+                                // ),
+                                // Text(
+                                //   'Enter your booking and management information. You can only add one phone number with an email.',
+                                //   style: TextStyle(
+                                //     color: ConfigBloc().darkModeOn
+                                //         ? Colors.white
+                                //         : Colors.black,
+                                //   ),
+                                // ),
+                                // SizedBox(
+                                //   height: 20.0,
+                                // ),
+                                // Align(
+                                //   alignment: Alignment.bottomLeft,
+                                //   child: Container(
+                                //     height: 2,
+                                //     color: Colors.blue,
+                                //     width: width / 3,
+                                //   ),
+                                // ),
+                                // SizedBox(
+                                //   height: 30.0,
+                                // ),
+                                const SizedBox(
+                                  height: 10.0,
+                                ),
+                                TextFormField(
+                                  keyboardType: TextInputType.multiline,
+                                  maxLines: null,
+                                  textCapitalization:
+                                      TextCapitalization.sentences,
+                                  initialValue: Provider.of<UserData>(context,
+                                          listen: false)
+                                      .post6,
+                                  style: TextStyle(
+                                    fontSize: 12.0,
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                  decoration: InputDecoration(
+                                    labelStyle: TextStyle(
+                                      color: Colors.grey,
                                     ),
-                                    SizedBox(
-                                      height: 20.0,
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.blue, width: 3.0),
                                     ),
-                                    Align(
-                                      alignment: Alignment.bottomLeft,
-                                      child: Container(
-                                        height: 2,
-                                        color: Colors.blue,
-                                        width: width / 3,
-                                      ),
+                                    enabledBorder: new OutlineInputBorder(
+                                        borderSide:
+                                            new BorderSide(color: Colors.grey)),
+                                    hintText: "The company managing you",
+                                    hintStyle: TextStyle(
+                                        fontSize: 12, color: Colors.grey),
+                                    labelText: 'Management',
+                                  ),
+                                  validator: (input) => input!.trim().length < 1
+                                      ? 'Please enter management/manager'
+                                      : null,
+                                  onSaved: (input) => Provider.of<UserData>(
+                                          context,
+                                          listen: false)
+                                      .setPost6(input!),
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  " Enter the name of your manager or any company managing you.",
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 12),
+                                ),
+                                SizedBox(
+                                  height: 20.0,
+                                ),
+                                TextFormField(
+                                  maxLines: null,
+                                  initialValue: Provider.of<UserData>(context,
+                                          listen: false)
+                                      .post7,
+                                  keyboardType: TextInputType.number,
+                                  style: TextStyle(
+                                    fontSize: 12.0,
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                  decoration: InputDecoration(
+                                    labelStyle: TextStyle(
+                                      color: Colors.grey,
                                     ),
-                                    SizedBox(
-                                      height: 30.0,
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.blue, width: 3.0),
                                     ),
-                                    SizedBox(
-                                      height: 10.0,
-                                    ),
-                                    TextFormField(
-                                      keyboardType: TextInputType.multiline,
-                                      maxLines: null,
-                                      textCapitalization:
-                                          TextCapitalization.sentences,
-                                      initialValue: _management,
-                                      style: TextStyle(
-                                        fontSize: 12.0,
-                                        color: ConfigBloc().darkModeOn
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
-                                      decoration: InputDecoration(
-                                        labelStyle: TextStyle(
-                                          color: Colors.grey,
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: Colors.blue, width: 3.0),
-                                        ),
-                                        enabledBorder: new OutlineInputBorder(
-                                            borderSide: new BorderSide(
-                                                color: Colors.grey)),
-                                        hintText: "The company managing you",
-                                        hintStyle: TextStyle(
-                                            fontSize: 12, color: Colors.grey),
-                                        labelText: 'Management',
-                                      ),
-                                      validator: (input) => input!
-                                                  .trim()
-                                                  .length <
-                                              1
-                                          ? 'Please enter management/manager'
-                                          : null,
-                                      onSaved: (input) => _management = input!,
-                                    ),
-                                    SizedBox(height: 10),
-                                    Text(
-                                      " Enter the name of your manager or any company managing you.",
-                                      style: TextStyle(
-                                          color: Colors.grey, fontSize: 12),
-                                    ),
-                                    SizedBox(
-                                      height: 20.0,
-                                    ),
-                                    TextFormField(
-                                      maxLines: null,
-                                      initialValue: _contacts,
-                                      keyboardType: TextInputType.number,
-                                      style: TextStyle(
-                                        fontSize: 12.0,
-                                        color: ConfigBloc().darkModeOn
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
-                                      decoration: InputDecoration(
-                                        labelStyle: TextStyle(
-                                          color: Colors.grey,
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: Colors.blue, width: 3.0),
-                                        ),
-                                        enabledBorder: new OutlineInputBorder(
-                                            borderSide: new BorderSide(
-                                                color: Colors.grey)),
-                                        hintText:
-                                            " Phone number of your manager",
-                                        hintStyle: TextStyle(
-                                            fontSize: 12, color: Colors.grey),
-                                        labelText: 'Phone number',
-                                      ),
-                                      autofillHints: [
-                                        AutofillHints.telephoneNumberDevice,
-                                      ],
-                                      validator: (input) =>
-                                          input!.trim().length < 1
-                                              ? 'Please enter a phone number'
-                                              : null,
-                                      onSaved: (input) => _contacts = input!,
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Text(
-                                      "Enter the phone number of your manager or the company managing you.",
-                                      style: TextStyle(
-                                          color: Colors.grey, fontSize: 12),
-                                    ),
-                                    SizedBox(
-                                      height: 20.0,
-                                    ),
-                                    TextFormField(
-                                      keyboardType: TextInputType.multiline,
-                                      maxLines: null,
-                                      initialValue: _mail,
-                                      style: TextStyle(
-                                        fontSize: 12.0,
-                                        color: ConfigBloc().darkModeOn
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
-                                      decoration: InputDecoration(
-                                        labelStyle: TextStyle(
-                                          color: Colors.grey,
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: Colors.blue, width: 3.0),
-                                        ),
-                                        enabledBorder: new OutlineInputBorder(
-                                            borderSide: new BorderSide(
-                                                color: Colors.grey)),
-                                        hintText: " Enter your email address",
-                                        hintStyle: TextStyle(
-                                            fontSize: 12, color: Colors.grey),
-                                        labelText: 'Email',
-                                      ),
-                                      autofillHints: [AutofillHints.email],
-                                      validator: (email) => email != null &&
-                                              !EmailValidator.validate(email)
-                                          ? 'Please enter a valid email'
-                                          : null,
-                                      onSaved: (input) => _mail = input!,
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Text(
-                                      "Please, enter an email to help people contact you if they don't hear from your manager..",
-                                      style: TextStyle(
-                                          color: Colors.grey, fontSize: 12),
-                                    ),
+                                    enabledBorder: new OutlineInputBorder(
+                                        borderSide:
+                                            new BorderSide(color: Colors.grey)),
+                                    hintText: " Phone number of your manager",
+                                    hintStyle: TextStyle(
+                                        fontSize: 12, color: Colors.grey),
+                                    labelText: 'Phone number',
+                                  ),
+                                  autofillHints: [
+                                    AutofillHints.telephoneNumberDevice,
                                   ],
+                                  validator: (input) => input!.trim().length < 1
+                                      ? 'Please enter a phone number'
+                                      : null,
+                                  onSaved: (input) => Provider.of<UserData>(
+                                          context,
+                                          listen: false)
+                                      .setPost7(input!),
                                 ),
                                 SizedBox(
-                                  height: 30.0,
+                                  height: 10,
                                 ),
-                                Divider(color: Colors.grey),
+                                Text(
+                                  "Enter the phone number of your manager or the company managing you.",
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 12),
+                                ),
                                 SizedBox(
-                                  height: 30.0,
+                                  height: 20.0,
                                 ),
-                                Column(
-                                  children: [
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: <Widget>[
-                                            Icon(
-                                              Icons.web,
-                                              color: Colors.blue,
-                                              size: 20.0,
-                                            ),
-                                            SizedBox(
-                                              width: 10.0,
-                                            ),
-                                            Text(
-                                              'Your Works',
-                                              style: TextStyle(
-                                                  color: Colors.blue,
-                                                  fontSize: 14),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 10.0,
-                                        ),
-                                        Text(
-                                          'Enter the following hyperlinks to some of your works. You can enter a hyperlink directly to your website,  or any other platform. When adding a hyperlink, the URL should be directly copied from a browser and not an app.  ',
-                                          style: TextStyle(
-                                            color: ConfigBloc().darkModeOn
-                                                ? Colors.white
-                                                : Colors.black,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 20.0,
-                                        ),
-                                        Align(
-                                          alignment: Alignment.bottomLeft,
-                                          child: Container(
-                                            height: 2,
-                                            color: Colors.blue,
-                                            width: width / 3,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 40.0,
-                                        ),
-                                        TextFormField(
-                                          keyboardType: TextInputType.multiline,
-                                          maxLines: null,
-                                          initialValue: _website,
-                                          style: TextStyle(
-                                            fontSize: 12.0,
-                                            color: ConfigBloc().darkModeOn
-                                                ? Colors.white
-                                                : Colors.black,
-                                          ),
-                                          decoration: InputDecoration(
-                                            labelStyle: TextStyle(
-                                              color: Colors.grey,
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: Colors.blue,
-                                                  width: 3.0),
-                                            ),
-                                            enabledBorder:
-                                                new OutlineInputBorder(
-                                                    borderSide: new BorderSide(
-                                                        color: Colors.grey)),
-                                            hintText: " Enter hyperlink",
-                                            hintStyle: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.grey),
-                                            labelText: 'Website',
-                                          ),
-                                          onSaved: (input) => _website = input!,
-                                        ),
-                                        SizedBox(height: 10),
-                                        Text(
-                                          "Enter a hyperlink to your website.",
-                                          style: TextStyle(
-                                              color: Colors.grey, fontSize: 12),
-                                        ),
-                                        SizedBox(
-                                          height: 20.0,
-                                        ),
-                                        TextFormField(
-                                          keyboardType: TextInputType.multiline,
-                                          maxLines: null,
-                                          initialValue: _otherSites1,
-                                          style: TextStyle(
-                                            fontSize: 12.0,
-                                            color: ConfigBloc().darkModeOn
-                                                ? Colors.white
-                                                : Colors.black,
-                                          ),
-                                          decoration: InputDecoration(
-                                            labelStyle: TextStyle(
-                                              color: Colors.grey,
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: Colors.blue,
-                                                  width: 3.0),
-                                            ),
-                                            enabledBorder:
-                                                new OutlineInputBorder(
-                                                    borderSide: new BorderSide(
-                                                        color: Colors.grey)),
-                                            hintText:
-                                                "Enter a hyperlink to your video channel.",
-                                            hintStyle: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.grey),
-                                            labelText: 'video channel Url',
-                                          ),
-                                          onSaved: (input) =>
-                                              _otherSites1 = input!,
-                                        ),
-                                        SizedBox(height: 10),
-                                        Text(
-                                          "Enter a hyperlink to your video channel where people can see your works. ",
-                                          style: TextStyle(
-                                              color: Colors.grey, fontSize: 12),
-                                        ),
-                                        SizedBox(
-                                          height: 20.0,
-                                        ),
-                                        TextFormField(
-                                          keyboardType: TextInputType.multiline,
-                                          maxLines: null,
-                                          initialValue: _otherSites2,
-                                          style: TextStyle(
-                                            fontSize: 12.0,
-                                            color: ConfigBloc().darkModeOn
-                                                ? Colors.white
-                                                : Colors.black,
-                                          ),
-                                          decoration: InputDecoration(
-                                            labelStyle: TextStyle(
-                                              color: Colors.grey,
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: Colors.blue,
-                                                  width: 3.0),
-                                            ),
-                                            enabledBorder:
-                                                new OutlineInputBorder(
-                                                    borderSide: new BorderSide(
-                                                        color: Colors.grey)),
-                                            hintText:
-                                                "Enter another place to find your works",
-                                            hintStyle: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.grey),
-                                            labelText: 'Other Places',
-                                          ),
-                                          validator: (input) => input!
-                                                      .trim()
-                                                      .length <
-                                                  1
-                                              ? 'Please enter a link to your works'
-                                              : null,
-                                          onSaved: (input) =>
-                                              _otherSites2 = input!,
-                                        ),
-                                        SizedBox(height: 10),
-                                        Text(
-                                          "Enter a link to any other site where users can see your works. Please copy an URL link of an app website and past it here. ",
-                                          style: TextStyle(
-                                              color: Colors.grey, fontSize: 12),
-                                        ),
-                                      ],
+                                TextFormField(
+                                  keyboardType: TextInputType.multiline,
+                                  maxLines: null,
+                                  initialValue: Provider.of<UserData>(context,
+                                          listen: false)
+                                      .post12,
+                                  style: TextStyle(
+                                    fontSize: 12.0,
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                  decoration: InputDecoration(
+                                    labelStyle: TextStyle(
+                                      color: Colors.grey,
                                     ),
-                                    SizedBox(
-                                      height: 30.0,
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.blue, width: 3.0),
                                     ),
-                                    Divider(color: Colors.grey),
-                                    SizedBox(
-                                      height: 30.0,
+                                    enabledBorder: new OutlineInputBorder(
+                                        borderSide:
+                                            new BorderSide(color: Colors.grey)),
+                                    hintText: " Enter your email address",
+                                    hintStyle: TextStyle(
+                                        fontSize: 12, color: Colors.grey),
+                                    labelText: 'Email',
+                                  ),
+                                  autofillHints: [AutofillHints.email],
+                                  validator: (email) => email != null &&
+                                          !EmailValidator.validate(email)
+                                      ? 'Please enter a valid email'
+                                      : null,
+                                  onSaved: (input) => Provider.of<UserData>(
+                                          context,
+                                          listen: false)
+                                      .setPost12(input!),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  "Please, enter an email to help people contact you if they don't hear from your manager..",
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 12),
+                                ),
+                                const SizedBox(
+                                  height: 50,
+                                ),
+                                Center(
+                                  child: AlwaysWhiteButton(
+                                      onPressed: _validate,
+                                      buttonText: "Continue"),
+                                ),
+                                const SizedBox(
+                                  height: 70,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      SingleChildScrollView(
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Column(
+                              children: [
+                                DirectionWidgetWithIcon(
+                                  text:
+                                      'Enter the following hyperlinks to some of your works. You can enter a hyperlink directly to your website,  or any other platform. When adding a hyperlink, the URL should be directly copied from a browser and not an app.',
+                                  fontSize: null,
+                                  icon: Icon(
+                                    Icons.work,
+                                    color: Colors.blue,
+                                  ),
+                                  title: 'Your Works',
+                                ),
+                                // Row(
+                                //   mainAxisAlignment: MainAxisAlignment.start,
+                                //   children: <Widget>[
+                                //     Icon(
+                                //       Icons.web,
+                                //       color: Colors.blue,
+                                //       size: 20.0,
+                                //     ),
+                                //     SizedBox(
+                                //       width: 10.0,
+                                //     ),
+                                //     Text(
+                                //       'Your Works',
+                                //       style: TextStyle(
+                                //           color: Colors.blue, fontSize: 14),
+                                //     ),
+                                //   ],
+                                // ),
+                                // SizedBox(
+                                //   height: 10.0,
+                                // ),
+                                // Text(
+                                //   'Enter the following hyperlinks to some of your works. You can enter a hyperlink directly to your website,  or any other platform. When adding a hyperlink, the URL should be directly copied from a browser and not an app.  ',
+                                //   style: TextStyle(
+                                //     color: ConfigBloc().darkModeOn
+                                //         ? Colors.white
+                                //         : Colors.black,
+                                //   ),
+                                // ),
+                                const SizedBox(
+                                  height: 40.0,
+                                ),
+                                TextFormField(
+                                  keyboardType: TextInputType.multiline,
+                                  maxLines: null,
+                                  initialValue: Provider.of<UserData>(context,
+                                          listen: false)
+                                      .post9,
+                                  style: TextStyle(
+                                    fontSize: 12.0,
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                  decoration: InputDecoration(
+                                    labelStyle: TextStyle(
+                                      color: Colors.grey,
                                     ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Icon(
-                                          Icons.photo_album_outlined,
-                                          color: Colors.blue,
-                                          size: 20.0,
-                                        ),
-                                        SizedBox(
-                                          width: 10.0,
-                                        ),
-                                        Text(
-                                          'Your Gallery',
-                                          style: TextStyle(
-                                              color: Colors.blue, fontSize: 14),
-                                        ),
-                                      ],
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.blue, width: 3.0),
                                     ),
-                                    SizedBox(
-                                      height: 10.0,
+                                    enabledBorder: new OutlineInputBorder(
+                                        borderSide:
+                                            new BorderSide(color: Colors.grey)),
+                                    hintText: " Enter hyperlink",
+                                    hintStyle: TextStyle(
+                                        fontSize: 12, color: Colors.grey),
+                                    labelText: 'Website',
+                                  ),
+                                  onSaved: (input) => Provider.of<UserData>(
+                                          context,
+                                          listen: false)
+                                      .setPost9(input!),
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  "Enter a hyperlink to your website.",
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 12),
+                                ),
+                                SizedBox(
+                                  height: 20.0,
+                                ),
+                                TextFormField(
+                                  keyboardType: TextInputType.multiline,
+                                  maxLines: null,
+                                  initialValue: Provider.of<UserData>(context,
+                                          listen: false)
+                                      .post10,
+                                  style: TextStyle(
+                                    fontSize: 12.0,
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                  decoration: InputDecoration(
+                                    labelStyle: TextStyle(
+                                      color: Colors.grey,
                                     ),
-                                    Text(
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.blue, width: 3.0),
+                                    ),
+                                    enabledBorder: new OutlineInputBorder(
+                                        borderSide:
+                                            new BorderSide(color: Colors.grey)),
+                                    hintText:
+                                        "Enter a hyperlink to your video channel.",
+                                    hintStyle: TextStyle(
+                                        fontSize: 12, color: Colors.grey),
+                                    labelText: 'video channel Url',
+                                  ),
+                                  onSaved: (input) => Provider.of<UserData>(
+                                          context,
+                                          listen: false)
+                                      .setPost10(input!),
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  "Enter a hyperlink to your video channel where people can see your works. ",
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 12),
+                                ),
+                                SizedBox(
+                                  height: 20.0,
+                                ),
+                                TextFormField(
+                                  keyboardType: TextInputType.multiline,
+                                  maxLines: null,
+                                  initialValue: Provider.of<UserData>(context,
+                                          listen: false)
+                                      .post11,
+                                  style: TextStyle(
+                                    fontSize: 12.0,
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                  decoration: InputDecoration(
+                                    labelStyle: TextStyle(
+                                      color: Colors.grey,
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.blue, width: 3.0),
+                                    ),
+                                    enabledBorder: new OutlineInputBorder(
+                                        borderSide:
+                                            new BorderSide(color: Colors.grey)),
+                                    hintText:
+                                        "Enter another place to find your works",
+                                    hintStyle: TextStyle(
+                                        fontSize: 12, color: Colors.grey),
+                                    labelText: 'Other Places',
+                                  ),
+                                  validator: (input) => input!.trim().length < 1
+                                      ? 'Please enter a link to your works'
+                                      : null,
+                                  onSaved: (input) => Provider.of<UserData>(
+                                          context,
+                                          listen: false)
+                                      .setPost11(input!),
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  "Enter a link to any other site where users can see your works. Please copy an URL link of an app website and past it here. ",
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 12),
+                                ),
+                                const SizedBox(
+                                  height: 50,
+                                ),
+                                Center(
+                                  child: AlwaysWhiteButton(
+                                      onPressed: _validate,
+                                      buttonText: "Continue"),
+                                ),
+                                const SizedBox(
+                                  height: 70,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      SingleChildScrollView(
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Column(
+                              children: [
+                                DirectionWidgetWithIcon(
+                                  text:
                                       'Your gallery displays professional images about you.',
-                                      style: TextStyle(
-                                        color: ConfigBloc().darkModeOn
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
+                                  fontSize: null,
+                                  icon: Icon(
+                                    Icons.photo_album_outlined,
+                                    color: Color.fromRGBO(33, 150, 243, 1),
+                                  ),
+                                  title: 'Your Gallery',
+                                ),
+                                // Row(
+                                //   mainAxisAlignment: MainAxisAlignment.start,
+                                //   children: <Widget>[
+                                //     Icon(
+                                //       Icons.photo_album_outlined,
+                                //       color: Colors.blue,
+                                //       size: 20.0,
+                                //     ),
+                                //     SizedBox(
+                                //       width: 10.0,
+                                //     ),
+                                //     Text(
+                                //       'Your Gallery',
+                                //       style: TextStyle(
+                                //           color: Colors.blue, fontSize: 14),
+                                //     ),
+                                //   ],
+                                // ),
+                                // SizedBox(
+                                //   height: 10.0,
+                                // ),
+                                // Text(
+                                //   'Your gallery displays professional images about you.',
+                                //   style: TextStyle(
+                                //     color: ConfigBloc().darkModeOn
+                                //         ? Colors.white
+                                //         : Colors.black,
+                                //   ),
+                                // ),
+                                // SizedBox(
+                                //   height: 20.0,
+                                // ),
+                                // Align(
+                                //   alignment: Alignment.bottomLeft,
+                                //   child: Container(
+                                //     height: 2,
+                                //     color: Colors.blue,
+                                //     width: width / 3,
+                                //   ),
+                                // ),
+                                SizedBox(
+                                  height: 20.0,
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: _handleImage,
+                                      child: _displayPostImage(),
                                     ),
-                                    SizedBox(
-                                      height: 20.0,
+                                    GestureDetector(
+                                      onTap: _handleImage2,
+                                      child: _displayPostImage2(),
                                     ),
-                                    Align(
-                                      alignment: Alignment.bottomLeft,
-                                      child: Container(
-                                        height: 2,
-                                        color: Colors.blue,
-                                        width: width / 3,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 20.0,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        GestureDetector(
-                                          onTap: _handleImage,
-                                          child: _displayPostImage(),
-                                        ),
-                                        GestureDetector(
-                                          onTap: _handleImage2,
-                                          child: _displayPostImage2(),
-                                        ),
-                                        GestureDetector(
-                                          onTap: _handleImage3,
-                                          child: _displayPostImage3(),
-                                        )
-                                      ],
-                                    ),
-                                    _isLoading
-                                        ? SizedBox.shrink()
-                                        : _displayButton(),
-                                    SizedBox(
-                                      height: 40,
+                                    GestureDetector(
+                                      onTap: _handleImage3,
+                                      child: _displayPostImage3(),
                                     )
                                   ],
+                                ),
+                                const SizedBox(
+                                  height: 50,
                                 ),
                                 _isLoading
                                     ? SizedBox(
@@ -1179,14 +1373,760 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                               Colors.blue),
                                         ),
                                       )
-                                    : SizedBox.shrink(),
+                                    : _displayButton(),
+                                const SizedBox(
+                                  height: 70,
+                                ),
                               ],
                             ),
-                          ))),
-                ),
+                          ),
+                        ),
+                      ),
+                    ]),
               ),
             ),
           )),
     );
   }
 }
+
+//  SingleChildScrollView(
+//               child: Center(
+//                 child: Container(
+//                     child: Form(
+//                         key: _formKey,
+//                         child: Padding(
+//                           padding: const EdgeInsets.all(30.0),
+//                           child: Column(
+//                             mainAxisAlignment: MainAxisAlignment.start,
+//                             crossAxisAlignment: CrossAxisAlignment.start,
+//                             children: [
+//                               EditProfileInfo(
+//                                 editTitle: 'Booking \nportfolio',
+//                                 info:
+//                                     'Enter your professional information to make it easy for other users to get to know you for business and recommendation purposes.  Read the instruction under each text field carefully before filling out the forms.',
+//                                 icon: Icons.work,
+//                               ),
+//                               TextFormField(
+//                                 keyboardType: TextInputType.multiline,
+//                                 maxLines: null,
+//                                 textCapitalization:
+//                                     TextCapitalization.sentences,
+//                                 initialValue:   Provider.of<UserData>(context, listen: false).post1,
+//                                 style: TextStyle(
+//                                   fontSize: 12.0,
+//                                   color: ConfigBloc().darkModeOn
+//                                       ? Colors.white
+//                                       : Colors.black,
+//                                 ),
+//                                 decoration: InputDecoration(
+//                                   labelStyle: TextStyle(
+//                                     color: Colors.grey,
+//                                   ),
+//                                   focusedBorder: OutlineInputBorder(
+//                                     borderSide: BorderSide(
+//                                         color: Colors.blue, width: 3.0),
+//                                   ),
+//                                   enabledBorder: new OutlineInputBorder(
+//                                       borderSide:
+//                                           new BorderSide(color: Colors.grey)),
+//                                   hintText: " example (Black Records)",
+//                                   hintStyle: TextStyle(
+//                                       fontSize: 12, color: Colors.grey),
+//                                   labelText: 'Record Label / Organization',
+//                                 ),
+//                                 validator: (input) => input!.trim().length < 1
+//                                     ? 'Please enter a valid  company name'
+//                                     : null,
+//                                 onSaved: (input) =>   Provider.of<UserData>(context, listen: false).post1 = input!,
+//                               ),
+//                               SizedBox(
+//                                 height: 10.0,
+//                               ),
+//                               Text(
+//                                 "Enter the company or organization you are associated with or signed to.",
+//                                 style: TextStyle(
+//                                     color: Colors.grey, fontSize: 12),
+//                               ),
+//                               SizedBox(
+//                                 height: 20.0,
+//                               ),
+//                               TextFormField(
+//                                 keyboardType: TextInputType.multiline,
+//                                 maxLines: null,
+//                                 textCapitalization:
+//                                     TextCapitalization.sentences,
+//                                 initialValue:   Provider.of<UserData>(context, listen: false).post2,
+//                                 style: TextStyle(
+//                                   fontSize: 12.0,
+//                                   color: ConfigBloc().darkModeOn
+//                                       ? Colors.white
+//                                       : Colors.black,
+//                                 ),
+//                                 decoration: InputDecoration(
+//                                   labelStyle: TextStyle(
+//                                     color: Colors.grey,
+//                                   ),
+//                                   focusedBorder: OutlineInputBorder(
+//                                     borderSide: BorderSide(
+//                                         color: Colors.blue, width: 3.0),
+//                                   ),
+//                                   enabledBorder: new OutlineInputBorder(
+//                                       borderSide:
+//                                           new BorderSide(color: Colors.grey)),
+//                                   hintText:
+//                                       "example (rapping, singing, dancing)",
+//                                   hintStyle: TextStyle(
+//                                       fontSize: 12, color: Colors.grey),
+//                                   labelText: 'Skills',
+//                                 ),
+//                                 validator: (input) => input!.trim().length < 1
+//                                     ? 'Please enter some skills'
+//                                     : null,
+//                                 onSaved: (input) =>   Provider.of<UserData>(context, listen: false).post2 = input!,
+//                               ),
+//                               SizedBox(
+//                                 height: 10,
+//                               ),
+//                               Text(
+//                                 "Enter your skills in your field of work as a musician, producer, video director, or any of the above account types. Separate each skill with a comma(,).",
+//                                 style: TextStyle(
+//                                     color: Colors.grey, fontSize: 12),
+//                               ),
+//                               _profileHandle.startsWith('M') ||
+//                                       _profileHandle.startsWith("B") ||
+//                                       _profileHandle.startsWith("V") ||
+//                                       _profileHandle.startsWith("P")
+//                                   ? const SizedBox.shrink()
+//                                   : SizedBox(
+//                                       height: 20.0,
+//                                     ),
+//                               _profileHandle.startsWith('M') ||
+//                                       _profileHandle.startsWith("B") ||
+//                                       _profileHandle.startsWith("V") ||
+//                                       _profileHandle.startsWith("P")
+//                                   ? const SizedBox.shrink()
+//                                   : TextFormField(
+//                                       keyboardType: TextInputType.multiline,
+//                                       maxLines: null,
+//                                       textCapitalization:
+//                                           TextCapitalization.sentences,
+//                                       initialValue:   Provider.of<UserData>(context, listen: false).post3,
+//                                       style: TextStyle(
+//                                         fontSize: 12.0,
+//                                         color: ConfigBloc().darkModeOn
+//                                             ? Colors.white
+//                                             : Colors.black,
+//                                       ),
+//                                       decoration: InputDecoration(
+//                                         labelStyle: TextStyle(
+//                                           color: Colors.grey,
+//                                         ),
+//                                         focusedBorder: OutlineInputBorder(
+//                                           borderSide: BorderSide(
+//                                               color: Colors.blue, width: 3.0),
+//                                         ),
+//                                         enabledBorder: new OutlineInputBorder(
+//                                             borderSide: new BorderSide(
+//                                                 color: Colors.grey)),
+//                                         hintText: " At least 3 ",
+//                                         hintStyle: TextStyle(
+//                                             fontSize: 14.0,
+//                                             color: Colors.grey),
+//                                         labelText: 'Performances/exhibitions',
+//                                       ),
+//                                       validator: (input) => input!
+//                                                   .trim()
+//                                                   .length <
+//                                               1
+//                                           ? 'Please, enter at least three performances/exhibitions'
+//                                           : null,
+//                                       onSaved: (input) =>
+//                                             Provider.of<UserData>(context, listen: false).post3 = input!,
+//                                     ),
+//                               _profileHandle.startsWith('M') ||
+//                                       _profileHandle.startsWith("B") ||
+//                                       _profileHandle.startsWith("V") ||
+//                                       _profileHandle.startsWith("P")
+//                                   ? const SizedBox.shrink()
+//                                   : SizedBox(height: 10),
+//                               _profileHandle.startsWith('M') ||
+//                                       _profileHandle.startsWith("B") ||
+//                                       _profileHandle.startsWith("V") ||
+//                                       _profileHandle.startsWith("P")
+//                                   ? const SizedBox.shrink()
+//                                   : Text(
+//                                       "Enter any event or ceremony you've performed at based on your account type, for example, BET 2019, World Art exhibition.",
+//                                       style: TextStyle(
+//                                           color: Colors.grey, fontSize: 12),
+//                                     ),
+//                               SizedBox(
+//                                 height: 20.0,
+//                               ),
+//                               TextFormField(
+//                                 keyboardType: TextInputType.multiline,
+//                                 maxLines: null,
+//                                 textCapitalization:
+//                                     TextCapitalization.sentences,
+//                                 initialValue:   Provider.of<UserData>(context, listen: false).post4,
+//                                 style: TextStyle(
+//                                   fontSize: 12.0,
+//                                   color: ConfigBloc().darkModeOn
+//                                       ? Colors.white
+//                                       : Colors.black,
+//                                 ),
+//                                 decoration: InputDecoration(
+//                                   labelStyle: TextStyle(
+//                                     color: Colors.grey,
+//                                   ),
+//                                   focusedBorder: OutlineInputBorder(
+//                                     borderSide: BorderSide(
+//                                         color: Colors.blue, width: 3.0),
+//                                   ),
+//                                   enabledBorder: new OutlineInputBorder(
+//                                       borderSide:
+//                                           new BorderSide(color: Colors.grey)),
+//                                   hintText: " At least 5",
+//                                   hintStyle: TextStyle(
+//                                       fontSize: 12, color: Colors.grey),
+//                                   labelText: 'Top Collaborations/Projects',
+//                                 ),
+//                                 validator: (input) => input!.trim().length < 1
+//                                     ? 'Please, enter some collaborations/projects.'
+//                                     : null,
+//                                 onSaved: (input) =>   Provider.of<UserData>(context, listen: false).post4 = input!,
+//                               ),
+//                               SizedBox(height: 10),
+//                               Text(
+//                                 "With artists, producers, designers, or organizers",
+//                                 style: TextStyle(
+//                                     color: Colors.grey, fontSize: 12),
+//                               ),
+//                               _profileHandle.startsWith('V')
+//                                   ? const SizedBox.shrink()
+//                                   : SizedBox(
+//                                       height: 20.0,
+//                                     ),
+//                               _profileHandle.startsWith('V')
+//                                   ? const SizedBox.shrink()
+//                                   : TextFormField(
+//                                       keyboardType: TextInputType.multiline,
+//                                       maxLines: null,
+//                                       textCapitalization:
+//                                           TextCapitalization.sentences,
+//                                       initialValue:   Provider.of<UserData>(context, listen: false).post5,
+//                                       style: TextStyle(
+//                                         fontSize: 12.0,
+//                                         color: ConfigBloc().darkModeOn
+//                                             ? Colors.white
+//                                             : Colors.black,
+//                                       ),
+//                                       decoration: InputDecoration(
+//                                         labelStyle: TextStyle(
+//                                           color: Colors.grey,
+//                                         ),
+//                                         focusedBorder: OutlineInputBorder(
+//                                           borderSide: BorderSide(
+//                                               color: Colors.blue, width: 3.0),
+//                                         ),
+//                                         enabledBorder: new OutlineInputBorder(
+//                                             borderSide: new BorderSide(
+//                                                 color: Colors.grey)),
+//                                         hintText:
+//                                             "Separate each award with a comma(,) ",
+//                                         hintStyle: TextStyle(
+//                                             fontSize: 14.0,
+//                                             color: Colors.grey),
+//                                         labelText: 'Awards',
+//                                       ),
+//                                       onSaved: (input) =>   Provider.of<UserData>(context, listen: false).post5 = input!,
+//                                     ),
+//                               _profileHandle.startsWith('V')
+//                                   ? const SizedBox.shrink()
+//                                   : SizedBox(height: 10),
+//                               _profileHandle.startsWith('V')
+//                                   ? const SizedBox.shrink()
+//                                   : Text(
+//                                       "Please enter any awards, prizes or plaques received. For example (6 BETs, 2 Grammys, 9 AFRIMAS ).",
+//                                       style: TextStyle(
+//                                           color: Colors.grey, fontSize: 12),
+//                                     ),
+//                               SizedBox(
+//                                 height: 30.0,
+//                               ),
+//                               Divider(color: Colors.grey),
+//                               SizedBox(
+//                                 height: 30.0,
+//                               ),
+//                               Column(
+//                                 mainAxisAlignment: MainAxisAlignment.start,
+//                                 crossAxisAlignment: CrossAxisAlignment.start,
+//                                 children: <Widget>[
+                              //     Row(
+                              //       mainAxisAlignment:
+                              //           MainAxisAlignment.start,
+                              //       children: <Widget>[
+                              //         Icon(
+                              //           Icons.email,
+                              //           color: Colors.blue,
+                              //           size: 20.0,
+                              //         ),
+                              //         SizedBox(
+                              //           width: 10.0,
+                              //         ),
+                              //         Text(
+                              //           'Booking Contact',
+                              //           style: TextStyle(
+                              //               color: Colors.blue, fontSize: 14),
+                              //         ),
+                              //       ],
+                              //     ),
+                              //     SizedBox(
+                              //       height: 10.0,
+                              //     ),
+                              //     Text(
+                              //       'Enter your booking and management information. You can only add one phone number with an email.',
+                              //       style: TextStyle(
+                              //         color: ConfigBloc().darkModeOn
+                              //             ? Colors.white
+                              //             : Colors.black,
+                              //       ),
+                              //     ),
+                              //     SizedBox(
+                              //       height: 20.0,
+                              //     ),
+                              //     Align(
+                              //       alignment: Alignment.bottomLeft,
+                              //       child: Container(
+                              //         height: 2,
+                              //         color: Colors.blue,
+                              //         width: width / 3,
+                              //       ),
+                              //     ),
+                              //     SizedBox(
+                              //       height: 30.0,
+                              //     ),
+                              //     SizedBox(
+                              //       height: 10.0,
+                              //     ),
+                              //     TextFormField(
+                              //       keyboardType: TextInputType.multiline,
+                              //       maxLines: null,
+                              //       textCapitalization:
+                              //           TextCapitalization.sentences,
+                              //       initialValue:   Provider.of<UserData>(context, listen: false).post6,
+                              //       style: TextStyle(
+                              //         fontSize: 12.0,
+                              //         color: ConfigBloc().darkModeOn
+                              //             ? Colors.white
+                              //             : Colors.black,
+                              //       ),
+                              //       decoration: InputDecoration(
+                              //         labelStyle: TextStyle(
+                              //           color: Colors.grey,
+                              //         ),
+                              //         focusedBorder: OutlineInputBorder(
+                              //           borderSide: BorderSide(
+                              //               color: Colors.blue, width: 3.0),
+                              //         ),
+                              //         enabledBorder: new OutlineInputBorder(
+                              //             borderSide: new BorderSide(
+                              //                 color: Colors.grey)),
+                              //         hintText: "The company managing you",
+                              //         hintStyle: TextStyle(
+                              //             fontSize: 12, color: Colors.grey),
+                              //         labelText: 'Management',
+                              //       ),
+                              //       validator: (input) => input!
+                              //                   .trim()
+                              //                   .length <
+                              //               1
+                              //           ? 'Please enter management/manager'
+                              //           : null,
+                              //       onSaved: (input) =>   Provider.of<UserData>(context, listen: false).post6 = input!,
+                              //     ),
+                              //     SizedBox(height: 10),
+                              //     Text(
+                              //       " Enter the name of your manager or any company managing you.",
+                              //       style: TextStyle(
+                              //           color: Colors.grey, fontSize: 12),
+                              //     ),
+                              //     SizedBox(
+                              //       height: 20.0,
+                              //     ),
+                              //     TextFormField(
+                              //       maxLines: null,
+                              //       initialValue:   Provider.of<UserData>(context, listen: false).post7,
+                              //       keyboardType: TextInputType.number,
+                              //       style: TextStyle(
+                              //         fontSize: 12.0,
+                              //         color: ConfigBloc().darkModeOn
+                              //             ? Colors.white
+                              //             : Colors.black,
+                              //       ),
+                              //       decoration: InputDecoration(
+                              //         labelStyle: TextStyle(
+                              //           color: Colors.grey,
+                              //         ),
+                              //         focusedBorder: OutlineInputBorder(
+                              //           borderSide: BorderSide(
+                              //               color: Colors.blue, width: 3.0),
+                              //         ),
+                              //         enabledBorder: new OutlineInputBorder(
+                              //             borderSide: new BorderSide(
+                              //                 color: Colors.grey)),
+                              //         hintText:
+                              //             " Phone number of your manager",
+                              //         hintStyle: TextStyle(
+                              //             fontSize: 12, color: Colors.grey),
+                              //         labelText: 'Phone number',
+                              //       ),
+                              //       autofillHints: [
+                              //         AutofillHints.telephoneNumberDevice,
+                              //       ],
+                              //       validator: (input) =>
+                              //           input!.trim().length < 1
+                              //               ? 'Please enter a phone number'
+                              //               : null,
+                              //       onSaved: (input) =>   Provider.of<UserData>(context, listen: false).post7 = input!,
+                              //     ),
+                              //     SizedBox(
+                              //       height: 10,
+                              //     ),
+                              //     Text(
+                              //       "Enter the phone number of your manager or the company managing you.",
+                              //       style: TextStyle(
+                              //           color: Colors.grey, fontSize: 12),
+                              //     ),
+                              //     SizedBox(
+                              //       height: 20.0,
+                              //     ),
+                              //     TextFormField(
+                              //       keyboardType: TextInputType.multiline,
+                              //       maxLines: null,
+                              //       initialValue:   Provider.of<UserData>(context, listen: false).post12,
+                              //       style: TextStyle(
+                              //         fontSize: 12.0,
+                              //         color: ConfigBloc().darkModeOn
+                              //             ? Colors.white
+                              //             : Colors.black,
+                              //       ),
+                              //       decoration: InputDecoration(
+                              //         labelStyle: TextStyle(
+                              //           color: Colors.grey,
+                              //         ),
+                              //         focusedBorder: OutlineInputBorder(
+                              //           borderSide: BorderSide(
+                              //               color: Colors.blue, width: 3.0),
+                              //         ),
+                              //         enabledBorder: new OutlineInputBorder(
+                              //             borderSide: new BorderSide(
+                              //                 color: Colors.grey)),
+                              //         hintText: " Enter your email address",
+                              //         hintStyle: TextStyle(
+                              //             fontSize: 12, color: Colors.grey),
+                              //         labelText: 'Email',
+                              //       ),
+                              //       autofillHints: [AutofillHints.email],
+                              //       validator: (email) => email != null &&
+                              //               !EmailValidator.validate(email)
+                              //           ? 'Please enter a valid email'
+                              //           : null,
+                              //       onSaved: (input) =>   Provider.of<UserData>(context, listen: false).post12 = input!,
+                              //     ),
+                              //     SizedBox(
+                              //       height: 10,
+                              //     ),
+                              //     Text(
+                              //       "Please, enter an email to help people contact you if they don't hear from your manager..",
+                              //       style: TextStyle(
+                              //           color: Colors.grey, fontSize: 12),
+                              //     ),
+                              //   ],
+                              // ),
+//                               SizedBox(
+//                                 height: 30.0,
+//                               ),
+//                               Divider(color: Colors.grey),
+//                               SizedBox(
+//                                 height: 30.0,
+//                               ),
+//                               Column(
+//                                 children: [
+//                                   Column(
+//                                     mainAxisAlignment:
+//                                         MainAxisAlignment.start,
+//                                     crossAxisAlignment:
+//                                         CrossAxisAlignment.start,
+//                                     children: <Widget>[
+                                      // Row(
+                                      //   mainAxisAlignment:
+                                      //       MainAxisAlignment.start,
+                                      //   children: <Widget>[
+                                      //     Icon(
+                                      //       Icons.web,
+                                      //       color: Colors.blue,
+                                      //       size: 20.0,
+                                      //     ),
+                                      //     SizedBox(
+                                      //       width: 10.0,
+                                      //     ),
+                                      //     Text(
+                                      //       'Your Works',
+                                      //       style: TextStyle(
+                                      //           color: Colors.blue,
+                                      //           fontSize: 14),
+                                      //     ),
+                                      //   ],
+                                      // ),
+                                      // SizedBox(
+                                      //   height: 10.0,
+                                      // ),
+                                      // Text(
+                                      //   'Enter the following hyperlinks to some of your works. You can enter a hyperlink directly to your website,  or any other platform. When adding a hyperlink, the URL should be directly copied from a browser and not an app.  ',
+                                      //   style: TextStyle(
+                                      //     color: ConfigBloc().darkModeOn
+                                      //         ? Colors.white
+                                      //         : Colors.black,
+                                      //   ),
+                                      // ),
+                                      // SizedBox(
+                                      //   height: 20.0,
+                                      // ),
+                                      // Align(
+                                      //   alignment: Alignment.bottomLeft,
+                                      //   child: Container(
+                                      //     height: 2,
+                                      //     color: Colors.blue,
+                                      //     width: width / 3,
+                                      //   ),
+                                      // ),
+                                      // SizedBox(
+                                      //   height: 40.0,
+                                      // ),
+                                      // TextFormField(
+                                      //   keyboardType: TextInputType.multiline,
+                                      //   maxLines: null,
+                                      //   initialValue:   Provider.of<UserData>(context, listen: false).post9,
+                                      //   style: TextStyle(
+                                      //     fontSize: 12.0,
+                                      //     color: ConfigBloc().darkModeOn
+                                      //         ? Colors.white
+                                      //         : Colors.black,
+                                      //   ),
+                                      //   decoration: InputDecoration(
+                                      //     labelStyle: TextStyle(
+                                      //       color: Colors.grey,
+                                      //     ),
+                                      //     focusedBorder: OutlineInputBorder(
+                                      //       borderSide: BorderSide(
+                                      //           color: Colors.blue,
+                                      //           width: 3.0),
+                                      //     ),
+                                      //     enabledBorder:
+                                      //         new OutlineInputBorder(
+                                      //             borderSide: new BorderSide(
+                                      //                 color: Colors.grey)),
+                                      //     hintText: " Enter hyperlink",
+                                      //     hintStyle: TextStyle(
+                                      //         fontSize: 12,
+                                      //         color: Colors.grey),
+                                      //     labelText: 'Website',
+                                      //   ),
+                                      //   onSaved: (input) =>   Provider.of<UserData>(context, listen: false).post9 = input!,
+                                      // ),
+                                      // SizedBox(height: 10),
+                                      // Text(
+                                      //   "Enter a hyperlink to your website.",
+                                      //   style: TextStyle(
+                                      //       color: Colors.grey, fontSize: 12),
+                                      // ),
+                                      // SizedBox(
+                                      //   height: 20.0,
+                                      // ),
+                                      // TextFormField(
+                                      //   keyboardType: TextInputType.multiline,
+                                      //   maxLines: null,
+                                      //   initialValue:   Provider.of<UserData>(context, listen: false).post10,
+                                      //   style: TextStyle(
+                                      //     fontSize: 12.0,
+                                      //     color: ConfigBloc().darkModeOn
+                                      //         ? Colors.white
+                                      //         : Colors.black,
+                                      //   ),
+                                      //   decoration: InputDecoration(
+                                      //     labelStyle: TextStyle(
+                                      //       color: Colors.grey,
+                                      //     ),
+                                      //     focusedBorder: OutlineInputBorder(
+                                      //       borderSide: BorderSide(
+                                      //           color: Colors.blue,
+                                      //           width: 3.0),
+                                      //     ),
+                                      //     enabledBorder:
+                                      //         new OutlineInputBorder(
+                                      //             borderSide: new BorderSide(
+                                      //                 color: Colors.grey)),
+                                      //     hintText:
+                                      //         "Enter a hyperlink to your video channel.",
+                                      //     hintStyle: TextStyle(
+                                      //         fontSize: 12,
+                                      //         color: Colors.grey),
+                                      //     labelText: 'video channel Url',
+                                      //   ),
+                                      //   onSaved: (input) =>
+                                      //         Provider.of<UserData>(context, listen: false).post10 = input!,
+                                      // ),
+                                      // SizedBox(height: 10),
+                                      // Text(
+                                      //   "Enter a hyperlink to your video channel where people can see your works. ",
+                                      //   style: TextStyle(
+                                      //       color: Colors.grey, fontSize: 12),
+                                      // ),
+                                      // SizedBox(
+                                      //   height: 20.0,
+                                      // ),
+                                      // TextFormField(
+                                      //   keyboardType: TextInputType.multiline,
+                                      //   maxLines: null,
+                                      //   initialValue:   Provider.of<UserData>(context, listen: false).post11,
+                                      //   style: TextStyle(
+                                      //     fontSize: 12.0,
+                                      //     color: ConfigBloc().darkModeOn
+                                      //         ? Colors.white
+                                      //         : Colors.black,
+                                      //   ),
+                                      //   decoration: InputDecoration(
+                                      //     labelStyle: TextStyle(
+                                      //       color: Colors.grey,
+                                      //     ),
+                                      //     focusedBorder: OutlineInputBorder(
+                                      //       borderSide: BorderSide(
+                                      //           color: Colors.blue,
+                                      //           width: 3.0),
+                                      //     ),
+                                      //     enabledBorder:
+                                      //         new OutlineInputBorder(
+                                      //             borderSide: new BorderSide(
+                                      //                 color: Colors.grey)),
+                                      //     hintText:
+                                      //         "Enter another place to find your works",
+                                      //     hintStyle: TextStyle(
+                                      //         fontSize: 12,
+                                      //         color: Colors.grey),
+                                      //     labelText: 'Other Places',
+                                      //   ),
+                                      //   validator: (input) => input!
+                                      //               .trim()
+                                      //               .length <
+                                      //           1
+                                      //       ? 'Please enter a link to your works'
+                                      //       : null,
+                                      //   onSaved: (input) =>
+                                      //         Provider.of<UserData>(context, listen: false).post11 = input!,
+                                      // ),
+                                      // SizedBox(height: 10),
+                                      // Text(
+                                      //   "Enter a link to any other site where users can see your works. Please copy an URL link of an app website and past it here. ",
+                                      //   style: TextStyle(
+                                      //       color: Colors.grey, fontSize: 12),
+                                      // ),
+//                                     ],
+//                                   ),
+//                                   SizedBox(
+//                                     height: 30.0,
+//                                   ),
+//                                   Divider(color: Colors.grey),
+//                                   SizedBox(
+//                                     height: 30.0,
+//                                   ),
+                                  // Row(
+                                  //   mainAxisAlignment:
+                                  //       MainAxisAlignment.start,
+                                  //   children: <Widget>[
+                                  //     Icon(
+                                  //       Icons.photo_album_outlined,
+                                  //       color: Colors.blue,
+                                  //       size: 20.0,
+                                  //     ),
+                                  //     SizedBox(
+                                  //       width: 10.0,
+                                  //     ),
+                                  //     Text(
+                                  //       'Your Gallery',
+                                  //       style: TextStyle(
+                                  //           color: Colors.blue, fontSize: 14),
+                                  //     ),
+                                  //   ],
+                                  // ),
+                                  // SizedBox(
+                                  //   height: 10.0,
+                                  // ),
+                                  // Text(
+                                  //   'Your gallery displays professional images about you.',
+                                  //   style: TextStyle(
+                                  //     color: ConfigBloc().darkModeOn
+                                  //         ? Colors.white
+                                  //         : Colors.black,
+                                  //   ),
+                                  // ),
+                                  // SizedBox(
+                                  //   height: 20.0,
+                                  // ),
+                                  // Align(
+                                  //   alignment: Alignment.bottomLeft,
+                                  //   child: Container(
+                                  //     height: 2,
+                                  //     color: Colors.blue,
+                                  //     width: width / 3,
+                                  //   ),
+                                  // ),
+                                  // SizedBox(
+                                  //   height: 20.0,
+                                  // ),
+                                  // Row(
+                                  //   mainAxisAlignment:
+                                  //       MainAxisAlignment.spaceEvenly,
+                                  //   children: [
+                                  //     GestureDetector(
+                                  //       onTap: _handleImage,
+                                  //       child: _displayPostImage(),
+                                  //     ),
+                                  //     GestureDetector(
+                                  //       onTap: _handleImage2,
+                                  //       child: _displayPostImage2(),
+                                  //     ),
+                                  //     GestureDetector(
+                                  //       onTap: _handleImage3,
+                                  //       child: _displayPostImage3(),
+                                  //     )
+                                  //   ],
+                                  // ),
+//                                   _isLoading
+//                                       ? const SizedBox.shrink()
+//                                       : _displayButton(),
+//                                   SizedBox(
+//                                     height: 40,
+//                                   )
+//                                 ],
+//                               ),
+//                               _isLoading
+//                                   ? SizedBox(
+//                                       height: 1.0,
+//                                       child: LinearProgressIndicator(
+//                                         backgroundColor: Colors.grey[100],
+//                                         valueColor: AlwaysStoppedAnimation(
+//                                             Colors.blue),
+//                                       ),
+//                                     )
+//                                   : const SizedBox.shrink()
+//                             ],
+//                           ),
+//                         ))),
+//               ),
+//             ),
+
+
+
+
+

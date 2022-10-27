@@ -1,14 +1,16 @@
 import 'package:bars/utilities/exports.dart';
 
 class NoContents extends StatelessWidget {
-  final String title;
-  final String subTitle;
-  final IconData icon;
+   final String title;
+   final String subTitle;
+   final IconData icon;
+   final Color color;
 
   NoContents({
     required this.title,
     required this.subTitle,
     required this.icon,
+     this.color = Colors.grey,
   });
 
   @override
@@ -21,12 +23,12 @@ class NoContents extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.grey, width: 2)),
+                border: Border.all(color: color, width: 2)),
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Icon(
                 icon,
-                color: Colors.grey,
+                color: color,
                 size: 50.0,
               ),
             ),

@@ -44,8 +44,10 @@ class _AlbumLaunchesState extends State<AlbumLaunches>
   }
 
   _setupEventFeed() async {
-    QuerySnapshot eventFeedSnapShot = await allEventsRef
-        .where('type', isEqualTo: 'Album_Launch')
+    QuerySnapshot eventFeedSnapShot = await eventTypesRef
+        .doc('Album_Launch')
+        .collection('Album_Launch')
+        .orderBy('timestamp', descending: true)
         .limit(limit)
         .get();
     List<Event> events =
@@ -64,8 +66,10 @@ class _AlbumLaunchesState extends State<AlbumLaunches>
     if (_isFetchingEvent) return;
     _isFetchingEvent = true;
     _hasNext = true;
-    QuerySnapshot eventFeedSnapShot = await allEventsRef
-        .where('type', isEqualTo: 'Album_Launch')
+    QuerySnapshot eventFeedSnapShot = await eventTypesRef
+        .doc('Album_Launch')
+        .collection('Album_Launch')
+        .orderBy('timestamp', descending: true)
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();
@@ -90,7 +94,6 @@ class _AlbumLaunchesState extends State<AlbumLaunches>
       feed: 3,
       currentUserId: widget.currentUserId,
       event: event,
-      author: author,
       // eventList: _events,
       user: widget.user,
     );
@@ -113,7 +116,9 @@ class _AlbumLaunchesState extends State<AlbumLaunches>
                       future: DatabaseService.getUserWithId(event.authorId),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (!snapshot.hasData) {
-                          return EventSchimmerBlurHash(event: event,);
+                          return EventSchimmerBlurHash(
+                            event: event,
+                          );
                         }
                         AccountHolder author = snapshot.data;
 
@@ -147,7 +152,7 @@ class _AlbumLaunchesState extends State<AlbumLaunches>
                     child: _buildUser()))
             : _events.length == 0
                 ? Center(
-                    child:  EventSchimmer(),
+                    child: EventSchimmer(),
                   )
                 : Center(
                     child: EventSchimmer(),

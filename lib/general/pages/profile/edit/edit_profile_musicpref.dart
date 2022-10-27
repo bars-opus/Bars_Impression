@@ -134,7 +134,7 @@ class _EditProfileMusicPrefState extends State<EditProfileMusicPref> {
                                               Colors.blue),
                                         ),
                                       )
-                                    : SizedBox.shrink(),
+                                    : const SizedBox.shrink(),
                                 EditProfileInfo(
                                     editTitle: 'Music \nPreference',
                                     info:
@@ -353,7 +353,7 @@ class _EditProfileMusicPrefState extends State<EditProfileMusicPref> {
                                               Colors.blue),
                                         ),
                                       )
-                                    : SizedBox.shrink(),
+                                    : const SizedBox.shrink()
                               ],
                             ),
                           ))),

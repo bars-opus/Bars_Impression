@@ -111,22 +111,27 @@ class _ForumFeedState extends State<ForumFeed>
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
                     Forum forum = _forumList[index];
-                    return FutureBuilder(
-                        future: DatabaseService.getUserWithId(forum.authorId),
-                        builder:
-                            (BuildContext context, AsyncSnapshot snapshot) {
-                          if (!snapshot.hasData) {
-                            return ForumSchimmerSkeleton();
-                          }
-                          AccountHolder author = snapshot.data;
-                          return ForumView(
-                            currentUserId: widget.currentUserId,
-                            forum: forum,
-                            feed: 'Feed',
-                            author: author,
-                            // forumList: _forumList,
-                          );
-                        });
+                    return ForumView(
+                      feed: 'All',
+                      currentUserId: widget.currentUserId,
+                      forum: forum,
+                    );
+                    // FutureBuilder(
+                    //     future: DatabaseService.getUserWithId(forum.authorId),
+                    //     builder:
+                    //         (BuildContext context, AsyncSnapshot snapshot) {
+                    //       if (!snapshot.hasData) {
+                    //         return ForumSchimmerSkeleton();
+                    //       }
+                    //       AccountHolder author = snapshot.data;
+                    //       return ForumView(
+                    //         currentUserId: widget.currentUserId,
+                    //         forum: forum,
+                    //         feed: 'Feed',
+                    //         author: author,
+                    //         // forumList: _forumList,
+                    //       );
+                    //     });
                   },
                   childCount: _forumList.length,
                 ),
@@ -157,7 +162,7 @@ class _ForumFeedState extends State<ForumFeed>
             alignment: Alignment.topLeft,
             child: SizedBox(
               child:
-                  _feedCount.isNegative ? const SizedBox.shrink() : _display(),
+                  _feedCount.isNegative ? const SizedBox.shrink() : Display(),
             ),
           ),
         ),
@@ -220,7 +225,7 @@ class _ForumFeedState extends State<ForumFeed>
 }
 
 //display
-class _display extends StatelessWidget {
+class Display extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String currentUserId =

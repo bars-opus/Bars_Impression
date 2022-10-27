@@ -71,10 +71,13 @@ class _EventsAllLocationState extends State<EventsAllLocation>
   _setupEventFeed() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
         .where('city', isEqualTo: widget.user.city)
+        .where('country', isEqualTo: widget.user.country)
         .limit(limit)
         .get();
-    List<Event> events =
-        eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
+    List<Event> events = eventFeedSnapShot.docs
+        .map((doc) => Event.fromDoc(doc))
+        .toList()
+      ..shuffle();
     _eventSnapshot.addAll((eventFeedSnapShot.docs));
     if (mounted) {
       setState(() {
@@ -91,11 +94,14 @@ class _EventsAllLocationState extends State<EventsAllLocation>
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
         .where('city', isEqualTo: widget.user.city)
+        .where('country', isEqualTo: widget.user.country)
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();
-    List<Event> moreevents =
-        eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
+    List<Event> moreevents = eventFeedSnapShot.docs
+        .map((doc) => Event.fromDoc(doc))
+        .toList()
+      ..shuffle();
     if (_eventSnapshot.length < limit) _hasNext = false;
     List<Event> allevents = _events..addAll(moreevents);
     _eventSnapshot.addAll((eventFeedSnapShot.docs));
@@ -114,8 +120,10 @@ class _EventsAllLocationState extends State<EventsAllLocation>
         .where('country', isEqualTo: widget.user.country)
         .limit(limit)
         .get();
-    List<Event> events =
-        eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
+    List<Event> events = eventFeedSnapShot.docs
+        .map((doc) => Event.fromDoc(doc))
+        .toList()
+      ..shuffle();
     _eventSnapshot.addAll((eventFeedSnapShot.docs));
     if (mounted) {
       setState(() {
@@ -135,8 +143,10 @@ class _EventsAllLocationState extends State<EventsAllLocation>
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();
-    List<Event> moreevents =
-        eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
+    List<Event> moreevents = eventFeedSnapShot.docs
+        .map((doc) => Event.fromDoc(doc))
+        .toList()
+      ..shuffle();
     if (_eventSnapshot.length < limit) _hasNext = false;
     List<Event> allevents = _events..addAll(moreevents);
     _eventSnapshot.addAll((eventFeedSnapShot.docs));
@@ -155,8 +165,10 @@ class _EventsAllLocationState extends State<EventsAllLocation>
         .where('isVirtual', isEqualTo: true)
         .limit(limit)
         .get();
-    List<Event> events =
-        eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
+    List<Event> events = eventFeedSnapShot.docs
+        .map((doc) => Event.fromDoc(doc))
+        .toList()
+      ..shuffle();
     _eventSnapshot.addAll((eventFeedSnapShot.docs));
     if (mounted) {
       setState(() {
@@ -176,8 +188,10 @@ class _EventsAllLocationState extends State<EventsAllLocation>
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();
-    List<Event> moreevents =
-        eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
+    List<Event> moreevents = eventFeedSnapShot.docs
+        .map((doc) => Event.fromDoc(doc))
+        .toList()
+      ..shuffle();
     if (_eventSnapshot.length < limit) _hasNext = false;
     List<Event> allevents = _events..addAll(moreevents);
     _eventSnapshot.addAll((eventFeedSnapShot.docs));
@@ -204,7 +218,6 @@ class _EventsAllLocationState extends State<EventsAllLocation>
       feed: 2,
       currentUserId: widget.currentUserId,
       event: event,
-      author: author,
       user: widget.user,
     );
   }
@@ -226,7 +239,9 @@ class _EventsAllLocationState extends State<EventsAllLocation>
                       future: DatabaseService.getUserWithId(event.authorId),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (!snapshot.hasData) {
-                          return EventSchimmerBlurHash(event: event,);
+                          return EventSchimmerBlurHash(
+                            event: event,
+                          );
                         }
                         AccountHolder author = snapshot.data;
 

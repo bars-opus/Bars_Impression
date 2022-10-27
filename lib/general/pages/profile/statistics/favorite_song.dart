@@ -156,14 +156,14 @@ class _FavoriteSongState extends State<FavoriteSong> {
                         ),
                       ),
                       user.profileHandle!.isEmpty
-                          ? SizedBox.shrink()
+                          ? const SizedBox.shrink()
                           : Text(user.profileHandle!,
                               style: TextStyle(
                                 fontSize: 12.0,
                                 color: Colors.blueGrey,
                               )),
                       user.company!.isEmpty
-                          ? SizedBox.shrink()
+                          ? const SizedBox.shrink()
                           : Text(user.company!,
                               style: TextStyle(
                                 fontSize: 12.0,
@@ -253,7 +253,7 @@ class _FavoriteSongState extends State<FavoriteSong> {
                                         builder: (BuildContext context,
                                             AsyncSnapshot snapshot) {
                                           if (!snapshot.hasData) {
-                                            return SizedBox.shrink();
+                                            return const SizedBox.shrink();
                                           }
                                           AccountHolder user = snapshot.data;
                                           return _buildUserTile(user);

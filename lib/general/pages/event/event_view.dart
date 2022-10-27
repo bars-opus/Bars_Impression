@@ -5,20 +5,18 @@ import 'package:intl/intl.dart';
 class EventView extends StatefulWidget {
   final String currentUserId;
   final Event event;
-  final AccountHolder author;
+  // final AccountHolder author;
   final AccountHolder? user;
-  // final List<Event> eventList;
   final int feed;
   final String exploreLocation;
 
-  EventView(
-      {required this.currentUserId,
-      //  required  this.eventList,
-      required this.feed,
-      required this.exploreLocation,
-      required this.user,
-      required this.event,
-      required this.author});
+  EventView({
+    required this.currentUserId,
+    required this.feed,
+    required this.exploreLocation,
+    required this.user,
+    required this.event,
+  });
 
   @override
   _EventViewState createState() => _EventViewState();
@@ -28,6 +26,7 @@ class _EventViewState extends State<EventView> {
   int _askCount = 0;
   late DateTime _date;
   late DateTime _closingDate;
+  int _different = 0;
 
   late DateTime _toDaysDate;
 
@@ -56,40 +55,22 @@ class _EventViewState extends State<EventView> {
       _date = date;
       _toDaysDate = toDayDate;
       _closingDate = clossingDate;
+      _different = date.difference(toDayDate).inDays;
+      print(' event ---  999999');
     });
   }
 
-  // _dynamicLink() async {
-  //   final dynamicLinkParams = DynamicLinkParameters(
-  //     socialMetaTagParameters: SocialMetaTagParameters(
-  //       imageUrl: Uri.parse(
-  //           'https://firebasestorage.googleapis.com/v0/b/bars-5e3e5.appspot.com/o/barsLauncherforfirebase.png?alt=media&token=be7d907e-30fa-475b-86ca-ab9eaaa34837'),
-  //       title: 'Event',
-  //       description: widget.event.title,
-  //     ),
-  //     link: Uri.parse('https://www.barsopus.com/event_${widget.event.id}'),
-  //     uriPrefix: 'https://barsimpression.page.link',
-  //     androidParameters:
-  //         AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
-  //     iosParameters: IOSParameters(
-  //       bundleId: 'com.bars-Opus.barsImpression',
-  //       appStoreId: '1610868894',
-  //     ),
-  //   );
-  //   var link =
-  //       await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
-
-  //   Share.share(link.shortUrl.toString());
-  // }
-
   _dynamicLink() async {
-    final dynamicLinkParams = await DynamicLinkParameters(
-      socialMetaTagParameters: await SocialMetaTagParameters(
+    var linkUrl = Uri.parse(widget.event.imageUrl);
+
+    final dynamicLinkParams = DynamicLinkParameters(
+      socialMetaTagParameters: SocialMetaTagParameters(
+        imageUrl: linkUrl,
         title: 'Event',
         description: widget.event.title,
       ),
       link: Uri.parse('https://www.barsopus.com/event_${widget.event.id}'),
-      uriPrefix: 'https://barsopus.com/barsImpression/',
+      uriPrefix: 'https://barsopus.com/barsImpression',
       androidParameters:
           AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
       iosParameters: IOSParameters(
@@ -97,10 +78,15 @@ class _EventViewState extends State<EventView> {
         appStoreId: '1610868894',
       ),
     );
-    var link =
-        await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
-
-    Share.share(link.shortUrl.toString());
+    if (Platform.isIOS) {
+      var link =
+          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
+      Share.share(link.toString());
+    } else {
+      var link =
+          await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+      Share.share(link.shortUrl.toString());
+    }
   }
 
   @override
@@ -150,7 +136,7 @@ class _EventViewState extends State<EventView> {
                   width: width - 40,
                   child: Center(
                     child: Text(
-                      "Go to ${widget.author.userName}'s profile",
+                      "View profile",
                       overflow: TextOverflow.ellipsis,
                       textScaleFactor: MediaQuery.of(context).textScaleFactor,
                     ),
@@ -159,7 +145,14 @@ class _EventViewState extends State<EventView> {
                 onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (_) => ProfileScreen(
+                        builder: (_) =>
+
+                            //  widget.author.userName!.isEmpty
+                            //     ? UserNotFound(
+                            //         userName: 'User',
+                            //       )
+                            //     :
+                            ProfileScreen(
                               currentUserId: widget.currentUserId,
                               userId: widget.event.authorId,
                             ))),
@@ -240,59 +233,51 @@ class _EventViewState extends State<EventView> {
         data: MediaQuery.of(context).copyWith(
             textScaleFactor:
                 MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
-        child: Slidable(
-          startActionPane: ActionPane(
-            motion: const DrawerMotion(),
-            children: [
-              SlidableAction(
-                onPressed: (_) {
-                  widget.currentUserId == widget.author.id!
-                      ? _toDaysDate.isAfter(_closingDate)
-                          ? Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => EventCompleted(
-                                    date: DateFormat.yMMMMEEEEd().format(_date),
-                                    event: widget.event,
-                                    currentUserId: widget.currentUserId),
-                              ),
-                            )
-                          : Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => EditEvent(
-                                    event: widget.event,
-                                    currentUserId: widget.currentUserId),
-                              ),
-                            )
-                      : Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => ProfileScreen(
-                                    currentUserId: widget.currentUserId,
-                                    userId: widget.event.authorId,
-                                  )));
-                },
-                backgroundColor: ConfigBloc().darkModeOn
-                    ? Color(0xFF1f2022)
-                    : Color(0xFFf2f2f2),
-                foregroundColor: Colors.grey,
-                icon: widget.currentUserId == widget.author.id!
-                    ? Icons.edit
-                    : Icons.account_circle,
-                label: widget.currentUserId == widget.author.id!
-                    ? 'Edit event'
-                    : 'Profile page ',
-              ),
-            ],
-          ),
-          child: Stack(
-            children: [
-              EventViewWidget(
-                currentUserId: widget.currentUserId,
-                author: widget.author,
-                event: widget.event,
-                onPressedEventEnlarged: () => Navigator.push(
+        child: Stack(
+          children: [
+            EventViewWidget(
+              currentUserId: widget.currentUserId,
+              // author: widget.author,
+              event: widget.event,
+              // onPressedEventEnlarged: () => Navigator.push(
+              //   context,
+              //   PageRouteBuilder(
+              //     pageBuilder: (context, animation1, animation2) =>
+              //         AllEvenEnlarged(
+              //       exploreLocation: widget.exploreLocation,
+              //       feed: widget.feed,
+              //       askCount: _askCount,
+              //       currentUserId: widget.currentUserId,
+              //       event: widget.event,
+              //       user: widget.user,
+              //     ),
+              //     transitionDuration: Duration(seconds: 0),
+              //   ),
+              // ),
+
+              //  Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (_) => AllEvenEnlarged(
+              //               exploreLocation: widget.exploreLocation,
+              //               feed: widget.feed,
+              //               askCount: _askCount,
+              //               currentUserId: widget.currentUserId,
+              //               event: widget.event,
+              //               user: widget.user,
+              //             ))),
+              // imageHero: '',
+              askCount: _askCount,
+              titleHero: 'title ${widget.event.id.toString()}',
+              difference: _different,
+              completed: _toDaysDate.isAfter(_closingDate) ? true : false,
+              exploreLocation: widget.exploreLocation, feed: widget.feed,
+            ),
+            Positioned(
+              top: 1,
+              right: 10,
+              child: GestureDetector(
+                onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (_) => AllEvenEnlarged(
@@ -301,83 +286,60 @@ class _EventViewState extends State<EventView> {
                               askCount: _askCount,
                               currentUserId: widget.currentUserId,
                               event: widget.event,
-                              user: widget.user,
-                              // eventList: widget.eventList,
+                              // user: widget.user,
                             ))),
-                imageHero: 'image ${widget.event.id.toString()}',
-                askCount: NumberFormat.compact().format(_askCount),
-                titleHero: 'title ${widget.event.id.toString()}',
-              ),
-              Positioned(
-                top: 1,
-                right: 10,
-                child: GestureDetector(
-                  onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => AllEvenEnlarged(
-                                exploreLocation: widget.exploreLocation,
-                                feed: widget.feed,
-                                askCount: _askCount,
-                                currentUserId: widget.currentUserId,
-                                event: widget.event,
-                                user: widget.user,
-                                // eventList: widget.eventList,
-                              ))),
-                  child: Hero(
-                    tag: 'type' + widget.event.id.toString(),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Container(
-                        width: 35.0,
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            primary: widget.event.report.isNotEmpty
-                                ? Colors.grey
-                                : Colors.blue,
-                            side: BorderSide(width: 1.0, color: Colors.blue),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
+                child: Hero(
+                  tag: 'type' + widget.event.id.toString(),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Container(
+                      width: 35.0,
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          primary: widget.event.report.isNotEmpty
+                              ? Colors.grey
+                              : Colors.blue,
+                          side: BorderSide(width: 1.0, color: Colors.blue),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
                           ),
-                          child: Text(
-                            widget.event.type.startsWith('F')
-                                ? 'FE'
-                                : widget.event.type.startsWith('Al')
-                                    ? 'AL'
-                                    : widget.event.type.startsWith('Aw')
-                                        ? 'AW'
-                                        : widget.event.type.startsWith('O')
-                                            ? 'OT'
-                                            : widget.event.type.startsWith('T')
-                                                ? 'TO'
-                                                : '',
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontSize: width > 800 ? 16 : 10,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => AllEvenEnlarged(
-                                        exploreLocation: widget.exploreLocation,
-                                        feed: widget.feed,
-                                        askCount: _askCount,
-                                        currentUserId: widget.currentUserId,
-                                        event: widget.event,
-                                        user: widget.user,
-                                        // eventList: widget.eventList,
-                                      ))),
                         ),
+                        child: Text(
+                          widget.event.type.startsWith('F')
+                              ? 'F\nE'
+                              : widget.event.type.startsWith('Al')
+                                  ? 'A\nL'
+                                  : widget.event.type.startsWith('Aw')
+                                      ? 'A\nW'
+                                      : widget.event.type.startsWith('O')
+                                          ? 'O\nT'
+                                          : widget.event.type.startsWith('T')
+                                              ? 'T\nO'
+                                              : '',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: 10,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => AllEvenEnlarged(
+                                      exploreLocation: widget.exploreLocation,
+                                      feed: widget.feed,
+                                      askCount: _askCount,
+                                      currentUserId: widget.currentUserId,
+                                      event: widget.event,
+                                      // user: widget.user,
+                                    ))),
                       ),
                     ),
                   ),
                 ),
-              )
-            ],
-          ),
+              ),
+            )
+          ],
         ),
       ),
     );

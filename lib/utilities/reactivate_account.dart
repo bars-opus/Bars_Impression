@@ -110,94 +110,99 @@ class _reActivateAccountState extends State<reActivateAccount> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    return Scaffold(
-      backgroundColor: Color(0xFF1a1a1a),
-      appBar: AppBar(
-        automaticallyImplyLeading: true,
-        elevation: 0,
+    final double width = Responsive.isDesktop(context)
+        ? 600.0
+        : MediaQuery.of(context).size.width;
+    return ResponsiveScaffold(
+      child: Scaffold(
         backgroundColor: Color(0xFF1a1a1a),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            ShakeTransition(
-              child: new Material(
+        appBar: AppBar(
+          automaticallyImplyLeading: true,
+          elevation: 0,
+          backgroundColor: Color(0xFF1a1a1a),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              ShakeTransition(
+                child: new Material(
+                  color: Colors.transparent,
+                  child: Column(
+                    children: [
+                      SizedBox(height: 20),
+                      Text(
+                        'Activate',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 50.0,
+                          fontWeight: FontWeight.w100,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        'Your Account',
+                        style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Container(
+                  width: 20,
+                  height: 1,
+                  color: Color(0xFFD38B41),
+                ),
+              ),
+              new Material(
                 color: Colors.transparent,
-                child: Column(
-                  children: [
-                    SizedBox(height: 20),
-                    Text(
+                child: Text(
+                  'Welcome Back. You have deactivate your account. You can reactivate your account to start connecting with others.',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              SizedBox(height: 50),
+              Container(
+                width: width - 100,
+                child: TextButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: ConfigBloc().darkModeOn
+                        ? Color(0xFF1a1a1a)
+                        : Colors.white,
+                    onPrimary: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(3.0),
+                    ),
+                  ),
+                  onPressed: () {
+                    _reActivate();
+                  },
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Text(
                       'Activate',
                       style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 50.0,
-                        fontWeight: FontWeight.w100,
+                        color: ConfigBloc().darkModeOn
+                            ? Colors.white
+                            : Colors.black,
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                    Text(
-                      'Your Account',
-                      style: TextStyle(
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Container(
-                width: 20,
-                height: 1,
-                color: Color(0xFFD38B41),
-              ),
-            ),
-            new Material(
-              color: Colors.transparent,
-              child: Text(
-                'Welcome Back. You have deactivate your account. You can reactivate your account to start connecting with other',
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            SizedBox(height: 50),
-            Container(
-              width: width - 100,
-              child: TextButton(
-                style: ElevatedButton.styleFrom(
-                  primary: ConfigBloc().darkModeOn
-                      ? Color(0xFF1a1a1a)
-                      : Colors.white,
-                  onPrimary: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(3.0),
-                  ),
-                ),
-                onPressed: () {
-                  _reActivate();
-                },
-                child: Material(
-                  color: Colors.transparent,
-                  child: Text(
-                    'Activate',
-                    style: TextStyle(
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
                     ),
                   ),
                 ),
               ),
-            ),
-            SizedBox(height: 100),
-          ],
+              SizedBox(height: 100),
+            ],
+          ),
         ),
       ),
     );

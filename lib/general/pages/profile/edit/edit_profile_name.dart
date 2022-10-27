@@ -265,7 +265,7 @@ class _EditProfileNameState extends State<EditProfileName> {
                                           AlwaysStoppedAnimation(Colors.blue),
                                     ),
                                   )
-                                : SizedBox.shrink(),
+                                : const SizedBox.shrink(),
                             Padding(
                               padding: const EdgeInsets.all(30.0),
                               child: Column(

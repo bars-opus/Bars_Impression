@@ -37,18 +37,19 @@ class SearchUserTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     return ListTile(
-      leading: CircleAvatar(
-        backgroundColor:
-            ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
-        radius: 25.0,
-        backgroundImage: profileImageUrl.isEmpty
-            ? AssetImage(
-                ConfigBloc().darkModeOn
-                    ? 'assets/images/user_placeholder.png'
-                    : 'assets/images/user_placeholder2.png',
-              ) as ImageProvider
-            : CachedNetworkImageProvider(profileImageUrl),
-      ),
+      leading: profileImageUrl.isEmpty
+          ? Icon(
+              Icons.account_circle,
+              size: 60.0,
+              color: Colors.grey,
+            )
+          : CircleAvatar(
+              radius: 25.0,
+              backgroundColor: ConfigBloc().darkModeOn
+                  ? Color(0xFF1a1a1a)
+                  : Color(0xFFf2f2f2),
+              backgroundImage: CachedNetworkImageProvider(profileImageUrl),
+            ),
       title: Align(
         alignment: Alignment.topLeft,
         child: Stack(
@@ -65,7 +66,7 @@ class SearchUserTile extends StatelessWidget {
                   )),
             ),
             verified!.isEmpty
-                ? SizedBox.shrink()
+                ? const SizedBox.shrink()
                 : Positioned(
                     top: 3,
                     right: 0,
@@ -110,7 +111,7 @@ class SearchUserTile extends StatelessWidget {
                 color: Colors.blueGrey,
               )),
           profileHandle.startsWith('F') || profileHandle.isEmpty
-              ? SizedBox.shrink()
+              ? const SizedBox.shrink()
               : Stars(
                   score: score,
                 ),

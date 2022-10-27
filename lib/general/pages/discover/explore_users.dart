@@ -327,6 +327,9 @@ class _UsersExpandState extends State<UsersExpand> {
 
   @override
   Widget build(BuildContext context) {
+    final width = Responsive.isDesktop(context)
+        ? 600.0
+        : MediaQuery.of(context).size.width;
     return ResponsiveScaffold(
       child: Stack(
         children: [
@@ -397,7 +400,7 @@ class _UsersExpandState extends State<UsersExpand> {
                               child: Align(
                                 alignment: Alignment.center,
                                 child: Container(
-                                  width: MediaQuery.of(context).size.width / 2,
+                                  width: width / 2,
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Text(
@@ -637,7 +640,6 @@ class _UserExpandedWidgetState extends State<UserExpandedWidget> {
           context,
           MaterialPageRoute(
               builder: (_) => ProfileProfessionalProfile(
-                
                     currentUserId:
                         Provider.of<UserData>(context).currentUserId!,
                     user: widget.user,

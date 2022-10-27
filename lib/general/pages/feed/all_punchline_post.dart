@@ -195,26 +195,34 @@ class _AllPunclinePostState extends State<AllPunclinePost> {
                                           delegate: SliverChildBuilderDelegate(
                                             (context, index) {
                                               Post post = _posts[index];
-                                              return FutureBuilder(
-                                                future: DatabaseService
-                                                    .getUserWithId(
-                                                        post.authorId),
-                                                builder: (BuildContext context,
-                                                    AsyncSnapshot snapshot) {
-                                                  if (!snapshot.hasData) {
-                                                    return GridSchimmerSkeleton();
-                                                  }
-                                                  AccountHolder author =
-                                                      snapshot.data;
-                                                  return FeedGrid(
+                                              return FeedGrid(
                                                     feed: 'Punchline',
                                                     currentUserId:
                                                         widget.currentUserId,
                                                     post: post,
-                                                    author: author,
+                                           
                                                   );
-                                                },
-                                              );
+                                              
+                                              // FutureBuilder(
+                                              //   future: DatabaseService
+                                              //       .getUserWithId(
+                                              //           post.authorId),
+                                              //   builder: (BuildContext context,
+                                              //       AsyncSnapshot snapshot) {
+                                              //     if (!snapshot.hasData) {
+                                              //       return GridSchimmerSkeleton();
+                                              //     }
+                                              //     AccountHolder author =
+                                              //         snapshot.data;
+                                              //     return FeedGrid(
+                                              //       feed: 'Punchline',
+                                              //       currentUserId:
+                                              //           widget.currentUserId,
+                                              //       post: post,
+                                           
+                                              //     );
+                                              //   },
+                                              // );
                                             },
                                             childCount: _posts.length,
                                           ),

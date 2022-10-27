@@ -4,7 +4,13 @@ class Thought {
   final String id;
   final String content;
   final String authorId;
+  final String authorName;
+  final String authorProfileHanlde;
+  final String authorProfileImageUrl;
+  final String authorVerification;
   final String report;
+  final String mediaType;
+  final String mediaUrl;
   final int? count;
   final String reportConfirmed;
   final Timestamp timestamp;
@@ -15,8 +21,14 @@ class Thought {
     required this.authorId,
     required this.report,
     required this.count,
+    required this.mediaType,
+    required this.mediaUrl,
     required this.reportConfirmed,
     required this.timestamp,
+    required this.authorName,
+    required this.authorProfileHanlde,
+    required this.authorProfileImageUrl,
+    required this.authorVerification,
   });
 
   factory Thought.fromDoc(DocumentSnapshot doc) {
@@ -25,9 +37,15 @@ class Thought {
       content: doc['content'],
       authorId: doc['authorId'],
       report: doc['report'] ?? '',
+      mediaUrl: doc['mediaUrl'] ?? '',
+      mediaType: doc['mediaType'] ?? '',
       count: doc['count'] ?? 0,
       reportConfirmed: doc['reportConfirmed'] ?? '',
       timestamp: doc['timestamp'],
+      authorName: doc['authorName'] ?? '',
+      authorProfileHanlde: doc['authorProfileHanlde'] ?? '',
+      authorProfileImageUrl: doc['authorProfileImageUrl'] ?? '',
+      authorVerification: doc['authorVerification'] ?? '',
     );
   }
 }

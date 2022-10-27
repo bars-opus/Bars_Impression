@@ -4,6 +4,7 @@ class UpdateApp {
   final String? id;
   final Timestamp? timeStamp;
   final String? updateNote;
+  final String? version;
   final bool? updateIsAvailable;
   final bool? displayMiniUpdate;
   final bool? displayFullUpdate;
@@ -14,6 +15,7 @@ class UpdateApp {
     required this.id,
     required this.updateIsAvailable,
     required this.updateNote,
+    required this.version,
     required this.displayFullUpdate,
     required this.displayMiniUpdate,
     required this.updateVersionIos,
@@ -25,6 +27,7 @@ class UpdateApp {
     return UpdateApp(
       id: doc.id,
       updateNote: doc['updateNote'] ?? '',
+      version: doc['version'] ?? '',
       updateIsAvailable: doc['updateIsAvailable'] ?? false,
       displayFullUpdate: doc['displayFullUpdate'] ?? false,
       displayMiniUpdate: doc['displayMiniUpdate'] ?? false,

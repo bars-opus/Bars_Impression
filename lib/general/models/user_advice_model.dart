@@ -7,6 +7,10 @@ class UserAdvice {
   final String report;
   final String reportConfirmed;
   final Timestamp timestamp;
+  final String authorName;
+  final String authorProfileHanlde;
+  final String authorProfileImageUrl;
+  final String authorVerification;
 
   UserAdvice({
     required this.id,
@@ -15,6 +19,10 @@ class UserAdvice {
     required this.report,
     required this.reportConfirmed,
     required this.timestamp,
+    required this.authorName,
+    required this.authorProfileHanlde,
+    required this.authorProfileImageUrl,
+    required this.authorVerification,
   });
 
   factory UserAdvice.fromDoc(DocumentSnapshot doc) {
@@ -25,6 +33,10 @@ class UserAdvice {
       report: doc['report'] ?? '',
       reportConfirmed: doc['reportConfirmed'] ?? '',
       timestamp: doc['timestamp'],
+      authorName: doc['authorName'] ?? '',
+      authorProfileHanlde: doc['authorProfileHanlde'] ?? '',
+      authorProfileImageUrl: doc['authorProfileImageUrl'] ?? '',
+      authorVerification: doc['authorVerification'] ?? '',
     );
   }
 }

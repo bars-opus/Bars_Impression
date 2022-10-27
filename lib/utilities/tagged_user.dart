@@ -242,7 +242,7 @@ class _TaggedUserState extends State<TaggedUser> {
                                         ),
                                       ),
                                       user.verified!.isEmpty
-                                          ? SizedBox.shrink()
+                                          ? const SizedBox.shrink()
                                           : Positioned(
                                               top: 3,
                                               right: 0,

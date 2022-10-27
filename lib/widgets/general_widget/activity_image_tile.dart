@@ -76,19 +76,20 @@ class ActivityImageTile extends StatelessWidget {
                       )
                     ]),
           child: ListTile(
-            leading: CircleAvatar(
-              radius: 20.0,
-              backgroundColor: ConfigBloc().darkModeOn
-                  ? Color(0xFF1a1a1a)
-                  : Color(0xFFf2f2f2),
-              backgroundImage: profileImageUrl.isEmpty
-                  ? AssetImage(
-                      ConfigBloc().darkModeOn
-                          ? 'assets/images/user_placeholder.png'
-                          : 'assets/images/user_placeholder2.png',
-                    ) as ImageProvider
-                  : CachedNetworkImageProvider(profileImageUrl),
-            ),
+            leading: profileImageUrl.isEmpty
+                ? Icon(
+                    Icons.account_circle,
+                    size: 60.0,
+                    color: Colors.grey,
+                  )
+                : CircleAvatar(
+                    radius: 25.0,
+                    backgroundColor: ConfigBloc().darkModeOn
+                        ? Color(0xFF1a1a1a)
+                        : Color(0xFFf2f2f2),
+                    backgroundImage:
+                        CachedNetworkImageProvider(profileImageUrl),
+                  ),
             trailing: CachedNetworkImage(
               imageUrl: activityImage,
               height: 40.0,
@@ -117,7 +118,7 @@ class ActivityImageTile extends StatelessWidget {
                       ),
                     ),
                     verified.isEmpty
-                        ? SizedBox.shrink()
+                        ? const SizedBox.shrink()
                         : Positioned(
                             top: 0,
                             right: 0,

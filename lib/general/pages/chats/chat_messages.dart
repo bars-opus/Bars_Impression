@@ -30,7 +30,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   bool _isBlockedUser = false;
   bool _isBlockingUser = false;
   int _chatMessageCount = 0;
-  // bool _isLoading = false;
+  bool _isLoading = false;
   bool _restrictChat = false;
   late ScrollController _hideButtonController;
   late ScrollController _hideAppBarController;
@@ -155,6 +155,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     )
         ? 600.0
         : MediaQuery.of(context).size.width;
+    HapticFeedback.mediumImpact();
     DatabaseService.deleteMessage(
         currentUserId: widget.currentUserId,
         userId: widget.user.id!,
@@ -232,6 +233,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   }
 
   _showSelectImageDialog() {
+    HapticFeedback.heavyImpact();
     return Platform.isIOS ? _iosBottomSheet() : _androidDialog(context);
   }
 
@@ -269,7 +271,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
               'Pick image',
               style: TextStyle(
                 fontSize: 16,
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                color: Colors.black,
               ),
             ),
             actions: <Widget>[
@@ -311,9 +313,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
         });
   }
 
-
-
-_androidDialog(BuildContext parentContext) {
+  _androidDialog(BuildContext parentContext) {
     return showDialog(
         context: parentContext,
         builder: (context) {
@@ -334,12 +334,12 @@ _androidDialog(BuildContext parentContext) {
                     textAlign: TextAlign.center,
                   ),
                   onPressed: () {
-                     Navigator.pop(context);
-                  _handleImage();
+                    Navigator.pop(context);
+                    _handleImage();
                   },
                 ),
               ),
-               Divider(),
+              Divider(),
               Center(
                 child: SimpleDialogOption(
                   child: Text(
@@ -349,8 +349,8 @@ _androidDialog(BuildContext parentContext) {
                     textAlign: TextAlign.center,
                   ),
                   onPressed: () {
-                     Navigator.pop(context);
-                  _handleImage();
+                    Navigator.pop(context);
+                    _handleImage();
                   },
                 ),
               ),
@@ -367,7 +367,6 @@ _androidDialog(BuildContext parentContext) {
           );
         });
   }
-
 
   _displayMessageImage(ChatMessage message, String currentUserId) {
     final width = MediaQuery.of(context).size.width;
@@ -537,7 +536,7 @@ _androidDialog(BuildContext parentContext) {
                   height: 5,
                 ),
                 message.replyingMessage.isEmpty
-                    ? SizedBox.shrink()
+                    ? const SizedBox.shrink()
                     : _repliedMessageContent(message, currentUserId),
                 DragTarget<bool>(builder: (context, data, rejectedData) {
                   return Container(
@@ -780,95 +779,11 @@ _androidDialog(BuildContext parentContext) {
                   ? CrossAxisAlignment.end
                   : CrossAxisAlignment.start,
               children: [
-                // GestureDetector(
-                //   onTap: () => Navigator.push(
-                //       context,
-                //       MaterialPageRoute(
-                //           builder: (_) => ViewSentContent(
-                //                 contentId: message.sendContentId,
-                //                 contentType: message.sendPostType,
-                //               ))),
-                //   child: Padding(
-                //     padding: const EdgeInsets.all(8.0),
-                //     child:
-                //  Row(
-                //   mainAxisAlignment: currentUserId == message.authorId
-                //       ? MainAxisAlignment.end
-                //       : MainAxisAlignment.start,
-                //   crossAxisAlignment: CrossAxisAlignment.end,
-                //   children: [
-                //     currentUserId == message.authorId
-                //         ? Text(
-                //             message.sendContentTitle,
-                //             style: TextStyle(
-                //                 color: Colors.grey,
-                //                 fontSize: 10,
-                //                 fontWeight: FontWeight.bold),
-                //             overflow: TextOverflow.ellipsis,
-                //             textScaleFactor:
-                //                 MediaQuery.of(context).textScaleFactor,
-                //           )
-                //         : SizedBox.shrink(),
-                //     currentUserId == message.authorId
-                //         ? const SizedBox(
-                //             width: 10,
-                //           )
-                //         : const SizedBox.shrink(),
-                //     Container(
-                //       width: 50,
-                //       height: 50,
-                //       decoration: BoxDecoration(
-                //           color: Colors.grey,
-                //           borderRadius: BorderRadius.circular(10)),
-                //       child: CachedNetworkImage(
-                //         imageUrl: message.mediaUrl,
-                //         height: 40.0,
-                //         width: 40.0,
-                //         fit: BoxFit.cover,
-                //       ),
-                //     ),
-                //     currentUserId != message.authorId
-                //         ? const SizedBox(
-                //             width: 10,
-                //           )
-                //         : const SizedBox.shrink(),
-                //     currentUserId != message.authorId
-                //         ? Text(
-                //             message.sendContentTitle,
-                //             style: TextStyle(
-                //                 color: Colors.grey,
-                //                 fontSize: 10,
-                //                 fontWeight: FontWeight.bold),
-                //             overflow: TextOverflow.ellipsis,
-                //             textScaleFactor:
-                //                 MediaQuery.of(context).textScaleFactor,
-                //           )
-                //         : const SizedBox.shrink(),
-                //   ],
-                // ),
-                // ),
-                // ),
                 const SizedBox(
                   height: 5,
                 ),
                 DragTarget<bool>(builder: (context, data, rejectedData) {
                   return Container(
-                    // decoration: BoxDecoration(
-                    // color: currentUserId == message.authorId
-                    //     ? Colors.teal[200]
-                    //     : Colors.white,
-                    // borderRadius: currentUserId == message.authorId
-                    //     ? BorderRadius.only(
-                    //         topLeft: Radius.circular(50.0),
-                    //         topRight: Radius.circular(50.0),
-                    //         bottomLeft: Radius.circular(50.0),
-                    //       )
-                    //     : BorderRadius.only(
-                    //         topLeft: Radius.circular(50.0),
-                    //         topRight: Radius.circular(50.0),
-                    //         bottomRight: Radius.circular(50.0),
-                    //         ),
-                    // ),
                     child: Column(
                       crossAxisAlignment: currentUserId == message.authorId
                           ? CrossAxisAlignment.end
@@ -961,7 +876,7 @@ _androidDialog(BuildContext parentContext) {
                                     child: Text(
                                       message.content,
                                       style: TextStyle(
-                                        fontSize: 14.0,
+                                        fontSize: 12.0,
                                         color: Colors.blueGrey,
                                       ),
                                       textAlign:
@@ -1109,7 +1024,7 @@ _androidDialog(BuildContext parentContext) {
     final width = MediaQuery.of(context).size.width;
 
     return Provider.of<UserData>(context).postImage == null
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : ShakeTransition(
             curve: Curves.easeOutBack,
             axis: Axis.vertical,
@@ -1124,7 +1039,7 @@ _androidDialog(BuildContext parentContext) {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Provider.of<UserData>(context, listen: false).isLoading
+                      _isLoading
                           ? Padding(
                               padding:
                                   const EdgeInsets.only(bottom: 10.0, top: 5),
@@ -1137,7 +1052,7 @@ _androidDialog(BuildContext parentContext) {
                                 ),
                               ),
                             )
-                          : SizedBox.shrink(),
+                          : const SizedBox.shrink(),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: Row(
@@ -1152,10 +1067,7 @@ _androidDialog(BuildContext parentContext) {
                                       .setPostImage(null);
                                 }),
                             Text(
-                              Provider.of<UserData>(context, listen: false)
-                                      .isLoading
-                                  ? "Sending message"
-                                  : "Ready to send",
+                              _isLoading ? "Sending message" : "Ready to send",
                               style: TextStyle(
                                 fontSize: 12.0,
                                 color: Colors.white,
@@ -1170,7 +1082,9 @@ _androidDialog(BuildContext parentContext) {
                           height: width / 2,
                           width: width,
                           image: FileImage(File(
-                              Provider.of<UserData>(context).postImage!.path)),
+                              Provider.of<UserData>(context, listen: false)
+                                  .postImage!
+                                  .path)),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -1252,8 +1166,8 @@ _androidDialog(BuildContext parentContext) {
               children: [
                 _displayIsReplying(),
                 _displayImage(),
-                Provider.of<UserData>(context, listen: false).isLoading
-                    ? SizedBox.shrink()
+                _isLoading
+                    ? const SizedBox.shrink()
                     : Material(
                         color: Colors.white,
                         elevation: 10.0,
@@ -1271,7 +1185,7 @@ _androidDialog(BuildContext parentContext) {
                                                   listen: false)
                                               .messageCount <
                                           1
-                                      ? SizedBox.shrink()
+                                      ? const SizedBox.shrink()
                                       : GestureDetector(
                                           onTap: _showSelectImageDialog,
                                           child: Icon(
@@ -1279,7 +1193,7 @@ _androidDialog(BuildContext parentContext) {
                                             color: Colors.grey,
                                           ),
                                         )
-                                  : SizedBox.shrink(),
+                                  : const SizedBox.shrink(),
                               SizedBox(width: 10.0),
                               Expanded(
                                 child: TextField(
@@ -1336,6 +1250,8 @@ _androidDialog(BuildContext parentContext) {
                                                     .disabledColor,
                                       ),
                                       onPressed: () {
+                                        HapticFeedback.mediumImpact();
+
                                         // Provider.of<UserData>(context,
                                         //                 listen: false)
                                         //             .messageCount <
@@ -1367,6 +1283,7 @@ _androidDialog(BuildContext parentContext) {
     HapticFeedback.mediumImpact();
     if (Provider.of<UserData>(context, listen: false).post9.isNotEmpty) {
       DatabaseService.firstChatMessage(
+        author: Provider.of<UserData>(context, listen: false).user!,
         currentUserId: widget.currentUserId,
         userId: widget.user.id!,
         messageInitiator: currentUser.userName!,
@@ -1395,10 +1312,10 @@ _androidDialog(BuildContext parentContext) {
   }
 
   _submitMessageWithImage() async {
-    // setState(() {
-    //   _isLoading = true;
-    // });
-    Provider.of<UserData>(context, listen: false).setIsLoading(true);
+    setState(() {
+      _isLoading = true;
+    });
+
     String imageUrl = await StorageService.uploadMessageImage(
         Provider.of<UserData>(context, listen: false).postImage!);
     HapticFeedback.mediumImpact();
@@ -1418,6 +1335,7 @@ _androidDialog(BuildContext parentContext) {
       message: _adviceControler.text.isEmpty ? "Image" : _adviceControler.text,
       sendContentId: '',
       sendPostType: '',
+      author: Provider.of<UserData>(context, listen: false).user!,
     );
     _adviceControler.clear();
     Provider.of<UserData>(context, listen: false).setPost9('');
@@ -1425,9 +1343,9 @@ _androidDialog(BuildContext parentContext) {
       _isAdvicingUser = false;
       _isreplying = false;
       imageUrl = '';
-      // _isLoading = false;
+      _isLoading = false;
     });
-    Provider.of<UserData>(context, listen: false).setIsLoading(false);
+
     Provider.of<UserData>(context, listen: false).setPostImage(null);
     Provider.of<UserData>(context, listen: false).setPost8('');
     Provider.of<UserData>(context, listen: false).setPost7('');
@@ -1437,6 +1355,7 @@ _androidDialog(BuildContext parentContext) {
     HapticFeedback.mediumImpact();
     if (Provider.of<UserData>(context, listen: false).post9.isNotEmpty) {
       DatabaseService.chatMessage(
+        author: Provider.of<UserData>(context, listen: false).user!,
         currentUserId: widget.currentUserId,
         userId: widget.user.id!,
         mediaUrl: '',
@@ -1612,7 +1531,8 @@ _androidDialog(BuildContext parentContext) {
                                                     ),
                                                     widget.user.verified!
                                                             .isEmpty
-                                                        ? SizedBox.shrink()
+                                                        ? const SizedBox
+                                                            .shrink()
                                                         : Positioned(
                                                             top: 3,
                                                             right: 0,
@@ -1655,7 +1575,7 @@ _androidDialog(BuildContext parentContext) {
                                   ),
                                 ),
                                 widget.chat == null
-                                    ? SizedBox.shrink()
+                                    ? const SizedBox.shrink()
                                     : AnimatedContainer(
                                         duration: Duration(milliseconds: 500),
                                         height: _isBlockedUser ||
@@ -1797,7 +1717,7 @@ _androidDialog(BuildContext parentContext) {
                                             listen: false)
                                         .user!
                                         .disableChat!
-                                ? SizedBox.shrink()
+                                ? const SizedBox.shrink()
                                 : _buildUserAdvice(),
                           ],
                         )),
@@ -1817,7 +1737,7 @@ _androidDialog(BuildContext parentContext) {
                               color: Colors.pink,
                             ),
                           ))
-                  : SizedBox.shrink(),
+                  : const SizedBox.shrink()
             ],
           ),
         ),

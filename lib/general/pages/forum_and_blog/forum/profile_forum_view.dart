@@ -1,5 +1,4 @@
 import 'package:bars/utilities/exports.dart';
-import 'package:intl/intl.dart';
 
 class ProfileForumView extends StatefulWidget {
   final String currentUserId;
@@ -33,6 +32,34 @@ class _ProfileForumViewState extends State<ProfileForumView> {
         });
       }
     });
+  }
+
+  _dynamicLink() async {
+    final dynamicLinkParams = DynamicLinkParameters(
+      socialMetaTagParameters: SocialMetaTagParameters(
+        imageUrl: Uri.parse(
+            'https://firebasestorage.googleapis.com/v0/b/bars-5e3e5.appspot.com/o/IMG_8574.PNG?alt=media&token=ccb4e3b1-b5dc-470f-abd0-63edb5ed549f'),
+        title: 'Forum',
+        description: widget.forum.title,
+      ),
+      link: Uri.parse('https://www.barsopus.com/forum_${widget.forum.id}'),
+      uriPrefix: 'https://barsopus.com/barsImpression',
+      androidParameters:
+          AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
+      iosParameters: IOSParameters(
+        bundleId: 'com.bars-Opus.barsImpression',
+        appStoreId: '1610868894',
+      ),
+    );
+    if (Platform.isIOS) {
+      var link =
+          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
+      Share.share(link.toString());
+    } else {
+      var link =
+          await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+      Share.share(link.shortUrl.toString());
+    }
   }
 
   @override
@@ -72,10 +99,14 @@ class _ProfileForumViewState extends State<ProfileForumView> {
               : Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (_) => ProfileScreen(
-                            currentUserId: widget.currentUserId,
-                            userId: widget.forum.authorId,
-                          ))),
+                      builder: (_) => widget.author.userName!.isEmpty
+                          ? UserNotFound(
+                              userName: 'User',
+                            )
+                          : ProfileScreen(
+                              currentUserId: widget.currentUserId,
+                              userId: widget.forum.authorId,
+                            ))),
         ),
         FocusedMenuItem(
             title: Container(
@@ -114,21 +145,7 @@ class _ProfileForumViewState extends State<ProfileForumView> {
                 ),
               ),
             ),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => SendToChats(
-                            currentUserId: widget.currentUserId,
-                            userId: '',
-                            sendContentType: 'Forum',
-                            event: null,
-                            post: null,
-                            forum: widget.forum,
-                            user: null,
-                            sendContentId: widget.forum.id,
-                          )));
-            }),
+            onPressed: () => _dynamicLink()),
         FocusedMenuItem(
             title: Container(
               width: width - 40,
@@ -170,23 +187,15 @@ class _ProfileForumViewState extends State<ProfileForumView> {
             textScaleFactor:
                 MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
         child: ForumViewWidget(
-          currentUserId: widget.currentUserId,
-          author: widget.author,
-          forum: widget.forum,
-          titleHero: 'titleProfile' + widget.forum.id.toString(),
-          subtitleHero: 'subTitleProfile' + widget.forum.id.toString(),
-          thougthCount: NumberFormat.compact().format(_thoughtCount),
-          onPressedThougthScreen: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => ThoughtsScreen(
-                        feed: widget.feed,
-                        forum: widget.forum,
-                        author: widget.author,
-                        thoughtCount: _thoughtCount,
-                        currentUserId: widget.currentUserId,
-                      ))),
-        ),
+            currentUserId: widget.currentUserId,
+            // author: widget.author,
+            forum: widget.forum,
+            // titleHero: 'titleProfile' + widget.forum.id.toString(),
+            // subtitleHero: 'subTitleProfile' + widget.forum.id.toString(),
+            feed: widget.feed,
+            thoughtCount: _thoughtCount
+            // NumberFormat.compact().format(_thoughtCount),
+            ),
       ),
     );
   }

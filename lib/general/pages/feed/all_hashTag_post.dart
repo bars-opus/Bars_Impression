@@ -85,7 +85,6 @@ class _AllHashTagPostState extends State<AllHashTagPost> {
     return _hasNext;
   }
 
-
   _setUpArtistPuchCount() async {
     final String currentUserId =
         Provider.of<UserData>(context, listen: false).currentUserId!;
@@ -147,8 +146,7 @@ class _AllHashTagPostState extends State<AllHashTagPost> {
                       text: TextSpan(
                         children: [
                           TextSpan(
-                              text:
-                                  "These are the mood punches with the hashtag:",
+                              text: "These are the mood punches with the tag:",
                               style: TextStyle(
                                 color: ConfigBloc().darkModeOn
                                     ? Colors.white
@@ -189,27 +187,34 @@ class _AllHashTagPostState extends State<AllHashTagPost> {
                                         delegate: SliverChildBuilderDelegate(
                                           (context, index) {
                                             Post post = _posts[index];
-                                            return FutureBuilder(
-                                              future:
-                                                  DatabaseService.getUserWithId(
-                                                      post.authorId),
-                                              builder: (BuildContext context,
-                                                  AsyncSnapshot snapshot) {
-                                                if (!snapshot.hasData) {
-                                                  return GridSchimmerSkeleton();
-                                                }
-                                                AccountHolder author =
-                                                    snapshot.data;
-                                                return FeedGrid(
+                                            return
+                                             FeedGrid(
                                                   currentUserId:
                                                       widget.currentUserId,
                                                   post: post,
-                                                  author: author,
+                                          
                                                   feed: 'Hashtag',
-                                                 
                                                 );
-                                              },
-                                            );
+                                            //  FutureBuilder(
+                                            //   future:
+                                            //       DatabaseService.getUserWithId(
+                                            //           post.authorId),
+                                            //   builder: (BuildContext context,
+                                            //       AsyncSnapshot snapshot) {
+                                            //     if (!snapshot.hasData) {
+                                            //       return GridSchimmerSkeleton();
+                                            //     }
+                                            //     AccountHolder author =
+                                            //         snapshot.data;
+                                            //     return FeedGrid(
+                                            //       currentUserId:
+                                            //           widget.currentUserId,
+                                            //       post: post,
+                                          
+                                            //       feed: 'Hashtag',
+                                            //     );
+                                            //   },
+                                            // );
                                           },
                                           childCount: _posts.length,
                                         ),

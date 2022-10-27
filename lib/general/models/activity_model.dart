@@ -7,6 +7,10 @@ class Activity {
   final String? postImageUrl;
   final String? comment;
   final String? seen;
+  final String authorName;
+  final String authorProfileHanlde;
+  final String authorProfileImageUrl;
+  final String authorVerification;
   final Timestamp? timestamp;
 
   Activity({
@@ -17,6 +21,10 @@ class Activity {
     required this.postImageUrl,
     required this.comment,
     required this.timestamp,
+    required this.authorName,
+    required this.authorProfileHanlde,
+    required this.authorProfileImageUrl,
+    required this.authorVerification,
   });
 
   factory Activity.fromDoc(DocumentSnapshot doc) {
@@ -28,6 +36,10 @@ class Activity {
       postImageUrl: doc['postImageUrl'],
       comment: doc['comment'],
       timestamp: doc['timestamp'],
+      authorName: doc['authorName'] ?? '',
+      authorProfileHanlde: doc['authorProfileHanlde'] ?? '',
+      authorProfileImageUrl: doc['authorProfileImageUrl'] ?? '',
+      authorVerification: doc['authorVerification'] ?? '',
     );
   }
 }

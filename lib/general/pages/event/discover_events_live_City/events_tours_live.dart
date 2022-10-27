@@ -99,7 +99,7 @@ late  ScrollController _hideButtonController;
       currentUserId: widget.currentUserId,
       event: event,      user: widget.user,
 
-      author: author,
+     
       // eventList: _events,
     );
   }

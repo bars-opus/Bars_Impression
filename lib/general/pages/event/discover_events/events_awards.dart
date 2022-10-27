@@ -44,8 +44,12 @@ class _AwardEventsState extends State<AwardEvents>
   }
 
   _setupEventFeed() async {
-    QuerySnapshot eventFeedSnapShot =
-        await allEventsRef.where('type', isEqualTo: 'Award').limit(limit).get();
+    QuerySnapshot eventFeedSnapShot = await eventTypesRef
+        .doc('Award')
+        .collection('Award')
+        .orderBy('timestamp', descending: true)
+        .limit(limit)
+        .get();
     List<Event> events =
         eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
     _eventSnapshot.addAll((eventFeedSnapShot.docs));
@@ -62,8 +66,10 @@ class _AwardEventsState extends State<AwardEvents>
     if (_isFetchingEvent) return;
     _isFetchingEvent = true;
     _hasNext = true;
-    QuerySnapshot eventFeedSnapShot = await allEventsRef
-        .where('type', isEqualTo: 'Award')
+    QuerySnapshot eventFeedSnapShot = await eventTypesRef
+        .doc('Award')
+        .collection('Award')
+        .orderBy('timestamp', descending: true)
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();
@@ -87,7 +93,6 @@ class _AwardEventsState extends State<AwardEvents>
       feed: 3,
       currentUserId: widget.currentUserId,
       event: event,
-      author: author,
       // eventList: _events,
       exploreLocation: '', user: widget.user,
     );
@@ -110,7 +115,9 @@ class _AwardEventsState extends State<AwardEvents>
                       future: DatabaseService.getUserWithId(event.authorId),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (!snapshot.hasData) {
-                          return EventSchimmerBlurHash(event: event,);
+                          return EventSchimmerBlurHash(
+                            event: event,
+                          );
                         }
                         AccountHolder author = snapshot.data;
 
@@ -144,7 +151,7 @@ class _AwardEventsState extends State<AwardEvents>
                     child: _buildUser()))
             : _events.length == 0
                 ? Center(
-                    child:  EventSchimmer(),
+                    child: EventSchimmer(),
                   )
                 : Center(
                     child: EventSchimmer(),

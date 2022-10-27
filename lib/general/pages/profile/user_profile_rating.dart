@@ -175,18 +175,18 @@ class _ProfileRatingState extends State<ProfileRating> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Text(
               widget.user.id! == currentUserId
-                  ? '${widget.user.name} you can tap below to see people you have rated. This information is not displayed to other people.'
-                  : 'This is how ${widget.user.name} has rated people.',
+                  ? '${widget.user.name} you can tap below to see people you have reacted to. This information is not displayed to other people.'
+                  : 'This is how ${widget.user.name} has reacted to people.',
               style: TextStyle(
                 fontSize: 14,
                 color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
               )),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Container(
@@ -232,7 +232,7 @@ class _ProfileRatingState extends State<ProfileRating> {
                               ),
                             ),
                             Text(
-                              'Positively \nRatings',
+                              'Positively',
                               style: TextStyle(
                                 color: Colors.grey,
                                 fontSize: 12,
@@ -282,7 +282,7 @@ class _ProfileRatingState extends State<ProfileRating> {
                               ),
                             ),
                             Text(
-                              'Negatively \nRatings',
+                              'Negatively',
                               style: TextStyle(
                                 color: Colors.grey,
                                 fontSize: 12,
@@ -340,37 +340,17 @@ class _ProfileRatingState extends State<ProfileRating> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 30.0),
-                child: Row(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Icon(
-                          Icons.star,
-                          color: Color(0xFF1a1a1a),
-                          size: 20.0,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Text(
-                      'Rating \nInformation',
-                      style: TextStyle(
-                          color: Colors.white, fontSize: 16.0, height: 1),
-                    ),
-                  ],
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                child: PageFeatureWidget(
+                  heroTag: 'workHero',
+                  title: 'Rating \nInformation',
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Padding(
@@ -416,14 +396,14 @@ class _ProfileRatingState extends State<ProfileRating> {
                                           color: Colors.black,
                                           fontWeight: FontWeight.bold)),
                                   TextSpan(
-                                      text: "\nBars score. ",
+                                      text: "\nProgression. ",
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: Colors.black,
                                       )),
                                   TextSpan(
                                       text:
-                                          "\nBased on ${_point.toString()} ratings. ",
+                                          "\nBased on ${_point.toString()} reactions. ",
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: Colors.black,
@@ -435,10 +415,11 @@ class _ProfileRatingState extends State<ProfileRating> {
                             : Hero(
                                 tag: 'userStar',
                                 child: Stars(
-                                  score: widget.user.score!,
+                                  score: 100000,
+                                  // widget.user.score!,
                                 ),
                               ),
-                        SizedBox(
+                        const SizedBox(
                           height: 40,
                         ),
                         widget.user.profileHandle!.startsWith('F') ||
@@ -446,8 +427,8 @@ class _ProfileRatingState extends State<ProfileRating> {
                             ? SizedBox.shrink()
                             : Text(
                                 widget.user.id == currentUserId
-                                    ? '${widget.user.name} this is how people rate you'
-                                    : 'This is how people rate ${widget.user.name} ',
+                                    ? '${widget.user.name} this is how people reacts to you'
+                                    : 'This is how people reacts to ${widget.user.name} ',
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.black,
@@ -469,7 +450,7 @@ class _ProfileRatingState extends State<ProfileRating> {
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 10.0, horizontal: 20),
                                         child: Text(
-                                          'Posstively Rated',
+                                          'Posstively ',
                                           style: TextStyle(
                                             color: Colors.black,
                                           ),
@@ -493,7 +474,7 @@ class _ProfileRatingState extends State<ProfileRating> {
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 10.0, horizontal: 20),
                                         child: Text(
-                                          'Negatively Rated',
+                                          'Negatively',
                                           style: TextStyle(
                                             color: Colors.black,
                                           ),
@@ -517,7 +498,7 @@ class _ProfileRatingState extends State<ProfileRating> {
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 10.0, horizontal: 20),
                                         child: Text(
-                                          'Total Rate',
+                                          'Total reactions',
                                           style: TextStyle(
                                             color: Colors.black,
                                           ),
@@ -538,11 +519,11 @@ class _ProfileRatingState extends State<ProfileRating> {
                                   ],
                                 ),
                               ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         _buildHowYouRateForYou(widget.user),
-                        SizedBox(
+                        const SizedBox(
                           height: 50,
                         ),
                         widget.user.profileHandle!.startsWith('F') ||
@@ -551,13 +532,13 @@ class _ProfileRatingState extends State<ProfileRating> {
                             : widget.user.id == currentUserId
                                 ? SizedBox.shrink()
                                 : Text(
-                                    "You can rate ${widget.user.name} by adding or subtracting to ${widget.user.name}'s stars when you press the buttons below. When you find ${widget.user.name}'s page interesting and ${widget.user.name}'s works creative enough, you may add to ${widget.user.name}'s stars else you may do otherwise. Please rate wisely and honestly.",
+                                    "You can react to ${widget.user.name} by adding or subtracting to ${widget.user.name}'s progression when you press the buttons below. When you find ${widget.user.name}'s page interesting and ${widget.user.name}'s works creative enough, you may add to ${widget.user.name}'s progression else you may do otherwise. Please react wisely and honestly.",
                                     style: TextStyle(
                                       color: Colors.black,
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
-                        SizedBox(
+                        const SizedBox(
                           height: 50,
                         ),
                         Row(
@@ -568,7 +549,7 @@ class _ProfileRatingState extends State<ProfileRating> {
                                 color: Colors.blue, height: 1.5, width: 50),
                           ],
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 50,
                         ),
                         widget.user.profileHandle!.startsWith('F') ||
@@ -611,13 +592,13 @@ class _ProfileRatingState extends State<ProfileRating> {
                                                   });
                                                 }
                                               }),
-                                          SizedBox(
+                                          const SizedBox(
                                             height: 10,
                                           ),
                                           Text(
                                             _isRatingUserPossitively
                                                 ? 'undo'
-                                                : '+ Star',
+                                                : '+',
                                             style: TextStyle(
                                               color: Colors.black,
                                               fontSize: 14,
@@ -625,7 +606,7 @@ class _ProfileRatingState extends State<ProfileRating> {
                                           )
                                         ],
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 30,
                                       ),
                                       Column(
@@ -659,13 +640,13 @@ class _ProfileRatingState extends State<ProfileRating> {
                                                   });
                                                 }
                                               }),
-                                          SizedBox(
+                                          const SizedBox(
                                             height: 10,
                                           ),
                                           Text(
                                             _isRatingUserNegatively
                                                 ? 'undo'
-                                                : '- Star',
+                                                : '-',
                                             style: TextStyle(
                                               color: Colors.black,
                                               fontSize: 14,
@@ -675,7 +656,7 @@ class _ProfileRatingState extends State<ProfileRating> {
                                       ),
                                     ],
                                   ),
-                        SizedBox(
+                        const SizedBox(
                           height: 30,
                         ),
                         widget.user.profileHandle!.startsWith('F') ||
@@ -713,7 +694,7 @@ class _ProfileRatingState extends State<ProfileRating> {
                                                 color: Colors.white,
                                               ),
                                             ),
-                                      SizedBox(
+                                      const SizedBox(
                                         height: 10,
                                       ),
                                       widget.user.profileHandle!
@@ -743,14 +724,14 @@ class _ProfileRatingState extends State<ProfileRating> {
                                                     ),
                                                     textAlign: TextAlign.right,
                                                   ))),
-                                      SizedBox(
+                                      const SizedBox(
                                         height: 20,
                                       ),
                                     ],
                                   ),
                                 ),
                               ),
-                        SizedBox(height: 40),
+                        const SizedBox(height: 40),
                         GestureDetector(
                             onTap: () => Navigator.push(
                                 context,
@@ -768,8 +749,33 @@ class _ProfileRatingState extends State<ProfileRating> {
                   ),
                 ),
               ),
-              SizedBox(
-                height: 40,
+              const SizedBox(
+                height: 20,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Text(
+                  "You can react to ${widget.user.name} by adding or subtracting to ${widget.user.name}'s progression when you press the buttons below. When you find ${widget.user.name}'s page interesting and ${widget.user.name}'s works creative enough, you may add to ${widget.user.name}'s progression else you may do otherwise. Please react wisely and honestly.",
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 12,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(
+                height: 70,
+              ),
+              Center(
+                child: IconButton(
+                  icon: Icon(Icons.close),
+                  iconSize: 30.0,
+                  color: Colors.white,
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ),
+              const SizedBox(
+                height: 120,
               ),
             ],
           ),

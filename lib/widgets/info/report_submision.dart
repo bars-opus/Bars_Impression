@@ -283,122 +283,129 @@ class _ReportContentSubmissionState extends State<ReportContentSubmission> {
                     ),
                     ShakeTransition(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10.0, horizontal: 30),
-                        child: widget.reportType.startsWith('Spam')
-                            ? Text(
-                                'We do not allow or promote any form or content related to ' +
-                                    widget.reportType +
-                                    ': Misleading or repetitive content',
-                                style: TextStyle(
-                                    color: ConfigBloc().darkModeOn
-                                        ? Color(0xFFf2f2f2)
-                                        : Color(0xFF1a1a1a),
-                                    fontSize: 14),
-                                textAlign: TextAlign.center,
-                              )
-                            : widget.reportType.startsWith('Nudity')
-                                ? Text(
-                                    'We do not allow or promote any form or content related to ' +
-                                        widget.reportType +
-                                        ': Sexually explicit content',
-                                    style: TextStyle(
-                                        color: ConfigBloc().darkModeOn
-                                            ? Color(0xFFf2f2f2)
-                                            : Color(0xFF1a1a1a),
-                                        fontSize: 14),
-                                    textAlign: TextAlign.center,
-                                  )
-                                : widget.reportType.startsWith('Misinformation')
-                                    ? Text(
-                                        'We do not allow or promote any form or content related to ' +
-                                            widget.reportType +
-                                            ': Health misinformation or conspiracies',
-                                        style: TextStyle(
-                                            color: ConfigBloc().darkModeOn
-                                                ? Color(0xFFf2f2f2)
-                                                : Color(0xFF1a1a1a),
-                                            fontSize: 14),
-                                        textAlign: TextAlign.center,
-                                      )
-                                    : widget.reportType
-                                            .startsWith('Hateful Activities')
-                                        ? Text(
-                                            'We do not allow or promote any form or content related to ' +
-                                                widget.reportType +
-                                                ': Prejudice, stereotypes, white supremacy, slurs, racism',
-                                            style: TextStyle(
-                                                color: ConfigBloc().darkModeOn
-                                                    ? Color(0xFFf2f2f2)
-                                                    : Color(0xFF1a1a1a),
-                                                fontSize: 14),
-                                            textAlign: TextAlign.center,
-                                          )
-                                        : widget.reportType
-                                                .startsWith('Dangerous goods')
-                                            ? Text(
-                                                'We do not allow or promote any form or content related to ' +
-                                                    widget.reportType +
-                                                    ': Drugs, regulated products',
-                                                style: TextStyle(
-                                                    color:
-                                                        ConfigBloc().darkModeOn
-                                                            ? Color(0xFFf2f2f2)
-                                                            : Color(0xFF1a1a1a),
-                                                    fontSize: 14),
-                                                textAlign: TextAlign.center,
-                                              )
-                                            : widget.reportType
-                                                    .startsWith('Harassment')
-                                                ? Text(
-                                                    'We do not allow or promote any form or content related to ' +
-                                                        widget.reportType +
-                                                        ': Insults, threats, personally identifiable info',
-                                                    style: TextStyle(
-                                                        color: ConfigBloc()
-                                                                .darkModeOn
-                                                            ? Color(0xFFf2f2f2)
-                                                            : Color(0xFF1a1a1a),
-                                                        fontSize: 14),
-                                                    textAlign: TextAlign.center,
-                                                  )
-                                                : widget.reportType
-                                                        .startsWith('Graphic')
-                                                    ? Text(
-                                                        'We do not allow or promote any form or content related to ' +
-                                                            widget.reportType +
-                                                            ': Violent images or promotion of violence',
-                                                        style: TextStyle(
-                                                            color: ConfigBloc()
-                                                                    .darkModeOn
-                                                                ? Color(
-                                                                    0xFFf2f2f2)
-                                                                : Color(
-                                                                    0xFF1a1a1a),
-                                                            fontSize: 14),
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                      )
-                                                    : widget.reportType.startsWith(
-                                                            'My intellectual property')
-                                                        ? Text(
-                                                            'We do not allow or promote any form or content related to ' +
-                                                                widget
-                                                                    .reportType +
-                                                                ': Copyright or trademark infringement',
-                                                            style: TextStyle(
-                                                                color: ConfigBloc()
-                                                                        .darkModeOn
-                                                                    ? Color(
-                                                                        0xFFf2f2f2)
-                                                                    : Color(
-                                                                        0xFF1a1a1a),
-                                                                fontSize: 14),
-                                                            textAlign: TextAlign
-                                                                .center,
-                                                          )
-                                                        : SizedBox.shrink(),
-                      ),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10.0, horizontal: 30),
+                          child: widget.reportType.startsWith('Spam')
+                              ? Text(
+                                  'We do not allow or promote any form or content related to ' +
+                                      widget.reportType +
+                                      ': Misleading or repetitive content',
+                                  style: TextStyle(
+                                      color: ConfigBloc().darkModeOn
+                                          ? Color(0xFFf2f2f2)
+                                          : Color(0xFF1a1a1a),
+                                      fontSize: 14),
+                                  textAlign: TextAlign.center,
+                                )
+                              : widget.reportType.startsWith('Nudity')
+                                  ? Text(
+                                      'We do not allow or promote any form or content related to ' +
+                                          widget.reportType +
+                                          ': Sexually explicit content',
+                                      style: TextStyle(
+                                          color: ConfigBloc().darkModeOn
+                                              ? Color(0xFFf2f2f2)
+                                              : Color(0xFF1a1a1a),
+                                          fontSize: 14),
+                                      textAlign: TextAlign.center,
+                                    )
+                                  : widget.reportType
+                                          .startsWith('Misinformation')
+                                      ? Text(
+                                          'We do not allow or promote any form or content related to ' +
+                                              widget.reportType +
+                                              ': Health misinformation or conspiracies',
+                                          style: TextStyle(
+                                              color: ConfigBloc().darkModeOn
+                                                  ? Color(0xFFf2f2f2)
+                                                  : Color(0xFF1a1a1a),
+                                              fontSize: 14),
+                                          textAlign: TextAlign.center,
+                                        )
+                                      : widget.reportType
+                                              .startsWith('Hateful Activities')
+                                          ? Text(
+                                              'We do not allow or promote any form or content related to ' +
+                                                  widget.reportType +
+                                                  ': Prejudice, stereotypes, white supremacy, slurs, racism',
+                                              style: TextStyle(
+                                                  color: ConfigBloc().darkModeOn
+                                                      ? Color(0xFFf2f2f2)
+                                                      : Color(0xFF1a1a1a),
+                                                  fontSize: 14),
+                                              textAlign: TextAlign.center,
+                                            )
+                                          : widget.reportType
+                                                  .startsWith('Dangerous goods')
+                                              ? Text(
+                                                  'We do not allow or promote any form or content related to ' +
+                                                      widget.reportType +
+                                                      ': Drugs, regulated products',
+                                                  style: TextStyle(
+                                                      color: ConfigBloc()
+                                                              .darkModeOn
+                                                          ? Color(0xFFf2f2f2)
+                                                          : Color(0xFF1a1a1a),
+                                                      fontSize: 14),
+                                                  textAlign: TextAlign.center,
+                                                )
+                                              : widget.reportType
+                                                      .startsWith('Harassment')
+                                                  ? Text(
+                                                      'We do not allow or promote any form or content related to ' +
+                                                          widget.reportType +
+                                                          ': Insults, threats, personally identifiable info',
+                                                      style: TextStyle(
+                                                          color: ConfigBloc()
+                                                                  .darkModeOn
+                                                              ? Color(
+                                                                  0xFFf2f2f2)
+                                                              : Color(
+                                                                  0xFF1a1a1a),
+                                                          fontSize: 14),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    )
+                                                  : widget.reportType
+                                                          .startsWith('Graphic')
+                                                      ? Text(
+                                                          'We do not allow or promote any form or content related to ' +
+                                                              widget
+                                                                  .reportType +
+                                                              ': Violent images or promotion of violence',
+                                                          style: TextStyle(
+                                                              color: ConfigBloc()
+                                                                      .darkModeOn
+                                                                  ? Color(
+                                                                      0xFFf2f2f2)
+                                                                  : Color(
+                                                                      0xFF1a1a1a),
+                                                              fontSize: 14),
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                        )
+                                                      : widget.reportType
+                                                              .startsWith(
+                                                                  'My intellectual property')
+                                                          ? Text(
+                                                              'We do not allow or promote any form or content related to ' +
+                                                                  widget
+                                                                      .reportType +
+                                                                  ': Copyright or trademark infringement',
+                                                              style: TextStyle(
+                                                                  color: ConfigBloc()
+                                                                          .darkModeOn
+                                                                      ? Color(
+                                                                          0xFFf2f2f2)
+                                                                      : Color(
+                                                                          0xFF1a1a1a),
+                                                                  fontSize: 14),
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                            )
+                                                          : const SizedBox
+                                                              .shrink()),
                     ),
                     FadeAnimation(
                       0.5,

@@ -1,8 +1,10 @@
 // ignore_for_file: unnecessary_null_comparison
 
 import 'dart:typed_data';
+import 'package:bars/widgets/create_content_white.dart';
 import 'package:blurhash/blurhash.dart';
 import 'package:bars/utilities/exports.dart';
+import 'package:currency_picker/currency_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:geocoding/geocoding.dart';
@@ -85,17 +87,11 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
   int index = 0;
   int showDatePicker = 0;
   int showTimePicker = 0;
-  // bool _isLoading = false;
-  // bool _isVirtual = false;
-  // bool _isPhysical = false;
-  // bool _isPrivate = false;
-  // bool _isPublic = false;
-  // bool _isFree = false;
   bool _isfetchingAddress = false;
   int eventTypeIndex = 0;
   int showEventTypePicker = 0;
   late PageController _pageController;
-  int _indexx = 0;
+  // int _indexx = 0;
   DateTime dateTime = DateTime.now();
   DateTime minDateTime = DateTime.now().subtract(Duration(days: 1));
   DateTime minTime = DateTime.now().subtract(Duration(minutes: 1));
@@ -103,6 +99,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
   String selectedValue = '';
   String selectedclosingDay = '';
   String _type = '';
+  bool _showSheet = false;
 
   String _closingDay = '';
 
@@ -112,7 +109,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
   @override
   void initState() {
     _type = widget.type;
-    _indexx = widget.isEditting ? 5 : 0;
+    // _indexx = widget.isEditting ? 5 : 0;
     selectedValue = _type.isEmpty ? values.last : _type;
     selectedclosingDay =
         _closingDay.isEmpty ? eventClossingDay.first : _closingDay;
@@ -122,6 +119,9 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
 
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((_) {
+      Provider.of<UserData>(context, listen: false).setInt1(
+        widget.isEditting ? 5 : 0,
+      );
       Provider.of<UserData>(context, listen: false).setPostImage(null);
       Provider.of<UserData>(context, listen: false).setPost1(widget.title);
       Provider.of<UserData>(context, listen: false).setPost2(widget.theme);
@@ -140,6 +140,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
       Provider.of<UserData>(context, listen: false).setBool3(widget.isFree);
       Provider.of<UserData>(context, listen: false)
           .setPost13(widget.clossingDay);
+      Provider.of<UserData>(context, listen: false).setPost14('');
       Provider.of<UserData>(context, listen: false).setIsLoading(false);
       Provider.of<UserData>(context, listen: false)
           .setBool4(widget.isCashPayment);
@@ -150,14 +151,25 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
     });
   }
 
+  // _handleImage() async {
+  //   final file = await PickCropImage.pickedMedia(cropImage: _cropImage);
+  //   if (file == null) return;
+  //   if (file != null) {
+  //     if (mounted) {
+  //       Provider.of<UserData>(context, listen: false)
+  //           .setPostImage(file as File);
+  //     }
+  //   }
+  // }
+
   _handleImage() async {
+    HapticFeedback.heavyImpact();
+
     final file = await PickCropImage.pickedMedia(cropImage: _cropImage);
     if (file == null) return;
-    if (file != null) {
-      if (mounted) {
-        Provider.of<UserData>(context, listen: false)
-            .setPostImage(file as File);
-      }
+
+    if (mounted) {
+      Provider.of<UserData>(context, listen: false).setPostImage(file as File);
     }
   }
 
@@ -189,7 +201,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                   : TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                color: Colors.black,
               ),
             ),
             actions: <Widget>[
@@ -394,6 +406,10 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
         showOnExplorePage: Provider.of<UserData>(context, listen: false).bool5,
         showToFollowers: Provider.of<UserData>(context, listen: false).bool6,
         clossingDay: Provider.of<UserData>(context, listen: false).post13,
+        mediaType: '',
+        mediaUrl: '',
+        authorName:
+            Provider.of<UserData>(context, listen: false).user!.userName!,
       );
 
       try {
@@ -481,9 +497,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
   }
 
   _reverseGeocoding() async {
-    // setState(() {
-    //   _isLoading = true;
-    // });
     Provider.of<UserData>(context, listen: false).setIsLoading(true);
     try {
       List<Location> locations = await locationFromAddress(
@@ -501,9 +514,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
       });
     } catch (e) {}
     Provider.of<UserData>(context, listen: false).addressSearchResults = [];
-    // setState(() {
-    //   _isLoading = false;
-    // });
     Provider.of<UserData>(context, listen: false).setIsLoading(false);
     animateToPage();
   }
@@ -514,44 +524,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
       _formKey.currentState?.save();
       FocusScope.of(context).unfocus();
       animateToPage();
-
-      // setState(() {
-      //   _isLoading = true;
-      // });
       Provider.of<UserData>(context, listen: false).setIsLoading(true);
-      // final double width = Responsive.isDesktop(context)
-      //     ? 600.0
-      //     : MediaQuery.of(context).size.width;
-      // FocusScope.of(context).unfocus();
-      // Flushbar(
-      //   maxWidth: MediaQuery.of(context).size.width,
-      //   backgroundColor: Color(0xFF1a1a1a),
-      //   margin: EdgeInsets.all(8),
-      //   showProgressIndicator: true,
-      //   progressIndicatorBackgroundColor: Color(0xFF1a1a1a),
-      //   progressIndicatorValueColor: AlwaysStoppedAnimation(Colors.blue),
-      //   flushbarPosition: FlushbarPosition.TOP,
-      //   boxShadows: [
-      //     BoxShadow(
-      //       color: Colors.black,
-      //       offset: Offset(0.0, 2.0),
-      //       blurRadius: 3.0,
-      //     )
-      //   ],
-      //   titleText: Text(
-      //     'Creating event',
-      //     style: TextStyle(
-      //       color: Colors.white,
-      //       fontSize: width > 800 ? 22 : 14,
-      //     ),
-      //   ),
-      //   messageText: Text(
-      //     "Please wait...",
-      //     style: TextStyle(
-      //       color: Colors.white,
-      //       fontSize: width > 800 ? 20 : 12,
-      //     ),
-      //   ),
 
       DateTime date =
           DateTime.parse(Provider.of<UserData>(context, listen: false).post8);
@@ -574,7 +547,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
           .setPost13(closeDate.toString());
 
       try {
-        String? imageUrl = await StorageService.uploadEvent(
+        String imageUrl = await StorageService.uploadEvent(
             Provider.of<UserData>(context, listen: false).postImage!);
 
         Uint8List bytes =
@@ -621,9 +594,14 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
               Provider.of<UserData>(context, listen: false).bool5,
           showToFollowers: Provider.of<UserData>(context, listen: false).bool6,
           clossingDay: Provider.of<UserData>(context, listen: false).post13,
+          mediaType: '',
+          mediaUrl: '',
+          authorName: widget.user!.userName!,
         );
         DatabaseService.createEvent(event);
+
         _pop();
+
         final double width = Responsive.isDesktop(context)
             ? 600.0
             : MediaQuery.of(context).size.width;
@@ -646,7 +624,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
             ),
           ),
           messageText: Text(
-            "Your event was created successfully.",
+            "Your event was published successfully.",
             style: TextStyle(
               color: Colors.white,
               fontSize: width > 800 ? 20 : 12,
@@ -733,33 +711,34 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
 
   Widget buildClosingDay() => Theme(
         data: Theme.of(context).copyWith(
-          unselectedWidgetColor:
-              ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+          unselectedWidgetColor: Colors.white,
         ),
         child: Column(
             children: eventClossingDay.map((value) {
           final selected = this.selectedclosingDay == value;
-          final color = selected
-              ? Colors.blue
-              : ConfigBloc().darkModeOn
-                  ? Colors.white
-                  : Colors.black;
+          final color = selected ? Colors.blue : Colors.white;
 
           return RadioListTile<String>(
-            value: value,
-            groupValue: selectedclosingDay,
-            title: Text(
-              value,
-              style: TextStyle(color: color, fontSize: 14),
-            ),
-            activeColor: Colors.blue,
-            onChanged: (value) => setState(
-              () {
-                _closingDay = (this.selectedclosingDay = value!);
-                Provider.of<UserData>(context, listen: false).setPost13(value);
-              },
-            ),
-          );
+              value: value,
+              groupValue: selectedclosingDay,
+              title: Text(
+                value,
+                style: TextStyle(color: color, fontSize: 14),
+              ),
+              activeColor: Colors.blue,
+              onChanged: (value) {
+                Provider.of<UserData>(context, listen: false)
+                    .setPost13(this.selectedclosingDay = value!);
+                animateToPage();
+              }
+
+              //  => setState(
+              //   () {
+              //     _closingDay = (this.selectedclosingDay = value!);
+              //     Provider.of<UserData>(context, listen: false).setPost13(value);
+              //   },
+              // ),
+              );
         }).toList()),
       );
 
@@ -771,44 +750,40 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              // Text(
-              //   'Select event type.',
-              //   style: TextStyle(
-              //     color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-              //     fontSize: 14,
-              //   ),
-              // ),
-              // SizedBox(
-              //   height: 20,
-              // ),
               buildClosingDay(),
             ],
           ),
           SizedBox(height: 70),
           Container(
-            width: 200,
-            child: OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  primary: Colors.blue,
-                  side: BorderSide(
-                    width: 1.0,
-                    color:
-                        ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                ),
-                child: Text(
-                  'Pick day',
-                  style: TextStyle(
-                    color:
-                        ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                  ),
-                ),
+            width: 250,
+            child: AlwaysWhiteButton(
                 onPressed: () {
                   animateToPage();
-                }),
+                },
+                buttonText: "Pick day"),
+
+            //  OutlinedButton(
+            //     style: OutlinedButton.styleFrom(
+            //       primary: Colors.blue,
+            //       side: BorderSide(
+            //         width: 1.0,
+            //         color:
+            //             ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+            //       ),
+            //       shape: RoundedRectangleBorder(
+            //         borderRadius: BorderRadius.circular(20.0),
+            //       ),
+            //     ),
+            //     child: Text(
+            //       'Pick day',
+            //       style: TextStyle(
+            //         color:
+            //             ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+            //       ),
+            //     ),
+            //     onPressed: () {
+            //       animateToPage();
+            //     }),
           ),
         ],
       );
@@ -823,33 +798,34 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
 
   Widget buildRadios() => Theme(
         data: Theme.of(context).copyWith(
-          unselectedWidgetColor:
-              ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+          unselectedWidgetColor: Colors.white,
         ),
         child: Column(
             children: values.map((value) {
           final selected = this.selectedValue == value;
-          final color = selected
-              ? Colors.blue
-              : ConfigBloc().darkModeOn
-                  ? Colors.white
-                  : Colors.black;
+          final color = selected ? Colors.blue : Colors.white;
 
           return RadioListTile<String>(
-            value: value,
-            groupValue: selectedValue,
-            title: Text(
-              value,
-              style: TextStyle(color: color, fontSize: 14),
-            ),
-            activeColor: Colors.blue,
-            onChanged: (value) => setState(
-              () {
-                _type = (this.selectedValue = value!);
-                Provider.of<UserData>(context, listen: false).setPost6(_type);
-              },
-            ),
-          );
+              value: value,
+              groupValue: selectedValue,
+              title: Text(
+                value,
+                style: TextStyle(color: color, fontSize: 14),
+              ),
+              activeColor: Colors.blue,
+              onChanged: (value) {
+                Provider.of<UserData>(context, listen: false)
+                    .setPost6(this.selectedValue = value!);
+                animateToPage();
+              }
+
+              // setState(
+              //   () {
+              //     _type = (this.selectedValue = value!);
+              //     Provider.of<UserData>(context, listen: false).setPost6(_type);
+              //   },
+              // ),
+              );
         }).toList()),
       );
 
@@ -861,44 +837,40 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              // Text(
-              //   'Select event type.',
-              //   style: TextStyle(
-              //     color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-              //     fontSize: 14,
-              //   ),
-              // ),
-              // SizedBox(
-              //   height: 20,
-              // ),
               buildRadios(),
             ],
           ),
           SizedBox(height: 70),
           Container(
-            width: 200,
-            child: OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  primary: Colors.blue,
-                  side: BorderSide(
-                    width: 1.0,
-                    color:
-                        ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                ),
-                child: Text(
-                  'Pick Event Type',
-                  style: TextStyle(
-                    color:
-                        ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                  ),
-                ),
+            width: 250,
+            child: AlwaysWhiteButton(
                 onPressed: () {
                   animateToPage();
-                }),
+                },
+                buttonText: "Pick event type"),
+
+            //  OutlinedButton(
+            //     style: OutlinedButton.styleFrom(
+            //       primary: Colors.blue,
+            //       side: BorderSide(
+            //         width: 1.0,
+            //         color:
+            //             ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+            //       ),
+            //       shape: RoundedRectangleBorder(
+            //         borderRadius: BorderRadius.circular(20.0),
+            //       ),
+            //     ),
+            //     child: Text(
+            //       'Pick Event Type',
+            //       style: TextStyle(
+            //         color:
+            //             ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+            //       ),
+            //     ),
+            //     onPressed: () {
+            //       animateToPage();
+            //     }),
           ),
         ],
       );
@@ -941,44 +913,13 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
             ),
           ),
           SizedBox(height: 70),
-          // widget.isEditting
-          //     ? AlwaysWhiteButton(
-          //         onPressed: () {
-          //           Provider.of<UserData>(context, listen: false).setPost7(
-          //             MyDateFormat.toTime(DateTime.parse(widget.time)),
-          //           );
-          //           // setState(() {
-          //           //   widget.time = dayTime.toString();
-          //           // });
-          //           animateToPage();
-          //         },
-          //         buttonText: widget.isEditting ? 'Next' : "Continue")
-          //     :
           AnimatedContainer(
             duration: Duration(milliseconds: 300),
             height: minTime.isBefore(dayTime) ? 0.0 : null,
             curve: Curves.bounceInOut,
             child: Container(
-              width: 200,
-              child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    primary: Colors.blue,
-                    side: BorderSide(
-                      width: 1.0,
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
-                  child: Text(
-                    'Pick Time',
-                    style: TextStyle(
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                    ),
-                  ),
+              width: 250,
+              child: AlwaysWhiteButton(
                   onPressed: () {
                     Provider.of<UserData>(context, listen: false)
                         .setPost7(dayTime.toString());
@@ -989,7 +930,39 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                     print(
                       widget.time,
                     );
-                  }),
+                  },
+                  buttonText: "Pick time"),
+
+              //  OutlinedButton(
+              //     style: OutlinedButton.styleFrom(
+              //       primary: Colors.blue,
+              //       side: BorderSide(
+              //         width: 1.0,
+              //         color:
+              //             ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+              //       ),
+              //       shape: RoundedRectangleBorder(
+              //         borderRadius: BorderRadius.circular(20.0),
+              //       ),
+              //     ),
+              //     child: Text(
+              //       'Pick Time',
+              //       style: TextStyle(
+              //         color:
+              //             ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+              //       ),
+              //     ),
+              //     onPressed: () {
+              //       Provider.of<UserData>(context, listen: false)
+              //           .setPost7(dayTime.toString());
+              //       setState(() {
+              //         widget.time = dayTime.toString();
+              //       });
+              //       animateToPage();
+              //       print(
+              //         widget.time,
+              //       );
+              //     }),
             ),
           ),
         ],
@@ -1049,26 +1022,8 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                     : null,
             curve: Curves.bounceInOut,
             child: Container(
-              width: 200,
-              child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    primary: Colors.blue,
-                    side: BorderSide(
-                      width: 1.0,
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
-                  child: Text(
-                    'Pick Date',
-                    style: TextStyle(
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                    ),
-                  ),
+              width: 250,
+              child: AlwaysWhiteButton(
                   onPressed: () {
                     Provider.of<UserData>(context, listen: false)
                         .setPost8(dateTime.toString());
@@ -1076,7 +1031,36 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                       widget.date = dateTime.toString();
                     });
                     animateToPage();
-                  }),
+                  },
+                  buttonText: "Pick date"),
+
+              // OutlinedButton(
+              //     style: OutlinedButton.styleFrom(
+              //       primary: Colors.blue,
+              //       side: BorderSide(
+              //         width: 1.0,
+              //         color:
+              //             ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+              //       ),
+              //       shape: RoundedRectangleBorder(
+              //         borderRadius: BorderRadius.circular(20.0),
+              //       ),
+              //     ),
+              //     child: Text(
+              //       'Pick Date',
+              //       style: TextStyle(
+              //         color:
+              //             ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+              //       ),
+              //     ),
+              //     onPressed: () {
+              //       Provider.of<UserData>(context, listen: false)
+              //           .setPost8(dateTime.toString());
+              //       setState(() {
+              //         widget.date = dateTime.toString();
+              //       });
+              //       animateToPage();
+              //     }),
             ),
           ),
         ],
@@ -1084,7 +1068,15 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
 
   animateBack() {
     _pageController.animateToPage(
-      _indexx - 1,
+      Provider.of<UserData>(context, listen: false).int1 - 1,
+      duration: Duration(milliseconds: 800),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  animateBack2() {
+    _pageController.animateToPage(
+      Provider.of<UserData>(context, listen: false).int1 - 2,
       duration: Duration(milliseconds: 800),
       curve: Curves.easeInOut,
     );
@@ -1092,43 +1084,12 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
 
   animateToPage() {
     _pageController.animateToPage(
-      _indexx + 1,
+      // _indexx + 1,
+      Provider.of<UserData>(context, listen: false).int1 + 1,
       duration: Duration(milliseconds: 800),
       curve: Curves.easeInOut,
     );
   }
-
-  // _isVirtualEvent() {
-  //   setState(() {
-  //     _isVirtual = true;
-  //     widget.isVirtual = true;
-  //     _isPhysical = false;
-  //   });
-  // }
-
-  // _isPhysicalEvent() {
-  //   setState(() {
-  //     _isPhysical = true;
-  //     _isVirtual = false;
-  //     widget.isVirtual = false;
-  //   });
-  // }
-
-  // _isPrivateEvent() {
-  //   setState(() {
-  //     _isPrivate = true;
-  //     widget.isPrivate = true;
-  //     _isPublic = false;
-  //   });
-  // }
-
-  // _isPublicEvent() {
-  //   setState(() {
-  //     _isPublic = true;
-  //     _isPrivate = false;
-  //     widget.isPrivate = false;
-  //   });
-  // }
 
   _validate() {
     if (_formKey.currentState!.validate()) {
@@ -1146,20 +1107,67 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
 
   animateToPage2() {
     _pageController.animateToPage(
-      _indexx + 2,
+      // _indexx + 2,
+      Provider.of<UserData>(context, listen: false).int1 + 2,
       duration: Duration(milliseconds: 800),
       curve: Curves.easeInOut,
     );
   }
 
+  // _displayPostImage() {
+  //   final width = Responsive.isDesktop(context)
+  //       ? 600.0
+  //       : MediaQuery.of(context).size.width;
+  //   if (widget.imageUrl.isNotEmpty) {
+  //     return Container(
+  //         height: width / 2,
+  //         width: width / 2,
+  //         decoration: BoxDecoration(
+  //             image: DecorationImage(
+  //           image: CachedNetworkImageProvider(widget.imageUrl),
+  //           fit: BoxFit.cover,
+  //         )),
+  //         child: Container(
+  //           decoration: BoxDecoration(
+  //               gradient: LinearGradient(begin: Alignment.bottomRight, colors: [
+  //             Colors.black.withOpacity(.5),
+  //             Colors.black.withOpacity(.5),
+  //           ])),
+  //         ));
+  //   } else {
+  //     return GestureDetector(
+  //       onTap: _handleImage,
+  //       child: Container(
+  //         child: Provider.of<UserData>(context).postImage == null
+  //             ? Center(
+  //                 child: InkBoxColumn(
+  //                   size: 3,
+  //                   onPressed: _handleImage,
+  //                   icon: Icon(
+  //                     Icons.add_a_photo,
+  //                     size: 150,
+  //                     color:
+  //                         ConfigBloc().darkModeOn ? Colors.black : Colors.white,
+  //                   ),
+  //                   text: '',
+  //                 ),
+  //               )
+  //             : Image(
+  //                 height: width,
+  //                 width: width,
+  //                 image: FileImage(
+  //                     File(Provider.of<UserData>(context).postImage!.path)),
+  //                 fit: BoxFit.cover,
+  //               ),
+  //       ),
+  //     );
+  //   }
+  // }
+
   _displayPostImage() {
-    final width = Responsive.isDesktop(context)
-        ? 600.0
-        : MediaQuery.of(context).size.width;
     if (widget.imageUrl.isNotEmpty) {
       return Container(
-          height: width / 2,
-          width: width / 2,
+          height: double.infinity,
           decoration: BoxDecoration(
               image: DecorationImage(
             image: CachedNetworkImageProvider(widget.imageUrl),
@@ -1173,37 +1181,44 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
             ])),
           ));
     } else {
-      return GestureDetector(
-        onTap: _handleImage,
-        child: Container(
-          child: Provider.of<UserData>(context).postImage == null
-              ? Center(
-                  child: InkBoxColumn(
-                    size: 3,
-                    onPressed: _handleImage,
-                    icon: Icon(
-                      Icons.add_a_photo,
-                      size: 150,
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.black : Colors.white,
-                    ),
-                    text: '',
-                  ),
-                )
-              : Image(
-                  height: width,
-                  width: width,
-                  image: FileImage(
-                      File(Provider.of<UserData>(context).postImage!.path)),
-                  fit: BoxFit.cover,
-                ),
-        ),
-      );
+      return Container(
+          height: double.infinity,
+          width: double.infinity,
+          color:
+              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+          child: _display());
     }
+  }
+
+  _display() {
+    return Container(
+      child: Provider.of<UserData>(context).postImage == null
+          ? Container(
+              height: double.infinity,
+              width: double.infinity,
+              color: Colors.black,
+            )
+          : Container(
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                image: FileImage(
+                    File(Provider.of<UserData>(context).postImage!.path)),
+                fit: BoxFit.cover,
+              )),
+              child: Container(
+                decoration: BoxDecoration(
+                    gradient:
+                        LinearGradient(begin: Alignment.bottomRight, colors: [
+                  Colors.black.withOpacity(.5),
+                  Colors.black.withOpacity(.5),
+                ])),
+              )),
+    );
   }
 
   setNull() {
     Provider.of<UserData>(context, listen: false).setPostImage(null);
+    Provider.of<UserData>(context, listen: false).setInt1(0);
     Provider.of<UserData>(context, listen: false).setPost1('');
     Provider.of<UserData>(context, listen: false).setPost2('');
     Provider.of<UserData>(context, listen: false).setPost3('');
@@ -1217,6 +1232,8 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
     Provider.of<UserData>(context, listen: false).setPost11('');
     Provider.of<UserData>(context, listen: false).setPost12('');
     Provider.of<UserData>(context, listen: false).setPost13('');
+
+    Provider.of<UserData>(context, listen: false).setPost14('');
     Provider.of<UserData>(context, listen: false).setBool1(false);
     Provider.of<UserData>(context, listen: false).setBool2(false);
     Provider.of<UserData>(context, listen: false).setBool3(false);
@@ -1227,1293 +1244,3079 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
   }
 
   _pop() {
-    Navigator.pop(context);
+    Provider.of<UserData>(context, listen: false).setInt1(0);
     setNull();
+    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
+    final double width = Responsive.isDesktop(
+      context,
+    )
+        ? 600.0
+        : MediaQuery.of(context).size.width;
+    final double height = MediaQuery.of(context).size.height;
     return ResponsiveScaffold(
-      child: Scaffold(
-        backgroundColor: _indexx == 10
-            ? Color(0xFFFF2D55)
-            : ConfigBloc().darkModeOn
-                ? Color(0xFF1a1a1a)
-                : Color(0xFFf2f2f2),
-        appBar: AppBar(
-          iconTheme: IconThemeData(
-            color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-          ),
-          leading: _indexx == 10
-              ? SizedBox.shrink()
-              : widget.isEditting
-                  ? IconButton(
-                      icon: Icon(Platform.isIOS
-                          ? Icons.arrow_back_ios
-                          : Icons.arrow_back),
-                      onPressed: () {
-                        _indexx == 4 || _indexx == 0
-                            ? Navigator.pop(context)
-                            : animateBack();
-                      })
-                  : IconButton(
-                      icon: Icon(Platform.isIOS
-                          ? Icons.arrow_back_ios
-                          : Icons.arrow_back),
-                      onPressed: () {
-                        _indexx != 0 ? animateBack() : _pop();
-                      }),
-          elevation: 0,
-          backgroundColor: _indexx == 10
-              ? Color(0xFFFF2D55)
-              : ConfigBloc().darkModeOn
-                  ? Color(0xFF1a1a1a)
-                  : Color(0xFFf2f2f2),
-          title: Material(
-            color: Colors.transparent,
-            child:
-                // _isLoading
-                Provider.of<UserData>(context, listen: false).isLoading
-                    ? Text(
-                        '',
-                      )
-                    : Text(
-                        _indexx == 10
-                            ? ''
-                            : widget.isEditting
-                                ? 'Edit Event'
-                                : 'Create Event',
-                        style: TextStyle(
-                            color: ConfigBloc().darkModeOn
-                                ? Colors.white
-                                : Colors.black,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
-                      ),
-          ),
-          centerTitle: true,
+        child: Scaffold(
+      backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
+      // backgroundColor: _indexx == 10
+      //     ? Color(0xFFFF2D55)
+      //     : ConfigBloc().darkModeOn
+      //         ? Color(0xFF1a1a1a)
+      //         : Color(0xFFf2f2f2),
+      appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Colors.white,
         ),
-        body: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
+        leading: Provider.of<UserData>(context, listen: false).int1 == 10
+            ? const SizedBox.shrink()
+            : widget.isEditting
+                ? IconButton(
+                    icon: Icon(Platform.isIOS
+                        ? Icons.arrow_back_ios
+                        : Icons.arrow_back),
+                    onPressed: () {
+                      Provider.of<UserData>(context, listen: false).int1 == 5
+                          ? Navigator.pop(context)
+                          : Provider.of<UserData>(context, listen: false)
+                                      .int1 ==
+                                  2
+                              ? animateBack2()
+                              : animateBack();
+                    })
+                : IconButton(
+                    icon: Icon(Platform.isIOS
+                        ? Icons.arrow_back_ios
+                        : Icons.arrow_back),
+                    onPressed: () {
+                      Provider.of<UserData>(context, listen: false).int1 == 2 &&
+                              Provider.of<UserData>(context, listen: false)
+                                  .bool3
+                          ? animateBack2()
+                          : Provider.of<UserData>(context, listen: false)
+                                      .int1 !=
+                                  0
+                              ? animateBack()
+                              : _pop();
+                    }),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+
+        // _indexx == 10
+        //     ? Color(0xFFFF2D55)
+        //     : ConfigBloc().darkModeOn
+        //         ? Color(0xFF1a1a1a)
+        //         : Color(0xFFf2f2f2),
+        title: Material(
+          color: Colors.transparent,
+          child: Provider.of<UserData>(context, listen: false).isLoading
+              ? Text(
+                  '',
+                )
+              : Text(
+                  Provider.of<UserData>(context, listen: false).int1 == 10
+                      ? ''
+                      : widget.isEditting
+                          ? 'Edit Event'
+                          : 'Create Event',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
+                ),
+        ),
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        child: Container(
+          height: height,
+          width: width,
           child: Form(
             key: _formKey,
-            child: PageView(
-              controller: _pageController,
-              physics: NeverScrollableScrollPhysics(),
-              onPageChanged: (int index) {
-                setState(() {
-                  _indexx = index;
-                });
-              },
-              children: [
-                SingleChildScrollView(
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        children: [
-                          SizedBox(height: 10),
-                          // Container(
-                          //   child: DecisionContainer(
-                          //     questions:
-                          //         'You can create an event where people can attend or you can also create a virtual event that can be hosted on virtual platforms, where people can interact with you. Are You Creating A you creating a physical event or a virtual event?',
-                          //     answer1: 'Virtual Event',
-                          //     answer2: 'Physical Event',eve
-                          //     onPressed1: _isVirtualEvent,
-                          //     onPressed2: _isPhysicalEvent,
-                          //     isPicked1: _isVirtual,
-                          //     isPicked2: _isPhysical,
-                          //   ),
-                          // ),
-                          // AnimatedContainer(
-                          //   duration: Duration(milliseconds: 300),
-                          //   height: _isVirtual || _isPhysical ? 130 : 0.0,
-                          //   width: double.infinity,
-                          //   curve: Curves.bounceInOut,
-                          //   child: Center(
-                          //     child: Padding(
-                          //       padding: const EdgeInsets.only(top: 70.0),
-                          //       child: AlwaysWhiteButton(
-                          //           onPressed: () {
-                          //             animateToPage();
-                          //           },
-                          //           buttonText: "Continue"),
-                          //     ),
-                          //   ),
-                          // ),
-                          // AnimatedContainer(
-                          //   duration: Duration(milliseconds: 300),
-                          //   height: _isVirtual || _isPhysical ? 0.0 : width,
-                          //   curve: Curves.bounceInOut,
-                          //   child: SingleChildScrollView(
-                          //     child: GestureDetector(
-                          //       onTap: () => Navigator.push(
-                          //           context,
-                          //           MaterialPageRoute(
-                          //               builder: (_) => FeatureInfo(
-                          //                     feature: 'Event',
-                          //                   ))),
-                          //       child: Padding(
-                          //         padding: const EdgeInsets.symmetric(
-                          //             horizontal: 30.0),
-                          //         child: PageHint(
-                          //           more: 'more',
-                          //           body:
-                          //               "Create an event where people can attend, have fun, create memories, and have unforgettable experiences.",
-                          //           title: "Create Events.",
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // )
-
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Row(
-                              children: [
-                                Text(
-                                  '1. ',
-                                  style: TextStyle(
-                                    color: Colors.blue,
-                                    fontSize: 30,
-                                  ),
-                                ),
-                                Text(
-                                  'Background\nImage.',
-                                  style: TextStyle(
-                                    color: Colors.blue,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Provider.of<UserData>(context, listen: false)
-                                      .postImage ==
-                                  null
-                              ? DirectionWidget(
-                                  text:
-                                      'Select a background image for your event. The image selected should not contain any text and should be of good pixel quality. The image selected should align with the context of your event. We advise you to select a great background image. ',
-                                  fontSize: null,
-                                )
-                              : const SizedBox.shrink(),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          _displayPostImage(),
-                          widget.imageUrl.isNotEmpty && widget.isEditting
-                              ? Padding(
-                                  padding: const EdgeInsets.only(top: 50.0),
-                                  child: AlwaysWhiteButton(
-                                      onPressed: _validate2,
-                                      buttonText: "Next"),
-                                )
-                              : Provider.of<UserData>(context, listen: false)
-                                          .postImage ==
-                                      null
-                                  ? const SizedBox.shrink()
-                                  : Padding(
-                                      padding: const EdgeInsets.only(top: 50.0),
-                                      child: AlwaysWhiteButton(
-                                          onPressed: _validate,
-                                          buttonText: "Continue"),
-                                    ),
-                          GestureDetector(
-                            onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => FeatureInfo(
-                                          feature: 'Event',
-                                        ))),
-                            child: PageHint(
-                              more: 'tap to read',
-                              body: "Event documentation.",
-                              title: ".",
-                            ),
-                          ),
-                          // Padding(
-                          //   padding:
-                          //       const EdgeInsets.symmetric(horizontal: 30.0),
-                          //   child: PageHint(
-                          //     more: 'more',
-                          //     body:
-                          //         "Create an event where people can attend, have fun, create memories, and have unforgettable experiences.",
-                          //     title: "Create Events.",
-                          //   ),
-                          // ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                SingleChildScrollView(
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Row(
-                              children: [
-                                Text(
-                                  '2. ',
-                                  style: TextStyle(
-                                    color: Colors.blue,
-                                    fontSize: 30,
-                                  ),
-                                ),
-                                Text(
-                                  'Event\nsettings.',
-                                  style: TextStyle(
-                                    color: Colors.blue,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 30),
-                          // Container(
-                          //   child: DecisionContainer(
-                          //     questions:
-                          //         'You can create a private event and invite only specifc people or you can create a general event where anybody can attend.',
-                          //     answer1: 'Private Event',
-                          //     answer2: 'Public Event',
-                          //     onPressed1: _isPrivateEvent,
-                          //     onPressed2: _isPublicEvent,
-                          //     isPicked1: _isPrivate,
-                          //     isPicked2: _isPublic,
-                          //   ),
-                          // ),
-
-                          SettingSwitch(
-                              title: 'Private event',
-                              subTitle:
-                                  'You can create a private event and invite only specific people, or you can create a general event where anybody can attend.',
-                              value:
-                                  Provider.of<UserData>(context, listen: false)
-                                      .bool1,
-                              onChanged: (value) =>
-                                  Provider.of<UserData>(context, listen: false)
-                                      .setBool1(value)),
-                          !Provider.of<UserData>(context, listen: false).bool1
-                              ? SizedBox.shrink()
-                              : Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 10.0, bottom: 10),
-                                  child: Divider(
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                          !Provider.of<UserData>(context, listen: false).bool1
-                              ? SizedBox.shrink()
-                              : SettingSwitch(
-                                  title: 'Show on explore page',
-                                  subTitle:
-                                      'Should your private event be shown on the explore page?',
-                                  value: Provider.of<UserData>(context,
-                                          listen: false)
-                                      .bool5,
-                                  onChanged: (value) => Provider.of<UserData>(
-                                          context,
-                                          listen: false)
-                                      .setBool5(value)),
-
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(top: 10.0, bottom: 10),
-                            child: Divider(
-                              color: Colors.grey,
-                            ),
-                          ),
-
-                          SettingSwitch(
-                              title: 'Virtual event',
-                              subTitle:
-                                  'You can create an event that people can attend, or you can also create a virtual event that can be hosted on virtual platforms, where people can interact with you. ',
-                              value:
-                                  Provider.of<UserData>(context, listen: false)
-                                      .bool2,
-                              onChanged: (value) =>
-                                  Provider.of<UserData>(context, listen: false)
-                                      .setBool2(value)),
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(top: 10.0, bottom: 10),
-                            child: Divider(
-                              color: Colors.grey,
-                            ),
-                          ),
-
-                          Provider.of<UserData>(context, listen: false).bool4
-                              ? SizedBox.shrink()
-                              : SettingSwitch(
-                                  title: 'Free event',
-                                  subTitle:
-                                      'A free event without a ticket or gate fee (rate free).',
-                                  value: Provider.of<UserData>(context,
-                                          listen: false)
-                                      .bool3,
-                                  onChanged: (value) => Provider.of<UserData>(
-                                          context,
-                                          listen: false)
-                                      .setBool3(value)
-
-                                  // setState(
-                                  //   () {
-                                  //     _isFree = this._isFree = value;
-                                  //     widget.isFree = _isFree;
-                                  //   },
-                                  // ),
-                                  ),
-                          Provider.of<UserData>(context, listen: false).bool4
-                              ? SizedBox.shrink()
-                              : Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 10.0, bottom: 10),
-                                  child: Divider(
-                                    color: Colors.grey,
-                                  ),
-                                ),
-
-                          Provider.of<UserData>(context, listen: false).bool3
-                              ? SizedBox.shrink()
-                              : Container(
-                                  child: SettingSwitch(
-                                      title: 'Cash payment',
-                                      subTitle:
-                                          'Cash in hand mode of payment for ticket or gate fee?',
-                                      value: Provider.of<UserData>(context,
-                                              listen: false)
-                                          .bool4,
-                                      onChanged: (value) =>
-                                          Provider.of<UserData>(context,
+            child: GestureDetector(
+              onTap: () => FocusScope.of(context).unfocus(),
+              child: Stack(
+                alignment: FractionalOffset.center,
+                children: <Widget>[
+                  Stack(alignment: FractionalOffset.center, children: <Widget>[
+                    _displayPostImage(),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          top: 120.0, left: 10.0, right: 10.0),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: SingleChildScrollView(
+                          child: Container(
+                              height: height,
+                              width: width,
+                              child: Provider.of<UserData>(context,
                                                   listen: false)
-                                              .setBool4(value)
-
-                                      // setState(
-                                      //   () {
-                                      //     _isFree = this._isFree = value;
-                                      //     widget.isFree = _isFree;
-                                      //   },
-                                      // ),
+                                              .postImage ==
+                                          null &&
+                                      widget.imageUrl.isEmpty
+                                  ? Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          AvatarGlow(
+                                            animate: true,
+                                            showTwoGlows: true,
+                                            shape: BoxShape.circle,
+                                            glowColor: Colors.blue,
+                                            endRadius: 100,
+                                            duration: const Duration(
+                                                milliseconds: 2000),
+                                            repeatPauseDuration: const Duration(
+                                                milliseconds: 3000),
+                                            child: Container(
+                                                width: 100,
+                                                height: 100,
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12),
+                                                    border: Border.all(
+                                                      width: 2,
+                                                      color: Colors.white,
+                                                    )),
+                                                child: IconButton(
+                                                  icon: Icon(
+                                                    MdiIcons.image,
+                                                    color: Colors.white,
+                                                    size: 80,
+                                                  ),
+                                                  onPressed: () =>
+                                                      _handleImage(),
+                                                )),
+                                          ),
+                                          const SizedBox(
+                                            height: 30,
+                                          ),
+                                          GestureDetector(
+                                            onTap: () => Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (_) => FeatureInfo(
+                                                          feature: 'Punch',
+                                                        ))),
+                                            child: RichText(
+                                                textScaleFactor:
+                                                    MediaQuery.of(context)
+                                                        .textScaleFactor
+                                                        .clamp(0.5, 1.5),
+                                                text: TextSpan(children: [
+                                                  TextSpan(
+                                                    text: widget.user!.name,
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  TextSpan(
+                                                    text:
+                                                        '\nSelect a background image for your event. The image selected should not contain any text and should be of good pixel quality. The image selected should align with the context of your event. We advise you to select a great background image. ',
+                                                    style: TextStyle(
+                                                      color: Colors.grey,
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
+                                                  TextSpan(
+                                                    text: '...more',
+                                                    style: TextStyle(
+                                                      color: Colors.blue,
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
+                                                  TextSpan(
+                                                    text:
+                                                        '\n\nCreate an event where people can attend, have fun, create memories, and have unforgettable experiences. You can create a virtual event that can be hosted on a live stream of other platforms, or you can create an event with a physical venue that people can attend.You can create two types of events. A private and a public event. A public event can be attended by anybody. But a private event can only be attended by specific people.',
+                                                    style: TextStyle(
+                                                      color: Colors.grey,
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
+                                                ]),
+                                                textAlign: TextAlign.center),
+                                          )
+                                        ],
                                       ),
-                                ),
-
-                          Provider.of<UserData>(context, listen: false).bool3
-                              ? SizedBox.shrink()
-                              : Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 10.0, bottom: 10),
-                                  child: Divider(
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                          Center(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(bottom: 70.0, top: 50),
-                              child: AlwaysWhiteButton(
-                                  onPressed: () {
-                                    animateToPage();
-                                  },
-                                  buttonText: "Continue"),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                // SingleChildScrollView(
-                //   child: Container(
-                //     child: Padding(
-                //       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                //       child: Column(
-                //         mainAxisAlignment: MainAxisAlignment.center,
-                //         crossAxisAlignment: CrossAxisAlignment.center,
-                //         children: <Widget>[
-                //           DirectionWidget(
-                //             text:
-                //                 'Select a background image for your event. The image selected should not contain any text and should be of good pixel quality. The image selected should align with the context of your event and the information already provided in the previous stages. We advise you to select a great background image. ',
-                //             fontSize: null,
-                //           ),
-                //           SizedBox(
-                //             height: 20,
-                //           ),
-                //           _displayPostImage(),
-                //           widget.imageUrl.isNotEmpty && widget.isEditting
-                //               ? Padding(
-                //                   padding: const EdgeInsets.only(top: 50.0),
-                //                   child: AlwaysWhiteButton(
-                //                       onPressed: _validate2,
-                //                       buttonText: "Next"),
-                //                 )
-                //               : Provider.of<UserData>(context, listen: false)
-                //                           .postImage ==
-                //                       null
-                //                   ? SizedBox.shrink()
-                //                   : Padding(
-                //                       padding: const EdgeInsets.only(top: 50.0),
-                //                       child: AlwaysWhiteButton(
-                //                           onPressed: _validate,
-                //                           buttonText: "Continue"),
-                //                     ),
-                //           SizedBox(
-                //             height: 70,
-                //           ),
-                //         ],
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Row(
-                            children: [
-                              Text(
-                                '3. ',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 30,
-                                ),
-                              ),
-                              Text(
-                                'Category.',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        DirectionWidget(
-                          fontSize: null,
-                          text:
-                              'Select an event category that matches the event you are creating. ',
-                        ),
-                        buildEventTypePicker(),
-                      ],
-                    ),
-                  ),
-                ),
-                SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Row(
-                            children: [
-                              Text(
-                                '4. ',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 30,
-                                ),
-                              ),
-                              Text(
-                                'Time',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        DirectionWidget(
-                          fontSize: null,
-                          text:
-                              'Select the exact time your event would begin. ',
-                        ),
-                        SizedBox(height: 20),
-                        buildTImePicker(),
-                      ],
-                    ),
-                  ),
-                ),
-                SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Row(
-                            children: [
-                              Text(
-                                '5. ',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 30,
-                                ),
-                              ),
-                              Text(
-                                'Date.',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        DirectionWidget(
-                          fontSize: null,
-                          text: 'Select the exact date of your event. ',
-                        ),
-                        SizedBox(height: 20),
-                        buildDatePicker(),
-                      ],
-                    ),
-                  ),
-                ),
-                SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Row(
-                            children: [
-                              Text(
-                                widget.isEditting ? '' : '6. ',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 30,
-                                ),
-                              ),
-                              Text(
-                                widget.isEditting ? '' : 'Closeing day.',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        widget.isEditting
-                            ? DirectionWidget(
-                                fontSize: null,
-                                text:
-                                    'Certiain information of an event cannot be modified once an event is created. Information such as date, time, category, flyer background, and event settings cannot be changed. ',
-                              )
-                            : DirectionWidget(
-                                fontSize: null,
-                                text:
-                                    'Choose a closing day for your event. This indicates the closing period of your event. For instance, if you pick three days, your event dashboard and flyer would be disabled three days after your event date specified previously. ',
-                              ),
-                        SizedBox(height: 20),
-                        widget.isEditting
-                            ? Center(
-                                child: AlwaysWhiteButton(
-                                    onPressed: _validate,
-                                    buttonText: "Start editing"),
-                              )
-                            : buildClosingDayPicker(),
-                      ],
-                    ),
-                  ),
-                ),
-                SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      bottom: 30,
-                    ),
-                    child: Container(
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Row(
-                                children: [
-                                  Text(
-                                    '7. ',
-                                    style: TextStyle(
-                                      color: Colors.blue,
-                                      fontSize: 30,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Venue.',
-                                    style: TextStyle(
-                                      color: Colors.blue,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Provider.of<UserData>(context, listen: false)
-                                    .isLoading
-                                ? Padding(
-                                    padding:
-                                        const EdgeInsets.only(bottom: 10.0),
-                                    child: SizedBox(
-                                      height: 2.0,
-                                      child: LinearProgressIndicator(
-                                        backgroundColor: Colors.transparent,
-                                        valueColor:
-                                            AlwaysStoppedAnimation(Colors.blue),
-                                      ),
-                                    ),
-                                  )
-                                : SizedBox.shrink(),
-                            Provider.of<UserData>(context, listen: false)
-                                    .post5
-                                    .isNotEmpty
-                                ? AnimatedContainer(
-                                    duration: Duration(milliseconds: 500),
-                                    height: Provider.of<UserData>(context,
-                                                listen: false)
-                                            .post5
-                                            .isEmpty
-                                        ? 0.0
-                                        : null,
-                                    curve: Curves.easeInOut,
-                                    child: Text(
-                                      Provider.of<UserData>(context,
-                                              listen: false)
-                                          .post5
-                                          .toString(),
-                                      style: TextStyle(
-                                          color: Colors.blue,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  )
-                                : _isfetchingAddress
-                                    ? SizedBox.shrink()
-                                    : DirectionWidget(
-                                        fontSize: null,
-                                        text: Provider.of<UserData>(context,
-                                                    listen: false)
-                                                .bool2
-                                            ? 'Enter the host link of the event. It will help other users virtually join the event if they are interested. '
-                                            : 'Enter the address venue of the event. Make sure you select the correct address from the list suggested below. It will help other users navigate to the venue if they are interested. ',
-                                      ),
-                            Text(
-                              Provider.of<UserData>(context, listen: false)
-                                  .post10
-                                  .toString(),
-                              style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(height: 10),
-                            Provider.of<UserData>(context, listen: false).bool2
-                                ? ContentField(
-                                    labelText: "Virtual venue",
-                                    hintText: "Link to virtual event venue",
-                                    initialValue: widget.virtualVenue,
-                                    onSavedText: (input) =>
+                                    )
+                                  : PageView(
+                                      controller: _pageController,
+                                      physics: AlwaysScrollableScrollPhysics(),
+                                      onPageChanged: (int index) {
                                         Provider.of<UserData>(context,
                                                 listen: false)
-                                            .setPost5(input),
-                                    onValidateText: (_) {},
-                                  )
-                                : TextFormField(
-                                    keyboardType: TextInputType.multiline,
-                                    maxLines: null,
-                                    controller: _controller,
-                                    textCapitalization:
-                                        TextCapitalization.sentences,
-                                    autovalidateMode: AutovalidateMode.always,
-                                    onChanged: (value) => {
-                                      Provider.of<UserData>(context,
-                                              listen: false)
-                                          .searchAddress(value),
-                                      setState(() {
-                                        _isfetchingAddress = true;
-                                      })
-                                    },
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: ConfigBloc().darkModeOn
-                                          ? Colors.white
-                                          : Colors.black,
-                                    ),
-                                    initialValue: widget.venue,
-                                    decoration: InputDecoration(
-                                        hintText: "Event venue address",
-                                        hintStyle: TextStyle(
-                                          fontSize: 12.0,
-                                          color: Colors.grey,
-                                        ),
-                                        labelText: 'Venue',
-                                        labelStyle: TextStyle(
-                                          fontSize: 16.0,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.grey,
-                                        ),
-                                        enabledBorder: new UnderlineInputBorder(
-                                            borderSide: new BorderSide(
-                                                color: Colors.grey))),
-                                  ),
-                            if (Provider.of<UserData>(context, listen: false)
-                                    .addressSearchResults !=
-                                null)
-                              const SizedBox(
-                                height: 30,
-                              ),
-                            Provider.of<UserData>(context, listen: false).bool2
-                                ? SizedBox.shrink()
-                                : Container(
-                                    color: ConfigBloc().darkModeOn
-                                        ? Colors.white
-                                        : Colors.black,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Align(
-                                        alignment: Alignment.topLeft,
-                                        child: Text(
-                                          'Tap below to select the venue\'s address',
-                                          style: TextStyle(
-                                            color: ConfigBloc().darkModeOn
-                                                ? Colors.black
-                                                : Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                            if (Provider.of<UserData>(
-                                  context,
-                                ).addressSearchResults !=
-                                null)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 10.0),
-                                child: SingleChildScrollView(
-                                  child: Provider.of<UserData>(context,
-                                              listen: false)
-                                          .bool2
-                                      ? SizedBox.shrink()
-                                      : Column(
-                                          children: [
-                                            _isfetchingAddress
-                                                ? Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            bottom: 5.0,
-                                                            top: 10),
-                                                    child: SizedBox(
-                                                      height: 2.0,
-                                                      child:
-                                                          LinearProgressIndicator(
-                                                        backgroundColor:
-                                                            Colors.transparent,
-                                                        valueColor:
-                                                            AlwaysStoppedAnimation(
-                                                                Colors.grey),
+                                            .setInt1(index);
+
+                                        // setState(() {
+                                        //   _indexx = index;
+                                        // });
+                                      },
+                                      children: [
+                                          SingleChildScrollView(
+                                            child: Stack(
+                                              children: [
+                                                Center(
+                                                  child: Column(
+                                                    children: [
+                                                      Align(
+                                                        alignment: Alignment
+                                                            .centerLeft,
+                                                        child: Row(
+                                                          children: [
+                                                            Text(
+                                                              '1. ',
+                                                              style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontSize: 30,
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              'Event\nsettings.',
+                                                              style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontSize: 12,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
                                                       ),
+                                                      const SizedBox(
+                                                        height: 20,
+                                                      ),
+                                                      Container(
+                                                        color: Colors.white,
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(30.0),
+                                                          child: Column(
+                                                            children: [
+                                                              SizedBox(
+                                                                  height: 30),
+                                                              SettingSwitch(
+                                                                  title:
+                                                                      'Private event',
+                                                                  subTitle:
+                                                                      'You can create a private event and invite only specific people, or you can create a general event where anybody can attend.',
+                                                                  value: Provider.of<
+                                                                              UserData>(
+                                                                          context,
+                                                                          listen:
+                                                                              false)
+                                                                      .bool1,
+                                                                  onChanged: (value) => Provider.of<
+                                                                              UserData>(
+                                                                          context,
+                                                                          listen:
+                                                                              false)
+                                                                      .setBool1(
+                                                                          value)),
+                                                              !Provider.of<UserData>(
+                                                                          context,
+                                                                          listen:
+                                                                              false)
+                                                                      .bool1
+                                                                  ? const SizedBox
+                                                                      .shrink()
+                                                                  : Padding(
+                                                                      padding: const EdgeInsets
+                                                                              .only(
+                                                                          top:
+                                                                              10.0,
+                                                                          bottom:
+                                                                              10),
+                                                                      child:
+                                                                          Divider(
+                                                                        color: Colors
+                                                                            .grey,
+                                                                      ),
+                                                                    ),
+                                                              !Provider.of<UserData>(
+                                                                          context,
+                                                                          listen:
+                                                                              false)
+                                                                      .bool1
+                                                                  ? const SizedBox
+                                                                      .shrink()
+                                                                  : SettingSwitch(
+                                                                      title:
+                                                                          'Show on explore page',
+                                                                      subTitle:
+                                                                          'Should your private event be shown on the explore page?',
+                                                                      value: Provider.of<UserData>(
+                                                                              context,
+                                                                              listen:
+                                                                                  false)
+                                                                          .bool5,
+                                                                      onChanged: (value) => Provider.of<UserData>(
+                                                                              context,
+                                                                              listen:
+                                                                                  false)
+                                                                          .setBool5(
+                                                                              value)),
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .only(
+                                                                        top:
+                                                                            10.0,
+                                                                        bottom:
+                                                                            10),
+                                                                child: Divider(
+                                                                  color: Colors
+                                                                      .grey,
+                                                                ),
+                                                              ),
+                                                              SettingSwitch(
+                                                                  title:
+                                                                      'Virtual event',
+                                                                  subTitle:
+                                                                      'You can create an event that people can attend, or you can also create a virtual event that can be hosted on virtual platforms, where people can interact with you. ',
+                                                                  value: Provider.of<
+                                                                              UserData>(
+                                                                          context,
+                                                                          listen:
+                                                                              false)
+                                                                      .bool2,
+                                                                  onChanged: (value) => Provider.of<
+                                                                              UserData>(
+                                                                          context,
+                                                                          listen:
+                                                                              false)
+                                                                      .setBool2(
+                                                                          value)),
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .only(
+                                                                        top:
+                                                                            10.0,
+                                                                        bottom:
+                                                                            10),
+                                                                child: Divider(
+                                                                  color: Colors
+                                                                      .grey,
+                                                                ),
+                                                              ),
+                                                              Provider.of<UserData>(
+                                                                          context,
+                                                                          listen:
+                                                                              false)
+                                                                      .bool4
+                                                                  ? const SizedBox
+                                                                      .shrink()
+                                                                  : SettingSwitch(
+                                                                      title:
+                                                                          'Free event',
+                                                                      subTitle:
+                                                                          'A free event without a ticket or gate fee (rate free).',
+                                                                      value: Provider.of<UserData>(
+                                                                              context,
+                                                                              listen:
+                                                                                  false)
+                                                                          .bool3,
+                                                                      onChanged: (value) => Provider.of<UserData>(
+                                                                              context,
+                                                                              listen:
+                                                                                  false)
+                                                                          .setBool3(
+                                                                              value)),
+                                                              Provider.of<UserData>(
+                                                                          context,
+                                                                          listen:
+                                                                              false)
+                                                                      .bool4
+                                                                  ? const SizedBox
+                                                                      .shrink()
+                                                                  : Padding(
+                                                                      padding: const EdgeInsets
+                                                                              .only(
+                                                                          top:
+                                                                              10.0,
+                                                                          bottom:
+                                                                              10),
+                                                                      child:
+                                                                          Divider(
+                                                                        color: Colors
+                                                                            .grey,
+                                                                      ),
+                                                                    ),
+                                                              Provider.of<UserData>(
+                                                                          context,
+                                                                          listen:
+                                                                              false)
+                                                                      .bool3
+                                                                  ? const SizedBox
+                                                                      .shrink()
+                                                                  : Container(
+                                                                      child: SettingSwitch(
+                                                                          title:
+                                                                              'Cash payment',
+                                                                          subTitle:
+                                                                              'Cash in hand mode of payment for ticket or gate fee?',
+                                                                          value: Provider.of<UserData>(context, listen: false)
+                                                                              .bool4,
+                                                                          onChanged: (value) =>
+                                                                              Provider.of<UserData>(context, listen: false).setBool4(value)),
+                                                                    ),
+                                                              Provider.of<UserData>(
+                                                                          context,
+                                                                          listen:
+                                                                              false)
+                                                                      .bool3
+                                                                  ? const SizedBox
+                                                                      .shrink()
+                                                                  : Padding(
+                                                                      padding: const EdgeInsets
+                                                                              .only(
+                                                                          top:
+                                                                              10.0,
+                                                                          bottom:
+                                                                              10),
+                                                                      child:
+                                                                          Divider(
+                                                                        color: Colors
+                                                                            .grey,
+                                                                      ),
+                                                                    ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Center(
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .only(
+                                                                  bottom: 70.0,
+                                                                  top: 50),
+                                                          child:
+                                                              AlwaysWhiteButton(
+                                                                  onPressed: Provider.of<UserData>(
+                                                                              context,
+                                                                              listen:
+                                                                                  false)
+                                                                          .bool3
+                                                                      ? animateToPage2
+                                                                      : () {
+                                                                          showCurrencyPicker(
+                                                                            context:
+                                                                                context,
+                                                                            showFlag:
+                                                                                true,
+                                                                            showSearchField:
+                                                                                true,
+                                                                            showCurrencyName:
+                                                                                true,
+                                                                            showCurrencyCode:
+                                                                                true,
+                                                                            onSelect:
+                                                                                (Currency currency) {
+                                                                              // print(
+                                                                              //     'Select currency: ${currency.code}');
+                                                                              Provider.of<UserData>(context, listen: false).setPost14('${currency.name}, ${currency.code} ');
+                                                                              animateToPage();
+                                                                            },
+                                                                            favorite: [
+                                                                              'USD'
+                                                                            ],
+                                                                          );
+                                                                          // animateToPage();
+                                                                        },
+                                                                  buttonText:
+                                                                      "Continue"),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                // AnimatedContainer(
+                                                //   margin: EdgeInsets.symmetric(
+                                                //       horizontal: 10),
+                                                //   duration: Duration(
+                                                //       milliseconds: 500),
+                                                //   curve: Curves.linearToEaseOut,
+                                                //   height: _showSheet
+                                                //       ? height - 100
+                                                //       : 0.0,
+                                                //   width: width,
+                                                //   decoration: BoxDecoration(
+                                                //     color: Colors.grey[300],
+                                                //     borderRadius:
+                                                //         BorderRadius.only(
+                                                //       topLeft:
+                                                //           Radius.circular(20.0),
+                                                //       topRight:
+                                                //           Radius.circular(20.0),
+                                                //     ),
+                                                //   ),
+                                                //   child: Padding(
+                                                //     padding:
+                                                //         const EdgeInsets.all(
+                                                //             30.0),
+                                                //     child: Column(
+                                                //       mainAxisAlignment:
+                                                //           MainAxisAlignment
+                                                //               .start,
+                                                //       crossAxisAlignment:
+                                                //           CrossAxisAlignment
+                                                //               .start,
+                                                //       children: [
+                                                //         DirectionWidget(
+                                                //           fontSize: null,
+                                                //           text:
+                                                //               'Enter the rate of your event. Example 10.00.',
+                                                //         ),
+                                                //         Text(
+                                                //           Provider.of<UserData>(
+                                                //                       context,
+                                                //                       listen:
+                                                //                           false)
+                                                //                   .post3
+                                                //                   .isEmpty
+                                                //               ? Provider.of<
+                                                //                           UserData>(
+                                                //                       context,
+                                                //                       listen:
+                                                //                           false)
+                                                //                   .post13
+                                                //               : Provider.of<
+                                                //                           UserData>(
+                                                //                       context,
+                                                //                       listen:
+                                                //                           false)
+                                                //                   .post3,
+                                                //           style: TextStyle(
+                                                //             color: Colors.blue,
+                                                //             fontSize: 30,
+                                                //           ),
+                                                //         ),
+                                                //         const SizedBox(
+                                                //           height: 5,
+                                                //         ),
+                                                //         ContentField(
+                                                //           labelText: 'Rate',
+                                                //           hintText:
+                                                //               "currency - amount: example (\$: 00.0) ",
+                                                //           initialValue:
+                                                //               Provider.of<UserData>(
+                                                //                       context,
+                                                //                       listen:
+                                                //                           false)
+                                                //                   .post3
+                                                //                   .toString(),
+                                                //           onSavedText: (input) => Provider.of<
+                                                //                       UserData>(
+                                                //                   context,
+                                                //                   listen: false)
+                                                //               .setPost3(Provider.of<
+                                                //                               UserData>(
+                                                //                           context,
+                                                //                           listen:
+                                                //                               false)
+                                                //                       .post13 +
+                                                //                   input),
+                                                //           onValidateText:
+                                                //               (input) => input
+                                                //                           .trim()
+                                                //                           .length <
+                                                //                       1
+                                                //                   ? "The price rate cannot be empty (input free)"
+                                                //                   : null,
+                                                //         ),
+                                                //         const SizedBox(
+                                                //           height: 70,
+                                                //         ),
+                                                //         AnimatedContainer(
+                                                //           margin: EdgeInsets
+                                                //               .symmetric(
+                                                //                   horizontal:
+                                                //                       10),
+                                                //           duration: Duration(
+                                                //               milliseconds:
+                                                //                   500),
+                                                //           curve: Curves
+                                                //               .linearToEaseOut,
+                                                //           height: Provider.of<
+                                                //                           UserData>(
+                                                //                       context,
+                                                //                       listen:
+                                                //                           false)
+                                                //                   .post3
+                                                //                   .isEmpty
+                                                //               ? 0
+                                                //               : 40,
+                                                //           child: Center(
+                                                //             child: Container(
+                                                //               width: 200,
+                                                //               child:
+                                                //                   OutlinedButton(
+                                                //                       style: OutlinedButton
+                                                //                           .styleFrom(
+                                                //                         primary:
+                                                //                             Colors.blue,
+                                                //                         side:
+                                                //                             BorderSide(
+                                                //                           width:
+                                                //                               1.0,
+                                                //                           color: ConfigBloc().darkModeOn
+                                                //                               ? Colors.white
+                                                //                               : Colors.black,
+                                                //                         ),
+                                                //                         shape:
+                                                //                             RoundedRectangleBorder(
+                                                //                           borderRadius:
+                                                //                               BorderRadius.circular(20.0),
+                                                //                         ),
+                                                //                       ),
+                                                //                       child:
+                                                //                           Text(
+                                                //                         'Continue',
+                                                //                         style:
+                                                //                             TextStyle(
+                                                //                           color: ConfigBloc().darkModeOn
+                                                //                               ? Colors.white
+                                                //                               : Colors.black,
+                                                //                         ),
+                                                //                       ),
+                                                //                       onPressed:
+                                                //                           () {
+                                                //                         FocusScope.of(context)
+                                                //                             .unfocus();
+                                                //                         animateToPage();
+                                                //                       }),
+                                                //             ),
+                                                //           ),
+
+                                                //           // AlwaysWhiteButton(
+                                                //           //     onPressed: () {
+                                                //           //       animateToPage();
+                                                //           //     },
+                                                //           //     buttonText: "Continue"),
+                                                //         ),
+                                                //       ],
+                                                //     ),
+                                                //   ),
+                                                // )
+                                              ],
+                                            ),
+                                          ),
+                                          SingleChildScrollView(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 20.0),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Align(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    child: Row(
+                                                      children: [
+                                                        Text(
+                                                          '1. ',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 30,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          'Rate.',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 12,
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
-                                                  )
-                                                : SizedBox.shrink(),
-                                            Container(
-                                              height: MediaQuery.of(context)
-                                                      .size
-                                                      .width -
-                                                  100,
-                                              width: double.infinity,
-                                              decoration: BoxDecoration(
-                                                color: Colors.transparent,
-                                                shape: BoxShape.rectangle,
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              child: ListView.builder(
-                                                itemCount:
+                                                  ),
+                                                  DirectionWidgetWhite(
+                                                    fontSize: null,
+                                                    text:
+                                                        'Enter the rate of your event. Example 10.00.',
+                                                  ),
+                                                  Text(
                                                     Provider.of<UserData>(
                                                             context,
                                                             listen: false)
-                                                        .addressSearchResults!
-                                                        .length,
-                                                itemBuilder: (context, index) {
-                                                  return ListTile(
-                                                      title: Text(
+                                                        .post14,
+                                                    style: TextStyle(
+                                                      color: Colors.blue,
+                                                      fontSize: 30,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 5,
+                                                  ),
+                                                  ContentFieldWhite(
+                                                    labelText: 'Rate',
+                                                    hintText:
+                                                        "currency - amount: example (\$: 00.0) ",
+                                                    initialValue:
                                                         Provider.of<UserData>(
                                                                 context,
                                                                 listen: false)
-                                                            .addressSearchResults![
-                                                                index]
-                                                            .description,
-                                                        style: TextStyle(
-                                                          color: ConfigBloc()
-                                                                  .darkModeOn
-                                                              ? Colors.white
-                                                              : Colors.black,
-                                                        ),
-                                                      ),
-                                                      onTap: () {
-                                                        Provider.of<UserData>(
+                                                            .post3
+                                                            .toString(),
+                                                    onSavedText: (input) => Provider
+                                                            .of<UserData>(
                                                                 context,
                                                                 listen: false)
-                                                            .setPost5(Provider.of<
+                                                        .setPost3(Provider.of<
                                                                         UserData>(
                                                                     context,
                                                                     listen:
                                                                         false)
-                                                                .addressSearchResults![
-                                                                    index]
-                                                                .description);
-                                                        setState(() {
-                                                          _isfetchingAddress =
-                                                              false;
+                                                                .post14 +
+                                                            input),
+                                                    onValidateText: (input) =>
+                                                        input.trim().length < 1
+                                                            ? "The price rate cannot be empty (input free)"
+                                                            : null,
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 70,
+                                                  ),
+                                                  AnimatedContainer(
+                                                    margin:
+                                                        EdgeInsets.symmetric(
+                                                            horizontal: 10),
+                                                    duration: Duration(
+                                                        milliseconds: 500),
+                                                    curve:
+                                                        Curves.linearToEaseOut,
+                                                    height:
+                                                        Provider.of<UserData>(
+                                                                    context,
+                                                                    listen:
+                                                                        false)
+                                                                .post3
+                                                                .isEmpty
+                                                            ? 0
+                                                            : 40,
+                                                    child: Center(
+                                                      child: Container(
+                                                          width: 250,
+                                                          child: Center(
+                                                            child:
+                                                                AlwaysWhiteButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      FocusScope.of(
+                                                                              context)
+                                                                          .unfocus();
+                                                                      animateToPage();
+                                                                    },
+                                                                    buttonText:
+                                                                        "Continue"),
+                                                          )),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          SingleChildScrollView(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 20.0),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Align(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    child: Row(
+                                                      children: [
+                                                        Text(
+                                                          '2. ',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 30,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          'Category.',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 12,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  DirectionWidgetWhite(
+                                                    fontSize: null,
+                                                    text:
+                                                        'Select an event category that matches the event you are creating. ',
+                                                  ),
+                                                  Text(
+                                                    Provider.of<UserData>(
+                                                            context,
+                                                            listen: false)
+                                                        .post6,
+                                                    style: TextStyle(
+                                                        color: Colors.blue,
+                                                        fontSize: 30,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  const SizedBox(height: 20),
+                                                  buildEventTypePicker(),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          SingleChildScrollView(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 30.0),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Align(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    child: Row(
+                                                      children: [
+                                                        Text(
+                                                          '3. ',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 30,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          'Time',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 12,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  DirectionWidgetWhite(
+                                                    fontSize: null,
+                                                    text:
+                                                        'Select the exact time your event would begin. ',
+                                                  ),
+                                                  SizedBox(height: 20),
+                                                  buildTImePicker(),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          SingleChildScrollView(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 20.0),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Align(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    child: Row(
+                                                      children: [
+                                                        Text(
+                                                          '4. ',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 30,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          'Date.',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 12,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  DirectionWidgetWhite(
+                                                    fontSize: null,
+                                                    text:
+                                                        'Select the exact date of your event. ',
+                                                  ),
+                                                  SizedBox(height: 20),
+                                                  buildDatePicker(),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          SingleChildScrollView(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 20.0),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Align(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    child: Row(
+                                                      children: [
+                                                        Text(
+                                                          widget.isEditting
+                                                              ? ''
+                                                              : '5. ',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 30,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          widget.isEditting
+                                                              ? ''
+                                                              : 'Closing day.',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 12,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  widget.isEditting
+                                                      ? DirectionWidgetWhite(
+                                                          fontSize: null,
+                                                          text:
+                                                              'Certiain information of an event cannot be modified once an event is created. Information such as date, time, category, flyer background, and event settings cannot be changed. ',
+                                                        )
+                                                      : DirectionWidgetWhite(
+                                                          fontSize: null,
+                                                          text:
+                                                              'Choose a closing day for your event. This indicates the closing period of your event. For instance, if you pick three days, your event dashboard and flyer would be disabled three days after your event date specified previously. ',
+                                                        ),
+                                                  widget.isEditting
+                                                      ? const SizedBox.shrink()
+                                                      : Text(
+                                                          Provider.of<UserData>(
+                                                                  context,
+                                                                  listen: false)
+                                                              .post13,
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.blue,
+                                                              fontSize: 30,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                        ),
+                                                  const SizedBox(height: 20),
+                                                  widget.isEditting
+                                                      ? Center(
+                                                          child: AlwaysWhiteButton(
+                                                              onPressed:
+                                                                  _validate,
+                                                              buttonText:
+                                                                  "Start editing"),
+                                                        )
+                                                      : buildClosingDayPicker(),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          SingleChildScrollView(
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                bottom: 30,
+                                              ),
+                                              child: Container(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      20.0),
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: <Widget>[
+                                                      Align(
+                                                        alignment: Alignment
+                                                            .centerLeft,
+                                                        child: Row(
+                                                          children: [
+                                                            Text(
+                                                              '6. ',
+                                                              style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontSize: 30,
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              'Venue.',
+                                                              style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontSize: 12,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Provider.of<UserData>(
+                                                                  context,
+                                                                  listen: false)
+                                                              .isLoading
+                                                          ? Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .only(
+                                                                      bottom:
+                                                                          10.0),
+                                                              child: SizedBox(
+                                                                height: 2.0,
+                                                                child:
+                                                                    LinearProgressIndicator(
+                                                                  backgroundColor:
+                                                                      Colors
+                                                                          .transparent,
+                                                                  valueColor:
+                                                                      AlwaysStoppedAnimation(
+                                                                          Colors
+                                                                              .blue),
+                                                                ),
+                                                              ),
+                                                            )
+                                                          : const SizedBox
+                                                              .shrink(),
+                                                      Provider.of<UserData>(
+                                                                  context,
+                                                                  listen: false)
+                                                              .post5
+                                                              .isNotEmpty
+                                                          ? AnimatedContainer(
+                                                              duration: Duration(
+                                                                  milliseconds:
+                                                                      500),
+                                                              height: Provider.of<
+                                                                              UserData>(
+                                                                          context,
+                                                                          listen:
+                                                                              false)
+                                                                      .post5
+                                                                      .isEmpty
+                                                                  ? 0.0
+                                                                  : null,
+                                                              curve: Curves
+                                                                  .easeInOut,
+                                                              child: Text(
+                                                                Provider.of<UserData>(
+                                                                        context,
+                                                                        listen:
+                                                                            false)
+                                                                    .post5
+                                                                    .toString(),
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .blue,
+                                                                    fontSize:
+                                                                        20,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold),
+                                                              ),
+                                                            )
+                                                          : _isfetchingAddress
+                                                              ? const SizedBox
+                                                                  .shrink()
+                                                              : DirectionWidgetWhite(
+                                                                  fontSize:
+                                                                      null,
+                                                                  text: Provider.of<UserData>(
+                                                                              context,
+                                                                              listen: false)
+                                                                          .bool2
+                                                                      ? 'Enter the host link of the event. It will help other users virtually join the event if they are interested. '
+                                                                      : 'Enter the address venue of the event. Make sure you select the correct address from the list suggested below. It will help other users navigate to the venue if they are interested. ',
+                                                                ),
+                                                      Text(
+                                                        Provider.of<UserData>(
+                                                                context,
+                                                                listen: false)
+                                                            .post10
+                                                            .toString(),
+                                                        style: TextStyle(
+                                                            color: Colors.blue,
+                                                            fontSize: 20,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      SizedBox(height: 10),
+                                                      Provider.of<UserData>(
+                                                                  context,
+                                                                  listen: false)
+                                                              .bool2
+                                                          ? ContentFieldWhite(
+                                                              labelText:
+                                                                  "Virtual venue",
+                                                              hintText:
+                                                                  "Link to virtual event venue",
+                                                              initialValue: widget
+                                                                  .virtualVenue,
+                                                              onSavedText: (input) =>
+                                                                  Provider.of<UserData>(
+                                                                          context,
+                                                                          listen:
+                                                                              false)
+                                                                      .setPost5(
+                                                                          input),
+                                                              onValidateText:
+                                                                  (_) {},
+                                                            )
+                                                          : TextFormField(
+                                                              keyboardType:
+                                                                  TextInputType
+                                                                      .multiline,
+                                                              maxLines: null,
+                                                              controller:
+                                                                  _controller,
+                                                              textCapitalization:
+                                                                  TextCapitalization
+                                                                      .sentences,
+                                                              autovalidateMode:
+                                                                  AutovalidateMode
+                                                                      .always,
+                                                              onChanged:
+                                                                  (value) => {
+                                                                Provider.of<UserData>(
+                                                                        context,
+                                                                        listen:
+                                                                            false)
+                                                                    .searchAddress(
+                                                                        value),
+                                                                setState(() {
+                                                                  _isfetchingAddress =
+                                                                      true;
+                                                                })
+                                                              },
+                                                              style: TextStyle(
+                                                                fontSize: 16,
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                              initialValue:
+                                                                  widget.venue,
+                                                              decoration:
+                                                                  InputDecoration(
+                                                                      hintText:
+                                                                          "Event venue address",
+                                                                      hintStyle:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            12.0,
+                                                                        color: Colors
+                                                                            .grey,
+                                                                      ),
+                                                                      labelText:
+                                                                          'Venue',
+                                                                      labelStyle:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            16.0,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        color: Colors
+                                                                            .grey,
+                                                                      ),
+                                                                      enabledBorder:
+                                                                          new UnderlineInputBorder(
+                                                                              borderSide: new BorderSide(color: Colors.grey))),
+                                                            ),
+                                                      if (Provider.of<UserData>(
+                                                                  context,
+                                                                  listen: false)
+                                                              .addressSearchResults !=
+                                                          null)
+                                                        const SizedBox(
+                                                          height: 30,
+                                                        ),
+                                                      Provider.of<UserData>(
+                                                                  context,
+                                                                  listen: false)
+                                                              .bool2
+                                                          ? const SizedBox
+                                                              .shrink()
+                                                          : Container(
+                                                              color: ConfigBloc()
+                                                                      .darkModeOn
+                                                                  ? Colors.white
+                                                                  : Colors
+                                                                      .black,
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .all(
+                                                                        10.0),
+                                                                child: Align(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .topLeft,
+                                                                  child: Text(
+                                                                    'Tap below to select the venue\'s address',
+                                                                    style:
+                                                                        TextStyle(
+                                                                      color: ConfigBloc().darkModeOn
+                                                                          ? Colors
+                                                                              .black
+                                                                          : Colors
+                                                                              .white,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                      if (Provider.of<UserData>(
+                                                            context,
+                                                          ).addressSearchResults !=
+                                                          null)
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .only(
+                                                                  top: 10.0),
+                                                          child:
+                                                              SingleChildScrollView(
+                                                            child: Provider.of<
+                                                                            UserData>(
+                                                                        context,
+                                                                        listen:
+                                                                            false)
+                                                                    .bool2
+                                                                ? const SizedBox
+                                                                    .shrink()
+                                                                : Column(
+                                                                    children: [
+                                                                      _isfetchingAddress
+                                                                          ? Padding(
+                                                                              padding: const EdgeInsets.only(bottom: 5.0, top: 10),
+                                                                              child: SizedBox(
+                                                                                height: 1.0,
+                                                                                child: LinearProgressIndicator(
+                                                                                  backgroundColor: Colors.transparent,
+                                                                                  valueColor: AlwaysStoppedAnimation(Colors.grey),
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          : const SizedBox
+                                                                              .shrink(),
+                                                                      Container(
+                                                                        height: MediaQuery.of(context)
+                                                                            .size
+                                                                            .width,
+                                                                        width: double
+                                                                            .infinity,
+                                                                        decoration:
+                                                                            BoxDecoration(
+                                                                          color:
+                                                                              Colors.white,
+                                                                          shape:
+                                                                              BoxShape.rectangle,
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(10),
+                                                                        ),
+                                                                        child: ListView
+                                                                            .builder(
+                                                                          itemCount: Provider.of<UserData>(context, listen: false)
+                                                                              .addressSearchResults!
+                                                                              .length,
+                                                                          itemBuilder:
+                                                                              (context, index) {
+                                                                            return ListTile(
+                                                                                title: Text(
+                                                                                  Provider.of<UserData>(context, listen: false).addressSearchResults![index].description,
+                                                                                  style: TextStyle(
+                                                                                    color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                                                                                  ),
+                                                                                ),
+                                                                                onTap: () {
+                                                                                  Provider.of<UserData>(context, listen: false).setPost5(Provider.of<UserData>(context, listen: false).addressSearchResults![index].description);
+                                                                                  setState(() {
+                                                                                    _isfetchingAddress = false;
 
-                                                          widget
-                                                              .venue = Provider
-                                                                  .of<UserData>(
+                                                                                    widget.venue = Provider.of<UserData>(context, listen: false).addressSearchResults![index].description;
+                                                                                  });
+                                                                                  _reverseGeocoding();
+                                                                                });
+                                                                          },
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                          ),
+                                                        ),
+                                                      SizedBox(height: 20),
+                                                      widget.isEditting
+                                                          ? AnimatedContainer(
+                                                              duration: Duration(
+                                                                  milliseconds:
+                                                                      500),
+                                                              height: null,
+                                                              curve: Curves
+                                                                  .easeInOut,
+                                                              child: Center(
+                                                                child: AlwaysWhiteButton(
+                                                                    onPressed:
+                                                                        _validate,
+                                                                    buttonText:
+                                                                        'Next'),
+                                                              ),
+                                                            )
+                                                          : AnimatedContainer(
+                                                              duration: Duration(
+                                                                  milliseconds:
+                                                                      500),
+                                                              height: Provider.of<
+                                                                              UserData>(
+                                                                          context,
+                                                                          listen:
+                                                                              false)
+                                                                      .post5
+                                                                      .isEmpty
+                                                                  ? 0.0
+                                                                  : null,
+                                                              curve: Curves
+                                                                  .easeInOut,
+                                                              child: Center(
+                                                                child: AlwaysWhiteButton(
+                                                                    onPressed:
+                                                                        _validate,
+                                                                    buttonText: widget
+                                                                            .isEditting
+                                                                        ? 'Next'
+                                                                        : "Continue"),
+                                                              ),
+                                                            ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          SingleChildScrollView(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(20.0),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Align(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    child: Row(
+                                                      children: [
+                                                        Text(
+                                                          '7. ',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 30,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          'People (Optional)',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 12,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  DirectionWidgetWhite(
+                                                    fontSize: null,
+                                                    text:
+                                                        'Enter the name of people participating in this event. Separate each name with a comma(,).\nExmaple: James,Edith',
+                                                  ),
+                                                  ContentFieldWhite(
+                                                    labelText:
+                                                        "Name(s) of guests",
+                                                    hintText:
+                                                        'Special Guests (optional)',
+                                                    initialValue:
+                                                        Provider.of<UserData>(
+                                                                context,
+                                                                listen: false)
+                                                            .post11,
+                                                    onSavedText: (input) =>
+                                                        Provider.of<UserData>(
+                                                                context,
+                                                                listen: false)
+                                                            .setPost11(input),
+                                                    onValidateText: (_) {},
+                                                  ),
+                                                  ContentFieldWhite(
+                                                    labelText:
+                                                        "Name(s) of artists",
+                                                    hintText:
+                                                        'Artist Performing (optional)',
+                                                    initialValue:
+                                                        Provider.of<UserData>(
+                                                                context,
+                                                                listen: false)
+                                                            .post12,
+                                                    onSavedText: (input) =>
+                                                        Provider.of<UserData>(
+                                                                context,
+                                                                listen: false)
+                                                            .setPost12(input),
+                                                    onValidateText: (_) {},
+                                                  ),
+                                                  SizedBox(height: 70),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            bottom: 50),
+                                                    child: AlwaysWhiteButton(
+                                                        onPressed: _validate,
+                                                        buttonText:
+                                                            widget.isEditting
+                                                                ? 'Next'
+                                                                : "Continue"),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          SingleChildScrollView(
+                                            child: Container(
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 12.0),
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: <Widget>[
+                                                    Align(
+                                                      alignment:
+                                                          Alignment.centerLeft,
+                                                      child: Row(
+                                                        children: [
+                                                          Text(
+                                                            '8. ',
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: 30,
+                                                            ),
+                                                          ),
+                                                          Text(
+                                                            'Flyer\nInformation.',
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: 12,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    DirectionWidgetWhite(
+                                                      fontSize: null,
+                                                      text:
+                                                          'Provide the required information below correctly. The fields on this page cannot be empty. ',
+                                                    ),
+                                                    Container(
+                                                      color: Colors.white,
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                          horizontal: 10.0,
+                                                        ),
+                                                        child: Column(
+                                                          children: [
+                                                            const SizedBox(
+                                                              height: 20,
+                                                            ),
+                                                            ContentField(
+                                                              labelText:
+                                                                  'Title',
+                                                              hintText:
+                                                                  "Enter the title of your event",
+                                                              initialValue: Provider.of<
+                                                                          UserData>(
                                                                       context,
                                                                       listen:
                                                                           false)
-                                                              .addressSearchResults![
-                                                                  index]
-                                                              .description;
-                                                        });
-                                                        _reverseGeocoding();
-                                                      });
-                                                },
+                                                                  .post1
+                                                                  .toString(),
+                                                              onSavedText: (input) =>
+                                                                  Provider.of<UserData>(
+                                                                          context,
+                                                                          listen:
+                                                                              false)
+                                                                      .setPost1(
+                                                                          input),
+                                                              onValidateText: (input) => input
+                                                                          .trim()
+                                                                          .length <
+                                                                      1
+                                                                  ? "The title cannot be empty"
+                                                                  : null,
+                                                            ),
+                                                            ContentField(
+                                                              labelText:
+                                                                  'Theme',
+                                                              hintText:
+                                                                  "Enter a theme for the event",
+                                                              initialValue: Provider.of<
+                                                                          UserData>(
+                                                                      context,
+                                                                      listen:
+                                                                          false)
+                                                                  .post2
+                                                                  .toString(),
+                                                              onSavedText: (input) =>
+                                                                  Provider.of<UserData>(
+                                                                          context,
+                                                                          listen:
+                                                                              false)
+                                                                      .setPost2(
+                                                                          input),
+                                                              onValidateText: (input) => input
+                                                                          .trim()
+                                                                          .length <
+                                                                      10
+                                                                  ? "The theme is too short( > 10 characters)"
+                                                                  : null,
+                                                            ),
+                                                            ContentField(
+                                                              labelText: 'Host',
+                                                              hintText:
+                                                                  "Name of event host",
+                                                              initialValue: Provider.of<
+                                                                          UserData>(
+                                                                      context,
+                                                                      listen:
+                                                                          false)
+                                                                  .post4
+                                                                  .toString(),
+                                                              onSavedText: (input) =>
+                                                                  Provider.of<UserData>(
+                                                                          context,
+                                                                          listen:
+                                                                              false)
+                                                                      .setPost4(
+                                                                          input),
+                                                              onValidateText: (input) => input
+                                                                          .trim()
+                                                                          .length <
+                                                                      1
+                                                                  ? "The host cannot be empty"
+                                                                  : null,
+                                                            ),
+                                                            Provider.of<UserData>(
+                                                                        context,
+                                                                        listen:
+                                                                            false)
+                                                                    .post10
+                                                                    .isEmpty
+                                                                ? Provider.of<UserData>(
+                                                                            context,
+                                                                            listen:
+                                                                                false)
+                                                                        .bool2
+                                                                    ? const SizedBox
+                                                                        .shrink()
+                                                                    : ContentField(
+                                                                        labelText:
+                                                                            'Country',
+                                                                        hintText:
+                                                                            "Country of event",
+                                                                        initialValue: Provider.of<UserData>(context,
+                                                                                listen: false)
+                                                                            .post10
+                                                                            .toString(),
+                                                                        onSavedText:
+                                                                            (input) =>
+                                                                                Provider.of<UserData>(context, listen: false).setPost10(input),
+                                                                        onValidateText: (input) => input.trim().length <
+                                                                                1
+                                                                            ? "Enter the country of event"
+                                                                            : null,
+                                                                      )
+                                                                : const SizedBox
+                                                                    .shrink(),
+                                                            const SizedBox(
+                                                              height: 50,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 70),
+                                                    AlwaysWhiteButton(
+                                                        onPressed: _validate,
+                                                        buttonText:
+                                                            widget.isEditting
+                                                                ? 'Next'
+                                                                : "Continue"),
+                                                    const SizedBox(height: 70),
+                                                  ],
+                                                ),
                                               ),
                                             ),
-                                          ],
-                                        ),
-                                ),
-                              ),
-                            SizedBox(height: 20),
-                            widget.isEditting
-                                ? AnimatedContainer(
-                                    duration: Duration(milliseconds: 500),
-                                    height: null,
-                                    curve: Curves.easeInOut,
-                                    child: Center(
-                                      child: AlwaysWhiteButton(
-                                          onPressed: _validate,
-                                          buttonText: 'Next'),
-                                    ),
-                                  )
-                                : AnimatedContainer(
-                                    duration: Duration(milliseconds: 500),
-                                    height: Provider.of<UserData>(context,
-                                                listen: false)
-                                            .post5
-                                            .isEmpty
-                                        ? 0.0
-                                        : null,
-                                    curve: Curves.easeInOut,
-                                    child: Center(
-                                      child: AlwaysWhiteButton(
-                                          onPressed: _validate,
-                                          buttonText: widget.isEditting
-                                              ? 'Next'
-                                              : "Continue"),
-                                    ),
-                                  ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Row(
-                            children: [
-                              Text(
-                                '8. ',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 30,
-                                ),
-                              ),
-                              Text(
-                                'People (Optional)',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        DirectionWidget(
-                          fontSize: null,
-                          text:
-                              'Enter the name of people participating in this event. Separate each name with a comma(,).\nExmaple: James,Edith',
-                        ),
-                        ContentField(
-                          labelText: "Name(s) of guests",
-                          hintText: 'Special Guests (optional)',
-                          initialValue:
-                              Provider.of<UserData>(context, listen: false)
-                                  .post11,
-                          onSavedText: (input) =>
-                              Provider.of<UserData>(context, listen: false)
-                                  .setPost11(input),
-                          onValidateText: (_) {},
-                        ),
-                        ContentField(
-                          labelText: "Name(s) of artists",
-                          hintText: 'Artist Performing (optional)',
-                          initialValue:
-                              Provider.of<UserData>(context, listen: false)
-                                  .post12,
-                          onSavedText: (input) =>
-                              Provider.of<UserData>(context, listen: false)
-                                  .setPost12(input),
-                          onValidateText: (_) {},
-                        ),
-                        SizedBox(height: 70),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 50),
-                          child: AlwaysWhiteButton(
-                              onPressed: _validate,
-                              buttonText:
-                                  widget.isEditting ? 'Next' : "Continue"),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SingleChildScrollView(
-                  child: Container(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Row(
-                              children: [
-                                Text(
-                                  '8. ',
-                                  style: TextStyle(
-                                    color: Colors.blue,
-                                    fontSize: 30,
-                                  ),
-                                ),
-                                Text(
-                                  'Flyer\nInformation.',
-                                  style: TextStyle(
-                                    color: Colors.blue,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          DirectionWidget(
-                            fontSize: null,
-                            text:
-                                'Provide the required information below correctly. The fields on this page cannot be empty. ',
-                          ),
-                          ContentField(
-                            labelText: 'Title',
-                            hintText: "Enter the title of your event",
-                            initialValue:
-                                Provider.of<UserData>(context, listen: false)
-                                    .post1
-                                    .toString(),
-                            onSavedText: (input) =>
-                                Provider.of<UserData>(context, listen: false)
-                                    .setPost1(input),
-                            onValidateText: (input) => input.trim().length < 1
-                                ? "The title cannot be empty"
-                                : null,
-                          ),
-                          ContentField(
-                            labelText: 'Theme',
-                            hintText: "Enter a theme for the event",
-                            initialValue:
-                                Provider.of<UserData>(context, listen: false)
-                                    .post2
-                                    .toString(),
-                            onSavedText: (input) =>
-                                Provider.of<UserData>(context, listen: false)
-                                    .setPost2(input),
-                            onValidateText: (input) => input.trim().length < 10
-                                ? "The theme is too short( > 10 characters)"
-                                : null,
-                          ),
-                          Provider.of<UserData>(context, listen: false).bool3
-                              ? const SizedBox.shrink()
-                              : ContentField(
-                                  labelText: 'Rate',
-                                  hintText:
-                                      "currency - amount: example (\$: 00.0) ",
-                                  initialValue: Provider.of<UserData>(context,
-                                          listen: false)
-                                      .post3
-                                      .toString(),
-                                  onSavedText: (input) => Provider.of<UserData>(
-                                          context,
-                                          listen: false)
-                                      .setPost3(input),
-                                  onValidateText: (input) => input
-                                              .trim()
-                                              .length <
-                                          3
-                                      ? "The price rate cannot be empty (input free)"
-                                      : null,
-                                ),
-                          ContentField(
-                            labelText: 'Host',
-                            hintText: "Name of event host",
-                            initialValue:
-                                Provider.of<UserData>(context, listen: false)
-                                    .post4
-                                    .toString(),
-                            onSavedText: (input) =>
-                                Provider.of<UserData>(context, listen: false)
-                                    .setPost4(input),
-                            onValidateText: (input) => input.trim().length < 1
-                                ? "The host cannot be empty"
-                                : null,
-                          ),
-                          Provider.of<UserData>(context, listen: false)
-                                  .post10
-                                  .isEmpty
-                              ? Provider.of<UserData>(context, listen: false)
-                                      .bool2
-                                  ? SizedBox.shrink()
-                                  : ContentField(
-                                      labelText: 'Country',
-                                      hintText: "Country of event",
-                                      initialValue: Provider.of<UserData>(
-                                              context,
-                                              listen: false)
-                                          .post10
-                                          .toString(),
-                                      onSavedText: (input) =>
-                                          Provider.of<UserData>(context,
-                                                  listen: false)
-                                              .setPost10(input),
-                                      onValidateText: (input) =>
-                                          input.trim().length < 1
-                                              ? "Enter the country of event"
-                                              : null,
-                                    )
-                              : SizedBox.shrink(),
-                          const SizedBox(height: 70),
-                          AlwaysWhiteButton(
-                              onPressed: _validate,
-                              buttonText:
-                                  widget.isEditting ? 'Next' : "Continue"),
-                          const SizedBox(height: 70),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                                          ),
+                                          SingleChildScrollView(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(20.0),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Align(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    child: Row(
+                                                      children: [
+                                                        Text(
+                                                          '9. ',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 30,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          'Flyer\nInformation.(optional)',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 12,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  DirectionWidgetWhite(
+                                                    fontSize: null,
+                                                    text:
+                                                        'You can provide the following information if available for your event. The information required on this page is optional. ',
+                                                  ),
+                                                  ContentFieldWhite(
+                                                    labelText: "Name of Dj",
+                                                    hintText: 'Dj',
+                                                    initialValue: widget.dj,
+                                                    onSavedText: (input) =>
+                                                        widget.dj = input,
+                                                    onValidateText: (_) {},
+                                                  ),
+                                                  ContentFieldWhite(
+                                                    labelText:
+                                                        "Dress code for the event",
+                                                    hintText: 'Dress code',
+                                                    initialValue:
+                                                        widget.dressCode,
+                                                    onSavedText: (input) =>
+                                                        widget.dressCode =
+                                                            input,
+                                                    onValidateText: (_) {},
+                                                  ),
+                                                  ContentFieldWhite(
+                                                    labelText: "Ticket site",
+                                                    hintText:
+                                                        'Website to purchase ticket',
+                                                    initialValue:
+                                                        widget.ticketSite,
+                                                    onSavedText: (input) =>
+                                                        widget.ticketSite =
+                                                            input,
+                                                    onValidateText: (_) {},
+                                                  ),
+                                                  ContentFieldWhite(
+                                                    labelText: "Previous event",
+                                                    hintText:
+                                                        'A Video link of the previous events',
+                                                    initialValue:
+                                                        widget.previousEvent,
+                                                    onSavedText: (input) =>
+                                                        widget.previousEvent =
+                                                            input,
+                                                    onValidateText: (input) =>
+                                                        !musicVideoLink.hasMatch(
+                                                                    input) &&
+                                                                input
+                                                                        .trim()
+                                                                        .length >
+                                                                    1
+                                                            ? "Enter a valid video link"
+                                                            : null,
+                                                  ),
+                                                  SizedBox(height: 70),
+                                                  Provider.of<UserData>(context,
+                                                              listen: false)
+                                                          .isLoading
+                                                      ? const SizedBox.shrink()
+                                                      : Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .only(
+                                                                  bottom: 50),
+                                                          child: Container(
+                                                            width: 250,
+                                                            child:
+                                                                ElevatedButton(
+                                                              style:
+                                                                  ElevatedButton
+                                                                      .styleFrom(
+                                                                primary:
+                                                                    Colors.blue,
+                                                                elevation: 20.0,
+                                                                onPrimary:
+                                                                    Colors.blue,
+                                                                shape:
+                                                                    RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              20.0),
+                                                                ),
+                                                              ),
+                                                              onPressed: () => widget
+                                                                      .isEditting
+                                                                  ? _submitEdit()
+                                                                  : _showSelectImageDialog(
+                                                                      'create'),
+                                                              child: Text(
+                                                                widget.isEditting
+                                                                    ? 'Save'
+                                                                    : "Create",
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: ConfigBloc()
+                                                                          .darkModeOn
+                                                                      ? Colors
+                                                                          .black
+                                                                      : Colors
+                                                                          .white,
+                                                                  fontSize: 16,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
 
-                // SingleChildScrollView(
-                //   child: Padding(
-                //     padding: const EdgeInsets.all(20.0),
-                //     child: Column(
-                //       mainAxisAlignment: MainAxisAlignment.center,
-                //       crossAxisAlignment: CrossAxisAlignment.center,
-                //       children: [
-                //         DirectionWidget(
-                //           fontSize: null,
-                //           text:
-                //               'You can provide the following information if available for your event. The information required on this page is optional. ',
-                //         ),
-                //         ContentField(
-                //           labelText: "Name(s) of artists",
-                //           hintText: 'Artist Performing (optional)',
-                //           initialValue: widget.artist,
-                //           onSavedText: (input) => widget.artist = input,
-                //           onValidateText: (_) {},
-                //         ),
-                //         SizedBox(height: 70),
-                //         Padding(
-                //           padding: const EdgeInsets.only(bottom: 50),
-                //           child: AlwaysWhiteButton(
-                //               onPressed: _validate,
-                //               buttonText:
-                //                   widget.isEditting ? 'Next' : "Continue"),
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                // ),
-                SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Row(
-                            children: [
-                              Text(
-                                '9. ',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 30,
-                                ),
-                              ),
-                              Text(
-                                'Flyer\nInformation.(optional)',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
+                                                          // AvatarCircularButton(
+                                                          //     buttonText: widget
+                                                          //             .isEditting
+                                                          //         ? 'Save'
+                                                          //         : "Create",
+                                                          // onPressed: () => widget
+                                                          //         .isEditting
+                                                          //     ? _submitEdit()
+                                                          //     : _showSelectImageDialog(
+                                                          //         'create')),
+                                                        ),
+                                                  widget.isEditting
+                                                      ? Column(
+                                                          children: [
+                                                            Container(
+                                                              width: 50,
+                                                              height: 50,
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            10),
+                                                                color:
+                                                                    Colors.blue,
+                                                              ),
+                                                              child: InkWell(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            10),
+                                                                onTap: () =>
+                                                                    () {},
+                                                                child: Ink(
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    color: Colors
+                                                                        .blue,
+                                                                    borderRadius:
+                                                                        BorderRadius
+                                                                            .circular(8),
+                                                                  ),
+                                                                  child:
+                                                                      Container(
+                                                                    height: 40,
+                                                                    width: 40,
+                                                                    child: IconButton(
+                                                                        icon: Icon(Icons.delete_forever),
+                                                                        iconSize: 25,
+                                                                        color: Colors.white,
+                                                                        onPressed: () {
+                                                                          _showSelectImageDialog(
+                                                                              '');
+                                                                        }),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              height: 30.0,
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .only(
+                                                                      left:
+                                                                          50.0,
+                                                                      right:
+                                                                          50),
+                                                              child: Text(
+                                                                " Provide accurate information.\nRefresh your page to see the effect of your event edited or deleted",
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .grey,
+                                                                    fontSize:
+                                                                        12.0),
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center,
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              height: 50.0,
+                                                            ),
+                                                          ],
+                                                        )
+                                                      : const SizedBox.shrink()
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          SingleChildScrollView(
+                                            child: Container(
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .height -
+                                                    200,
+                                                child: Center(
+                                                    child: Loading(
+                                                  title: 'Publishing event',
+                                                  icon: (Icons.event),
+                                                ))),
+                                          )
+                                        ])),
                         ),
-                        DirectionWidget(
-                          fontSize: null,
-                          text:
-                              'You can provide the following information if available for your event. The information required on this page is optional. ',
-                        ),
-                        ContentField(
-                          labelText: "Name of Dj",
-                          hintText: 'Dj',
-                          initialValue: widget.dj,
-                          onSavedText: (input) => widget.dj = input,
-                          onValidateText: (_) {},
-                        ),
-                        ContentField(
-                          labelText: "Dress code for the event",
-                          hintText: 'Dress code',
-                          initialValue: widget.dressCode,
-                          onSavedText: (input) => widget.dressCode = input,
-                          onValidateText: (_) {},
-                        ),
-                        ContentField(
-                          labelText: "Ticket site",
-                          hintText: 'Website to purchase ticket',
-                          initialValue: widget.ticketSite,
-                          onSavedText: (input) => widget.ticketSite = input,
-                          onValidateText: (_) {},
-                        ),
-                        ContentField(
-                          labelText: "Previous event",
-                          hintText: 'A Video link of the previous events',
-                          initialValue: widget.previousEvent,
-                          onSavedText: (input) => widget.previousEvent = input,
-                          onValidateText: (input) =>
-                              !musicVideoLink.hasMatch(input) &&
-                                      input.trim().length > 1
-                                  ? "Enter a valid video link"
-                                  : null,
-                        ),
-                        SizedBox(height: 70),
-                        Provider.of<UserData>(context, listen: false).isLoading
-                            ? SizedBox.shrink()
-                            : Padding(
-                                padding: const EdgeInsets.only(bottom: 50),
-                                child: AvatarCircularButton(
-                                    buttonText:
-                                        widget.isEditting ? 'Save' : "Create",
-                                    onPressed: () => widget.isEditting
-                                        ? _submitEdit()
-                                        : _showSelectImageDialog('create')
-                                    // _submitCreate,
-                                    ),
-                              ),
-                        widget.isEditting
-                            ? Column(
-                                children: [
-                                  InkWell(
-                                    borderRadius: BorderRadius.circular(10),
-                                    onTap: () => () {},
-                                    child: Ink(
-                                      decoration: BoxDecoration(
-                                        color: ConfigBloc().darkModeOn
-                                            ? Colors.white
-                                            : Colors.black,
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Container(
-                                        height: 40,
-                                        width: 40,
-                                        child: IconButton(
-                                            icon: Icon(Icons.delete_forever),
-                                            iconSize: 25,
-                                            color: ConfigBloc().darkModeOn
-                                                ? Colors.black
-                                                : Colors.white,
-                                            onPressed: () {
-                                              _showSelectImageDialog('');
-                                            }),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 30.0,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 50.0, right: 50),
-                                    child: Text(
-                                      " Provide accurate information.\nRefresh your page to see the effect of your event edited or deleted",
-                                      style: TextStyle(
-                                          color: Colors.grey, fontSize: 12.0),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 50.0,
-                                  ),
-                                ],
-                              )
-                            : SizedBox.shrink(),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-                SingleChildScrollView(
-                  child: Container(
-                      color: Color(0xFFFF2D55),
-                      height: MediaQuery.of(context).size.height - 200,
-                      child: Center(
-                          child: Loading(
-                        title: 'Creating event',
-                        icon: (Icons.event),
-                      ))),
-                )
-              ],
+                  ]),
+                ],
+              ),
             ),
           ),
         ),
       ),
-    );
+
+      // SingleChildScrollView(
+      //   child: Center(
+      //     child: Padding(
+      //       padding: const EdgeInsets.all(20.0),
+      //       child: Column(
+      //         children: [
+      //           SizedBox(height: 10),
+      //           Align(
+      //             alignment: Alignment.centerLeft,
+      //             child: Row(
+      //               children: [
+      //                 Text(
+      //                   '1. ',
+      //                   style: TextStyle(
+      //                     color: Colors.blue,
+      //                     fontSize: 30,
+      //                   ),
+      //                 ),
+      //                 Text(
+      //                   'Background\nImage.',
+      //                   style: TextStyle(
+      //                     color: Colors.blue,
+      //                     fontSize: 12,
+      //                   ),
+      //                 ),
+      //               ],
+      //             ),
+      //           ),
+      //           Provider.of<UserData>(context, listen: false)
+      //                       .postImage ==
+      //                   null
+      //               ? DirectionWidgetWhite(
+      //                   text:
+      //                       'Select a background image for your event. The image selected should not contain any text and should be of good pixel quality. The image selected should align with the context of your event. We advise you to select a great background image. ',
+      //                   fontSize: null,
+      //                 )
+      //               : const SizedBox.shrink(),
+      //           const SizedBox(
+      //             height: 20,
+      //           ),
+      //           _displayPostImage(),
+      //           widget.imageUrl.isNotEmpty && widget.isEditting
+      //               ? Padding(
+      //                   padding: const EdgeInsets.only(top: 50.0),
+      //                   child: AlwaysWhiteButton(
+      //                       onPressed: _validate2,
+      //                       buttonText: "Next"),
+      //                 )
+      //               : Provider.of<UserData>(context, listen: false)
+      //                           .postImage ==
+      //                       null
+      //                   ? const SizedBox.shrink()
+      //                   : Padding(
+      //                       padding: const EdgeInsets.only(top: 50.0),
+      //                       child: AlwaysWhiteButton(
+      //                           onPressed: _validate,
+      //                           buttonText: "Continue"),
+      //                     ),
+      //           GestureDetector(
+      //             onTap: () => Navigator.push(
+      //                 context,
+      //                 MaterialPageRoute(
+      //                     builder: (_) => FeatureInfo(
+      //                           feature: 'Event',
+      //                         ))),
+      //             child: PageHint(
+      //               more: 'tap to read',
+      //               body: "Event documentation.",
+      //               title: ".",
+      //             ),
+      //           ),
+      //         ],
+      //       ),
+      //     ),
+      //   ),
+      // ),
+      // SingleChildScrollView(
+      //   child: Stack(
+      //     children: [
+      //       Center(
+      //         child: Padding(
+      //           padding: const EdgeInsets.all(20.0),
+      //           child: Column(
+      //             children: [
+      //               Align(
+      //                 alignment: Alignment.centerLeft,
+      //                 child: Row(
+      //                   children: [
+      //                     Text(
+      //                       '2. ',
+      //                       style: TextStyle(
+      //                         color: Colors.blue,
+      //                         fontSize: 30,
+      //                       ),
+      //                     ),
+      //                     Text(
+      //                       'Event\nsettings.',
+      //                       style: TextStyle(
+      //                         color: Colors.blue,
+      //                         fontSize: 12,
+      //                       ),
+      //                     ),
+      //                   ],
+      //                 ),
+      //               ),
+      //               SizedBox(height: 30),
+      //               SettingSwitch(
+      //                   title: 'Private event',
+      //                   subTitle:
+      //                       'You can create a private event and invite only specific people, or you can create a general event where anybody can attend.',
+      //                   value: Provider.of<UserData>(context,
+      //                           listen: false)
+      //                       .bool1,
+      //                   onChanged: (value) => Provider.of<UserData>(
+      //                           context,
+      //                           listen: false)
+      //                       .setBool1(value)),
+      //               !Provider.of<UserData>(context, listen: false)
+      //                       .bool1
+      //                   ? const SizedBox.shrink()
+      //                   : Padding(
+      //                       padding: const EdgeInsets.only(
+      //                           top: 10.0, bottom: 10),
+      //                       child: Divider(
+      //                         color: Colors.grey,
+      //                       ),
+      //                     ),
+      //               !Provider.of<UserData>(context, listen: false)
+      //                       .bool1
+      //                   ? const SizedBox.shrink()
+      //                   : SettingSwitch(
+      //                       title: 'Show on explore page',
+      //                       subTitle:
+      //                           'Should your private event be shown on the explore page?',
+      //                       value: Provider.of<UserData>(context,
+      //                               listen: false)
+      //                           .bool5,
+      //                       onChanged: (value) =>
+      //                           Provider.of<UserData>(context,
+      //                                   listen: false)
+      //                               .setBool5(value)),
+      //               Padding(
+      //                 padding: const EdgeInsets.only(
+      //                     top: 10.0, bottom: 10),
+      //                 child: Divider(
+      //                   color: Colors.grey,
+      //                 ),
+      //               ),
+      //               SettingSwitch(
+      //                   title: 'Virtual event',
+      //                   subTitle:
+      //                       'You can create an event that people can attend, or you can also create a virtual event that can be hosted on virtual platforms, where people can interact with you. ',
+      //                   value: Provider.of<UserData>(context,
+      //                           listen: false)
+      //                       .bool2,
+      //                   onChanged: (value) => Provider.of<UserData>(
+      //                           context,
+      //                           listen: false)
+      //                       .setBool2(value)),
+      //               Padding(
+      //                 padding: const EdgeInsets.only(
+      //                     top: 10.0, bottom: 10),
+      //                 child: Divider(
+      //                   color: Colors.grey,
+      //                 ),
+      //               ),
+      //               Provider.of<UserData>(context, listen: false)
+      //                       .bool4
+      //                   ? const SizedBox.shrink()
+      //                   : SettingSwitch(
+      //                       title: 'Free event',
+      //                       subTitle:
+      //                           'A free event without a ticket or gate fee (rate free).',
+      //                       value: Provider.of<UserData>(context,
+      //                               listen: false)
+      //                           .bool3,
+      //                       onChanged: (value) =>
+      //                           Provider.of<UserData>(context,
+      //                                   listen: false)
+      //                               .setBool3(value)),
+      //               Provider.of<UserData>(context, listen: false)
+      //                       .bool4
+      //                   ? const SizedBox.shrink()
+      //                   : Padding(
+      //                       padding: const EdgeInsets.only(
+      //                           top: 10.0, bottom: 10),
+      //                       child: Divider(
+      //                         color: Colors.grey,
+      //                       ),
+      //                     ),
+      //               Provider.of<UserData>(context, listen: false)
+      //                       .bool3
+      //                   ? const SizedBox.shrink()
+      //                   : Container(
+      //                       child: SettingSwitch(
+      //                           title: 'Cash payment',
+      //                           subTitle:
+      //                               'Cash in hand mode of payment for ticket or gate fee?',
+      //                           value: Provider.of<UserData>(context,
+      //                                   listen: false)
+      //                               .bool4,
+      //                           onChanged: (value) =>
+      //                               Provider.of<UserData>(context,
+      //                                       listen: false)
+      //                                   .setBool4(value)),
+      //                     ),
+      //               Provider.of<UserData>(context, listen: false)
+      //                       .bool3
+      //                   ? const SizedBox.shrink()
+      //                   : Padding(
+      //                       padding: const EdgeInsets.only(
+      //                           top: 10.0, bottom: 10),
+      //                       child: Divider(
+      //                         color: Colors.grey,
+      //                       ),
+      //                     ),
+      //               Center(
+      //                 child: Padding(
+      //                   padding: const EdgeInsets.only(
+      //                       bottom: 70.0, top: 50),
+      //                   child: AlwaysWhiteButton(
+      //                       onPressed: () {
+      //                         Provider.of<UserData>(context,
+      //                                     listen: false)
+      //                                 .bool3
+      //                             ? animateToPage()
+      //                             : showCurrencyPicker(
+      //                                 context: context,
+      //                                 showFlag: true,
+      //                                 showSearchField: true,
+      //                                 showCurrencyName: true,
+      //                                 showCurrencyCode: true,
+      //                                 onSelect: (Currency currency) {
+      //                                   // print(
+      //                                   //     'Select currency: ${currency.code}');
+      //                                   Provider.of<UserData>(context,
+      //                                           listen: false)
+      //                                       .setPost13(
+      //                                           '${currency.name}, ${currency.code} ');
+      //                                   setState(() {
+      //                                     _showSheet = true;
+      //                                   });
+      //                                 },
+      //                                 favorite: ['USD'],
+      //                               );
+      //                         // animateToPage();
+      //                       },
+      //                       buttonText: "Continue"),
+      //                 ),
+      //               ),
+      //             ],
+      //           ),
+      //         ),
+      //       ),
+      //       AnimatedContainer(
+      //         margin: EdgeInsets.symmetric(horizontal: 10),
+      //         duration: Duration(milliseconds: 500),
+      //         curve: Curves.linearToEaseOut,
+      //         height: _showSheet ? height - 100 : 0.0,
+      //         width: width,
+      //         decoration: BoxDecoration(
+      //           color: Colors.grey[300],
+      //           borderRadius: BorderRadius.only(
+      //             topLeft: Radius.circular(20.0),
+      //             topRight: Radius.circular(20.0),
+      //           ),
+      //         ),
+      //         child: Padding(
+      //           padding: const EdgeInsets.all(30.0),
+      //           child: Column(
+      //             mainAxisAlignment: MainAxisAlignment.start,
+      //             crossAxisAlignment: CrossAxisAlignment.start,
+      //             children: [
+      //               DirectionWidgetWhite(
+      //                 fontSize: null,
+      //                 text:
+      //                     'Enter the rate of your event. Example 10.00.',
+      //               ),
+      //               Text(
+      //                 Provider.of<UserData>(context, listen: false)
+      //                         .post3
+      //                         .isEmpty
+      //                     ? Provider.of<UserData>(context,
+      //                             listen: false)
+      //                         .post13
+      //                     : Provider.of<UserData>(context,
+      //                             listen: false)
+      //                         .post3,
+      //                 style: TextStyle(
+      //                   color: Colors.blue,
+      //                   fontSize: 30,
+      //                 ),
+      //               ),
+      //               const SizedBox(
+      //                 height: 5,
+      //               ),
+      //               ContentField(
+      //                 labelText: 'Rate',
+      //                 hintText:
+      //                     "currency - amount: example (\$: 00.0) ",
+      //                 initialValue: Provider.of<UserData>(context,
+      //                         listen: false)
+      //                     .post3
+      //                     .toString(),
+      //                 onSavedText: (input) => Provider.of<UserData>(
+      //                         context,
+      //                         listen: false)
+      //                     .setPost3(Provider.of<UserData>(context,
+      //                                 listen: false)
+      //                             .post13 +
+      //                         input),
+      //                 onValidateText: (input) => input.trim().length <
+      //                         1
+      //                     ? "The price rate cannot be empty (input free)"
+      //                     : null,
+      //               ),
+      //               const SizedBox(
+      //                 height: 70,
+      //               ),
+      //               AnimatedContainer(
+      //                 margin: EdgeInsets.symmetric(horizontal: 10),
+      //                 duration: Duration(milliseconds: 500),
+      //                 curve: Curves.linearToEaseOut,
+      //                 height: Provider.of<UserData>(context,
+      //                             listen: false)
+      //                         .post3
+      //                         .isEmpty
+      //                     ? 0
+      //                     : 40,
+      //                 child: Center(
+      //                   child: Container(
+      //                     width: 200,
+      //                     child: OutlinedButton(
+      //                         style: OutlinedButton.styleFrom(
+      //                           primary: Colors.blue,
+      //                           side: BorderSide(
+      //                             width: 1.0,
+      //                             color: ConfigBloc().darkModeOn
+      //                                 ? Colors.white
+      //                                 : Colors.black,
+      //                           ),
+      //                           shape: RoundedRectangleBorder(
+      //                             borderRadius:
+      //                                 BorderRadius.circular(20.0),
+      //                           ),
+      //                         ),
+      //                         child: Text(
+      //                           'Continue',
+      //                           style: TextStyle(
+      //                             color: ConfigBloc().darkModeOn
+      //                                 ? Colors.white
+      //                                 : Colors.black,
+      //                           ),
+      //                         ),
+      //                         onPressed: () {
+      //                           FocusScope.of(context).unfocus();
+      //                           animateToPage();
+      //                         }),
+      //                   ),
+      //                 ),
+
+      //                 // AlwaysWhiteButton(
+      //                 //     onPressed: () {
+      //                 //       animateToPage();
+      //                 //     },
+      //                 //     buttonText: "Continue"),
+      //               ),
+      //             ],
+      //           ),
+      //         ),
+      //       )
+      //     ],
+      //   ),
+      // ),
+      // SingleChildScrollView(
+      //   child: Padding(
+      //     padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      //     child: Column(
+      //       mainAxisAlignment: MainAxisAlignment.start,
+      //       crossAxisAlignment: CrossAxisAlignment.start,
+      //       children: [
+      //         Align(
+      //           alignment: Alignment.centerLeft,
+      //           child: Row(
+      //             children: [
+      //               Text(
+      //                 '3. ',
+      //                 style: TextStyle(
+      //                   color: Colors.blue,
+      //                   fontSize: 30,
+      //                 ),
+      //               ),
+      //               Text(
+      //                 'Category.',
+      //                 style: TextStyle(
+      //                   color: Colors.blue,
+      //                   fontSize: 12,
+      //                 ),
+      //               ),
+      //             ],
+      //           ),
+      //         ),
+      //         DirectionWidgetWhite(
+      //           fontSize: null,
+      //           text:
+      //               'Select an event category that matches the event you are creating. ',
+      //         ),
+      //         buildEventTypePicker(),
+      //       ],
+      //     ),
+      //   ),
+      // ),
+      // SingleChildScrollView(
+      //   child: Padding(
+      //     padding: const EdgeInsets.symmetric(horizontal: 30.0),
+      //     child: Column(
+      //       mainAxisAlignment: MainAxisAlignment.start,
+      //       crossAxisAlignment: CrossAxisAlignment.start,
+      //       children: [
+      //         Align(
+      //           alignment: Alignment.centerLeft,
+      //           child: Row(
+      //             children: [
+      //               Text(
+      //                 '4. ',
+      //                 style: TextStyle(
+      //                   color: Colors.blue,
+      //                   fontSize: 30,
+      //                 ),
+      //               ),
+      //               Text(
+      //                 'Time',
+      //                 style: TextStyle(
+      //                   color: Colors.blue,
+      //                   fontSize: 12,
+      //                 ),
+      //               ),
+      //             ],
+      //           ),
+      //         ),
+      //         DirectionWidgetWhite(
+      //           fontSize: null,
+      //           text:
+      //               'Select the exact time your event would begin. ',
+      //         ),
+      //         SizedBox(height: 20),
+      //         buildTImePicker(),
+      //       ],
+      //     ),
+      //   ),
+      // ),
+      // SingleChildScrollView(
+      //   child: Padding(
+      //     padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      //     child: Column(
+      //       mainAxisAlignment: MainAxisAlignment.start,
+      //       crossAxisAlignment: CrossAxisAlignment.start,
+      //       children: [
+      //         Align(
+      //           alignment: Alignment.centerLeft,
+      //           child: Row(
+      //             children: [
+      //               Text(
+      //                 '5. ',
+      //                 style: TextStyle(
+      //                   color: Colors.blue,
+      //                   fontSize: 30,
+      //                 ),
+      //               ),
+      //               Text(
+      //                 'Date.',
+      //                 style: TextStyle(
+      //                   color: Colors.blue,
+      //                   fontSize: 12,
+      //                 ),
+      //               ),
+      //             ],
+      //           ),
+      //         ),
+      //         DirectionWidgetWhite(
+      //           fontSize: null,
+      //           text: 'Select the exact date of your event. ',
+      //         ),
+      //         SizedBox(height: 20),
+      //         buildDatePicker(),
+      //       ],
+      //     ),
+      //   ),
+      // ),
+      // SingleChildScrollView(
+      //   child: Padding(
+      //     padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      //     child: Column(
+      //       mainAxisAlignment: MainAxisAlignment.start,
+      //       crossAxisAlignment: CrossAxisAlignment.start,
+      //       children: [
+      //         Align(
+      //           alignment: Alignment.centerLeft,
+      //           child: Row(
+      //             children: [
+      //               Text(
+      //                 widget.isEditting ? '' : '6. ',
+      //                 style: TextStyle(
+      //                   color: Colors.blue,
+      //                   fontSize: 30,
+      //                 ),
+      //               ),
+      //               Text(
+      //                 widget.isEditting ? '' : 'Closeing day.',
+      //                 style: TextStyle(
+      //                   color: Colors.blue,
+      //                   fontSize: 12,
+      //                 ),
+      //               ),
+      //             ],
+      //           ),
+      //         ),
+      //         widget.isEditting
+      //             ? DirectionWidgetWhite(
+      //                 fontSize: null,
+      //                 text:
+      //                     'Certiain information of an event cannot be modified once an event is created. Information such as date, time, category, flyer background, and event settings cannot be changed. ',
+      //               )
+      //             : DirectionWidgetWhite(
+      //                 fontSize: null,
+      //                 text:
+      //                     'Choose a closing day for your event. This indicates the closing period of your event. For instance, if you pick three days, your event dashboard and flyer would be disabled three days after your event date specified previously. ',
+      //               ),
+      //         SizedBox(height: 20),
+      //         widget.isEditting
+      //             ? Center(
+      //                 child: AlwaysWhiteButton(
+      //                     onPressed: _validate,
+      //                     buttonText: "Start editing"),
+      //               )
+      //             : buildClosingDayPicker(),
+      //       ],
+      //     ),
+      //   ),
+      // ),
+      // SingleChildScrollView(
+      //   child: Padding(
+      //     padding: const EdgeInsets.only(
+      //       bottom: 30,
+      //     ),
+      //     child: Container(
+      //       child: Padding(
+      //         padding: const EdgeInsets.all(20.0),
+      //         child: Column(
+      //           mainAxisAlignment: MainAxisAlignment.start,
+      //           crossAxisAlignment: CrossAxisAlignment.start,
+      //           children: <Widget>[
+      //             Align(
+      //               alignment: Alignment.centerLeft,
+      //               child: Row(
+      //                 children: [
+      //                   Text(
+      //                     '7. ',
+      //                     style: TextStyle(
+      //                       color: Colors.blue,
+      //                       fontSize: 30,
+      //                     ),
+      //                   ),
+      //                   Text(
+      //                     'Venue.',
+      //                     style: TextStyle(
+      //                       color: Colors.blue,
+      //                       fontSize: 12,
+      //                     ),
+      //                   ),
+      //                 ],
+      //               ),
+      //             ),
+      //             Provider.of<UserData>(context, listen: false)
+      //                     .isLoading
+      //                 ? Padding(
+      //                     padding:
+      //                         const EdgeInsets.only(bottom: 10.0),
+      //                     child: SizedBox(
+      //                       height: 2.0,
+      //                       child: LinearProgressIndicator(
+      //                         backgroundColor: Colors.transparent,
+      //                         valueColor:
+      //                             AlwaysStoppedAnimation(Colors.blue),
+      //                       ),
+      //                     ),
+      //                   )
+      //                 : const SizedBox.shrink(),
+      //             Provider.of<UserData>(context, listen: false)
+      //                     .post5
+      //                     .isNotEmpty
+      //                 ? AnimatedContainer(
+      //                     duration: Duration(milliseconds: 500),
+      //                     height: Provider.of<UserData>(context,
+      //                                 listen: false)
+      //                             .post5
+      //                             .isEmpty
+      //                         ? 0.0
+      //                         : null,
+      //                     curve: Curves.easeInOut,
+      //                     child: Text(
+      //                       Provider.of<UserData>(context,
+      //                               listen: false)
+      //                           .post5
+      //                           .toString(),
+      //                       style: TextStyle(
+      //                           color: Colors.blue,
+      //                           fontSize: 20,
+      //                           fontWeight: FontWeight.bold),
+      //                     ),
+      //                   )
+      //                 : _isfetchingAddress
+      //                     ? const SizedBox.shrink()
+      //                     : DirectionWidgetWhite(
+      //                         fontSize: null,
+      //                         text: Provider.of<UserData>(context,
+      //                                     listen: false)
+      //                                 .bool2
+      //                             ? 'Enter the host link of the event. It will help other users virtually join the event if they are interested. '
+      //                             : 'Enter the address venue of the event. Make sure you select the correct address from the list suggested below. It will help other users navigate to the venue if they are interested. ',
+      //                       ),
+      //             Text(
+      //               Provider.of<UserData>(context, listen: false)
+      //                   .post10
+      //                   .toString(),
+      //               style: TextStyle(
+      //                   color: Colors.blue,
+      //                   fontSize: 20,
+      //                   fontWeight: FontWeight.bold),
+      //             ),
+      //             SizedBox(height: 10),
+      //             Provider.of<UserData>(context, listen: false).bool2
+      //                 ? ContentField(
+      //                     labelText: "Virtual venue",
+      //                     hintText: "Link to virtual event venue",
+      //                     initialValue: widget.virtualVenue,
+      //                     onSavedText: (input) =>
+      //                         Provider.of<UserData>(context,
+      //                                 listen: false)
+      //                             .setPost5(input),
+      //                     onValidateText: (_) {},
+      //                   )
+      //                 : TextFormField(
+      //                     keyboardType: TextInputType.multiline,
+      //                     maxLines: null,
+      //                     controller: _controller,
+      //                     textCapitalization:
+      //                         TextCapitalization.sentences,
+      //                     autovalidateMode: AutovalidateMode.always,
+      //                     onChanged: (value) => {
+      //                       Provider.of<UserData>(context,
+      //                               listen: false)
+      //                           .searchAddress(value),
+      //                       setState(() {
+      //                         _isfetchingAddress = true;
+      //                       })
+      //                     },
+      //                     style: TextStyle(
+      //                       fontSize: 16,
+      //                       color: ConfigBloc().darkModeOn
+      //                           ? Colors.white
+      //                           : Colors.black,
+      //                     ),
+      //                     initialValue: widget.venue,
+      //                     decoration: InputDecoration(
+      //                         hintText: "Event venue address",
+      //                         hintStyle: TextStyle(
+      //                           fontSize: 12.0,
+      //                           color: Colors.grey,
+      //                         ),
+      //                         labelText: 'Venue',
+      //                         labelStyle: TextStyle(
+      //                           fontSize: 16.0,
+      //                           fontWeight: FontWeight.bold,
+      //                           color: Colors.grey,
+      //                         ),
+      //                         enabledBorder: new UnderlineInputBorder(
+      //                             borderSide: new BorderSide(
+      //                                 color: Colors.grey))),
+      //                   ),
+      //             if (Provider.of<UserData>(context, listen: false)
+      //                     .addressSearchResults !=
+      //                 null)
+      //               const SizedBox(
+      //                 height: 30,
+      //               ),
+      //             Provider.of<UserData>(context, listen: false).bool2
+      //                 ? const SizedBox.shrink()
+      //                 : Container(
+      //                     color: ConfigBloc().darkModeOn
+      //                         ? Colors.white
+      //                         : Colors.black,
+      //                     child: Padding(
+      //                       padding: const EdgeInsets.all(10.0),
+      //                       child: Align(
+      //                         alignment: Alignment.topLeft,
+      //                         child: Text(
+      //                           'Tap below to select the venue\'s address',
+      //                           style: TextStyle(
+      //                             color: ConfigBloc().darkModeOn
+      //                                 ? Colors.black
+      //                                 : Colors.white,
+      //                           ),
+      //                         ),
+      //                       ),
+      //                     ),
+      //                   ),
+      //             if (Provider.of<UserData>(
+      //                   context,
+      //                 ).addressSearchResults !=
+      //                 null)
+      //               Padding(
+      //                 padding: const EdgeInsets.only(top: 10.0),
+      //                 child: SingleChildScrollView(
+      //                   child: Provider.of<UserData>(context,
+      //                               listen: false)
+      //                           .bool2
+      //                       ? const SizedBox.shrink()
+      //                       : Column(
+      //                           children: [
+      //                             _isfetchingAddress
+      //                                 ? Padding(
+      //                                     padding:
+      //                                         const EdgeInsets.only(
+      //                                             bottom: 5.0,
+      //                                             top: 10),
+      //                                     child: SizedBox(
+      //                                       height: 2.0,
+      //                                       child:
+      //                                           LinearProgressIndicator(
+      //                                         backgroundColor:
+      //                                             Colors.transparent,
+      //                                         valueColor:
+      //                                             AlwaysStoppedAnimation(
+      //                                                 Colors.grey),
+      //                                       ),
+      //                                     ),
+      //                                   )
+      //                                 : const SizedBox.shrink(),
+      //                             Container(
+      //                               height: MediaQuery.of(context)
+      //                                       .size
+      //                                       .width -
+      //                                   100,
+      //                               width: double.infinity,
+      //                               decoration: BoxDecoration(
+      //                                 color: Colors.transparent,
+      //                                 shape: BoxShape.rectangle,
+      //                                 borderRadius:
+      //                                     BorderRadius.circular(10),
+      //                               ),
+      //                               child: ListView.builder(
+      //                                 itemCount:
+      //                                     Provider.of<UserData>(
+      //                                             context,
+      //                                             listen: false)
+      //                                         .addressSearchResults!
+      //                                         .length,
+      //                                 itemBuilder: (context, index) {
+      //                                   return ListTile(
+      //                                       title: Text(
+      //                                         Provider.of<UserData>(
+      //                                                 context,
+      //                                                 listen: false)
+      //                                             .addressSearchResults![
+      //                                                 index]
+      //                                             .description,
+      //                                         style: TextStyle(
+      //                                           color: ConfigBloc()
+      //                                                   .darkModeOn
+      //                                               ? Colors.white
+      //                                               : Colors.black,
+      //                                         ),
+      //                                       ),
+      //                                       onTap: () {
+      //                                         Provider.of<UserData>(
+      //                                                 context,
+      //                                                 listen: false)
+      //                                             .setPost5(Provider.of<
+      //                                                         UserData>(
+      //                                                     context,
+      //                                                     listen:
+      //                                                         false)
+      //                                                 .addressSearchResults![
+      //                                                     index]
+      //                                                 .description);
+      //                                         setState(() {
+      //                                           _isfetchingAddress =
+      //                                               false;
+
+      //                                           widget
+      //                                               .venue = Provider
+      //                                                   .of<UserData>(
+      //                                                       context,
+      //                                                       listen:
+      //                                                           false)
+      //                                               .addressSearchResults![
+      //                                                   index]
+      //                                               .description;
+      //                                         });
+      //                                         _reverseGeocoding();
+      //                                       });
+      //                                 },
+      //                               ),
+      //                             ),
+      //                           ],
+      //                         ),
+      //                 ),
+      //               ),
+      //             SizedBox(height: 20),
+      //             widget.isEditting
+      //                 ? AnimatedContainer(
+      //                     duration: Duration(milliseconds: 500),
+      //                     height: null,
+      //                     curve: Curves.easeInOut,
+      //                     child: Center(
+      //                       child: AlwaysWhiteButton(
+      //                           onPressed: _validate,
+      //                           buttonText: 'Next'),
+      //                     ),
+      //                   )
+      //                 : AnimatedContainer(
+      //                     duration: Duration(milliseconds: 500),
+      //                     height: Provider.of<UserData>(context,
+      //                                 listen: false)
+      //                             .post5
+      //                             .isEmpty
+      //                         ? 0.0
+      //                         : null,
+      //                     curve: Curves.easeInOut,
+      //                     child: Center(
+      //                       child: AlwaysWhiteButton(
+      //                           onPressed: _validate,
+      //                           buttonText: widget.isEditting
+      //                               ? 'Next'
+      //                               : "Continue"),
+      //                     ),
+      //                   ),
+      //           ],
+      //         ),
+      //       ),
+      //     ),
+      //   ),
+      // ),
+      // SingleChildScrollView(
+      //   child: Padding(
+      //     padding: const EdgeInsets.all(20.0),
+      //     child: Column(
+      //       mainAxisAlignment: MainAxisAlignment.center,
+      //       crossAxisAlignment: CrossAxisAlignment.center,
+      //       children: [
+      //         Align(
+      //           alignment: Alignment.centerLeft,
+      //           child: Row(
+      //             children: [
+      //               Text(
+      //                 '8. ',
+      //                 style: TextStyle(
+      //                   color: Colors.blue,
+      //                   fontSize: 30,
+      //                 ),
+      //               ),
+      //               Text(
+      //                 'People (Optional)',
+      //                 style: TextStyle(
+      //                   color: Colors.blue,
+      //                   fontSize: 12,
+      //                 ),
+      //               ),
+      //             ],
+      //           ),
+      //         ),
+      //         DirectionWidgetWhite(
+      //           fontSize: null,
+      //           text:
+      //               'Enter the name of people participating in this event. Separate each name with a comma(,).\nExmaple: James,Edith',
+      //         ),
+      //         ContentField(
+      //           labelText: "Name(s) of guests",
+      //           hintText: 'Special Guests (optional)',
+      //           initialValue:
+      //               Provider.of<UserData>(context, listen: false)
+      //                   .post11,
+      //           onSavedText: (input) =>
+      //               Provider.of<UserData>(context, listen: false)
+      //                   .setPost11(input),
+      //           onValidateText: (_) {},
+      //         ),
+      //         ContentField(
+      //           labelText: "Name(s) of artists",
+      //           hintText: 'Artist Performing (optional)',
+      //           initialValue:
+      //               Provider.of<UserData>(context, listen: false)
+      //                   .post12,
+      //           onSavedText: (input) =>
+      //               Provider.of<UserData>(context, listen: false)
+      //                   .setPost12(input),
+      //           onValidateText: (_) {},
+      //         ),
+      //         SizedBox(height: 70),
+      //         Padding(
+      //           padding: const EdgeInsets.only(bottom: 50),
+      //           child: AlwaysWhiteButton(
+      //               onPressed: _validate,
+      //               buttonText:
+      //                   widget.isEditting ? 'Next' : "Continue"),
+      //         ),
+      //       ],
+      //     ),
+      //   ),
+      // ),
+      // SingleChildScrollView(
+      //   child: Container(
+      //     child: Padding(
+      //       padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      //       child: Column(
+      //         mainAxisAlignment: MainAxisAlignment.center,
+      //         crossAxisAlignment: CrossAxisAlignment.center,
+      //         children: <Widget>[
+      //           Align(
+      //             alignment: Alignment.centerLeft,
+      //             child: Row(
+      //               children: [
+      //                 Text(
+      //                   '8. ',
+      //                   style: TextStyle(
+      //                     color: Colors.blue,
+      //                     fontSize: 30,
+      //                   ),
+      //                 ),
+      //                 Text(
+      //                   'Flyer\nInformation.',
+      //                   style: TextStyle(
+      //                     color: Colors.blue,
+      //                     fontSize: 12,
+      //                   ),
+      //                 ),
+      //               ],
+      //             ),
+      //           ),
+      //           DirectionWidgetWhite(
+      //             fontSize: null,
+      //             text:
+      //                 'Provide the required information below correctly. The fields on this page cannot be empty. ',
+      //           ),
+      //           ContentField(
+      //             labelText: 'Title',
+      //             hintText: "Enter the title of your event",
+      //             initialValue:
+      //                 Provider.of<UserData>(context, listen: false)
+      //                     .post1
+      //                     .toString(),
+      //             onSavedText: (input) =>
+      //                 Provider.of<UserData>(context, listen: false)
+      //                     .setPost1(input),
+      //             onValidateText: (input) => input.trim().length < 1
+      //                 ? "The title cannot be empty"
+      //                 : null,
+      //           ),
+      //           ContentField(
+      //             labelText: 'Theme',
+      //             hintText: "Enter a theme for the event",
+      //             initialValue:
+      //                 Provider.of<UserData>(context, listen: false)
+      //                     .post2
+      //                     .toString(),
+      //             onSavedText: (input) =>
+      //                 Provider.of<UserData>(context, listen: false)
+      //                     .setPost2(input),
+      //             onValidateText: (input) => input.trim().length < 10
+      //                 ? "The theme is too short( > 10 characters)"
+      //                 : null,
+      //           ),
+      //           ContentField(
+      //             labelText: 'Host',
+      //             hintText: "Name of event host",
+      //             initialValue:
+      //                 Provider.of<UserData>(context, listen: false)
+      //                     .post4
+      //                     .toString(),
+      //             onSavedText: (input) =>
+      //                 Provider.of<UserData>(context, listen: false)
+      //                     .setPost4(input),
+      //             onValidateText: (input) => input.trim().length < 1
+      //                 ? "The host cannot be empty"
+      //                 : null,
+      //           ),
+      //           Provider.of<UserData>(context, listen: false)
+      //                   .post10
+      //                   .isEmpty
+      //               ? Provider.of<UserData>(context, listen: false)
+      //                       .bool2
+      //                   ? const SizedBox.shrink()
+      //                   : ContentField(
+      //                       labelText: 'Country',
+      //                       hintText: "Country of event",
+      //                       initialValue: Provider.of<UserData>(
+      //                               context,
+      //                               listen: false)
+      //                           .post10
+      //                           .toString(),
+      //                       onSavedText: (input) =>
+      //                           Provider.of<UserData>(context,
+      //                                   listen: false)
+      //                               .setPost10(input),
+      //                       onValidateText: (input) =>
+      //                           input.trim().length < 1
+      //                               ? "Enter the country of event"
+      //                               : null,
+      //                     )
+      //               : const SizedBox.shrink(),
+      //           const SizedBox(height: 70),
+      //           AlwaysWhiteButton(
+      //               onPressed: _validate,
+      //               buttonText:
+      //                   widget.isEditting ? 'Next' : "Continue"),
+      //           const SizedBox(height: 70),
+      //         ],
+      //       ),
+      //     ),
+      //   ),
+      // ),
+      // SingleChildScrollView(
+      //   child: Padding(
+      //     padding: const EdgeInsets.all(20.0),
+      //     child: Column(
+      //       mainAxisAlignment: MainAxisAlignment.center,
+      //       crossAxisAlignment: CrossAxisAlignment.center,
+      //       children: [
+      //         Align(
+      //           alignment: Alignment.centerLeft,
+      //           child: Row(
+      //             children: [
+      //               Text(
+      //                 '9. ',
+      //                 style: TextStyle(
+      //                   color: Colors.blue,
+      //                   fontSize: 30,
+      //                 ),
+      //               ),
+      //               Text(
+      //                 'Flyer\nInformation.(optional)',
+      //                 style: TextStyle(
+      //                   color: Colors.blue,
+      //                   fontSize: 12,
+      //                 ),
+      //               ),
+      //             ],
+      //           ),
+      //         ),
+      //         DirectionWidgetWhite(
+      //           fontSize: null,
+      //           text:
+      //               'You can provide the following information if available for your event. The information required on this page is optional. ',
+      //         ),
+      //         ContentField(
+      //           labelText: "Name of Dj",
+      //           hintText: 'Dj',
+      //           initialValue: widget.dj,
+      //           onSavedText: (input) => widget.dj = input,
+      //           onValidateText: (_) {},
+      //         ),
+      //         ContentField(
+      //           labelText: "Dress code for the event",
+      //           hintText: 'Dress code',
+      //           initialValue: widget.dressCode,
+      //           onSavedText: (input) => widget.dressCode = input,
+      //           onValidateText: (_) {},
+      //         ),
+      //         ContentField(
+      //           labelText: "Ticket site",
+      //           hintText: 'Website to purchase ticket',
+      //           initialValue: widget.ticketSite,
+      //           onSavedText: (input) => widget.ticketSite = input,
+      //           onValidateText: (_) {},
+      //         ),
+      //         ContentField(
+      //           labelText: "Previous event",
+      //           hintText: 'A Video link of the previous events',
+      //           initialValue: widget.previousEvent,
+      //           onSavedText: (input) => widget.previousEvent = input,
+      //           onValidateText: (input) =>
+      //               !musicVideoLink.hasMatch(input) &&
+      //                       input.trim().length > 1
+      //                   ? "Enter a valid video link"
+      //                   : null,
+      //         ),
+      //         SizedBox(height: 70),
+      //         Provider.of<UserData>(context, listen: false).isLoading
+      //             ? const SizedBox.shrink()
+      //             : Padding(
+      //                 padding: const EdgeInsets.only(bottom: 50),
+      //                 child: AvatarCircularButton(
+      //                     buttonText:
+      //                         widget.isEditting ? 'Save' : "Create",
+      //                     onPressed: () => widget.isEditting
+      //                         ? _submitEdit()
+      //                         : _showSelectImageDialog('create')),
+      //               ),
+      //         widget.isEditting
+      //             ? Column(
+      //                 children: [
+      //                   InkWell(
+      //                     borderRadius: BorderRadius.circular(10),
+      //                     onTap: () => () {},
+      //                     child: Ink(
+      //                       decoration: BoxDecoration(
+      //                         color: ConfigBloc().darkModeOn
+      //                             ? Colors.white
+      //                             : Colors.black,
+      //                         borderRadius: BorderRadius.circular(8),
+      //                       ),
+      //                       child: Container(
+      //                         height: 40,
+      //                         width: 40,
+      //                         child: IconButton(
+      //                             icon: Icon(Icons.delete_forever),
+      //                             iconSize: 25,
+      //                             color: ConfigBloc().darkModeOn
+      //                                 ? Colors.black
+      //                                 : Colors.white,
+      //                             onPressed: () {
+      //                               _showSelectImageDialog('');
+      //                             }),
+      //                       ),
+      //                     ),
+      //                   ),
+      //                   SizedBox(
+      //                     height: 30.0,
+      //                   ),
+      //                   Padding(
+      //                     padding: const EdgeInsets.only(
+      //                         left: 50.0, right: 50),
+      //                     child: Text(
+      //                       " Provide accurate information.\nRefresh your page to see the effect of your event edited or deleted",
+      //                       style: TextStyle(
+      //                           color: Colors.grey, fontSize: 12.0),
+      //                       textAlign: TextAlign.center,
+      //                     ),
+      //                   ),
+      //                   SizedBox(
+      //                     height: 50.0,
+      //                   ),
+      //                 ],
+      //               )
+      //             : const SizedBox.shrink()
+      //       ],
+      //     ),
+      //   ),
+      // ),
+      // SingleChildScrollView(
+      //   child: Container(
+      //       color: Color(0xFFFF2D55),
+      //       height: MediaQuery.of(context).size.height - 200,
+      //       child: Center(
+      //           child: Loading(
+      //         title: 'Publishing event',
+      //         icon: (Icons.event),
+      //       ))),
+      // )
+    ));
   }
 }

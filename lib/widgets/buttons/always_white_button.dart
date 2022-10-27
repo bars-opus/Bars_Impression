@@ -27,13 +27,13 @@ class AlwaysWhiteButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(20.0),
           ),
         ),
-        onPressed:  onPressed,
+        onPressed: onPressed,
         child: Text(
           buttonText,
           style: TextStyle(
             color: Colors.blue,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+            // fontSize: 16,
+            // fontWeight: FontWeight.bold,
           ),
         ),
       ),

@@ -1,3 +1,4 @@
+import 'package:bars/general/pages/discover/seach/store_search.dart';
 import 'package:bars/utilities/exports.dart';
 
 class DiscoverUser extends StatefulWidget {
@@ -174,58 +175,72 @@ class _DiscoverUserState extends State<DiscoverUser>
                 Artists(
                   currentUserId: widget.currentUserId,
                   exploreLocation: '',
+                  profileHandle: 'Artist',
                 ),
-                Producers(
+                Artists(
                   currentUserId: widget.currentUserId,
                   exploreLocation: '',
+                  profileHandle: 'Producer',
                 ),
-                Designers(
+                Artists(
                   currentUserId: widget.currentUserId,
                   exploreLocation: '',
+                  profileHandle: 'Cover_Art_Designer',
                 ),
-                VideoDirectors(
+                Artists(
                   currentUserId: widget.currentUserId,
                   exploreLocation: '',
+                  profileHandle: 'Music_Video_Director',
                 ),
-                Djs(
+                Artists(
                   currentUserId: widget.currentUserId,
                   exploreLocation: '',
+                  profileHandle: 'DJ',
                 ),
-                BattleRappers(
+                Artists(
                   currentUserId: widget.currentUserId,
                   exploreLocation: '',
+                  profileHandle: 'Battle_Rapper',
                 ),
-                Photographers(
+                Artists(
                   currentUserId: widget.currentUserId,
                   exploreLocation: '',
+                  profileHandle: 'Photographer',
                 ),
-                Dancers(
+                Artists(
                   currentUserId: widget.currentUserId,
                   exploreLocation: '',
+                  profileHandle: 'Dancer',
                 ),
-                VideoVixens(
+                Artists(
                   currentUserId: widget.currentUserId,
                   exploreLocation: '',
+                  profileHandle: 'Video_Vixen',
                 ),
-                MakeUpArtists(
+                Artists(
                   currentUserId: widget.currentUserId,
                   exploreLocation: '',
+                  profileHandle: 'Makeup_Artist',
                 ),
-                RecordLabels(
+                Artists(
                   currentUserId: widget.currentUserId,
                   exploreLocation: '',
+                  profileHandle: 'Record_Label',
                 ),
-                BrandInfluencers(
+                Artists(
                   currentUserId: widget.currentUserId,
                   exploreLocation: '',
+                  profileHandle: 'Brand_Influencer',
                 ),
-                Bloggers(
+                Artists(
                   currentUserId: widget.currentUserId,
                   exploreLocation: '',
+                  profileHandle: 'Blogger',
                 ),
-                MCHosts(
+                Artists(
                   currentUserId: widget.currentUserId,
                   exploreLocation: '',
+                  profileHandle: 'MC(Host)',
                 ),
                 Fans(
                   currentUserId: widget.currentUserId,
@@ -248,7 +263,7 @@ class _locationTab extends StatelessWidget {
         Provider.of<UserData>(context, listen: false).user!;
     // ignore: unnecessary_null_comparison
     return user == null
-        ? SizedBox.shrink()
+        ? const SizedBox.shrink()
         : Padding(
             padding: const EdgeInsets.only(left: 12.0, right: 12, top: 12),
             child: FadeAnimation(

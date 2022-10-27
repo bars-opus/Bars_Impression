@@ -1,6 +1,6 @@
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
 // import 'package:google_sign_in/google_sign_in.dart';
 
 class ProfileSettings extends StatefulWidget {
@@ -162,8 +162,8 @@ class _ProfileSettingsState extends State<ProfileSettings> {
         ),
         duration: Duration(seconds: 3),
       )..show(context);
-      final googleSignIn = GoogleSignIn();
-      googleSignIn.disconnect();
+      // final googleSignIn = GoogleSignIn();
+      // googleSignIn.disconnect();
       await _auth.signOut();
       Navigator.pushReplacementNamed(context, WelcomeScreen.id);
     } catch (e) {
@@ -235,7 +235,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
           ),
         ),
         messageText: Text(
-          'Could luanch mail',
+          'Could\'nt launch mail',
           style: TextStyle(
             color: Colors.white,
             fontSize: width > 800 ? 20 : 12,
@@ -318,10 +318,10 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                 ),
                               ),
                               widget.user.profileHandle!.startsWith('Fan')
-                                  ? SizedBox.shrink()
+                                  ? const SizedBox.shrink()
                                   : Divider(color: Colors.grey),
                               widget.user.profileHandle!.startsWith('Fan')
-                                  ? SizedBox.shrink()
+                                  ? const SizedBox.shrink()
                                   : SettingSwitch(
                                       title: 'Enable chat booking',
                                       subTitle:
@@ -343,10 +343,10 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                       ),
                                     ),
                               widget.user.profileHandle!.startsWith('Fan')
-                                  ? SizedBox.shrink()
+                                  ? const SizedBox.shrink()
                                   : Divider(color: Colors.grey),
                               widget.user.profileHandle!.startsWith('Fan')
-                                  ? SizedBox.shrink()
+                                  ? const SizedBox.shrink()
                                   : SettingSwitch(
                                       title: 'Disable Advice',
                                       subTitle:
@@ -367,10 +367,10 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                       ),
                                     ),
                               widget.user.profileHandle!.startsWith('Fan')
-                                  ? SizedBox.shrink()
+                                  ? const SizedBox.shrink()
                                   : Divider(color: Colors.grey),
                               widget.user.profileHandle!.startsWith('Fan')
-                                  ? SizedBox.shrink()
+                                  ? const SizedBox.shrink()
                                   : SettingSwitch(
                                       title: 'Hide Advices',
                                       subTitle:
@@ -391,10 +391,10 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                       ),
                                     ),
                               widget.user.profileHandle!.startsWith('Fan')
-                                  ? SizedBox.shrink()
+                                  ? const SizedBox.shrink()
                                   : Divider(color: Colors.grey),
                               widget.user.profileHandle!.startsWith('Fan')
-                                  ? SizedBox.shrink()
+                                  ? const SizedBox.shrink()
                                   : SettingSwitch(
                                       title: 'Not Avaliable For Booking',
                                       subTitle: 'Other users can\'t book you.',
@@ -743,7 +743,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                             valueColor: AlwaysStoppedAnimation(Colors.blue),
                           ),
                         )
-                      : SizedBox.shrink(),
+                      : const SizedBox.shrink()
                 ],
               ),
             ),

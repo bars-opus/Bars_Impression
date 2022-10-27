@@ -7,14 +7,22 @@ class ActivityAdvice {
   final String advice;
   final String seen;
   final Timestamp timestamp;
+  final String authorName;
+  final String authorProfileHanlde;
+  final String authorProfileImageUrl;
+  final String authorVerification;
 
   ActivityAdvice({
-   required this.id,
-   required this.fromUserId,
-   required this.userId,
-   required this.seen,
-   required this.advice,
-   required this.timestamp,
+    required this.id,
+    required this.fromUserId,
+    required this.userId,
+    required this.seen,
+    required this.advice,
+    required this.timestamp,
+    required this.authorName,
+    required this.authorProfileHanlde,
+    required this.authorProfileImageUrl,
+    required this.authorVerification,
   });
 
   factory ActivityAdvice.fromDoc(DocumentSnapshot doc) {
@@ -25,6 +33,10 @@ class ActivityAdvice {
       seen: doc['seen'],
       advice: doc['advice'],
       timestamp: doc['timestamp'],
+      authorName: doc['authorName'] ?? '',
+      authorProfileHanlde: doc['authorProfileHanlde'] ?? '',
+      authorProfileImageUrl: doc['authorProfileImageUrl'] ?? '',
+      authorVerification: doc['authorVerification'] ?? '',
     );
   }
 }

@@ -1,5 +1,7 @@
 import 'dart:ui';
+import 'package:animations/animations.dart';
 import 'package:bars/utilities/exports.dart';
+import 'package:bars/widgets/general_widget/punch_expanded_profile_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
@@ -264,7 +266,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   _followUser(AccountHolder user) async {
     DatabaseService.followUser(
       currentUserId: widget.currentUserId,
-      userId: user.id!,
+      user: user,
     );
 
     if (mounted) {
@@ -295,7 +297,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             child: Column(
               children: <Widget>[
                 user.userName!.isEmpty
-                    ? SizedBox.shrink()
+                    ? const SizedBox.shrink()
                     : user.score!.isNegative
                         ? _displayBannnedUploadNote(user)
                         : Wrap(
@@ -430,7 +432,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     ),
                                   ),
                                 )
-                              : SizedBox.shrink(),
+                              : const SizedBox.shrink(),
                           SizedBox(
                             height: 30.0,
                           ),
@@ -457,7 +459,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                         repeatPauseDuration:
                                             const Duration(milliseconds: 3000),
                                         child: Container())
-                                    : SizedBox.shrink(),
+                                    : const SizedBox.shrink(),
                                 Container(
                                     width: 200,
                                     color: Colors.transparent,
@@ -479,7 +481,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                           ),
                         ],
                       )
-                    : SizedBox.shrink(),
+                    : const SizedBox.shrink()
               ],
             ))
         : Padding(
@@ -519,6 +521,20 @@ class _ProfileScreenState extends State<ProfileScreen>
           );
   }
 
+//  Navigator.push(
+//                 context,
+//                 PageRouteBuilder(
+//                   pageBuilder: (context, animation1, animation2) =>
+//                       AllPostEnlarged(
+//                     feed: 'Profile',
+//                     currentUserId: widget.currentUserId,
+//                     post: post,
+//                     author: _profileUser,
+//                   ),
+//                   transitionDuration: Duration(seconds: 0),
+//                 ),
+//               ),
+
   Widget buildBlur({
     required Widget child,
     double sigmaX = 10,
@@ -539,18 +555,14 @@ class _ProfileScreenState extends State<ProfileScreen>
       showDuration: Duration(seconds: 10),
       padding: EdgeInsets.all(20.0),
       message: post.punch + '\n\n' + post.caption,
-      child: GestureDetector(
-          onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => AllPostEnlarged(
-                        feed: 'Profile',
-                        currentUserId: widget.currentUserId,
-                        post: post,
-                        author: _profileUser,
-                      ))),
-          child: Stack(alignment: FractionalOffset.center, children: <Widget>[
-            Stack(alignment: Alignment.center, children: <Widget>[
+      child: Stack(alignment: FractionalOffset.center, children: <Widget>[
+        OpenContainer(
+          openColor: ConfigBloc().darkModeOn ? Color(0xFF1f2022) : Colors.white,
+          closedColor:
+              ConfigBloc().darkModeOn ? Color(0xFF1f2022) : Colors.white,
+          transitionType: ContainerTransitionType.fade,
+          closedBuilder: (BuildContext _, VoidCallback openContainer) {
+            return Stack(alignment: Alignment.center, children: <Widget>[
               Container(
                 decoration: BoxDecoration(
                   color: ConfigBloc().darkModeOn
@@ -634,7 +646,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       SizedBox(height: 3.0),
                       SizedBox(height: 2.0),
                       post.report.isNotEmpty
-                          ? SizedBox.shrink()
+                          ? const SizedBox.shrink()
                           : Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 16.0),
@@ -659,8 +671,19 @@ class _ProfileScreenState extends State<ProfileScreen>
                             ),
                     ]),
               )
-            ])
-          ])),
+            ]);
+          },
+          openBuilder: (BuildContext context,
+              void Function({Object? returnValue}) action) {
+            return PunchExpandedProfileWidget(
+              author: _profileUser,
+              feed: 'Profile',
+              currentUserId: widget.currentUserId,
+              post: post,
+            );
+          },
+        )
+      ]),
     ));
   }
 
@@ -1092,7 +1115,6 @@ class _ProfileScreenState extends State<ProfileScreen>
         feed: 4,
         currentUserId: widget.currentUserId,
         event: event,
-        author: _profileUser,
         user: _profileUser,
       ));
     });
@@ -1174,6 +1196,35 @@ class _ProfileScreenState extends State<ProfileScreen>
         textAlign: TextAlign.center);
   }
 
+  _dynamicLink() async {
+    var linkUrl = Uri.parse(_profileUser.profileImageUrl!);
+
+    final dynamicLinkParams = DynamicLinkParameters(
+      socialMetaTagParameters: SocialMetaTagParameters(
+        imageUrl: linkUrl,
+        title: _profileUser.userName,
+        description: _profileUser.bio,
+      ),
+      link: Uri.parse('https://www.barsopus.com/user_${_profileUser.id}'),
+      uriPrefix: 'https://barsopus.com/barsImpression',
+      androidParameters:
+          AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
+      iosParameters: IOSParameters(
+        bundleId: 'com.bars-Opus.barsImpression',
+        appStoreId: '1610868894',
+      ),
+    );
+    if (Platform.isIOS) {
+      var link =
+          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
+      Share.share(link.toString());
+    } else {
+      var link =
+          await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+      Share.share(link.shortUrl.toString());
+    }
+  }
+
   _showSelectImageDialog(AccountHolder user) {
     return Platform.isIOS
         ? _iosBottomSheet(user)
@@ -1201,7 +1252,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                           : '',
               style: TextStyle(
                 fontSize: 16,
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                color: Colors.black,
               ),
             ),
             actions: <Widget>[
@@ -1242,53 +1293,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         });
   }
 
-  // _androidDialog2(BuildContext parentContext, AccountHolder user, String from) {
-  //   return showDialog(
-  //       context: parentContext,
-  //       builder: (context) {
-  //         return SimpleDialog(
-  //           title: Text(
-  //             from.startsWith('unfollow')
-  //                 ? 'Are you sure you want to unfollow ${user.userName}?'
-  //                 : from.startsWith('block')
-  //                     ? 'Are you sure you want to block ${user.userName}?'
-  //                     : from.startsWith('unBlock')
-  //                         ? 'Are you sure you want to unblock ${user.userName}?'
-  //                         : '',
-  //           ),
-  //           children: <Widget>[
-  //             SimpleDialogOption(
-  //                 child: Text(
-  //                   from.startsWith('unfollow')
-  //                       ? 'unFollow'
-  //                       : from.startsWith('block')
-  //                           ? 'block'
-  //                           : from.startsWith('unBlock')
-  //                               ? 'unBlock'
-  //                               : '',
-  //                 ),
-  //                 onPressed: () {
-  //                   Navigator.pop(context);
-  //                   from.startsWith('unfollow')
-  //                       ? _unfollowUser(user)
-  //                       : from.startsWith('block')
-  //                           ? _blockser(user)
-  //                           : from.startsWith('unBlock')
-  //                               ? _unBlockser(user)
-  //                               : () {};
-  //                 }),
-  //             SimpleDialogOption(
-  //               child: Text('cancel'),
-  //               onPressed: () => Navigator.pop(context),
-  //             ),
-  //           ],
-  //         );
-  //       });
-  // }
-
-
-
- _androidDialog2(BuildContext parentContext, AccountHolder user, String from ) {
+  _androidDialog2(BuildContext parentContext, AccountHolder user, String from) {
     return showDialog(
         context: parentContext,
         builder: (context) {
@@ -1309,7 +1314,7 @@ class _ProfileScreenState extends State<ProfileScreen>
               Center(
                 child: SimpleDialogOption(
                   child: Text(
-                 from.startsWith('unfollow')
+                    from.startsWith('unfollow')
                         ? 'unFollow'
                         : from.startsWith('block')
                             ? 'block'
@@ -1321,8 +1326,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                     textAlign: TextAlign.center,
                   ),
                   onPressed: () {
-                     Navigator.pop(context);
-                from.startsWith('unfollow')
+                    Navigator.pop(context);
+                    from.startsWith('unfollow')
                         ? _unfollowUser(user)
                         : from.startsWith('block')
                             ? _blockser(user)
@@ -1355,7 +1360,7 @@ class _ProfileScreenState extends State<ProfileScreen>
               'Actions',
               style: TextStyle(
                 fontSize: 16,
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                color: Colors.black,
               ),
             ),
             actions: <Widget>[
@@ -1386,6 +1391,14 @@ class _ProfileScreenState extends State<ProfileScreen>
                               currentUserId: widget.currentUserId,
                             ),
                           ))),
+              CupertinoActionSheetAction(
+                  child: Text(
+                    'Share',
+                    style: TextStyle(
+                      color: Colors.blue,
+                    ),
+                  ),
+                  onPressed: () => _dynamicLink()),
               CupertinoActionSheetAction(
                   child: Text(
                     _isFollowing ? 'unFollow' : 'Follow',
@@ -1442,68 +1455,6 @@ class _ProfileScreenState extends State<ProfileScreen>
         });
   }
 
-  // _androidDialog(BuildContext parentContext, AccountHolder user) {
-  //   return showDialog(
-  //       context: parentContext,
-  //       builder: (context) {
-  //         return SimpleDialog(
-  //           title: Text('Actions'),
-  //           children: <Widget>[
-  //             SimpleDialogOption(
-  //                 child: Text(
-  //                   'Message',
-  //                 ),
-  //                 onPressed: () {
-  //                   Navigator.pop(context);
-  //                   Navigator.push(
-  //                       context,
-  //                       MaterialPageRoute(
-  //                         builder: (_) => StartChat(
-  //                           user: user,
-  //                           currentUserId: widget.currentUserId,
-  //                         ),
-  //                       ));
-  //                 }),
-  //             SimpleDialogOption(
-  //                 child: Text(
-  //                   _isFollowing ? 'unFollow' : 'Follow',
-  //                 ),
-  //                 onPressed: () {
-  //                   Navigator.pop(context);
-  //                   _followOrUnfollow(user);
-  //                 }),
-  //             SimpleDialogOption(
-  //                 child: Text(
-  //                   _isBlockingUser ? 'unBlock' : 'Block',
-  //                 ),
-  //                 onPressed: () {
-  //                   Navigator.pop(context);
-  //                   _blockOrUnBlock(user);
-  //                 }),
-  //             SimpleDialogOption(
-  //               child: Text('Report'),
-  //               onPressed: () {
-  //                 Navigator.pop(context);
-  //                 Navigator.push(
-  //                     context,
-  //                     MaterialPageRoute(
-  //                         builder: (_) => ReportContentPage(
-  //                               parentContentId: widget.userId,
-  //                               repotedAuthorId: widget.userId,
-  //                               contentId: widget.userId,
-  //                               contentType: user.userName!,
-  //                             )));
-  //               },
-  //             ),
-  //             SimpleDialogOption(
-  //               child: Text('cancel'),
-  //               onPressed: () => Navigator.pop(context),
-  //             ),
-  //           ],
-  //         );
-  //       });
-  // }
-
   _androidDialog(BuildContext parentContext, AccountHolder user) {
     return showDialog(
         context: parentContext,
@@ -1535,6 +1486,16 @@ class _ProfileScreenState extends State<ProfileScreen>
                         ));
                   },
                 ),
+              ),
+              Center(
+                child: SimpleDialogOption(
+                    child: Text(
+                      'Share',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.blue),
+                      textAlign: TextAlign.center,
+                    ),
+                    onPressed: () => _dynamicLink()),
               ),
               Divider(),
               Center(
@@ -1741,6 +1702,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                               ? Colors.blueGrey
                                               : Colors.white,
                                           onPressed: () async {
+                                            HapticFeedback.heavyImpact();
                                             ConfigBloc().add(DarkModeEvent(
                                                 !ConfigBloc().darkModeOn));
                                           }),
@@ -1777,7 +1739,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 _setUpEvents();
                                 _setUpPossitiveRated();
                                 _setUpNegativeRated();
-                                _setUpProfileUser();
+                                // _setUpProfileUser();
                               },
                               child: ListView(children: <Widget>[
                                 Container(
@@ -1822,7 +1784,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                               ),
                                             ),
                                             user.verified!.isEmpty
-                                                ? SizedBox.shrink()
+                                                ? const SizedBox.shrink()
                                                 : Positioned(
                                                     top: 5,
                                                     right: 0,
@@ -1910,7 +1872,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                             user.profileHandle!
                                                         .startsWith('F') ||
                                                     user.profileHandle!.isEmpty
-                                                ? SizedBox.shrink()
+                                                ? const SizedBox.shrink()
                                                 : Text(
                                                     user.company!,
                                                     style: TextStyle(
@@ -1925,7 +1887,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                             user.profileHandle!
                                                         .startsWith('F') ||
                                                     user.profileHandle!.isEmpty
-                                                ? SizedBox.shrink()
+                                                ? const SizedBox.shrink()
                                                 : Row(
                                                     crossAxisAlignment:
                                                         CrossAxisAlignment
@@ -1940,14 +1902,14 @@ class _ProfileScreenState extends State<ProfileScreen>
                                             user.profileHandle!
                                                         .startsWith('F') ||
                                                     user.profileHandle!.isEmpty
-                                                ? SizedBox.shrink()
+                                                ? const SizedBox.shrink()
                                                 : SizedBox(
                                                     height: 10.0,
                                                   ),
                                             user.profileHandle!
                                                         .startsWith('F') ||
                                                     user.profileHandle!.isEmpty
-                                                ? SizedBox.shrink()
+                                                ? const SizedBox.shrink()
                                                 : Row(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment
@@ -2148,7 +2110,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 ),
                                 ConfigBloc().darkModeOn
                                     ? Divider(color: Colors.white)
-                                    : SizedBox.shrink(),
+                                    : const SizedBox.shrink(),
                                 SizedBox(
                                   height: 30.0,
                                 ),

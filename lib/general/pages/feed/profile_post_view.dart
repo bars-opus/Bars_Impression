@@ -1,4 +1,3 @@
-
 import 'dart:ui';
 
 import 'package:bars/utilities/exports.dart';
@@ -131,7 +130,8 @@ class _ProfilePostViewState extends State<ProfilePostView> {
 
   _likePost() {
     DatabaseService.likePost(
-        currentUserId: widget.currentUserId, post: widget.post);
+        user: Provider.of<UserData>(context, listen: false).user!,
+        post: widget.post);
     if (mounted) {
       setState(() {
         _heartAnim = true;
@@ -332,7 +332,7 @@ class _ProfilePostViewState extends State<ProfilePostView> {
                                   ),
                                 ),
                               )
-                            : SizedBox.shrink(),
+                            : const SizedBox.shrink()
               ])
             : Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -367,7 +367,7 @@ class _ProfilePostViewState extends State<ProfilePostView> {
                   ),
                 ),
               )
-            : SizedBox.shrink(),
+            : const SizedBox.shrink(),
         _displayImage == false
             ? Padding(
                 padding: EdgeInsets.only(bottom: 40.0, left: 10.0, right: 10.0),
@@ -955,7 +955,7 @@ class _ProfilePostViewState extends State<ProfilePostView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               widget.post.caption.isEmpty
-                  ? SizedBox.shrink()
+                  ? const SizedBox.shrink()
                   : Padding(
                       padding: const EdgeInsets.only(bottom: 10.0),
                       child: Material(

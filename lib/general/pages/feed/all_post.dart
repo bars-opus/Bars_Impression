@@ -13,7 +13,7 @@ class AllPost extends StatefulWidget {
 class _AllPostState extends State<AllPost> {
   List<Post> _posts = [];
   final _postSnapshot = <DocumentSnapshot>[];
-  int limit = 15;
+  int limit = 16;
   bool _hasNext = true;
   bool _isFetchingPost = false;
   late ScrollController _hideButtonController;
@@ -136,33 +136,40 @@ class _AllPostState extends State<AllPost> {
                                           delegate: SliverChildBuilderDelegate(
                                             (context, index) {
                                               Post post = _posts[index];
-                                              return FutureBuilder(
-                                                future: DatabaseService
-                                                    .getUserWithId(
-                                                        post.authorId),
-                                                builder: (BuildContext context,
-                                                    AsyncSnapshot snapshot) {
-                                                  if (!snapshot.hasData) {
-                                                    return Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: PostBlurHash(
-                                                        post: post,
-                                                      ),
-                                                    );
-                                                  }
-                                                  AccountHolder author =
-                                                      snapshot.data;
-                                                  return FeedGrid(
-                                                    feed: 'All',
-                                                    currentUserId:
-                                                        widget.currentUserId,
-                                                    post: post,
-                                                    author: author,
-                                                  );
-                                                },
+                                              return FeedGrid(
+                                                feed: 'All',
+                                                currentUserId:
+                                                    widget.currentUserId,
+                                                post: post,
+                                                // author: author,
                                               );
+                                              // FutureBuilder(
+                                              //   future: DatabaseService
+                                              //       .getUserWithId(
+                                              //           post.authorId),
+                                              //   builder: (BuildContext context,
+                                              //       AsyncSnapshot snapshot) {
+                                              //     if (!snapshot.hasData) {
+                                              //       return Padding(
+                                              //         padding:
+                                              //             const EdgeInsets.all(
+                                              //                 8.0),
+                                              //         child: PostBlurHash(
+                                              //           post: post,
+                                              //         ),
+                                              //       );
+                                              //     }
+                                              //     AccountHolder author =
+                                              //         snapshot.data;
+                                              //     return FeedGrid(
+                                              //       feed: 'All',
+                                              //       currentUserId:
+                                              //           widget.currentUserId,
+                                              //       post: post,
+                                              //       author: author,
+                                              //     );
+                                              //   },
+                                              // );
                                             },
                                             childCount: _posts.length,
                                           ),

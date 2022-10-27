@@ -197,11 +197,8 @@ class _OtherEventsLocationState extends State<OtherEventsLocation>
                   ? 'Virtual'
                   : '',
       currentUserId: widget.currentUserId,
-      event: event,
-      author: author,
+      event: event, 
       user: widget.user,
-
-      // eventList: _events,
       feed: 3,
     );
   }

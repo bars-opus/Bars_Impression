@@ -4,12 +4,14 @@ import 'package:bars/utilities/exports.dart';
 class UserBooking extends StatefulWidget {
   final AccountHolder user;
   final String currentUserId;
+  final String from;
 
   final int userIsCall;
   UserBooking({
     required this.user,
     required this.currentUserId,
     required this.userIsCall,
+    required this.from,
   });
 
   @override
@@ -104,7 +106,7 @@ class _UserBookingState extends State<UserBooking> {
           ),
         ),
         messageText: Text(
-          'Could luanch mail',
+          'Could\'nt launch mail',
           style: TextStyle(
             color: Colors.white,
             fontSize: width > 800 ? 20 : 12,
@@ -142,7 +144,7 @@ class _UserBookingState extends State<UserBooking> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
               Padding(
@@ -150,20 +152,9 @@ class _UserBookingState extends State<UserBooking> {
                 child: Container(
                   width: width,
                   decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26,
-                        offset: Offset(0, 10),
-                        blurRadius: 10.0,
-                        spreadRadius: 4.0,
-                      ),
-                    ],
                     color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(20.0),
-                      topLeft: Radius.circular(20.0),
-                      bottomLeft: Radius.circular(20.0),
-                      bottomRight: Radius.circular(20.0),
+                    borderRadius: BorderRadius.circular(
+                      20,
                     ),
                   ),
                   child: Padding(
@@ -173,17 +164,21 @@ class _UserBookingState extends State<UserBooking> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             height: 30,
                           ),
                           ShakeTransition(
                             child: Icon(
-                              Icons.mail,
-                              color: Colors.blue,
+                              widget.from.startsWith('Booking')
+                                  ? Icons.mail
+                                  : Icons.link,
+                              color: widget.from.startsWith('Booking')
+                                  ? Colors.blue
+                                  : Colors.black,
                               size: 70.0,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 30,
                           ),
                           Container(
@@ -193,11 +188,14 @@ class _UserBookingState extends State<UserBooking> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 ShakeTransition(
-                                  child: Text('Booking Contact',
-                                      style: TextStyle(
+                                  child: Text(
+                                      widget.from.startsWith('Booking')
+                                          ? 'Booking Contact'
+                                          : '${widget.user.userName} Works',
+                                      style: const TextStyle(
                                           color: Colors.black, fontSize: 24)),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 30,
                                 ),
                                 ShakeTransition(
@@ -214,14 +212,11 @@ class _UserBookingState extends State<UserBooking> {
                                   text: TextSpan(
                                     children: [
                                       TextSpan(
-                                        text: "\nEven though we try to get the contact of " +
-                                            widget.user.userName! +
-                                            ' for you, we cannot guarantee that this are the exact and correct contact of  ' +
-                                            widget.user.userName! +
-                                            ', we therefore advice that you do extra research concerning the management of ' +
-                                            widget.user.userName!,
-                                        style: TextStyle(
-                                          fontSize: 14,
+                                        text: widget.from.startsWith('Booking')
+                                            ? '\nEven though we try to get the contact of ${widget.user.userName!} for you, we cannot guarantee that this are the exact and correct contact of ${widget.user.userName!}, we therefore advice that you do extra research concerning the management of  ${widget.user.userName!}'
+                                            : '\nYou will be directed to a website where you can take a look at ${widget.user.userName}\'s work to see if you will like to do business. Bars Impression accepts no liability or responsibility for the information, views, or opinion contained therein.',
+                                        style: const TextStyle(
+                                          fontSize: 12,
                                           color: Colors.black,
                                         ),
                                       ),
@@ -229,106 +224,153 @@ class _UserBookingState extends State<UserBooking> {
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
-                                SizedBox(
-                                  height: 40,
-                                ),
                               ],
                             ),
                           ),
-                          SizedBox(height: 40),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 0.0),
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: Wrap(
-                                direction: Axis.vertical,
-                                children: [
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      Container(
-                                        width: width > 600
-                                            ? 200
-                                            : width < 400
-                                                ? 120
-                                                : 150.0,
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            primary: Color(0xFF1a1a1a),
-                                            onPrimary: Colors.blue,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(5.0),
-                                            ),
-                                          ),
-                                          onPressed: () => setState(() {
-                                            _sendMail(
-                                                'mailto:${widget.user.email}');
-                                          }),
-                                          child: Material(
-                                            color: Colors.transparent,
-                                            child: Text(
-                                              'Email',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize:
-                                                    width > 600 ? 20 : 14.0,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Container(
-                                        width: width > 600
-                                            ? 200
-                                            : width < 400
-                                                ? 120
-                                                : 150.0,
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            primary: Color(0xFF1a1a1a),
-                                            onPrimary: Colors.blue,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(5.0),
-                                            ),
-                                          ),
-                                          onPressed: () => setState(() {
-                                            _makePhoneCall(
-                                                'tel:${widget.user.contacts}');
-                                          }),
-                                          child: Material(
-                                            color: Colors.transparent,
-                                            child: Text(
-                                              'Call',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize:
-                                                    width > 600 ? 20 : 14.0,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 40),
+                          const SizedBox(height: 40),
+                          // widget.from.startsWith('Booking')
+                          //     ? Align(
+                          //         alignment: Alignment.center,
+                          //         child: Wrap(
+                          //           direction: Axis.vertical,
+                          //           children: [
+                          //             Row(
+                          //               crossAxisAlignment:
+                          //                   CrossAxisAlignment.center,
+                          //               mainAxisAlignment:
+                          //                   MainAxisAlignment.center,
+                          //               children: <Widget>[
+                          //                 Container(
+                          //                   width: width / 3,
+                          //                   child: ElevatedButton(
+                          //                     style: ElevatedButton.styleFrom(
+                          //                       primary: Color(0xFF1a1a1a),
+                          //                       onPrimary: Colors.blue,
+                          //                       shape: RoundedRectangleBorder(
+                          //                         borderRadius:
+                          //                             BorderRadius.circular(
+                          //                                 5.0),
+                          //                       ),
+                          //                     ),
+                          //                     onPressed: () => setState(() {
+                          //                       _sendMail(
+                          //                           'mailto:${widget.user.email}');
+                          //                     }),
+                          //                     child: Material(
+                          //                       color: Colors.transparent,
+                          //                       child: Text(
+                          //                         'Email',
+                          //                         style: TextStyle(
+                          //                           color: Colors.white,
+                          //                           fontSize: 12.0,
+                          //                         ),
+                          //                       ),
+                          //                     ),
+                          //                   ),
+                          //                 ),
+                          //                 const SizedBox(
+                          //                   width: 10,
+                          //                 ),
+                          //                 Container(
+                          //                   width: width / 3,
+                          //                   child: ElevatedButton(
+                          //                     style: ElevatedButton.styleFrom(
+                          //                       primary: Color(0xFF1a1a1a),
+                          //                       onPrimary: Colors.blue,
+                          //                       shape: RoundedRectangleBorder(
+                          //                         borderRadius:
+                          //                             BorderRadius.circular(
+                          //                                 5.0),
+                          //                       ),
+                          //                     ),
+                          //                     onPressed: () => setState(() {
+                          //                       _makePhoneCall(
+                          //                           'tel:${widget.user.contacts}');
+                          //                     }),
+                          //                     child: Material(
+                          //                       color: Colors.transparent,
+                          //                       child: Text(
+                          //                         'Call',
+                          //                         style: TextStyle(
+                          //                           color: Colors.white,
+                          //                           fontSize: 12.0,
+                          //                         ),
+                          //                       ),
+                          //                     ),
+                          //                   ),
+                          //                 ),
+                          //               ],
+                          //             ),
+                          //           ],
+                          //         ),
+                          //       )
+                          //     : const SizedBox(height: 40),
                         ],
                       ),
                     ),
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
+                height: 10,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Container(
+                  width: width,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.white,
+                      onPrimary: Colors.blue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
+                    onPressed: () => setState(() {
+                      _sendMail('mailto:${widget.user.email}');
+                    }),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Text(
+                        'Email',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Container(
+                  width: width,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.white,
+                      onPrimary: Colors.blue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
+                    onPressed: () => setState(() {
+                      _makePhoneCall('tel:${widget.user.contacts}');
+                    }),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Text(
+                        'Call',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
                 height: 40,
               ),
             ],

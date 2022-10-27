@@ -150,7 +150,8 @@ class Notifications extends StatelessWidget {
                   currentUserId: currentUserId,
                   activityForumCount: activityForumCount,
                 ),
-                ActivityEventScreen(from: '',
+                ActivityEventScreen(
+                  from: '',
                   currentUserId: currentUserId,
                   activityEventCount: activityEventCount,
                 ),

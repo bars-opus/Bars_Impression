@@ -35,7 +35,7 @@ class CreatedBy extends StatelessWidget {
                     )),
               ),
               // !verified
-              //     ? SizedBox.shrink()
+              //     ? nil
               //     :
               Positioned(
                 top: 3,
@@ -52,7 +52,7 @@ class CreatedBy extends StatelessWidget {
             text: authorProfileHande,
           ),
           authorProfileHande.startsWith('F') || authorProfileHande.isEmpty
-              ? SizedBox.shrink()
+              ? const SizedBox.shrink()
               : Stars(
                   score: score,
                 ),

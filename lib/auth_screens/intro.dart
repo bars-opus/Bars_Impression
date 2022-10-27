@@ -28,6 +28,9 @@ class _IntroState extends State<Intro> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+                          const SizedBox(
+                            height: 30,
+                          ),
                           ShakeTransition(
                             child: Container(
                               height: 50,
@@ -112,7 +115,7 @@ class _IntroState extends State<Intro> {
                               children: [
                                 TextSpan(
                                     text:
-                                        'Connecting all music creators. We are bringing the whole music industry together. Connect and make history with legends.',
+                                        'We are connecting all music creatives. We are bringing the whole music industry together. Connect and make history with legends.',
                                     style: TextStyle(
                                       fontSize: 14,
                                       color: Colors.white,
@@ -224,6 +227,9 @@ class _IntroState extends State<Intro> {
                       ),
                     ),
                   ),
+                  const SizedBox(
+                    height: 60,
+                  )
                 ]),
           ),
         ),

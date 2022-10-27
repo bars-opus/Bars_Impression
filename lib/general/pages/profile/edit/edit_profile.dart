@@ -182,6 +182,35 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  _dynamicLink() async {
+    var linkUrl = Uri.parse(widget.user.profileImageUrl!);
+
+    final dynamicLinkParams = DynamicLinkParameters(
+      socialMetaTagParameters: SocialMetaTagParameters(
+        imageUrl: linkUrl,
+        title: widget.user.userName,
+        description: widget.user.bio,
+      ),
+      link: Uri.parse('https://www.barsopus.com/user_${widget.user.id}'),
+      uriPrefix: 'https://barsopus.com/barsImpression',
+      androidParameters:
+          AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
+      iosParameters: IOSParameters(
+        bundleId: 'com.bars-Opus.barsImpression',
+        appStoreId: '1610868894',
+      ),
+    );
+    if (Platform.isIOS) {
+      var link =
+          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
+      Share.share(link.toString());
+    } else {
+      var link =
+          await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+      Share.share(link.shortUrl.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final double width = Responsive.isDesktop(context)
@@ -207,6 +236,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   fontWeight: FontWeight.bold),
             ),
             centerTitle: true,
+            actions: [
+              IconButton(
+                  icon: Icon(Icons.share),
+                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                  onPressed: () => _dynamicLink()),
+            ],
           ),
           body: SafeArea(
             child: GestureDetector(
@@ -226,7 +261,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                           AlwaysStoppedAnimation(Colors.blue),
                                     ),
                                   )
-                                : SizedBox.shrink(),
+                                : const SizedBox.shrink(),
                             Padding(
                                 padding: const EdgeInsets.all(30.0),
                                 child: Column(
@@ -549,7 +584,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     widget.user.profileHandle!
                                                 .startsWith('F') ||
                                             widget.user.profileHandle!.isEmpty
-                                        ? SizedBox.shrink()
+                                        ? const SizedBox.shrink()
                                         : Padding(
                                             padding: const EdgeInsets.all(3.0),
                                             child: UserWebsite(

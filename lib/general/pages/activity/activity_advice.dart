@@ -99,6 +99,10 @@ class _ActivityAdviceScreenState extends State<ActivityAdviceScreen>
       userId: activiitiesAdvice.userId,
       advice: activiitiesAdvice.advice,
       timestamp: activiitiesAdvice.timestamp,
+      authorName: activiitiesAdvice.authorName,
+      authorProfileHanlde: activiitiesAdvice.authorProfileHanlde,
+      authorVerification: activiitiesAdvice.authorVerification,
+      authorProfileImageUrl: activiitiesAdvice.authorProfileImageUrl,
     );
     print('sumiting');
     try {
@@ -109,54 +113,53 @@ class _ActivityAdviceScreenState extends State<ActivityAdviceScreen>
   }
 
   _buildActivity(ActivityAdvice activityAdvice) {
-    return FutureBuilder(
-      future: DatabaseService.getUserWithId(activityAdvice.fromUserId),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (!snapshot.hasData) {
-          return SizedBox.shrink();
-        }
-        AccountHolder user = snapshot.data;
-        return ActivityTile(
-          seen: activityAdvice.seen,
-          verified: user.verified!,
-          profileImageUrl: user.profileImageUrl!,
-          activityIndicator: "adviced you: ",
-          activityTitle: '',
-          activityContent: activityAdvice.advice,
-          activityTime: timeago.format(
-            activityAdvice.timestamp.toDate(),
-          ),
-          userName: user.userName!,
-          onPressed: () async {
-            // setState(() {
-            //   _isLoading = true;
-            // });
-            Provider.of<UserData>(context, listen: false).setIsLoading(true);
-            String currentUserId =
-                Provider.of<UserData>(context, listen: false).currentUserId!;
-            AccountHolder user =
-                await DatabaseService.getUserWithId(currentUserId);
+    // return FutureBuilder(
+    //   future: DatabaseService.getUserWithId(activityAdvice.fromUserId),
+    //   builder: (BuildContext context, AsyncSnapshot snapshot) {
+    //     if (!snapshot.hasData) {
+    //       return const SizedBox.shrink();
+    //     }
+    //     AccountHolder user = snapshot.data;
+    return ActivityTile(
+      seen: activityAdvice.seen,
+      verified: activityAdvice.authorVerification,
+      profileImageUrl: activityAdvice.authorProfileImageUrl,
+      activityIndicator: "adviced you: ",
+      activityTitle: '',
+      activityContent: activityAdvice.advice,
+      activityTime: timeago.format(
+        activityAdvice.timestamp.toDate(),
+      ),
+      userName: activityAdvice.authorName,
+      onPressed: () async {
+        // setState(() {
+        //   _isLoading = true;
+        // });
+        Provider.of<UserData>(context, listen: false).setIsLoading(true);
+        String currentUserId =
+            Provider.of<UserData>(context, listen: false).currentUserId!;
+        AccountHolder user = await DatabaseService.getUserWithId(currentUserId);
 
-            activityAdvice.seen != 'seen'
-                ? _submit(activityAdvice)
-                : SizedBox.shrink();
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => UserAdviceScreen(
-                  currentUserId: currentUserId,
-                  user: user,
-                ),
-              ),
-            );
-            // setState(() {
-            //   _isLoading = false;
-            // });
-            Provider.of<UserData>(context, listen: false).setIsLoading(false);
-          },
+        activityAdvice.seen != 'seen'
+            ? _submit(activityAdvice)
+            : const SizedBox.shrink();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => UserAdviceScreen(
+              currentUserId: currentUserId,
+              user: user,
+            ),
+          ),
         );
+        // setState(() {
+        //   _isLoading = false;
+        // });
+        Provider.of<UserData>(context, listen: false).setIsLoading(false);
       },
     );
+    //   },
+    // );
   }
 
   bool get wantKeepAlive => true;
@@ -171,7 +174,7 @@ class _ActivityAdviceScreenState extends State<ActivityAdviceScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           widget.activityAdviceCount == 0
-              ? SizedBox.shrink()
+              ? const SizedBox.shrink()
               : Padding(
                   padding: const EdgeInsets.only(left: 20.0),
                   child: Container(
@@ -208,7 +211,7 @@ class _ActivityAdviceScreenState extends State<ActivityAdviceScreen>
                     )),
                   ),
                 )
-              : SizedBox.shrink(),
+              : const SizedBox.shrink(),
           SizedBox(
             height: 20.0,
           ),

@@ -199,7 +199,7 @@ class _AwardEventsLocationState extends State<AwardEventsLocation>
       feed: 3,
       currentUserId: widget.currentUserId,
       event: event,
-      author: author,
+      // author: author,
       user: widget.user,
       // eventList: _events,
     );

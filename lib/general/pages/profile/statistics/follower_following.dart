@@ -184,7 +184,7 @@ class _FollowerFollowingState extends State<FollowerFollowing>
                     }
                     AccountHolder user = snapshot.data;
                     return widget.currentUserId == user.id
-                        ? SizedBox.shrink()
+                        ? const SizedBox.shrink()
                         : _buildUserTile(user);
                   },
                 );
@@ -250,13 +250,14 @@ class _FollowerFollowingState extends State<FollowerFollowing>
                         color: Colors.blue,
                         child: ShakeTransition(
                           child: ListTile(
-                            title:
-                                Text(   widget.follower.startsWith('Follower')
-                  ?'Other users can\'t see your followers.': 'Other users can\'t see your following.',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                    )),
+                            title: Text(
+                                widget.follower.startsWith('Follower')
+                                    ? 'Other users can\'t see your followers.'
+                                    : 'Other users can\'t see your following.',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                )),
                             leading: IconButton(
                               icon: Icon(Icons.info_outline_rounded),
                               iconSize: 20.0,

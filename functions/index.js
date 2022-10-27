@@ -170,9 +170,9 @@ exports.onUploadPost = functions.firestore
         .doc(postId)
         .set(snapshot.data());
     });
-    admin.firestore().collection('allPosts')
-    .doc(postId)
-    .set(snapshot.data());
+    // admin.firestore().collection('allPosts')
+    // .doc(postId)
+    // .set(snapshot.data());
   });
 
 
@@ -248,9 +248,9 @@ exports.onUploadForum = functions.firestore
       .doc(forumId)
       .set(snapshot.data());
   });
-  admin.firestore().collection('allForums')
-  .doc(forumId)
-  .set(snapshot.data());
+  // admin.firestore().collection('allForums')
+  // .doc(forumId)
+  // .set(snapshot.data());
 });
 
 // exports.allForums = functions.firestore
@@ -408,9 +408,9 @@ exports.onUploadEvent = functions.firestore
       .doc(eventId)
       .set(snapshot.data());
   });
-  admin.firestore().collection('allEvents')
-  .doc(eventId)
-  .set(snapshot.data());
+  // admin.firestore().collection('allEvents')
+  // .doc(eventId)
+  // .set(snapshot.data());
 });
 
 // exports.allEvents = functions.firestore
@@ -624,10 +624,10 @@ exports.onCreateActivityNotification = functions.firestore
    let body;
    switch (userActivities.comment){
     case null:
-      body = `Dope`
+      body = `[ ${userActivities.authorName} ] Dope`
       break;
      
-      default: body = ` ${userActivities.comment} `
+      default: body = `[ ${userActivities.authorName} ] ${userActivities.comment} `
    }
    let title;
    switch (userActivities.comment){
@@ -674,7 +674,7 @@ exports.onCreateActivityForumNotification = functions.firestore
   }
   function sendNotification(androidNotificationToken, userActivitiesForum)
  {
-    body = ` ${userActivitiesForum.thought} `
+    body = `[ ${userActivitiesForum.authorName} ] ${userActivitiesForum.thought} `
     title = `New forum thought `
   
    const message = {
@@ -721,7 +721,7 @@ exports.onCreateActivityEventNotification = functions.firestore
        body = ` ${userActivitiesEvent.eventInviteType} `
        break;
       
-       default: body = ` ${userActivitiesEvent.ask} `
+       default: body = `[ ${userActivitiesEvent.authorName} ] ${userActivitiesEvent.ask} `
     }
     let title;
     switch (userActivitiesEvent.ask){
@@ -770,7 +770,7 @@ exports.onCreateChatMessage = functions.firestore
   }
   function sendNotification(androidNotificationToken, chatActivities)
  {
-    body = ` ${chatActivities.comment} `
+    body = `[ ${chatActivities.authorName}] ${chatActivities.comment} `
     title = `New message  `
   
    const message = {
@@ -854,8 +854,8 @@ exports.onCreateActivityAdviceNotification = functions.firestore
   }
   function sendNotification(androidNotificationToken, userActivitiesAdvice)
  {
-    body = ` ${userActivitiesAdvice.advice} `
-    title = `New advice for you  `
+    body = `[ ${userActivitiesAdvice.authorName} ] ${userActivitiesAdvice.advice} `
+    title = `New advice  `
   
    const message = {
     notification: {body: body, title: title},

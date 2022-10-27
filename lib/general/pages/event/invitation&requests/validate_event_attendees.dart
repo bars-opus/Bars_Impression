@@ -32,8 +32,6 @@ class _ValidateEventAttendeesState extends State<ValidateEventAttendees>
   @override
   void initState() {
     super.initState();
-    // widget.from.startsWith('Received') ? _setUpInviteAll() :
-
     _setAttendesNotValidate();
     __setShowInfo();
     _hideButtonController = ScrollController();
@@ -42,7 +40,6 @@ class _ValidateEventAttendeesState extends State<ValidateEventAttendees>
   bool _handleScrollNotification(ScrollNotification notification) {
     if (notification is ScrollEndNotification) {
       if (_hideButtonController.position.extentAfter == 0) {
-        // widget.from.startsWith('Received') ? _loadMoreAll() :
         _loadAttendeesNotValidated();
       }
     }
@@ -172,13 +169,12 @@ class _ValidateEventAttendeesState extends State<ValidateEventAttendees>
             title: Padding(
               padding: EdgeInsets.symmetric(horizontal: 10.0),
               child: Material(
-                color: Colors.grey,
+                color: Colors.white,
                 elevation: 1.0,
                 borderRadius: BorderRadius.all(Radius.circular(30.0)),
                 child: TextField(
                   style: TextStyle(
-                    color:
-                        ConfigBloc().darkModeOn ? Colors.black : Colors.white,
+                    color: Colors.black,
                   ),
                   cursorColor: Colors.blue,
                   controller: _controller,
@@ -194,24 +190,21 @@ class _ValidateEventAttendeesState extends State<ValidateEventAttendees>
                     contentPadding:
                         EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                     border: InputBorder.none,
-                    hintText: 'Enter Attendee number',
+                    hintText: 'check-in number',
                     prefixIcon: Icon(
                       Icons.search,
                       size: 20.0,
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.black : Colors.white,
+                      color: Colors.black,
                     ),
                     hintStyle: TextStyle(
                       fontSize: 16.0,
-                      color: Colors.white,
+                      color: Colors.grey,
                     ),
                     suffixIcon: IconButton(
                       icon: Icon(
                         Icons.clear,
                         size: 15.0,
-                        color: ConfigBloc().darkModeOn
-                            ? Colors.black
-                            : Colors.white,
+                        color: Colors.black,
                       ),
                       onPressed: _clearSearch,
                     ),
@@ -235,12 +228,6 @@ class _ValidateEventAttendeesState extends State<ValidateEventAttendees>
                   // ignore: unnecessary_null_comparison
                   child: _invite == null
                       ? _buildEventBuilder()
-                      //  Center(
-                      //     child: NoContents(
-                      //         title: "Searh for users. ",
-                      //         subTitle:
-                      //             'Enter username, \ndon\'t enter a user\'s nickname.',
-                      //         icon: Icons.search))
                       : FutureBuilder<QuerySnapshot>(
                           future: _invite,
                           builder: (BuildContext context,
@@ -266,7 +253,7 @@ class _ValidateEventAttendeesState extends State<ValidateEventAttendees>
                                             color: Colors.blueGrey)),
                                     TextSpan(
                                         text:
-                                            '\nCheck attendee number  and try again.'),
+                                            '\nCheck check-in number  and try again.'),
                                   ],
                                   style: TextStyle(
                                       fontSize: 14, color: Colors.grey),
@@ -299,59 +286,5 @@ class _ValidateEventAttendeesState extends State<ValidateEventAttendees>
             ),
           )),
     ));
-
-    // ResponsiveScaffold(
-    //   child: NestedScrollView(
-    //     controller: _hideButtonController,
-    //     headerSliverBuilder: (context, innerBoxScrolled) => [
-    //       SliverAppBar(
-    //         elevation: 0.0,
-    //         automaticallyImplyLeading: true,
-    //         floating: true,
-    //         snap: true,
-    //         pinned: true,
-    //         iconTheme: new IconThemeData(
-    //           color: ConfigBloc().darkModeOn ? Colors.black : Colors.white,
-    //         ),
-    //         backgroundColor: widget.palette.darkMutedColor == null
-    //             ? Color(0xFF1a1a1a)
-    //             : widget.palette.darkMutedColor!.color,
-    //         title: Text(
-    //           'Validate Attendees',
-    //           style: TextStyle(
-    //               color: ConfigBloc().darkModeOn ? Colors.black : Colors.white,
-    //               fontSize: 20,
-    //               fontWeight: FontWeight.bold),
-    //         ),
-    //         centerTitle: true,
-    //       )
-    //     ],
-    //     body: MediaQuery.removePadding(
-    //       context: context,
-    //       removeTop: true,
-    //       child: Container(
-    //         color: widget.palette.darkMutedColor == null
-    //             ? Color(0xFF1a1a1a)
-    //             : widget.palette.darkMutedColor!.color,
-    //         child: SafeArea(
-    //           child: MediaQuery(
-    //             data: MediaQuery.of(context).copyWith(
-    //                 textScaleFactor:
-    //                     MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
-    //             child: Column(
-    //               mainAxisAlignment: MainAxisAlignment.start,
-    //               crossAxisAlignment: CrossAxisAlignment.start,
-    //               children: <Widget>[
-    //                 _inviteList.length == 0
-    //                     ? SizedBox.shrink()
-    //                     : Expanded(child: _buildEventBuilder())
-    //               ],
-    //             ),
-    //           ),
-    //         ),
-    //       ),
-    //     ),
-    //   ),
-    // );
   }
 }

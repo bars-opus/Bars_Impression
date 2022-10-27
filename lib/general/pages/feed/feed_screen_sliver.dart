@@ -1,5 +1,5 @@
 import 'package:bars/utilities/exports.dart';
-
+import 'package:async/async.dart';
 import 'package:intl/intl.dart';
 
 class FeedScreenSliver extends StatefulWidget {
@@ -27,13 +27,15 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
   int _activityForumCount = 0;
   int _activityEventCount = 0;
   int _activityAdviceCount = 0;
-  int total = 0;
+  int _totalCount = 0;
   final bool _showExplore = true;
   late ScrollController _hideButtonController;
   late ScrollController _listController;
   int limit = 5;
   bool _hasNext = true;
   bool _isFetchingPost = false;
+  late AsyncMemoizer _memoizer;
+
   late PageController _pageController;
 
   @override
@@ -42,6 +44,8 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
     _pageController = PageController(
       initialPage: 0,
     );
+    _memoizer = AsyncMemoizer();
+
     _setupFeed();
     _setUpactivityCount();
     _setUpactivityForumCount();
@@ -85,9 +89,15 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
       setState(() {
         _hasNext = false;
         _postsList = posts;
+        // ..shuffle();
       });
     }
-    return posts;
+    return posts.forEach((doc) {
+           DatabaseService.getUserWithId(doc.authorId);
+      // if (doc.exists) {
+      //   doc.reference.delete();
+      // }
+    });
   }
 
   _loadMorePosts() async {
@@ -205,6 +215,58 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
     });
   }
 
+// Map<String, AsyncMemoizer>
+
+  // Future _fetchData(
+  //   List postList,
+  // ) async {
+  //   // postList
+  //   //     .map((e) => this._memoizer.runOnce(() async {
+  //   //           // final Post post = postList[i];
+  //   //           return DatabaseService.getUserWithId(e.authorId);
+  //   //           // return user;
+  //   //         }))
+  //   //     .toList();
+  //   //     print()
+
+  //   postList
+  //       .asMap()
+  //       .map((i, e) {
+  //         return MapEntry(
+  //             i,
+  //             this._memoizer.runOnce(() async {
+  //               final Post post = postList[i];
+  //               return DatabaseService.getUserWithId(post.authorId);
+  //               // return user;
+  //             }));
+  //       })
+  //   .values
+  //   .toList();
+  //      print()
+
+  // }
+
+  // Future<AccountHolder> runner(String authorId) async {
+  //   return await this._memoizer.runOnce(() async {
+  //     return getUser(authorId);
+  //     // return user;
+  //   });
+  // }
+
+  // Future<AccountHolder> getUser(String authorId) async {
+  //   return await DatabaseService.getUserWithId(authorId);
+  // }
+
+  // Map<String, dynamic> _fetchData(String authorId) {
+  //   Map<String, dynamic> user = {
+  //     authorId: this._memoizer.runOnce(() async {
+  //       return DatabaseService.getUserWithId(authorId);
+  //       // return user;
+  //     })
+  //   };
+  //   return user;
+  // }
+
   _buildPostBuilder() {
     super.build(context);
     return NotificationListener<ScrollNotification>(
@@ -222,25 +284,38 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   Post post = _postsList[index];
-                  return FutureBuilder(
-                    future: DatabaseService.getUserWithId(post.authorId),
-                    builder: (BuildContext context, AsyncSnapshot snapshot) {
-                      if (!snapshot.hasData) {
-                        return PostEnlargedBlurharsh(
-                          post: post,
-                        );
-                      }
-                      AccountHolder author = snapshot.data;
-                      return PostView(
+        return PostView(
                         key: PageStorageKey('FeedList'),
                         currentUserId: widget.currentUserId,
                         post: post,
-                        author: author,
+                        // author: author,
                         postList: _postsList,
                         showExplore: _showExplore,
                       );
-                    },
-                  );
+                  
+                  // FutureBuilder(
+                  //   future: runner(post.authorId),
+                  //   //  _fetchData(
+                  //   //   _postsList,
+                  //   // ),
+                  //   // DatabaseService.getUserWithId(post.authorId),
+                  //   builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  //     if (!snapshot.hasData) {
+                  //       return PostEnlargedBlurharsh(
+                  //         post: post,
+                  //       );
+                  //     }
+                  //     AccountHolder author = snapshot.data;
+                  //     return PostView(
+                  //       key: PageStorageKey('FeedList'),
+                  //       currentUserId: widget.currentUserId,
+                  //       post: post,
+                  //       author: author,
+                  //       postList: _postsList,
+                  //       showExplore: _showExplore,
+                  //     );
+                  //   },
+                  // );
                 },
                 childCount: _postsList.length,
               ),
@@ -251,8 +326,22 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
     );
   }
 
+  _total() async {
+    int eCount = _activityEventCount.toInt();
+    int pCount = _activityCount.toInt();
+    int fCount = _activityForumCount.toInt();
+    int aCount = _activityAdviceCount.toInt();
+    int flCount = _activityFollowerCount.toInt();
+    int total = eCount + pCount + fCount + aCount + flCount;
+    return _totalCount = total;
+    // setState(() {
+    //   _totalCount = total;
+    // });
+  }
+
   @override
   Widget build(BuildContext context) {
+    _total();
     super.build(context);
     final width = MediaQuery.of(context).size.width;
     final AccountHolder? user =
@@ -344,19 +433,20 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
                     child: _feedCount.isNegative
                         ? const SizedBox.shrink()
                         : SizedBox(
-                            child: _buildNotification(
+                            child: BuildNotification(
                             user: user,
                             activityFollowerCount: _activityFollowerCount,
                             activityCount: _activityCount,
                             activityForumCount: _activityForumCount,
                             activityEventCount: _activityEventCount,
                             activityAdviceCount: _activityAdviceCount,
+                            totalCount: _totalCount,
                           )),
                   ),
                   Positioned(
                     top: 28,
                     right: 5,
-                    child: _buildToggleButton(
+                    child: BuildToggleButton(
                       activityChatCount: _activityChatCount,
                     ),
                   ),
@@ -372,32 +462,29 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
 }
 
 //notification
-class _buildNotification extends StatelessWidget {
+class BuildNotification extends StatelessWidget {
   final AccountHolder? user;
   final int activityCount;
   final int activityForumCount;
   final int activityEventCount;
   final int activityFollowerCount;
   final int activityAdviceCount;
+  final int totalCount;
 
-  const _buildNotification(
+  const BuildNotification(
       {required this.user,
       required this.activityCount,
       required this.activityForumCount,
       required this.activityAdviceCount,
       required this.activityEventCount,
-      required this.activityFollowerCount});
+      required this.activityFollowerCount,
+      required this.totalCount});
 
   @override
   Widget build(BuildContext context) {
     final String currentUserId =
         Provider.of<UserData>(context, listen: false).currentUserId!;
-    int eCount = activityEventCount.toInt();
-    int pCount = activityCount.toInt();
-    int fCount = activityForumCount.toInt();
-    int aCount = activityAdviceCount.toInt();
-    int flCount = activityFollowerCount.toInt();
-    int total = eCount + pCount + fCount + aCount + flCount;
+
     return Stack(
       children: [
         const Text(
@@ -409,7 +496,7 @@ class _buildNotification extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         ),
         IconButton(
-          icon: Icon(total == 0
+          icon: Icon(totalCount == 0
               ? Icons.notifications_none
               : Icons.notifications_active),
           iconSize: 30.0,
@@ -446,8 +533,8 @@ class _buildNotification extends StatelessWidget {
             }
           },
         ),
-        total == 0
-            ? SizedBox.shrink()
+        totalCount == 0
+            ? const SizedBox.shrink()
             : Positioned(
                 top: 5,
                 left: 25,
@@ -502,7 +589,7 @@ class _buildNotification extends StatelessWidget {
                       padding: const EdgeInsets.only(
                           left: 8.0, right: 8, top: 2, bottom: 2),
                       child: Text(
-                        NumberFormat.compact().format(total),
+                        NumberFormat.compact().format(totalCount),
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
@@ -515,10 +602,10 @@ class _buildNotification extends StatelessWidget {
 }
 
 // explore punches
-class _buildToggleButton extends StatelessWidget {
+class BuildToggleButton extends StatelessWidget {
   final int activityChatCount;
 
-  const _buildToggleButton({
+  const BuildToggleButton({
     required this.activityChatCount,
   });
 
@@ -580,7 +667,6 @@ class _buildToggleButton extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (_) => Chats(
                       currentUserId: currentUserId,
-                      // activityChatCount: activityChatCount,
                       userId: '',
                     ),
                   ),

@@ -17,7 +17,6 @@ class EditAdvice extends StatefulWidget {
 class _EditAdviceState extends State<EditAdvice> {
   final _formKey = GlobalKey<FormState>();
   String _content = '';
-  bool _isLoading = false;
 
   _showSelectImageDialog(advice) {
     return Platform.isIOS
@@ -34,7 +33,7 @@ class _EditAdviceState extends State<EditAdvice> {
               'Are you sure you want to delete this advice?',
               style: TextStyle(
                 fontSize: 16,
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                color: Colors.black,
               ),
             ),
             actions: <Widget>[
@@ -63,29 +62,6 @@ class _EditAdviceState extends State<EditAdvice> {
           );
         });
   }
-
-  // _androidDialog(BuildContext parentContext, UserAdvice advice) {
-  //   return showDialog(
-  //       context: parentContext,
-  //       builder: (context) {
-  //         return SimpleDialog(
-  //           title: Text('Are you sure you want to delete this advice'),
-  //           children: <Widget>[
-  //             SimpleDialogOption(
-  //               child: Text('delete'),
-  //               onPressed: () {
-  //                 Navigator.pop(context);
-  //                 _deleteAdvice(advice);
-  //               },
-  //             ),
-  //             SimpleDialogOption(
-  //               child: Text('cancel'),
-  //               onPressed: () => Navigator.pop(context),
-  //             ),
-  //           ],
-  //         );
-  //       });
-  // }
 
   _androidDialog(BuildContext parentContext, UserAdvice advice) {
     return showDialog(
@@ -128,6 +104,8 @@ class _EditAdviceState extends State<EditAdvice> {
   }
 
   _deleteAdvice(UserAdvice advice) {
+    HapticFeedback.heavyImpact();
+
     DatabaseService.deleteAdvice(
         currentUserId: widget.currentUserId, advice: advice, user: widget.user);
     Navigator.pop(context);
@@ -176,6 +154,8 @@ class _EditAdviceState extends State<EditAdvice> {
   _submit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState?.save();
+      AccountHolder user = Provider.of<UserData>(context, listen: false).user!;
+
       UserAdvice advice = UserAdvice(
         id: widget.advice.id,
         content: _content,
@@ -183,45 +163,16 @@ class _EditAdviceState extends State<EditAdvice> {
         timestamp: widget.advice.timestamp,
         report: '',
         reportConfirmed: '',
+        authorName: user.userName!,
+        authorProfileHanlde: user.profileHandle!,
+        authorProfileImageUrl: user.profileImageUrl!,
+        authorVerification: '',
       );
 
       try {
-        DatabaseService.editAdvice(advice, widget.user);
+        HapticFeedback.heavyImpact();
         Navigator.pop(context);
-        final double width = MediaQuery.of(context).size.width;
-        Flushbar(
-          margin: EdgeInsets.all(8),
-          boxShadows: [
-            BoxShadow(
-              color: Colors.black,
-              offset: Offset(0.0, 2.0),
-              blurRadius: 3.0,
-            )
-          ],
-          flushbarPosition: FlushbarPosition.TOP,
-          flushbarStyle: FlushbarStyle.FLOATING,
-          titleText: Text(
-            'Done!!',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: width > 800 ? 22 : 14,
-            ),
-          ),
-          messageText: Text(
-            "Edited succesfully. Refesh your advice page",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: width > 800 ? 20 : 12,
-            ),
-          ),
-          icon: Icon(
-            Icons.info_outline,
-            size: 28.0,
-            color: Colors.blue,
-          ),
-          duration: Duration(seconds: 2),
-          leftBarIndicatorColor: Colors.blue,
-        )..show(context);
+        DatabaseService.editAdvice(advice, widget.user);
       } catch (e) {
         final double width = MediaQuery.of(context).size.width;
         String error = e.toString();
@@ -299,18 +250,6 @@ class _EditAdviceState extends State<EditAdvice> {
               child: Container(
                 child: Column(
                   children: <Widget>[
-                    _isLoading
-                        ? Padding(
-                            padding: const EdgeInsets.only(bottom: 10.0),
-                            child: SizedBox(
-                              height: 2.0,
-                              child: LinearProgressIndicator(
-                                backgroundColor: Colors.grey[100],
-                                valueColor: AlwaysStoppedAnimation(Colors.blue),
-                              ),
-                            ),
-                          )
-                        : SizedBox.shrink(),
                     SizedBox(
                       height: 20.0,
                     ),
@@ -323,6 +262,7 @@ class _EditAdviceState extends State<EditAdvice> {
                           keyboardType: TextInputType.multiline,
                           maxLines: null,
                           initialValue: _content,
+                          autofocus: true,
                           style: TextStyle(
                             fontSize: 16,
                             color: ConfigBloc().darkModeOn
@@ -330,8 +270,7 @@ class _EditAdviceState extends State<EditAdvice> {
                                 : Colors.black,
                           ),
                           decoration: InputDecoration(
-                              hintText:
-                                  "lets know your perspective on this punch",
+                              hintText: "leave an advice",
                               hintStyle: TextStyle(
                                 fontSize: 14.0,
                                 color: ConfigBloc().darkModeOn
@@ -376,7 +315,7 @@ class _EditAdviceState extends State<EditAdvice> {
                               width: 10.0,
                             ),
                             Text(
-                              'Save Edit',
+                              'Save',
                               style: TextStyle(
                                 fontSize: 16.0,
                                 fontWeight: FontWeight.bold,
@@ -410,39 +349,9 @@ class _EditAdviceState extends State<EditAdvice> {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 50.0,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 50.0, right: 50),
-                      child: Text(
-                        "Refresh your page to see effect of your advice edited or deleted",
-                        style: TextStyle(color: Colors.grey, fontSize: 12.0),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 5.0,
-                    ),
-                    Text(
-                      "Advice field can't be empty.",
-                      style: TextStyle(color: Colors.blueGrey, fontSize: 12.0),
-                    ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20.0,
                     ),
-                    _isLoading
-                        ? Padding(
-                            padding: const EdgeInsets.only(bottom: 10.0),
-                            child: SizedBox(
-                              height: 2.0,
-                              child: LinearProgressIndicator(
-                                backgroundColor: Colors.grey[100],
-                                valueColor: AlwaysStoppedAnimation(Colors.blue),
-                              ),
-                            ),
-                          )
-                        : SizedBox.shrink(),
                   ],
                 ),
               ),

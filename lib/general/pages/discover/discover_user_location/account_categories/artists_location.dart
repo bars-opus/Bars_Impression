@@ -6,11 +6,13 @@ class ArtistsLocation extends StatefulWidget {
   final String currentUserId;
   final AccountHolder user;
   final String locationType;
+  final String profileHandle;
 
   ArtistsLocation({
     required this.currentUserId,
     required this.user,
     required this.locationType,
+    required this.profileHandle,
   });
   @override
   _ArtistsLocationState createState() => _ArtistsLocationState();
@@ -37,7 +39,7 @@ class _ArtistsLocationState extends State<ArtistsLocation>
                 : () {};
 
     _hideButtonController = ScrollController();
-      _hideButtonController.addListener(() {
+    _hideButtonController.addListener(() {
       if (_hideButtonController.position.userScrollDirection ==
           ScrollDirection.forward) {
         Provider.of<UserData>(context, listen: false).setShowUsersTab(true);
@@ -72,7 +74,7 @@ class _ArtistsLocationState extends State<ArtistsLocation>
 
   _setupUsers() async {
     QuerySnapshot userFeedSnapShot = await usersRef
-        .where('profileHandle', isEqualTo: 'Artist')
+        .where('profileHandle', isEqualTo: widget.profileHandle)
         .where('city', isEqualTo: widget.user.city)
         .where('country', isEqualTo: widget.user.country)
         .limit(limit)
@@ -83,7 +85,7 @@ class _ArtistsLocationState extends State<ArtistsLocation>
     if (mounted) {
       setState(() {
         _hasNext = false;
-        _userList = users;
+        _userList = users..shuffle();
       });
     }
     return users;
@@ -93,7 +95,7 @@ class _ArtistsLocationState extends State<ArtistsLocation>
     if (_isFectchingUser) return;
     _isFectchingUser = true;
     QuerySnapshot userFeedSnapShot = await usersRef
-        .where('profileHandle', isEqualTo: 'Artist')
+        .where('profileHandle', isEqualTo: widget.profileHandle)
         .where('city', isEqualTo: widget.user.city)
         .where('country', isEqualTo: widget.user.country)
         .limit(limit)
@@ -106,7 +108,7 @@ class _ArtistsLocationState extends State<ArtistsLocation>
     _userSnapshot.addAll((userFeedSnapShot.docs));
     if (mounted) {
       setState(() {
-        _userList = allusers;
+        _userList = allusers..shuffle();
       });
     }
     _hasNext = false;
@@ -116,7 +118,7 @@ class _ArtistsLocationState extends State<ArtistsLocation>
 
   _setupCountryUsers() async {
     QuerySnapshot userFeedSnapShot = await usersRef
-        .where('profileHandle', isEqualTo: 'Artist')
+        .where('profileHandle', isEqualTo: widget.profileHandle)
         .where('country', isEqualTo: widget.user.country)
         .limit(limit)
         .get();
@@ -126,7 +128,7 @@ class _ArtistsLocationState extends State<ArtistsLocation>
     if (mounted) {
       setState(() {
         _hasNext = false;
-        _userList = users;
+        _userList = users..shuffle();
       });
     }
     return users;
@@ -136,13 +138,15 @@ class _ArtistsLocationState extends State<ArtistsLocation>
     if (_isFectchingUser) return;
     _isFectchingUser = true;
     QuerySnapshot userFeedSnapShot = await usersRef
-        .where('profileHandle', isEqualTo: 'Artist')
+        .where('profileHandle', isEqualTo: widget.profileHandle)
         .where('country', isEqualTo: widget.user.country)
         .limit(limit)
         .startAfterDocument(_userSnapshot.last)
         .get();
-    List<AccountHolder> moreusers =
-        userFeedSnapShot.docs.map((doc) => AccountHolder.fromDoc(doc)).toList();
+    List<AccountHolder> moreusers = userFeedSnapShot.docs
+        .map((doc) => AccountHolder.fromDoc(doc))
+        .toList()
+      ..shuffle();
     if (_userSnapshot.length < limit) _hasNext = false;
     List<AccountHolder> allusers = _userList..addAll(moreusers);
     _userSnapshot.addAll((userFeedSnapShot.docs));
@@ -158,12 +162,14 @@ class _ArtistsLocationState extends State<ArtistsLocation>
 
   _setupContinentUsers() async {
     QuerySnapshot userFeedSnapShot = await usersRef
-        .where('profileHandle', isEqualTo: 'Artist')
+        .where('profileHandle', isEqualTo: widget.profileHandle)
         .where('continent', isEqualTo: widget.user.continent)
         .limit(limit)
         .get();
-    List<AccountHolder> users =
-        userFeedSnapShot.docs.map((doc) => AccountHolder.fromDoc(doc)).toList();
+    List<AccountHolder> users = userFeedSnapShot.docs
+        .map((doc) => AccountHolder.fromDoc(doc))
+        .toList()
+      ..shuffle();
     _userSnapshot.addAll((userFeedSnapShot.docs));
     if (mounted) {
       setState(() {
@@ -178,7 +184,7 @@ class _ArtistsLocationState extends State<ArtistsLocation>
     if (_isFectchingUser) return;
     _isFectchingUser = true;
     QuerySnapshot userFeedSnapShot = await usersRef
-        .where('profileHandle', isEqualTo: 'Artist')
+        .where('profileHandle', isEqualTo: widget.profileHandle)
         .where('continent', isEqualTo: widget.user.continent)
         .limit(limit)
         .startAfterDocument(_userSnapshot.last)
@@ -190,7 +196,7 @@ class _ArtistsLocationState extends State<ArtistsLocation>
     _userSnapshot.addAll((userFeedSnapShot.docs));
     if (mounted) {
       setState(() {
-        _userList = allusers;
+        _userList = allusers..shuffle();
       });
     }
     _hasNext = false;
@@ -211,21 +217,27 @@ class _ArtistsLocationState extends State<ArtistsLocation>
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   AccountHolder accountHolder = _userList[index];
-                  return FutureBuilder(
-                      future: DatabaseService.getUserWithId(accountHolder.id!),
-                      builder: (BuildContext context, AsyncSnapshot snapshot) {
-                        if (!snapshot.hasData) {
-                          return UserSchimmerSkeleton();
-                        }
-                        AccountHolder accountHolder = snapshot.data;
+                  return UserView(
+                    exploreLocation: widget.locationType,
+                    currentUserId: widget.currentUserId,
+                    userId: accountHolder.id!,
+                    user: accountHolder,
+                  );
+                  //  FutureBuilder(
+                  //     future: DatabaseService.getUserWithId(accountHolder.id!),
+                  //     builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  //       if (!snapshot.hasData) {
+                  //         return UserSchimmerSkeleton();
+                  //       }
+                  //       AccountHolder accountHolder = snapshot.data;
 
-                        return UserView(
-                          exploreLocation: widget.locationType,
-                          currentUserId: widget.currentUserId,
-                          userId: accountHolder.id!,
-                          user: accountHolder,
-                        );
-                      });
+                  //       return UserView(
+                  //         exploreLocation: widget.locationType,
+                  //         currentUserId: widget.currentUserId,
+                  //         userId: accountHolder.id!,
+                  //         user: accountHolder,
+                  //       );
+                  //     });
                 },
                 childCount: _userList.length,
               ),
@@ -255,7 +267,7 @@ class _ArtistsLocationState extends State<ArtistsLocation>
           : _userList.length == 0
               ? Center(
                   child: NoUsersDicovered(
-                    title: 'Music\nArtists',
+                    title: 'Music\n${widget.profileHandle}',
                   ),
                 )
               : Center(

@@ -4,8 +4,11 @@ import 'package:store_redirect/store_redirect.dart';
 class UpdateAppInfo extends StatefulWidget {
   final String updateNote;
 
+  final String version;
+
   UpdateAppInfo({
     required this.updateNote,
+    required this.version,
   });
 
   @override
@@ -109,6 +112,12 @@ class _UpdateAppInfoState extends State<UpdateAppInfo> {
               ),
             ),
             SizedBox(height: 100),
+            Text(
+              'New version: ${widget.version}',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
           ],
         ),
       ),

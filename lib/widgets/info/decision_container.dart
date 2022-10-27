@@ -102,7 +102,7 @@ class _DecisionContainerState extends State<DecisionContainer> {
                       ),
                     ),
                     widget.isPicked1 || widget.isPicked2
-                        ? SizedBox.shrink()
+                        ? const SizedBox.shrink()
                         : Container(
                             height: 40,
                             width: 1,

@@ -35,11 +35,167 @@ class AuthService {
         duration: Duration(seconds: 3),
       )..show(context);
 
-      UserCredential authResult = await _auth.createUserWithEmailAndPassword(
+      // UserCredential authResult =
+      await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      User? signedInHandler = authResult.user;
+
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => SignpsScreenVerifyEmail()),
+          (Route<dynamic> route) => false);
+
+      // User? signedInHandler = authResult.user;
+
+      // if (signedInHandler != null) {
+      //   _firestore.collection('/users').doc(signedInHandler.uid).set({
+      //     'name': name,
+      //     'email': email,
+      //     'timestamp': Timestamp.fromDate(DateTime.now()),
+      //     'verified': '',
+      //     'userName': '',
+      //     'profileImageUrl': '',
+      //     'bio': '',
+      //     'favouritePunchline': '',
+      //     'favouriteArtist': '',
+      //     'favouriteSong': '',
+      //     'favouriteAlbum': '',
+      //     'company': '',
+      //     'country': '',
+      //     'city': '',
+      //     'continent': '',
+      //     'skills': '',
+      //     'performances': '',
+      //     'collaborations': '',
+      //     'awards': '',
+      //     'management': '',
+      //     'contacts': '',
+      //     'profileHandle': '',
+      //     'report': '',
+      //     'score': 0,
+      //     'reportConfirmed': '',
+      //     'website': '',
+      //     'otherSites1': '',
+      //     'otherSites2': '',
+      //     'mail': '',
+      //     'privateAccount': false,
+      //     'androidNotificationToken': '',
+      //     'hideUploads': false,
+      //     'disableAdvice': false,
+      //     'disableChat': false,
+      //     'enableBookingOnChat': false,
+      //     'hideAdvice': false,
+      //     'noBooking': false,
+      //     'disabledAccount': false,
+      //     'disableContentSharing': false,
+      //     'disableMoodPunchReaction': false,
+      //     'disableMoodPunchVibe': false,
+      //     'dontShowContentOnExplorePage': false,
+      //     'isEmailVerified': false,
+      //     'specialtyTags': '',
+      //     'blurHash': '',
+      //     'professionalPicture1': '',
+      //     'professionalPicture2': '',
+      //     'professionalPicture3': '',
+      //     'professionalVideo1': '',
+      //     'professionalVideo2': '',
+      //     'professionalVideo3': '',
+      //     'genreTags': '',
+      //   });
+      //   Provider.of<UserData>(context, listen: false).currentUserId =
+      //       signedInHandler.uid;
+      //   followersRef
+      //       .doc(signedInHandler.uid)
+      //       .collection('userFollowers')
+      //       .doc(signedInHandler.uid)
+      //       .set({
+      //     'uid': signedInHandler.uid,
+      //   });
+      //   Provider.of<UserData>(context, listen: false).setShowUsersTab(true);
+      //   Navigator.of(context).pushAndRemoveUntil(
+      //       MaterialPageRoute(builder: (context) => TipScreen()),
+      //       (Route<dynamic> route) => false);
+      //   return Flushbar(
+      //     maxWidth: MediaQuery.of(context).size.width,
+      //     backgroundColor: Colors.white,
+      //     margin: EdgeInsets.all(8),
+      //     flushbarPosition: FlushbarPosition.TOP,
+      //     flushbarStyle: FlushbarStyle.FLOATING,
+      //     titleText: Text(
+      //       'Registration Successful',
+      //       style: TextStyle(
+      //         color: Colors.black,
+      //       ),
+      //     ),
+      //     icon: Icon(
+      //       MdiIcons.checkCircleOutline,
+      //       size: 30.0,
+      //       color: Colors.blue,
+      //     ),
+      //     messageText: RichText(
+      //       textScaleFactor: MediaQuery.of(context).textScaleFactor,
+      //       text: TextSpan(children: [
+      //         TextSpan(
+      //             text:
+      //                 "We have put together some tips to help you understand certain features of Bars Impression and to use this platform effectively.",
+      //             style: TextStyle(fontSize: 14, color: Colors.black)),
+      //       ]),
+      //     ),
+      //     isDismissible: false,
+      //     leftBarIndicatorColor: Colors.blue,
+      //   )..show(context);
+      // }
+    } catch (e) {
+      String error = e.toString();
+      String result = error.contains(']')
+          ? error.substring(error.lastIndexOf(']') + 1)
+          : error;
+      Flushbar(
+        maxWidth: MediaQuery.of(context).size.width,
+        margin: EdgeInsets.all(8),
+        flushbarPosition: FlushbarPosition.TOP,
+        flushbarStyle: FlushbarStyle.FLOATING,
+        boxShadows: [
+          BoxShadow(
+            color: Colors.black,
+            offset: Offset(0.0, 2.0),
+            blurRadius: 3.0,
+          )
+        ],
+        titleText: Text(
+          'Sign up failed',
+          style: TextStyle(color: Colors.white),
+        ),
+        messageText: Container(
+            child: Text(
+          result.toString(),
+          style: TextStyle(color: Colors.white),
+        )),
+        icon: Icon(Icons.error_outline, size: 28.0, color: Colors.blue),
+        mainButton: OutlinedButton(
+          style: OutlinedButton.styleFrom(
+            primary: Colors.transparent,
+            side: BorderSide(width: 1.0, color: Colors.transparent),
+          ),
+          onPressed: () => Navigator.pop(context),
+          child: Text("Ok",
+              style: TextStyle(
+                color: Colors.blue,
+              )),
+        ),
+        leftBarIndicatorColor: Colors.blue,
+      )..show(context);
+      print(e.toString());
+    }
+  }
+
+  static verifyUseer(
+    BuildContext context,
+    String name,
+    String email,
+  ) async {
+    try {
+      User? signedInHandler = FirebaseAuth.instance.currentUser;
 
       if (signedInHandler != null) {
         _firestore.collection('/users').doc(signedInHandler.uid).set({
@@ -85,6 +241,7 @@ class AuthService {
           'disableMoodPunchReaction': false,
           'disableMoodPunchVibe': false,
           'dontShowContentOnExplorePage': false,
+          'isEmailVerified': true,
           'specialtyTags': '',
           'blurHash': '',
           'professionalPicture1': '',
@@ -94,6 +251,7 @@ class AuthService {
           'professionalVideo2': '',
           'professionalVideo3': '',
           'genreTags': '',
+          'subAccountType': '',
         });
         Provider.of<UserData>(context, listen: false).currentUserId =
             signedInHandler.uid;

@@ -13,125 +13,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // int _activityEventCount = 0;
-
-  // int _currentTab = 0;
   int _updateAppVersion = Platform.isIOS ? 6 : 6;
-  // late PageController _pageController;
   String notificationMsg = '';
 
   @override
   void initState() {
     super.initState();
-    // _pageController = PageController();
     LocalNotificationService.initilize();
     _configureNotification();
-    // _setDynamicLink();
-
-    // SchedulerBinding.instance.addPostFrameCallback((_) {
-    //   // _setUpUser();
-    //   _setUpInvitesActivities();
-    //   // _sett();
-    // });
   }
-
-  // _setDynamicLink() async {
-  //   final PendingDynamicLinkData? initialLink =
-  //       await FirebaseDynamicLinks.instance.getInitialLink();
-  //   initialLink == null
-  //       ? () {}
-  //       : Provider.of<UserData>(context, listen: false)
-  //           .setDynamicLink(initialLink);
-  //   if (Provider.of<UserData>(context, listen: false).dynamicLink != null) {
-  //     Provider.of<UserData>(context, listen: false).setAvailableDynamicLink(
-  //         Provider.of<UserData>(context, listen: false).dynamicLink!.link.path);
-  //   }
-  // }
-
-  // 'disableContentSharing': false;
-  // 'disableMoodPunchReaction': false,
-  // 'disableMoodPunchVibe': false,
-  // 'dontShowContentOnExplorePage': false,
-  // 'specialtyTags': '',
-  // 'professionalVideo1': '',
-  // 'professionalVideo2': '',
-  // 'professionalVideo3': '',
-
-  // _sett() async {
-  //   QuerySnapshot activitySnapShot = await usersRef
-  //       // .doc(currentUserId)
-  //       // .collection('userActivities')
-  //       // .where('postId', isEqualTo: post.id)
-  //       .get();
-
-  //   activitySnapShot.docs.forEach((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.set({
-  //         'name': '',
-  //         'email': '',
-  //         'timestamp': Timestamp.fromDate(DateTime.now()),
-  //         'verified': '',
-  //         'userName': '',
-  //         'profileImageUrl': '',
-  //         'bio': '',
-  //         'favouritePunchline': '',
-  //         'favouriteArtist': '',
-  //         'favouriteSong': '',
-  //         'favouriteAlbum': '',
-  //         'company': '',
-  //         'country': '',
-  //         'city': '',
-  //         'continent': '',
-  //         'skills': '',
-  //         'performances': '',
-  //         'collaborations': '',
-  //         'awards': '',
-  //         'management': '',
-  //         'contacts': '',
-  //         'profileHandle': '',
-  //         'report': '',
-  //         'score': 0,
-  //         'reportConfirmed': '',
-  //         'website': '',
-  //         'otherSites1': '',
-  //         'otherSites2': '',
-  //         'mail': '',
-  //         'privateAccount': false,
-  //         'androidNotificationToken': '',
-  //         'hideUploads': false,
-  //         'disableAdvice': false,
-  //         'disableChat': false,
-  //         'enableBookingOnChat': false,
-  //         'hideAdvice': false,
-  //         'noBooking': false,
-  //         'disabledAccount': false,
-  //         'disableContentSharing': false,
-  //         'disableMoodPunchReaction': false,
-  //         'disableMoodPunchVibe': false,
-  //         'dontShowContentOnExplorePage': false,
-  //         'specialtyTags': '',
-  //         'professionalPicture1': '',
-  //         'professionalPicture2': '',
-  //         'professionalPicture3': '',
-  //         'professionalVideo1': '',
-  //         'professionalVideo2': '',
-  //         'professionalVideo3': '',
-  //       });
-  //     }
-  //   });
-  // }
-
-  // _setUpUser() async {
-  //   final String currentUserId =
-  //       Provider.of<UserData>(context, listen: false).currentUserId!;
-  //   AccountHolder profileUser =
-  //       await DatabaseService.getUserWithId(currentUserId);
-  //   if (mounted) {
-  //     setState(() {
-  //       Provider.of<UserData>(context, listen: false).setUser(profileUser);
-  //     });
-  //   }
-  // }
 
   _configureNotification() async {
     final String currentUserId =
@@ -171,12 +61,12 @@ class _HomeScreenState extends State<HomeScreen> {
     FirebaseMessaging.onMessage.listen((event) {
       final String recipientId = event.data['recipient'];
       if (recipientId == currentUserId) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            "${event.notification!.title}: " + "${event.notification!.body}",
-            overflow: TextOverflow.ellipsis,
-          ),
-        ));
+        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        //   content: Text(
+        //     "${event.notification!.title}: " + "${event.notification!.body}",
+        //     overflow: TextOverflow.ellipsis,
+        //   ),
+        // ));
         LocalNotificationService.showNotificationOnForeground(event);
         setState(() {
           notificationMsg =
@@ -196,32 +86,20 @@ class _HomeScreenState extends State<HomeScreen> {
           future: DatabaseService.getUpdateInfo(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (!snapshot.hasData) {
-              return PostSchimmerSkeleton();
+              return ResponsiveScaffold(child: PostSchimmerSkeleton());
             }
             UpdateApp _updateApp = snapshot.data;
-            // int? version = Platform.isIOS
-            //     ? _updateApp.updateVersionIos
-            //     : _updateApp.updateVersionAndroid;
             return NestedScrollView(
                 headerSliverBuilder: (context, innerBoxScrolled) => [],
                 body: Responsive.isDesktop(context)
-                    ? HomeDesktop()
-                    : HomeMobile(
+                    ? HomeDesktop(
                         updateApp: _updateApp,
                         updateAppVersion: _updateAppVersion,
                       )
-                // _updateApp == null
-
-                //     ?
-                // _updateAppVersion < version! &&
-                //         _updateApp.displayFullUpdate!
-                //     ? UpdateAppInfo(
-                //         updateNote: _updateApp.updateNote!,
-                //       )
-                //     :
-
-                // : SizedBox.shrink(),
-                );
+                    : HomeMobile(
+                        updateApp: _updateApp,
+                        updateAppVersion: _updateAppVersion,
+                      ));
           }),
     );
   }
@@ -244,7 +122,6 @@ class _HomeMobileState extends State<HomeMobile> {
   int _activityEventCount = 0;
   int _currentTab = 0;
   late PageController _pageController;
-  String notificationMsg = '';
   int _version = 0;
 
   @override
@@ -262,11 +139,9 @@ class _HomeMobileState extends State<HomeMobile> {
   }
 
   Future<void> initDynamicLinks() async {
-    // final PendingDynamicLinkData? data = await dynamicLinks.getInitialLink();
-
-    // final Uri? deepLink = data?.link;
+    FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
+    FirebaseDynamicLinks.instance.getInitialLink(); //
     dynamicLinks.onLink.listen((dynamicLinkData) {
-      // if (deepLink != null) {
       final List<String> link = dynamicLinkData.link.path.toString().split("_");
 
       Navigator.push(
@@ -283,41 +158,8 @@ class _HomeMobileState extends State<HomeMobile> {
                               : link[0].endsWith('user')
                                   ? 'User'
                                   : '')));
-      // }
     }).onError((error) {});
   }
-
-  // void inintDynamicLinks() async {
-  //   final PendingDynamicLinkData? data = await dynamicLinks.getInitialLink();
-
-  //   final Uri? deepLink = data?.link;
-
-  //   if (deepLink != null) {
-  //     // ignore: unawaited_futures
-  //     final List<String> link = deepLink.toString().split("_");
-
-  //     Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //             builder: (_) => ViewSentContent(
-  //                 contentId: link[1],
-  //                 contentType: link[0].endsWith('punched')
-  //                     ? 'Mood Punched'
-  //                     : link[0].endsWith('forum')
-  //                         ? 'Forum'
-  //                         : link[0].endsWith('event')
-  //                             ? 'Event'
-  //                             : link[0].endsWith('user')
-  //                                 ? 'User'
-  //                                 : '')));
-
-  //     // Navigator.push(
-  //     //     context,
-  //     //     MaterialPageRoute(
-  //     //         builder: (_) => ViewSentContent(
-  //     //             contentId: deepLink.path, contentType: 'Mood Punched')));
-  //   }
-  // }
 
   _setUpInvitesActivities() async {
     final String currentUserId =
@@ -340,24 +182,12 @@ class _HomeMobileState extends State<HomeMobile> {
     )
         ? 600.0
         : MediaQuery.of(context).size.width;
-
-    // return
-    //  FutureBuilder(
-    //     future: DatabaseService.getUserWithId(currentUserId),
-    //     builder: (BuildContext context, AsyncSnapshot snapshot) {
-    //       if (!snapshot.hasData) {
-    //         return PostSchimmerSkeleton();
-    //       }
-
-    //       AccountHolder _user = snapshot.data;
-    //       SchedulerBinding.instance.addPostFrameCallback((_) {
-    //         Provider.of<UserData>(context, listen: false).setUser(_user);
-    //       });
     AccountHolder _user = Provider.of<UserData>(context, listen: false).user!;
     return widget.updateAppVersion < _version &&
             widget.updateApp.displayFullUpdate!
         ? UpdateAppInfo(
             updateNote: widget.updateApp.updateNote!,
+            version: widget.updateApp.version!,
           )
         : Scaffold(
             body: Container(
@@ -411,8 +241,7 @@ class _HomeMobileState extends State<HomeMobile> {
                         ),
                         Positioned(
                             bottom: 7,
-                            child: GestureDetector(
-                                child: UpdateInfoMini(
+                            child: UpdateInfoMini(
                               updateNote: widget.updateApp.updateNote!,
                               showinfo: widget.updateAppVersion < _version
                                   ? true
@@ -425,7 +254,7 @@ class _HomeMobileState extends State<HomeMobile> {
                                   iOSAppId: "1610868894",
                                 );
                               },
-                            ))),
+                            )),
                         Positioned(bottom: 7, child: NoConnection()),
                         Positioned(
                           bottom: 7,
@@ -491,7 +320,7 @@ class _HomeMobileState extends State<HomeMobile> {
                     ),
             ),
             bottomNavigationBar: _user.disabledAccount!
-                ? SizedBox.shrink()
+                ? const SizedBox.shrink()
                 : Container(
                     child: Wrap(
                       children: [
@@ -535,7 +364,7 @@ class _HomeMobileState extends State<HomeMobile> {
                                       )),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 1.0),
-                                    child: Icon(
+                                    child: const Icon(
                                       MdiIcons.home,
                                       size: 25.0,
                                     ),
@@ -564,7 +393,7 @@ class _HomeMobileState extends State<HomeMobile> {
                                       )),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 1.0),
-                                    child: Icon(Icons.forum, size: 25.0),
+                                    child: const Icon(Icons.forum, size: 25.0),
                                   ),
                                 ],
                               ),
@@ -590,7 +419,7 @@ class _HomeMobileState extends State<HomeMobile> {
                                       )),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 1.0),
-                                    child: Icon(Icons.event, size: 25.0),
+                                    child: const Icon(Icons.event, size: 25.0),
                                   ),
                                 ],
                               ),
@@ -642,8 +471,8 @@ class _HomeMobileState extends State<HomeMobile> {
                                       )),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 1.0),
-                                    child:
-                                        Icon(Icons.account_circle, size: 25.0),
+                                    child: const Icon(Icons.account_circle,
+                                        size: 25.0),
                                   ),
                                 ],
                               ),
@@ -655,12 +484,16 @@ class _HomeMobileState extends State<HomeMobile> {
                     ),
                   ),
           );
-    // });
   }
 }
 
 class HomeDesktop extends StatefulWidget {
-  const HomeDesktop({Key? key}) : super(key: key);
+  final UpdateApp updateApp;
+  final int updateAppVersion;
+
+  const HomeDesktop(
+      {Key? key, required this.updateApp, required this.updateAppVersion})
+      : super(key: key);
 
   @override
   State<HomeDesktop> createState() => _HomeDesktopState();
@@ -668,33 +501,67 @@ class HomeDesktop extends StatefulWidget {
 
 class _HomeDesktopState extends State<HomeDesktop> {
   late PageController _pageController;
-
+  int _currentTab = 0;
+  FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
+  int _activityEventCount = 0;
   String notificationMsg = '';
+  int _version = 0;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
-    LocalNotificationService.initilize();
+    int? version = Platform.isIOS
+        ? widget.updateApp.updateVersionIos
+        : widget.updateApp.updateVersionAndroid;
+    _version = version!;
+    WidgetsFlutterBinding.ensureInitialized();
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      // _sett();
+      _setUpInvitesActivities();
+      initDynamicLinks();
     });
   }
 
-  _aboutBars() {
-    showAboutDialog(
-      context: context,
-      applicationName: 'Bars Impression',
-      applicationIcon: Container(
-        width: 30,
-        height: 30,
-        child: Image.asset(
-          'assets/images/barsw.png',
-          color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-        ),
-      ),
-    );
+  Future<void> initDynamicLinks() async {
+    FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
+    FirebaseDynamicLinks.instance.getInitialLink();
+    dynamicLinks.onLink.listen((dynamicLinkData) {
+      final Uri uri = dynamicLinkData.link;
+      final queryParams = uri.queryParameters;
+      if (queryParams.isNotEmpty) {
+        print("Incoming Link :" + uri.toString());
+        final List<String> link = queryParams.toString().split("_");
+
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => ViewSentContent(
+                    contentId: link[1],
+                    contentType: link[0].endsWith('punched')
+                        ? 'Mood Punched'
+                        : link[0].endsWith('forum')
+                            ? 'Forum'
+                            : link[0].endsWith('event')
+                                ? 'Event'
+                                : link[0].endsWith('user')
+                                    ? 'User'
+                                    : '')));
+      }
+    });
+  }
+
+  _setUpInvitesActivities() async {
+    final String currentUserId =
+        Provider.of<UserData>(context, listen: false).currentUserId!;
+    DatabaseService.numEventInviteActivities(currentUserId)
+        .listen((activityEventCount) {
+      if (mounted) {
+        setState(() {
+          _activityEventCount = activityEventCount;
+        });
+      }
+    });
   }
 
   Future<void> _sendMail(String url) async {
@@ -729,7 +596,7 @@ class _HomeDesktopState extends State<HomeDesktop> {
           ),
         ),
         messageText: Text(
-          'Could\'nt luanch mail',
+          'Could\'nt launch mail',
           style: TextStyle(
             color: Colors.white,
             fontSize: width > 800 ? 20 : 12,
@@ -749,280 +616,399 @@ class _HomeDesktopState extends State<HomeDesktop> {
   @override
   Widget build(BuildContext context) {
     final String currentUserId = Provider.of<UserData>(context).currentUserId!;
-    int _currentTab = 0;
-    return Scaffold(
-      backgroundColor:
-          ConfigBloc().darkModeOn ? Color(0xFF1f2022) : Color(0xFFf2f2f2),
-      body: Container(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Provider.of<UserData>(context, listen: false).user == null
-                ? const SizedBox.shrink()
+    final double width = Responsive.isDesktop(
+      context,
+    )
+        ? 600.0
+        : MediaQuery.of(context).size.width;
+    AccountHolder _user = Provider.of<UserData>(context, listen: false).user!;
+    return widget.updateAppVersion < _version &&
+            widget.updateApp.displayFullUpdate!
+        ? UpdateAppInfo(
+            updateNote: widget.updateApp.updateNote!,
+            version: widget.updateApp.version!,
+          )
+        : Scaffold(
+            backgroundColor:
+                ConfigBloc().darkModeOn ? Color(0xFF1f2022) : Color(0xFFf2f2f2),
+            body: _user.disabledAccount!
+                ? reActivateAccount(user: _user)
                 : Container(
-                    decoration: BoxDecoration(
-                      color: ConfigBloc().darkModeOn
-                          ? Color(0xFF1a1a1a)
-                          : Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          offset: Offset(0, 5),
-                          blurRadius: 8.0,
-                          spreadRadius: 2.0,
-                        )
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Provider.of<UserData>(context, listen: false).user ==
+                                null
+                            ? const SizedBox.shrink()
+                            : Container(
+                                decoration: BoxDecoration(
+                                  color: ConfigBloc().darkModeOn
+                                      ? Color(0xFF1a1a1a)
+                                      : Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      offset: Offset(0, 5),
+                                      blurRadius: 8.0,
+                                      spreadRadius: 2.0,
+                                    )
+                                  ],
+                                ),
+                                width: 300,
+                                height: width * 3,
+                                child: ListView(
+                                  physics: AlwaysScrollableScrollPhysics(),
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(20),
+                                      child: UserWebsite(
+                                        iconSize: 35,
+                                        padding: 5,
+                                        raduis: 100,
+                                        arrowColor: Colors.transparent,
+                                        title: '  Home',
+                                        icon: MdiIcons.home,
+                                        textColor: _currentTab != 0
+                                            ? Colors.grey
+                                            : ConfigBloc().darkModeOn
+                                                ? Color(0xFFf2f2f2)
+                                                : Color(0xFF1a1a1a),
+                                        iconColor: _currentTab != 0
+                                            ? Colors.grey
+                                            : ConfigBloc().darkModeOn
+                                                ? Color(0xFFf2f2f2)
+                                                : Color(0xFF1a1a1a),
+                                        onPressed: () {
+                                          _pageController.animateToPage(
+                                            _currentTab = 0,
+                                            duration:
+                                                Duration(milliseconds: 500),
+                                            curve: Curves.easeInOut,
+                                          );
+                                        },
+                                        containerColor: null,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(20),
+                                      child: UserWebsite(
+                                          containerColor: null,
+                                          iconSize: 35,
+                                          padding: 5,
+                                          raduis: 100,
+                                          arrowColor: Colors.transparent,
+                                          title: '  Forum',
+                                          icon: Icons.forum,
+                                          textColor: _currentTab != 1
+                                              ? Colors.grey
+                                              : ConfigBloc().darkModeOn
+                                                  ? Color(0xFFf2f2f2)
+                                                  : Color(0xFF1a1a1a),
+                                          iconColor: _currentTab != 1
+                                              ? Colors.grey
+                                              : ConfigBloc().darkModeOn
+                                                  ? Color(0xFFf2f2f2)
+                                                  : Color(0xFF1a1a1a),
+                                          onPressed: () {
+                                            _pageController.animateToPage(
+                                              _currentTab = 1,
+                                              duration:
+                                                  Duration(milliseconds: 500),
+                                              curve: Curves.easeInOut,
+                                            );
+                                          }),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(20),
+                                      child: UserWebsite(
+                                          containerColor: null,
+                                          iconSize: 35,
+                                          padding: 5,
+                                          raduis: 100,
+                                          arrowColor: Colors.transparent,
+                                          title: '  Event',
+                                          icon: Icons.event,
+                                          textColor: _currentTab != 2
+                                              ? Colors.grey
+                                              : ConfigBloc().darkModeOn
+                                                  ? Color(0xFFf2f2f2)
+                                                  : Color(0xFF1a1a1a),
+                                          iconColor: _currentTab != 2
+                                              ? Colors.grey
+                                              : ConfigBloc().darkModeOn
+                                                  ? Color(0xFFf2f2f2)
+                                                  : Color(0xFF1a1a1a),
+                                          onPressed: () {
+                                            _pageController.animateToPage(
+                                              _currentTab = 2,
+                                              duration:
+                                                  Duration(milliseconds: 500),
+                                              curve: Curves.easeInOut,
+                                            );
+                                          }),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(20),
+                                      child: UserWebsite(
+                                          containerColor: null,
+                                          iconSize: 35,
+                                          padding: 5,
+                                          raduis: 100,
+                                          arrowColor: Colors.transparent,
+                                          title: '  Discover',
+                                          icon: Icons.search,
+                                          textColor: _currentTab != 3
+                                              ? Colors.grey
+                                              : ConfigBloc().darkModeOn
+                                                  ? Color(0xFFf2f2f2)
+                                                  : Color(0xFF1a1a1a),
+                                          iconColor: _currentTab != 3
+                                              ? Colors.grey
+                                              : ConfigBloc().darkModeOn
+                                                  ? Color(0xFFf2f2f2)
+                                                  : Color(0xFF1a1a1a),
+                                          onPressed: () {
+                                            _pageController.animateToPage(
+                                              _currentTab = 3,
+                                              duration:
+                                                  Duration(milliseconds: 500),
+                                              curve: Curves.easeInOut,
+                                            );
+                                          }),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(20),
+                                      child: UserWebsite(
+                                          containerColor: null,
+                                          iconSize: 35,
+                                          padding: 5,
+                                          raduis: 100,
+                                          arrowColor: Colors.transparent,
+                                          title: '  Profile',
+                                          icon: Icons.account_circle,
+                                          textColor: _currentTab != 4
+                                              ? Colors.grey
+                                              : ConfigBloc().darkModeOn
+                                                  ? Color(0xFFf2f2f2)
+                                                  : Color(0xFF1a1a1a),
+                                          iconColor: _currentTab != 4
+                                              ? Colors.grey
+                                              : ConfigBloc().darkModeOn
+                                                  ? Color(0xFFf2f2f2)
+                                                  : Color(0xFF1a1a1a),
+                                          onPressed: () {
+                                            _pageController.animateToPage(
+                                              _currentTab = 4,
+                                              duration:
+                                                  Duration(milliseconds: 500),
+                                              curve: Curves.easeInOut,
+                                            );
+                                          }),
+                                    ),
+                                    const SizedBox(
+                                      height: 30,
+                                    ),
+                                    AnimatedContainer(
+                                      curve: Curves.easeInOut,
+                                      duration: Duration(milliseconds: 800),
+                                      height:
+                                          _activityEventCount != 0 ? 80.0 : 0.0,
+                                      width: width - 10,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[400],
+                                      ),
+                                      child: Material(
+                                          color: Colors.transparent,
+                                          child: ListTile(
+                                            leading: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 8.0),
+                                              child: Icon(
+                                                Icons.info,
+                                                color: _activityEventCount != 0
+                                                    ? Colors.black
+                                                    : Colors.transparent,
+                                                size: 25.0,
+                                              ),
+                                            ),
+                                            trailing: IconButton(
+                                              icon: Icon(Icons.event_available),
+                                              iconSize: 25.0,
+                                              color: _activityEventCount != 0
+                                                  ? Colors.black
+                                                  : Colors.transparent,
+                                              onPressed: () {},
+                                            ),
+                                            title: Text(
+                                                '${_activityEventCount.toString()}  Event Invitations',
+                                                style: TextStyle(
+                                                  fontSize: 14.0,
+                                                  color: Colors.black,
+                                                )),
+                                            subtitle: Text(
+                                              'You have ${_activityEventCount.toString()} new event invititation activities you have not seen.',
+                                              style: TextStyle(
+                                                fontSize: 11.0,
+                                                color: Colors.black,
+                                              ),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            onTap: () => Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (_) =>
+                                                      ActivityEventInvitation(
+                                                    currentUserId:
+                                                        Provider.of<UserData>(
+                                                                context,
+                                                                listen: false)
+                                                            .currentUserId!,
+                                                    count: _activityEventCount,
+                                                  ),
+                                                )),
+                                          )),
+                                    ),
+                                    const SizedBox(
+                                      height: 30,
+                                    ),
+                                    NoConnection(),
+                                    const SizedBox(
+                                      height: 30,
+                                    ),
+                                    Divider(color: Colors.grey),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 30.0, left: 30, bottom: 30),
+                                      child: Text(
+                                        'Bars \nImpression',
+                                        style: TextStyle(
+                                            fontSize: 30,
+                                            fontWeight: FontWeight.w100,
+                                            color: ConfigBloc().darkModeOn
+                                                ? Colors.white
+                                                : Colors.black),
+                                      ),
+                                    ),
+                                    Divider(color: Colors.grey),
+                                    Container(
+                                      color: Colors.grey[300],
+                                      child: UpdateInfoMini(
+                                        updateNote:
+                                            widget.updateApp.updateNote!,
+                                        showinfo:
+                                            widget.updateAppVersion < _version
+                                                ? true
+                                                : false,
+                                        displayMiniUpdate:
+                                            widget.updateApp.displayMiniUpdate!,
+                                        onPressed: () {
+                                          StoreRedirect.redirect(
+                                            androidAppId:
+                                                "com.barsOpus.barsImpression",
+                                            iOSAppId: "1610868894",
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 60,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 30.0, left: 30),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (_) =>
+                                                      SuggestionBox()));
+                                        },
+                                        child: Text(
+                                          'Suggestion Box',
+                                          style: TextStyle(color: Colors.blue),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 30.0, left: 30),
+                                      child: GestureDetector(
+                                        onTap: () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (_) => AboutUs())),
+                                        child: Text(
+                                          'About us',
+                                          style: TextStyle(color: Colors.blue),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 30.0, left: 30),
+                                      child: GestureDetector(
+                                        onTap: () => setState(() {
+                                          _sendMail(
+                                              'mailto:support@barsopus.com');
+                                        }),
+                                        child: Text(
+                                          'Contact us',
+                                          style: TextStyle(color: Colors.blue),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                        SizedBox(
+                          width: 30,
+                        ),
+                        Container(
+                          width: 600,
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black12,
+                                offset: Offset(0, 10),
+                                blurRadius: 8.0,
+                                spreadRadius: 2.0,
+                              )
+                            ],
+                          ),
+                          child: PageView(
+                            physics: NeverScrollableScrollPhysics(),
+                            controller: _pageController,
+                            children: <Widget>[
+                              FeedScreenSliver(
+                                currentUserId: currentUserId,
+                              ),
+                              ForumFeed(
+                                currentUserId: currentUserId,
+                              ),
+                              EventsFeed(
+                                currentUserId: currentUserId,
+                              ),
+                              DiscoverUser(
+                                isWelcome: false,
+                                currentUserId: currentUserId,
+                              ),
+                              ProfileScreen(
+                                currentUserId: currentUserId,
+                                userId: currentUserId,
+                              ),
+                            ],
+                            onPageChanged: (int index) {
+                              setState(() {
+                                _currentTab = index;
+                              });
+                            },
+                          ),
+                        ),
                       ],
                     ),
-                    width: 300,
-                    child: SafeArea(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: UserWebsite(
-                              iconSize: 35,
-                              padding: 5,
-                              raduis: 100,
-                              arrowColor: Colors.transparent,
-                              title: '  Home',
-                              icon: MdiIcons.home,
-                              textColor: _currentTab != 0
-                                  ? Colors.grey
-                                  : ConfigBloc().darkModeOn
-                                      ? Color(0xFFf2f2f2)
-                                      : Color(0xFF1a1a1a),
-                              iconColor: _currentTab != 0
-                                  ? Colors.grey
-                                  : ConfigBloc().darkModeOn
-                                      ? Color(0xFFf2f2f2)
-                                      : Color(0xFF1a1a1a),
-                              onPressed: () {
-                                _pageController.animateToPage(
-                                  _currentTab = 0,
-                                  duration: Duration(milliseconds: 500),
-                                  curve: Curves.easeInOut,
-                                );
-                              },
-                              containerColor: null,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: UserWebsite(
-                                containerColor: null,
-                                iconSize: 35,
-                                padding: 5,
-                                raduis: 100,
-                                arrowColor: Colors.transparent,
-                                title: '  Forum',
-                                icon: Icons.forum,
-                                textColor: _currentTab != 1
-                                    ? Colors.grey
-                                    : ConfigBloc().darkModeOn
-                                        ? Color(0xFFf2f2f2)
-                                        : Color(0xFF1a1a1a),
-                                iconColor: _currentTab != 1
-                                    ? Colors.grey
-                                    : ConfigBloc().darkModeOn
-                                        ? Color(0xFFf2f2f2)
-                                        : Color(0xFF1a1a1a),
-                                onPressed: () {
-                                  _pageController.animateToPage(
-                                    _currentTab = 1,
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut,
-                                  );
-                                }),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: UserWebsite(
-                                containerColor: null,
-                                iconSize: 35,
-                                padding: 5,
-                                raduis: 100,
-                                arrowColor: Colors.transparent,
-                                title: '  Event',
-                                icon: Icons.forum,
-                                textColor: _currentTab != 2
-                                    ? Colors.grey
-                                    : ConfigBloc().darkModeOn
-                                        ? Color(0xFFf2f2f2)
-                                        : Color(0xFF1a1a1a),
-                                iconColor: _currentTab != 2
-                                    ? Colors.grey
-                                    : ConfigBloc().darkModeOn
-                                        ? Color(0xFFf2f2f2)
-                                        : Color(0xFF1a1a1a),
-                                onPressed: () {
-                                  _pageController.animateToPage(
-                                    _currentTab = 2,
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut,
-                                  );
-                                }),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: UserWebsite(
-                                containerColor: null,
-                                iconSize: 35,
-                                padding: 5,
-                                raduis: 100,
-                                arrowColor: Colors.transparent,
-                                title: '  Discover',
-                                icon: Icons.search,
-                                textColor: _currentTab != 3
-                                    ? Colors.grey
-                                    : ConfigBloc().darkModeOn
-                                        ? Color(0xFFf2f2f2)
-                                        : Color(0xFF1a1a1a),
-                                iconColor: _currentTab != 3
-                                    ? Colors.grey
-                                    : ConfigBloc().darkModeOn
-                                        ? Color(0xFFf2f2f2)
-                                        : Color(0xFF1a1a1a),
-                                onPressed: () {
-                                  _pageController.animateToPage(
-                                    _currentTab = 3,
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut,
-                                  );
-                                }),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: UserWebsite(
-                                containerColor: null,
-                                iconSize: 35,
-                                padding: 5,
-                                raduis: 100,
-                                arrowColor: Colors.transparent,
-                                title: '  Profile',
-                                icon: Icons.account_circle,
-                                textColor: _currentTab != 4
-                                    ? Colors.grey
-                                    : ConfigBloc().darkModeOn
-                                        ? Color(0xFFf2f2f2)
-                                        : Color(0xFF1a1a1a),
-                                iconColor: _currentTab != 4
-                                    ? Colors.grey
-                                    : ConfigBloc().darkModeOn
-                                        ? Color(0xFFf2f2f2)
-                                        : Color(0xFF1a1a1a),
-                                onPressed: () {
-                                  _pageController.animateToPage(
-                                    _currentTab = 4,
-                                    duration: Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut,
-                                  );
-                                }),
-                          ),
-                          Divider(color: Colors.grey),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                top: 30.0, left: 30, bottom: 30),
-                            child: Text(
-                              'Bars \nImpression',
-                              style: TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.bold,
-                                  color: ConfigBloc().darkModeOn
-                                      ? Colors.white
-                                      : Colors.black),
-                            ),
-                          ),
-                          Divider(color: Colors.grey),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 30.0, left: 30),
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => SuggestionBox()));
-                              },
-                              child: Text(
-                                'Suggestion Box',
-                                style: TextStyle(color: Colors.blue),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 30.0, left: 30),
-                            child: GestureDetector(
-                              onTap: _aboutBars,
-                              child: Text(
-                                'App Infomation',
-                                style: TextStyle(color: Colors.blue),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 30.0, left: 30),
-                            child: GestureDetector(
-                              onTap: () => setState(() {
-                                _sendMail('mailto:support@barsopus.com');
-                              }),
-                              child: Text(
-                                'Contact us',
-                                style: TextStyle(color: Colors.blue),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   ),
-            SizedBox(
-              width: 30,
-            ),
-            Container(
-              width: 600,
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    offset: Offset(0, 10),
-                    blurRadius: 8.0,
-                    spreadRadius: 2.0,
-                  )
-                ],
-              ),
-              child: PageView(
-                physics: NeverScrollableScrollPhysics(),
-                controller: _pageController,
-                children: <Widget>[
-                  FeedScreenSliver(
-                    currentUserId: currentUserId,
-                  ),
-                  ForumFeed(
-                    currentUserId: currentUserId,
-                  ),
-                  EventsFeed(
-                    currentUserId: currentUserId,
-                  ),
-                  DiscoverUser(
-                    isWelcome: false,
-                    currentUserId: currentUserId,
-                  ),
-                  ProfileScreen(
-                    currentUserId: currentUserId,
-                    userId: currentUserId,
-                  ),
-                ],
-                onPageChanged: (int index) {
-                  setState(() {
-                    _currentTab = index;
-                  });
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+          );
   }
 }

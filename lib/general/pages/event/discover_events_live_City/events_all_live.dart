@@ -64,8 +64,10 @@ class _EventsAllLiveCityState extends State<EventsAllLiveCity>
         .where('country', isEqualTo: widget.liveCountry)
         .limit(limit)
         .get();
-    List<Event> events =
-        eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
+    List<Event> events = eventFeedSnapShot.docs
+        .map((doc) => Event.fromDoc(doc))
+        .toList()
+      ..shuffle();
     _eventSnapshot.addAll((eventFeedSnapShot.docs));
     if (mounted) {
       setState(() {
@@ -86,8 +88,10 @@ class _EventsAllLiveCityState extends State<EventsAllLiveCity>
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();
-    List<Event> moreevents =
-        eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
+    List<Event> moreevents = eventFeedSnapShot.docs
+        .map((doc) => Event.fromDoc(doc))
+        .toList()
+      ..shuffle();
     if (_eventSnapshot.length < limit) _hasNext = false;
     List<Event> allevents = _events..addAll(moreevents);
     _eventSnapshot.addAll((eventFeedSnapShot.docs));
@@ -108,7 +112,6 @@ class _EventsAllLiveCityState extends State<EventsAllLiveCity>
       allEvents: true,
       currentUserId: widget.currentUserId,
       event: event,
-      author: author,
       user: widget.user,
     );
   }
@@ -130,7 +133,9 @@ class _EventsAllLiveCityState extends State<EventsAllLiveCity>
                       future: DatabaseService.getUserWithId(event.authorId),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (!snapshot.hasData) {
-                          return EventSchimmerBlurHash(event: event,);
+                          return EventSchimmerBlurHash(
+                            event: event,
+                          );
                         }
                         AccountHolder author = snapshot.data;
 

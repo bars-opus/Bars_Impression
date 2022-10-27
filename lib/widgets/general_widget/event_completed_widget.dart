@@ -172,7 +172,7 @@ class EventCompletedWidget extends StatelessWidget {
                     ),
                   ),
                 )
-              : SizedBox.shrink(),
+              : const SizedBox.shrink(),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 50.0),
             child: Text(

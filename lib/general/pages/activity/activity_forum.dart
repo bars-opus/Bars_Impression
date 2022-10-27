@@ -99,6 +99,10 @@ class _ActivityForumScreenState extends State<ActivityForumScreen>
       forumTitle: activiitiesForum.forumTitle,
       thought: activiitiesForum.thought,
       timestamp: activiitiesForum.timestamp,
+      authorName: activiitiesForum.authorName,
+      authorProfileHanlde: activiitiesForum.authorProfileHanlde,
+      authorVerification: activiitiesForum.authorVerification,
+      authorProfileImageUrl: activiitiesForum.authorProfileImageUrl,
     );
     print('sumiting');
     try {
@@ -109,65 +113,65 @@ class _ActivityForumScreenState extends State<ActivityForumScreen>
   }
 
   _buildActivity(ActivityForum activityForum) {
-    return FutureBuilder(
-      future: DatabaseService.getUserWithId(activityForum.fromUserId),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (!snapshot.hasData) {
-          return SizedBox.shrink();
-        }
-        AccountHolder user = snapshot.data;
-        return ActivityTile(
-          seen: activityForum.seen,
-          verified: user.verified!,
-          profileImageUrl: user.profileImageUrl!,
-          activityIndicator: 'thought on:  ',
-          activityTitle: activityForum.forumTitle,
-          activityContent: activityForum.thought,
-          activityTime: timeago.format(
-            activityForum.timestamp.toDate(),
-          ),
-          userName: user.userName!,
-          onPressed: () async {
-            setState(() {
-              _isLoading = true;
-            });
-            String currentUserId =
-                Provider.of<UserData>(context, listen: false).currentUserId!;
-            Forum forum = await DatabaseService.getUserForum(
-              currentUserId,
-              activityForum.forumId,
-            );
-            DatabaseService.numThoughts(forum.id).listen((thoughtCount) {
-              if (mounted) {
-                setState(() {
-                  _thoughtCount = thoughtCount;
-                });
-              }
-            });
-            AccountHolder user =
-                await DatabaseService.getUserWithId(forum.authorId);
-            activityForum.seen != 'seen'
-                ? _submit(activityForum)
-                : SizedBox.shrink();
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => ThoughtsScreen(
-                  feed: '',
-                  forum: forum,
-                  author: user,
-                  thoughtCount: _thoughtCount,
-                  currentUserId: widget.currentUserId,
-                ),
-              ),
-            );
-            setState(() {
-              _isLoading = false;
-            });
-          },
+    // return FutureBuilder(
+    //   future: DatabaseService.getUserWithId(activityForum.fromUserId),
+    //   builder: (BuildContext context, AsyncSnapshot snapshot) {
+    //     if (!snapshot.hasData) {
+    //       return const SizedBox.shrink();
+    //     }
+    //     AccountHolder user = snapshot.data;
+    return ActivityTile(
+      seen: activityForum.seen,
+      verified: activityForum.authorVerification,
+      profileImageUrl: activityForum.authorProfileImageUrl,
+      activityIndicator: 'thought on:  ',
+      activityTitle: activityForum.forumTitle,
+      activityContent: activityForum.thought,
+      activityTime: timeago.format(
+        activityForum.timestamp.toDate(),
+      ),
+      userName: activityForum.authorName,
+      onPressed: () async {
+        setState(() {
+          _isLoading = true;
+        });
+        String currentUserId =
+            Provider.of<UserData>(context, listen: false).currentUserId!;
+        Forum forum = await DatabaseService.getUserForum(
+          currentUserId,
+          activityForum.forumId,
         );
+        DatabaseService.numThoughts(forum.id).listen((thoughtCount) {
+          if (mounted) {
+            setState(() {
+              _thoughtCount = thoughtCount;
+            });
+          }
+        });
+        // AccountHolder user =
+        //     await DatabaseService.getUserWithId(forum.authorId);
+        activityForum.seen != 'seen'
+            ? _submit(activityForum)
+            : const SizedBox.shrink();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ThoughtsScreen(
+              feed: '',
+              forum: forum,
+              // author: user,
+              thoughtCount: _thoughtCount,
+              currentUserId: widget.currentUserId,
+            ),
+          ),
+        );
+        setState(() {
+          _isLoading = false;
+        });
       },
     );
+    //   },
+    // );
   }
 
   bool get wantKeepAlive => true;
@@ -182,7 +186,7 @@ class _ActivityForumScreenState extends State<ActivityForumScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           widget.activityForumCount == 0
-              ? SizedBox.shrink()
+              ? const SizedBox.shrink()
               : Padding(
                   padding: const EdgeInsets.only(left: 20.0),
                   child: Container(
@@ -219,7 +223,7 @@ class _ActivityForumScreenState extends State<ActivityForumScreen>
                     )),
                   ),
                 )
-              : SizedBox.shrink(),
+              : const SizedBox.shrink(),
           SizedBox(
             height: 20.0,
           ),

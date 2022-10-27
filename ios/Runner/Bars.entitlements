@@ -10,7 +10,7 @@
 	</array>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>applinks:barsopus.com/share/link</string>
+		<string>applinks:barsopus.com/barsImpression</string>
 	</array>
 </dict>
 </plist>

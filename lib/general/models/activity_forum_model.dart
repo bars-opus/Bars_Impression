@@ -8,6 +8,10 @@ class ActivityForum {
   final String forumTitle;
   final String thought;
   final Timestamp timestamp;
+  final String authorName;
+  final String authorProfileHanlde;
+  final String authorProfileImageUrl;
+  final String authorVerification;
 
   ActivityForum({
     required this.id,
@@ -17,6 +21,10 @@ class ActivityForum {
     required this.forumTitle,
     required this.thought,
     required this.timestamp,
+    required this.authorName,
+    required this.authorProfileHanlde,
+    required this.authorProfileImageUrl,
+    required this.authorVerification,
   });
 
   factory ActivityForum.fromDoc(DocumentSnapshot doc) {
@@ -28,6 +36,10 @@ class ActivityForum {
       forumTitle: doc['forumTitle'],
       thought: doc['thought'],
       timestamp: doc['timestamp'],
+      authorName: doc['authorName'] ?? '',
+      authorProfileHanlde: doc['authorProfileHanlde'] ?? '',
+      authorProfileImageUrl: doc['authorProfileImageUrl'] ?? '',
+      authorVerification: doc['authorVerification'] ?? '',
     );
   }
 }

@@ -6,17 +6,17 @@ import 'package:vector_math/vector_math_64.dart' as vector;
 
 class ExploreForums extends StatefulWidget {
   final Forum forum;
-  final AccountHolder author;
+  // final AccountHolder author;
   final String currentUserId;
-  final String profileImage;
+  // final String profileImage;
   final String feed;
 
   ExploreForums({
     required this.currentUserId,
-    required this.author,
+    // required this.author,
     required this.forum,
     required this.feed,
-    required this.profileImage,
+    // required this.profileImage,
   });
   @override
   _ExploreForumsState createState() => _ExploreForumsState();
@@ -221,37 +221,14 @@ class _ExploreForumsState extends State<ExploreForums> {
     return ResponsiveScaffold(
       child: Stack(
         children: [
-          widget.profileImage.isEmpty
-              ? Container(
+          Container(
                   height: double.infinity,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: Colors.grey[200],
                   ),
                 )
-              : Container(
-                  height: double.infinity,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      color: ConfigBloc().darkModeOn
-                          ? Color(0xFF1a1a1a)
-                          : Color(0xFFeff0f2),
-                      image: DecorationImage(
-                        image: CachedNetworkImageProvider(
-                          widget.profileImage,
-                        ),
-                        fit: BoxFit.cover,
-                      )),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                            begin: Alignment.bottomRight,
-                            colors: [
-                          Colors.black.withOpacity(.5),
-                          Colors.black.withOpacity(.5),
-                        ])),
-                  ),
-                ),
+             ,
           Positioned.fill(
             child: BackdropFilter(
               filter: new ImageFilter.blur(sigmaX: 30, sigmaY: 30),
@@ -347,7 +324,7 @@ class _ExploreForumsState extends State<ExploreForums> {
                                     child: ExploreForumMin(
                                       feed: widget.feed,
                                       forum: forum,
-                                      author: widget.author,
+                                      // author: widget.author,
                                       currentUserId:
                                           Provider.of<UserData>(context)
                                               .currentUserId!,

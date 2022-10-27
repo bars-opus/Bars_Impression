@@ -198,8 +198,7 @@ class _AlbumLaunchesLocationState extends State<AlbumLaunchesLocation>
                   : '',
       feed: 3,
       currentUserId: widget.currentUserId,
-      event: event,
-      author: author, user: widget.user,
+      event: event, user: widget.user,
 
       // eventList: _events,
     );

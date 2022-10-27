@@ -1,3 +1,4 @@
+import 'package:bars/general/pages/discover/seach/store_search.dart';
 import 'package:bars/services/auth_create_user_credentials.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/scheduler.dart';
@@ -42,17 +43,12 @@ class MyApp extends StatelessWidget {
         builder: (context, AsyncSnapshot<User?> snapshot) {
           if (snapshot.hasData) {
             Provider.of<UserData>(context).currentUserId = snapshot.data!.uid;
-            // ignore: unnecessary_null_comparison
-            // if (Provider.of<UserData>(context, listen: false).user == null) {
-            //   return AuthCreateUserCredentials();
-            // } else {
-            //   return HomeScreen();
-            // }
+
             return FutureBuilder(
                 future: DatabaseService.getUserWithId(snapshot.data!.uid),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (!snapshot.hasData) {
-                    return PostSchimmerSkeleton();
+                    return ResponsiveScaffold(child: PostSchimmerSkeleton());
                   }
                   AccountHolder _user = snapshot.data;
                   SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -61,19 +57,12 @@ class MyApp extends StatelessWidget {
                     Provider.of<UserData>(context, listen: false)
                         .setIsLoading(false);
                   });
-                  // return   HomeScreen();
                   if (_user.userName!.isEmpty || _user.profileHandle!.isEmpty) {
                     return AuthCreateUserCredentials();
                   } else {
                     return HomeScreen();
                   }
-                  // AccountHolder _user = snapshot.data;
-                  // SchedulerBinding.instance.addPostFrameCallback((_) {
-                  //   Provider.of<UserData>(context, listen: false)
-                  //       .setUser(_user);
-                  // });
                 });
-            // return   HomeScreen();
           } else {
             return Intro();
           }

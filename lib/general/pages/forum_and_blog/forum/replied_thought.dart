@@ -8,13 +8,13 @@ class ReplyThoughtsScreen extends StatefulWidget {
   final Thought thought;
   final String currentUserId;
   final bool isBlocked;
-  final AccountHolder author;
+  // final AccountHolder author;
 
   ReplyThoughtsScreen({
     required this.forum,
     required this.currentUserId,
     required this.thought,
-    required this.author,
+    // required this.author,
     required this.isBlocked,
   });
 
@@ -103,105 +103,113 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
     });
   }
 
-  _buildComment(ReplyThought replyThought, AccountHolder author) {
+  _buildComment(
+    ReplyThought replyThought,
+  ) {
     final String currentUserId = Provider.of<UserData>(context).currentUserId!;
     return Padding(
-      padding: const EdgeInsets.only(left: 30.0),
-      child: FutureBuilder(
-        future: DatabaseService.getUserWithId(replyThought.authorId),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (!snapshot.hasData) {
-            return SizedBox.shrink();
-          }
-          AccountHolder author = snapshot.data;
-          return ListTile(
-            leading: currentUserId == author.id!
-                ? SizedBox.shrink()
-                : CircleAvatar(
-                    radius: 20.0,
-                    backgroundColor: Colors.grey,
-                    backgroundImage: author.profileImageUrl!.isEmpty
-                        ? AssetImage(
-                            'assets/images/user_placeholder2.png',
-                          ) as ImageProvider
-                        : CachedNetworkImageProvider(author.profileImageUrl!),
-                  ),
-            title: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: currentUserId != author.id!
-                  ? CrossAxisAlignment.start
-                  : CrossAxisAlignment.end,
-              children: <Widget>[
-                Text(
-                  currentUserId == author.id! ? 'Me' : author.userName!,
+        padding: const EdgeInsets.only(left: 30.0),
+        child:
+
+            // FutureBuilder(
+            //   future: DatabaseService.getUserWithId(replyThought.authorId),
+            //   builder: (BuildContext context, AsyncSnapshot snapshot) {
+            //     if (!snapshot.hasData) {
+            //       return const SizedBox.shrink();
+            //     }
+            //     AccountHolder author = snapshot.data;
+            //     return
+
+            ListTile(
+          leading: currentUserId == replyThought.authorId
+              ? const SizedBox.shrink()
+              : CircleAvatar(
+                  radius: 20.0,
+                  backgroundColor: Colors.grey,
+                  backgroundImage: replyThought.authorProfileImageUrl.isEmpty
+                      ? AssetImage(
+                          'assets/images/user_placeholder2.png',
+                        ) as ImageProvider
+                      : CachedNetworkImageProvider(
+                          replyThought.authorProfileImageUrl),
+                ),
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: currentUserId != replyThought.authorId
+                ? CrossAxisAlignment.start
+                : CrossAxisAlignment.end,
+            children: <Widget>[
+              Text(
+                currentUserId == replyThought.authorId
+                    ? 'Me'
+                    : replyThought.authorName,
+                style: TextStyle(
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.bold,
+                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                ),
+              ),
+              Text(replyThought.authorProfileHanlde,
                   style: TextStyle(
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.bold,
-                    color:
-                        ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                    fontSize: 10.0,
+                    color: Colors.blueGrey,
+                  )),
+              SizedBox(
+                height: 5.0,
+              ),
+            ],
+          ),
+          subtitle: Column(
+            crossAxisAlignment: currentUserId == replyThought.authorId
+                ? CrossAxisAlignment.end
+                : CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 2.0),
+                child: Container(
+                  color: _randomColor.randomColor(
+                    colorHue: ColorHue.multiple(colorHues: _hueType),
+                    colorSaturation: _colorSaturation,
                   ),
+                  height: 1.0,
+                  width: 30.0,
                 ),
-                Text(author.profileHandle!,
-                    style: TextStyle(
-                      fontSize: 10.0,
-                      color: Colors.blueGrey,
-                    )),
-                SizedBox(
-                  height: 5.0,
-                ),
-              ],
-            ),
-            subtitle: Column(
-              crossAxisAlignment: currentUserId == author.id!
-                  ? CrossAxisAlignment.end
-                  : CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 2.0),
-                  child: Container(
-                    color: _randomColor.randomColor(
-                      colorHue: ColorHue.multiple(colorHues: _hueType),
-                      colorSaturation: _colorSaturation,
+              ),
+              replyThought.report.isNotEmpty
+                  ? BarsTextStrikeThrough(
+                      fontSize: 12,
+                      text: replyThought.content,
+                    )
+                  : HyperLinkText(
+                      from: '',
+                      text: replyThought.content,
                     ),
-                    height: 1.0,
-                    width: 30.0,
+              SizedBox(height: 10.0),
+              Text(
+                  timeago.format(
+                    replyThought.timestamp.toDate(),
                   ),
-                ),
-                replyThought.report.isNotEmpty
-                    ? BarsTextStrikeThrough(
-                        fontSize: 12,
-                        text: replyThought.content,
-                      )
-                    : HyperLinkText(
-                        from: '',
-                        text: replyThought.content,
-                      ),
-                SizedBox(height: 10.0),
-                Text(
-                    timeago.format(
-                      replyThought.timestamp.toDate(),
-                    ),
-                    style: TextStyle(fontSize: 10, color: Colors.grey)),
-                SizedBox(
-                  height: 2.0,
-                ),
-                Divider(
-                  color: Colors.grey,
-                ),
-              ],
-            ),
-            onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => ProfileScreen(
-                          currentUserId:
-                              Provider.of<UserData>(context).currentUserId!,
-                          userId: author.id!,
-                        ))),
-          );
-        },
-      ),
-    );
+                  style: TextStyle(fontSize: 10, color: Colors.grey)),
+              SizedBox(
+                height: 2.0,
+              ),
+              Divider(
+                color: Colors.grey,
+              ),
+            ],
+          ),
+          onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => ProfileScreen(
+                        currentUserId:
+                            Provider.of<UserData>(context).currentUserId!,
+                        userId: replyThought.authorId,
+                      ))),
+        )
+        //   },
+        // ),
+        );
   }
 
   _buildThoughtTF() {
@@ -276,6 +284,9 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
                             HapticFeedback.mediumImpact();
                             DatabaseService.replyThought(
                               count: _count,
+                              user:
+                                  Provider.of<UserData>(context, listen: false)
+                                      .user!,
                               currentUserId: currentUserId!,
                               forum: widget.forum,
                               replyThought: _replythoughtController.text,
@@ -333,7 +344,7 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
               ContentWarning(
                 report: widget.forum.report,
                 onPressed: _setContentWarning,
-                imageUrl: widget.author.profileImageUrl!,
+                imageUrl: widget.thought.authorProfileImageUrl,
               ),
               _displayWarning == true
                   ? Positioned(
@@ -351,7 +362,7 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
                         onPressed: _pop,
                       ),
                     )
-                  : SizedBox.shrink(),
+                  : const SizedBox.shrink()
             ]),
           )
         : ResponsiveScaffold(
@@ -414,20 +425,22 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
                                                                 .of<UserData>(
                                                                     context)
                                                             .currentUserId!,
-                                                        userId:
-                                                            widget.author.id!,
+                                                        userId: widget
+                                                            .thought.authorId,
                                                       ))),
                                           child: CircleAvatar(
                                             radius: 30.0,
                                             backgroundColor: Colors.grey,
-                                            backgroundImage: widget.author
-                                                    .profileImageUrl!.isEmpty
+                                            backgroundImage: widget
+                                                    .thought
+                                                    .authorProfileImageUrl
+                                                    .isEmpty
                                                 ? AssetImage(
                                                     'assets/images/user_placeholder2.png',
                                                   ) as ImageProvider
                                                 : CachedNetworkImageProvider(
-                                                    widget.author
-                                                        .profileImageUrl!),
+                                                    widget.thought
+                                                        .authorProfileImageUrl),
                                           ),
                                         ),
                                         title: Column(
@@ -437,7 +450,7 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
                                               CrossAxisAlignment.start,
                                           children: <Widget>[
                                             Text(
-                                              widget.author.userName!,
+                                              widget.thought.authorName,
                                               style: TextStyle(
                                                 fontSize: 14.0,
                                                 fontWeight: FontWeight.bold,
@@ -446,7 +459,9 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
                                                     : Colors.black,
                                               ),
                                             ),
-                                            Text(widget.author.profileHandle!,
+                                            Text(
+                                                widget.thought
+                                                    .authorProfileHanlde,
                                                 style: TextStyle(
                                                   fontSize: 12.0,
                                                   color: Colors.blueGrey,
@@ -530,7 +545,7 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
                                           return Container(
                                               height: 50,
                                               color: Colors.red,
-                                              child: SizedBox.shrink());
+                                              child: const SizedBox.shrink());
                                         }
                                         return MediaQuery.removePadding(
                                           context: context,
@@ -549,29 +564,32 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
                                                     ReplyThought.fromDoc(
                                                         snapshot
                                                             .data.docs[index]);
-                                                return FutureBuilder(
-                                                  future: DatabaseService
-                                                      .getUserWithId(
-                                                          replyThought
-                                                              .authorId),
-                                                  builder: (BuildContext
-                                                          context,
-                                                      AsyncSnapshot snapshot) {
-                                                    if (!snapshot.hasData) {
-                                                      return SizedBox.shrink();
-                                                    }
-                                                    AccountHolder author =
-                                                        snapshot.data;
-                                                    return _buildComment(
-                                                        replyThought, author);
-                                                  },
-                                                );
+                                                return _buildComment(
+                                                    replyThought);
+                                                // FutureBuilder(
+                                                //   future: DatabaseService
+                                                //       .getUserWithId(
+                                                //           replyThought
+                                                //               .authorId),
+                                                //   builder: (BuildContext
+                                                //           context,
+                                                //       AsyncSnapshot snapshot) {
+                                                //     if (!snapshot.hasData) {
+                                                //       return const SizedBox
+                                                //           .shrink();
+                                                //     }
+                                                //     AccountHolder author =
+                                                //         snapshot.data;
+                                                //     return _buildComment(
+                                                //         replyThought);
+                                                //   },
+                                                // );
                                               }),
                                         );
                                       }),
                                 ),
                                 widget.isBlocked
-                                    ? SizedBox.shrink()
+                                    ? const SizedBox.shrink()
                                     : _buildThoughtTF(),
                               ],
                             ))),

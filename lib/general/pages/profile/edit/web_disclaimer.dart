@@ -65,9 +65,7 @@ class _WebDisclaimerState extends State<WebDisclaimer> {
                   ),
                   Text(
                     widget.contentType.contains('Work')
-                        ? 'You will be directed to a website where you can take a look at ' +
-                            widget.contentType +
-                            ' to see if you will like to do business. Bars Impression accepts no liability or responsibility for the information, views, or opinion contained therein.'
+                        ? 'You will be directed to a website where you can take a look at ${widget.contentType} to see if you will like to do business. Bars Impression accepts no liability or responsibility for the information, views, or opinion contained therein.'
                         : widget.contentType.contains('Music Video')
                             ? 'Access the music video link featured with this mood punched. Note that the author of this mood punch might not be the owner or author of the music video link you are about to access. But rather an appreciator, lover, and promoter of the creativity of the original author(right owner/s).'
                             : widget.contentType.contains('Event ticket')
@@ -91,7 +89,6 @@ class _WebDisclaimerState extends State<WebDisclaimer> {
                     child: Container(
                       width: 250,
                       child: OutlinedButton(
-                        
                         style: OutlinedButton.styleFrom(
                           primary: Colors.blue,
                           side: BorderSide(width: 1.0, color: Colors.blue),

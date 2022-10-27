@@ -64,7 +64,7 @@ class _NoCityState extends State<NoCity> {
                     height: 5.0,
                   ),
                   Text(
-                      '${widget.user.name}, go to edit profile and enter the name of your City, Country, and Continent. It helps you discover and get discovered by people living around you for business. You can also browse and get to know people around you.',
+                      '${widget.user.name},  go to edit profile and enter the name of your City, Country, and Continent. It helps you discover and get discovered by people living around you.',
                       style: TextStyle(
                         fontSize: width > 800 ? 18 : 14,
                         color: ConfigBloc().darkModeOn

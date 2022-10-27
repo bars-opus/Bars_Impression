@@ -108,20 +108,94 @@ class _InviteSearchState extends State<InviteSearch>
   }
 
   _buildUserTile(AccountHolder user) {
-    return UserListTile(
-        user: user,
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => SendEventInviation(
-                        user: user,
-                        currentUserId:
-                            Provider.of<UserData>(context).currentUserId!,
-                        event: widget.event,
-                        palette: widget.palette,
-                      )));
-        });
+    final width = MediaQuery.of(context).size.width;
+    return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListTile(
+          leading: user.profileImageUrl!.isEmpty
+              ? Icon(
+                  Icons.account_circle,
+                  size: 60.0,
+                  color: Colors.white,
+                )
+              : CircleAvatar(
+                  radius: 25.0,
+                  backgroundColor: ConfigBloc().darkModeOn
+                      ? Color(0xFF1a1a1a)
+                      : Color(0xFFf2f2f2),
+                  backgroundImage:
+                      CachedNetworkImageProvider(user.profileImageUrl!),
+                ),
+          title: Align(
+            alignment: Alignment.topLeft,
+            child: Stack(
+              alignment: Alignment.bottomRight,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 12.0),
+                  child: Text(user.userName!,
+                      style: TextStyle(
+                        fontSize: width > 800 ? 18 : 14.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      )),
+                ),
+                user.verified!.isEmpty
+                    ? const SizedBox.shrink()
+                    : Positioned(
+                        top: 3,
+                        right: 0,
+                        child: Icon(
+                          MdiIcons.checkboxMarkedCircle,
+                          size: 11,
+                          color: Colors.blue,
+                        ),
+                      ),
+              ],
+            ),
+          ),
+          subtitle: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(user.profileHandle!,
+                        style: TextStyle(
+                          fontSize: width > 800 ? 14 : 12,
+                          color: Colors.blue,
+                        )),
+                    Text(user.company!,
+                        style: TextStyle(
+                          fontSize: width > 800 ? 14 : 12,
+                          color: Colors.blueGrey,
+                        )),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    Divider(
+                      color: ConfigBloc().darkModeOn
+                          ? Colors.grey[850]
+                          : Colors.grey[350],
+                    )
+                  ],
+                ),
+              ]),
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => SendEventInviation(
+                          user: user,
+                          currentUserId:
+                              Provider.of<UserData>(context).currentUserId!,
+                          event: widget.event,
+                          palette: widget.palette,
+                        )));
+          },
+        ));
   }
 
   _buildFollowerBuilder() {
@@ -144,7 +218,7 @@ class _InviteSearchState extends State<InviteSearch>
                       }
                       AccountHolder user = snapshot.data;
                       return widget.currentUserId == user.id
-                          ? SizedBox.shrink()
+                          ? const SizedBox.shrink()
                           : _buildUserTile(user);
                     },
                   );
@@ -172,28 +246,27 @@ class _InviteSearchState extends State<InviteSearch>
     return ResponsiveScaffold(
         child: ResponsiveScaffold(
       child: Scaffold(
-          backgroundColor:
-              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+          backgroundColor: widget.palette.darkMutedColor == null
+              ? Color(0xFF1a1a1a)
+              : widget.palette.darkMutedColor!.color,
           appBar: AppBar(
             iconTheme: IconThemeData(
-              color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+              color: Colors.white,
             ),
             automaticallyImplyLeading: true,
             elevation: 0,
-            backgroundColor:
-                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+            backgroundColor: widget.palette.darkMutedColor == null
+                ? Color(0xFF1a1a1a)
+                : widget.palette.darkMutedColor!.color,
             title: Padding(
               padding: EdgeInsets.symmetric(horizontal: 10.0),
               child: Material(
-                color: ConfigBloc().darkModeOn
-                    ? Color(0xFFf2f2f2)
-                    : Color(0xFF1a1a1a),
+                color: Colors.white,
                 elevation: 1.0,
                 borderRadius: BorderRadius.all(Radius.circular(30.0)),
                 child: TextField(
                   style: TextStyle(
-                    color:
-                        ConfigBloc().darkModeOn ? Colors.black : Colors.white,
+                    color: Colors.black,
                   ),
                   cursorColor: Colors.blue,
                   controller: _controller,
@@ -202,8 +275,6 @@ class _InviteSearchState extends State<InviteSearch>
                       _users = DatabaseService.searchUsers(input.toUpperCase());
                     });
                   },
-
-                  // },
                   decoration: InputDecoration(
                     contentPadding:
                         EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
@@ -212,8 +283,7 @@ class _InviteSearchState extends State<InviteSearch>
                     prefixIcon: Icon(
                       Icons.search,
                       size: 20.0,
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.black : Colors.white,
+                      color: Colors.black,
                     ),
                     hintStyle: TextStyle(
                       fontSize: 16.0,
@@ -223,9 +293,7 @@ class _InviteSearchState extends State<InviteSearch>
                       icon: Icon(
                         Icons.clear,
                         size: 15.0,
-                        color: ConfigBloc().darkModeOn
-                            ? Colors.black
-                            : Colors.white,
+                        color: Colors.black,
                       ),
                       onPressed: _clearSearch,
                     ),
@@ -249,18 +317,25 @@ class _InviteSearchState extends State<InviteSearch>
                   // ignore: unnecessary_null_comparison
                   child: _users == null
                       ? _buildFollowerBuilder()
-                      //  Center(
-                      //     child: NoContents(
-                      //         title: "Searh for users. ",
-                      //         subTitle:
-                      //             'Enter username, \ndon\'t enter a user\'s nickname.',
-                      //         icon: Icons.search))
                       : FutureBuilder<QuerySnapshot>(
                           future: _users,
                           builder: (BuildContext context,
                               AsyncSnapshot<QuerySnapshot> snapshot) {
                             if (!snapshot.hasData) {
-                              return SearchUserSchimmer();
+                              return Center(
+                                child: SizedBox(
+                                  height: 250,
+                                  width: 250,
+                                  child: CircularProgressIndicator(
+                                    backgroundColor: Colors.transparent,
+                                    valueColor:
+                                        new AlwaysStoppedAnimation<Color>(
+                                      Colors.grey,
+                                    ),
+                                    strokeWidth: 1,
+                                  ),
+                                ),
+                              );
                             }
                             if (snapshot.data!.docs.length == 0) {
                               return Center(
@@ -307,96 +382,6 @@ class _InviteSearchState extends State<InviteSearch>
                           })),
             ),
           )),
-    )
-
-        // NestedScrollView(
-        //   controller: _hideButtonController,
-        //   headerSliverBuilder: (context, innerBoxScrolled) => [
-        //     SliverAppBar(
-        //       elevation: 0.0,
-        //       automaticallyImplyLeading: true,
-        //       floating: true,
-        //       snap: true,
-        //       pinned: true,
-        //       iconTheme: new IconThemeData(
-        //         color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-        //       ),
-        //       backgroundColor:
-        //           ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-        //       title: Text(
-        //         'Invtite',
-        //         style: TextStyle(
-        //             color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-        //             fontSize: 20,
-        //             fontWeight: FontWeight.bold),
-        //       ),
-        //       centerTitle: true,
-        //     ),
-        //   ],
-        //   body: MediaQuery.removePadding(
-        //     context: context,
-        //     removeTop: true,
-        //     child: Container(
-        //       color: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-        //       child: SafeArea(
-        //         child: MediaQuery(
-        //           data: MediaQuery.of(context).copyWith(
-        //               textScaleFactor:
-        //                   MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
-        //           child: Column(
-        //             mainAxisAlignment: MainAxisAlignment.start,
-        //             crossAxisAlignment: CrossAxisAlignment.start,
-        //             children: <Widget>[
-        //               AnimatedContainer(
-        //                   curve: Curves.easeInOut,
-        //                   duration: Duration(milliseconds: 800),
-        //                   height: _showInfo ? 50 : 0.0,
-        //                   width: double.infinity,
-        //                   color: Colors.blue,
-        //                   child: ShakeTransition(
-        //                     child: ListTile(
-        //                       title:
-        //                           Text('Other users can\'t see your following.',
-        //                               style: TextStyle(
-        //                                 color: Colors.white,
-        //                                 fontSize: 12,
-        //                               )),
-        //                       leading: IconButton(
-        //                         icon: Icon(Icons.info_outline_rounded),
-        //                         iconSize: 20.0,
-        //                         color:
-        //                             _showInfo ? Colors.white : Colors.transparent,
-        //                         onPressed: () => () {},
-        //                       ),
-        //                     ),
-        //                   )),
-        //               SizedBox(
-        //                 height: 30.0,
-        //               ),
-        //               Expanded(
-        //                 child: _buildFollowerBuilder(),
-        //                 //  widget.followingCount > 0
-        //                 //     ? _buildFollowerBuilder()
-        //                 //     : _userList.length > 0
-        //                 //         ? Expanded(
-        //                 //             child: Center(
-        //                 //               child: NoContents(
-        //                 //                 icon: (Icons.people_outline),
-        //                 //                 title: 'No following yet,',
-        //                 //                 subTitle:
-        //                 //                     'You are not following anybody yet, follow people to see the contents they create and connect with them for collaborations ',
-        //                 //               ),
-        //                 //             ),
-        //                 //           )
-        //                 //         : Center(child: FollowUserSchimmer()),
-        //               )
-        //             ],
-        //           ),
-        //         ),s
-        //       ),
-        //     ),
-        //   ),
-        // ),
-        );
+    ));
   }
 }

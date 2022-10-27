@@ -11,7 +11,6 @@ class CreateEvent extends StatefulWidget {
 }
 
 class _CreateEventState extends State<CreateEvent> {
-  //  File _image;
   int index = 0;
   String _type = '';
   int showDatePicker = 0;

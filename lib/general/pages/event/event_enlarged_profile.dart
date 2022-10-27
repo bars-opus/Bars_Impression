@@ -63,14 +63,23 @@ class _AllEvenEnlargedProfileState extends State<AllEvenEnlargedProfile> {
                       palette: _paletteGenerator,
                     )),
           )
-        : Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (_) => EventCalender(
-                      event: widget.event,
-                      palette: _paletteGenerator,
-                    )),
-          );
+        : from.startsWith('Calendar')
+            ? Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => EventCalender(
+                          event: widget.event,
+                          palette: _paletteGenerator,
+                        )),
+              )
+            : Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => EventRate(
+                          event: widget.event,
+                          palette: _paletteGenerator,
+                        )),
+              );
   }
 
   @override
@@ -113,10 +122,10 @@ class _AllEvenEnlargedProfileState extends State<AllEvenEnlargedProfile> {
                               askCount: widget.askCount!,
                               currentUserId: widget.currentUserId,
                               event: widget.event,
-                              user: widget.user,
+                              // user: widget.user,
                             ))),
                 imageHero: 'image ${widget.event.id.toString()}',
-                titleHero:  'title ${widget.event.id.toString()}',
+                titleHero: 'title ${widget.event.id.toString()}',
                 onPressedLocationMap: _launchMap,
                 onPressedEventticketSite: () {
                   Navigator.push(
@@ -139,15 +148,15 @@ class _AllEvenEnlargedProfileState extends State<AllEvenEnlargedProfile> {
                   context,
                   MaterialPageRoute(
                       builder: (_) => AsksScreen(
-                            // askCount: widget.askCount!,
                             event: widget.event,
                             ask: null,
                             currentUserId: widget.currentUserId,
                           )),
                 ),
                 event: widget.event,
-                onPressedCalendar: () => _generatePalette2(context, ''),
+                onPressedCalendar: () => _generatePalette2(context, 'Calendar'),
                 onPressedPeople: () => _generatePalette2(context, 'People'),
+                onPressedRate: () => _generatePalette2(context, ''),
               ),
               Positioned(
                 top: 55,
@@ -160,6 +169,7 @@ class _AllEvenEnlargedProfileState extends State<AllEvenEnlargedProfile> {
                   onPressed: () => Navigator.of(context).push(PageRouteBuilder(
                       transitionDuration: const Duration(milliseconds: 500),
                       pageBuilder: (context, animation, _) {
+                        HapticFeedback.heavyImpact();
                         return FadeTransition(
                           opacity: animation,
                           child: ExploreEvent(

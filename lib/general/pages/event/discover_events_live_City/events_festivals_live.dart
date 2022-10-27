@@ -98,7 +98,7 @@ class _FestivalEventsLiveCityState extends State<FestivalEventsLiveCity>
       feed: 3,
       currentUserId: widget.currentUserId,
       event: event,
-      author: author,      user: widget.user,
+          user: widget.user,
 
       // eventList: _events,
     );

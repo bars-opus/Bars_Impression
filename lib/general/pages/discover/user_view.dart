@@ -17,19 +17,6 @@ class UserView extends StatefulWidget {
 }
 
 class _UserViewState extends State<UserView> {
-  RandomColor _randomColor = RandomColor();
-  final List<ColorHue> _hueType = <ColorHue>[
-    ColorHue.green,
-    ColorHue.red,
-    ColorHue.pink,
-    ColorHue.purple,
-    ColorHue.blue,
-    ColorHue.yellow,
-    ColorHue.orange
-  ];
-
-  ColorSaturation _colorSaturation = ColorSaturation.random;
-
   _userFans() {
     final width = MediaQuery.of(context).size.width;
     return Container(
@@ -76,311 +63,230 @@ class _UserViewState extends State<UserView> {
                               repotedAuthorId: widget.user.id!,
                             )))),
           ],
-          child: GestureDetector(
-              onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => ProfileScreen(
-                            currentUserId:
-                                Provider.of<UserData>(context).currentUserId!,
-                            userId: widget.userId,
-                          ))),
-              child: Container(
-                  width: width,
-                  child: SingleChildScrollView(
-                      physics: const NeverScrollableScrollPhysics(),
-                      child: Padding(
-                          padding: const EdgeInsets.only(
-                              right: 12.0, top: 12, bottom: 12),
-                          child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ListTile(
-                                    leading: Container(
-                                      decoration: BoxDecoration(
-                                        color: ConfigBloc().darkModeOn
-                                            ? Color(0xFF1a1a1a)
-                                            : Colors.white,
-                                        borderRadius:
-                                            BorderRadius.circular(100.0),
-                                      ),
-                                      child: CircleAvatar(
+          child: Container(
+              width: width,
+              child: SingleChildScrollView(
+                  physics: const NeverScrollableScrollPhysics(),
+                  child: Padding(
+                      padding: const EdgeInsets.only(
+                          right: 12.0, top: 12, bottom: 12),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ListTile(
+                                leading: widget.user.profileImageUrl!.isEmpty
+                                    ? const Icon(
+                                        Icons.account_circle,
+                                        size: 50.0,
+                                        color: Colors.grey,
+                                      )
+                                    : CircleAvatar(
+                                        radius: 25.0,
                                         backgroundColor: ConfigBloc().darkModeOn
                                             ? Color(0xFF1a1a1a)
-                                            : Colors.white,
-                                        radius: 25.0,
-                                        backgroundImage: widget
-                                                .user.profileImageUrl!.isEmpty
-                                            ? AssetImage(
-                                                ConfigBloc().darkModeOn
-                                                    ? 'assets/images/user_placeholder.png'
-                                                    : 'assets/images/user_placeholder2.png',
-                                              ) as ImageProvider
-                                            : CachedNetworkImageProvider(
+                                            : Color(0xFFf2f2f2),
+                                        backgroundImage:
+                                            CachedNetworkImageProvider(
                                                 widget.user.profileImageUrl!),
                                       ),
-                                    ),
-                                    title: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Stack(
-                                          alignment: Alignment.bottomRight,
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  right: 20.0, bottom: 7),
-                                              child: RichText(
-                                                  textScaleFactor:
-                                                      MediaQuery.of(context)
-                                                          .textScaleFactor,
-                                                  text: TextSpan(children: [
-                                                    TextSpan(
-                                                      text: widget
-                                                          .user.userName!
-                                                          .toUpperCase(),
-                                                      style: TextStyle(
-                                                          fontSize: width > 800
-                                                              ? 18
-                                                              : 16.0,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color: ConfigBloc()
-                                                                  .darkModeOn
-                                                              ? Colors.white
-                                                              : Colors.black,
-                                                          shadows: [
-                                                            const BoxShadow(
-                                                              color: Colors
-                                                                  .black26,
-                                                              offset:
-                                                                  Offset(0, 10),
-                                                              blurRadius: 10.0,
-                                                              spreadRadius: 2.0,
-                                                            )
-                                                          ]),
-                                                    )
-                                                  ])),
-                                            ),
-                                            widget.user.verified!.isEmpty
-                                                ? SizedBox.shrink()
-                                                : Positioned(
-                                                    top: -17,
-                                                    right: -10,
-                                                    child: IconButton(
-                                                        icon: Icon(
-                                                          MdiIcons
-                                                              .checkboxMarkedCircle,
-                                                        ),
-                                                        iconSize: 12,
-                                                        color: Colors.blue,
-                                                        onPressed: () {}),
-                                                  ),
-                                          ],
-                                        ),
+                                title: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Stack(
+                                      alignment: Alignment.bottomRight,
+                                      children: [
                                         Padding(
                                           padding: const EdgeInsets.only(
-                                              top: 10, bottom: 10.0),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                color: _randomColor.randomColor(
-                                                  colorHue: ColorHue.multiple(
-                                                      colorHues: _hueType),
-                                                  colorSaturation:
-                                                      _colorSaturation,
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        100.0),
-                                                boxShadow: [
-                                                  const BoxShadow(
-                                                    color: Colors.black26,
-                                                    offset: Offset(0, 10),
-                                                    blurRadius: 10.0,
-                                                    spreadRadius: 2.0,
-                                                  )
-                                                ]),
-                                            height: 1.0,
-                                            width: 50.0,
-                                          ),
-                                        ),
-                                        Material(
-                                          color: Colors.transparent,
+                                              right: 20.0, bottom: 7),
                                           child: RichText(
-                                            textScaleFactor:
-                                                MediaQuery.of(context)
-                                                    .textScaleFactor,
-                                            text: TextSpan(
-                                              children: [
+                                              textScaleFactor:
+                                                  MediaQuery.of(context)
+                                                      .textScaleFactor,
+                                              text: TextSpan(children: [
                                                 TextSpan(
-                                                  text: widget
-                                                          .user.company!.isEmpty
-                                                      ? ''
-                                                      : '${widget.user.company}\n',
+                                                  text: widget.user.userName!
+                                                      .toUpperCase(),
                                                   style: TextStyle(
                                                     fontSize:
-                                                        width > 800 ? 14 : 12,
-                                                    color: Colors.blueGrey,
-                                                  ),
-                                                ),
-                                                TextSpan(
-                                                    text:
-                                                        "City/ Country/ Continent: ",
-                                                    style: const TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.grey,
-                                                    )),
-                                                TextSpan(
-                                                    text:
-                                                        "${widget.user.city}/ ${widget.user.country}/  ${widget.user.continent}",
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          width > 800 ? 14 : 12,
-                                                      color: ConfigBloc()
-                                                              .darkModeOn
-                                                          ? Colors.white
-                                                          : Colors.black,
-                                                    )),
-                                                TextSpan(
-                                                    text: "\nBio: ",
-                                                    style: const TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.grey,
-                                                    )),
-                                                TextSpan(
-                                                  text: " ${widget.user.bio}",
-                                                  style: TextStyle(
-                                                    fontSize:
-                                                        width > 800 ? 14 : 12,
+                                                        width > 800 ? 18 : 16.0,
+                                                    fontWeight: FontWeight.bold,
                                                     color:
                                                         ConfigBloc().darkModeOn
                                                             ? Colors.white
                                                             : Colors.black,
                                                   ),
-                                                ),
-                                                TextSpan(
-                                                    text:
-                                                        " \nFavorite Punchline:  ",
-                                                    style: const TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.grey,
-                                                    )),
-                                                TextSpan(
-                                                    text:
-                                                        " ${widget.user.favouritePunchline}\n",
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          width > 800 ? 14 : 12,
-                                                      color: ConfigBloc()
-                                                              .darkModeOn
-                                                          ? Colors.white
-                                                          : Colors.black,
-                                                    )),
-                                                TextSpan(
-                                                    text: 'Favorite Musician',
-                                                    style: const TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.grey,
-                                                    )),
-                                                TextSpan(
-                                                    text:
-                                                        " ${widget.user.favouriteArtist}\n",
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          width > 800 ? 14 : 12,
-                                                      color: ConfigBloc()
-                                                              .darkModeOn
-                                                          ? Colors.white
-                                                          : Colors.black,
-                                                    )),
-                                                TextSpan(
-                                                    text: 'Favorite Song',
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.grey,
-                                                    )),
-                                                TextSpan(
-                                                    text:
-                                                        " ${widget.user.favouriteSong}\n",
-                                                    style: TextStyle(
-                                                      fontSize: width > 800
-                                                          ? 14
-                                                          : 12.0,
-                                                      color: ConfigBloc()
-                                                              .darkModeOn
-                                                          ? Colors.white
-                                                          : Colors.black,
-                                                    )),
-                                                TextSpan(
-                                                    text: 'Favorite Album',
-                                                    style: const TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.grey,
-                                                    )),
-                                                TextSpan(
-                                                    text:
-                                                        " ${widget.user.favouriteAlbum}",
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          width > 800 ? 14 : 12,
-                                                      color: ConfigBloc()
-                                                              .darkModeOn
-                                                          ? Colors.white
-                                                          : Colors.black,
-                                                    )),
-                                              ],
-                                            ),
-                                            maxLines: 16,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
+                                                )
+                                              ])),
                                         ),
+                                        widget.user.verified!.isEmpty
+                                            ? SizedBox.shrink()
+                                            : Positioned(
+                                                top: -17,
+                                                right: -10,
+                                                child: Icon(
+                                                  MdiIcons.checkboxMarkedCircle,
+                                                  size: 12,
+                                                  color: Colors.blue,
+                                                ),
+                                              ),
                                       ],
                                     ),
-                                    onTap: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (_) => ProfileScreen(
-                                                  currentUserId:
-                                                      Provider.of<UserData>(
-                                                              context)
-                                                          .currentUserId!,
-                                                  userId: widget.userId,
-                                                )))),
-                              ]))))),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 10, bottom: 10.0),
+                                      child: Container(
+                                        color: Colors.purple,
+                                        height: 1.0,
+                                        width: 50.0,
+                                      ),
+                                    ),
+                                    Material(
+                                      color: Colors.transparent,
+                                      child: RichText(
+                                        textScaleFactor: MediaQuery.of(context)
+                                            .textScaleFactor,
+                                        text: TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: widget.user.company!.isEmpty
+                                                  ? ''
+                                                  : '${widget.user.company}\n',
+                                              style: TextStyle(
+                                                fontSize: width > 800 ? 14 : 12,
+                                                color: Colors.blueGrey,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                                text:
+                                                    "City/ Country/ Continent: ",
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey,
+                                                )),
+                                            TextSpan(
+                                                text:
+                                                    "${widget.user.city}/ ${widget.user.country}/  ${widget.user.continent}",
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      width > 800 ? 14 : 12,
+                                                  color: ConfigBloc().darkModeOn
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                                )),
+                                            TextSpan(
+                                                text: "\nBio: ",
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey,
+                                                )),
+                                            TextSpan(
+                                              text: " ${widget.user.bio}",
+                                              style: TextStyle(
+                                                fontSize: width > 800 ? 14 : 12,
+                                                color: ConfigBloc().darkModeOn
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                                text:
+                                                    " \nFavorite Punchline:  ",
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey,
+                                                )),
+                                            TextSpan(
+                                                text:
+                                                    " ${widget.user.favouritePunchline}\n",
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      width > 800 ? 14 : 12,
+                                                  color: ConfigBloc().darkModeOn
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                                )),
+                                            TextSpan(
+                                                text: 'Favorite Musician',
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey,
+                                                )),
+                                            TextSpan(
+                                                text:
+                                                    " ${widget.user.favouriteArtist}\n",
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      width > 800 ? 14 : 12,
+                                                  color: ConfigBloc().darkModeOn
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                                )),
+                                            TextSpan(
+                                                text: 'Favorite Song',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey,
+                                                )),
+                                            TextSpan(
+                                                text:
+                                                    " ${widget.user.favouriteSong}\n",
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      width > 800 ? 14 : 12.0,
+                                                  color: ConfigBloc().darkModeOn
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                                )),
+                                            TextSpan(
+                                                text: 'Favorite Album',
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey,
+                                                )),
+                                            TextSpan(
+                                                text:
+                                                    " ${widget.user.favouriteAlbum}",
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      width > 800 ? 14 : 12,
+                                                  color: ConfigBloc().darkModeOn
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                                )),
+                                          ],
+                                        ),
+                                        maxLines: 16,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => ProfileScreen(
+                                              currentUserId:
+                                                  Provider.of<UserData>(context)
+                                                      .currentUserId!,
+                                              userId: widget.userId,
+                                            )))),
+                          ])))),
         ));
   }
 
-//   _dynamicLink() async {
-//     final dynamicLinkParams = DynamicLinkParameters(
-//       socialMetaTagParameters: SocialMetaTagParameters(
-//          imageUrl: Uri.parse(
-//             'https://firebasestorage.googleapis.com/v0/b/bars-5e3e5.appspot.com/o/barsLauncherforfirebase.png?alt=media&token=be7d907e-30fa-475b-86ca-ab9eaaa34837'),
-//         title: widget.user.userName,
-//         description: widget.user.bio,
-//       ),
-//       link: Uri.parse('https://www.barsopus.com/user_${widget.user.id}'),
-//       uriPrefix: 'https://barsimpression.page.link',
-//       androidParameters:
-//           AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
-//       iosParameters: IOSParameters(bundleId: 'com.bars-Opus.barsImpression', appStoreId: '1610868894',
-// ),
-//     );
-//     var link =
-//         await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
-
-//     Share.share(link.shortUrl.toString());
-//   }
   _dynamicLink() async {
-    final dynamicLinkParams = await DynamicLinkParameters(
-      socialMetaTagParameters: await SocialMetaTagParameters(
+    var linkUrl = Uri.parse(widget.user.profileImageUrl!);
+
+    final dynamicLinkParams = DynamicLinkParameters(
+      socialMetaTagParameters: SocialMetaTagParameters(
+        imageUrl: linkUrl,
         title: widget.user.userName,
         description: widget.user.bio,
       ),
       link: Uri.parse('https://www.barsopus.com/user_${widget.user.id}'),
-      uriPrefix: 'https://barsopus.com/barsImpression/',
+      uriPrefix: 'https://barsopus.com/barsImpression',
       androidParameters:
           AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
       iosParameters: IOSParameters(
@@ -388,10 +294,15 @@ class _UserViewState extends State<UserView> {
         appStoreId: '1610868894',
       ),
     );
-    var link =
-        await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
-
-    Share.share(link.shortUrl.toString());
+    if (Platform.isIOS) {
+      var link =
+          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
+      Share.share(link.toString());
+    } else {
+      var link =
+          await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+      Share.share(link.shortUrl.toString());
+    }
   }
 
   _userOthers() {
@@ -492,422 +403,377 @@ class _UserViewState extends State<UserView> {
               onPressed: () => Navigator.push(
                   context, MaterialPageRoute(builder: (_) => SuggestionBox()))),
         ],
-        child: GestureDetector(
-          onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => ProfessionalProfile(
-                        exploreLocation: widget.exploreLocation,
-                        currentUserId:
-                            Provider.of<UserData>(context).currentUserId!,
-                        user: widget.user,
-                        userId: widget.user.id!,
-                      ))),
+        child: Container(
+          height: Responsive.isDesktop(context) ? 350 : 250,
           child: Container(
-            height: Responsive.isDesktop(context) ? 350 : 250,
-            child: GestureDetector(
-              onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => ProfileProfessionalProfile(
-                            currentUserId:
-                                Provider.of<UserData>(context).currentUserId!,
-                            user: widget.user,
-                            userId: widget.user.id!,
-                          ))),
-              child: Container(
-                width: width,
-                child: SingleChildScrollView(
-                  physics: const NeverScrollableScrollPhysics(),
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.only(right: 12.0, top: 12, bottom: 12),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ListTile(
-                            leading: Container(
-                              decoration: BoxDecoration(
-                                color: ConfigBloc().darkModeOn
-                                    ? Color(0xFF1a1a1a)
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(100.0),
-                              ),
-                              child: Hero(
-                                tag: 'container1' + widget.user.id.toString(),
-                                child: CircleAvatar(
+            width: width,
+            child: SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              child: Padding(
+                padding:
+                    const EdgeInsets.only(right: 12.0, top: 12, bottom: 12),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ListTile(
+                        leading: Hero(
+                          tag: 'container1' + widget.user.id.toString(),
+                          child: widget.user.profileImageUrl!.isEmpty
+                              ? const Icon(
+                                  Icons.account_circle,
+                                  size: 50.0,
+                                  color: Colors.grey,
+                                )
+                              : CircleAvatar(
+                                  radius: 25.0,
                                   backgroundColor: ConfigBloc().darkModeOn
                                       ? Color(0xFF1a1a1a)
-                                      : Colors.white,
-                                  radius: 25.0,
-                                  backgroundImage:
-                                      widget.user.profileImageUrl!.isEmpty
-                                          ? AssetImage(
-                                              ConfigBloc().darkModeOn
-                                                  ? 'assets/images/user_placeholder.png'
-                                                  : 'assets/images/user_placeholder2.png',
-                                            ) as ImageProvider
-                                          : CachedNetworkImageProvider(
-                                              widget.user.profileImageUrl!),
+                                      : Color(0xFFf2f2f2),
+                                  backgroundImage: CachedNetworkImageProvider(
+                                      widget.user.profileImageUrl!),
+                                ),
+                        ),
+                        title: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Stack(
+                              alignment: Alignment.bottomRight,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      right: 20.0, bottom: 7),
+                                  child: RichText(
+                                      textScaleFactor: MediaQuery.of(context)
+                                          .textScaleFactor,
+                                      text: TextSpan(children: [
+                                        TextSpan(
+                                          text: widget.user.userName!
+                                              .toUpperCase(),
+                                          style: TextStyle(
+                                            fontSize: width > 800 ? 18 : 16.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: ConfigBloc().darkModeOn
+                                                ? Colors.white
+                                                : Colors.black,
+                                          ),
+                                        )
+                                      ])),
+                                ),
+                                widget.user.verified!.isEmpty
+                                    ? const SizedBox.shrink()
+                                    : Positioned(
+                                        top: -17,
+                                        right: -10,
+                                        child: const Icon(
+                                          MdiIcons.checkboxMarkedCircle,
+                                          size: 12,
+                                          color: Colors.blue,
+                                        ),
+                                      ),
+                              ],
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 10, bottom: 10.0),
+                              child: Container(
+                                color: Colors.purple,
+                                height: 1.0,
+                                width: 50.0,
+                              ),
+                            ),
+                            Stars(
+                              score: widget.user.score!,
+                            ),
+                            Material(
+                              color: Colors.transparent,
+                              child: RichText(
+                                textScaleFactor:
+                                    MediaQuery.of(context).textScaleFactor,
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: widget.user.profileHandle!,
+                                      style: TextStyle(
+                                        fontSize: width > 800 ? 14 : 12,
+                                        color: Colors.blue,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
-                            title: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Stack(
-                                  alignment: Alignment.bottomRight,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          right: 20.0, bottom: 7),
-                                      child: RichText(
-                                          textScaleFactor:
-                                              MediaQuery.of(context)
-                                                  .textScaleFactor,
-                                          text: TextSpan(children: [
-                                            TextSpan(
-                                              text: widget.user.userName!
-                                                  .toUpperCase(),
-                                              style: TextStyle(
-                                                  fontSize:
-                                                      width > 800 ? 18 : 16.0,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: ConfigBloc().darkModeOn
-                                                      ? Colors.white
-                                                      : Colors.black,
-                                                  shadows: [
-                                                    const BoxShadow(
-                                                      color: Colors.black26,
-                                                      offset: Offset(0, 10),
-                                                      blurRadius: 10.0,
-                                                      spreadRadius: 2.0,
-                                                    )
-                                                  ]),
-                                            )
-                                          ])),
-                                    ),
-                                    widget.user.verified!.isEmpty
-                                        ? SizedBox.shrink()
-                                        : Positioned(
-                                            top: -17,
-                                            right: -10,
-                                            child: IconButton(
-                                                icon: Icon(
-                                                  MdiIcons.checkboxMarkedCircle,
-                                                ),
-                                                iconSize: 12,
-                                                color: Colors.blue,
-                                                onPressed: () {}),
-                                          ),
-                                  ],
+                          ],
+                        ),
+                        subtitle: RichText(
+                          textScaleFactor:
+                              MediaQuery.of(context).textScaleFactor,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: widget.user.company!.isEmpty
+                                    ? ''
+                                    : '${widget.user.company}\n',
+                                style: TextStyle(
+                                  fontSize: width > 800 ? 14 : 12,
+                                  color: Colors.blueGrey,
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 10, bottom: 10.0),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                        color: _randomColor.randomColor(
-                                          colorHue: ColorHue.multiple(
-                                              colorHues: _hueType),
-                                          colorSaturation: _colorSaturation,
-                                        ),
-                                        borderRadius:
-                                            BorderRadius.circular(100.0),
-                                        boxShadow: [
-                                          const BoxShadow(
-                                            color: Colors.black26,
-                                            offset: Offset(0, 10),
-                                            blurRadius: 10.0,
-                                            spreadRadius: 2.0,
-                                          )
-                                        ]),
-                                    height: 1.0,
-                                    width: 50.0,
-                                  ),
+                              ),
+                              TextSpan(
+                                  text: "City/ Country/ Continent: ",
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  )),
+                              TextSpan(
+                                  text:
+                                      "${widget.user.city}/ ${widget.user.country}/  ${widget.user.continent}",
+                                  style: TextStyle(
+                                    fontSize: width > 800 ? 14 : 12,
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.white
+                                        : Colors.black,
+                                  )),
+                              TextSpan(
+                                  text: "\nBio: ",
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  )),
+                              TextSpan(
+                                text: " ${widget.user.bio}",
+                                style: TextStyle(
+                                  fontSize: width > 800 ? 14 : 12,
+                                  color: ConfigBloc().darkModeOn
+                                      ? Colors.white
+                                      : Colors.black,
                                 ),
-                                Stars(
-                                  score: widget.user.score!,
-                                ),
-                                Material(
-                                  color: Colors.transparent,
-                                  child: RichText(
-                                    textScaleFactor:
-                                        MediaQuery.of(context).textScaleFactor,
-                                    text: TextSpan(
-                                      children: [
-                                        TextSpan(
-                                          text: widget.user.profileHandle!,
-                                          style: TextStyle(
-                                            fontSize: width > 800 ? 14 : 12,
-                                            color: Colors.blue,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            subtitle: RichText(
-                              textScaleFactor:
-                                  MediaQuery.of(context).textScaleFactor,
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: widget.user.company!.isEmpty
-                                        ? ''
-                                        : '${widget.user.company}\n',
-                                    style: TextStyle(
-                                      fontSize: width > 800 ? 14 : 12,
-                                      color: Colors.blueGrey,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                      text: "City/ Country/ Continent: ",
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey,
-                                      )),
-                                  TextSpan(
-                                      text:
-                                          "${widget.user.city}/ ${widget.user.country}/  ${widget.user.continent}",
-                                      style: TextStyle(
-                                        fontSize: width > 800 ? 14 : 12,
-                                        color: ConfigBloc().darkModeOn
-                                            ? Colors.white
-                                            : Colors.black,
-                                      )),
-                                  TextSpan(
-                                      text: "\nBio: ",
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey,
-                                      )),
-                                  TextSpan(
-                                    text: " ${widget.user.bio}",
-                                    style: TextStyle(
-                                      fontSize: width > 800 ? 14 : 12,
-                                      color: ConfigBloc().darkModeOn
-                                          ? Colors.white
-                                          : Colors.black,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                      text: " \nSkills:  ",
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey,
-                                      )),
-                                  TextSpan(
-                                      text: " ${widget.user.skills}\n",
-                                      style: TextStyle(
-                                        fontSize: width > 800 ? 14 : 12,
-                                        color: ConfigBloc().darkModeOn
-                                            ? Colors.white
-                                            : Colors.black,
-                                      )),
-                                  TextSpan(
-                                      text: widget.user.profileHandle!
-                                              .startsWith('Ar')
-                                          ? 'Music Collaborations:'
+                              ),
+                              TextSpan(
+                                  text: " \nSkills:  ",
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  )),
+                              TextSpan(
+                                  text: " ${widget.user.skills}\n",
+                                  style: TextStyle(
+                                    fontSize: width > 800 ? 14 : 12,
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.white
+                                        : Colors.black,
+                                  )),
+                              TextSpan(
+                                  text: widget.user.profileHandle!
+                                          .startsWith('Ar')
+                                      ? 'Music Collaborations:'
+                                      : widget.user.profileHandle!
+                                              .startsWith('Co')
+                                          ? 'Design Collaborations:'
                                           : widget.user.profileHandle!
-                                                  .startsWith('Co')
-                                              ? 'Design Collaborations:'
+                                                  .startsWith('Da')
+                                              ? 'Danced With:'
                                               : widget.user.profileHandle!
-                                                      .startsWith('Da')
-                                                  ? 'Danced With:'
+                                                      .startsWith('M')
+                                                  ? 'Video Works:'
                                                   : widget.user.profileHandle!
-                                                          .startsWith('M')
-                                                      ? 'Video Works:'
-                                                      : widget.user.profileHandle!
-                                                              .endsWith('xen')
-                                                          ? 'Video appearances:'
-                                                          : widget.user
-                                                                  .profileHandle!
-                                                                  .startsWith(
-                                                                      'Bl')
-                                                              ? 'Blogged About:'
-                                                              : widget.user
-                                                                      .profileHandle!
-                                                                      .startsWith(
-                                                                          'Ph')
-                                                                  ? 'Worked With:'
-                                                                  : widget.user
-                                                                          .profileHandle!
-                                                                          .startsWith(
-                                                                              'Ba')
-                                                                      ? 'Battled Against:'
-                                                                      : widget.user
-                                                                              .profileHandle!
-                                                                              .endsWith('J')
-                                                                          ? 'Dj Collaborations:'
-                                                                          : widget.user.profileHandle!.startsWith('Make')
-                                                                              ? 'Worked For:'
-                                                                              : widget.user.profileHandle!.startsWith('Re')
-                                                                                  ? 'Partners:'
-                                                                                  : widget.user.profileHandle!.startsWith('Pr')
-                                                                                      ? 'Production Collaborations:'
-                                                                                      : '',
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey,
-                                      )),
-                                  TextSpan(
-                                      text: " ${widget.user.collaborations}\n",
-                                      style: TextStyle(
-                                        fontSize: width > 800 ? 14 : 12,
-                                        color: ConfigBloc().darkModeOn
-                                            ? Colors.white
-                                            : Colors.black,
-                                      )),
-                                  TextSpan(
-                                      text: widget.user.performances!.isEmpty
-                                          ? ''
-                                          : widget.user.profileHandle!
-                                                      .startsWith('Pr') ||
-                                                  widget.user.profileHandle!
-                                                      .startsWith("Bl") ||
-                                                  widget.user.profileHandle!
-                                                      .startsWith("Br") ||
-                                                  widget.user.profileHandle!
-                                                      .startsWith("Mak") ||
-                                                  widget.user.profileHandle!
-                                                      .startsWith("Re") ||
-                                                  widget.user.profileHandle!
-                                                      .startsWith("Mu") ||
-                                                  widget.user.profileHandle!
-                                                      .endsWith("xen")
-                                              ? ''
-                                              : widget.user.profileHandle!
-                                                      .startsWith('Ar')
-                                                  ? 'Music Performances: '
-                                                  : widget.user.profileHandle!
-                                                          .startsWith('Co')
-                                                      ? 'Design Exhibitions: '
+                                                          .endsWith('xen')
+                                                      ? 'Video appearances:'
                                                       : widget.user
                                                               .profileHandle!
-                                                              .startsWith('Ph')
-                                                          ? 'Photo Exhibitions: '
+                                                              .startsWith('Bl')
+                                                          ? 'Blogged About:'
                                                           : widget.user
                                                                   .profileHandle!
                                                                   .startsWith(
-                                                                      'Da')
-                                                              ? 'Dance performancess: '
+                                                                      'Ph')
+                                                              ? 'Worked With:'
                                                               : widget.user
                                                                       .profileHandle!
                                                                       .startsWith(
                                                                           'Ba')
-                                                                  ? 'Batlle Stages: '
+                                                                  ? 'Battled Against:'
                                                                   : widget.user
                                                                           .profileHandle!
-                                                                          .endsWith('J')
-                                                                      ? 'Performances: '
-                                                                      : '',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey,
-                                      )),
-                                  TextSpan(
-                                      text: widget.user.performances!.isEmpty
+                                                                          .endsWith(
+                                                                              'J')
+                                                                      ? 'Dj Collaborations:'
+                                                                      : widget.user.profileHandle!.startsWith('Make')
+                                                                          ? 'Worked For:'
+                                                                          : widget.user.profileHandle!.startsWith('Re')
+                                                                              ? 'Partners:'
+                                                                              : widget.user.profileHandle!.startsWith('Pr')
+                                                                                  ? 'Production Collaborations:'
+                                                                                  : '',
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  )),
+                              TextSpan(
+                                  text: " ${widget.user.collaborations}\n",
+                                  style: TextStyle(
+                                    fontSize: width > 800 ? 14 : 12,
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.white
+                                        : Colors.black,
+                                  )),
+                              TextSpan(
+                                  text: widget.user.performances!.isEmpty
+                                      ? ''
+                                      : widget.user.profileHandle!
+                                                  .startsWith('Pr') ||
+                                              widget.user.profileHandle!
+                                                  .startsWith("Bl") ||
+                                              widget.user.profileHandle!
+                                                  .startsWith("Br") ||
+                                              widget.user.profileHandle!
+                                                  .startsWith("Mak") ||
+                                              widget.user.profileHandle!
+                                                  .startsWith("Re") ||
+                                              widget.user.profileHandle!
+                                                  .startsWith("Mu") ||
+                                              widget.user.profileHandle!
+                                                  .endsWith("xen")
                                           ? ''
                                           : widget.user.profileHandle!
-                                                      .startsWith('Pr') ||
-                                                  widget.user.profileHandle!
-                                                      .startsWith("Bl") ||
-                                                  widget.user.profileHandle!
-                                                      .startsWith("Br") ||
-                                                  widget.user.profileHandle!
-                                                      .startsWith("Mak") ||
-                                                  widget.user.profileHandle!
-                                                      .startsWith("Re") ||
-                                                  widget.user.profileHandle!
-                                                      .startsWith("Mu") ||
-                                                  widget.user.profileHandle!
-                                                      .endsWith("xen")
-                                              ? ''
-                                              : " ${widget.user.performances}\n",
-                                      style: TextStyle(
-                                        fontSize: width > 800 ? 14 : 12.0,
-                                        color: ConfigBloc().darkModeOn
-                                            ? Colors.white
-                                            : Colors.black,
-                                      )),
-                                  TextSpan(
-                                      text: widget.user.profileHandle!
-                                              .startsWith('Ar')
-                                          ? 'Music Awards:'
-                                          : widget.user.profileHandle!
-                                                  .startsWith('Co')
-                                              ? 'Design Awards'
+                                                  .startsWith('Ar')
+                                              ? 'Music Performances: '
                                               : widget.user.profileHandle!
-                                                      .startsWith('Ph')
-                                                  ? 'Awards'
+                                                      .startsWith('Co')
+                                                  ? 'Design Exhibitions: '
                                                   : widget.user.profileHandle!
-                                                          .startsWith('Da')
-                                                      ? 'Dance Awards'
+                                                          .startsWith('Ph')
+                                                      ? 'Photo Exhibitions: '
                                                       : widget.user
                                                               .profileHandle!
-                                                              .startsWith('Re')
-                                                          ? 'Awards'
+                                                              .startsWith('Da')
+                                                          ? 'Dance performancess: '
                                                           : widget.user
                                                                   .profileHandle!
-                                                                  .endsWith(
-                                                                      'xen')
-                                                              ? 'Awards: '
+                                                                  .startsWith(
+                                                                      'Ba')
+                                                              ? 'Batlle Stages: '
+                                                              : widget.user
+                                                                      .profileHandle!
+                                                                      .endsWith(
+                                                                          'J')
+                                                                  ? 'Performances: '
+                                                                  : '',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  )),
+                              TextSpan(
+                                  text: widget.user.performances!.isEmpty
+                                      ? ''
+                                      : widget.user.profileHandle!
+                                                  .startsWith('Pr') ||
+                                              widget.user.profileHandle!
+                                                  .startsWith("Bl") ||
+                                              widget.user.profileHandle!
+                                                  .startsWith("Br") ||
+                                              widget.user.profileHandle!
+                                                  .startsWith("Mak") ||
+                                              widget.user.profileHandle!
+                                                  .startsWith("Re") ||
+                                              widget.user.profileHandle!
+                                                  .startsWith("Mu") ||
+                                              widget.user.profileHandle!
+                                                  .endsWith("xen")
+                                          ? ''
+                                          : " ${widget.user.performances}\n",
+                                  style: TextStyle(
+                                    fontSize: width > 800 ? 14 : 12.0,
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.white
+                                        : Colors.black,
+                                  )),
+                              TextSpan(
+                                  text: widget.user.profileHandle!
+                                          .startsWith('Ar')
+                                      ? 'Music Awards:'
+                                      : widget.user.profileHandle!
+                                              .startsWith('Co')
+                                          ? 'Design Awards'
+                                          : widget.user.profileHandle!
+                                                  .startsWith('Ph')
+                                              ? 'Awards'
+                                              : widget.user.profileHandle!
+                                                      .startsWith('Da')
+                                                  ? 'Dance Awards'
+                                                  : widget.user.profileHandle!
+                                                          .startsWith('Re')
+                                                      ? 'Awards'
+                                                      : widget.user
+                                                              .profileHandle!
+                                                              .endsWith('xen')
+                                                          ? 'Awards: '
+                                                          : widget.user
+                                                                  .profileHandle!
+                                                                  .startsWith(
+                                                                      'Mu')
+                                                              ? 'Video Awards:'
                                                               : widget.user
                                                                       .profileHandle!
                                                                       .startsWith(
-                                                                          'Mu')
-                                                                  ? 'Video Awards:'
+                                                                          'Bl')
+                                                                  ? 'Blogging Awards:'
                                                                   : widget.user
                                                                           .profileHandle!
                                                                           .startsWith(
-                                                                              'Bl')
-                                                                      ? 'Blogging Awards:'
-                                                                      : widget.user.profileHandle!.startsWith('Ba')
-                                                                          ? 'Battle Awards:'
-                                                                          : widget.user.profileHandle!.startsWith('Br')
-                                                                              ? 'Awards: '
-                                                                              : widget.user.profileHandle!.endsWith('J')
-                                                                                  ? 'Dj Awards:'
-                                                                                  : widget.user.profileHandle!.startsWith('Pr')
-                                                                                      ? 'Beat Production Awards:'
-                                                                                      : '',
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey,
-                                      )),
-                                  TextSpan(
-                                      text: " ${widget.user.awards}",
-                                      style: TextStyle(
-                                        fontSize: width > 800 ? 14 : 12,
-                                        color: ConfigBloc().darkModeOn
-                                            ? Colors.white
-                                            : Colors.black,
-                                      )),
-                                ],
-                              ),
-                              maxLines: 16,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => ProfessionalProfile(
-                                          exploreLocation:
-                                              widget.exploreLocation,
-                                          currentUserId:
-                                              Provider.of<UserData>(context)
-                                                  .currentUserId!,
-                                          user: widget.user,
-                                          userId: widget.user.id!,
-                                        )))),
-                      ],
-                    ),
-                  ),
+                                                                              'Ba')
+                                                                      ? 'Battle Awards:'
+                                                                      : widget.user.profileHandle!.startsWith('Br')
+                                                                          ? 'Awards: '
+                                                                          : widget.user.profileHandle!.endsWith('J')
+                                                                              ? 'Dj Awards:'
+                                                                              : widget.user.profileHandle!.startsWith('Pr')
+                                                                                  ? 'Beat Production Awards:'
+                                                                                  : '',
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  )),
+                              TextSpan(
+                                  text: " ${widget.user.awards}",
+                                  style: TextStyle(
+                                    fontSize: width > 800 ? 14 : 12,
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.white
+                                        : Colors.black,
+                                  )),
+                            ],
+                          ),
+                          maxLines: 16,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        onTap: () async {
+                          await new Future.delayed(
+                              const Duration(milliseconds: 100));
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (__) =>
+                                      new ProfileProfessionalProfile(
+                                        currentUserId:
+                                            Provider.of<UserData>(context)
+                                                .currentUserId!,
+                                        user: widget.user,
+                                        userId: widget.user.id!,
+                                      )));
+
+                          // Navigator.push(
+                          // context,
+                          // MaterialPageRoute(
+                          //     builder: (_) => ProfileProfessionalProfile(
+                          //           currentUserId:
+                          //               Provider.of<UserData>(context).currentUserId!,
+                          //           user: widget.user,
+                          //           userId: widget.user.id!,
+                          //         )));
+                        }),
+                  ],
                 ),
               ),
             ),

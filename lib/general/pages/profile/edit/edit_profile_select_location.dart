@@ -331,7 +331,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                     ),
                   ),
                 )
-              : SizedBox.shrink(),
+              : const SizedBox.shrink(),
           // ignore: unnecessary_null_comparison
           if (Provider.of<UserData>(context, listen: false).searchResults !=
               null)
@@ -466,12 +466,10 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                                               Colors.blue),
                                         ),
                                       )
-                                    : SizedBox.shrink(),
+                                    : const SizedBox.shrink(),
+                                _isfetchingCity ? const SizedBox.shrink() : SizedBox(height: 20.0),
                                 _isfetchingCity
-                                    ? SizedBox.shrink()
-                                    : SizedBox(height: 20.0),
-                                _isfetchingCity
-                                    ? SizedBox.shrink()
+                                    ? const SizedBox.shrink()
                                     : Text(
                                         'Enter your city in the field below. Tap on your correct city in the list below. ',
                                         style: TextStyle(
@@ -481,12 +479,12 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                                         ),
                                       ),
                                 _isfetchingCity
-                                    ? SizedBox.shrink()
+                                    ? const SizedBox.shrink()
                                     : SizedBox(
                                         height: 20.0,
                                       ),
                                 _isfetchingCity
-                                    ? SizedBox.shrink()
+                                    ? const SizedBox.shrink()
                                     : Align(
                                         alignment: Alignment.bottomLeft,
                                         child: Container(
@@ -495,9 +493,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                                           width: width / 3,
                                         ),
                                       ),
-                                _isfetchingCity
-                                    ? SizedBox.shrink()
-                                    : SizedBox(height: 50),
+                                _isfetchingCity ? const SizedBox.shrink() : SizedBox(height: 50),
                                 buildCityForm()
                               ],
                             )),
@@ -514,7 +510,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                                           AlwaysStoppedAnimation(Colors.blue),
                                     ),
                                   )
-                                : SizedBox.shrink(),
+                                : const SizedBox.shrink(),
                             Padding(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 30.0, vertical: 10.0),
@@ -527,7 +523,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                                     EditProfileInfo(
                                       editTitle: 'Choose \nLocation',
                                       info:
-                                          'Choosing a location helps us suggest users with similar interests living close to you. For instance, when you enter your city, we propose other users in your city for you on the discover page so you can connect with them for business and collaborations.',
+                                          'Choosing a location helps us suggest users with similar interests living close to you. For instance, when you enter your city, we propose other users in your city for you on the discover page so you can connect with them for business.',
                                       icon: Icons.location_on,
                                     ),
                                     Text(
@@ -558,14 +554,14 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                                                 listen: false)
                                             .post4!
                                             .isEmpty
-                                        ? SizedBox.shrink()
+                                        ? const SizedBox.shrink()
                                         : SizedBox(height: 30),
                                     Divider(color: Colors.grey),
                                     Provider.of<UserData>(context,
                                                 listen: false)
                                             .post4!
                                             .isEmpty
-                                        ? SizedBox.shrink()
+                                        ? const SizedBox.shrink()
                                         : SizedBox(height: 30),
                                     Text(
                                       _continent,
@@ -606,7 +602,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                                           AlwaysStoppedAnimation(Colors.blue),
                                     ),
                                   )
-                                : SizedBox.shrink(),
+                                : const SizedBox.shrink()
                           ],
                         ),
                       ),

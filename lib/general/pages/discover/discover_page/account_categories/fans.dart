@@ -59,8 +59,10 @@ class _FansState extends State<Fans> with AutomaticKeepAliveClientMixin {
         .where('profileHandle', isEqualTo: 'Fan')
         .limit(limit)
         .get();
-    List<AccountHolder> users =
-        userFeedSnapShot.docs.map((doc) => AccountHolder.fromDoc(doc)).toList();
+    List<AccountHolder> users = userFeedSnapShot.docs
+        .map((doc) => AccountHolder.fromDoc(doc))
+        .toList()
+      ..shuffle();
     _userSnapshot.addAll((userFeedSnapShot.docs));
     if (mounted) {
       setState(() {
@@ -79,8 +81,10 @@ class _FansState extends State<Fans> with AutomaticKeepAliveClientMixin {
         .limit(limit)
         .startAfterDocument(_userSnapshot.last)
         .get();
-    List<AccountHolder> moreusers =
-        userFeedSnapShot.docs.map((doc) => AccountHolder.fromDoc(doc)).toList();
+    List<AccountHolder> moreusers = userFeedSnapShot.docs
+        .map((doc) => AccountHolder.fromDoc(doc))
+        .toList()
+      ..shuffle();
     if (_userSnapshot.length < limit) _hasNext = false;
     List<AccountHolder> allusers = _userList..addAll(moreusers);
     _userSnapshot.addAll((userFeedSnapShot.docs));
@@ -91,16 +95,7 @@ class _FansState extends State<Fans> with AutomaticKeepAliveClientMixin {
     }
     _hasNext = false;
     _isFectchingUser = false;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        duration: const Duration(milliseconds: 800),
-        backgroundColor:
-            ConfigBloc().darkModeOn ? Colors.grey[800] :  Color(0xFFf2f2f2),
-        content: SizedBox(
-            height: 15,
-            child: Text(
-              'Loading...',
-              style: TextStyle(color: Colors.blue, fontSize: 12),
-            ))));
+
     return _hasNext;
   }
 
@@ -117,21 +112,28 @@ class _FansState extends State<Fans> with AutomaticKeepAliveClientMixin {
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   AccountHolder accountHolder = _userList[index];
-                  return FutureBuilder(
-                      future: DatabaseService.getUserWithId(accountHolder.id!),
-                      builder: (BuildContext context, AsyncSnapshot snapshot) {
-                        if (!snapshot.hasData) {
-                          return UserSchimmerSkeleton();
-                        }
-                        AccountHolder accountHolder = snapshot.data;
+                  return UserView(
+                    exploreLocation: widget.exploreLocation,
+                    currentUserId: widget.currentUserId,
+                    userId: accountHolder.id!,
+                    user: accountHolder,
+                  );
 
-                        return UserView(
-                          exploreLocation: widget.exploreLocation,
-                          currentUserId: widget.currentUserId,
-                          userId: accountHolder.id!,
-                          user: accountHolder,
-                        );
-                      });
+                  // FutureBuilder(
+                  //     future: DatabaseService.getUserWithId(accountHolder.id!),
+                  //     builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  //       if (!snapshot.hasData) {
+                  //         return UserSchimmerSkeleton();
+                  //       }
+                  //       AccountHolder accountHolder = snapshot.data;
+
+                  //       return UserView(
+                  //         exploreLocation: widget.exploreLocation,
+                  //         currentUserId: widget.currentUserId,
+                  //         userId: accountHolder.id!,
+                  //         user: accountHolder,
+                  //       );
+                  //     });
                 },
                 childCount: _userList.length,
               ),
@@ -161,9 +163,7 @@ class _FansState extends State<Fans> with AutomaticKeepAliveClientMixin {
               ),
             )
           : _userList.length == 0
-              ? Center(
-                  child: SizedBox.shrink(),
-                )
+              ? Center(child: const SizedBox.shrink())
               : Center(
                   child: UserSchimmer(),
                 ),

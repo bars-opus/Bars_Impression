@@ -30,7 +30,6 @@ class _EventAttendeesValidatedState extends State<EventAttendeesValidated>
   @override
   void initState() {
     super.initState();
-    // widget.from.startsWith('Received') ? _setUpInviteAll() :
     _setAttendeesValidate();
     __setShowInfo();
     _hideButtonController = ScrollController();
@@ -39,7 +38,6 @@ class _EventAttendeesValidatedState extends State<EventAttendeesValidated>
   bool _handleScrollNotification(ScrollNotification notification) {
     if (notification is ScrollEndNotification) {
       if (_hideButtonController.position.extentAfter == 0) {
-        // widget.from.startsWith('Received') ? _loadMoreAll() :
         _loadAttendeesValidated();
       }
     }
@@ -144,30 +142,26 @@ class _EventAttendeesValidatedState extends State<EventAttendeesValidated>
         controller: _hideButtonController,
         headerSliverBuilder: (context, innerBoxScrolled) => [
           SliverAppBar(
-                  elevation: 0.0,
-                  automaticallyImplyLeading: true,
-                  floating: true,
-                  snap: true,
-                  pinned: true,
-                  iconTheme: new IconThemeData(
-                    color:
-                        ConfigBloc().darkModeOn ? Colors.black : Colors.white,
-                  ),
-                  backgroundColor: widget.palette.darkMutedColor == null
-                      ? Color(0xFF1a1a1a)
-                      : widget.palette.darkMutedColor!.color,
-                  title: Text(
-                    'Validated Attendees',
-                    style: TextStyle(
-                        color: ConfigBloc().darkModeOn
-                            ? Colors.black
-                            : Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  centerTitle: true,
-                )
-             
+            elevation: 0.0,
+            automaticallyImplyLeading: true,
+            floating: true,
+            snap: true,
+            pinned: true,
+            iconTheme: new IconThemeData(
+              color: ConfigBloc().darkModeOn ? Colors.black : Colors.white,
+            ),
+            backgroundColor: widget.palette.darkMutedColor == null
+                ? Color(0xFF1a1a1a)
+                : widget.palette.darkMutedColor!.color,
+            title: Text(
+              'Validated Attendees',
+              style: TextStyle(
+                  color: ConfigBloc().darkModeOn ? Colors.black : Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
+            ),
+            centerTitle: true,
+          )
         ],
         body: MediaQuery.removePadding(
           context: context,
@@ -186,7 +180,7 @@ class _EventAttendeesValidatedState extends State<EventAttendeesValidated>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     _inviteList.length == 0
-                        ? SizedBox.shrink()
+                        ? const SizedBox.shrink()
                         : Expanded(child: _buildEventBuilder())
                   ],
                 ),

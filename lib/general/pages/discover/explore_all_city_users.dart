@@ -406,7 +406,8 @@ class _UserExpandedWidgetState extends State<UserExpandedWidget> {
           context,
           MaterialPageRoute(
               builder: (_) => ProfileProfessionalProfile(
-                    currentUserId: Provider.of<UserData>(context).currentUserId!,
+                    currentUserId:
+                        Provider.of<UserData>(context).currentUserId!,
                     user: widget.user,
                     userId: widget.user.id!,
                   ))),
@@ -633,7 +634,7 @@ class _UserExpandedWidgetState extends State<UserExpandedWidget> {
                           children: [
                             widget.user.profileHandle!.startsWith('F') ||
                                     widget.user.profileHandle!.isEmpty
-                                ? SizedBox.shrink()
+                                ? const SizedBox.shrink()
                                 : Hero(
                                     tag: 'container2' +
                                         widget.user.id.toString(),

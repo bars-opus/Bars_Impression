@@ -673,7 +673,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
                   ? Color(0xFFf2f2f2)
                   : Color(0xFF1a1a1a)),
           leading: _index == 3
-              ? SizedBox.shrink()
+              ? const SizedBox.shrink()
               : IconButton(
                   icon: Icon(
                       Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),

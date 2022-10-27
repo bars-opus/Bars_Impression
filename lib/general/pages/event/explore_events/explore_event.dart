@@ -729,6 +729,9 @@ class _ExploreEventState extends State<ExploreEvent> {
 
   @override
   Widget build(BuildContext context) {
+    final width = Responsive.isDesktop(context)
+        ? 600.0
+        : MediaQuery.of(context).size.width;
     return ResponsiveScaffold(
       child: Stack(
         children: [
@@ -789,7 +792,7 @@ class _ExploreEventState extends State<ExploreEvent> {
                           child: Align(
                             alignment: Alignment.center,
                             child: Container(
-                              width: MediaQuery.of(context).size.width / 2,
+                              width: width / 2,
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: widget.exploreLocation.endsWith('City')
@@ -822,7 +825,7 @@ class _ExploreEventState extends State<ExploreEvent> {
                                                 .endsWith('Live')
                                             ? Text(
                                                 widget.feed == 2
-                                                    ? "Explore\nAll Events\nIn ${_city}"
+                                                    ? "Explore\nAll Events\nIn $_city"
                                                     : widget.feed == 3
                                                         ? "Explore\n${widget.event.type == 'Others' ? widget.event.type : widget.event.type + 's'}\nIn ${_city}"
                                                         : '',
@@ -981,6 +984,8 @@ class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
   late DateTime _date;
   late DateTime _toDaysDate;
   int _different = 0;
+  late DateTime _closingDate;
+
   void initState() {
     super.initState();
 
@@ -990,12 +995,15 @@ class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
   _countDown() async {
     DateTime date = DateTime.parse(widget.event.date);
     final toDayDate = DateTime.now();
+    DateTime clossingDate = DateTime.parse(widget.event.clossingDay);
+
     var different = date.difference(toDayDate).inDays;
 
     setState(() {
       _date = date;
       _different = different;
       _toDaysDate = toDayDate;
+      _closingDate = clossingDate;
     });
   }
 
@@ -1102,7 +1110,7 @@ class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
                         scrollDirection: Axis.vertical,
                         child: widget.event.report.isNotEmpty
                             ? Center(child: ContentWarningMini())
-                            : _toDaysDate.isAfter(_date)
+                            : _toDaysDate.isAfter(_closingDate)
                                 ? EventCompletedWidget(
                                     date: widget.event.date,
                                     onPressed: () {},
@@ -1420,29 +1428,48 @@ class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
                                     SizedBox(
                                       height: 30.0,
                                     ),
-                                    RichText(
-                                      textScaleFactor: MediaQuery.of(context)
-                                          .textScaleFactor,
-                                      text: TextSpan(
-                                        children: [
-                                          TextSpan(
-                                            text: _different.toString(),
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              color: Colors.white,
+                                    _different < 1
+                                        ? RichText(
+                                            textScaleFactor:
+                                                MediaQuery.of(context)
+                                                    .textScaleFactor,
+                                            text: TextSpan(
+                                              children: [
+                                                TextSpan(
+                                                  text: '\n\nOngoing...\n\n',
+                                                  style: TextStyle(
+                                                    fontSize: 18,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                          ),
-                                          TextSpan(
-                                            text: '\nDays\nMore',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.white,
+                                            textAlign: TextAlign.center,
+                                          )
+                                        : RichText(
+                                            textScaleFactor:
+                                                MediaQuery.of(context)
+                                                    .textScaleFactor,
+                                            text: TextSpan(
+                                              children: [
+                                                TextSpan(
+                                                  text: _different.toString(),
+                                                  style: TextStyle(
+                                                    fontSize: 18,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                                TextSpan(
+                                                  text: '\nDays\nMore',
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
+                                            textAlign: TextAlign.left,
                                           ),
-                                        ],
-                                      ),
-                                      textAlign: TextAlign.left,
-                                    ),
                                     Padding(
                                       padding: const EdgeInsets.all(1.0),
                                       child: Container(

@@ -1,5 +1,6 @@
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/rendering.dart';
+import 'package:async/async.dart';
 
 class EventsAll extends StatefulWidget {
   static final id = 'EventsAll';
@@ -95,17 +96,24 @@ class _EventsAllState extends State<EventsAll>
     return _hasNext;
   }
 
-  _displayEvents(Event event, AccountHolder author) {
-    return EventProfileView(
-      exploreLocation: ' ',
-      allEvents: true,
-      currentUserId: widget.currentUserId,
-      event: event,
-      feed: 2,
-      author: author,
-      user: widget.user!,
-    );
-  }
+  // _displayEvents(Event event, AccountHolder author) {
+  //   return EventProfileView(
+  //     exploreLocation: ' ',
+  //     allEvents: true,
+  //     currentUserId: widget.currentUserId,
+  //     event: event,
+  //     feed: 2,
+  //     // author: author,
+  //     user: widget.user!,
+  //   );
+  // }
+
+  // Future _fetchData(String authorId) async {
+  //   return this._memoizer.runOnce(() async {
+  //     final user = await DatabaseService.getUserWithId(authorId);
+  //     return user;
+  //   });
+  // }
 
   _buildUser() {
     return NotificationListener<ScrollNotification>(
@@ -120,18 +128,29 @@ class _EventsAllState extends State<EventsAll>
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   Event event = _events[index];
-                  return FutureBuilder(
-                      future: DatabaseService.getUserWithId(event.authorId),
-                      builder: (BuildContext context, AsyncSnapshot snapshot) {
-                        if (!snapshot.hasData) {
-                          return EventSchimmerBlurHash(
-                            event: event,
-                          );
-                        }
-                        AccountHolder author = snapshot.data;
+                  return EventProfileView(
+                    exploreLocation: ' ',
+                    allEvents: true,
+                    currentUserId: widget.currentUserId,
+                    event: event,
+                    feed: 2,
+                    // author: author,
+                    user: widget.user!,
+                  );
 
-                        return _displayEvents(event, author);
-                      });
+                  // FutureBuilder(
+                  //     future: _fetchData(event.authorId),
+                  //     // DatabaseService.getUserWithId(event.authorId),
+                  //     builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  //       if (!snapshot.hasData) {
+                  //         return EventSchimmerBlurHash(
+                  //           event: event,
+                  //         );
+                  //       }
+                  //       AccountHolder author = snapshot.data;
+
+                  //       return _displayEvents(event, author);
+                  //     });
                 },
                 childCount: _events.length,
               ),
@@ -165,5 +184,14 @@ class _EventsAllState extends State<EventsAll>
                 : Center(
                     child: EventSchimmer(),
                   ));
+  }
+}
+
+class MyBuilder extends StatelessWidget {
+  const MyBuilder({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
   }
 }

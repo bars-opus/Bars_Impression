@@ -1,18 +1,15 @@
 import 'package:bars/utilities/exports.dart';
 
-class StoreSearch extends StatefulWidget {
-  final User? user;
-
-  StoreSearch({required this.user});
-
-  static final id = 'StoreSearch';
+class StoreSearchForum extends StatefulWidget {
+  static final id = 'StoreSearchForum';
 
   @override
-  _StoreSearchState createState() => _StoreSearchState();
+  _StoreSearchForumState createState() => _StoreSearchForumState();
 }
 
-class _StoreSearchState extends State<StoreSearch> {
-  Future<QuerySnapshot>? _users;
+class _StoreSearchForumState extends State<StoreSearchForum> {
+  Future<QuerySnapshot>? _forums;
+
   String query = "";
   final _controller = new TextEditingController();
   @override
@@ -26,31 +23,19 @@ class _StoreSearchState extends State<StoreSearch> {
     super.dispose();
   }
 
-  _buildUserTile(AccountHolder user) {
-    return SearchUserTile(
-        userName: user.userName!.toUpperCase(),
-        profileHandle: user.profileHandle!,
-        verified: user.verified,
-        company: user.company!,
-        profileImageUrl: user.profileImageUrl!,
-        bio: user.bio!,
-        score: user.score!,
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => ProfileScreen(
-                        currentUserId:
-                            Provider.of<UserData>(context).currentUserId!,
-                        userId: user.id!,
-                      )));
-        });
+  _buildUserTile(Forum forum) {
+    return ForumView(
+      feed: 'All',
+      currentUserId:
+          Provider.of<UserData>(context, listen: false).currentUserId!,
+      forum: forum,
+    );
   }
 
   _clearSearch() {
     WidgetsBinding.instance.addPostFrameCallback((_) => _controller.clear());
     setState(() {
-      _users = null;
+      _forums = null;
     });
   }
 
@@ -86,7 +71,10 @@ class _StoreSearchState extends State<StoreSearch> {
                   controller: _controller,
                   onChanged: (input) {
                     setState(() {
-                      _users = DatabaseService.searchUsers(input.toUpperCase());
+                      input.isEmpty
+                          ? () {}
+                          : _forums =
+                              DatabaseService.searchForum(input.toUpperCase());
                     });
                   },
 
@@ -95,7 +83,7 @@ class _StoreSearchState extends State<StoreSearch> {
                     contentPadding:
                         EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                     border: InputBorder.none,
-                    hintText: 'Enter username',
+                    hintText: 'Enter forum title',
                     prefixIcon: Icon(
                       Icons.search,
                       size: 20.0,
@@ -119,10 +107,12 @@ class _StoreSearchState extends State<StoreSearch> {
                   ),
                   onSubmitted: (input) {
                     if (input.isNotEmpty) {
-                      setState(() {
-                        _users =
-                            DatabaseService.searchUsers(input.toUpperCase());
-                      });
+                      input.isEmpty
+                          ? () {}
+                          : setState(() {
+                              _forums = DatabaseService.searchForum(
+                                  input.toUpperCase());
+                            });
                     }
                   },
                 ),
@@ -134,19 +124,18 @@ class _StoreSearchState extends State<StoreSearch> {
             child: SafeArea(
               child: Container(
                   // ignore: unnecessary_null_comparison
-                  child: _users == null
+                  child: _forums == null
                       ? Center(
                           child: NoContents(
-                              title: "Searh for users. ",
-                              subTitle:
-                                  'Enter username, \ndon\'t enter a user\'s nickname.',
-                              icon: Icons.search))
+                              title: "Searh for forums. ",
+                              subTitle: 'Enter title.',
+                              icon: Icons.forum))
                       : FutureBuilder<QuerySnapshot>(
-                          future: _users,
+                          future: _forums,
                           builder: (BuildContext context,
                               AsyncSnapshot<QuerySnapshot> snapshot) {
                             if (!snapshot.hasData) {
-                              return SearchUserSchimmer();
+                              return ForumSchimmer();
                             }
                             if (snapshot.data!.docs.length == 0) {
                               return Center(
@@ -154,14 +143,13 @@ class _StoreSearchState extends State<StoreSearch> {
                                     text: TextSpan(
                                   children: [
                                     TextSpan(
-                                        text: "No users found. ",
+                                        text: "No forums found. ",
                                         style: TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.blueGrey)),
                                     TextSpan(
-                                        text:
-                                            '\nCheck username and try again.'),
+                                        text: '\nCheck title and try again.'),
                                   ],
                                   style: TextStyle(
                                       fontSize: 14, color: Colors.grey),
@@ -178,10 +166,9 @@ class _StoreSearchState extends State<StoreSearch> {
                                       SliverList(
                                         delegate: SliverChildBuilderDelegate(
                                           (context, index) {
-                                            AccountHolder? user =
-                                                AccountHolder.fromDoc(
-                                                    snapshot.data!.docs[index]);
-                                            return _buildUserTile(user);
+                                            Forum? forum = Forum.fromDoc(
+                                                snapshot.data!.docs[index]);
+                                            return _buildUserTile(forum);
                                           },
                                           childCount:
                                               snapshot.data!.docs.length,

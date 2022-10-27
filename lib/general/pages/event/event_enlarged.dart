@@ -1,25 +1,19 @@
-
 import 'package:bars/utilities/exports.dart';
 
 class AllEvenEnlarged extends StatefulWidget {
   final String currentUserId;
   final Event event;
-  final AccountHolder? user;
+  // final AccountHolder? user;
   final int askCount;
   final int feed;
   final String exploreLocation;
 
-  // final AccountHolder author;
-  // final List<Event> eventList;
-
   AllEvenEnlarged({
     required this.currentUserId,
-    required this.user,
-    // required this.eventList,
+    // required this.user,
     required this.askCount,
     required this.exploreLocation,
     required this.feed,
-    // required this.author,
     required this.event,
   });
 
@@ -53,53 +47,68 @@ class _AllEvenEnlargedState extends State<AllEvenEnlarged> {
                       askCount: widget.askCount,
                     )),
           )
-        : widget.event.isPrivate
-            ? Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => AttendEvent(
-                          event: widget.event,
-                          currentUserId: widget.currentUserId,
-                          palette: _paletteGenerator,
-                        )),
-              )
-            : Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => EventPublicInvite(
-                          event: widget.event,
-                          palette: _paletteGenerator,
-                         
-                        )),
-              );
+        : Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => EventRate(
+                      event: widget.event,
+                      palette: _paletteGenerator,
+                    )),
+          );
+
+    // widget.event.isPrivate
+    //     ? Navigator.push(
+    //         context,
+    //         MaterialPageRoute(
+    //             builder: (_) => AttendEvent(
+    //                   event: widget.event,
+    //                   currentUserId: widget.currentUserId,
+    //                   palette: _paletteGenerator,
+    //                 )),
+    //       )
+    //     : Navigator.push(
+    //         context,
+    //         MaterialPageRoute(
+    //             builder: (_) => EventPublicInvite(
+    //                   event: widget.event,
+    //                   palette: _paletteGenerator,
+    //                 )),
+    //       );
   }
 
-  Future<void> _generatePalette2(
-    context, String from
-  ) async {
+  Future<void> _generatePalette2(context, String from) async {
     PaletteGenerator _paletteGenerator =
         await PaletteGenerator.fromImageProvider(
       CachedNetworkImageProvider(widget.event.imageUrl),
       size: Size(1110, 150),
       maximumColorCount: 20,
     );
-    from.startsWith('People')? Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (_) => EventPeople(
-                event: widget.event,
-                palette: _paletteGenerator,
-              )),
-    ):
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (_) => EventCalender(
-                event: widget.event,
-                palette: _paletteGenerator,
-              )),
-    );
+    from.startsWith('People')
+        ? Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => EventPeople(
+                      event: widget.event,
+                      palette: _paletteGenerator,
+                    )),
+          )
+        : from.startsWith('Calendar')
+            ? Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => EventCalender(
+                          event: widget.event,
+                          palette: _paletteGenerator,
+                        )),
+              )
+            : Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => EventRate(
+                          event: widget.event,
+                          palette: _paletteGenerator,
+                        )),
+              );
   }
 
   @override
@@ -115,6 +124,7 @@ class _AllEvenEnlargedState extends State<AllEvenEnlarged> {
             Navigator.of(context).push(PageRouteBuilder(
                 transitionDuration: const Duration(milliseconds: 500),
                 pageBuilder: (context, animation, _) {
+                  HapticFeedback.heavyImpact();
                   return FadeTransition(
                     opacity: animation,
                     child: ExploreEvent(
@@ -123,7 +133,6 @@ class _AllEvenEnlargedState extends State<AllEvenEnlarged> {
                       user: user,
                       currentUserId: widget.currentUserId,
                       askCount: widget.askCount,
-                      // author: widget.author,
                       event: widget.event,
                     ),
                   );
@@ -143,11 +152,10 @@ class _AllEvenEnlargedState extends State<AllEvenEnlarged> {
                               askCount: widget.askCount,
                               currentUserId: widget.currentUserId,
                               event: widget.event,
-                              // author: widget.author,
-                              user: widget.user,
+                              // user: widget.user,
                             ))),
                 imageHero: 'image ${widget.event.id.toString()}',
-                titleHero:  'title ${widget.event.id.toString()}',
+                titleHero: 'title ${widget.event.id.toString()}',
                 onPressedLocationMap: _launchMap,
                 onPressedEventticketSite: () {
                   Navigator.push(
@@ -170,15 +178,15 @@ class _AllEvenEnlargedState extends State<AllEvenEnlarged> {
                   context,
                   MaterialPageRoute(
                       builder: (_) => AsksScreen(
-                            // askCount: widget.askCount,
                             event: widget.event,
-                            // author: widget.author,
                             ask: null,
                             currentUserId: widget.currentUserId,
                           )),
                 ),
                 event: widget.event,
-                onPressedCalendar: () => _generatePalette2(context,''), onPressedPeople:  () => _generatePalette2(context, 'People'),
+                onPressedCalendar: () => _generatePalette2(context, 'Calendar'),
+                onPressedPeople: () => _generatePalette2(context, 'People'),
+                onPressedRate: () => _generatePalette2(context, ''),
               ),
               Positioned(
                 top: 55,
@@ -186,19 +194,21 @@ class _AllEvenEnlargedState extends State<AllEvenEnlarged> {
                 child: IconButton(
                   icon: Icon(
                     Icons.center_focus_strong,
-                    color: Colors.white,
+                    color: Color.fromRGBO(255, 255, 255, 1),
                   ),
                   onPressed: () => Navigator.of(context).push(PageRouteBuilder(
                       transitionDuration: const Duration(milliseconds: 500),
                       pageBuilder: (context, animation, _) {
+                        HapticFeedback.heavyImpact();
+
                         return FadeTransition(
                           opacity: animation,
                           child: ExploreEvent(
                             feed: widget.feed,
-                            user: widget.user!,
+                            user: Provider.of<UserData>(context, listen: false)
+                                .user!,
                             currentUserId: widget.currentUserId,
                             askCount: widget.askCount,
-                            // author: widget.author,
                             event: widget.event,
                             exploreLocation: widget.exploreLocation,
                           ),
