@@ -101,18 +101,6 @@ class _EventTypesAllState extends State<EventTypesAll>
     return _hasNext;
   }
 
-  // _displayEvents(Event event, AccountHolder author) {
-  //   return EventView(
-  //     exploreLocation: '',
-  //     feed: 3,
-  //     currentUserId: widget.currentUserId,
-  //     event: event,
-  //     author: author,
-  //     // eventList: _events,
-  //     user: widget.user,
-  //   );
-  // }
-
   _buildUser() {
     return NotificationListener<ScrollNotification>(
       onNotification: _handleScrollNotification,
@@ -131,7 +119,6 @@ class _EventTypesAllState extends State<EventTypesAll>
                     currentUserId: widget.currentUserId,
                     event: event,
                     feed: 2,
-                    // author: author,
                     user: widget.user!,
                   );
                 },

@@ -73,6 +73,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
       _formKey.currentState!.save();
       _city = Provider.of<UserData>(context, listen: false)
           .post4
+          // ignore: unnecessary_brace_in_string_interps
           ?.replaceAll(', ${_country}', '');
       _getCurrentLocation();
       try {

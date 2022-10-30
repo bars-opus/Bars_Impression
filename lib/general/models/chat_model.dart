@@ -10,7 +10,7 @@ class Chat {
   final String seen;
   final String mediaType;
   final bool restrictChat;
-  final bool disableChat;
+  // final bool disableChat;
   final Timestamp newMessageTimestamp;
   final Timestamp timestamp;
 
@@ -26,7 +26,7 @@ class Chat {
     required this.newMessageTimestamp,
     required this.toUserId,
     required this.timestamp,
-    required this.disableChat,
+    // required this.disableChat,
   });
 
   factory Chat.fromDoc(DocumentSnapshot doc) {
@@ -39,7 +39,7 @@ class Chat {
       messageInitiator: doc['messageInitiator'] ?? '',
       firstMessage: doc['firstMessage'] ?? '',
       restrictChat: doc['restrictChat'] ?? false,
-      disableChat: doc['disableChat'] ?? false,
+      // disableChat: doc['disableChat'] ?? false,
       newMessageTimestamp: doc['newMessageTimestamp'],
       toUserId: doc['toUserId'] ?? '',
       timestamp: doc['timestamp'],

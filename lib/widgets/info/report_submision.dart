@@ -24,6 +24,7 @@ class ReportContentSubmission extends StatefulWidget {
 class _ReportContentSubmissionState extends State<ReportContentSubmission> {
   bool _isLoading = false;
   final _formKey = GlobalKey<FormState>();
+  String _comment = '';
 
   _submit() async {
     if (_formKey.currentState!.validate() && !_isLoading) {
@@ -42,6 +43,7 @@ class _ReportContentSubmissionState extends State<ReportContentSubmission> {
         authorId: Provider.of<UserData>(context, listen: false).currentUserId!,
         timestamp: Timestamp.fromDate(DateTime.now()),
         id: '',
+        comment: _comment,
       );
       try {
         DatabaseService.createReportContent(reportContent);
@@ -406,6 +408,17 @@ class _ReportContentSubmissionState extends State<ReportContentSubmission> {
                                                             )
                                                           : const SizedBox
                                                               .shrink()),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 30.0, right: 30, bottom: 50),
+                      child: ContentField(
+                        labelText: 'Comment(optional)',
+                        hintText: "We want to hear your opinion",
+                        initialValue: '',
+                        onSavedText: (input) => _comment = input,
+                        onValidateText: (_) {},
+                      ),
                     ),
                     FadeAnimation(
                       0.5,

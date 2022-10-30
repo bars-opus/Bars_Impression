@@ -186,9 +186,9 @@ class _EventRateState extends State<EventRate> {
                 width: width,
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.white,
+                      backgroundColor: Colors.white,
                       elevation: 0.0,
-                      onPrimary: Colors.blue,
+                      foregroundColor: Colors.blue,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5.0),
                       ),
@@ -227,57 +227,8 @@ class _EventRateState extends State<EventRate> {
                                         palette: widget.palette,
                                       )),
                             );
-                    }
-
-                    //  Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //       builder: (_) => AttendEvent(
-                    //             event: widget.event,
-                    //             currentUserId:
-                    //                 Provider.of<UserData>(context, listen: false)
-                    //                     .currentUserId!,
-                    //             palette: widget.palette,
-                    //           )),
-                    // ),
-                    ),
+                    }),
               ),
-              // Container(
-              //   width: width,
-              //   child: ElevatedButton(
-              //     style: ElevatedButton.styleFrom(
-              //       primary: Colors.white,
-              //       elevation: 0.0,
-              //       onPrimary: Colors.blue,
-              //       shape: RoundedRectangleBorder(
-              //         borderRadius: BorderRadius.circular(5.0),
-              //       ),
-              //     ),
-              //     child: Padding(
-              //       padding: const EdgeInsets.symmetric(
-              //           horizontal: 5.0, vertical: 2),
-              //       child: Text(
-              //         'Ask more',
-              //         style: TextStyle(
-              //           color: Colors.blue,
-              //           fontSize: 12,
-              //         ),
-              //         textAlign: TextAlign.center,
-              //       ),
-              //     ),
-              //     onPressed: () => Navigator.push(
-              //       context,
-              //       MaterialPageRoute(
-              //           builder: (_) => AsksScreen(
-              //                 event: widget.event,
-              //                 ask: null,
-              //                 currentUserId:
-              //                     Provider.of<UserData>(context, listen: false)
-              //                         .currentUserId!,
-              //               )),
-              //   ),
-              // ),
-              // )
             ],
           ),
         ),

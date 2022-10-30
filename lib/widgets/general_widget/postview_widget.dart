@@ -7,7 +7,6 @@ import 'package:timeago/timeago.dart' as timeago;
 class PostViewWidget extends StatefulWidget {
   final String currentUserId;
   final Post post;
-  // final AccountHolder author;
   final List<Post> postList;
 
   PostViewWidget({
@@ -28,14 +27,12 @@ class _PostViewWidgetState extends State<PostViewWidget> {
   bool _isLiked = false;
   bool _isDisLiked = false;
   bool _heartAnim = false;
-  // late Future<AccountHolder> dataFuture;
 
   @override
   void initState() {
     super.initState();
 
     _displayWarning = widget.post.report.isNotEmpty ? true : false;
-    // dataFuture = runner(widget.post.authorId);
   }
 
   _setImage() {
@@ -189,10 +186,11 @@ class _PostViewWidgetState extends State<PostViewWidget> {
         MaterialPageRoute(
             builder: (_) => ProfileProfessionalProfile(
                   currentUserId: Provider.of<UserData>(context).currentUserId!,
-                  // user: widget.post.authorId,
                   userId: widget.post.authorId, user: user,
                 )));
   }
+
+  _nothing() {}
 
   @override
   Widget build(BuildContext context) {
@@ -208,18 +206,6 @@ class _PostViewWidgetState extends State<PostViewWidget> {
             imageUrl: widget.post.imageUrl,
           )
         :
-
-        //  FutureBuilder<AccountHolder>(
-        //     future: dataFuture,
-        //     // DatabaseService.getUserWithId(widget.post.authorId),
-        //     builder: (BuildContext context, AsyncSnapshot snapshot) {
-        //       if (!snapshot.hasData) {
-        //         return PostEnlargedBlurharsh(
-        //           post: widget.post,
-        //         );
-        //       }
-        //       AccountHolder _author = snapshot.data;
-        // return
         Stack(alignment: FractionalOffset.center, children: <Widget>[
             Stack(children: <Widget>[
               GestureDetector(
@@ -355,7 +341,7 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                       : widget.post
                                                               .authorHandleType
                                                               .startsWith('Fan')
-                                                          ? () {}
+                                                          ? _nothing()
                                                           : _viewProfessionalProfile();
                                                 },
                                                 backgroundColor:
@@ -581,11 +567,7 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                                           context,
                                                                           MaterialPageRoute(
                                                                               builder: (_) =>
-                                                                                  // _author.userName!.isEmpty
-                                                                                  //     ? UserNotFound(
-                                                                                  //         userName: 'User',
-                                                                                  //       )
-                                                                                  //     :
+                                                                            
                                                                                   ProfileScreen(
                                                                                     currentUserId: widget.currentUserId,
                                                                                     userId: widget.post.authorId,
@@ -652,7 +634,6 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                                                       text: TextSpan(
                                                                                         children: [
                                                                                           TextSpan(text: "${widget.post.authorHandleType}\n", style: const TextStyle(fontSize: 10, color: Colors.white)),
-                                                                                          // TextSpan(text: "${widget.post.company}", style: const TextStyle(fontSize: 10, color: Colors.white)),
                                                                                         ],
                                                                                       ),
                                                                                       overflow: TextOverflow.ellipsis,
@@ -942,6 +923,5 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                   : const SizedBox.shrink()
             ]),
           ]);
-    // });
   }
 }

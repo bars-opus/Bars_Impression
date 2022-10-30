@@ -20,9 +20,9 @@ class AlwaysWhiteButton extends StatelessWidget {
       width: buttonWidth,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          primary: buttonColor,
+          backgroundColor: buttonColor,
           elevation: 20.0,
-          onPrimary: Colors.blue,
+          foregroundColor: Colors.blue,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20.0),
           ),

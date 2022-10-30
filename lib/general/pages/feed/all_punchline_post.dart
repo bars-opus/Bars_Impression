@@ -203,26 +203,6 @@ class _AllPunclinePostState extends State<AllPunclinePost> {
                                            
                                                   );
                                               
-                                              // FutureBuilder(
-                                              //   future: DatabaseService
-                                              //       .getUserWithId(
-                                              //           post.authorId),
-                                              //   builder: (BuildContext context,
-                                              //       AsyncSnapshot snapshot) {
-                                              //     if (!snapshot.hasData) {
-                                              //       return GridSchimmerSkeleton();
-                                              //     }
-                                              //     AccountHolder author =
-                                              //         snapshot.data;
-                                              //     return FeedGrid(
-                                              //       feed: 'Punchline',
-                                              //       currentUserId:
-                                              //           widget.currentUserId,
-                                              //       post: post,
-                                           
-                                              //     );
-                                              //   },
-                                              // );
                                             },
                                             childCount: _posts.length,
                                           ),

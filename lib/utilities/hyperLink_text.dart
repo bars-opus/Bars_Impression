@@ -237,7 +237,7 @@ class _HyperLinkTextState extends State<HyperLinkText> {
                               ? _sendMail(linkToOpen)
                               : type.startsWith('contact')
                                   ? _makePhoneCall(linkToOpen)
-                                  : () {};
+                                  :_nothing();
         },
       ));
 
@@ -284,6 +284,8 @@ class _HyperLinkTextState extends State<HyperLinkText> {
 
     return list;
   }
+
+_nothing(){}
 
   @override
   Widget build(BuildContext context) {

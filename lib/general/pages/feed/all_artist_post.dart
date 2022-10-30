@@ -313,34 +313,11 @@ class _AllArtistPostsState extends State<AllArtistPosts> {
                                                       SliverChildBuilderDelegate(
                                                     (context, index) {
                                                       Post post = _posts[index];
-                                                      return  FeedGrid(
-                                                              currentUserId: widget
-                                                                  .currentUserId,
-                                                              post: post,
-                                                              feed: 'Artist');
-                                                      
-                                                      // FutureBuilder(
-                                                      //   future: DatabaseService
-                                                      //       .getUserWithId(
-                                                      //           post.authorId),
-                                                      //   builder: (BuildContext
-                                                      //           context,
-                                                      //       AsyncSnapshot
-                                                      //           snapshot) {
-                                                      //     if (!snapshot
-                                                      //         .hasData) {
-                                                      //       return GridSchimmerSkeleton();
-                                                      //     }
-                                                      //     AccountHolder author =
-                                                      //         snapshot.data;
-                                                      //     return FeedGrid(
-                                                      //         currentUserId: widget
-                                                      //             .currentUserId,
-                                                      //         post: post,
-                                                      //         author: author,
-                                                      //         feed: 'Artist');
-                                                      //   },
-                                                      // );
+                                                      return FeedGrid(
+                                                          currentUserId: widget
+                                                              .currentUserId,
+                                                          post: post,
+                                                          feed: 'Artist');
                                                     },
                                                     childCount: _posts.length,
                                                   ),

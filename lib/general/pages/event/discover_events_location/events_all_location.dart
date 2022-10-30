@@ -33,7 +33,7 @@ class _EventsAllLocationState extends State<EventsAllLocation>
             ? _setupCountryEvent()
             : widget.locationType.startsWith('Virtual')
                 ? _setupVirtalEvent()
-                : () {};
+                : _nothing();
     _hideButtonController = ScrollController();
     _hideButtonController.addListener(() {
       if (_hideButtonController.position.userScrollDirection ==
@@ -56,11 +56,13 @@ class _EventsAllLocationState extends State<EventsAllLocation>
                 ? _loadMoreCountryEvents()
                 : widget.locationType.startsWith('Virtual')
                     ? _loadMoreVirtualEvents()
-                    : () {};
+                    : _nothing();
       }
     }
     return false;
   }
+
+  _nothing(){}
 
   @override
   void dispose() {
@@ -240,18 +242,6 @@ class _EventsAllLocationState extends State<EventsAllLocation>
                   return _displayEvents(
                     event,
                   );
-                  // FutureBuilder(
-                  //     future: DatabaseService.getUserWithId(event.authorId),
-                  //     builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  //       if (!snapshot.hasData) {
-                  //         return EventSchimmerBlurHash(
-                  //           event: event,
-                  //         );
-                  //       }
-                  //       AccountHolder author = snapshot.data;
-
-                  //       return _displayEvents(event, author);
-                  //     });
                 },
                 childCount: _events.length,
               ),

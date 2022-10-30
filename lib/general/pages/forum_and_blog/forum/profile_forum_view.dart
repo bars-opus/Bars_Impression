@@ -189,13 +189,10 @@ class _ProfileForumViewState extends State<ProfileForumView> {
                 MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
         child: ForumViewWidget(
             currentUserId: widget.currentUserId,
-            // author: widget.author,
             forum: widget.forum,
-            // titleHero: 'titleProfile' + widget.forum.id.toString(),
-            // subtitleHero: 'subTitleProfile' + widget.forum.id.toString(),
+           
             feed: widget.feed,
             thoughtCount: _thoughtCount
-            // NumberFormat.compact().format(_thoughtCount),
             ),
       ),
     );

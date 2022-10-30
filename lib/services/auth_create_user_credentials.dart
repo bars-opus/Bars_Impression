@@ -1,11 +1,6 @@
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/scheduler.dart';
 
-// class AuthCreateUserCredentials {
-//   static final _auth = FirebaseAuth.instance;
-//   static final _firestore = FirebaseFirestore.instance;
-
-// }
 
 class AuthCreateUserCredentials extends StatefulWidget {
   const AuthCreateUserCredentials({Key? key}) : super(key: key);
@@ -113,6 +108,7 @@ class _AuthCreateUserCredentialsState extends State<AuthCreateUserCredentials> {
           'professionalVideo2': '',
           'professionalVideo3': '',
           'genreTags': '',
+          'subAccountType': '',
         });
         Provider.of<UserData>(context, listen: false).currentUserId =
             signedInHandler.uid;
@@ -122,6 +118,15 @@ class _AuthCreateUserCredentialsState extends State<AuthCreateUserCredentials> {
             .doc(signedInHandler.uid)
             .set({
           'uid': signedInHandler.uid,
+        });
+
+        _firestore.collection('/usersAuthors').doc(signedInHandler.uid).set({
+          'verified': '',
+          'userName': '',
+          'profileImageUrl': '',
+          'bio': '',
+          'profileHandle': '',
+          'disableChat': false,
         });
         Provider.of<UserData>(context, listen: false).setShowUsersTab(true);
         await Navigator.of(context).pushAndRemoveUntil(
@@ -187,7 +192,7 @@ class _AuthCreateUserCredentialsState extends State<AuthCreateUserCredentials> {
         icon: Icon(Icons.error_outline, size: 28.0, color: Colors.blue),
         mainButton: OutlinedButton(
           style: OutlinedButton.styleFrom(
-            primary: Colors.transparent,
+            foregroundColor: Colors.transparent,
             side: BorderSide(width: 1.0, color: Colors.transparent),
           ),
           onPressed: () => Navigator.pop(context),

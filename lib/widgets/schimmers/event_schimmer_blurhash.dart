@@ -35,6 +35,7 @@ class EventSchimmerBlurHash extends StatelessWidget {
                     ? 'LpQ0aNRkM{M{~qWBayWB4nofj[j['
                     : event.blurHash,
                 imageFit: BoxFit.cover,
+                
               ),
             ),
             const SizedBox(

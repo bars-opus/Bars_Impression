@@ -340,8 +340,8 @@ class _ChatDetailsState extends State<ChatDetails> {
                         width: width,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.teal,
-                            onPrimary: Colors.blue,
+                            backgroundColor: Colors.teal,
+                            foregroundColor: Colors.blue,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(5.0),
                             ),
@@ -421,7 +421,7 @@ class _ChatDetailsState extends State<ChatDetails> {
                     ),
                     Divider(color: Colors.teal),
                     const SizedBox(height: 30),
-                    _display(
+                    Display(
                       currentUserId: widget.currentUserId,
                       chat: widget.chat,
                       user: widget.user,
@@ -436,12 +436,12 @@ class _ChatDetailsState extends State<ChatDetails> {
 }
 
 //display
-class _display extends StatelessWidget {
+class Display extends StatelessWidget {
   final AccountHolderAuthor user;
   final Chat chat;
   final String currentUserId;
 
-  _display(
+  Display(
       {required this.user, required this.currentUserId, required this.chat});
   @override
   Widget build(BuildContext context) {

@@ -85,10 +85,10 @@ class _DecisionContainerState extends State<DecisionContainer> {
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           elevation: 0,
-                          primary: widget.isPicked1
+                          backgroundColor: widget.isPicked1
                               ? Colors.white
                               : Colors.transparent,
-                          onPrimary: Colors.blue,
+                          foregroundColor: Colors.blue,
                         ),
                         child: Text(
                           widget.answer1,
@@ -114,10 +114,10 @@ class _DecisionContainerState extends State<DecisionContainer> {
                       child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             elevation: 0,
-                            primary: widget.isPicked2
+                            backgroundColor: widget.isPicked2
                                 ? Colors.white
                                 : Colors.transparent,
-                            onPrimary: Colors.blue,
+                            foregroundColor: Colors.blue,
                           ),
                           child: Text(
                             widget.answer2,

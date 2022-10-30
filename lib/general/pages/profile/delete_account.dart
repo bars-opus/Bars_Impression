@@ -320,7 +320,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
             size: width > 800 ? 50 : 28.0, color: Colors.blue),
         mainButton: OutlinedButton(
           style: OutlinedButton.styleFrom(
-            primary: Colors.transparent,
+            foregroundColor: Colors.transparent,
             side: BorderSide(width: 1.0, color: Colors.transparent),
           ),
           onPressed: () => Navigator.pop(context),
@@ -586,6 +586,12 @@ class _DeleteAccountState extends State<DeleteAccount> {
         }
       });
 
+      usersAuthorRef.doc(_auth.currentUser!.uid).get().then((doc) {
+        if (doc.exists) {
+          doc.reference.delete();
+        }
+      });
+
       await _auth.currentUser!.delete().then((value) async {
         await _auth.signOut();
         Navigator.pushAndRemoveUntil(
@@ -621,7 +627,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
         icon: Icon(Icons.info_outline, size: 28.0, color: Colors.blue),
         mainButton: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            primary: Colors.transparent,
+            foregroundColor: Colors.transparent,
           ),
           onPressed: () => Navigator.pop(context),
           child: Text("Ok",

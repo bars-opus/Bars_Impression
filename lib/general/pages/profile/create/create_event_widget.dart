@@ -1,6 +1,5 @@
 // ignore_for_file: unnecessary_null_comparison
 
-import 'dart:typed_data';
 import 'package:bars/widgets/create_content_white.dart';
 import 'package:blurhash/blurhash.dart';
 import 'package:bars/utilities/exports.dart';
@@ -91,7 +90,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
   int eventTypeIndex = 0;
   int showEventTypePicker = 0;
   late PageController _pageController;
-  // int _indexx = 0;
   DateTime dateTime = DateTime.now();
   DateTime minDateTime = DateTime.now().subtract(Duration(days: 1));
   DateTime minTime = DateTime.now().subtract(Duration(minutes: 1));
@@ -99,7 +97,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
   String selectedValue = '';
   String selectedclosingDay = '';
   String _type = '';
-  bool _showSheet = false;
 
   String _closingDay = '';
 
@@ -109,7 +106,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
   @override
   void initState() {
     _type = widget.type;
-    // _indexx = widget.isEditting ? 5 : 0;
     selectedValue = _type.isEmpty ? values.last : _type;
     selectedclosingDay =
         _closingDay.isEmpty ? eventClossingDay.first : _closingDay;
@@ -150,17 +146,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
           .setBool6(widget.showToFollowers);
     });
   }
-
-  // _handleImage() async {
-  //   final file = await PickCropImage.pickedMedia(cropImage: _cropImage);
-  //   if (file == null) return;
-  //   if (file != null) {
-  //     if (mounted) {
-  //       Provider.of<UserData>(context, listen: false)
-  //           .setPostImage(file as File);
-  //     }
-  //   }
-  // }
 
   _handleImage() async {
     HapticFeedback.heavyImpact();
@@ -313,7 +298,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
               e.contains(']')
                   ? e.substring(e.lastIndexOf(']') + 1).toString()
                   : e.toString(),
-              // e.toString(),
               style: TextStyle(
                 color: Colors.white,
                 fontSize: width > 800 ? 20 : 12,
@@ -730,15 +714,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                 Provider.of<UserData>(context, listen: false)
                     .setPost13(this.selectedclosingDay = value!);
                 animateToPage();
-              }
-
-              //  => setState(
-              //   () {
-              //     _closingDay = (this.selectedclosingDay = value!);
-              //     Provider.of<UserData>(context, listen: false).setPost13(value);
-              //   },
-              // ),
-              );
+              });
         }).toList()),
       );
 
@@ -761,29 +737,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                   animateToPage();
                 },
                 buttonText: "Pick day"),
-
-            //  OutlinedButton(
-            //     style: OutlinedButton.styleFrom(
-            //       primary: Colors.blue,
-            //       side: BorderSide(
-            //         width: 1.0,
-            //         color:
-            //             ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-            //       ),
-            //       shape: RoundedRectangleBorder(
-            //         borderRadius: BorderRadius.circular(20.0),
-            //       ),
-            //     ),
-            //     child: Text(
-            //       'Pick day',
-            //       style: TextStyle(
-            //         color:
-            //             ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-            //       ),
-            //     ),
-            //     onPressed: () {
-            //       animateToPage();
-            //     }),
           ),
         ],
       );
@@ -817,15 +770,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                 Provider.of<UserData>(context, listen: false)
                     .setPost6(this.selectedValue = value!);
                 animateToPage();
-              }
-
-              // setState(
-              //   () {
-              //     _type = (this.selectedValue = value!);
-              //     Provider.of<UserData>(context, listen: false).setPost6(_type);
-              //   },
-              // ),
-              );
+              });
         }).toList()),
       );
 
@@ -848,29 +793,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                   animateToPage();
                 },
                 buttonText: "Pick event type"),
-
-            //  OutlinedButton(
-            //     style: OutlinedButton.styleFrom(
-            //       primary: Colors.blue,
-            //       side: BorderSide(
-            //         width: 1.0,
-            //         color:
-            //             ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-            //       ),
-            //       shape: RoundedRectangleBorder(
-            //         borderRadius: BorderRadius.circular(20.0),
-            //       ),
-            //     ),
-            //     child: Text(
-            //       'Pick Event Type',
-            //       style: TextStyle(
-            //         color:
-            //             ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-            //       ),
-            //     ),
-            //     onPressed: () {
-            //       animateToPage();
-            //     }),
           ),
         ],
       );
@@ -932,37 +854,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                     );
                   },
                   buttonText: "Pick time"),
-
-              //  OutlinedButton(
-              //     style: OutlinedButton.styleFrom(
-              //       primary: Colors.blue,
-              //       side: BorderSide(
-              //         width: 1.0,
-              //         color:
-              //             ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-              //       ),
-              //       shape: RoundedRectangleBorder(
-              //         borderRadius: BorderRadius.circular(20.0),
-              //       ),
-              //     ),
-              //     child: Text(
-              //       'Pick Time',
-              //       style: TextStyle(
-              //         color:
-              //             ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-              //       ),
-              //     ),
-              //     onPressed: () {
-              //       Provider.of<UserData>(context, listen: false)
-              //           .setPost7(dayTime.toString());
-              //       setState(() {
-              //         widget.time = dayTime.toString();
-              //       });
-              //       animateToPage();
-              //       print(
-              //         widget.time,
-              //       );
-              //     }),
             ),
           ),
         ],
@@ -1033,34 +924,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                     animateToPage();
                   },
                   buttonText: "Pick date"),
-
-              // OutlinedButton(
-              //     style: OutlinedButton.styleFrom(
-              //       primary: Colors.blue,
-              //       side: BorderSide(
-              //         width: 1.0,
-              //         color:
-              //             ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-              //       ),
-              //       shape: RoundedRectangleBorder(
-              //         borderRadius: BorderRadius.circular(20.0),
-              //       ),
-              //     ),
-              //     child: Text(
-              //       'Pick Date',
-              //       style: TextStyle(
-              //         color:
-              //             ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-              //       ),
-              //     ),
-              //     onPressed: () {
-              //       Provider.of<UserData>(context, listen: false)
-              //           .setPost8(dateTime.toString());
-              //       setState(() {
-              //         widget.date = dateTime.toString();
-              //       });
-              //       animateToPage();
-              //     }),
             ),
           ),
         ],
@@ -1084,7 +947,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
 
   animateToPage() {
     _pageController.animateToPage(
-      // _indexx + 1,
       Provider.of<UserData>(context, listen: false).int1 + 1,
       duration: Duration(milliseconds: 800),
       curve: Curves.easeInOut,
@@ -1098,71 +960,13 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
     }
   }
 
-  _validate2() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState?.save();
-      animateToPage2();
-    }
-  }
-
   animateToPage2() {
     _pageController.animateToPage(
-      // _indexx + 2,
       Provider.of<UserData>(context, listen: false).int1 + 2,
       duration: Duration(milliseconds: 800),
       curve: Curves.easeInOut,
     );
   }
-
-  // _displayPostImage() {
-  //   final width = Responsive.isDesktop(context)
-  //       ? 600.0
-  //       : MediaQuery.of(context).size.width;
-  //   if (widget.imageUrl.isNotEmpty) {
-  //     return Container(
-  //         height: width / 2,
-  //         width: width / 2,
-  //         decoration: BoxDecoration(
-  //             image: DecorationImage(
-  //           image: CachedNetworkImageProvider(widget.imageUrl),
-  //           fit: BoxFit.cover,
-  //         )),
-  //         child: Container(
-  //           decoration: BoxDecoration(
-  //               gradient: LinearGradient(begin: Alignment.bottomRight, colors: [
-  //             Colors.black.withOpacity(.5),
-  //             Colors.black.withOpacity(.5),
-  //           ])),
-  //         ));
-  //   } else {
-  //     return GestureDetector(
-  //       onTap: _handleImage,
-  //       child: Container(
-  //         child: Provider.of<UserData>(context).postImage == null
-  //             ? Center(
-  //                 child: InkBoxColumn(
-  //                   size: 3,
-  //                   onPressed: _handleImage,
-  //                   icon: Icon(
-  //                     Icons.add_a_photo,
-  //                     size: 150,
-  //                     color:
-  //                         ConfigBloc().darkModeOn ? Colors.black : Colors.white,
-  //                   ),
-  //                   text: '',
-  //                 ),
-  //               )
-  //             : Image(
-  //                 height: width,
-  //                 width: width,
-  //                 image: FileImage(
-  //                     File(Provider.of<UserData>(context).postImage!.path)),
-  //                 fit: BoxFit.cover,
-  //               ),
-  //       ),
-  //     );
-  //   }
-  // }
 
   _displayPostImage() {
     if (widget.imageUrl.isNotEmpty) {
@@ -1261,11 +1065,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
         child: Scaffold(
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
-      // backgroundColor: _indexx == 10
-      //     ? Color(0xFFFF2D55)
-      //     : ConfigBloc().darkModeOn
-      //         ? Color(0xFF1a1a1a)
-      //         : Color(0xFFf2f2f2),
       appBar: AppBar(
         iconTheme: IconThemeData(
           color: Colors.white,
@@ -1303,12 +1102,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                     }),
         elevation: 0,
         backgroundColor: Colors.transparent,
-
-        // _indexx == 10
-        //     ? Color(0xFFFF2D55)
-        //     : ConfigBloc().darkModeOn
-        //         ? Color(0xFF1a1a1a)
-        //         : Color(0xFFf2f2f2),
         title: Material(
           color: Colors.transparent,
           child: Provider.of<UserData>(context, listen: false).isLoading
@@ -1449,15 +1242,12 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                     )
                                   : PageView(
                                       controller: _pageController,
-                                      physics: const NeverScrollableScrollPhysics(),
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
                                       onPageChanged: (int index) {
                                         Provider.of<UserData>(context,
                                                 listen: false)
                                             .setInt1(index);
-
-                                        // setState(() {
-                                        //   _indexx = index;
-                                        // });
                                       },
                                       children: [
                                           SingleChildScrollView(
@@ -1521,49 +1311,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                                               false)
                                                                       .setBool1(
                                                                           value)),
-                                                              // !Provider.of<UserData>(
-                                                              //             context,
-                                                              //             listen:
-                                                              //                 false)
-                                                              //         .bool1
-                                                              //     ? const SizedBox
-                                                              //         .shrink()
-                                                              //     : Padding(
-                                                              //         padding: const EdgeInsets
-                                                              //                 .only(
-                                                              //             top:
-                                                              //                 10.0,
-                                                              //             bottom:
-                                                              //                 10),
-                                                              //         child:
-                                                              //             Divider(
-                                                              //           color: Colors
-                                                              //               .grey,
-                                                              //         ),
-                                                              //       ),
-                                                              // !Provider.of<UserData>(
-                                                              //             context,
-                                                              //             listen:
-                                                              //                 false)
-                                                              //         .bool1
-                                                              //     ? const SizedBox
-                                                              //         .shrink()
-                                                              //     : SettingSwitch(
-                                                              //         title:
-                                                              //             'Show on explore page',
-                                                              //         subTitle:
-                                                              //             'Should your private event be shown on the explore page?',
-                                                              //         value: Provider.of<UserData>(
-                                                              //                 context,
-                                                              //                 listen:
-                                                              //                     false)
-                                                              //             .bool5,
-                                                              //         onChanged: (value) => Provider.of<UserData>(
-                                                              //                 context,
-                                                              //                 listen:
-                                                              //                     false)
-                                                              //             .setBool5(
-                                                              //                 value)),
                                                               Padding(
                                                                 padding:
                                                                     const EdgeInsets
@@ -1722,8 +1469,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                                                 true,
                                                                             onSelect:
                                                                                 (Currency currency) {
-                                                                              // print(
-                                                                              //     'Select currency: ${currency.code}');
                                                                               Provider.of<UserData>(context, listen: false).setPost14('${currency.name}, ${currency.code} ');
                                                                               animateToPage();
                                                                             },
@@ -1731,7 +1476,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                                               'USD'
                                                                             ],
                                                                           );
-                                                                          // animateToPage();
                                                                         },
                                                                   buttonText:
                                                                       "Continue"),
@@ -1740,174 +1484,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                     ],
                                                   ),
                                                 ),
-                                                // AnimatedContainer(
-                                                //   margin: EdgeInsets.symmetric(
-                                                //       horizontal: 10),
-                                                //   duration: Duration(
-                                                //       milliseconds: 500),
-                                                //   curve: Curves.linearToEaseOut,
-                                                //   height: _showSheet
-                                                //       ? height - 100
-                                                //       : 0.0,
-                                                //   width: width,
-                                                //   decoration: BoxDecoration(
-                                                //     color: Colors.grey[300],
-                                                //     borderRadius:
-                                                //         BorderRadius.only(
-                                                //       topLeft:
-                                                //           Radius.circular(20.0),
-                                                //       topRight:
-                                                //           Radius.circular(20.0),
-                                                //     ),
-                                                //   ),
-                                                //   child: Padding(
-                                                //     padding:
-                                                //         const EdgeInsets.all(
-                                                //             30.0),
-                                                //     child: Column(
-                                                //       mainAxisAlignment:
-                                                //           MainAxisAlignment
-                                                //               .start,
-                                                //       crossAxisAlignment:
-                                                //           CrossAxisAlignment
-                                                //               .start,
-                                                //       children: [
-                                                //         DirectionWidget(
-                                                //           fontSize: null,
-                                                //           text:
-                                                //               'Enter the rate of your event. Example 10.00.',
-                                                //         ),
-                                                //         Text(
-                                                //           Provider.of<UserData>(
-                                                //                       context,
-                                                //                       listen:
-                                                //                           false)
-                                                //                   .post3
-                                                //                   .isEmpty
-                                                //               ? Provider.of<
-                                                //                           UserData>(
-                                                //                       context,
-                                                //                       listen:
-                                                //                           false)
-                                                //                   .post13
-                                                //               : Provider.of<
-                                                //                           UserData>(
-                                                //                       context,
-                                                //                       listen:
-                                                //                           false)
-                                                //                   .post3,
-                                                //           style: TextStyle(
-                                                //             color: Colors.blue,
-                                                //             fontSize: 30,
-                                                //           ),
-                                                //         ),
-                                                //         const SizedBox(
-                                                //           height: 5,
-                                                //         ),
-                                                //         ContentField(
-                                                //           labelText: 'Rate',
-                                                //           hintText:
-                                                //               "currency - amount: example (\$: 00.0) ",
-                                                //           initialValue:
-                                                //               Provider.of<UserData>(
-                                                //                       context,
-                                                //                       listen:
-                                                //                           false)
-                                                //                   .post3
-                                                //                   .toString(),
-                                                //           onSavedText: (input) => Provider.of<
-                                                //                       UserData>(
-                                                //                   context,
-                                                //                   listen: false)
-                                                //               .setPost3(Provider.of<
-                                                //                               UserData>(
-                                                //                           context,
-                                                //                           listen:
-                                                //                               false)
-                                                //                       .post13 +
-                                                //                   input),
-                                                //           onValidateText:
-                                                //               (input) => input
-                                                //                           .trim()
-                                                //                           .length <
-                                                //                       1
-                                                //                   ? "The price rate cannot be empty (input free)"
-                                                //                   : null,
-                                                //         ),
-                                                //         const SizedBox(
-                                                //           height: 70,
-                                                //         ),
-                                                //         AnimatedContainer(
-                                                //           margin: EdgeInsets
-                                                //               .symmetric(
-                                                //                   horizontal:
-                                                //                       10),
-                                                //           duration: Duration(
-                                                //               milliseconds:
-                                                //                   500),
-                                                //           curve: Curves
-                                                //               .linearToEaseOut,
-                                                //           height: Provider.of<
-                                                //                           UserData>(
-                                                //                       context,
-                                                //                       listen:
-                                                //                           false)
-                                                //                   .post3
-                                                //                   .isEmpty
-                                                //               ? 0
-                                                //               : 40,
-                                                //           child: Center(
-                                                //             child: Container(
-                                                //               width: 200,
-                                                //               child:
-                                                //                   OutlinedButton(
-                                                //                       style: OutlinedButton
-                                                //                           .styleFrom(
-                                                //                         primary:
-                                                //                             Colors.blue,
-                                                //                         side:
-                                                //                             BorderSide(
-                                                //                           width:
-                                                //                               1.0,
-                                                //                           color: ConfigBloc().darkModeOn
-                                                //                               ? Colors.white
-                                                //                               : Colors.black,
-                                                //                         ),
-                                                //                         shape:
-                                                //                             RoundedRectangleBorder(
-                                                //                           borderRadius:
-                                                //                               BorderRadius.circular(20.0),
-                                                //                         ),
-                                                //                       ),
-                                                //                       child:
-                                                //                           Text(
-                                                //                         'Continue',
-                                                //                         style:
-                                                //                             TextStyle(
-                                                //                           color: ConfigBloc().darkModeOn
-                                                //                               ? Colors.white
-                                                //                               : Colors.black,
-                                                //                         ),
-                                                //                       ),
-                                                //                       onPressed:
-                                                //                           () {
-                                                //                         FocusScope.of(context)
-                                                //                             .unfocus();
-                                                //                         animateToPage();
-                                                //                       }),
-                                                //             ),
-                                                //           ),
-
-                                                //           // AlwaysWhiteButton(
-                                                //           //     onPressed: () {
-                                                //           //       animateToPage();
-                                                //           //     },
-                                                //           //     buttonText: "Continue"),
-                                                //         ),
-                                                //       ],
-                                                //     ),
-                                                //   ),
-                                                // )
                                               ],
                                             ),
                                           ),
@@ -3003,10 +2579,10 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                               style:
                                                                   ElevatedButton
                                                                       .styleFrom(
-                                                                primary:
+                                                                backgroundColor:
                                                                     Colors.blue,
                                                                 elevation: 20.0,
-                                                                onPrimary:
+                                                                foregroundColor:
                                                                     Colors.blue,
                                                                 shape:
                                                                     RoundedRectangleBorder(
@@ -3041,17 +2617,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                               ),
                                                             ),
                                                           ),
-
-                                                          // AvatarCircularButton(
-                                                          //     buttonText: widget
-                                                          //             .isEditting
-                                                          //         ? 'Save'
-                                                          //         : "Create",
-                                                          // onPressed: () => widget
-                                                          //         .isEditting
-                                                          //     ? _submitEdit()
-                                                          //     : _showSelectImageDialog(
-                                                          //         'create')),
                                                         ),
                                                   widget.isEditting
                                                       ? Column(
@@ -3156,1167 +2721,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
           ),
         ),
       ),
-
-      // SingleChildScrollView(
-      //   child: Center(
-      //     child: Padding(
-      //       padding: const EdgeInsets.all(20.0),
-      //       child: Column(
-      //         children: [
-      //           SizedBox(height: 10),
-      //           Align(
-      //             alignment: Alignment.centerLeft,
-      //             child: Row(
-      //               children: [
-      //                 Text(
-      //                   '1. ',
-      //                   style: TextStyle(
-      //                     color: Colors.blue,
-      //                     fontSize: 30,
-      //                   ),
-      //                 ),
-      //                 Text(
-      //                   'Background\nImage.',
-      //                   style: TextStyle(
-      //                     color: Colors.blue,
-      //                     fontSize: 12,
-      //                   ),
-      //                 ),
-      //               ],
-      //             ),
-      //           ),
-      //           Provider.of<UserData>(context, listen: false)
-      //                       .postImage ==
-      //                   null
-      //               ? DirectionWidgetWhite(
-      //                   text:
-      //                       'Select a background image for your event. The image selected should not contain any text and should be of good pixel quality. The image selected should align with the context of your event. We advise you to select a great background image. ',
-      //                   fontSize: null,
-      //                 )
-      //               : const SizedBox.shrink(),
-      //           const SizedBox(
-      //             height: 20,
-      //           ),
-      //           _displayPostImage(),
-      //           widget.imageUrl.isNotEmpty && widget.isEditting
-      //               ? Padding(
-      //                   padding: const EdgeInsets.only(top: 50.0),
-      //                   child: AlwaysWhiteButton(
-      //                       onPressed: _validate2,
-      //                       buttonText: "Next"),
-      //                 )
-      //               : Provider.of<UserData>(context, listen: false)
-      //                           .postImage ==
-      //                       null
-      //                   ? const SizedBox.shrink()
-      //                   : Padding(
-      //                       padding: const EdgeInsets.only(top: 50.0),
-      //                       child: AlwaysWhiteButton(
-      //                           onPressed: _validate,
-      //                           buttonText: "Continue"),
-      //                     ),
-      //           GestureDetector(
-      //             onTap: () => Navigator.push(
-      //                 context,
-      //                 MaterialPageRoute(
-      //                     builder: (_) => FeatureInfo(
-      //                           feature: 'Event',
-      //                         ))),
-      //             child: PageHint(
-      //               more: 'tap to read',
-      //               body: "Event documentation.",
-      //               title: ".",
-      //             ),
-      //           ),
-      //         ],
-      //       ),
-      //     ),
-      //   ),
-      // ),
-      // SingleChildScrollView(
-      //   child: Stack(
-      //     children: [
-      //       Center(
-      //         child: Padding(
-      //           padding: const EdgeInsets.all(20.0),
-      //           child: Column(
-      //             children: [
-      //               Align(
-      //                 alignment: Alignment.centerLeft,
-      //                 child: Row(
-      //                   children: [
-      //                     Text(
-      //                       '2. ',
-      //                       style: TextStyle(
-      //                         color: Colors.blue,
-      //                         fontSize: 30,
-      //                       ),
-      //                     ),
-      //                     Text(
-      //                       'Event\nsettings.',
-      //                       style: TextStyle(
-      //                         color: Colors.blue,
-      //                         fontSize: 12,
-      //                       ),
-      //                     ),
-      //                   ],
-      //                 ),
-      //               ),
-      //               SizedBox(height: 30),
-      //               SettingSwitch(
-      //                   title: 'Private event',
-      //                   subTitle:
-      //                       'You can create a private event and invite only specific people, or you can create a general event where anybody can attend.',
-      //                   value: Provider.of<UserData>(context,
-      //                           listen: false)
-      //                       .bool1,
-      //                   onChanged: (value) => Provider.of<UserData>(
-      //                           context,
-      //                           listen: false)
-      //                       .setBool1(value)),
-      //               !Provider.of<UserData>(context, listen: false)
-      //                       .bool1
-      //                   ? const SizedBox.shrink()
-      //                   : Padding(
-      //                       padding: const EdgeInsets.only(
-      //                           top: 10.0, bottom: 10),
-      //                       child: Divider(
-      //                         color: Colors.grey,
-      //                       ),
-      //                     ),
-      //               !Provider.of<UserData>(context, listen: false)
-      //                       .bool1
-      //                   ? const SizedBox.shrink()
-      //                   : SettingSwitch(
-      //                       title: 'Show on explore page',
-      //                       subTitle:
-      //                           'Should your private event be shown on the explore page?',
-      //                       value: Provider.of<UserData>(context,
-      //                               listen: false)
-      //                           .bool5,
-      //                       onChanged: (value) =>
-      //                           Provider.of<UserData>(context,
-      //                                   listen: false)
-      //                               .setBool5(value)),
-      //               Padding(
-      //                 padding: const EdgeInsets.only(
-      //                     top: 10.0, bottom: 10),
-      //                 child: Divider(
-      //                   color: Colors.grey,
-      //                 ),
-      //               ),
-      //               SettingSwitch(
-      //                   title: 'Virtual event',
-      //                   subTitle:
-      //                       'You can create an event that people can attend, or you can also create a virtual event that can be hosted on virtual platforms, where people can interact with you. ',
-      //                   value: Provider.of<UserData>(context,
-      //                           listen: false)
-      //                       .bool2,
-      //                   onChanged: (value) => Provider.of<UserData>(
-      //                           context,
-      //                           listen: false)
-      //                       .setBool2(value)),
-      //               Padding(
-      //                 padding: const EdgeInsets.only(
-      //                     top: 10.0, bottom: 10),
-      //                 child: Divider(
-      //                   color: Colors.grey,
-      //                 ),
-      //               ),
-      //               Provider.of<UserData>(context, listen: false)
-      //                       .bool4
-      //                   ? const SizedBox.shrink()
-      //                   : SettingSwitch(
-      //                       title: 'Free event',
-      //                       subTitle:
-      //                           'A free event without a ticket or gate fee (rate free).',
-      //                       value: Provider.of<UserData>(context,
-      //                               listen: false)
-      //                           .bool3,
-      //                       onChanged: (value) =>
-      //                           Provider.of<UserData>(context,
-      //                                   listen: false)
-      //                               .setBool3(value)),
-      //               Provider.of<UserData>(context, listen: false)
-      //                       .bool4
-      //                   ? const SizedBox.shrink()
-      //                   : Padding(
-      //                       padding: const EdgeInsets.only(
-      //                           top: 10.0, bottom: 10),
-      //                       child: Divider(
-      //                         color: Colors.grey,
-      //                       ),
-      //                     ),
-      //               Provider.of<UserData>(context, listen: false)
-      //                       .bool3
-      //                   ? const SizedBox.shrink()
-      //                   : Container(
-      //                       child: SettingSwitch(
-      //                           title: 'Cash payment',
-      //                           subTitle:
-      //                               'Cash in hand mode of payment for ticket or gate fee?',
-      //                           value: Provider.of<UserData>(context,
-      //                                   listen: false)
-      //                               .bool4,
-      //                           onChanged: (value) =>
-      //                               Provider.of<UserData>(context,
-      //                                       listen: false)
-      //                                   .setBool4(value)),
-      //                     ),
-      //               Provider.of<UserData>(context, listen: false)
-      //                       .bool3
-      //                   ? const SizedBox.shrink()
-      //                   : Padding(
-      //                       padding: const EdgeInsets.only(
-      //                           top: 10.0, bottom: 10),
-      //                       child: Divider(
-      //                         color: Colors.grey,
-      //                       ),
-      //                     ),
-      //               Center(
-      //                 child: Padding(
-      //                   padding: const EdgeInsets.only(
-      //                       bottom: 70.0, top: 50),
-      //                   child: AlwaysWhiteButton(
-      //                       onPressed: () {
-      //                         Provider.of<UserData>(context,
-      //                                     listen: false)
-      //                                 .bool3
-      //                             ? animateToPage()
-      //                             : showCurrencyPicker(
-      //                                 context: context,
-      //                                 showFlag: true,
-      //                                 showSearchField: true,
-      //                                 showCurrencyName: true,
-      //                                 showCurrencyCode: true,
-      //                                 onSelect: (Currency currency) {
-      //                                   // print(
-      //                                   //     'Select currency: ${currency.code}');
-      //                                   Provider.of<UserData>(context,
-      //                                           listen: false)
-      //                                       .setPost13(
-      //                                           '${currency.name}, ${currency.code} ');
-      //                                   setState(() {
-      //                                     _showSheet = true;
-      //                                   });
-      //                                 },
-      //                                 favorite: ['USD'],
-      //                               );
-      //                         // animateToPage();
-      //                       },
-      //                       buttonText: "Continue"),
-      //                 ),
-      //               ),
-      //             ],
-      //           ),
-      //         ),
-      //       ),
-      //       AnimatedContainer(
-      //         margin: EdgeInsets.symmetric(horizontal: 10),
-      //         duration: Duration(milliseconds: 500),
-      //         curve: Curves.linearToEaseOut,
-      //         height: _showSheet ? height - 100 : 0.0,
-      //         width: width,
-      //         decoration: BoxDecoration(
-      //           color: Colors.grey[300],
-      //           borderRadius: BorderRadius.only(
-      //             topLeft: Radius.circular(20.0),
-      //             topRight: Radius.circular(20.0),
-      //           ),
-      //         ),
-      //         child: Padding(
-      //           padding: const EdgeInsets.all(30.0),
-      //           child: Column(
-      //             mainAxisAlignment: MainAxisAlignment.start,
-      //             crossAxisAlignment: CrossAxisAlignment.start,
-      //             children: [
-      //               DirectionWidgetWhite(
-      //                 fontSize: null,
-      //                 text:
-      //                     'Enter the rate of your event. Example 10.00.',
-      //               ),
-      //               Text(
-      //                 Provider.of<UserData>(context, listen: false)
-      //                         .post3
-      //                         .isEmpty
-      //                     ? Provider.of<UserData>(context,
-      //                             listen: false)
-      //                         .post13
-      //                     : Provider.of<UserData>(context,
-      //                             listen: false)
-      //                         .post3,
-      //                 style: TextStyle(
-      //                   color: Colors.blue,
-      //                   fontSize: 30,
-      //                 ),
-      //               ),
-      //               const SizedBox(
-      //                 height: 5,
-      //               ),
-      //               ContentField(
-      //                 labelText: 'Rate',
-      //                 hintText:
-      //                     "currency - amount: example (\$: 00.0) ",
-      //                 initialValue: Provider.of<UserData>(context,
-      //                         listen: false)
-      //                     .post3
-      //                     .toString(),
-      //                 onSavedText: (input) => Provider.of<UserData>(
-      //                         context,
-      //                         listen: false)
-      //                     .setPost3(Provider.of<UserData>(context,
-      //                                 listen: false)
-      //                             .post13 +
-      //                         input),
-      //                 onValidateText: (input) => input.trim().length <
-      //                         1
-      //                     ? "The price rate cannot be empty (input free)"
-      //                     : null,
-      //               ),
-      //               const SizedBox(
-      //                 height: 70,
-      //               ),
-      //               AnimatedContainer(
-      //                 margin: EdgeInsets.symmetric(horizontal: 10),
-      //                 duration: Duration(milliseconds: 500),
-      //                 curve: Curves.linearToEaseOut,
-      //                 height: Provider.of<UserData>(context,
-      //                             listen: false)
-      //                         .post3
-      //                         .isEmpty
-      //                     ? 0
-      //                     : 40,
-      //                 child: Center(
-      //                   child: Container(
-      //                     width: 200,
-      //                     child: OutlinedButton(
-      //                         style: OutlinedButton.styleFrom(
-      //                           primary: Colors.blue,
-      //                           side: BorderSide(
-      //                             width: 1.0,
-      //                             color: ConfigBloc().darkModeOn
-      //                                 ? Colors.white
-      //                                 : Colors.black,
-      //                           ),
-      //                           shape: RoundedRectangleBorder(
-      //                             borderRadius:
-      //                                 BorderRadius.circular(20.0),
-      //                           ),
-      //                         ),
-      //                         child: Text(
-      //                           'Continue',
-      //                           style: TextStyle(
-      //                             color: ConfigBloc().darkModeOn
-      //                                 ? Colors.white
-      //                                 : Colors.black,
-      //                           ),
-      //                         ),
-      //                         onPressed: () {
-      //                           FocusScope.of(context).unfocus();
-      //                           animateToPage();
-      //                         }),
-      //                   ),
-      //                 ),
-
-      //                 // AlwaysWhiteButton(
-      //                 //     onPressed: () {
-      //                 //       animateToPage();
-      //                 //     },
-      //                 //     buttonText: "Continue"),
-      //               ),
-      //             ],
-      //           ),
-      //         ),
-      //       )
-      //     ],
-      //   ),
-      // ),
-      // SingleChildScrollView(
-      //   child: Padding(
-      //     padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      //     child: Column(
-      //       mainAxisAlignment: MainAxisAlignment.start,
-      //       crossAxisAlignment: CrossAxisAlignment.start,
-      //       children: [
-      //         Align(
-      //           alignment: Alignment.centerLeft,
-      //           child: Row(
-      //             children: [
-      //               Text(
-      //                 '3. ',
-      //                 style: TextStyle(
-      //                   color: Colors.blue,
-      //                   fontSize: 30,
-      //                 ),
-      //               ),
-      //               Text(
-      //                 'Category.',
-      //                 style: TextStyle(
-      //                   color: Colors.blue,
-      //                   fontSize: 12,
-      //                 ),
-      //               ),
-      //             ],
-      //           ),
-      //         ),
-      //         DirectionWidgetWhite(
-      //           fontSize: null,
-      //           text:
-      //               'Select an event category that matches the event you are creating. ',
-      //         ),
-      //         buildEventTypePicker(),
-      //       ],
-      //     ),
-      //   ),
-      // ),
-      // SingleChildScrollView(
-      //   child: Padding(
-      //     padding: const EdgeInsets.symmetric(horizontal: 30.0),
-      //     child: Column(
-      //       mainAxisAlignment: MainAxisAlignment.start,
-      //       crossAxisAlignment: CrossAxisAlignment.start,
-      //       children: [
-      //         Align(
-      //           alignment: Alignment.centerLeft,
-      //           child: Row(
-      //             children: [
-      //               Text(
-      //                 '4. ',
-      //                 style: TextStyle(
-      //                   color: Colors.blue,
-      //                   fontSize: 30,
-      //                 ),
-      //               ),
-      //               Text(
-      //                 'Time',
-      //                 style: TextStyle(
-      //                   color: Colors.blue,
-      //                   fontSize: 12,
-      //                 ),
-      //               ),
-      //             ],
-      //           ),
-      //         ),
-      //         DirectionWidgetWhite(
-      //           fontSize: null,
-      //           text:
-      //               'Select the exact time your event would begin. ',
-      //         ),
-      //         SizedBox(height: 20),
-      //         buildTImePicker(),
-      //       ],
-      //     ),
-      //   ),
-      // ),
-      // SingleChildScrollView(
-      //   child: Padding(
-      //     padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      //     child: Column(
-      //       mainAxisAlignment: MainAxisAlignment.start,
-      //       crossAxisAlignment: CrossAxisAlignment.start,
-      //       children: [
-      //         Align(
-      //           alignment: Alignment.centerLeft,
-      //           child: Row(
-      //             children: [
-      //               Text(
-      //                 '5. ',
-      //                 style: TextStyle(
-      //                   color: Colors.blue,
-      //                   fontSize: 30,
-      //                 ),
-      //               ),
-      //               Text(
-      //                 'Date.',
-      //                 style: TextStyle(
-      //                   color: Colors.blue,
-      //                   fontSize: 12,
-      //                 ),
-      //               ),
-      //             ],
-      //           ),
-      //         ),
-      //         DirectionWidgetWhite(
-      //           fontSize: null,
-      //           text: 'Select the exact date of your event. ',
-      //         ),
-      //         SizedBox(height: 20),
-      //         buildDatePicker(),
-      //       ],
-      //     ),
-      //   ),
-      // ),
-      // SingleChildScrollView(
-      //   child: Padding(
-      //     padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      //     child: Column(
-      //       mainAxisAlignment: MainAxisAlignment.start,
-      //       crossAxisAlignment: CrossAxisAlignment.start,
-      //       children: [
-      //         Align(
-      //           alignment: Alignment.centerLeft,
-      //           child: Row(
-      //             children: [
-      //               Text(
-      //                 widget.isEditting ? '' : '6. ',
-      //                 style: TextStyle(
-      //                   color: Colors.blue,
-      //                   fontSize: 30,
-      //                 ),
-      //               ),
-      //               Text(
-      //                 widget.isEditting ? '' : 'Closeing day.',
-      //                 style: TextStyle(
-      //                   color: Colors.blue,
-      //                   fontSize: 12,
-      //                 ),
-      //               ),
-      //             ],
-      //           ),
-      //         ),
-      //         widget.isEditting
-      //             ? DirectionWidgetWhite(
-      //                 fontSize: null,
-      //                 text:
-      //                     'Certiain information of an event cannot be modified once an event is created. Information such as date, time, category, flyer background, and event settings cannot be changed. ',
-      //               )
-      //             : DirectionWidgetWhite(
-      //                 fontSize: null,
-      //                 text:
-      //                     'Choose a closing day for your event. This indicates the closing period of your event. For instance, if you pick three days, your event dashboard and flyer would be disabled three days after your event date specified previously. ',
-      //               ),
-      //         SizedBox(height: 20),
-      //         widget.isEditting
-      //             ? Center(
-      //                 child: AlwaysWhiteButton(
-      //                     onPressed: _validate,
-      //                     buttonText: "Start editing"),
-      //               )
-      //             : buildClosingDayPicker(),
-      //       ],
-      //     ),
-      //   ),
-      // ),
-      // SingleChildScrollView(
-      //   child: Padding(
-      //     padding: const EdgeInsets.only(
-      //       bottom: 30,
-      //     ),
-      //     child: Container(
-      //       child: Padding(
-      //         padding: const EdgeInsets.all(20.0),
-      //         child: Column(
-      //           mainAxisAlignment: MainAxisAlignment.start,
-      //           crossAxisAlignment: CrossAxisAlignment.start,
-      //           children: <Widget>[
-      //             Align(
-      //               alignment: Alignment.centerLeft,
-      //               child: Row(
-      //                 children: [
-      //                   Text(
-      //                     '7. ',
-      //                     style: TextStyle(
-      //                       color: Colors.blue,
-      //                       fontSize: 30,
-      //                     ),
-      //                   ),
-      //                   Text(
-      //                     'Venue.',
-      //                     style: TextStyle(
-      //                       color: Colors.blue,
-      //                       fontSize: 12,
-      //                     ),
-      //                   ),
-      //                 ],
-      //               ),
-      //             ),
-      //             Provider.of<UserData>(context, listen: false)
-      //                     .isLoading
-      //                 ? Padding(
-      //                     padding:
-      //                         const EdgeInsets.only(bottom: 10.0),
-      //                     child: SizedBox(
-      //                       height: 2.0,
-      //                       child: LinearProgressIndicator(
-      //                         backgroundColor: Colors.transparent,
-      //                         valueColor:
-      //                             AlwaysStoppedAnimation(Colors.blue),
-      //                       ),
-      //                     ),
-      //                   )
-      //                 : const SizedBox.shrink(),
-      //             Provider.of<UserData>(context, listen: false)
-      //                     .post5
-      //                     .isNotEmpty
-      //                 ? AnimatedContainer(
-      //                     duration: Duration(milliseconds: 500),
-      //                     height: Provider.of<UserData>(context,
-      //                                 listen: false)
-      //                             .post5
-      //                             .isEmpty
-      //                         ? 0.0
-      //                         : null,
-      //                     curve: Curves.easeInOut,
-      //                     child: Text(
-      //                       Provider.of<UserData>(context,
-      //                               listen: false)
-      //                           .post5
-      //                           .toString(),
-      //                       style: TextStyle(
-      //                           color: Colors.blue,
-      //                           fontSize: 20,
-      //                           fontWeight: FontWeight.bold),
-      //                     ),
-      //                   )
-      //                 : _isfetchingAddress
-      //                     ? const SizedBox.shrink()
-      //                     : DirectionWidgetWhite(
-      //                         fontSize: null,
-      //                         text: Provider.of<UserData>(context,
-      //                                     listen: false)
-      //                                 .bool2
-      //                             ? 'Enter the host link of the event. It will help other users virtually join the event if they are interested. '
-      //                             : 'Enter the address venue of the event. Make sure you select the correct address from the list suggested below. It will help other users navigate to the venue if they are interested. ',
-      //                       ),
-      //             Text(
-      //               Provider.of<UserData>(context, listen: false)
-      //                   .post10
-      //                   .toString(),
-      //               style: TextStyle(
-      //                   color: Colors.blue,
-      //                   fontSize: 20,
-      //                   fontWeight: FontWeight.bold),
-      //             ),
-      //             SizedBox(height: 10),
-      //             Provider.of<UserData>(context, listen: false).bool2
-      //                 ? ContentField(
-      //                     labelText: "Virtual venue",
-      //                     hintText: "Link to virtual event venue",
-      //                     initialValue: widget.virtualVenue,
-      //                     onSavedText: (input) =>
-      //                         Provider.of<UserData>(context,
-      //                                 listen: false)
-      //                             .setPost5(input),
-      //                     onValidateText: (_) {},
-      //                   )
-      //                 : TextFormField(
-      //                     keyboardType: TextInputType.multiline,
-      //                     maxLines: null,
-      //                     controller: _controller,
-      //                     textCapitalization:
-      //                         TextCapitalization.sentences,
-      //                     autovalidateMode: AutovalidateMode.always,
-      //                     onChanged: (value) => {
-      //                       Provider.of<UserData>(context,
-      //                               listen: false)
-      //                           .searchAddress(value),
-      //                       setState(() {
-      //                         _isfetchingAddress = true;
-      //                       })
-      //                     },
-      //                     style: TextStyle(
-      //                       fontSize: 16,
-      //                       color: ConfigBloc().darkModeOn
-      //                           ? Colors.white
-      //                           : Colors.black,
-      //                     ),
-      //                     initialValue: widget.venue,
-      //                     decoration: InputDecoration(
-      //                         hintText: "Event venue address",
-      //                         hintStyle: TextStyle(
-      //                           fontSize: 12.0,
-      //                           color: Colors.grey,
-      //                         ),
-      //                         labelText: 'Venue',
-      //                         labelStyle: TextStyle(
-      //                           fontSize: 16.0,
-      //                           fontWeight: FontWeight.bold,
-      //                           color: Colors.grey,
-      //                         ),
-      //                         enabledBorder: new UnderlineInputBorder(
-      //                             borderSide: new BorderSide(
-      //                                 color: Colors.grey))),
-      //                   ),
-      //             if (Provider.of<UserData>(context, listen: false)
-      //                     .addressSearchResults !=
-      //                 null)
-      //               const SizedBox(
-      //                 height: 30,
-      //               ),
-      //             Provider.of<UserData>(context, listen: false).bool2
-      //                 ? const SizedBox.shrink()
-      //                 : Container(
-      //                     color: ConfigBloc().darkModeOn
-      //                         ? Colors.white
-      //                         : Colors.black,
-      //                     child: Padding(
-      //                       padding: const EdgeInsets.all(10.0),
-      //                       child: Align(
-      //                         alignment: Alignment.topLeft,
-      //                         child: Text(
-      //                           'Tap below to select the venue\'s address',
-      //                           style: TextStyle(
-      //                             color: ConfigBloc().darkModeOn
-      //                                 ? Colors.black
-      //                                 : Colors.white,
-      //                           ),
-      //                         ),
-      //                       ),
-      //                     ),
-      //                   ),
-      //             if (Provider.of<UserData>(
-      //                   context,
-      //                 ).addressSearchResults !=
-      //                 null)
-      //               Padding(
-      //                 padding: const EdgeInsets.only(top: 10.0),
-      //                 child: SingleChildScrollView(
-      //                   child: Provider.of<UserData>(context,
-      //                               listen: false)
-      //                           .bool2
-      //                       ? const SizedBox.shrink()
-      //                       : Column(
-      //                           children: [
-      //                             _isfetchingAddress
-      //                                 ? Padding(
-      //                                     padding:
-      //                                         const EdgeInsets.only(
-      //                                             bottom: 5.0,
-      //                                             top: 10),
-      //                                     child: SizedBox(
-      //                                       height: 2.0,
-      //                                       child:
-      //                                           LinearProgressIndicator(
-      //                                         backgroundColor:
-      //                                             Colors.transparent,
-      //                                         valueColor:
-      //                                             AlwaysStoppedAnimation(
-      //                                                 Colors.grey),
-      //                                       ),
-      //                                     ),
-      //                                   )
-      //                                 : const SizedBox.shrink(),
-      //                             Container(
-      //                               height: MediaQuery.of(context)
-      //                                       .size
-      //                                       .width -
-      //                                   100,
-      //                               width: double.infinity,
-      //                               decoration: BoxDecoration(
-      //                                 color: Colors.transparent,
-      //                                 shape: BoxShape.rectangle,
-      //                                 borderRadius:
-      //                                     BorderRadius.circular(10),
-      //                               ),
-      //                               child: ListView.builder(
-      //                                 itemCount:
-      //                                     Provider.of<UserData>(
-      //                                             context,
-      //                                             listen: false)
-      //                                         .addressSearchResults!
-      //                                         .length,
-      //                                 itemBuilder: (context, index) {
-      //                                   return ListTile(
-      //                                       title: Text(
-      //                                         Provider.of<UserData>(
-      //                                                 context,
-      //                                                 listen: false)
-      //                                             .addressSearchResults![
-      //                                                 index]
-      //                                             .description,
-      //                                         style: TextStyle(
-      //                                           color: ConfigBloc()
-      //                                                   .darkModeOn
-      //                                               ? Colors.white
-      //                                               : Colors.black,
-      //                                         ),
-      //                                       ),
-      //                                       onTap: () {
-      //                                         Provider.of<UserData>(
-      //                                                 context,
-      //                                                 listen: false)
-      //                                             .setPost5(Provider.of<
-      //                                                         UserData>(
-      //                                                     context,
-      //                                                     listen:
-      //                                                         false)
-      //                                                 .addressSearchResults![
-      //                                                     index]
-      //                                                 .description);
-      //                                         setState(() {
-      //                                           _isfetchingAddress =
-      //                                               false;
-
-      //                                           widget
-      //                                               .venue = Provider
-      //                                                   .of<UserData>(
-      //                                                       context,
-      //                                                       listen:
-      //                                                           false)
-      //                                               .addressSearchResults![
-      //                                                   index]
-      //                                               .description;
-      //                                         });
-      //                                         _reverseGeocoding();
-      //                                       });
-      //                                 },
-      //                               ),
-      //                             ),
-      //                           ],
-      //                         ),
-      //                 ),
-      //               ),
-      //             SizedBox(height: 20),
-      //             widget.isEditting
-      //                 ? AnimatedContainer(
-      //                     duration: Duration(milliseconds: 500),
-      //                     height: null,
-      //                     curve: Curves.easeInOut,
-      //                     child: Center(
-      //                       child: AlwaysWhiteButton(
-      //                           onPressed: _validate,
-      //                           buttonText: 'Next'),
-      //                     ),
-      //                   )
-      //                 : AnimatedContainer(
-      //                     duration: Duration(milliseconds: 500),
-      //                     height: Provider.of<UserData>(context,
-      //                                 listen: false)
-      //                             .post5
-      //                             .isEmpty
-      //                         ? 0.0
-      //                         : null,
-      //                     curve: Curves.easeInOut,
-      //                     child: Center(
-      //                       child: AlwaysWhiteButton(
-      //                           onPressed: _validate,
-      //                           buttonText: widget.isEditting
-      //                               ? 'Next'
-      //                               : "Continue"),
-      //                     ),
-      //                   ),
-      //           ],
-      //         ),
-      //       ),
-      //     ),
-      //   ),
-      // ),
-      // SingleChildScrollView(
-      //   child: Padding(
-      //     padding: const EdgeInsets.all(20.0),
-      //     child: Column(
-      //       mainAxisAlignment: MainAxisAlignment.center,
-      //       crossAxisAlignment: CrossAxisAlignment.center,
-      //       children: [
-      //         Align(
-      //           alignment: Alignment.centerLeft,
-      //           child: Row(
-      //             children: [
-      //               Text(
-      //                 '8. ',
-      //                 style: TextStyle(
-      //                   color: Colors.blue,
-      //                   fontSize: 30,
-      //                 ),
-      //               ),
-      //               Text(
-      //                 'People (Optional)',
-      //                 style: TextStyle(
-      //                   color: Colors.blue,
-      //                   fontSize: 12,
-      //                 ),
-      //               ),
-      //             ],
-      //           ),
-      //         ),
-      //         DirectionWidgetWhite(
-      //           fontSize: null,
-      //           text:
-      //               'Enter the name of people participating in this event. Separate each name with a comma(,).\nExmaple: James,Edith',
-      //         ),
-      //         ContentField(
-      //           labelText: "Name(s) of guests",
-      //           hintText: 'Special Guests (optional)',
-      //           initialValue:
-      //               Provider.of<UserData>(context, listen: false)
-      //                   .post11,
-      //           onSavedText: (input) =>
-      //               Provider.of<UserData>(context, listen: false)
-      //                   .setPost11(input),
-      //           onValidateText: (_) {},
-      //         ),
-      //         ContentField(
-      //           labelText: "Name(s) of artists",
-      //           hintText: 'Artist Performing (optional)',
-      //           initialValue:
-      //               Provider.of<UserData>(context, listen: false)
-      //                   .post12,
-      //           onSavedText: (input) =>
-      //               Provider.of<UserData>(context, listen: false)
-      //                   .setPost12(input),
-      //           onValidateText: (_) {},
-      //         ),
-      //         SizedBox(height: 70),
-      //         Padding(
-      //           padding: const EdgeInsets.only(bottom: 50),
-      //           child: AlwaysWhiteButton(
-      //               onPressed: _validate,
-      //               buttonText:
-      //                   widget.isEditting ? 'Next' : "Continue"),
-      //         ),
-      //       ],
-      //     ),
-      //   ),
-      // ),
-      // SingleChildScrollView(
-      //   child: Container(
-      //     child: Padding(
-      //       padding: const EdgeInsets.symmetric(horizontal: 12.0),
-      //       child: Column(
-      //         mainAxisAlignment: MainAxisAlignment.center,
-      //         crossAxisAlignment: CrossAxisAlignment.center,
-      //         children: <Widget>[
-      //           Align(
-      //             alignment: Alignment.centerLeft,
-      //             child: Row(
-      //               children: [
-      //                 Text(
-      //                   '8. ',
-      //                   style: TextStyle(
-      //                     color: Colors.blue,
-      //                     fontSize: 30,
-      //                   ),
-      //                 ),
-      //                 Text(
-      //                   'Flyer\nInformation.',
-      //                   style: TextStyle(
-      //                     color: Colors.blue,
-      //                     fontSize: 12,
-      //                   ),
-      //                 ),
-      //               ],
-      //             ),
-      //           ),
-      //           DirectionWidgetWhite(
-      //             fontSize: null,
-      //             text:
-      //                 'Provide the required information below correctly. The fields on this page cannot be empty. ',
-      //           ),
-      //           ContentField(
-      //             labelText: 'Title',
-      //             hintText: "Enter the title of your event",
-      //             initialValue:
-      //                 Provider.of<UserData>(context, listen: false)
-      //                     .post1
-      //                     .toString(),
-      //             onSavedText: (input) =>
-      //                 Provider.of<UserData>(context, listen: false)
-      //                     .setPost1(input),
-      //             onValidateText: (input) => input.trim().length < 1
-      //                 ? "The title cannot be empty"
-      //                 : null,
-      //           ),
-      //           ContentField(
-      //             labelText: 'Theme',
-      //             hintText: "Enter a theme for the event",
-      //             initialValue:
-      //                 Provider.of<UserData>(context, listen: false)
-      //                     .post2
-      //                     .toString(),
-      //             onSavedText: (input) =>
-      //                 Provider.of<UserData>(context, listen: false)
-      //                     .setPost2(input),
-      //             onValidateText: (input) => input.trim().length < 10
-      //                 ? "The theme is too short( > 10 characters)"
-      //                 : null,
-      //           ),
-      //           ContentField(
-      //             labelText: 'Host',
-      //             hintText: "Name of event host",
-      //             initialValue:
-      //                 Provider.of<UserData>(context, listen: false)
-      //                     .post4
-      //                     .toString(),
-      //             onSavedText: (input) =>
-      //                 Provider.of<UserData>(context, listen: false)
-      //                     .setPost4(input),
-      //             onValidateText: (input) => input.trim().length < 1
-      //                 ? "The host cannot be empty"
-      //                 : null,
-      //           ),
-      //           Provider.of<UserData>(context, listen: false)
-      //                   .post10
-      //                   .isEmpty
-      //               ? Provider.of<UserData>(context, listen: false)
-      //                       .bool2
-      //                   ? const SizedBox.shrink()
-      //                   : ContentField(
-      //                       labelText: 'Country',
-      //                       hintText: "Country of event",
-      //                       initialValue: Provider.of<UserData>(
-      //                               context,
-      //                               listen: false)
-      //                           .post10
-      //                           .toString(),
-      //                       onSavedText: (input) =>
-      //                           Provider.of<UserData>(context,
-      //                                   listen: false)
-      //                               .setPost10(input),
-      //                       onValidateText: (input) =>
-      //                           input.trim().length < 1
-      //                               ? "Enter the country of event"
-      //                               : null,
-      //                     )
-      //               : const SizedBox.shrink(),
-      //           const SizedBox(height: 70),
-      //           AlwaysWhiteButton(
-      //               onPressed: _validate,
-      //               buttonText:
-      //                   widget.isEditting ? 'Next' : "Continue"),
-      //           const SizedBox(height: 70),
-      //         ],
-      //       ),
-      //     ),
-      //   ),
-      // ),
-      // SingleChildScrollView(
-      //   child: Padding(
-      //     padding: const EdgeInsets.all(20.0),
-      //     child: Column(
-      //       mainAxisAlignment: MainAxisAlignment.center,
-      //       crossAxisAlignment: CrossAxisAlignment.center,
-      //       children: [
-      //         Align(
-      //           alignment: Alignment.centerLeft,
-      //           child: Row(
-      //             children: [
-      //               Text(
-      //                 '9. ',
-      //                 style: TextStyle(
-      //                   color: Colors.blue,
-      //                   fontSize: 30,
-      //                 ),
-      //               ),
-      //               Text(
-      //                 'Flyer\nInformation.(optional)',
-      //                 style: TextStyle(
-      //                   color: Colors.blue,
-      //                   fontSize: 12,
-      //                 ),
-      //               ),
-      //             ],
-      //           ),
-      //         ),
-      //         DirectionWidgetWhite(
-      //           fontSize: null,
-      //           text:
-      //               'You can provide the following information if available for your event. The information required on this page is optional. ',
-      //         ),
-      //         ContentField(
-      //           labelText: "Name of Dj",
-      //           hintText: 'Dj',
-      //           initialValue: widget.dj,
-      //           onSavedText: (input) => widget.dj = input,
-      //           onValidateText: (_) {},
-      //         ),
-      //         ContentField(
-      //           labelText: "Dress code for the event",
-      //           hintText: 'Dress code',
-      //           initialValue: widget.dressCode,
-      //           onSavedText: (input) => widget.dressCode = input,
-      //           onValidateText: (_) {},
-      //         ),
-      //         ContentField(
-      //           labelText: "Ticket site",
-      //           hintText: 'Website to purchase ticket',
-      //           initialValue: widget.ticketSite,
-      //           onSavedText: (input) => widget.ticketSite = input,
-      //           onValidateText: (_) {},
-      //         ),
-      //         ContentField(
-      //           labelText: "Previous event",
-      //           hintText: 'A Video link of the previous events',
-      //           initialValue: widget.previousEvent,
-      //           onSavedText: (input) => widget.previousEvent = input,
-      //           onValidateText: (input) =>
-      //               !musicVideoLink.hasMatch(input) &&
-      //                       input.trim().length > 1
-      //                   ? "Enter a valid video link"
-      //                   : null,
-      //         ),
-      //         SizedBox(height: 70),
-      //         Provider.of<UserData>(context, listen: false).isLoading
-      //             ? const SizedBox.shrink()
-      //             : Padding(
-      //                 padding: const EdgeInsets.only(bottom: 50),
-      //                 child: AvatarCircularButton(
-      //                     buttonText:
-      //                         widget.isEditting ? 'Save' : "Create",
-      //                     onPressed: () => widget.isEditting
-      //                         ? _submitEdit()
-      //                         : _showSelectImageDialog('create')),
-      //               ),
-      //         widget.isEditting
-      //             ? Column(
-      //                 children: [
-      //                   InkWell(
-      //                     borderRadius: BorderRadius.circular(10),
-      //                     onTap: () => () {},
-      //                     child: Ink(
-      //                       decoration: BoxDecoration(
-      //                         color: ConfigBloc().darkModeOn
-      //                             ? Colors.white
-      //                             : Colors.black,
-      //                         borderRadius: BorderRadius.circular(8),
-      //                       ),
-      //                       child: Container(
-      //                         height: 40,
-      //                         width: 40,
-      //                         child: IconButton(
-      //                             icon: Icon(Icons.delete_forever),
-      //                             iconSize: 25,
-      //                             color: ConfigBloc().darkModeOn
-      //                                 ? Colors.black
-      //                                 : Colors.white,
-      //                             onPressed: () {
-      //                               _showSelectImageDialog('');
-      //                             }),
-      //                       ),
-      //                     ),
-      //                   ),
-      //                   SizedBox(
-      //                     height: 30.0,
-      //                   ),
-      //                   Padding(
-      //                     padding: const EdgeInsets.only(
-      //                         left: 50.0, right: 50),
-      //                     child: Text(
-      //                       " Provide accurate information.\nRefresh your page to see the effect of your event edited or deleted",
-      //                       style: TextStyle(
-      //                           color: Colors.grey, fontSize: 12.0),
-      //                       textAlign: TextAlign.center,
-      //                     ),
-      //                   ),
-      //                   SizedBox(
-      //                     height: 50.0,
-      //                   ),
-      //                 ],
-      //               )
-      //             : const SizedBox.shrink()
-      //       ],
-      //     ),
-      //   ),
-      // ),
-      // SingleChildScrollView(
-      //   child: Container(
-      //       color: Color(0xFFFF2D55),
-      //       height: MediaQuery.of(context).size.height - 200,
-      //       child: Center(
-      //           child: Loading(
-      //         title: 'Publishing event',
-      //         icon: (Icons.event),
-      //       ))),
-      // )
     ));
   }
 }

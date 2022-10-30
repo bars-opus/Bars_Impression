@@ -35,7 +35,7 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
             ? _setupCountryEvent()
             : widget.locationType.startsWith('Virtual')
                 ? _setupVirtalEvent()
-                : () {};
+                : _nothing();
     _hideButtonController = ScrollController();
   }
 
@@ -48,11 +48,13 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
                 ? _loadMoreCountryEvents()
                 : widget.locationType.startsWith('Virtual')
                     ? _loadMoreVirtualEvents()
-                    : () {};
+                    : _nothing();
       }
     }
     return false;
   }
+
+  _nothing() {}
 
   @override
   void dispose() {
@@ -201,7 +203,9 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
     return _hasNext;
   }
 
-  _displayEvents(Event event,) {
+  _displayEvents(
+    Event event,
+  ) {
     return EventView(
       exploreLocation: widget.locationType.startsWith('City')
           ? 'City'
@@ -233,19 +237,6 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
                   return _displayEvents(
                     event,
                   );
-
-                  //  FutureBuilder(
-                  //     future: DatabaseService.getUserWithId(event.authorId),
-                  //     builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  //       if (!snapshot.hasData) {
-                  //         return EventSchimmerBlurHash(
-                  //           event: event,
-                  //         );
-                  //       }
-                  //       AccountHolder author = snapshot.data;
-
-                  //       return _displayEvents(event, author);
-                  //     });
                 },
                 childCount: _events.length,
               ),

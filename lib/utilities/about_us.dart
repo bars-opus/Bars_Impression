@@ -182,7 +182,7 @@ class _AboutUsState extends State<AboutUs> {
             ),
             const SizedBox(height: 10),
             Text(
-              'BARS IMPRESSION\nfrom',
+              'BARS IMPRESSION',
               style: TextStyle(fontSize: 12.0, color: Colors.white),
               textAlign: TextAlign.center,
             ), 

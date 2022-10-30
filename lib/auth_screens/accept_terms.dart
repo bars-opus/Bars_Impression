@@ -17,8 +17,6 @@ class _AcceptTermsState extends State<AcceptTerms>
   late AnimationController animationController;
 
   final _formKey = GlobalKey<FormState>();
-
-  // bool _isLoading = false;
   @override
   void initState() {
     super.initState();
@@ -199,9 +197,9 @@ class _AcceptTermsState extends State<AcceptTerms>
                                     width: 250.0,
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                        primary: Colors.white,
+                                        backgroundColor: Colors.white,
                                         elevation: 20.0,
-                                        onPrimary: Colors.blue,
+                                        foregroundColor: Colors.blue,
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(20.0),
@@ -235,7 +233,7 @@ class _AcceptTermsState extends State<AcceptTerms>
                                     width: 250.0,
                                     child: OutlinedButton(
                                       style: OutlinedButton.styleFrom(
-                                        primary: Colors.blue,
+                                        foregroundColor: Colors.blue,
                                         side: BorderSide(
                                           width: 1.0,
                                           color: Colors.white,

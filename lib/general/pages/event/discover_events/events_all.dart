@@ -1,6 +1,5 @@
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/rendering.dart';
-import 'package:async/async.dart';
 
 class EventsAll extends StatefulWidget {
   static final id = 'EventsAll';
@@ -96,24 +95,6 @@ class _EventsAllState extends State<EventsAll>
     return _hasNext;
   }
 
-  // _displayEvents(Event event, AccountHolder author) {
-  //   return EventProfileView(
-  //     exploreLocation: ' ',
-  //     allEvents: true,
-  //     currentUserId: widget.currentUserId,
-  //     event: event,
-  //     feed: 2,
-  //     // author: author,
-  //     user: widget.user!,
-  //   );
-  // }
-
-  // Future _fetchData(String authorId) async {
-  //   return this._memoizer.runOnce(() async {
-  //     final user = await DatabaseService.getUserWithId(authorId);
-  //     return user;
-  //   });
-  // }
 
   _buildUser() {
     return NotificationListener<ScrollNotification>(
@@ -134,23 +115,8 @@ class _EventsAllState extends State<EventsAll>
                     currentUserId: widget.currentUserId,
                     event: event,
                     feed: 2,
-                    // author: author,
                     user: widget.user!,
                   );
-
-                  // FutureBuilder(
-                  //     future: _fetchData(event.authorId),
-                  //     // DatabaseService.getUserWithId(event.authorId),
-                  //     builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  //       if (!snapshot.hasData) {
-                  //         return EventSchimmerBlurHash(
-                  //           event: event,
-                  //         );
-                  //       }
-                  //       AccountHolder author = snapshot.data;
-
-                  //       return _displayEvents(event, author);
-                  //     });
                 },
                 childCount: _events.length,
               ),

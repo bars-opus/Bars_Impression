@@ -141,35 +141,8 @@ class _AllPostState extends State<AllPost> {
                                                 currentUserId:
                                                     widget.currentUserId,
                                                 post: post,
-                                                // author: author,
                                               );
-                                              // FutureBuilder(
-                                              //   future: DatabaseService
-                                              //       .getUserWithId(
-                                              //           post.authorId),
-                                              //   builder: (BuildContext context,
-                                              //       AsyncSnapshot snapshot) {
-                                              //     if (!snapshot.hasData) {
-                                              //       return Padding(
-                                              //         padding:
-                                              //             const EdgeInsets.all(
-                                              //                 8.0),
-                                              //         child: PostBlurHash(
-                                              //           post: post,
-                                              //         ),
-                                              //       );
-                                              //     }
-                                              //     AccountHolder author =
-                                              //         snapshot.data;
-                                              //     return FeedGrid(
-                                              //       feed: 'All',
-                                              //       currentUserId:
-                                              //           widget.currentUserId,
-                                              //       post: post,
-                                              //       author: author,
-                                              //     );
-                                              //   },
-                                              // );
+                                             
                                             },
                                             childCount: _posts.length,
                                           ),

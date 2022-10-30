@@ -1,7 +1,5 @@
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/cupertino.dart';
-// import 'package:google_sign_in/google_sign_in.dart';
-// import 'package:google_sign_in/google_sign_in.dart';
 
 class ProfileSettings extends StatefulWidget {
   final AccountHolder user;
@@ -16,7 +14,6 @@ class ProfileSettings extends StatefulWidget {
 
 class _ProfileSettingsState extends State<ProfileSettings> {
   bool _disableChat = false;
-  bool _enableBookingOnChat = false;
   bool _disableAdvice = false;
   bool _hideAdvice = false;
   bool _noBooking = false;
@@ -73,28 +70,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
         });
   }
 
-  // _androidDialog(BuildContext parentContext) {
-  //   return showDialog(
-  //       context: parentContext,
-  //       builder: (context) {
-  //         return SimpleDialog(
-  //           title: Text('Are you sure you want to log out of this account?'),
-  //           children: <Widget>[
-  //             SimpleDialogOption(
-  //               child: Text('Log Out'),
-  //               onPressed: () {
-  //                 _logOutUser(context);
-  //               },
-  //             ),
-  //             SimpleDialogOption(
-  //               child: Text('cancel'),
-  //               onPressed: () => Navigator.pop(context),
-  //             ),
-  //           ],
-  //         );
-  //       });
-  // }
-
+ 
   _androidDialog(BuildContext parentContext) {
     return showDialog(
         context: parentContext,
@@ -162,8 +138,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
         ),
         duration: Duration(seconds: 3),
       )..show(context);
-      // final googleSignIn = GoogleSignIn();
-      // googleSignIn.disconnect();
+ 
       await _auth.signOut();
       Navigator.pushReplacementNamed(context, WelcomeScreen.id);
     } catch (e) {
@@ -189,7 +164,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
         icon: Icon(Icons.info_outline, size: 28.0, color: Colors.blue),
         mainButton: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            primary: Colors.transparent,
+            backgroundColor: Colors.transparent,
           ),
           onPressed: () => Navigator.pop(context),
           child: Text("Ok",
@@ -314,43 +289,18 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                         .update({
                                       'disableChat': _disableChat,
                                     });
+                                    usersAuthorRef
+                                        .doc(
+                                      widget.user.id,
+                                    )
+                                        .update({
+                                      'disableChat': _disableChat,
+                                    });
 
-    //                                  usersRef
-    //                 .doc( widget.user.id,)
-    //                 .collection('chats').
-    // //                .forEach((doc) {
-    //   if (doc.exists) {
-    //     doc.reference.delete();
-    //   }
-    // });
                                   },
                                 ),
                               ),
-                              // widget.user.profileHandle!.startsWith('Fan')
-                              //     ? const SizedBox.shrink()
-                              //     : Divider(color: Colors.grey),
-                              // widget.user.profileHandle!.startsWith('Fan')
-                              //     ? const SizedBox.shrink()
-                              //     : SettingSwitch(
-                              //         title: 'Enable chat booking',
-                              //         subTitle:
-                              //             'Your management contact appears on your chat details.',
-                              //         value: _enableBookingOnChat,
-                              //         onChanged: (value) => setState(
-                              //           () {
-                              //             _enableBookingOnChat =
-                              //                 this._enableBookingOnChat = value;
-                              //             usersRef
-                              //                 .doc(
-                              //               widget.user.id,
-                              //             )
-                              //                 .update({
-                              //               'enableBookingOnChat':
-                              //                   _enableBookingOnChat,
-                              //             });
-                              //           },
-                              //         ),
-                              //       ),
+                              
                               widget.user.profileHandle!.startsWith('Fan')
                                   ? const SizedBox.shrink()
                                   : Divider(color: Colors.grey),
@@ -442,38 +392,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              // GestureDetector(
-                              //   onTap: () => Navigator.push(
-                              //       context,
-                              //       MaterialPageRoute(
-                              //         builder: (_) => ProfileContentSettings(
-                              //           user: widget.user,
-                              //         ),
-                              //       )),
-                              //   child: IntroInfo(
-                              //     titleColor: ConfigBloc().darkModeOn
-                              //         ? Color(0xFFf2f2f2)
-                              //         : Color(0xFF1a1a1a),
-                              //     title: 'Content Settings',
-                              //     onPressed: () => Navigator.push(
-                              //         context,
-                              //         MaterialPageRoute(
-                              //           builder: (_) => ProfileContentSettings(
-                              //             user: widget.user,
-                              //           ),
-                              //         )),
-                              //     subTitle:
-                              //         "Control the privacy settings of your contents",
-                              //     icon: Icon(
-                              //       Icons.arrow_forward_ios_outlined,
-                              //       size: 20,
-                              //       color: ConfigBloc().darkModeOn
-                              //           ? Colors.white
-                              //           : Colors.black,
-                              //     ),
-                              //   ),
-                              // ),
-                              // Divider(color: Colors.grey),
+                             
                               GestureDetector(
                                 onTap: () => Navigator.push(
                                     context,
@@ -652,7 +571,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                         width: 250.0,
                         child: OutlinedButton(
                           style: OutlinedButton.styleFrom(
-                            primary: Colors.blue,
+                            foregroundColor: Colors.blue,
                             side: BorderSide(width: 1.0, color: Colors.blue),
                           ),
                           child: Hero(

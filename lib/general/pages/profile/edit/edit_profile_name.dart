@@ -93,15 +93,7 @@ class _EditProfileNameState extends State<EditProfileName> {
               });
             }
             try {
-              widget.user.verified!.isEmpty
-                  ? usersRef
-                      .doc(
-                      widget.user.id,
-                    )
-                      .update({
-                      'userName': _userName,
-                    })
-                  : _unVerify();
+              widget.user.verified!.isEmpty ? _update() : _unVerify();
 
               widget.user.verified!.isEmpty
                   ? Navigator.pop(context)
@@ -195,8 +187,34 @@ class _EditProfileNameState extends State<EditProfileName> {
     }
   }
 
+  _update() {
+    usersRef
+        .doc(
+      widget.user.id,
+    )
+        .update({
+      'userName': _userName,
+    });
+
+    usersAuthorRef
+        .doc(
+      widget.user.id,
+    )
+        .update({
+      'userName': _userName,
+    });
+  }
+
   _unVerify() {
     usersRef
+        .doc(
+      widget.user.id,
+    )
+        .update({
+      'userName': _userName,
+      'verified': '',
+    });
+    usersAuthorRef
         .doc(
       widget.user.id,
     )
@@ -309,6 +327,7 @@ class _EditProfileNameState extends State<EditProfileName> {
                                           child: Container(
                                             color: Colors.transparent,
                                             child: TextFormField(
+                                              autofocus: true,
                                               // onChanged: (input) {
                                               //   _validate();
                                               // },
@@ -392,12 +411,13 @@ class _EditProfileNameState extends State<EditProfileName> {
                                                 child: ElevatedButton(
                                                   style:
                                                       ElevatedButton.styleFrom(
-                                                    primary:
+                                                    backgroundColor:
                                                         ConfigBloc().darkModeOn
                                                             ? Colors.white
                                                             : Color(0xFF1d2323),
                                                     elevation: 20.0,
-                                                    onPrimary: Colors.blue,
+                                                    foregroundColor:
+                                                        Colors.blue,
                                                     shape:
                                                         RoundedRectangleBorder(
                                                       borderRadius:

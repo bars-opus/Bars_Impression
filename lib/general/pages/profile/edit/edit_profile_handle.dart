@@ -27,17 +27,8 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
     if (_profileHandle.isEmpty) {
       _profileHandle = 'Fan';
     }
-
     try {
-      widget.user.verified!.isEmpty
-          ? usersRef
-              .doc(
-              widget.user.id,
-            )
-              .update({
-              'profileHandle': _profileHandle,
-            })
-          : _unVerify();
+      widget.user.verified!.isEmpty ? _update() : _unVerify();
     } catch (e) {
       final double width = Responsive.isDesktop(context)
           ? 600.0
@@ -78,8 +69,34 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
     }
   }
 
+  _update() {
+    usersRef
+        .doc(
+      widget.user.id,
+    )
+        .update({
+      'profileHandle': _profileHandle,
+    });
+
+    usersAuthorRef
+        .doc(
+      widget.user.id,
+    )
+        .update({
+      'profileHandle': _profileHandle,
+    });
+  }
+
   _unVerify() {
     usersRef
+        .doc(
+      widget.user.id,
+    )
+        .update({
+      'profileHandle': _profileHandle,
+      'verified': '',
+    });
+    usersAuthorRef
         .doc(
       widget.user.id,
     )
@@ -157,26 +174,6 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
 
   _pop() {
     Navigator.pop(context);
-    // accountTypesRef
-    //     .doc(widget.user.profileHandle!)
-    //     .collection(widget.user.profileHandle!)
-    //     .doc(widget.user.id)
-    //     .get()
-    //     .then((doc) {
-    //   if (doc.exists) {
-    //     doc.reference.delete();
-    //   }
-    // });
-    // accountTypesRef
-    //     .doc(
-    //       _profileHandle,
-    //     )
-    //     .collection(_profileHandle)
-    //     .doc(widget.user.id)
-    //     .set({
-    //   'uid': widget.user.id,
-    //   'timestamp': Timestamp.fromDate(DateTime.now()),
-    // });
   }
 
   @override

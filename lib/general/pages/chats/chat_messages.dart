@@ -1,6 +1,6 @@
 // ignore_for_file: unnecessary_null_comparison
 
-import 'package:bars/general/models/user_author_model.dart';
+import 'package:bars/general/pages/chats/chat_details.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
@@ -148,6 +148,8 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     }
   }
 
+  _nothing() {}
+
   _deleteMessage(
     ChatMessage message,
   ) {
@@ -162,7 +164,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
         userId: widget.user.id!,
         message: message);
     message.mediaUrl.isEmpty
-        ? () {}
+        ? _nothing()
         : FirebaseStorage.instance
             .refFromURL(message.mediaUrl)
             .delete()
@@ -398,6 +400,12 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                       bottomRight: Radius.circular(30.0),
                     ),
               image: DecorationImage(
+                colorFilter: Provider.of<UserData>(context, listen: false)
+                                .postImage !=
+                            null ||
+                        _isreplying
+                    ? ColorFilter.mode(Colors.grey[700]!, BlendMode.modulate)
+                    : null,
                 image: CachedNetworkImageProvider(message.mediaUrl),
                 fit: BoxFit.cover,
               ),
@@ -1572,7 +1580,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                         duration: Duration(milliseconds: 500),
                                         height: _isBlockedUser ||
                                                 _isBlockingUser ||
-                                                widget.chat!.disableChat ||
+                                                widget.user.disableChat! ||
                                                 _restrictChat ||
                                                 Provider.of<UserData>(context,
                                                         listen: false)
@@ -1587,20 +1595,20 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                             color: widget.chat!.restrictChat ||
                                                     _restrictChat ||
                                                     _isBlockingUser ||
-                                                    widget.chat!.disableChat
+                                                    widget.user.disableChat!
                                                 ? Colors.grey
                                                 : Colors.transparent,
                                             onPressed: () => () {},
                                           ),
                                           title: Text(
-                                              widget.chat!.disableChat
+                                              widget.user.disableChat!
                                                   ? 'Disabled chat'
                                                   : _restrictChat
                                                       ? 'Restricted chat'
                                                       : _isBlockingUser
                                                           ? 'Unblock to send message'
-                                                          : widget.chat!
-                                                                  .disableChat
+                                                          : widget.user
+                                                                  .disableChat!
                                                               ? widget.user
                                                                       .userName! +
                                                                   ' is not interested in receiving new messages'
@@ -1703,7 +1711,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                             ),
                             _isBlockedUser ||
                                     _isBlockingUser ||
-                                    widget.chat!.disableChat ||
+                                    widget.user.disableChat! ||
                                     _restrictChat ||
                                     Provider.of<UserData>(context,
                                             listen: false)
@@ -1735,9 +1743,11 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
                       color: Colors.black87,
-                      child: Text(
-                        'Sending..',
-                        style: TextStyle(color: Colors.white),
+                      child: Center(
+                        child: Text(
+                          'Sending..',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     )
                   : const SizedBox.shrink()

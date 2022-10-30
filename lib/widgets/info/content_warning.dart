@@ -98,7 +98,7 @@ class ContentWarning extends StatelessWidget {
                     color: Colors.transparent,
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
-                        primary: Colors.transparent,
+                        foregroundColor: Colors.transparent,
                         side: BorderSide(width: 1.0, color: Colors.transparent),
                       ),
                       onPressed: onPressed,

@@ -100,7 +100,7 @@ class _DiscoverUserState extends State<DiscoverUser>
                                             )))
                                   ],
                                 )
-                              : _locationTab(),
+                              : LocationTab(),
                           const SizedBox(height: 20),
                           TabBar(
                               labelColor: ConfigBloc().darkModeOn
@@ -254,7 +254,7 @@ class _DiscoverUserState extends State<DiscoverUser>
 }
 
 //display
-class _locationTab extends StatelessWidget {
+class LocationTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String currentUserId =
@@ -281,7 +281,7 @@ class _locationTab extends StatelessWidget {
                               children: [
                                 OutlinedButton(
                                   style: OutlinedButton.styleFrom(
-                                    primary: Colors.blue,
+                                    foregroundColor: Colors.blue,
                                     side: BorderSide(
                                         width: 1.0, color: Colors.grey),
                                   ),
@@ -323,7 +323,7 @@ class _locationTab extends StatelessWidget {
                       const SizedBox(width: 20),
                       OutlinedButton(
                           style: OutlinedButton.styleFrom(
-                            primary: Colors.blue,
+                            foregroundColor: Colors.blue,
                             side: BorderSide(width: 1.0, color: Colors.grey),
                           ),
                           child: Padding(
@@ -351,7 +351,7 @@ class _locationTab extends StatelessWidget {
                       const SizedBox(width: 20),
                       OutlinedButton(
                         style: OutlinedButton.styleFrom(
-                          primary: Colors.blue,
+                          foregroundColor: Colors.blue,
                           side: BorderSide(width: 1.0, color: Colors.grey),
                         ),
                         child: Padding(
@@ -393,7 +393,7 @@ class _locationTab extends StatelessWidget {
                       Container(
                         child: OutlinedButton(
                             style: OutlinedButton.styleFrom(
-                              primary: Colors.blue,
+                              foregroundColor: Colors.blue,
                               side: BorderSide(width: 1.0, color: Colors.grey),
                             ),
                             child: Padding(
@@ -435,7 +435,7 @@ class _locationTab extends StatelessWidget {
                       Container(
                         child: OutlinedButton(
                             style: OutlinedButton.styleFrom(
-                              primary: Colors.blue,
+                              foregroundColor: Colors.blue,
                               side: BorderSide(width: 1.0, color: Colors.grey),
                             ),
                             child: Padding(

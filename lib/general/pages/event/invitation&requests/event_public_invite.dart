@@ -449,9 +449,9 @@ class _EventPublicInviteState extends State<EventPublicInvite> {
                         width: width,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
+                            backgroundColor: Colors.white,
                             elevation: 0.0,
-                            onPrimary: Colors.blue,
+                            foregroundColor: Colors.blue,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(5.0),
                             ),

@@ -1,4 +1,3 @@
-import 'package:bars/general/models/user_author_model.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -6,12 +5,9 @@ class Chats extends StatefulWidget {
   static final id = 'Chats';
   final String currentUserId;
   final String? userId;
-  // final int activityChatCount;
-
   Chats({
     required this.currentUserId,
     required this.userId,
-    // required this.activityChatCount,
   });
 
   @override
@@ -91,7 +87,7 @@ class _ChatsState extends State<Chats> {
                                   }
                                   AccountHolderAuthor author = snapshot.data;
 
-                                  return _display(
+                                  return Display(
                                     author: author,
                                     chats: chats,
                                     lastMessage: lastMessage,
@@ -130,14 +126,14 @@ class _ChatsState extends State<Chats> {
 
 //display
 // ignore: must_be_immutable
-class _display extends StatelessWidget {
+class Display extends StatelessWidget {
   final AccountHolderAuthor author;
   final Chat chats;
   String lastMessage;
   String seen;
   final String userId;
 
-  _display({
+  Display({
     required this.author,
     required this.chats,
     required this.lastMessage,

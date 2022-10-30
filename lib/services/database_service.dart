@@ -1,4 +1,3 @@
-import 'package:bars/general/models/user_author_model.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:uuid/uuid.dart';
 
@@ -50,7 +49,7 @@ class DatabaseService {
   static Future<QuerySnapshot> searchUsers(String name) {
     Future<QuerySnapshot> users = usersRef
         .where('userName', isGreaterThanOrEqualTo: name)
-        .limit(30)
+        .limit(20)
         .get();
     return users;
   }
@@ -58,7 +57,7 @@ class DatabaseService {
   static Future<QuerySnapshot> searchEvent(String title) {
     Future<QuerySnapshot> events = allEventsRef
         .where('title', isGreaterThanOrEqualTo: title)
-        .limit(30)
+        .limit(10)
         .get();
     return events;
   }
@@ -66,7 +65,7 @@ class DatabaseService {
   static Future<QuerySnapshot> searchPost(String punchline) {
     Future<QuerySnapshot> posts = allPostsRef
         .where('punch', isGreaterThanOrEqualTo: punchline)
-        .limit(30)
+        .limit(15)
         .get();
     return posts;
   }
@@ -74,7 +73,7 @@ class DatabaseService {
   static Future<QuerySnapshot> searchForum(String title) {
     Future<QuerySnapshot> forums = allForumsRef
         .where('title', isGreaterThanOrEqualTo: title)
-        .limit(30)
+        .limit(15)
         .get();
     return forums;
   }
@@ -736,6 +735,7 @@ class DatabaseService {
       'reportConfirmation': reportContents.reportConfirmation,
       'authorId': reportContents.authorId,
       'timestamp': reportContents.timestamp,
+      'comment': reportContents.comment,
     });
   }
 
@@ -1227,40 +1227,12 @@ class DatabaseService {
     return feedForumSnapShot.docs.length - 1;
   }
 
-  // static Future<List<Post>> getAllPosts(
-  //   String userId,
-  // ) async {
-  //   QuerySnapshot allPostsSnapShot =
-  //       await allPostsRef.orderBy('timestamp', descending: true).get();
-  //   List<Post> posts =
-  //       allPostsSnapShot.docs.map((doc) => Post.fromDoc(doc)).toList();
-  //   return posts;
-  // }
-
-  // static Future<List<Post>> getAllArtistPosts(
-  //     String userId, String artist) async {
-  //   QuerySnapshot allPostsSnapShot =
-  //       await allPostsRef.where('artist', isEqualTo: artist).get();
-  //   List<Post> posts =
-  //       allPostsSnapShot.docs.map((doc) => Post.fromDoc(doc)).toList();
-  //   return posts;
-  // }
-
   static Stream<int> numArtistPunch(String userId, String artist) {
     return allPostsRef
         .where('artist', isEqualTo: artist)
         .snapshots()
         .map((documentSnapshot) => documentSnapshot.docs.length);
   }
-
-  // static Future<List<Post>> getAllhasTagPosts(
-  //     String userId, String hashTag) async {
-  //   QuerySnapshot allPostsSnapShot =
-  //       await allPostsRef.where('hashTag', isEqualTo: hashTag).get();
-  //   List<Post> posts =
-  //       allPostsSnapShot.docs.map((doc) => Post.fromDoc(doc)).toList();
-  //   return posts;
-  // }
 
   static Stream<int> numPunchlinePunch(String userId, String punchline) {
     return allPostsRef
@@ -1402,6 +1374,7 @@ class DatabaseService {
       userName: '',
       profileHandle: '',
       verified: '',
+      disableChat: null,
     );
   }
 
@@ -2079,14 +2052,6 @@ class DatabaseService {
             'ask': '',
             'timestamp': Timestamp.fromDate(DateTime.now()),
           })
-
-        // addActivityEventItem(
-        //     currentUserId: user.id!,
-        //     event: event,
-        //     ask: '',
-        //     eventInviteType: 'AttendRequest',
-        //     commonId: commonId,
-        //   )
         : () {};
   }
 
@@ -2099,25 +2064,6 @@ class DatabaseService {
     required AccountHolder currentUser,
   }) {
     String commonId = Uuid().v4();
-    // userInviteRef.doc(user.id).collection('eventInvite').doc(event.id).set({
-    //   'eventId': event.id,
-    //   'requestNumber': requestNumber,
-    //   'commonId': commonId,
-    //   'attendNumber': '',
-    //   'anttendeeId': user.id,
-    //   'message': message,
-    //   'inviteStatus': '',
-    //   'inviteeName': '',
-    //   'invited': true,
-    //   'attendeeStatus': '',
-    //   'anttendeeName': user.userName,
-    //   'anttendeeprofileHandle': user.profileHandle,
-    //   'anttendeeprofileImageUrl': user.profileImageUrl,
-    //   'eventImageUrl': event.imageUrl,
-    //   'authorId': event.authorId,
-    //   'timestamp': Timestamp.fromDate(DateTime.now()),
-    //   'eventTimestamp': eventDate,
-    // });
 
     eventInviteRef.doc(event.id).collection('eventInvite').doc(user.id).set({
       'eventId': event.id,
@@ -2215,22 +2161,6 @@ class DatabaseService {
       'seen': 'seen',
       'timestamp': Timestamp.fromDate(DateTime.now()),
     });
-    // activitiesEventRef
-    //     .doc(event.authorId)
-    //     .collection('userActivitiesEvent')
-    //     .doc(commonId)
-    //     .set({
-    //   'toUserId': currentUserId,
-    //   'fromUserId': currentUserId,
-    //   'eventId': event.id,
-    //   'eventInviteType': 'Invitation',
-    //   'seen': '',
-    //   'eventImageUrl': event.imageUrl,
-    //   'eventTitle': event.title,
-    //   'commonId': commonId,
-    //   'ask': '',
-    //   'timestamp': Timestamp.fromDate(DateTime.now()),
-    // });
   }
 
   static void deleteUnAvailableEvent({

@@ -4,24 +4,15 @@ import 'package:timeago/timeago.dart' as timeago;
 
 class ForumViewWidget extends StatelessWidget {
   final String currentUserId;
-  // final AccountHolder author;
   final Forum forum;
   final int thoughtCount;
-  // final String titleHero;
   final String feed;
-  // final String subtitleHero;
-  // final VoidCallback onPressedThougthScreen;
 
   ForumViewWidget({
     required this.forum,
-    // required this.author,
     required this.currentUserId,
-    // required this.titleHero,
-    // required this.subtitleHero,
-    // required this.onPressedThougthScreen,
     required this.feed,
     required this.thoughtCount,
-//  required String thougthCount,
   });
 
   @override
@@ -123,7 +114,6 @@ class ForumViewWidget extends StatelessWidget {
           subtitle: SizedBox(
             height: 5.0,
           ),
-          // onTap: onPressedThougthScreen,
         );
       },
       openBuilder:

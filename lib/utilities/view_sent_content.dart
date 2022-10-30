@@ -15,9 +15,9 @@ class _ViewSentContentState extends State<ViewSentContent> {
   @override
   void initState() {
     super.initState();
-    widget.contentType.startsWith('Forum') ? _setUpThoughts() : () {};
+    widget.contentType.startsWith('Forum') ? _setUpThoughts() : _nothing();
   }
-
+_nothing(){}
   _setUpThoughts() async {
     DatabaseService.numThoughts(widget.contentId).listen((thoughtCount) {
       if (mounted) {
@@ -51,7 +51,6 @@ class _ViewSentContentState extends State<ViewSentContent> {
                         if (!snapshot.hasData) {
                           return PostSchimmerSkeleton();
                         }
-                        AccountHolder _author = snapshot.data;
                         return AllPostEnlarged(
                             currentUserId:
                                 Provider.of<UserData>(context, listen: false)

@@ -6,13 +6,11 @@ import 'package:bars/utilities/exports.dart';
 class FeedGrid extends StatefulWidget {
   final String currentUserId;
   final Post post;
-  // final AccountHolder author;
   final String feed;
 
   FeedGrid({
     required this.currentUserId,
     required this.post,
-    // required this.author,
     required this.feed,
   });
 

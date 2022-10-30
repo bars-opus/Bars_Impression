@@ -85,15 +85,6 @@ class _CommentsScreenState extends State<CommentsScreen>
   ) {
     final width = MediaQuery.of(context).size.width;
     final String currentUserId = Provider.of<UserData>(context).currentUserId!;
-    // return
-
-    // FutureBuilder(
-    //   future: DatabaseService.getUserWithId(comment.authorId),
-    //   builder: (BuildContext context, AsyncSnapshot snapshot) {
-    //     if (!snapshot.hasData) {
-    //       return const SizedBox.shrink();
-    //     }
-    //     AccountHolder author = snapshot.data;
     return FocusedMenuHolder(
       menuWidth: width,
       menuOffset: 1,
@@ -496,23 +487,7 @@ class _CommentsScreenState extends State<CommentsScreen>
                                                   return _buildComment(
                                                     comment,
                                                   );
-                                                  // FutureBuilder(
-                                                  //     future: DatabaseService
-                                                  //         .getUserWithId(
-                                                  //             comment.authorId),
-                                                  //     builder:
-                                                  //         (BuildContext context,
-                                                  //             AsyncSnapshot
-                                                  //                 snapshot) {
-                                                  //       if (!snapshot.hasData) {
-                                                  //         return FollowerUserSchimmerSkeleton();
-                                                  //       }
-                                                  //       AccountHolder author =
-                                                  //           snapshot.data;
-
-                                                  //       return _buildComment(
-                                                  //           comment, author);
-                                                  //     });
+                                                 
                                                 },
                                                 childCount:
                                                     snapshot.data.docs.length,

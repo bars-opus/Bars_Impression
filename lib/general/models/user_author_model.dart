@@ -7,6 +7,8 @@ class AccountHolderAuthor {
   final String? profileImageUrl;
   final String? verified;
   final String? profileHandle;
+  final bool? disableChat;
+
   final String? bio;
 
   AccountHolderAuthor({
@@ -16,6 +18,7 @@ class AccountHolderAuthor {
     required this.bio,
     required this.profileHandle,
     required this.verified,
+    required this.disableChat,
   });
 
   factory AccountHolderAuthor.fromDoc(DocumentSnapshot doc) {
@@ -26,6 +29,7 @@ class AccountHolderAuthor {
       bio: doc['bio'] ?? '',
       profileHandle: doc['profileHandle'] ?? 'Fan',
       verified: doc['verified'] ?? '',
+      disableChat: doc['disableChat'] ?? false,
     );
   }
 }

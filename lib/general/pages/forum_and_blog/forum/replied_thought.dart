@@ -8,13 +8,11 @@ class ReplyThoughtsScreen extends StatefulWidget {
   final Thought thought;
   final String currentUserId;
   final bool isBlocked;
-  // final AccountHolder author;
 
   ReplyThoughtsScreen({
     required this.forum,
     required this.currentUserId,
     required this.thought,
-    // required this.author,
     required this.isBlocked,
   });
 
@@ -109,18 +107,7 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
     final String currentUserId = Provider.of<UserData>(context).currentUserId!;
     return Padding(
         padding: const EdgeInsets.only(left: 30.0),
-        child:
-
-            // FutureBuilder(
-            //   future: DatabaseService.getUserWithId(replyThought.authorId),
-            //   builder: (BuildContext context, AsyncSnapshot snapshot) {
-            //     if (!snapshot.hasData) {
-            //       return const SizedBox.shrink();
-            //     }
-            //     AccountHolder author = snapshot.data;
-            //     return
-
-            ListTile(
+        child: ListTile(
           leading: currentUserId == replyThought.authorId
               ? const SizedBox.shrink()
               : CircleAvatar(
@@ -566,24 +553,6 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
                                                             .data.docs[index]);
                                                 return _buildComment(
                                                     replyThought);
-                                                // FutureBuilder(
-                                                //   future: DatabaseService
-                                                //       .getUserWithId(
-                                                //           replyThought
-                                                //               .authorId),
-                                                //   builder: (BuildContext
-                                                //           context,
-                                                //       AsyncSnapshot snapshot) {
-                                                //     if (!snapshot.hasData) {
-                                                //       return const SizedBox
-                                                //           .shrink();
-                                                //     }
-                                                //     AccountHolder author =
-                                                //         snapshot.data;
-                                                //     return _buildComment(
-                                                //         replyThought);
-                                                //   },
-                                                // );
                                               }),
                                         );
                                       }),

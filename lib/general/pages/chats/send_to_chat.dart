@@ -12,8 +12,6 @@ class SendToChats extends StatefulWidget {
   final Forum? forum;
   final AccountHolder? user;
 
-  // final int activityChatCount;
-
   SendToChats({
     required this.currentUserId,
     required this.userId,
@@ -23,7 +21,6 @@ class SendToChats extends StatefulWidget {
     required this.forum,
     required this.user,
     required this.sendContentId,
-    // required this.activityChatCount,
   });
 
   @override
@@ -339,7 +336,7 @@ class _SendToChatsState extends State<SendToChats> {
                                                 AccountHolder author =
                                                     snapshot.data;
 
-                                                return _display(
+                                                return Display(
                                                   author: author,
                                                   chats: chats,
                                                   lastMessage: lastMessage,
@@ -408,7 +405,7 @@ class _SendToChatsState extends State<SendToChats> {
 
 //display
 // ignore: must_be_immutable
-class _display extends StatefulWidget {
+class Display extends StatefulWidget {
   final AccountHolder author;
   final Chat chats;
   String lastMessage;
@@ -419,7 +416,7 @@ class _display extends StatefulWidget {
   final String sendContentType;
   final String sendContentId;
 
-  _display({
+  Display({
     required this.author,
     required this.chats,
     required this.lastMessage,
@@ -432,10 +429,10 @@ class _display extends StatefulWidget {
   });
 
   @override
-  State<_display> createState() => _displayState();
+  State<Display> createState() => DisplayState();
 }
 
-class _displayState extends State<_display> {
+class DisplayState extends State<Display> {
   int _chatMessageCount = 0;
 
   @override

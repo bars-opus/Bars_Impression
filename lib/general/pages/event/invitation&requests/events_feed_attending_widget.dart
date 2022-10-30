@@ -24,9 +24,11 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
   @override
   void initState() {
     super.initState();
-    widget.event.id.isEmpty ? () {} : _countDown();
+    widget.event.id.isEmpty ? _nothing() : _countDown();
   }
 
+
+_nothing(){}
   _countDown() async {
     DateTime date = DateTime.parse(widget.event.date);
     DateTime closingdate = DateTime.parse(widget.event.clossingDay);

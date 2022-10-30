@@ -118,21 +118,6 @@ class _ArtistsLiveState extends State<ArtistsLive>
                     userId: accountHolder.id!,
                     user: accountHolder,
                   );
-                  // FutureBuilder(
-                  //     future: DatabaseService.getUserWithId(accountHolder.id!),
-                  //     builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  //       if (!snapshot.hasData) {
-                  //         return UserSchimmerSkeleton();
-                  //       }
-                  //       AccountHolder accountHolder = snapshot.data;
-
-                  //       return UserView(
-                  //         exploreLocation: widget.exploreLocation,
-                  //         currentUserId: widget.currentUserId,
-                  //         userId: accountHolder.id!,
-                  //         user: accountHolder,
-                  //       );
-                  //     });
                 },
                 childCount: _userList.length,
               ),

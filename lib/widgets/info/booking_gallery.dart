@@ -15,7 +15,6 @@ class BookingGallery extends StatefulWidget {
 
 class _BookingGalleryState extends State<BookingGallery> {
   late PageController _pageController;
-  int _index = 0;
 
   @override
   void initState() {
@@ -55,12 +54,7 @@ class _BookingGalleryState extends State<BookingGallery> {
                 child: PageView(
                     controller: _pageController,
                     physics: AlwaysScrollableScrollPhysics(),
-                    onPageChanged: (int index) {
-                      setState(() {
-                        _index = index;
-                      });
-                      _index;
-                    },
+                   
                     children: [
                       Hero(
                         tag: 'image1',

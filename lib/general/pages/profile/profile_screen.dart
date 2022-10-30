@@ -38,7 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   void initState() {
     super.initState();
-    widget.userId.isEmpty ? () {} : setUp();
+    widget.userId.isEmpty ? _nothing() : setUp();
   }
 
   setUp() {
@@ -55,6 +55,8 @@ class _ProfileScreenState extends State<ProfileScreen>
     _setUpNegativeRated();
     _setUpProfileUser();
   }
+
+  _nothing() {}
 
   _setupIsFollowing() async {
     bool isFollowingUser = await DatabaseService.isFollowingUser(
@@ -315,10 +317,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                                             : 150.0,
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                        primary: ConfigBloc().darkModeOn
+                                        backgroundColor: ConfigBloc().darkModeOn
                                             ? Colors.blueGrey[100]
                                             : Colors.white,
-                                        onPrimary: Colors.blue,
+                                        foregroundColor: Colors.blue,
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(20.0),
@@ -356,10 +358,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                                             : 150.0,
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                        primary: ConfigBloc().darkModeOn
+                                        backgroundColor: ConfigBloc().darkModeOn
                                             ? Colors.blueGrey[100]
                                             : Colors.white,
-                                        onPrimary: Colors.blue,
+                                        foregroundColor: Colors.blue,
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(20.0),
@@ -499,8 +501,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                   width: 150.0,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: _isFollowing ? Colors.grey : Color(0xFFD38B41),
-                      onPrimary: Colors.blue,
+                      backgroundColor:
+                          _isFollowing ? Colors.grey : Color(0xFFD38B41),
+                      foregroundColor: Colors.blue,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
@@ -520,20 +523,6 @@ class _ProfileScreenState extends State<ProfileScreen>
             ),
           );
   }
-
-//  Navigator.push(
-//                 context,
-//                 PageRouteBuilder(
-//                   pageBuilder: (context, animation1, animation2) =>
-//                       AllPostEnlarged(
-//                     feed: 'Profile',
-//                     currentUserId: widget.currentUserId,
-//                     post: post,
-//                     author: _profileUser,
-//                   ),
-//                   transitionDuration: Duration(seconds: 0),
-//                 ),
-//               ),
 
   Widget buildBlur({
     required Widget child,
@@ -1172,7 +1161,6 @@ class _ProfileScreenState extends State<ProfileScreen>
     if (_moodPunched == 0) {
       return Column(
         children: <Widget>[
-          // _buildToggleButton(user),
           _buildDisplayPosts(),
         ],
       );
@@ -1197,7 +1185,9 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   _dynamicLink() async {
-    var linkUrl = Uri.parse(_profileUser.profileImageUrl!);
+    var linkUrl = _profileUser.profileImageUrl!.isEmpty
+        ? Uri.parse('https://firebasestorage.googleapis.com/v0/b/bars-5e3e5.appspot.com/o/IMG_8574.PNG?alt=media&token=ccb4e3b1-b5dc-470f-abd0-63edb5ed549f')
+        : Uri.parse(_profileUser.profileImageUrl!);
 
     final dynamicLinkParams = DynamicLinkParameters(
       socialMetaTagParameters: SocialMetaTagParameters(
@@ -1277,7 +1267,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             ? _blockser(user)
                             : from.startsWith('unBlock')
                                 ? _unBlockser(user)
-                                : () {};
+                                : _nothing();
                   }),
             ],
             cancelButton: CupertinoActionSheetAction(
@@ -1333,7 +1323,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             ? _blockser(user)
                             : from.startsWith('unBlock')
                                 ? _unBlockser(user)
-                                : () {};
+                                : _nothing();
                   },
                 ),
               ),
@@ -1745,7 +1735,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 _setUpEvents();
                                 _setUpPossitiveRated();
                                 _setUpNegativeRated();
-                                // _setUpProfileUser();
                               },
                               child: ListView(children: <Widget>[
                                 Container(
@@ -1890,21 +1879,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                                           width > 600 ? 16 : 14,
                                                     ),
                                                   ),
-                                            // user.profileHandle!
-                                            //             .startsWith('F') ||
-                                            //         user.profileHandle!.isEmpty
-                                            //     ? const SizedBox.shrink()
-                                            //     : Row(
-                                            //         crossAxisAlignment:
-                                            //             CrossAxisAlignment
-                                            //                 .start,
-                                            //         mainAxisAlignment:
-                                            //             MainAxisAlignment
-                                            //                 .center,
-                                            //         children: [
-                                            //           Stars(score: user.score!),
-                                            //         ],
-                                            //       ),
+                                          
                                             user.profileHandle!
                                                         .startsWith('F') ||
                                                     user.profileHandle!.isEmpty
@@ -1976,56 +1951,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                                       SizedBox(
                                                         width: 10,
                                                       ),
-                                                      // GestureDetector(
-                                                      //   onTap: () =>
-                                                      //       Navigator.push(
-                                                      //           context,
-                                                      //           MaterialPageRoute(
-                                                      //               builder: (_) =>
-                                                      //                   ProfileRating(
-                                                      //                     user:
-                                                      //                         user,
-                                                      //                     currentUserId:
-                                                      //                         widget.currentUserId,
-                                                      //                   ))),
-                                                      //   child: Container(
-                                                      //     width: 35,
-                                                      //     height: 35,
-                                                      //     decoration:
-                                                      //         BoxDecoration(
-                                                      //       color: Colors
-                                                      //           .transparent,
-                                                      //       shape:
-                                                      //           BoxShape.circle,
-                                                      //       border: Border.all(
-                                                      //           width: 1.0,
-                                                      //           color: Colors
-                                                      //               .white),
-                                                      //     ),
-                                                      //     child: Padding(
-                                                      //       padding:
-                                                      //           const EdgeInsets
-                                                      //               .all(1.0),
-                                                      //       child: Align(
-                                                      //         alignment:
-                                                      //             Alignment
-                                                      //                 .center,
-                                                      //         child: Text(
-                                                      //           'R',
-                                                      //           style:
-                                                      //               TextStyle(
-                                                      //             color: Colors
-                                                      //                 .white,
-                                                      //             fontSize: 14,
-                                                      //           ),
-                                                      //           textAlign:
-                                                      //               TextAlign
-                                                      //                   .center,
-                                                      //         ),
-                                                      //       ),
-                                                      //     ),
-                                                      //   ),
-                                                      // ),
+                                                     
                                                       SizedBox(
                                                         width: 10,
                                                       ),

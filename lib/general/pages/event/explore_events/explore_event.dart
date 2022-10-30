@@ -9,7 +9,6 @@ class ExploreEvent extends StatefulWidget {
   final String currentUserId;
   final AccountHolder user;
   final int askCount;
-  // final AccountHolder author;
   final Event event;
   final int feed;
   final String exploreLocation;
@@ -17,7 +16,6 @@ class ExploreEvent extends StatefulWidget {
   ExploreEvent(
       {required this.currentUserId,
       required this.askCount,
-      // required this.author,
       required this.feed,
       required this.exploreLocation,
       required this.event,
@@ -44,7 +42,7 @@ class _ExploreEventState extends State<ExploreEvent> {
   void initState() {
     _pageController.addListener(_listenScroll);
     _setShowInfo();
-    widget.exploreLocation.endsWith('Live') ? _getCurrentLocation() : () {};
+    widget.exploreLocation.endsWith('Live') ? _getCurrentLocation() : _nothing();
     widget.exploreLocation.endsWith('City')
         ? _setUpCityFeed()
         : widget.exploreLocation.endsWith('Country')
@@ -58,6 +56,8 @@ class _ExploreEventState extends State<ExploreEvent> {
     super.initState();
   }
 
+
+_nothing(){}
   _setShowInfo() {
     if (_showInfo) {
       Timer(Duration(seconds: 3), () {
@@ -92,7 +92,7 @@ class _ExploreEventState extends State<ExploreEvent> {
                 ? _setupAllCategoryEvent()
                 : widget.feed == 4
                     ? _setupProfileEvent()
-                    : () {};
+                    : _nothing();
   }
 
   _loadMore() {
@@ -104,7 +104,7 @@ class _ExploreEventState extends State<ExploreEvent> {
                 ? _loadMoreAllCategoryEvent()
                 : widget.feed == 3
                     ? _loadMoreProfileEvents()
-                    : () {};
+                    : _nothing();
   }
 
   _setUpCityFeed() async {
@@ -112,7 +112,7 @@ class _ExploreEventState extends State<ExploreEvent> {
         ? _setupAllCityEvent()
         : widget.feed == 3
             ? _setupCategoryCityEvent()
-            : () {};
+            : _nothing();
   }
 
   _loadMoreCity() {
@@ -120,7 +120,7 @@ class _ExploreEventState extends State<ExploreEvent> {
         ? _loadMoreAllCityEvents()
         : widget.feed == 3
             ? _loadMoreCategoryCityEvent()
-            : () {};
+            : _nothing();
   }
 
   _setUpCountryFeed() async {
@@ -128,7 +128,7 @@ class _ExploreEventState extends State<ExploreEvent> {
         ? _setupAllCountryEvent()
         : widget.feed == 3
             ? _setupCategoryCountryEvent()
-            : () {};
+            : _nothing();
   }
 
   _loadMoreCountry() {
@@ -136,7 +136,7 @@ class _ExploreEventState extends State<ExploreEvent> {
         ? _loadMoreAllCountryEvents()
         : widget.feed == 3
             ? _loadMoreCategoryCountryEvent()
-            : () {};
+            : _nothing();
   }
 
   _setUpLiveFeed() async {
@@ -144,7 +144,7 @@ class _ExploreEventState extends State<ExploreEvent> {
         ? _setupAllLiveEvent()
         : widget.feed == 3
             ? _setupCategoryLiveEvent()
-            : () {};
+            : _nothing();
   }
 
   _loadMoreLive() {
@@ -152,7 +152,7 @@ class _ExploreEventState extends State<ExploreEvent> {
         ? _loadMoreAllLiveEvents()
         : widget.feed == 3
             ? _loadMoreCategoryLiveEvent()
-            : () {};
+            : _nothing();
   }
 
   _setUpVirtualFeed() async {
@@ -160,7 +160,7 @@ class _ExploreEventState extends State<ExploreEvent> {
         ? _setupAllVirtualEvent()
         : widget.feed == 3
             ? _setupCategoryVirtualEvent()
-            : () {};
+            : _nothing();
   }
 
   _loadMoreVirtual() {
@@ -168,7 +168,7 @@ class _ExploreEventState extends State<ExploreEvent> {
         ? _loadMoreAllVirtualEvents()
         : widget.feed == 3
             ? _loadMoreCategoryVirtualEvent()
-            : () {};
+            : _nothing();
   }
 
   _getCurrentLocation() async {
@@ -827,7 +827,7 @@ class _ExploreEventState extends State<ExploreEvent> {
                                                 widget.feed == 2
                                                     ? "Explore\nAll Events\nIn $_city"
                                                     : widget.feed == 3
-                                                        ? "Explore\n${widget.event.type == 'Others' ? widget.event.type : widget.event.type + 's'}\nIn ${_city}"
+                                                        ? "Explore\n${widget.event.type == 'Others' ? widget.event.type : widget.event.type + 's'}\nIn $_city"
                                                         : '',
                                                 style: TextStyle(
                                                   color: Colors.white,
@@ -981,7 +981,7 @@ class ExploreEventEnlarged extends StatefulWidget {
 }
 
 class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
-  late DateTime _date;
+  // late DateTime _date;
   late DateTime _toDaysDate;
   int _different = 0;
   late DateTime _closingDate;
@@ -1000,7 +1000,7 @@ class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
     var different = date.difference(toDayDate).inDays;
 
     setState(() {
-      _date = date;
+      // _date = date;
       _different = different;
       _toDaysDate = toDayDate;
       _closingDate = clossingDate;
@@ -1113,7 +1113,7 @@ class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
                             : _toDaysDate.isAfter(_closingDate)
                                 ? EventCompletedWidget(
                                     date: widget.event.date,
-                                    onPressed: () {},
+                                    onPressed: (){},
                                     previousEvent: widget.event.previousEvent,
                                     type: widget.event.type,
                                     title: widget.event.title,
@@ -1189,7 +1189,7 @@ class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
                                             width: 35.0,
                                             child: OutlinedButton(
                                               style: OutlinedButton.styleFrom(
-                                                primary: Colors.blue,
+                                                foregroundColor: Colors.blue,
                                                 side: BorderSide(
                                                     width: 1.0,
                                                     color: Colors.white),
@@ -1221,7 +1221,7 @@ class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
                                                 ),
                                                 textAlign: TextAlign.center,
                                               ),
-                                              onPressed: () => () {},
+                                              onPressed: (){},
                                             ),
                                           ),
                                         ),

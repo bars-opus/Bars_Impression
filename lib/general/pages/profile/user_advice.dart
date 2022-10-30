@@ -16,18 +16,6 @@ class UserAdviceScreen extends StatefulWidget {
 }
 
 class _UserAdviceScreenState extends State<UserAdviceScreen> {
-  // RandomColor _randomColor = RandomColor();
-  // final List<ColorHue> _hueType = <ColorHue>[
-  //   ColorHue.green,
-  //   ColorHue.red,
-  //   ColorHue.pink,
-  //   ColorHue.purple,
-  //   ColorHue.blue,
-  //   ColorHue.yellow,
-  //   ColorHue.orange
-  // ];
-
-  // ColorSaturation _colorSaturation = ColorSaturation.random;
 
   final TextEditingController _adviceControler = TextEditingController();
   bool _isAdvicingUser = false;
@@ -115,7 +103,6 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
         MaterialPageRoute(
             builder: (_) => ProfileProfessionalProfile(
                   currentUserId: Provider.of<UserData>(context).currentUserId!,
-                  // user: widget.post.authorId,
                   userId: userAdvice.authorId, user: user,
                 )));
   }
@@ -125,14 +112,6 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
   ) {
     final width = MediaQuery.of(context).size.width;
     final String currentUserId = Provider.of<UserData>(context).currentUserId!;
-    // return
-    // FutureBuilder(
-    //   future: DatabaseService.getUserWithId(userAdvice.authorId),
-    //   builder: (BuildContext context, AsyncSnapshot snapshot) {
-    //     if (!snapshot.hasData) {
-    //       return const SizedBox.shrink();
-    //     }
-    //     AccountHolder author = snapshot.data;
     return FocusedMenuHolder(
       menuWidth: width,
       menuOffset: 1,
@@ -170,11 +149,7 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (_) =>
-                                // author.userName!.isEmpty
-                                //     ? UserNotFound(
-                                //         userName: 'User',
-                                //       )
-                                //     :
+                          
                                 ProfileScreen(
                                   currentUserId: Provider.of<UserData>(context)
                                       .currentUserId!,
@@ -182,15 +157,6 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                                 )))
                     : _viewProfessionalProfile(userAdvice)
 
-            // Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //         builder: (_) => ProfileProfessionalProfile(
-            //               currentUserId: Provider.of<UserData>(context)
-            //                   .currentUserId!,
-            //               user: author,
-            //               userId: userAdvice.authorId,
-            //             ))),
             ),
         FocusedMenuItem(
             title: Container(
@@ -390,11 +356,7 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                           context,
                           MaterialPageRoute(
                               builder: (_) =>
-                                  // author.userName!.isEmpty
-                                  //     ? UserNotFound(
-                                  //         userName: 'User',
-                                  //       )
-                                  //     :
+                                 
                                   ProfileScreen(
                                     currentUserId: currentUserId,
                                     userId: userAdvice.authorId,
@@ -693,28 +655,6 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                                                               return _buildBlogComment(
                                                                 userAdvice,
                                                               );
-
-                                                              //  FutureBuilder(
-                                                              //     future: DatabaseService
-                                                              //         .getUserWithId(
-                                                              //             userAdvice
-                                                              //                 .authorId),
-                                                              //     builder: (BuildContext
-                                                              //             context,
-                                                              //         AsyncSnapshot
-                                                              //             snapshot) {
-                                                              //       if (!snapshot
-                                                              //           .hasData) {
-                                                              //         return FollowerUserSchimmerSkeleton();
-                                                              //       }
-                                                              //       AccountHolder
-                                                              //           author =
-                                                              //           snapshot
-                                                              //               .data;
-                                                              //       return _buildBlogComment(
-                                                              //           userAdvice,
-                                                              //           author);
-                                                              //     });
                                                             },
                                                             childCount: snapshot
                                                                 .data

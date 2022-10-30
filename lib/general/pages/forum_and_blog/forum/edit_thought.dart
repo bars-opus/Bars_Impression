@@ -320,11 +320,11 @@ class _EditThoughtState extends State<EditThought> {
                       width: 250.0,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          primary: ConfigBloc().darkModeOn
+                          backgroundColor: ConfigBloc().darkModeOn
                               ? Color(0xFF1a1a1a)
                               : Colors.white,
                           elevation: 20.0,
-                          onPrimary: Colors.blue,
+                          foregroundColor: Colors.blue,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20.0),
                           ),

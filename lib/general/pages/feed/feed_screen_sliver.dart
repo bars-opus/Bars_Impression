@@ -1,5 +1,5 @@
+import 'package:bars/general/pages/chats/chats.dart';
 import 'package:bars/utilities/exports.dart';
-import 'package:async/async.dart';
 import 'package:intl/intl.dart';
 
 class FeedScreenSliver extends StatefulWidget {
@@ -34,7 +34,6 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
   int limit = 5;
   bool _hasNext = true;
   bool _isFetchingPost = false;
-  late AsyncMemoizer _memoizer;
 
   late PageController _pageController;
 
@@ -44,8 +43,6 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
     _pageController = PageController(
       initialPage: 0,
     );
-    _memoizer = AsyncMemoizer();
-
     _setupFeed();
     _setUpactivityCount();
     _setUpactivityForumCount();
@@ -89,15 +86,9 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
       setState(() {
         _hasNext = false;
         _postsList = posts;
-        // ..shuffle();
       });
     }
-    return posts.forEach((doc) {
-           DatabaseService.getUserWithId(doc.authorId);
-      // if (doc.exists) {
-      //   doc.reference.delete();
-      // }
-    });
+    
   }
 
   _loadMorePosts() async {
@@ -215,57 +206,6 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
     });
   }
 
-// Map<String, AsyncMemoizer>
-
-  // Future _fetchData(
-  //   List postList,
-  // ) async {
-  //   // postList
-  //   //     .map((e) => this._memoizer.runOnce(() async {
-  //   //           // final Post post = postList[i];
-  //   //           return DatabaseService.getUserWithId(e.authorId);
-  //   //           // return user;
-  //   //         }))
-  //   //     .toList();
-  //   //     print()
-
-  //   postList
-  //       .asMap()
-  //       .map((i, e) {
-  //         return MapEntry(
-  //             i,
-  //             this._memoizer.runOnce(() async {
-  //               final Post post = postList[i];
-  //               return DatabaseService.getUserWithId(post.authorId);
-  //               // return user;
-  //             }));
-  //       })
-  //   .values
-  //   .toList();
-  //      print()
-
-  // }
-
-  // Future<AccountHolder> runner(String authorId) async {
-  //   return await this._memoizer.runOnce(() async {
-  //     return getUser(authorId);
-  //     // return user;
-  //   });
-  // }
-
-  // Future<AccountHolder> getUser(String authorId) async {
-  //   return await DatabaseService.getUserWithId(authorId);
-  // }
-
-  // Map<String, dynamic> _fetchData(String authorId) {
-  //   Map<String, dynamic> user = {
-  //     authorId: this._memoizer.runOnce(() async {
-  //       return DatabaseService.getUserWithId(authorId);
-  //       // return user;
-  //     })
-  //   };
-  //   return user;
-  // }
 
   _buildPostBuilder() {
     super.build(context);
@@ -288,34 +228,10 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
                         key: PageStorageKey('FeedList'),
                         currentUserId: widget.currentUserId,
                         post: post,
-                        // author: author,
                         postList: _postsList,
                         showExplore: _showExplore,
                       );
                   
-                  // FutureBuilder(
-                  //   future: runner(post.authorId),
-                  //   //  _fetchData(
-                  //   //   _postsList,
-                  //   // ),
-                  //   // DatabaseService.getUserWithId(post.authorId),
-                  //   builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  //     if (!snapshot.hasData) {
-                  //       return PostEnlargedBlurharsh(
-                  //         post: post,
-                  //       );
-                  //     }
-                  //     AccountHolder author = snapshot.data;
-                  //     return PostView(
-                  //       key: PageStorageKey('FeedList'),
-                  //       currentUserId: widget.currentUserId,
-                  //       post: post,
-                  //       author: author,
-                  //       postList: _postsList,
-                  //       showExplore: _showExplore,
-                  //     );
-                  //   },
-                  // );
                 },
                 childCount: _postsList.length,
               ),
@@ -334,9 +250,6 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
     int flCount = _activityFollowerCount.toInt();
     int total = eCount + pCount + fCount + aCount + flCount;
     return _totalCount = total;
-    // setState(() {
-    //   _totalCount = total;
-    // });
   }
 
   @override
@@ -454,7 +367,6 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
               ),
               Chats(
                 currentUserId: widget.currentUserId,
-                // activityChatCount: _activityChatCount,
                 userId: '',
               ),
             ]));
@@ -687,7 +599,6 @@ class BuildToggleButton extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (_) => Chats(
                           currentUserId: currentUserId,
-                          // activityChatCount: activityChatCount,
                           userId: '',
                         ),
                       ),

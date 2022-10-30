@@ -324,9 +324,9 @@ class _SignpsScreenState extends State<SignpsScreen>
                                                 child: ElevatedButton(
                                                   style:
                                                       ElevatedButton.styleFrom(
-                                                    primary: Colors.white,
+                                                    backgroundColor: Colors.white,
                                                     elevation: 20.0,
-                                                    onPrimary: Colors.blue,
+                                                    foregroundColor: Colors.blue,
                                                     shape:
                                                         RoundedRectangleBorder(
                                                       borderRadius:
@@ -372,7 +372,7 @@ class _SignpsScreenState extends State<SignpsScreen>
                                                 child: OutlinedButton(
                                                   style:
                                                       OutlinedButton.styleFrom(
-                                                    primary: Colors.blue,
+                                                    foregroundColor: Colors.blue,
                                                     side: BorderSide(
                                                       width: 1.0,
                                                       color: Colors.white,

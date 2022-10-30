@@ -36,7 +36,7 @@ class _ArtistsLocationState extends State<ArtistsLocation>
             ? _setupCountryUsers()
             : widget.locationType.startsWith('Continent')
                 ? _setupContinentUsers()
-                : () {};
+                : _nothing();
 
     _hideButtonController = ScrollController();
     _hideButtonController.addListener(() {
@@ -51,6 +51,9 @@ class _ArtistsLocationState extends State<ArtistsLocation>
     });
   }
 
+
+  _nothing(){}
+
   bool _handleScrollNotification(ScrollNotification notification) {
     if (notification is ScrollEndNotification) {
       if (_hideButtonController.position.extentAfter == 0) {
@@ -60,7 +63,7 @@ class _ArtistsLocationState extends State<ArtistsLocation>
                 ? _loadMoreCountryUsers()
                 : widget.locationType.startsWith('Continent')
                     ? _loadMoreContinentUsers()
-                    : () {};
+                    : _nothing();
       }
     }
     return false;
@@ -231,21 +234,6 @@ class _ArtistsLocationState extends State<ArtistsLocation>
                     userId: accountHolder.id!,
                     user: accountHolder,
                   );
-                  //  FutureBuilder(
-                  //     future: DatabaseService.getUserWithId(accountHolder.id!),
-                  //     builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  //       if (!snapshot.hasData) {
-                  //         return UserSchimmerSkeleton();
-                  //       }
-                  //       AccountHolder accountHolder = snapshot.data;
-
-                  //       return UserView(
-                  //         exploreLocation: widget.locationType,
-                  //         currentUserId: widget.currentUserId,
-                  //         userId: accountHolder.id!,
-                  //         user: accountHolder,
-                  //       );
-                  //     });
                 },
                 childCount: _userList.length,
               ),

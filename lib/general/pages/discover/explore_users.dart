@@ -35,7 +35,7 @@ class _UsersExpandState extends State<UsersExpand> {
   void initState() {
     _pageController.addListener(_listenScroll);
     _setShowInfo();
-    widget.exploreLocation.endsWith('Live') ? _getCurrentLocation() : () {};
+    widget.exploreLocation.endsWith('Live') ? _getCurrentLocation() : _nothing();
     widget.exploreLocation.endsWith('City')
         ? _setupCityUsers()
         : widget.exploreLocation.endsWith('Country')
@@ -48,6 +48,8 @@ class _UsersExpandState extends State<UsersExpand> {
     // _setupUsers();
     super.initState();
   }
+
+  _nothing(){}
 
   _setShowInfo() {
     if (_showInfo) {
@@ -414,7 +416,7 @@ class _UsersExpandState extends State<UsersExpand> {
                                                   ? "Explore\n${widget.user.profileHandle}s in ${widget.user.continent}"
                                                   : widget.exploreLocation
                                                           .startsWith('Live')
-                                                      ? "Explore\n${widget.user.profileHandle}s in ${_city}"
+                                                      ? "Explore\n${widget.user.profileHandle}s in $_city"
                                                       : 'Explore\n${widget.user.profileHandle}s',
                                       style: TextStyle(
                                         color: Colors.white,

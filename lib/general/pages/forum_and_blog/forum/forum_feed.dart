@@ -116,22 +116,7 @@ class _ForumFeedState extends State<ForumFeed>
                       currentUserId: widget.currentUserId,
                       forum: forum,
                     );
-                    // FutureBuilder(
-                    //     future: DatabaseService.getUserWithId(forum.authorId),
-                    //     builder:
-                    //         (BuildContext context, AsyncSnapshot snapshot) {
-                    //       if (!snapshot.hasData) {
-                    //         return ForumSchimmerSkeleton();
-                    //       }
-                    //       AccountHolder author = snapshot.data;
-                    //       return ForumView(
-                    //         currentUserId: widget.currentUserId,
-                    //         forum: forum,
-                    //         feed: 'Feed',
-                    //         author: author,
-                    //         // forumList: _forumList,
-                    //       );
-                    //     });
+                   
                   },
                   childCount: _forumList.length,
                 ),

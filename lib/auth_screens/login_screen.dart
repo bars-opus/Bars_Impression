@@ -1,3 +1,4 @@
+import 'package:bars/general/pages/discover/discover_user.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/scheduler.dart';
@@ -189,7 +190,7 @@ class _LoginScreenState extends State<LoginScreen>
             size: width > 800 ? 50 : 28.0, color: Colors.blue),
         mainButton: OutlinedButton(
           style: OutlinedButton.styleFrom(
-            primary: Colors.transparent,
+            backgroundColor: Colors.transparent,
             side: BorderSide(width: 1.0, color: Colors.transparent),
           ),
           onPressed: () => Navigator.pop(context),
@@ -437,9 +438,9 @@ class _LoginScreenState extends State<LoginScreen>
                                                     child: ElevatedButton(
                                                       style: ElevatedButton
                                                           .styleFrom(
-                                                        primary: Colors.white,
+                                                        backgroundColor: Colors.white,
                                                         elevation: 20.0,
-                                                        onPrimary: Colors.blue,
+                                                        foregroundColor: Colors.blue,
                                                         shape:
                                                             RoundedRectangleBorder(
                                                           borderRadius:
@@ -478,7 +479,7 @@ class _LoginScreenState extends State<LoginScreen>
                                                     child: OutlinedButton(
                                                       style: OutlinedButton
                                                           .styleFrom(
-                                                        primary: Colors.blue,
+                                                        backgroundColor: Colors.blue,
                                                         side: BorderSide(
                                                           width: 1.0,
                                                           color: Colors.white,

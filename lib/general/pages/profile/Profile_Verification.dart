@@ -930,7 +930,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                   DirectionWidget(
                                     text: _govIdType.isEmpty
                                         ? 'You will need to confirm your identity with Bars Impression to be Verified. This helps encourage and maintain trust between users on the platform.  Provide a photo of a valid official government-issued identification document, such as your Driver’s License or Passport if you are and individual. Companies, brands, or organizations are required to provide their document of incorporation.'
-                                        : 'Attach an image of your ${_govIdType} and lets continue',
+                                        : 'Attach an image of your $_govIdType and lets continue',
                                     fontSize: 14,
                                     sizedBox: 10,
                                   ),
@@ -1197,9 +1197,9 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                               child: ElevatedButton(
                                                   style:
                                                       ElevatedButton.styleFrom(
-                                                    primary: Colors.blue,
+                                                    backgroundColor: Colors.blue,
                                                     elevation: 20.0,
-                                                    onPrimary: Colors.blue,
+                                                    foregroundColor: Colors.blue,
                                                     shape:
                                                         RoundedRectangleBorder(
                                                       borderRadius:

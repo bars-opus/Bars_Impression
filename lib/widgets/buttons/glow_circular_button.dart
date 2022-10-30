@@ -12,9 +12,9 @@ class AvatarCircularButton extends StatelessWidget {
       width: 250,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          primary: ConfigBloc().darkModeOn ? Colors.blue : Color(0xFF1a1a1a),
+          backgroundColor: ConfigBloc().darkModeOn ? Colors.blue : Color(0xFF1a1a1a),
           elevation: 20.0,
-          onPrimary: Colors.blue,
+          foregroundColor: Colors.blue,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20.0),
           ),

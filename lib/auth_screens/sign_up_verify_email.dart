@@ -139,11 +139,13 @@ class _SignpsScreenVerifyEmailState extends State<SignpsScreenVerifyEmail>
 
   Future checkEmailVerified() async {
     await FirebaseAuth.instance.currentUser!.reload();
-
-    setState(() {
+if(mounted){
+ setState(() {
       _isVerified = FirebaseAuth.instance.currentUser!.emailVerified;
     });
 
+}
+   
     if (_isVerified) {
       timer?.cancel();
       return AuthService.verifyUseer(
@@ -226,9 +228,9 @@ class _SignpsScreenVerifyEmailState extends State<SignpsScreenVerifyEmail>
                                                 child: ElevatedButton(
                                                   style:
                                                       ElevatedButton.styleFrom(
-                                                    primary: Colors.white,
+                                                    backgroundColor: Colors.white,
                                                     elevation: 20.0,
-                                                    onPrimary: Colors.blue,
+                                                    foregroundColor: Colors.blue,
                                                     shape:
                                                         RoundedRectangleBorder(
                                                       borderRadius:

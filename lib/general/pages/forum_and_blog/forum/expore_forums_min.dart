@@ -5,7 +5,6 @@ import 'package:bars/utilities/exports.dart';
 class ExploreForumMin extends StatefulWidget {
   final String currentUserId;
   final Forum forum;
-  // final AccountHolder author;
   final String feed;
 
   ExploreForumMin(
@@ -36,7 +35,6 @@ class _ExploreForumMinState extends State<ExploreForumMin> {
   @override
   Widget build(BuildContext context) {
     return ExploreForumsMinWidget(
-      // author: widget.author,
       currentUserId: widget.currentUserId,
       forum: widget.forum,
       feed: widget.feed,

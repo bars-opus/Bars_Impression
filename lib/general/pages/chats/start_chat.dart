@@ -112,10 +112,10 @@ class _StartChatState extends State<StartChat> {
                   width: width - 100,
                   child: TextButton(
                     style: ElevatedButton.styleFrom(
-                      primary: ConfigBloc().darkModeOn
+                      backgroundColor: ConfigBloc().darkModeOn
                           ? Color(0xFF1a1a1a)
                           : Colors.white,
-                      onPrimary: Colors.blue,
+                      foregroundColor: Colors.blue,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(3.0),
                       ),
@@ -146,10 +146,10 @@ class _StartChatState extends State<StartChat> {
                   width: width - 100,
                   child: TextButton(
                     style: ElevatedButton.styleFrom(
-                      primary: ConfigBloc().darkModeOn
+                      backgroundColor: ConfigBloc().darkModeOn
                           ? Color(0xFF1a1a1a)
                           : Colors.white,
-                      onPrimary: Colors.blue,
+                      foregroundColor: Colors.blue,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(3.0),
                       ),

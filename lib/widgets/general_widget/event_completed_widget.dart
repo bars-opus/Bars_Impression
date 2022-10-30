@@ -155,7 +155,7 @@ class EventCompletedWidget extends StatelessWidget {
                   child: Container(
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
-                        primary: Colors.blue,
+                        foregroundColor: Colors.blue,
                         side: BorderSide(width: 1.0, color: Colors.white),
                       ),
                       child: Padding(

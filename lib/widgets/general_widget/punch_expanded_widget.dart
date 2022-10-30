@@ -7,7 +7,6 @@ import 'package:timeago/timeago.dart' as timeago;
 class PunchExpandedWidget extends StatefulWidget {
   final String currentUserId;
   final Post post;
-  // final AccountHolder author;
   final String feed;
 
   PunchExpandedWidget({
@@ -189,6 +188,8 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                   user: user,
                 )));
   }
+
+  _nothing() {}
 
   @override
   Widget build(BuildContext context) {
@@ -385,7 +386,7 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                                                                         .authorHandleType
                                                                         .startsWith(
                                                                             'Fan')
-                                                                    ? () {}
+                                                                    ? _nothing()
                                                                     : _viewProfessionalProfile();
                                                           },
                                                           backgroundColor:
@@ -949,7 +950,6 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                                 ),
                               )
                             : const SizedBox.shrink()
-                        // ]),
                       ]),
                     ]),
               ),

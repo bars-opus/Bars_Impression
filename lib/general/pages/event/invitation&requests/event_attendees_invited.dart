@@ -395,11 +395,11 @@ class _EventAttendeesInvitedState extends State<EventAttendeesInvited>
                           width: width / 1.5,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              primary:
+                              backgroundColor:
                                   // Colors.grey,
                                   Color(0xFFf2f2f2),
                               elevation: 0.0,
-                              onPrimary: Colors.blue,
+                              foregroundColor: Colors.blue,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(5.0),
                               ),

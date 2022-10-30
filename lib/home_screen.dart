@@ -1,3 +1,4 @@
+import 'package:bars/general/pages/discover/discover_user.dart';
 import 'package:bars/general/pages/forum_and_blog/forum/forum_feed.dart';
 import 'package:bars/utilities/local_notification.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -204,7 +205,7 @@ class _HomeMobileState extends State<HomeMobile> {
                 ],
               ),
               child: _user.disabledAccount!
-                  ? reActivateAccount(user: _user)
+                  ? ReActivateAccount(user: _user)
                   : Stack(
                       alignment: FractionalOffset.center,
                       children: [
@@ -633,7 +634,7 @@ class _HomeDesktopState extends State<HomeDesktop> {
             backgroundColor:
                 ConfigBloc().darkModeOn ? Color(0xFF1f2022) : Color(0xFFf2f2f2),
             body: _user.disabledAccount!
-                ? reActivateAccount(user: _user)
+                ? ReActivateAccount(user: _user)
                 : Container(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,

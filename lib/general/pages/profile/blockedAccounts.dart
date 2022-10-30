@@ -1,4 +1,3 @@
-import 'package:bars/general/models/user_author_model.dart';
 import 'package:bars/utilities/exports.dart';
 
 class BlockedAccounts extends StatefulWidget {

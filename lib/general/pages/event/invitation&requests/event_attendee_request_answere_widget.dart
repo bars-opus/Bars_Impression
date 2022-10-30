@@ -31,12 +31,14 @@ class _EventAttendeeRequestAnswereWidgetState
         ? _accepted = true
         : widget.invite.attendeeStatus.startsWith('Reject')
             ? _rejected = true
-            : null;
+            : _nothing();
 
-    widget.activityEvent == null ? _getInvitationActivity() : () {};
+    widget.activityEvent == null ? _getInvitationActivity() : _nothing();
     _setUpAttendee();
   }
 
+
+_nothing(){}
   _setUpAttendee() async {
     DatabaseService.numEventAttendee(widget.invite.eventId, 'Accepted')
         .listen((attendeeNumber) {
@@ -69,11 +71,11 @@ class _EventAttendeeRequestAnswereWidgetState
   _activityAvailableSubmit() {
     widget.activityEvent!.seen != 'seen'
         ? _submit(widget.activityEvent!)
-        : () {};
+        : _nothing();
   }
 
   _activitySubmit() {
-    _inviteActivity!.seen != 'seen' ? _submit(_inviteActivity!) : () {};
+    _inviteActivity!.seen != 'seen' ? _submit(_inviteActivity!) : _nothing();
   }
 
   _submit(ActivityEvent activiitiesEvent) async {
@@ -111,7 +113,7 @@ class _EventAttendeeRequestAnswereWidgetState
               )
             ]),
         child: GestureDetector(
-            onTap: () {},
+            onTap: _nothing(),
             child: Material(
                 color: Colors.transparent,
                 child: Column(
@@ -228,13 +230,13 @@ class _EventAttendeeRequestAnswereWidgetState
                                     width: width / 3,
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                        primary: _accepted == true
+                                        backgroundColor: _accepted == true
                                             ? Colors.blue
                                             : _rejected == true
                                                 ? Colors.white
                                                 : Color(0xFFf2f2f2),
                                         elevation: 0.0,
-                                        onPrimary: Colors.blue,
+                                        foregroundColor: Colors.blue,
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(5.0),
@@ -274,13 +276,13 @@ class _EventAttendeeRequestAnswereWidgetState
                                     width: width / 3,
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                        primary: _rejected == true
+                                        backgroundColor: _rejected == true
                                             ? Colors.blue
                                             : _accepted == true
                                                 ? Colors.white
                                                 : Color(0xFFf2f2f2),
                                         elevation: 0.0,
-                                        onPrimary: Colors.blue,
+                                        foregroundColor: Colors.blue,
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(5.0),
@@ -328,7 +330,7 @@ class _EventAttendeeRequestAnswereWidgetState
                                     width: width / 3,
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                        primary: _accepted == true
+                                        backgroundColor: _accepted == true
                                             ? widget.palette!.darkMutedColor ==
                                                     null
                                                 ? Colors.blue
@@ -338,7 +340,7 @@ class _EventAttendeeRequestAnswereWidgetState
                                                 ? Colors.white
                                                 : Color(0xFFf2f2f2),
                                         elevation: 0.0,
-                                        onPrimary: Colors.blue,
+                                        foregroundColor: Colors.blue,
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(5.0),
@@ -378,7 +380,7 @@ class _EventAttendeeRequestAnswereWidgetState
                                     width: width / 3,
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                        primary: _rejected == true
+                                        backgroundColor: _rejected == true
                                             ? widget.palette!.darkMutedColor ==
                                                     null
                                                 ? Colors.blue
@@ -388,7 +390,7 @@ class _EventAttendeeRequestAnswereWidgetState
                                                 ? Colors.white
                                                 : Color(0xFFf2f2f2),
                                         elevation: 0.0,
-                                        onPrimary: Colors.blue,
+                                        foregroundColor: Colors.blue,
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(5.0),

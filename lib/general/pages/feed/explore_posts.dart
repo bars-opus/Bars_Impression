@@ -43,7 +43,7 @@ class _ExplorePostsState extends State<ExplorePosts> {
                         ? _setupArtistPost()
                         : widget.feed.startsWith('Hashtag')
                             ? _setupHashtagPost()
-                            : () {};
+                            : _nothing();
     _setShowInfo();
 
     super.initState();
@@ -322,6 +322,9 @@ class _ExplorePostsState extends State<ExplorePosts> {
     _isFetchingPost = false;
     return _hasNext;
   }
+
+_nothing(){}
+
 
   Widget buildBlur({
     required Widget child,
@@ -817,7 +820,7 @@ class _ExplorePostsState extends State<ExplorePosts> {
                                                       : widget.feed.startsWith(
                                                               'Hashtag')
                                                           ? _loadMoreHashtagPosts()
-                                                          : () {};
+                                                          : _nothing();
                                 }
                               },
                               itemBuilder: (context, index) {

@@ -358,9 +358,9 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                     width: width,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.white,
+                        backgroundColor: Colors.white,
                         elevation: 0.0,
-                        onPrimary: Colors.blue,
+                        foregroundColor: Colors.blue,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5.0),
                         ),
@@ -983,9 +983,9 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                             width: width / 2.5,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                primary: Colors.white,
+                                backgroundColor: Colors.white,
                                 elevation: 0.0,
-                                onPrimary: Colors.blue,
+                                foregroundColor: Colors.blue,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(5.0),
                                 ),
@@ -1010,9 +1010,9 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                             width: width / 2.5,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                primary: Colors.white,
+                                backgroundColor: Colors.white,
                                 elevation: 0.0,
-                                onPrimary: Colors.blue,
+                                foregroundColor: Colors.blue,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(5.0),
                                 ),
@@ -1044,9 +1044,9 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                         width: width,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
+                            backgroundColor: Colors.white,
                             elevation: 0.0,
-                            onPrimary: Colors.blue,
+                            foregroundColor: Colors.blue,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(5.0),
                             ),

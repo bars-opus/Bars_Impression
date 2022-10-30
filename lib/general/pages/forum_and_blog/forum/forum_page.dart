@@ -100,21 +100,6 @@ class _ForumPageState extends State<ForumPage>
                             
                           );
                     
-                    // FutureBuilder(
-                    //     future: DatabaseService.getUserWithId(forum.authorId),
-                    //     builder:
-                    //         (BuildContext context, AsyncSnapshot snapshot) {
-                    //       if (!snapshot.hasData) {
-                    //         return ForumSchimmerSkeleton();
-                    //       }
-                    //       AccountHolder author = snapshot.data;
-                    //       return ForumView(
-                    //         feed: 'All',
-                    //         currentUserId: widget.currentUserId,
-                    //         forum: forum,
-                    //         author: author,
-                    //       );
-                    //     });
                   },
                   childCount: _forumList.length,
                 ),

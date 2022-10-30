@@ -144,28 +144,9 @@ class _EventsFeedState extends State<EventsFeed>
                     currentUserId: widget.currentUserId,
                     event: event,
                     user: user,
-                    // author: author,
-                    // eventList: _events,
+                 
                   );
-                  // FutureBuilder(
-                  //     future: DatabaseService.getUserWithId(event.authorId),
-                  //     builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  //       if (!snapshot.hasData) {
-                  //         return EventSchimmerBlurHash(
-                  //           event: event,
-                  //         );
-                  //       }
-                  //       AccountHolder author = snapshot.data;
-                  //       return EventView(
-                  //         exploreLocation: 'No',
-                  //         feed: 1,
-                  //         currentUserId: widget.currentUserId,
-                  //         event: event,
-                  //         user: user,
-                  //         // author: author,
-                  //         // eventList: _events,
-                  //       );
-                  //     });
+                  
                 },
                 childCount: _events.length,
               ),
@@ -228,7 +209,7 @@ class _EventsFeedState extends State<EventsFeed>
                   // ignore: unnecessary_null_comparison
                   : user == null
                       ? const SizedBox.shrink()
-                      : _display(
+                      : Display(
                           user: user,
                         ),
             ),
@@ -240,13 +221,7 @@ class _EventsFeedState extends State<EventsFeed>
         removeTop: true,
         child: Container(
           color: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-          child: user == null
-              ? NoContents(
-                  icon: (Icons.error),
-                  title: 'Sorry',
-                  subTitle: 'We run into a prblem please refresh your app',
-                )
-              : Column(
+          child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -312,10 +287,10 @@ class _EventsFeedState extends State<EventsFeed>
 }
 
 //display
-class _display extends StatelessWidget {
+class Display extends StatelessWidget {
   final AccountHolder user;
 
-  _display({
+ Display({
     required this.user,
   });
   @override

@@ -1,7 +1,5 @@
 import 'package:bars/services/bars_google_auth_service.dart';
 import 'package:bars/utilities/exports.dart';
-import 'package:flutter/scheduler.dart';
-// import 'package:google_sign_in/goo gle_sign_in.dart';
 
 class LoginScreenOptions extends StatefulWidget {
   final String? from;
@@ -140,7 +138,7 @@ class _LoginScreenOptionsState extends State<LoginScreenOptions>
                       ShakeTransition(
                         child: OutlinedButton(
                           style: OutlinedButton.styleFrom(
-                            primary: Colors.blue,
+                            foregroundColor: Colors.blue,
                             side: BorderSide(
                               width: 1.0,
                               color: Colors.transparent,

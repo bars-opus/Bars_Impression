@@ -27,9 +27,10 @@ class _EventAttendeeValidateWidgetState
   @override
   void initState() {
     super.initState();
-    widget.invite.validated! ? _validated = true : null;
+    widget.invite.validated! ? _validated = true : _nothing();
   }
 
+_nothing(){}
   _showSelectImageDialog() {
     return Platform.isIOS ? _iosBottomSheet() : _androidDialog(context);
   }
@@ -288,10 +289,10 @@ class _EventAttendeeValidateWidgetState
                           width: width / 3,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              primary:
+                              backgroundColor:
                                   _validated ? Colors.blue : Color(0xFFf2f2f2),
                               elevation: 0.0,
-                              onPrimary: Colors.blue,
+                              foregroundColor: Colors.blue,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(5.0),
                               ),

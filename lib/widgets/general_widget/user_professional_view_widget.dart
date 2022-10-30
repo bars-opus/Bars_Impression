@@ -1,7 +1,6 @@
 // // ignore_for_file: must_be_immutable
 
 import 'package:bars/utilities/exports.dart';
-import 'package:intl/intl.dart';
 
 // ignore: must_be_immutable
 class UserProfessionalViewWidget extends StatelessWidget {
@@ -372,7 +371,7 @@ class UserProfessionalViewWidget extends StatelessWidget {
                                                       child: OutlinedButton(
                                                         style: OutlinedButton
                                                             .styleFrom(
-                                                          primary:
+                                                          foregroundColor:
                                                               Color(0xFF1a1a1a),
                                                           side: BorderSide(
                                                             width: 1.0,
@@ -1538,8 +1537,8 @@ class UserProfessionalViewWidget extends StatelessWidget {
                     width: width,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.white,
-                        onPrimary: Colors.blue,
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.blue,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5.0),
                         ),
@@ -1572,8 +1571,8 @@ class UserProfessionalViewWidget extends StatelessWidget {
                     width: width,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.white,
-                        onPrimary: Colors.blue,
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.blue,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5.0),
                         ),
@@ -5025,6 +5024,7 @@ class UserProfessionalViewWidget extends StatelessWidget {
 //   }
 // }
 
+// ignore: must_be_immutable
 class NoBooking extends StatelessWidget {
   AccountHolder user;
 

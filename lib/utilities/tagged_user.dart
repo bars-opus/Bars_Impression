@@ -295,7 +295,7 @@ class _TaggedUserState extends State<TaggedUser> {
                                           MediaQuery.of(context).size.width / 2,
                                       child: OutlinedButton(
                                         style: OutlinedButton.styleFrom(
-                                          primary: Colors.blue,
+                                          foregroundColor: Colors.blue,
                                           side: BorderSide(
                                               width: 1.0, color: Colors.blue),
                                         ),

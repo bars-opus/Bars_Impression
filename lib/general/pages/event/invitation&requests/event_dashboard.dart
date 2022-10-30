@@ -30,7 +30,6 @@ class _EventDashboardState extends State<EventDashboard> {
   int _inviteRejectedCount = 0;
   int _inviteUnAnswered = 0;
   int _attendeesValidated = 0;
-  // late DateTime _closingdate;
 
   late DateTime _toDaysDate;
   late DateTime _date;
@@ -56,13 +55,10 @@ class _EventDashboardState extends State<EventDashboard> {
     DateTime date = DateTime.parse(widget.event.date);
     final toDayDate = DateTime.now();
     var different = date.difference(toDayDate).inDays;
-    // DateTime closingdate = DateTime.parse(widget.event.clossingDay);
 
     setState(() {
       _different = different;
       _toDaysDate = toDayDate;
-      // _closingdate = closingdate;
-
       _date = date;
     });
   }
@@ -434,7 +430,7 @@ class _EventDashboardState extends State<EventDashboard> {
                               width: width,
                               child: OutlinedButton(
                                 style: OutlinedButton.styleFrom(
-                                  primary: Colors.blue,
+                                  foregroundColor: Colors.blue,
                                   side: BorderSide(
                                     width: 1.0,
                                     color: widget.palette.darkMutedColor == null
@@ -536,9 +532,9 @@ class _EventDashboardState extends State<EventDashboard> {
                                   const EdgeInsets.only(top: 10.0, right: 10),
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  primary: Colors.white,
+                                  backgroundColor: Colors.white,
                                   elevation: 0.0,
-                                  onPrimary: Colors.blue,
+                                  foregroundColor: Colors.blue,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(100.0),
                                   ),
@@ -646,11 +642,11 @@ class _EventDashboardState extends State<EventDashboard> {
                           width: width - 80,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              primary: widget.palette.darkMutedColor == null
+                              backgroundColor: widget.palette.darkMutedColor == null
                                   ? Color(0xFF1a1a1a)
                                   : widget.palette.darkMutedColor!.color,
                               elevation: 0.0,
-                              onPrimary: Colors.blue,
+                              foregroundColor: Colors.blue,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(5.0),
                               ),
@@ -693,14 +689,14 @@ class _EventDashboardState extends State<EventDashboard> {
                                   width: width / 2.6,
                                   child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                        primary:
+                                        backgroundColor:
                                             widget.palette.darkMutedColor ==
                                                     null
                                                 ? Color(0xFF1a1a1a)
                                                 : widget.palette.darkMutedColor!
                                                     .color,
                                         elevation: 0.0,
-                                        onPrimary: Colors.blue,
+                                        foregroundColor: Colors.blue,
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(5.0),
@@ -743,14 +739,14 @@ class _EventDashboardState extends State<EventDashboard> {
                                   width: width / 2.6,
                                   child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                        primary:
+                                        backgroundColor:
                                             widget.palette.darkMutedColor ==
                                                     null
                                                 ? Color(0xFF1a1a1a)
                                                 : widget.palette.darkMutedColor!
                                                     .color,
                                         elevation: 0.0,
-                                        onPrimary: Colors.blue,
+                                        foregroundColor: Colors.blue,
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(5.0),

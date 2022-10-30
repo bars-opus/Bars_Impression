@@ -8,19 +8,21 @@ class ReportContents {
   final String repotedAuthorId;
   final String contentType;
   final String reportType;
+  final String comment;
   final String reportConfirmation;
   final Timestamp timestamp;
 
   ReportContents({
-   required this.contentId,
-   required this.contentType,
-   required this.reportType,
-   required this.repotedAuthorId,
-   required this.parentContentId,
-   required this.reportConfirmation,
-   required this.id,
-   required this.authorId,
-   required this.timestamp,
+    required this.contentId,
+    required this.contentType,
+    required this.reportType,
+    required this.repotedAuthorId,
+    required this.parentContentId,
+    required this.reportConfirmation,
+    required this.id,
+    required this.authorId,
+    required this.timestamp,
+    required this.comment,
   });
 
   factory ReportContents.fromDoc(DocumentSnapshot doc) {
@@ -34,6 +36,7 @@ class ReportContents {
       reportConfirmation: doc['reportConfirmation'],
       authorId: doc['authorId'],
       timestamp: doc['timestamp'],
+      comment: doc['comment'],
     );
   }
 }

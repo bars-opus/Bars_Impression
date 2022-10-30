@@ -6,17 +6,13 @@ import 'package:vector_math/vector_math_64.dart' as vector;
 
 class ExploreForums extends StatefulWidget {
   final Forum forum;
-  // final AccountHolder author;
   final String currentUserId;
-  // final String profileImage;
   final String feed;
 
   ExploreForums({
     required this.currentUserId,
-    // required this.author,
     required this.forum,
     required this.feed,
-    // required this.profileImage,
   });
   @override
   _ExploreForumsState createState() => _ExploreForumsState();
@@ -42,7 +38,7 @@ class _ExploreForumsState extends State<ExploreForums> {
             ? _setupAllForum()
             : widget.feed.startsWith('Profile')
                 ? _setupProfileForum()
-                : () {};
+                :_nothing();
     super.initState();
   }
 
@@ -71,6 +67,8 @@ class _ExploreForumsState extends State<ExploreForums> {
     super.dispose();
   }
 
+
+_nothing(){}
   _setupForumFeed() async {
     QuerySnapshot forumFeedSnapShot = await forumFeedsRef
         .doc(
@@ -301,7 +299,7 @@ class _ExploreForumsState extends State<ExploreForums> {
                                           ? _loadMoreAllForums()
                                           : widget.feed.startsWith('Profile')
                                               ? _loadMoreProfileForums()
-                                              : () {};
+                                              : _nothing();
                                 }
                               },
                               itemBuilder: (context, index) {
@@ -324,7 +322,6 @@ class _ExploreForumsState extends State<ExploreForums> {
                                     child: ExploreForumMin(
                                       feed: widget.feed,
                                       forum: forum,
-                                      // author: widget.author,
                                       currentUserId:
                                           Provider.of<UserData>(context)
                                               .currentUserId!,

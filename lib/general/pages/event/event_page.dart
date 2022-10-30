@@ -183,7 +183,7 @@ class LocationTab extends StatelessWidget {
                       SizedBox(width: 20),
                       OutlinedButton(
                           style: OutlinedButton.styleFrom(
-                            primary: Colors.blue,
+                            foregroundColor: Colors.blue,
                             side: BorderSide(width: 1.0, color: Colors.grey),
                           ),
                           child: Padding(
@@ -211,7 +211,7 @@ class LocationTab extends StatelessWidget {
                       SizedBox(width: 20),
                       OutlinedButton(
                           style: OutlinedButton.styleFrom(
-                            primary: Colors.blue,
+                            foregroundColor: Colors.blue,
                             side: BorderSide(width: 1.0, color: Colors.grey),
                           ),
                           child: Padding(
@@ -240,7 +240,7 @@ class LocationTab extends StatelessWidget {
                       Container(
                         child: OutlinedButton(
                             style: OutlinedButton.styleFrom(
-                              primary: Colors.blue,
+                              foregroundColor: Colors.blue,
                               side: BorderSide(width: 1.0, color: Colors.grey),
                             ),
                             child: Padding(

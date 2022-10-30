@@ -101,51 +101,6 @@ class _ArtistsState extends State<Artists> with AutomaticKeepAliveClientMixin {
     return _hasNext;
   }
 
-  // _setupUsers() async {
-  //   QuerySnapshot userFeedSnapShot = await accountTypesRef
-  //       .doc(widget.profileHandle)
-  //       .collection(widget.profileHandle)
-  //       .orderBy('timestamp', descending: true)
-  //       .limit(limit)
-  //       .get();
-  //   List<DocId> users =
-  //       userFeedSnapShot.docs.map((doc) => DocId.fromDoc(doc)).toList();
-  //   _userSnapshot.addAll((userFeedSnapShot.docs));
-  //   if (mounted) {
-  //     setState(() {
-  //       _hasNext = false;
-  //       _userList = users;
-  //     });
-  //   }
-  //   return users;
-  // }
-
-  // _loadMoreUsers() async {
-  //   if (_isFectchingUser) return;
-  //   _isFectchingUser = true;
-  //   QuerySnapshot userFeedSnapShot = await accountTypesRef
-  //       .doc(widget.profileHandle)
-  //       .collection(widget.profileHandle)
-  //       .orderBy('timestamp', descending: true)
-  //       .limit(limit)
-  //       .startAfterDocument(_userSnapshot.last)
-  //       .get();
-  //   List<DocId> moreusers =
-  //       userFeedSnapShot.docs.map((doc) => DocId.fromDoc(doc)).toList();
-  //   if (_userSnapshot.length < limit) _hasNext = false;
-  //   List<DocId> allusers = _userList..addAll(moreusers);
-  //   _userSnapshot.addAll((userFeedSnapShot.docs));
-  //   if (mounted) {
-  //     setState(() {
-  //       _userList = allusers;
-  //     });
-  //   }
-  //   _hasNext = false;
-  //   _isFectchingUser = false;
-
-  //   return _hasNext;
-  // }
-
   _buildUser() {
     return NotificationListener<ScrollNotification>(
       onNotification: _handleScrollNotification,
@@ -165,22 +120,6 @@ class _ArtistsState extends State<Artists> with AutomaticKeepAliveClientMixin {
                     userId: accountHolder.id!,
                     user: accountHolder,
                   );
-
-                  // FutureBuilder(
-                  //     future: DatabaseService.getUserWithId(accountHolder.uid),
-                  //     builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  //       if (!snapshot.hasData) {
-                  //         return UserSchimmerSkeleton();
-                  //       }
-                  //       AccountHolder accountHolder = snapshot.data;
-
-                  //       return UserView(
-                  //         exploreLocation: widget.exploreLocation,
-                  //         currentUserId: widget.currentUserId,
-                  //         userId: accountHolder.id!,
-                  //         user: accountHolder,
-                  //       );
-                  //     });
                 },
                 childCount: _userList.length,
               ),

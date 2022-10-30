@@ -163,9 +163,9 @@ class _PasswordState extends State<Password>
                                     width: 250.0,
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                        primary: Colors.white,
+                                        backgroundColor: Colors.white,
                                         elevation: 20.0,
-                                        onPrimary: Colors.blue,
+                                        foregroundColor: Colors.blue,
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(20.0),
@@ -192,7 +192,7 @@ class _PasswordState extends State<Password>
                                     width: 250.0,
                                     child: OutlinedButton(
                                       style: OutlinedButton.styleFrom(
-                                        primary: Colors.blue,
+                                        foregroundColor: Colors.blue,
                                         side: BorderSide(
                                           width: 1.0,
                                           color: Colors.white,

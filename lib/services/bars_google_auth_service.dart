@@ -1,3 +1,4 @@
+import 'package:bars/general/pages/discover/discover_user.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -146,6 +147,14 @@ class BarsGoogleAuthService {
               .doc(signedInHandler.uid)
               .set({
             'uid': signedInHandler.uid,
+          });
+          _firestore.collection('/usersAuthors').doc(signedInHandler.uid).set({
+            'verified': '',
+            'userName': '',
+            'profileImageUrl': '',
+            'bio': '',
+            'profileHandle': '',
+            'disableChat': false,
           });
           Provider.of<UserData>(context, listen: false).setShowUsersTab(true);
           Navigator.of(context).pushAndRemoveUntil(
@@ -338,6 +347,15 @@ class BarsGoogleAuthService {
               .doc(signedInHandler.uid)
               .set({
             'uid': signedInHandler.uid,
+          });
+
+          _firestore.collection('/usersAuthors').doc(signedInHandler.uid).set({
+            'verified': '',
+            'userName': '',
+            'profileImageUrl': '',
+            'bio': '',
+            'profileHandle': '',
+            'disableChat': false,
           });
           Provider.of<UserData>(context, listen: false).setShowUsersTab(true);
           Navigator.of(context).pushAndRemoveUntil(

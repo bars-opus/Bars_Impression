@@ -76,7 +76,6 @@ class _AsksScreenState extends State<AsksScreen> {
         MaterialPageRoute(
             builder: (_) => ProfileProfessionalProfile(
                   currentUserId: Provider.of<UserData>(context).currentUserId!,
-                  // user: widget.post.authorId,
                   userId: ask.authorId, user: user,
                 )));
   }
@@ -86,13 +85,7 @@ class _AsksScreenState extends State<AsksScreen> {
   ) {
     final width = MediaQuery.of(context).size.width;
     final String currentUserId = Provider.of<UserData>(context).currentUserId!;
-    // return FutureBuilder(
-    //   future: DatabaseService.getUserWithId(ask.authorId),
-    //   builder: (BuildContext context, AsyncSnapshot snapshot) {
-    //     if (!snapshot.hasData) {
-    //       return const SizedBox.shrink();
-    //     }
-    //     AccountHolder author = snapshot.data;
+
     return FocusedMenuHolder(
       menuWidth: width,
       menuOffset: 1,
@@ -141,15 +134,6 @@ class _AsksScreenState extends State<AsksScreen> {
                                     userId: ask.authorId,
                                   )))
                     : _viewProfessionalProfile(ask)
-            // Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //         builder: (_) => ProfileProfessionalProfile(
-            //               currentUserId: Provider.of<UserData>(context)
-            //                   .currentUserId!,
-            //               user: author,
-            //               userId: ask.authorId,
-            //             ))),
             ),
         FocusedMenuItem(
             title: Container(
@@ -209,8 +193,6 @@ class _AsksScreenState extends State<AsksScreen> {
         ),
       ),
     );
-    //   },
-    // );
   }
 
   _buildAskTF() {
@@ -509,19 +491,6 @@ class _AsksScreenState extends State<AsksScreen> {
                                             return _buildAsk(
                                               ask,
                                             );
-                                            // FutureBuilder(
-                                            //     future: DatabaseService
-                                            //         .getUserWithId(
-                                            //             ask.authorId),
-                                            //     builder: (BuildContext context,
-                                            //         AsyncSnapshot snapshot) {
-                                            //       if (!snapshot.hasData) {
-                                            //         return FollowerUserSchimmerSkeleton();
-                                            //       }
-                                            //       AccountHolder author =
-                                            //           snapshot.data;
-                                            //       return _buildAsk(ask, author);
-                                            //     });
                                           },
                                           childCount: snapshot.data.docs.length,
                                         ),

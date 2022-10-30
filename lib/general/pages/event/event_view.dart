@@ -1,12 +1,10 @@
 import 'package:bars/general/pages/chats/send_to_chat.dart';
 import 'package:bars/utilities/exports.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 
 class EventView extends StatefulWidget {
   final String currentUserId;
   final Event event;
-  // final AccountHolder author;
   final AccountHolder? user;
   final int feed;
   final String exploreLocation;
@@ -57,7 +55,6 @@ class _EventViewState extends State<EventView> {
       _toDaysDate = toDayDate;
       _closingDate = clossingDate;
       _different = date.difference(toDayDate).inDays;
-      print(' event ---  999999');
     });
   }
 
@@ -113,7 +110,7 @@ class _EventViewState extends State<EventView> {
                     ),
                   ),
                 ),
-                onPressed: () => _toDaysDate.isAfter(_date) || _different <0
+                onPressed: () => _toDaysDate.isAfter(_date) || _different < 0
                     ? Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -146,14 +143,7 @@ class _EventViewState extends State<EventView> {
                 onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (_) =>
-
-                            //  widget.author.userName!.isEmpty
-                            //     ? UserNotFound(
-                            //         userName: 'User',
-                            //       )
-                            //     :
-                            ProfileScreen(
+                        builder: (_) => ProfileScreen(
                               currentUserId: widget.currentUserId,
                               userId: widget.event.authorId,
                             ))),
@@ -238,41 +228,13 @@ class _EventViewState extends State<EventView> {
           children: [
             EventViewWidget(
               currentUserId: widget.currentUserId,
-              // author: widget.author,
               event: widget.event,
-              // onPressedEventEnlarged: () => Navigator.push(
-              //   context,
-              //   PageRouteBuilder(
-              //     pageBuilder: (context, animation1, animation2) =>
-              //         AllEvenEnlarged(
-              //       exploreLocation: widget.exploreLocation,
-              //       feed: widget.feed,
-              //       askCount: _askCount,
-              //       currentUserId: widget.currentUserId,
-              //       event: widget.event,
-              //       user: widget.user,
-              //     ),
-              //     transitionDuration: Duration(seconds: 0),
-              //   ),
-              // ),
-
-              //  Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (_) => AllEvenEnlarged(
-              //               exploreLocation: widget.exploreLocation,
-              //               feed: widget.feed,
-              //               askCount: _askCount,
-              //               currentUserId: widget.currentUserId,
-              //               event: widget.event,
-              //               user: widget.user,
-              //             ))),
-              // imageHero: '',
               askCount: _askCount,
               titleHero: 'title ${widget.event.id.toString()}',
               difference: _different,
-              completed:  _toDaysDate.isAfter(_date) || _different <0? true : false,
-              exploreLocation: widget.exploreLocation, feed: widget.feed,
+              completed: _toDaysDate.isAfter(_closingDate) ? true : false,
+              exploreLocation: widget.exploreLocation,
+              feed: widget.feed,
             ),
             Positioned(
               top: 1,
@@ -287,7 +249,6 @@ class _EventViewState extends State<EventView> {
                               askCount: _askCount,
                               currentUserId: widget.currentUserId,
                               event: widget.event,
-                              // user: widget.user,
                             ))),
                 child: Hero(
                   tag: 'type' + widget.event.id.toString(),
@@ -297,7 +258,7 @@ class _EventViewState extends State<EventView> {
                       width: 35.0,
                       child: OutlinedButton(
                         style: OutlinedButton.styleFrom(
-                          primary: widget.event.report.isNotEmpty
+                          foregroundColor: widget.event.report.isNotEmpty
                               ? Colors.grey
                               : Colors.blue,
                           side: BorderSide(width: 1.0, color: Colors.blue),
@@ -332,7 +293,6 @@ class _EventViewState extends State<EventView> {
                                       askCount: _askCount,
                                       currentUserId: widget.currentUserId,
                                       event: widget.event,
-                                      // user: widget.user,
                                     ))),
                       ),
                     ),

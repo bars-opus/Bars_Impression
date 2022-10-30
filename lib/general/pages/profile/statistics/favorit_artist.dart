@@ -268,20 +268,7 @@ class _FavoriteArtistsState extends State<FavoriteArtists> {
                                         (context, index) {
                                           AccountHolder user = _users[index];
                                           return _buildUserTile(user);
-                                          //  FutureBuilder(
-                                          //   future:
-                                          //       DatabaseService.getUserWithId(
-                                          //           user.id!),
-                                          //   builder: (BuildContext context,
-                                          //       AsyncSnapshot snapshot) {
-                                          //     if (!snapshot.hasData) {
-                                          //       return const SizedBox.shrink();
-                                          //     }
-                                          //     AccountHolder user =
-                                          //         snapshot.data;
-                                          //     return _buildUserTile(user);
-                                          //   },
-                                          // );
+                                         
                                         },
                                         childCount: _users.length,
                                       ),

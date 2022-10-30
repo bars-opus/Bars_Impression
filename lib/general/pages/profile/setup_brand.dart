@@ -1,3 +1,4 @@
+import 'package:bars/general/pages/discover/discover_user.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -12,7 +13,6 @@ class SetUpBrand extends StatefulWidget {
 class _SetUpBrandState extends State<SetUpBrand> {
   final _formKey = GlobalKey<FormState>();
   String _userName = '';
-  // bool _isLoading = false;
   File? _profileImage;
   String _profileHandle = '';
   String _bio = '';
@@ -133,6 +133,10 @@ class _SetUpBrandState extends State<SetUpBrand> {
           await usersRef.doc(currentUserId).update({
             'userName': _userName,
           });
+          usersAuthorRef.doc(currentUserId).update({
+            'userName': _userName,
+          });
+
           animateToPage();
         } catch (e) {
           final double width = Responsive.isDesktop(context)
@@ -182,9 +186,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
   }
 
   _submitProfileImage(AccountHolder user) async {
-    // final double width = Responsive.isDesktop(context)
-    //     ? 600.0
-    //     : MediaQuery.of(context).size.width;
+
     String currentUserId =
         Provider.of<UserData>(context, listen: false).currentUserId!;
     if (_formKey.currentState!.validate() &&
@@ -193,11 +195,6 @@ class _SetUpBrandState extends State<SetUpBrand> {
       _formKey.currentState?.save();
       FocusScope.of(context).unfocus();
       animateToPage();
-
-      // setState(() {
-      //   _isLoading = true;
-      // });
-
       String _profileImageUrl = '';
       if (_profileImage == null) {
         _profileImageUrl = '';
@@ -213,6 +210,11 @@ class _SetUpBrandState extends State<SetUpBrand> {
           'profileImageUrl': _profileImageUrl,
           'bio': Provider.of<UserData>(context, listen: false).post6,
         });
+        await usersAuthorRef.doc(currentUserId).update({
+          'profileImageUrl': _profileImageUrl,
+          'bio': Provider.of<UserData>(context, listen: false).post6,
+        });
+
         Navigator.push(
             context,
             MaterialPageRoute(
@@ -319,16 +321,10 @@ class _SetUpBrandState extends State<SetUpBrand> {
       await usersRef.doc(currentUserId).update({
         'profileHandle': _profileHandle,
       });
-      accountTypesRef
-          .doc(
-            _profileHandle,
-          )
-          .collection(_profileHandle)
-          .doc(currentUserId)
-          .set({
-        'uid': currentUserId,
-        'timestamp': Timestamp.fromDate(DateTime.now()),
+      await usersAuthorRef.doc(currentUserId).update({
+        'profileHandle': _profileHandle,
       });
+
       animateToPage();
     } catch (e) {
       final double width = Responsive.isDesktop(context)
@@ -599,7 +595,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                     width: 250.0,
                                     child: OutlinedButton(
                                         style: OutlinedButton.styleFrom(
-                                          primary: Colors.blue,
+                                          foregroundColor: Colors.blue,
                                           side: BorderSide(
                                             width: 1.0,
                                             color: Colors.blue,
@@ -770,7 +766,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                                             style:
                                                                 OutlinedButton
                                                                     .styleFrom(
-                                                              primary:
+                                                              foregroundColor:
                                                                   Colors.blue,
                                                               side: BorderSide(
                                                                   width: 1.0,
@@ -835,9 +831,9 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                     curve: Curves.easeOutBack,
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                        primary: Colors.blue,
+                                        backgroundColor: Colors.blue,
                                         elevation: 0.0,
-                                        onPrimary: Colors.blue,
+                                        foregroundColor: Colors.blue,
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(20.0),
@@ -911,9 +907,9 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                   alignment: Alignment.centerRight,
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      primary: Colors.blue,
+                                      backgroundColor: Colors.blue,
                                       elevation: 0.0,
-                                      onPrimary: Colors.blue,
+                                      foregroundColor: Colors.blue,
                                       shape: RoundedRectangleBorder(
                                         borderRadius:
                                             BorderRadius.circular(20.0),
@@ -970,7 +966,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                 Center(
                                   child: OutlinedButton(
                                     style: OutlinedButton.styleFrom(
-                                      primary: Colors.white,
+                                      foregroundColor: Colors.white,
                                       side: BorderSide(
                                           width: 1.0,
                                           color: Colors.transparent),
@@ -1050,7 +1046,8 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                               child: OutlinedButton(
                                                   style:
                                                       OutlinedButton.styleFrom(
-                                                    primary: Colors.blue,
+                                                    foregroundColor:
+                                                        Colors.blue,
                                                     side: BorderSide(
                                                         width: 1.0,
                                                         color: Colors.blue),

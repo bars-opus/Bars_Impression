@@ -71,7 +71,7 @@ class NoFeed extends StatelessWidget {
                   width: width > 800 ? 300 : 150,
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      primary: Colors.blue,
+                      foregroundColor: Colors.blue,
                       side: BorderSide(width: 1.0, color: Colors.blue),
                     ),
                     onPressed: onPressed,

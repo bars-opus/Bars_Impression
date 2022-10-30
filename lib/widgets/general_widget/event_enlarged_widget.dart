@@ -102,8 +102,8 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
           width: MediaQuery.of(context).size.width,
           child: TextButton(
             style: ElevatedButton.styleFrom(
-              primary: Colors.white,
-              onPrimary: Colors.blue,
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.blue,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(3.0),
               ),
@@ -367,7 +367,8 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                 child: OutlinedButton(
                                                   style:
                                                       OutlinedButton.styleFrom(
-                                                    primary: Colors.blue,
+                                                    foregroundColor:
+                                                        Colors.blue,
                                                     side: BorderSide(
                                                         width: 1.0,
                                                         color: Colors.white),
@@ -1050,7 +1051,7 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                               style:
                                                                   OutlinedButton
                                                                       .styleFrom(
-                                                                primary:
+                                                                foregroundColor:
                                                                     Colors.blue,
                                                                 side: BorderSide(
                                                                     width: 1.0,
@@ -1105,7 +1106,7 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                         child: OutlinedButton(
                                                           style: OutlinedButton
                                                               .styleFrom(
-                                                            primary:
+                                                            foregroundColor:
                                                                 Colors.blue,
                                                             side: BorderSide(
                                                                 width: 1.0,

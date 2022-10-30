@@ -278,7 +278,10 @@ class _UserViewState extends State<UserView> {
   }
 
   _dynamicLink() async {
-    var linkUrl = Uri.parse(widget.user.profileImageUrl!);
+    var linkUrl = widget.user.profileImageUrl!.isEmpty
+        ? Uri.parse(
+            'https://firebasestorage.googleapis.com/v0/b/bars-5e3e5.appspot.com/o/IMG_8574.PNG?alt=media&token=ccb4e3b1-b5dc-470f-abd0-63edb5ed549f')
+        : Uri.parse(widget.user.profileImageUrl!);
 
     final dynamicLinkParams = DynamicLinkParameters(
       socialMetaTagParameters: SocialMetaTagParameters(
@@ -763,16 +766,6 @@ class _UserViewState extends State<UserView> {
                                         user: widget.user,
                                         userId: widget.user.id!,
                                       )));
-
-                          // Navigator.push(
-                          // context,
-                          // MaterialPageRoute(
-                          //     builder: (_) => ProfileProfessionalProfile(
-                          //           currentUserId:
-                          //               Provider.of<UserData>(context).currentUserId!,
-                          //           user: widget.user,
-                          //           userId: widget.user.id!,
-                          //         )));
                         }),
                   ],
                 ),

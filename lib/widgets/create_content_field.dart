@@ -40,7 +40,7 @@ class ContentField extends StatelessWidget {
                 ),
                 enabledBorder: new UnderlineInputBorder(
                     borderSide: new BorderSide(color: Colors.grey))),
-            validator: (String) => onValidateText(String),
+            validator: (string) => onValidateText(string),
             onChanged: onSavedText,
             onSaved: (_) => onSavedText,
           ),

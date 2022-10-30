@@ -8,25 +8,17 @@ import 'package:timeago/timeago.dart' as timeago;
 class EventViewWidget extends StatelessWidget {
   final int askCount;
   final String currentUserId;
-  // final AccountHolder author;
   final String titleHero;
   final int difference;
   final bool completed;
   final int feed;
   final String exploreLocation;
-
-  // final String imageHero;
   final Event event;
 
-  // final VoidCallback onPressedEventEnlarged;
-
   EventViewWidget({
-    // required this.author,
     required this.currentUserId,
     required this.event,
     required this.titleHero,
-    // required this.imageHero,
-    // required this.onPressedEventEnlarged,
     required this.askCount,
     required this.difference,
     required this.completed,
@@ -934,7 +926,6 @@ class EventViewWidget extends StatelessWidget {
           askCount: askCount,
           currentUserId: currentUserId,
           event: event,
-          // user: author,
         );
       },
     );

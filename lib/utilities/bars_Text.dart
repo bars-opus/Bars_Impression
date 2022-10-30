@@ -122,7 +122,7 @@ class BarsTextConfirm extends StatelessWidget {
             ),
           ),
           TextSpan(
-            text: "\n${subText}",
+            text: "\n$subText",
             style: TextStyle(
               fontSize: 16.0,
               color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,

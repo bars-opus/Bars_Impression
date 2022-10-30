@@ -6,18 +6,14 @@ class ExploreForumsMinWidget extends StatelessWidget {
   final String currentUserId;
 
   final Forum forum;
-  // final AccountHolder author;
   final int thougthCount;
   final String feed;
-  // final bool showExplore;
 
   ExploreForumsMinWidget(
       {required this.currentUserId,
       required this.forum,
-      // required this.author,
       required this.thougthCount,
       required this.feed,
-      // @required this.showExplore,
       });
 
   Future launchURl(String url) async {

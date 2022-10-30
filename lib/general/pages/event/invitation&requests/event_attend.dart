@@ -430,8 +430,8 @@ class _AttendEventState extends State<AttendEvent> {
                               width: width,
                               child: TextButton(
                                 style: ElevatedButton.styleFrom(
-                                  primary: Colors.white,
-                                  onPrimary: Colors.blue,
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: Colors.blue,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(3.0),
                                   ),

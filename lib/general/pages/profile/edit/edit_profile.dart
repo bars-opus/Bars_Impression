@@ -97,6 +97,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           'profileImageUrl': _profileImageUrl,
           'bio': _bio,
         });
+
+        usersAuthorRef
+            .doc(
+          widget.user.id,
+        )
+            .update({
+          'profileImageUrl': _profileImageUrl,
+          'bio': _bio,
+        });
         Navigator.pop(context);
         final double width = Responsive.isDesktop(context)
             ? 600.0
@@ -282,7 +291,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     ),
                                     OutlinedButton(
                                       style: OutlinedButton.styleFrom(
-                                        primary: Colors.white,
+                                        foregroundColor: Colors.transparent,
                                         side: BorderSide(
                                             width: 1.0,
                                             color: Colors.transparent),
@@ -683,11 +692,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                             width: 250.0,
                                             child: ElevatedButton(
                                               style: ElevatedButton.styleFrom(
-                                                primary: ConfigBloc().darkModeOn
-                                                    ? Colors.white
-                                                    : Color(0xFF1d2323),
+                                                backgroundColor:
+                                                    ConfigBloc().darkModeOn
+                                                        ? Colors.white
+                                                        : Color(0xFF1d2323),
                                                 elevation: 20.0,
-                                                onPrimary: Colors.blue,
+                                                foregroundColor: Colors.blue,
                                                 shape: RoundedRectangleBorder(
                                                   borderRadius:
                                                       BorderRadius.circular(

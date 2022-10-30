@@ -7,8 +7,6 @@ import 'package:intl/intl.dart';
 class PunchWidget extends StatefulWidget {
   final String currentUserId;
   final Post post;
-  // final AccountHolder author;
-
   PunchWidget({
     required this.currentUserId,
     required this.post,

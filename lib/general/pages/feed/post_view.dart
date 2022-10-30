@@ -25,35 +25,3 @@ class PostView extends StatelessWidget {
   }
 }
 
-
-// class PostView extends StatefulWidget {
-  // final String currentUserId;
-  // final Post post;
-  // // final AccountHolder author;
-  // final Key key;
-  // final List<Post> postList;
-  // final bool showExplore;
-
-//   PostView({
-//     required this.currentUserId,
-//     required this.key,
-//     required this.post,
-//     // required this.author,
-//     required this.postList,
-//     required this.showExplore,
-//   }) : super(key: key);
-
-//   @override
-//   _PostViewState createState() => _PostViewState();
-// }
-
-// class _PostViewState extends State<PostView> {
-//   @override
-//   Widget build(BuildContext context) {
-    // return PostViewWidget(
-    //   post: widget.post,
-    //   postList: widget.postList,
-    //   currentUserId: widget.currentUserId,
-    // );
-//   }
-// }

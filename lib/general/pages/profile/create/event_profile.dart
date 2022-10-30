@@ -1,12 +1,10 @@
 import 'package:bars/general/pages/chats/send_to_chat.dart';
 import 'package:bars/utilities/exports.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 
 class EventProfileView extends StatefulWidget {
   final String currentUserId;
   final Event event;
-  // final AccountHolder author;
   final AccountHolder user;
   final bool allEvents;
   final String exploreLocation;
@@ -115,7 +113,7 @@ class _EventProfileViewState extends State<EventProfileView> {
                       ),
                     ),
                   ),
-                  onPressed: () => _toDaysDate.isAfter(_date) || _different <0
+                  onPressed: () => _toDaysDate.isAfter(_date) || _different < 0
                       ? Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -149,13 +147,6 @@ class _EventProfileViewState extends State<EventProfileView> {
                       context,
                       MaterialPageRoute(
                           builder: (_) =>
-
-                              //  widget.author.userName!.isEmpty
-                              //     ? UserNotFound(
-                              //         userName: 'User',
-                              //       )
-                              //     :
-
                               ProfileScreen(
                                 currentUserId: widget.currentUserId,
                                 userId: widget.event.authorId,
@@ -252,23 +243,12 @@ class _EventProfileViewState extends State<EventProfileView> {
               child: Stack(
                 children: [
                   EventViewWidget(
-                    completed: _toDaysDate.isAfter(_date) || _different <0? true : false,
+                    completed: _toDaysDate.isAfter(_closingDate) ? true : false,
                     currentUserId: widget.currentUserId,
 
                     titleHero: 'title1  ${widget.event.id.toString()}',
                     event: widget.event,
-                    // onPressedEventEnlarged: () => Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (_) => AllEvenEnlarged(
-                    //               exploreLocation: widget.exploreLocation,
-                    //               feed: widget.feed,
-                    //               askCount: _askCount,
-                    //               currentUserId: widget.currentUserId,
-                    //               event: widget.event,
-                    //               user: widget.user,
-                    //             ))),
-                    // imageHero: 'image1 ${widget.event.id.toString()}',
+                   
                     askCount: _askCount,
                     difference: _different,
                     exploreLocation: widget.exploreLocation,
@@ -297,7 +277,7 @@ class _EventProfileViewState extends State<EventProfileView> {
                             width: 35.0,
                             child: OutlinedButton(
                               style: OutlinedButton.styleFrom(
-                                primary: Colors.blue,
+                                foregroundColor: Colors.blue,
                                 side: BorderSide(
                                   width: 1.0,
                                   color: widget.event.report.isNotEmpty

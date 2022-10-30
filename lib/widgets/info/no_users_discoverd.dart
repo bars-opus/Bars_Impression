@@ -2,12 +2,10 @@ import 'package:bars/utilities/exports.dart';
 
 class NoUsersDicovered extends StatelessWidget {
   final String title;
-  // final String subTitle;
 
 
   NoUsersDicovered(
       {required this.title,
-      // @required this.subTitle,
 
   });
 

@@ -164,36 +164,7 @@ class _EventsAttendingState extends State<EventsAttending> {
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      // RichText(
-                      //   textScaleFactor:
-                      //       MediaQuery.of(context).textScaleFactor,
-                      //   text: TextSpan(
-                      //     children: [
-                      //       TextSpan(
-                      //         text: widget.different < 1
-                      //             ? 'Ongoing...'
-                      //             : widget.different.toString(),
-                      //         style: TextStyle(
-                      //           fontSize: widget.different < 1 ? 30 : 50,
-                      //           color: Colors.white,
-                      //         ),
-                      //       ),
-                      //       TextSpan(
-                      //         text: widget.different < 1
-                      //             ? '\nThis event is still in progress.\nIt would be completed on\n${MyDateFormat.toDate(DateTime.parse(widget.event.clossingDay))}.\nAttend, meet and explore.'
-                      //             : '\nDays\nMore',
-                      //         style: TextStyle(
-                      //             fontSize: widget.different < 1 ? 12 : 16,
-                      //             fontWeight: widget.different < 1
-                      //                 ? FontWeight.normal
-                      //                 : FontWeight.bold,
-                      //             color: Colors.white,
-                      //             height: 1),
-                      //       ),
-                      //     ],
-                      //   ),
-                      //   textAlign: TextAlign.center,
-                      // ),
+                     
                       Divider(),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -269,16 +240,7 @@ class _EventsAttendingState extends State<EventsAttending> {
                                           ),
                                   ),
                                 ),
-                          // Text(
-                          //   MyDateFormat.toTime(
-                          //       DateTime.parse(widget.event.time)),
-                          //   style: TextStyle(
-                          //     fontSize: 25,
-                          //     color: Colors.white,
-                          //     fontWeight: FontWeight.bold,
-                          //   ),
-                          //   textAlign: TextAlign.start,
-                          // ),
+                         
                           RichText(
                             textScaleFactor:
                                 MediaQuery.of(context).textScaleFactor,
@@ -327,13 +289,7 @@ class _EventsAttendingState extends State<EventsAttending> {
                           ),
                         ],
                       ),
-                      // const SizedBox(
-                      //   height: 40,
-                      // ),
-                      // const Divider(
-                      //   color: Colors.white,
-                      // ),
-
+                    
                       const SizedBox(
                         height: 40,
                       ),
@@ -363,9 +319,9 @@ class _EventsAttendingState extends State<EventsAttending> {
                         width: width,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
+                            backgroundColor: Colors.white,
                             elevation: 0.0,
-                            onPrimary: Colors.blue,
+                            foregroundColor: Colors.blue,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(5.0),
                             ),
@@ -389,9 +345,9 @@ class _EventsAttendingState extends State<EventsAttending> {
                         width: width,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
+                            backgroundColor: Colors.white,
                             elevation: 0.0,
-                            onPrimary: Colors.blue,
+                            foregroundColor: Colors.blue,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(5.0),
                             ),
@@ -426,9 +382,9 @@ class _EventsAttendingState extends State<EventsAttending> {
                         width: width,
                         child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              primary: Colors.white,
+                              backgroundColor: Colors.white,
                               elevation: 0.0,
-                              onPrimary: Colors.blue,
+                              foregroundColor: Colors.blue,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(5.0),
                               ),
@@ -457,9 +413,7 @@ class _EventsAttendingState extends State<EventsAttending> {
                                                   listen: false)
                                               .currentUserId!,
                                           event: widget.event,
-                                          // user: Provider.of<UserData>(context,
-                                          //         listen: false)
-                                          //     .user!,
+                                          
                                         )))),
                       ),
                     ],

@@ -3,7 +3,6 @@ import 'package:bars/utilities/exports.dart';
 class AllPostEnlarged extends StatefulWidget {
   final String currentUserId;
   final Post post;
-  // final AccountHolder author;
   final String feed;
   AllPostEnlarged(
       {required this.currentUserId,
@@ -26,7 +25,6 @@ class _AllPostEnlargedState extends State<AllPostEnlarged> {
             onLongPress: () => () {},
             child: PunchExpandedWidget(
               feed: widget.feed,
-              // author: widget.author,
               post: widget.post,
               currentUserId: widget.currentUserId,
             ),

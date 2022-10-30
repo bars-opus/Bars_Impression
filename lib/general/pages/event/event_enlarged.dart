@@ -3,14 +3,12 @@ import 'package:bars/utilities/exports.dart';
 class AllEvenEnlarged extends StatefulWidget {
   final String currentUserId;
   final Event event;
-  // final AccountHolder? user;
   final int askCount;
   final int feed;
   final String exploreLocation;
 
   AllEvenEnlarged({
     required this.currentUserId,
-    // required this.user,
     required this.askCount,
     required this.exploreLocation,
     required this.feed,
@@ -55,25 +53,6 @@ class _AllEvenEnlargedState extends State<AllEvenEnlarged> {
                       palette: _paletteGenerator,
                     )),
           );
-
-    // widget.event.isPrivate
-    //     ? Navigator.push(
-    //         context,
-    //         MaterialPageRoute(
-    //             builder: (_) => AttendEvent(
-    //                   event: widget.event,
-    //                   currentUserId: widget.currentUserId,
-    //                   palette: _paletteGenerator,
-    //                 )),
-    //       )
-    //     : Navigator.push(
-    //         context,
-    //         MaterialPageRoute(
-    //             builder: (_) => EventPublicInvite(
-    //                   event: widget.event,
-    //                   palette: _paletteGenerator,
-    //                 )),
-    //       );
   }
 
   Future<void> _generatePalette2(context, String from) async {
@@ -152,7 +131,6 @@ class _AllEvenEnlargedState extends State<AllEvenEnlarged> {
                               askCount: widget.askCount,
                               currentUserId: widget.currentUserId,
                               event: widget.event,
-                              // user: widget.user,
                             ))),
                 imageHero: 'image ${widget.event.id.toString()}',
                 titleHero: 'title ${widget.event.id.toString()}',

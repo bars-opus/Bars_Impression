@@ -132,18 +132,6 @@ class _EventsAllLiveCityState extends State<EventsAllLiveCity>
                 (context, index) {
                   Event event = _events[index];
                   return _displayEvents(event);
-                  // FutureBuilder(
-                  //     future: DatabaseService.getUserWithId(event.authorId),
-                  //     builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  //       if (!snapshot.hasData) {
-                  //         return EventSchimmerBlurHash(
-                  //           event: event,
-                  //         );
-                  //       }
-                  //       AccountHolder author = snapshot.data;
-
-                  //       return _displayEvents(event, author);
-                  //     });
                 },
                 childCount: _events.length,
               ),

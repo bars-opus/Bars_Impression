@@ -598,7 +598,7 @@ class _FeatureInfoState extends State<FeatureInfo> {
                         width: 250.0,
                         child: OutlinedButton(
                             style: OutlinedButton.styleFrom(
-                              primary: Colors.blue,
+                              foregroundColor: Colors.blue,
                               side: BorderSide(width: 1.0, color: Colors.blue),
                             ),
                             child: Material(

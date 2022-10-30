@@ -136,6 +136,8 @@ class _PunchExpandedProfileWidgetState
     }
   }
 
+  _nothing(){}
+
   Widget buildBlur({
     required Widget child,
     double sigmaX = 20,
@@ -388,7 +390,7 @@ class _PunchExpandedProfileWidgetState
                                                                         .authorHandleType
                                                                         .startsWith(
                                                                             'Fan')
-                                                                    ? () {}
+                                                                    ? _nothing()
                                                                     : _viewProfessionalProfile();
                                                           },
                                                           backgroundColor:
@@ -701,7 +703,6 @@ class _PunchExpandedProfileWidgetState
                                                                                                 text: TextSpan(
                                                                                                   children: [
                                                                                                     TextSpan(text: "${widget.author.profileHandle}\n", style: const TextStyle(fontSize: 10, color: Colors.white)),
-                                                                                                    // TextSpan(text: "${widget.author.company}", style: const TextStyle(fontSize: 10, color: Colors.white)),
                                                                                                   ],
                                                                                                 ),
                                                                                                 overflow: TextOverflow.ellipsis,

@@ -228,83 +228,7 @@ class _UserBookingState extends State<UserBooking> {
                             ),
                           ),
                           const SizedBox(height: 40),
-                          // widget.from.startsWith('Booking')
-                          //     ? Align(
-                          //         alignment: Alignment.center,
-                          //         child: Wrap(
-                          //           direction: Axis.vertical,
-                          //           children: [
-                          //             Row(
-                          //               crossAxisAlignment:
-                          //                   CrossAxisAlignment.center,
-                          //               mainAxisAlignment:
-                          //                   MainAxisAlignment.center,
-                          //               children: <Widget>[
-                          //                 Container(
-                          //                   width: width / 3,
-                          //                   child: ElevatedButton(
-                          //                     style: ElevatedButton.styleFrom(
-                          //                       primary: Color(0xFF1a1a1a),
-                          //                       onPrimary: Colors.blue,
-                          //                       shape: RoundedRectangleBorder(
-                          //                         borderRadius:
-                          //                             BorderRadius.circular(
-                          //                                 5.0),
-                          //                       ),
-                          //                     ),
-                          //                     onPressed: () => setState(() {
-                          //                       _sendMail(
-                          //                           'mailto:${widget.user.email}');
-                          //                     }),
-                          //                     child: Material(
-                          //                       color: Colors.transparent,
-                          //                       child: Text(
-                          //                         'Email',
-                          //                         style: TextStyle(
-                          //                           color: Colors.white,
-                          //                           fontSize: 12.0,
-                          //                         ),
-                          //                       ),
-                          //                     ),
-                          //                   ),
-                          //                 ),
-                          //                 const SizedBox(
-                          //                   width: 10,
-                          //                 ),
-                          //                 Container(
-                          //                   width: width / 3,
-                          //                   child: ElevatedButton(
-                          //                     style: ElevatedButton.styleFrom(
-                          //                       primary: Color(0xFF1a1a1a),
-                          //                       onPrimary: Colors.blue,
-                          //                       shape: RoundedRectangleBorder(
-                          //                         borderRadius:
-                          //                             BorderRadius.circular(
-                          //                                 5.0),
-                          //                       ),
-                          //                     ),
-                          //                     onPressed: () => setState(() {
-                          //                       _makePhoneCall(
-                          //                           'tel:${widget.user.contacts}');
-                          //                     }),
-                          //                     child: Material(
-                          //                       color: Colors.transparent,
-                          //                       child: Text(
-                          //                         'Call',
-                          //                         style: TextStyle(
-                          //                           color: Colors.white,
-                          //                           fontSize: 12.0,
-                          //                         ),
-                          //                       ),
-                          //                     ),
-                          //                   ),
-                          //                 ),
-                          //               ],
-                          //             ),
-                          //           ],
-                          //         ),
-                          //       )
-                          //     : const SizedBox(height: 40),
+                         
                         ],
                       ),
                     ),
@@ -320,8 +244,8 @@ class _UserBookingState extends State<UserBooking> {
                   width: width,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.white,
-                      onPrimary: Colors.blue,
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.blue,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5.0),
                       ),
@@ -348,8 +272,8 @@ class _UserBookingState extends State<UserBooking> {
                   width: width,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.white,
-                      onPrimary: Colors.blue,
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.blue,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5.0),
                       ),
