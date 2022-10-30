@@ -619,7 +619,7 @@ class _ExploreEventState extends State<ExploreEvent> {
   _setupCategoryVirtualEvent() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
         .where('isVirtual', isEqualTo: true)
-        .where('type', isEqualTo: 'Festival')
+        .where('type', isEqualTo:  widget.event.type)
         .limit(limit)
         .get();
     List<Event> events =
@@ -640,7 +640,7 @@ class _ExploreEventState extends State<ExploreEvent> {
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
         .where('isVirtual', isEqualTo: true)
-        .where('type', isEqualTo: 'Festival')
+        .where('type', isEqualTo:  widget.event.type)
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();

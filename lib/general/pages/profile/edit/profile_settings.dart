@@ -314,34 +314,43 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                         .update({
                                       'disableChat': _disableChat,
                                     });
+
+    //                                  usersRef
+    //                 .doc( widget.user.id,)
+    //                 .collection('chats').
+    // //                .forEach((doc) {
+    //   if (doc.exists) {
+    //     doc.reference.delete();
+    //   }
+    // });
                                   },
                                 ),
                               ),
-                              widget.user.profileHandle!.startsWith('Fan')
-                                  ? const SizedBox.shrink()
-                                  : Divider(color: Colors.grey),
-                              widget.user.profileHandle!.startsWith('Fan')
-                                  ? const SizedBox.shrink()
-                                  : SettingSwitch(
-                                      title: 'Enable chat booking',
-                                      subTitle:
-                                          'Your management contact appears on your chat details.',
-                                      value: _enableBookingOnChat,
-                                      onChanged: (value) => setState(
-                                        () {
-                                          _enableBookingOnChat =
-                                              this._enableBookingOnChat = value;
-                                          usersRef
-                                              .doc(
-                                            widget.user.id,
-                                          )
-                                              .update({
-                                            'enableBookingOnChat':
-                                                _enableBookingOnChat,
-                                          });
-                                        },
-                                      ),
-                                    ),
+                              // widget.user.profileHandle!.startsWith('Fan')
+                              //     ? const SizedBox.shrink()
+                              //     : Divider(color: Colors.grey),
+                              // widget.user.profileHandle!.startsWith('Fan')
+                              //     ? const SizedBox.shrink()
+                              //     : SettingSwitch(
+                              //         title: 'Enable chat booking',
+                              //         subTitle:
+                              //             'Your management contact appears on your chat details.',
+                              //         value: _enableBookingOnChat,
+                              //         onChanged: (value) => setState(
+                              //           () {
+                              //             _enableBookingOnChat =
+                              //                 this._enableBookingOnChat = value;
+                              //             usersRef
+                              //                 .doc(
+                              //               widget.user.id,
+                              //             )
+                              //                 .update({
+                              //               'enableBookingOnChat':
+                              //                   _enableBookingOnChat,
+                              //             });
+                              //           },
+                              //         ),
+                              //       ),
                               widget.user.profileHandle!.startsWith('Fan')
                                   ? const SizedBox.shrink()
                                   : Divider(color: Colors.grey),

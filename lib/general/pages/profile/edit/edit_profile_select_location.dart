@@ -443,6 +443,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                   key: _formKey,
                   child: PageView(
                     controller: _pageController,
+                    physics: const NeverScrollableScrollPhysics(),
                     onPageChanged: (int _index) {
                       setState(() {
                         _index = _index;
@@ -467,7 +468,9 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                                         ),
                                       )
                                     : const SizedBox.shrink(),
-                                _isfetchingCity ? const SizedBox.shrink() : SizedBox(height: 20.0),
+                                _isfetchingCity
+                                    ? const SizedBox.shrink()
+                                    : SizedBox(height: 20.0),
                                 _isfetchingCity
                                     ? const SizedBox.shrink()
                                     : Text(
@@ -493,7 +496,9 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                                           width: width / 3,
                                         ),
                                       ),
-                                _isfetchingCity ? const SizedBox.shrink() : SizedBox(height: 50),
+                                _isfetchingCity
+                                    ? const SizedBox.shrink()
+                                    : SizedBox(height: 50),
                                 buildCityForm()
                               ],
                             )),

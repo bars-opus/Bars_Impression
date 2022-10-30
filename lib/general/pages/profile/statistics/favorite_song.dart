@@ -247,18 +247,20 @@ class _FavoriteSongState extends State<FavoriteSong> {
                                   delegate: SliverChildBuilderDelegate(
                                     (context, index) {
                                       AccountHolder user = _users[index];
-                                      return FutureBuilder(
-                                        future: DatabaseService.getUserWithId(
-                                            user.id!),
-                                        builder: (BuildContext context,
-                                            AsyncSnapshot snapshot) {
-                                          if (!snapshot.hasData) {
-                                            return const SizedBox.shrink();
-                                          }
-                                          AccountHolder user = snapshot.data;
-                                          return _buildUserTile(user);
-                                        },
-                                      );
+                                      return _buildUserTile(user);
+                                      
+                                      // FutureBuilder(
+                                      //   future: DatabaseService.getUserWithId(
+                                      //       user.id!),
+                                      //   builder: (BuildContext context,
+                                      //       AsyncSnapshot snapshot) {
+                                      //     if (!snapshot.hasData) {
+                                      //       return const SizedBox.shrink();
+                                      //     }
+                                      //     AccountHolder user = snapshot.data;
+                                      //     return _buildUserTile(user);
+                                      //   },
+                                      // );
                                     },
                                     childCount: _users.length,
                                   ),

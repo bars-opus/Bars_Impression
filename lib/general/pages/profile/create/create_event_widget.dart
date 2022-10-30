@@ -1449,7 +1449,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                     )
                                   : PageView(
                                       controller: _pageController,
-                                      physics: AlwaysScrollableScrollPhysics(),
+                                      physics: const NeverScrollableScrollPhysics(),
                                       onPageChanged: (int index) {
                                         Provider.of<UserData>(context,
                                                 listen: false)

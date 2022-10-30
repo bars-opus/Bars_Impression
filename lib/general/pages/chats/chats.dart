@@ -1,3 +1,4 @@
+import 'package:bars/general/models/user_author_model.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -82,13 +83,13 @@ class _ChatsState extends State<Chats> {
                             var seen = snapshot.data.docs[index]['seen'];
 
                             return FutureBuilder(
-                                future: DatabaseService.getUserWithId(userId),
+                                future: DatabaseService.getUserAuthorWithId(userId),
                                 builder: (BuildContext context,
                                     AsyncSnapshot snapshot) {
                                   if (!snapshot.hasData) {
                                     return const SizedBox.shrink();
                                   }
-                                  AccountHolder author = snapshot.data;
+                                  AccountHolderAuthor author = snapshot.data;
 
                                   return _display(
                                     author: author,
@@ -130,7 +131,7 @@ class _ChatsState extends State<Chats> {
 //display
 // ignore: must_be_immutable
 class _display extends StatelessWidget {
-  final AccountHolder author;
+  final AccountHolderAuthor author;
   final Chat chats;
   String lastMessage;
   String seen;

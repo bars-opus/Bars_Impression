@@ -1,7 +1,8 @@
+import 'package:bars/general/models/user_author_model.dart';
 import 'package:bars/utilities/exports.dart';
 
 class UserListTile extends StatelessWidget {
-  final AccountHolder user;
+  final AccountHolderAuthor user;
   final VoidCallback onPressed;
 
   UserListTile({required this.user, required this.onPressed});
@@ -92,11 +93,7 @@ class UserListTile extends StatelessWidget {
                 fontSize: width > 800 ? 14 : 12,
                 color: Colors.blue,
               )),
-          Text(user.company!,
-              style: TextStyle(
-                fontSize: width > 800 ? 14 : 12,
-                color: Colors.blueGrey,
-              )),
+        
           SizedBox(
             height: 10.0,
           ),

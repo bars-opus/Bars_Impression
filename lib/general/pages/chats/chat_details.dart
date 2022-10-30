@@ -1,10 +1,11 @@
+import 'package:bars/general/models/user_author_model.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ChatDetails extends StatefulWidget {
-  final AccountHolder user;
+  final AccountHolderAuthor user;
   final AccountHolder currentUser;
   final Chat chat;
   final String currentUserId;
@@ -328,62 +329,50 @@ class _ChatDetailsState extends State<ChatDetails> {
                                       : Colors.black,
                                 ),
                               ),
-                              TextSpan(
-                                text: widget.user.company,
-                                style: TextStyle(
-                                  fontSize: 12.0,
-                                  color: ConfigBloc().darkModeOn
-                                      ? Colors.white
-                                      : Colors.black,
-                                ),
-                              ),
                             ],
                           ),
                           textAlign: TextAlign.center,
                         ),
                       ),
                     ),
-                    widget.user.enableBookingOnChat!
-                        ? const SizedBox(
-                            height: 30,
-                          )
-                        : const SizedBox.shrink(),
-                    !widget.user.enableBookingOnChat!
-                        ? Align(
-                            alignment: Alignment.center,
-                            child: Container(
-                              width: width,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  primary: Colors.teal,
-                                  onPrimary: Colors.blue,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5.0),
-                                  ),
-                                ),
-                                onPressed: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => UserBooking(
-                                              user: widget.user,
-                                              currentUserId:
-                                                  widget.currentUserId,
-                                              userIsCall: 1,
-                                              from: 'Booking',
-                                            ))),
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: Text(
-                                    'Booking Contact',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
+                    Align(
+                      alignment: Alignment.center,
+                      child: Container(
+                        width: width,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.teal,
+                            onPrimary: Colors.blue,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                          ),
+                          onPressed: () async {
+                            AccountHolder user =
+                                await DatabaseService.getUserWithId(
+                                    widget.user.id!);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => UserBooking(
+                                          user: user,
+                                          currentUserId: widget.currentUserId,
+                                          userIsCall: 1,
+                                          from: 'Booking',
+                                        )));
+                          },
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Text(
+                              'Booking Contact',
+                              style: TextStyle(
+                                color: Colors.white,
                               ),
                             ),
-                          )
-                        : const SizedBox.shrink(),
+                          ),
+                        ),
+                      ),
+                    ),
                     const SizedBox(
                       height: 30,
                     ),
@@ -449,7 +438,7 @@ class _ChatDetailsState extends State<ChatDetails> {
 
 //display
 class _display extends StatelessWidget {
-  final AccountHolder user;
+  final AccountHolderAuthor user;
   final Chat chat;
   final String currentUserId;
 

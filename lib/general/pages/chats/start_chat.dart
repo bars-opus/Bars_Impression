@@ -12,6 +12,22 @@ class StartChat extends StatefulWidget {
 }
 
 class _StartChatState extends State<StartChat> {
+  _chat() async {
+    AccountHolderAuthor user =
+        await DatabaseService.getUserAuthorWithId(widget.user.id!);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChatMessageScreen(
+          chat: null,
+          user: user,
+          currentUserId: widget.currentUserId,
+          fromProfile: true,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -138,17 +154,9 @@ class _StartChatState extends State<StartChat> {
                         borderRadius: BorderRadius.circular(3.0),
                       ),
                     ),
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => ChatMessageScreen(
-                          chat: null,
-                          user: widget.user,
-                          currentUserId: widget.currentUserId,
-                          fromProfile: true,
-                        ),
-                      ),
-                    ),
+                    onPressed: () {
+                      _chat();
+                    },
                     child: Material(
                       color: Colors.transparent,
                       child: Text(

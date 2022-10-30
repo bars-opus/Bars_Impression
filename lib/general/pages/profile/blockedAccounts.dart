@@ -1,3 +1,4 @@
+import 'package:bars/general/models/user_author_model.dart';
 import 'package:bars/utilities/exports.dart';
 
 class BlockedAccounts extends StatefulWidget {
@@ -95,7 +96,7 @@ class _BlockedAccountsState extends State<BlockedAccounts>
     return _hasNext;
   }
 
-  _buildUserTile(AccountHolder user) {
+  _buildUserTile(AccountHolderAuthor user) {
     return UserListTile(
         user: user,
         onPressed: () {
@@ -120,12 +121,12 @@ class _BlockedAccountsState extends State<BlockedAccounts>
               (context, index) {
                 DocId user = _userList[index];
                 return FutureBuilder(
-                  future: DatabaseService.getUserWithId(user.id),
+                  future: DatabaseService.getUserAuthorWithId(user.id),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if (!snapshot.hasData) {
                       return FollowerUserSchimmerSkeleton();
                     }
-                    AccountHolder user = snapshot.data;
+                    AccountHolderAuthor user = snapshot.data;
                     return Provider.of<UserData>(context).currentUserId ==
                             user.id
                         ? const SizedBox.shrink()

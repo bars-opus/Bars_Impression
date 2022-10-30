@@ -1,3 +1,4 @@
+import 'package:bars/general/models/user_author_model.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:uuid/uuid.dart';
 
@@ -1386,6 +1387,21 @@ class DatabaseService {
       genreTags: '',
       isEmailVerified: null,
       subAccountType: '',
+    );
+  }
+
+  static Future<AccountHolderAuthor> getUserAuthorWithId(String userId) async {
+    DocumentSnapshot userDocSnapshot = await usersRef.doc(userId).get();
+    if (userDocSnapshot.exists) {
+      return AccountHolderAuthor.fromDoc(userDocSnapshot);
+    }
+    return AccountHolderAuthor(
+      bio: '',
+      id: '',
+      profileImageUrl: '',
+      userName: '',
+      profileHandle: '',
+      verified: '',
     );
   }
 

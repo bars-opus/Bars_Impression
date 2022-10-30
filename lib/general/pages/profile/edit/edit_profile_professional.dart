@@ -552,7 +552,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                 key: _formKey,
                 child: PageView(
                     controller: _pageController,
-                    physics: AlwaysScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     onPageChanged: (int index) {
                       // setState(() {
                       //   _indexx = index;
@@ -566,6 +566,8 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                           child: Padding(
                             padding: const EdgeInsets.all(20.0),
                             child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 EditProfileInfo(
                                   editTitle: 'Booking \nportfolio',
@@ -851,7 +853,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                 widget.user.profileHandle!.startsWith('V')
                                     ? const SizedBox.shrink()
                                     : Text(
-                                        "Please enter any awards, prizes or plaques received. For example (6 BETs, 2 Grammys, 9 AFRIMAS ).",
+                                        "Please enter any awards, prizes or plaques received. For example (6 BETs, 2 Grammys, and 9 AFRIMAS ).",
                                         style: TextStyle(
                                             color: Colors.grey, fontSize: 12),
                                       ),
@@ -1053,7 +1055,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                     enabledBorder: new OutlineInputBorder(
                                         borderSide:
                                             new BorderSide(color: Colors.grey)),
-                                    hintText: " Enter your email address",
+                                    hintText: "Enter your email address",
                                     hintStyle: TextStyle(
                                         fontSize: 12, color: Colors.grey),
                                     labelText: 'Email',
@@ -1072,7 +1074,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                   height: 10,
                                 ),
                                 Text(
-                                  "Please, enter an email to help people contact you if they don't hear from your manager..",
+                                  "Please, enter an email to help people contact you if they don't hear from your manager.",
                                   style: TextStyle(
                                       color: Colors.grey, fontSize: 12),
                                 ),
@@ -1100,7 +1102,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                               children: [
                                 DirectionWidgetWithIcon(
                                   text:
-                                      'Enter the following hyperlinks to some of your works. You can enter a hyperlink directly to your website,  or any other platform. When adding a hyperlink, the URL should be directly copied from a browser and not an app.',
+                                      'Enter the following hyperlinks to some of your works. You can enter a hyperlink directly to your website,  or any other platform. The URL should be directly copied from a browser and not an app when adding a hyperlink.',
                                   fontSize: null,
                                   icon: Icon(
                                     Icons.work,
@@ -1209,7 +1211,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                         "Enter a hyperlink to your video channel.",
                                     hintStyle: TextStyle(
                                         fontSize: 12, color: Colors.grey),
-                                    labelText: 'video channel Url',
+                                    labelText: 'Video channel Url',
                                   ),
                                   onSaved: (input) => Provider.of<UserData>(
                                           context,
@@ -1264,7 +1266,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                 ),
                                 SizedBox(height: 10),
                                 Text(
-                                  "Enter a link to any other site where users can see your works. Please copy an URL link of an app website and past it here. ",
+                                  "Enter a link to any other site where users can see your works. Please copy an URL link of an app website and paste it here. ",
                                   style: TextStyle(
                                       color: Colors.grey, fontSize: 12),
                                 ),
@@ -1292,7 +1294,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                               children: [
                                 DirectionWidgetWithIcon(
                                   text:
-                                      'Your gallery displays professional images about you.',
+                                      'Your gallery displays professional images of you.',
                                   fontSize: null,
                                   icon: Icon(
                                     Icons.photo_album_outlined,

@@ -55,6 +55,11 @@ class _EventsAttendingState extends State<EventsAttending> {
 
   @override
   Widget build(BuildContext context) {
+    final List<String> rate = widget.event.rate.isEmpty
+        ? widget.event.title.split("")
+        : widget.event.rate.startsWith('free')
+            ? widget.event.title.split("r")
+            : widget.event.rate.split(",");
     final width = Responsive.isDesktop(context)
         ? 600.0
         : MediaQuery.of(context).size.width;
@@ -201,21 +206,93 @@ class _EventsAttendingState extends State<EventsAttending> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text(
-                            MyDateFormat.toTime(
-                                DateTime.parse(widget.event.time)),
-                            style: TextStyle(
-                              fontSize: 25,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.start,
-                          ),
+                          widget.event.rate.isEmpty
+                              ? const SizedBox.shrink()
+                              : ShakeTransition(
+                                  child: Center(
+                                    child: widget.event.rate.startsWith('free')
+                                        ? RichText(
+                                            textScaleFactor:
+                                                MediaQuery.of(context)
+                                                    .textScaleFactor,
+                                            text: TextSpan(children: [
+                                              TextSpan(
+                                                text: 'Free\n',
+                                                style: TextStyle(
+                                                  fontSize: 30.0,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text:
+                                                    'This event is free. \nSwag up, attend,\nmeet and experience.',
+                                                style: TextStyle(
+                                                  fontSize: 12.0,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ]),
+                                            textAlign: TextAlign.center,
+                                          )
+                                        : RichText(
+                                            textScaleFactor:
+                                                MediaQuery.of(context)
+                                                    .textScaleFactor,
+                                            text: TextSpan(children: [
+                                              TextSpan(
+                                                text: rate[1],
+                                                style: TextStyle(
+                                                  fontSize: 30.0,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text: "\n${rate[0]}\n\n",
+                                                style: TextStyle(
+                                                  fontSize: 12.0,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text: widget.event.isCashPayment
+                                                    ? 'The payment method\nfor this event is cash. '
+                                                    : '',
+                                                style: TextStyle(
+                                                  fontSize: 12.0,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ]),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                  ),
+                                ),
+                          // Text(
+                          //   MyDateFormat.toTime(
+                          //       DateTime.parse(widget.event.time)),
+                          //   style: TextStyle(
+                          //     fontSize: 25,
+                          //     color: Colors.white,
+                          //     fontWeight: FontWeight.bold,
+                          //   ),
+                          //   textAlign: TextAlign.start,
+                          // ),
                           RichText(
                             textScaleFactor:
                                 MediaQuery.of(context).textScaleFactor,
                             text: TextSpan(
                               children: [
+                                TextSpan(
+                                  text: MyDateFormat.toTime(
+                                      DateTime.parse(widget.event.time)),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                                 TextSpan(
                                   text: datePartition[0].toUpperCase(),
                                   style: TextStyle(

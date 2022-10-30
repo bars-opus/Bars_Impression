@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 final _firestore = FirebaseFirestore.instance;
 final storageRef = FirebaseStorage.instance.ref();
 final usersRef = _firestore.collection('users');
+final usersAuthorRef = _firestore.collection('usersAuthors');
 final updateAppRef = _firestore.collection('_updateApp');
 final postsRef = _firestore.collection('posts');
 final allPostsRef = _firestore.collection('allPosts');

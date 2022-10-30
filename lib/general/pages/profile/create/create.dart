@@ -193,7 +193,7 @@ class _CreateContentsState extends State<CreateContents> {
                       height: 5.0,
                     ),
                     Text(
-                      "Create forums to share ideas and discuss topics in the music industry. Create flyers of events and invite people to come and share great experiences with you.",
+                      "Create forums to share ideas and discuss topics in the music industry. Create events and invite people to come and share great experiences with you.",
                       style: TextStyle(
                         color: ConfigBloc().darkModeOn
                             ? Colors.grey

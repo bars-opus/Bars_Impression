@@ -1,5 +1,6 @@
 // ignore_for_file: unnecessary_null_comparison
 
+import 'package:bars/general/models/user_author_model.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
@@ -7,7 +8,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ChatMessageScreen extends StatefulWidget {
-  final AccountHolder user;
+  final AccountHolderAuthor user;
   final Chat? chat;
   final bool fromProfile;
   final String currentUserId;
@@ -541,9 +542,14 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                 DragTarget<bool>(builder: (context, data, rejectedData) {
                   return Container(
                     decoration: BoxDecoration(
-                      color: currentUserId == message.authorId
-                          ? Colors.teal[200]
-                          : Colors.white,
+                      color: Provider.of<UserData>(context, listen: false)
+                                      .postImage !=
+                                  null ||
+                              _isreplying
+                          ? Colors.grey
+                          : currentUserId == message.authorId
+                              ? Colors.teal[200]
+                              : Colors.white,
                       borderRadius: currentUserId == message.authorId
                           ? BorderRadius.only(
                               topLeft: Radius.circular(50.0),
@@ -1039,20 +1045,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _isLoading
-                          ? Padding(
-                              padding:
-                                  const EdgeInsets.only(bottom: 10.0, top: 5),
-                              child: SizedBox(
-                                height: 2.0,
-                                child: LinearProgressIndicator(
-                                  backgroundColor: Colors.transparent,
-                                  valueColor:
-                                      AlwaysStoppedAnimation(Colors.teal[300]),
-                                ),
-                              ),
-                            )
-                          : const SizedBox.shrink(),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: Row(
@@ -1580,7 +1572,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                         duration: Duration(milliseconds: 500),
                                         height: _isBlockedUser ||
                                                 _isBlockingUser ||
-                                                widget.user.disableChat! ||
+                                                widget.chat!.disableChat ||
                                                 _restrictChat ||
                                                 Provider.of<UserData>(context,
                                                         listen: false)
@@ -1595,20 +1587,20 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                             color: widget.chat!.restrictChat ||
                                                     _restrictChat ||
                                                     _isBlockingUser ||
-                                                    widget.user.disableChat!
+                                                    widget.chat!.disableChat
                                                 ? Colors.grey
                                                 : Colors.transparent,
                                             onPressed: () => () {},
                                           ),
                                           title: Text(
-                                              widget.user.disableChat!
+                                              widget.chat!.disableChat
                                                   ? 'Disabled chat'
                                                   : _restrictChat
                                                       ? 'Restricted chat'
                                                       : _isBlockingUser
                                                           ? 'Unblock to send message'
-                                                          : widget.user
-                                                                  .disableChat!
+                                                          : widget.chat!
+                                                                  .disableChat
                                                               ? widget.user
                                                                       .userName! +
                                                                   ' is not interested in receiving new messages'
@@ -1711,7 +1703,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                             ),
                             _isBlockedUser ||
                                     _isBlockingUser ||
-                                    widget.user.disableChat! ||
+                                    widget.chat!.disableChat ||
                                     _restrictChat ||
                                     Provider.of<UserData>(context,
                                             listen: false)
@@ -1737,6 +1729,17 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                               color: Colors.pink,
                             ),
                           ))
+                  : const SizedBox.shrink(),
+              _isLoading
+                  ? Container(
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      color: Colors.black87,
+                      child: Text(
+                        'Sending..',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    )
                   : const SizedBox.shrink()
             ],
           ),
