@@ -107,30 +107,35 @@ class _EventPageLiveState extends State<EventPageLive>
                     user: widget.user,
                     liveCity: widget.liveCity,
                     liveCountry: widget.liveCountry,
+                    type: 'Festival',
                   ),
-                  AwardEventsLiveCity(
+                  FestivalEventsLiveCity(
                     currentUserId: widget.currentUserId,
                     user: widget.user,
                     liveCity: widget.liveCity,
                     liveCountry: widget.liveCountry,
+                    type: 'Award',
                   ),
-                  ToursEventsLiveCity(
+                  FestivalEventsLiveCity(
                     currentUserId: widget.currentUserId,
                     user: widget.user,
                     liveCity: widget.liveCity,
                     liveCountry: widget.liveCountry,
+                    type: 'Tour',
                   ),
-                  AlbumLaunchesLiveCity(
+                  FestivalEventsLiveCity(
                     currentUserId: widget.currentUserId,
                     user: widget.user,
                     liveCity: widget.liveCity,
                     liveCountry: widget.liveCountry,
+                    type: 'Album_Launch',
                   ),
-                  OtherEventsLiveCity(
+                  FestivalEventsLiveCity(
                     currentUserId: widget.currentUserId,
                     user: widget.user,
                     liveCity: widget.liveCity,
                     liveCountry: widget.liveCountry,
+                    type: 'Others',
                   ),
                 ],
               )),

@@ -5,11 +5,13 @@ class FestivalEventsLocation extends StatefulWidget {
   final String currentUserId;
   final AccountHolder user;
   final String locationType;
+  final String type;
 
   FestivalEventsLocation({
     required this.currentUserId,
     required this.user,
     required this.locationType,
+    required this.type,
   });
   @override
   _FestivalEventsLocationState createState() => _FestivalEventsLocationState();
@@ -61,7 +63,7 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
   _setupEventFeed() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
         .where('city', isEqualTo: widget.user.city)
-        .where('type', isEqualTo: 'Festival')
+        .where('type', isEqualTo: widget.type)
         .limit(limit)
         .get();
     List<Event> events =
@@ -82,7 +84,7 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
         .where('city', isEqualTo: widget.user.city)
-        .where('type', isEqualTo: 'Festival')
+        .where('type', isEqualTo: widget.type)
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();
@@ -104,7 +106,7 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
   _setupCountryEvent() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
         .where('country', isEqualTo: widget.user.country)
-        .where('type', isEqualTo: 'Festival')
+        .where('type', isEqualTo: widget.type)
         .limit(limit)
         .get();
     List<Event> events =
@@ -125,7 +127,7 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
         .where('country', isEqualTo: widget.user.country)
-        .where('type', isEqualTo: 'Festival')
+        .where('type', isEqualTo: widget.type)
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();
@@ -147,7 +149,7 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
   _setupVirtalEvent() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
         .where('isVirtual', isEqualTo: true)
-        .where('type', isEqualTo: 'Festival')
+        .where('type', isEqualTo: widget.type)
         .limit(limit)
         .get();
     List<Event> events =
@@ -168,7 +170,7 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
         .where('isVirtual', isEqualTo: true)
-        .where('type', isEqualTo: 'Festival')
+        .where('type', isEqualTo: widget.type)
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();
@@ -198,9 +200,7 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
                   : '',
       currentUserId: widget.currentUserId,
       event: event,
-      
       user: widget.user,
-
       feed: 3,
     );
   }
@@ -222,7 +222,9 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
                       future: DatabaseService.getUserWithId(event.authorId),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (!snapshot.hasData) {
-                          return EventSchimmerBlurHash(event: event,);
+                          return EventSchimmerBlurHash(
+                            event: event,
+                          );
                         }
                         AccountHolder author = snapshot.data;
 
@@ -255,7 +257,7 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
                     padding: const EdgeInsets.only(top: 20),
                     child: _buildUser()))
             : _events.length == 0
-                ?Center(
+                ? Center(
                     child: NoUsersDicovered(
                       title: 'Festivals',
                     ),

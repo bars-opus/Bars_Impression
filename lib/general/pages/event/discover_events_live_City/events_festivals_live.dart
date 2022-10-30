@@ -5,12 +5,14 @@ class FestivalEventsLiveCity extends StatefulWidget {
   final String currentUserId;
   final AccountHolder user;
   final String liveCity;
+  final String type;
   final String liveCountry;
   FestivalEventsLiveCity({
     required this.currentUserId,
     required this.user,
     required this.liveCity,
     required this.liveCountry,
+    required this.type,
   });
   @override
   _FestivalEventsLiveCityState createState() => _FestivalEventsLiveCityState();
@@ -23,7 +25,7 @@ class _FestivalEventsLiveCityState extends State<FestivalEventsLiveCity>
   int limit = 10;
   bool _hasNext = true;
   bool _isFetchingEvent = false;
- late ScrollController _hideButtonController;
+  late ScrollController _hideButtonController;
 
   @override
   void initState() {
@@ -51,7 +53,7 @@ class _FestivalEventsLiveCityState extends State<FestivalEventsLiveCity>
     QuerySnapshot eventFeedSnapShot = await allEventsRef
         .where('city', isEqualTo: widget.liveCity)
         .where('country', isEqualTo: widget.liveCountry)
-        .where('type', isEqualTo: 'Festival')
+        .where('type', isEqualTo: widget.type)
         .limit(limit)
         .get();
     List<Event> events =
@@ -73,7 +75,7 @@ class _FestivalEventsLiveCityState extends State<FestivalEventsLiveCity>
     QuerySnapshot eventFeedSnapShot = await allEventsRef
         .where('city', isEqualTo: widget.liveCity)
         .where('country', isEqualTo: widget.liveCountry)
-        .where('type', isEqualTo: 'Festival')
+        .where('type', isEqualTo: widget.type)
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();
@@ -98,7 +100,7 @@ class _FestivalEventsLiveCityState extends State<FestivalEventsLiveCity>
       feed: 3,
       currentUserId: widget.currentUserId,
       event: event,
-          user: widget.user,
+      user: widget.user,
 
       // eventList: _events,
     );
@@ -121,7 +123,9 @@ class _FestivalEventsLiveCityState extends State<FestivalEventsLiveCity>
                       future: DatabaseService.getUserWithId(event.authorId),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (!snapshot.hasData) {
-                          return EventSchimmerBlurHash(event: event,);
+                          return EventSchimmerBlurHash(
+                            event: event,
+                          );
                         }
                         AccountHolder author = snapshot.data;
 

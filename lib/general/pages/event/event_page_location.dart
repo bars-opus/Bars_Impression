@@ -98,26 +98,31 @@ class _EventPageLocationState extends State<EventPageLocation>
                     locationType: widget.locationType,
                     currentUserId: widget.currentUserId,
                     user: widget.user,
+                    type: 'Festival',
                   ),
-                  AwardEventsLocation(
+                  FestivalEventsLocation(
                     locationType: widget.locationType,
                     currentUserId: widget.currentUserId,
                     user: widget.user,
+                    type: 'Award',
                   ),
-                  ToursEventsLocation(
+                  FestivalEventsLocation(
                     locationType: widget.locationType,
                     currentUserId: widget.currentUserId,
                     user: widget.user,
+                    type: 'Tour',
                   ),
-                  AlbumLaunchesLocation(
+                  FestivalEventsLocation(
                     locationType: widget.locationType,
                     currentUserId: widget.currentUserId,
                     user: widget.user,
+                    type: 'Album_Launch',
                   ),
-                  OtherEventsLocation(
+                  FestivalEventsLocation(
                     locationType: widget.locationType,
                     currentUserId: widget.currentUserId,
                     user: widget.user,
+                    type: 'Others',
                   ),
                 ],
               )),

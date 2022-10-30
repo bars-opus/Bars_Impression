@@ -1351,6 +1351,22 @@ class _ProfileScreenState extends State<ProfileScreen>
         });
   }
 
+  _chat() async {
+    AccountHolderAuthor user =
+        await DatabaseService.getUserAuthorWithId(_profileUser.id!);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChatMessageScreen(
+          user: user,
+          currentUserId: widget.currentUserId,
+          fromProfile: true,
+          chat: null,
+        ),
+      ),
+    );
+  }
+
   _iosBottomSheet(AccountHolder user) {
     showCupertinoModalPopup(
         context: context,
@@ -1372,17 +1388,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                     ),
                   ),
                   onPressed: () => user.profileHandle!.startsWith('Fan')
-                      ? Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => ChatMessageScreen(
-                              user: user,
-                              currentUserId: widget.currentUserId,
-                              fromProfile: true,
-                              chat: null,
-                            ),
-                          ),
-                        )
+                      ? _chat()
                       : Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -1970,56 +1976,56 @@ class _ProfileScreenState extends State<ProfileScreen>
                                                       SizedBox(
                                                         width: 10,
                                                       ),
-                                                      GestureDetector(
-                                                        onTap: () =>
-                                                            Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                    builder: (_) =>
-                                                                        ProfileRating(
-                                                                          user:
-                                                                              user,
-                                                                          currentUserId:
-                                                                              widget.currentUserId,
-                                                                        ))),
-                                                        child: Container(
-                                                          width: 35,
-                                                          height: 35,
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Colors
-                                                                .transparent,
-                                                            shape:
-                                                                BoxShape.circle,
-                                                            border: Border.all(
-                                                                width: 1.0,
-                                                                color: Colors
-                                                                    .white),
-                                                          ),
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(1.0),
-                                                            child: Align(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child: Text(
-                                                                'R',
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontSize: 14,
-                                                                ),
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .center,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
+                                                      // GestureDetector(
+                                                      //   onTap: () =>
+                                                      //       Navigator.push(
+                                                      //           context,
+                                                      //           MaterialPageRoute(
+                                                      //               builder: (_) =>
+                                                      //                   ProfileRating(
+                                                      //                     user:
+                                                      //                         user,
+                                                      //                     currentUserId:
+                                                      //                         widget.currentUserId,
+                                                      //                   ))),
+                                                      //   child: Container(
+                                                      //     width: 35,
+                                                      //     height: 35,
+                                                      //     decoration:
+                                                      //         BoxDecoration(
+                                                      //       color: Colors
+                                                      //           .transparent,
+                                                      //       shape:
+                                                      //           BoxShape.circle,
+                                                      //       border: Border.all(
+                                                      //           width: 1.0,
+                                                      //           color: Colors
+                                                      //               .white),
+                                                      //     ),
+                                                      //     child: Padding(
+                                                      //       padding:
+                                                      //           const EdgeInsets
+                                                      //               .all(1.0),
+                                                      //       child: Align(
+                                                      //         alignment:
+                                                      //             Alignment
+                                                      //                 .center,
+                                                      //         child: Text(
+                                                      //           'R',
+                                                      //           style:
+                                                      //               TextStyle(
+                                                      //             color: Colors
+                                                      //                 .white,
+                                                      //             fontSize: 14,
+                                                      //           ),
+                                                      //           textAlign:
+                                                      //               TextAlign
+                                                      //                   .center,
+                                                      //         ),
+                                                      //       ),
+                                                      //     ),
+                                                      //   ),
+                                                      // ),
                                                       SizedBox(
                                                         width: 10,
                                                       ),

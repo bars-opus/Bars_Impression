@@ -287,7 +287,6 @@ export 'package:bars/widgets/info/fetching_next_content.dart';
 export 'package:bars/utilities/error_user.dart';
 export 'package:bars/widgets/info/events_feed_attending_deleted.dart';
 export 'package:bars/widgets/focus_more_content_button.dart';
-export 'package:bars/general/pages/chats/send_to_chat.dart';
 export 'package:bars/widgets/buttons/sign_in_with_button.dart';
 export 'package:bars/auth_screens/login_screen_options.dart';
 export 'package:bars/utilities/view_sent_content.dart';
@@ -301,7 +300,6 @@ export 'package:bars/general/pages/event/invitation&requests/event_rate.dart';
 
 // discover user
 export 'package:bars/general/pages/discover/discover_page/account_categories/artists.dart';
-export 'package:bars/general/pages/forum_and_blog/forum/forum_feed.dart';
 export 'package:bars/general/pages/event/invitation&requests/event_attendees_validated.dart';
 export 'package:bars/general/pages/event/invitation&requests/validate_event_attendees.dart';
 // discover user import userLocation
@@ -312,28 +310,17 @@ export 'package:bars/general/pages/discover/discover_live/account_categories/art
 //event page
 export 'package:bars/general/pages/event/event_page_location.dart';
 //discover events
-export 'package:bars/general/pages/event/discover_events/events_albumLaunches.dart';
 export 'package:bars/general/pages/event/discover_events/events_all.dart';
-export 'package:bars/general/pages/event/discover_events/events_awards.dart';
-export 'package:bars/general/pages/event/discover_events/events_others.dart';
-export 'package:bars/general/pages/event/discover_events/events_tours.dart';
 //event page location
-export 'package:bars/general/pages/event/discover_events_location/events_albumLaunches_location.dart';
 export 'package:bars/general/pages/event/discover_events_location/events_all_location.dart';
-export 'package:bars/general/pages/event/discover_events_location/events_awards_location.dart';
 export 'package:bars/general/pages/event/discover_events_location/events_festivals_location.dart';
-export 'package:bars/general/pages/event/discover_events_location/events_others_location.dart';
-export 'package:bars/general/pages/event/discover_events_location/events_tours_location.dart';
 //event page live
-export 'package:bars/general/pages/event/discover_events_live_City/events_albumLaunches_live.dart';
 export 'package:bars/general/pages/event/discover_events_live_City/events_all_live.dart';
-export 'package:bars/general/pages/event/discover_events_live_City/events_awards_live.dart';
 export 'package:bars/general/pages/event/discover_events_live_City/events_festivals_live.dart';
-export 'package:bars/general/pages/event/discover_events_live_City/events_others_live.dart';
-export 'package:bars/general/pages/event/discover_events_live_City/events_tours_live.dart';
 export 'package:bars/widgets/info/direction_widget_white.dart';
 //
 export 'package:bars/general/pages/discover/seach/store_search%20_event.dart';
 export 'package:bars/general/pages/discover/seach/store_search%20_forum.dart';
 export 'package:bars/general/pages/discover/seach/store_search%20_post.dart';
 export 'package:bars/general/pages/discover/seach/store_search%20_user.dart';
+export 'package:bars/general/models/user_author_model.dart';
