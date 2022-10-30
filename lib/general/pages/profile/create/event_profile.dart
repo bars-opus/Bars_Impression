@@ -1,3 +1,4 @@
+import 'package:bars/general/pages/chats/send_to_chat.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
@@ -114,7 +115,7 @@ class _EventProfileViewState extends State<EventProfileView> {
                       ),
                     ),
                   ),
-                  onPressed: () => _toDaysDate.isAfter(_closingDate)
+                  onPressed: () => _toDaysDate.isAfter(_date) || _different <0
                       ? Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -251,7 +252,7 @@ class _EventProfileViewState extends State<EventProfileView> {
               child: Stack(
                 children: [
                   EventViewWidget(
-                    completed: _toDaysDate.isAfter(_closingDate) ? true : false,
+                    completed: _toDaysDate.isAfter(_date) || _different <0? true : false,
                     currentUserId: widget.currentUserId,
 
                     titleHero: 'title1  ${widget.event.id.toString()}',

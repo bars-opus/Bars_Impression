@@ -233,7 +233,7 @@ class _EventsAttendingState extends State<EventsAttending> {
                                                 ),
                                               ),
                                             ]),
-                                            textAlign: TextAlign.center,
+                                            textAlign: TextAlign.start,
                                           )
                                         : RichText(
                                             textScaleFactor:
@@ -265,7 +265,7 @@ class _EventsAttendingState extends State<EventsAttending> {
                                                 ),
                                               ),
                                             ]),
-                                            textAlign: TextAlign.center,
+                                            textAlign: TextAlign.start,
                                           ),
                                   ),
                                 ),
@@ -285,8 +285,8 @@ class _EventsAttendingState extends State<EventsAttending> {
                             text: TextSpan(
                               children: [
                                 TextSpan(
-                                  text: MyDateFormat.toTime(
-                                      DateTime.parse(widget.event.time)),
+                                  text:
+                                      '${MyDateFormat.toTime(DateTime.parse(widget.event.time))}\n',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.white,

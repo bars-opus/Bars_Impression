@@ -160,13 +160,7 @@ class _ProfessionalProfileState extends State<ProfessionalProfile> {
           ),
          
           currentUserId: currentUserId,
-          onPressedRating: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => ProfileRating(
-                        user: widget.user,
-                        currentUserId: widget.currentUserId,
-                      ))),
+          onPressedRating: () {},
           user: widget.user,
           point: _point,
           userTotal: _total,

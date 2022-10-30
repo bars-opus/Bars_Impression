@@ -105,7 +105,9 @@ class _EventsAllLiveCityState extends State<EventsAllLiveCity>
     return _hasNext;
   }
 
-  _displayEvents(Event event, AccountHolder author) {
+  _displayEvents(
+    Event event,
+  ) {
     return EventProfileView(
       exploreLocation: 'Live',
       feed: 2,
@@ -129,18 +131,19 @@ class _EventsAllLiveCityState extends State<EventsAllLiveCity>
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   Event event = _events[index];
-                  return FutureBuilder(
-                      future: DatabaseService.getUserWithId(event.authorId),
-                      builder: (BuildContext context, AsyncSnapshot snapshot) {
-                        if (!snapshot.hasData) {
-                          return EventSchimmerBlurHash(
-                            event: event,
-                          );
-                        }
-                        AccountHolder author = snapshot.data;
+                  return _displayEvents(event);
+                  // FutureBuilder(
+                  //     future: DatabaseService.getUserWithId(event.authorId),
+                  //     builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  //       if (!snapshot.hasData) {
+                  //         return EventSchimmerBlurHash(
+                  //           event: event,
+                  //         );
+                  //       }
+                  //       AccountHolder author = snapshot.data;
 
-                        return _displayEvents(event, author);
-                      });
+                  //       return _displayEvents(event, author);
+                  //     });
                 },
                 childCount: _events.length,
               ),

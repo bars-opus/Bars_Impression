@@ -1,3 +1,4 @@
+import 'package:bars/general/pages/forum_and_blog/forum/forum_feed.dart';
 import 'package:bars/utilities/local_notification.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';

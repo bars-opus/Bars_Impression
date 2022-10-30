@@ -110,11 +110,7 @@ class SearchUserTile extends StatelessWidget {
                 fontSize: width > 800 ? 14 : 12,
                 color: Colors.blueGrey,
               )),
-          profileHandle.startsWith('F') || profileHandle.isEmpty
-              ? const SizedBox.shrink()
-              : Stars(
-                  score: score,
-                ),
+        
           RichText(
             textScaleFactor: MediaQuery.of(context).textScaleFactor,
             maxLines: 3,

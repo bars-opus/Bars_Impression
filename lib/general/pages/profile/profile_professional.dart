@@ -126,13 +126,7 @@ class _ProfileProfessionalProfileState
       point: _point,
       userTotal: _total,
       currentUserId: currentUserId,
-      onPressedRating: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (_) => ProfileRating(
-                    user: widget.user,
-                    currentUserId: widget.currentUserId,
-                  ))),
+      onPressedRating: () {}
     );
   }
 }

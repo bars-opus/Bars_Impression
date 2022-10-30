@@ -1,4 +1,5 @@
 // import 'dart:ui';
+import 'package:bars/general/pages/chats/send_to_chat.dart';
 import 'package:bars/utilities/exports.dart';
 
 class EventEnlargedWidget extends StatefulWidget {
@@ -1147,7 +1148,7 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                         const EdgeInsets.only(
                                                       bottom: 3,
                                                     ),
-                                                    child: _different < 1
+                                                    child: _different < 0
                                                         ? RichText(
                                                             textScaleFactor:
                                                                 MediaQuery.of(

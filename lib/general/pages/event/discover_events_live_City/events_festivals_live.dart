@@ -56,8 +56,10 @@ class _FestivalEventsLiveCityState extends State<FestivalEventsLiveCity>
         .where('type', isEqualTo: widget.type)
         .limit(limit)
         .get();
-    List<Event> events =
-        eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
+    List<Event> events = eventFeedSnapShot.docs
+        .map((doc) => Event.fromDoc(doc))
+        .toList()
+      ..shuffle();
     _eventSnapshot.addAll((eventFeedSnapShot.docs));
     if (mounted) {
       setState(() {
@@ -79,8 +81,10 @@ class _FestivalEventsLiveCityState extends State<FestivalEventsLiveCity>
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();
-    List<Event> moreevents =
-        eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
+    List<Event> moreevents = eventFeedSnapShot.docs
+        .map((doc) => Event.fromDoc(doc))
+        .toList()
+      ..shuffle();
     if (_eventSnapshot.length < limit) _hasNext = false;
     List<Event> allevents = _events..addAll(moreevents);
     _eventSnapshot.addAll((eventFeedSnapShot.docs));
@@ -94,7 +98,9 @@ class _FestivalEventsLiveCityState extends State<FestivalEventsLiveCity>
     return _hasNext;
   }
 
-  _displayEvents(Event event, AccountHolder author) {
+  _displayEvents(
+    Event event,
+  ) {
     return EventView(
       exploreLocation: 'Live',
       feed: 3,
@@ -119,18 +125,21 @@ class _FestivalEventsLiveCityState extends State<FestivalEventsLiveCity>
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   Event event = _events[index];
-                  return FutureBuilder(
-                      future: DatabaseService.getUserWithId(event.authorId),
-                      builder: (BuildContext context, AsyncSnapshot snapshot) {
-                        if (!snapshot.hasData) {
-                          return EventSchimmerBlurHash(
-                            event: event,
-                          );
-                        }
-                        AccountHolder author = snapshot.data;
+                  return _displayEvents(
+                    event,
+                  );
+                  // FutureBuilder(
+                  //     future: DatabaseService.getUserWithId(event.authorId),
+                  //     builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  //       if (!snapshot.hasData) {
+                  //         return EventSchimmerBlurHash(
+                  //           event: event,
+                  //         );
+                  //       }
+                  //       AccountHolder author = snapshot.data;
 
-                        return _displayEvents(event, author);
-                      });
+                  //       return _displayEvents(event, author);
+                  //     });
                 },
                 childCount: _events.length,
               ),

@@ -1,3 +1,4 @@
+import 'package:bars/general/pages/chats/send_to_chat.dart';
 import 'package:bars/utilities/exports.dart';
 
 class UserView extends StatefulWidget {
@@ -483,9 +484,9 @@ class _UserViewState extends State<UserView> {
                                 width: 50.0,
                               ),
                             ),
-                            Stars(
-                              score: widget.user.score!,
-                            ),
+                            // Stars(
+                            //   score: widget.user.score!,
+                            // ),
                             Material(
                               color: Colors.transparent,
                               child: RichText(

@@ -529,64 +529,8 @@ class _UserExpandedWidgetState extends State<UserExpandedWidget> {
                               textAlign: TextAlign.center,
                             ),
                           ),
-                          SizedBox(height: 30),
-                          SingleChildScrollView(
-                            child: Container(
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Wrap(
-                                  direction: Axis.vertical,
-                                  children: [
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Container(
-                                          width: 150,
-                                          child: OutlinedButton(
-                                            style: OutlinedButton.styleFrom(
-                                              primary: Colors.blue,
-                                              side: BorderSide(
-                                                width: 1.0,
-                                                color: ConfigBloc().darkModeOn
-                                                    ? Colors.white
-                                                    : Colors.black,
-                                              ),
-                                            ),
-                                            onPressed: () => Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        ProfileRating(
-                                                          user: widget.user,
-                                                          currentUserId: widget
-                                                              .currentUserId,
-                                                        ))),
-                                            child: Material(
-                                              color: Colors.transparent,
-                                              child: Text(
-                                                widget.user.id ==
-                                                        widget.currentUserId
-                                                    ? 'Your Rating'
-                                                    : 'Rate Me',
-                                                style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize:
-                                                      width > 600 ? 20 : 14.0,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
+                        const  SizedBox(height: 30),
+                        
                         ],
                       ),
                     ),
@@ -675,9 +619,9 @@ class _UserExpandedWidgetState extends State<UserExpandedWidget> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Stars(
-                                  score: widget.user.score!,
-                                ),
+                                // Stars(
+                                //   score: widget.user.score!,
+                                // ),
                               ],
                             ),
                             SizedBox(

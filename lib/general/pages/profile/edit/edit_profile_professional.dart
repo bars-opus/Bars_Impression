@@ -580,9 +580,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                   maxLines: null,
                                   textCapitalization:
                                       TextCapitalization.sentences,
-                                  initialValue: Provider.of<UserData>(context,
-                                          listen: false)
-                                      .post1,
+                                  initialValue: widget.user.company,
                                   style: TextStyle(
                                     fontSize: 12.0,
                                     color: ConfigBloc().darkModeOn
@@ -629,9 +627,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                   maxLines: null,
                                   textCapitalization:
                                       TextCapitalization.sentences,
-                                  initialValue: Provider.of<UserData>(context,
-                                          listen: false)
-                                      .post2,
+                                  initialValue: widget.user.skills,
                                   style: TextStyle(
                                     fontSize: 12.0,
                                     color: ConfigBloc().darkModeOn
@@ -695,10 +691,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                         maxLines: null,
                                         textCapitalization:
                                             TextCapitalization.sentences,
-                                        initialValue: Provider.of<UserData>(
-                                                context,
-                                                listen: false)
-                                            .post3,
+                                        initialValue: widget.user.performances,
                                         style: TextStyle(
                                           fontSize: 12.0,
                                           color: ConfigBloc().darkModeOn
@@ -763,9 +756,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                   maxLines: null,
                                   textCapitalization:
                                       TextCapitalization.sentences,
-                                  initialValue: Provider.of<UserData>(context,
-                                          listen: false)
-                                      .post4,
+                                  initialValue: widget.user.collaborations,
                                   style: TextStyle(
                                     fontSize: 12.0,
                                     color: ConfigBloc().darkModeOn
@@ -814,10 +805,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                         maxLines: null,
                                         textCapitalization:
                                             TextCapitalization.sentences,
-                                        initialValue: Provider.of<UserData>(
-                                                context,
-                                                listen: false)
-                                            .post5,
+                                        initialValue: widget.user.awards,
                                         style: TextStyle(
                                           fontSize: 12.0,
                                           color: ConfigBloc().darkModeOn
@@ -940,9 +928,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                   maxLines: null,
                                   textCapitalization:
                                       TextCapitalization.sentences,
-                                  initialValue: Provider.of<UserData>(context,
-                                          listen: false)
-                                      .post6,
+                                  initialValue: widget.user.management,
                                   style: TextStyle(
                                     fontSize: 12.0,
                                     color: ConfigBloc().darkModeOn
@@ -984,9 +970,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                 ),
                                 TextFormField(
                                   maxLines: null,
-                                  initialValue: Provider.of<UserData>(context,
-                                          listen: false)
-                                      .post7,
+                                  initialValue: widget.user.contacts,
                                   keyboardType: TextInputType.number,
                                   style: TextStyle(
                                     fontSize: 12.0,
@@ -1035,9 +1019,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                 TextFormField(
                                   keyboardType: TextInputType.multiline,
                                   maxLines: null,
-                                  initialValue: Provider.of<UserData>(context,
-                                          listen: false)
-                                      .post12,
+                                  initialValue: widget.user.mail,
                                   style: TextStyle(
                                     fontSize: 12.0,
                                     color: ConfigBloc().darkModeOn
@@ -1145,9 +1127,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                 TextFormField(
                                   keyboardType: TextInputType.multiline,
                                   maxLines: null,
-                                  initialValue: Provider.of<UserData>(context,
-                                          listen: false)
-                                      .post9,
+                                  initialValue: widget.user.website,
                                   style: TextStyle(
                                     fontSize: 12.0,
                                     color: ConfigBloc().darkModeOn
@@ -1187,9 +1167,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                 TextFormField(
                                   keyboardType: TextInputType.multiline,
                                   maxLines: null,
-                                  initialValue: Provider.of<UserData>(context,
-                                          listen: false)
-                                      .post10,
+                                  initialValue: widget.user.otherSites1,
                                   style: TextStyle(
                                     fontSize: 12.0,
                                     color: ConfigBloc().darkModeOn
@@ -1230,9 +1208,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                 TextFormField(
                                   keyboardType: TextInputType.multiline,
                                   maxLines: null,
-                                  initialValue: Provider.of<UserData>(context,
-                                          listen: false)
-                                      .post11,
+                                  initialValue: widget.user.otherSites2,
                                   style: TextStyle(
                                     fontSize: 12.0,
                                     color: ConfigBloc().darkModeOn

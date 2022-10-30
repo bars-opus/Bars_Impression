@@ -79,13 +79,15 @@ class _ArtistsLocationState extends State<ArtistsLocation>
         .where('country', isEqualTo: widget.user.country)
         .limit(limit)
         .get();
-    List<AccountHolder> users =
-        userFeedSnapShot.docs.map((doc) => AccountHolder.fromDoc(doc)).toList();
+    List<AccountHolder> users = userFeedSnapShot.docs
+        .map((doc) => AccountHolder.fromDoc(doc))
+        .toList()
+      ..shuffle();
     _userSnapshot.addAll((userFeedSnapShot.docs));
     if (mounted) {
       setState(() {
         _hasNext = false;
-        _userList = users..shuffle();
+        _userList = users;
       });
     }
     return users;
@@ -101,14 +103,16 @@ class _ArtistsLocationState extends State<ArtistsLocation>
         .limit(limit)
         .startAfterDocument(_userSnapshot.last)
         .get();
-    List<AccountHolder> moreusers =
-        userFeedSnapShot.docs.map((doc) => AccountHolder.fromDoc(doc)).toList();
+    List<AccountHolder> moreusers = userFeedSnapShot.docs
+        .map((doc) => AccountHolder.fromDoc(doc))
+        .toList()
+      ..shuffle();
     if (_userSnapshot.length < limit) _hasNext = false;
     List<AccountHolder> allusers = _userList..addAll(moreusers);
     _userSnapshot.addAll((userFeedSnapShot.docs));
     if (mounted) {
       setState(() {
-        _userList = allusers..shuffle();
+        _userList = allusers;
       });
     }
     _hasNext = false;
@@ -122,13 +126,15 @@ class _ArtistsLocationState extends State<ArtistsLocation>
         .where('country', isEqualTo: widget.user.country)
         .limit(limit)
         .get();
-    List<AccountHolder> users =
-        userFeedSnapShot.docs.map((doc) => AccountHolder.fromDoc(doc)).toList();
+    List<AccountHolder> users = userFeedSnapShot.docs
+        .map((doc) => AccountHolder.fromDoc(doc))
+        .toList()
+      ..shuffle();
     _userSnapshot.addAll((userFeedSnapShot.docs));
     if (mounted) {
       setState(() {
         _hasNext = false;
-        _userList = users..shuffle();
+        _userList = users;
       });
     }
     return users;
@@ -189,14 +195,16 @@ class _ArtistsLocationState extends State<ArtistsLocation>
         .limit(limit)
         .startAfterDocument(_userSnapshot.last)
         .get();
-    List<AccountHolder> moreusers =
-        userFeedSnapShot.docs.map((doc) => AccountHolder.fromDoc(doc)).toList();
+    List<AccountHolder> moreusers = userFeedSnapShot.docs
+        .map((doc) => AccountHolder.fromDoc(doc))
+        .toList()
+      ..shuffle();
     if (_userSnapshot.length < limit) _hasNext = false;
     List<AccountHolder> allusers = _userList..addAll(moreusers);
     _userSnapshot.addAll((userFeedSnapShot.docs));
     if (mounted) {
       setState(() {
-        _userList = allusers..shuffle();
+        _userList = allusers;
       });
     }
     _hasNext = false;

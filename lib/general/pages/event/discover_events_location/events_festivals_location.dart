@@ -66,8 +66,10 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
         .where('type', isEqualTo: widget.type)
         .limit(limit)
         .get();
-    List<Event> events =
-        eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
+    List<Event> events = eventFeedSnapShot.docs
+        .map((doc) => Event.fromDoc(doc))
+        .toList()
+      ..shuffle();
     _eventSnapshot.addAll((eventFeedSnapShot.docs));
     if (mounted) {
       setState(() {
@@ -88,8 +90,10 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();
-    List<Event> moreevents =
-        eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
+    List<Event> moreevents = eventFeedSnapShot.docs
+        .map((doc) => Event.fromDoc(doc))
+        .toList()
+      ..shuffle();
     if (_eventSnapshot.length < limit) _hasNext = false;
     List<Event> allevents = _events..addAll(moreevents);
     _eventSnapshot.addAll((eventFeedSnapShot.docs));
@@ -109,8 +113,10 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
         .where('type', isEqualTo: widget.type)
         .limit(limit)
         .get();
-    List<Event> events =
-        eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
+    List<Event> events = eventFeedSnapShot.docs
+        .map((doc) => Event.fromDoc(doc))
+        .toList()
+      ..shuffle();
     _eventSnapshot.addAll((eventFeedSnapShot.docs));
     if (mounted) {
       setState(() {
@@ -131,8 +137,10 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();
-    List<Event> moreevents =
-        eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
+    List<Event> moreevents = eventFeedSnapShot.docs
+        .map((doc) => Event.fromDoc(doc))
+        .toList()
+      ..shuffle();
     if (_eventSnapshot.length < limit) _hasNext = false;
     List<Event> allevents = _events..addAll(moreevents);
     _eventSnapshot.addAll((eventFeedSnapShot.docs));
@@ -152,8 +160,10 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
         .where('type', isEqualTo: widget.type)
         .limit(limit)
         .get();
-    List<Event> events =
-        eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
+    List<Event> events = eventFeedSnapShot.docs
+        .map((doc) => Event.fromDoc(doc))
+        .toList()
+      ..shuffle();
     _eventSnapshot.addAll((eventFeedSnapShot.docs));
     if (mounted) {
       setState(() {
@@ -174,8 +184,10 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();
-    List<Event> moreevents =
-        eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
+    List<Event> moreevents = eventFeedSnapShot.docs
+        .map((doc) => Event.fromDoc(doc))
+        .toList()
+      ..shuffle();
     if (_eventSnapshot.length < limit) _hasNext = false;
     List<Event> allevents = _events..addAll(moreevents);
     _eventSnapshot.addAll((eventFeedSnapShot.docs));
@@ -189,7 +201,7 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
     return _hasNext;
   }
 
-  _displayEvents(Event event, AccountHolder author) {
+  _displayEvents(Event event,) {
     return EventView(
       exploreLocation: widget.locationType.startsWith('City')
           ? 'City'
@@ -218,18 +230,22 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   Event event = _events[index];
-                  return FutureBuilder(
-                      future: DatabaseService.getUserWithId(event.authorId),
-                      builder: (BuildContext context, AsyncSnapshot snapshot) {
-                        if (!snapshot.hasData) {
-                          return EventSchimmerBlurHash(
-                            event: event,
-                          );
-                        }
-                        AccountHolder author = snapshot.data;
+                  return _displayEvents(
+                    event,
+                  );
 
-                        return _displayEvents(event, author);
-                      });
+                  //  FutureBuilder(
+                  //     future: DatabaseService.getUserWithId(event.authorId),
+                  //     builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  //       if (!snapshot.hasData) {
+                  //         return EventSchimmerBlurHash(
+                  //           event: event,
+                  //         );
+                  //       }
+                  //       AccountHolder author = snapshot.data;
+
+                  //       return _displayEvents(event, author);
+                  //     });
                 },
                 childCount: _events.length,
               ),

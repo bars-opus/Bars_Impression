@@ -1,3 +1,4 @@
+import 'package:bars/general/pages/chats/send_to_chat.dart';
 import 'package:bars/utilities/exports.dart';
 
 class ForumView extends StatefulWidget {
@@ -36,8 +37,8 @@ class _ForumViewState extends State<ForumView> {
   }
 
   _dynamicLink() async {
-    final dynamicLinkParams = await DynamicLinkParameters(
-      socialMetaTagParameters: await SocialMetaTagParameters(
+    final dynamicLinkParams =  DynamicLinkParameters(
+      socialMetaTagParameters:  SocialMetaTagParameters(
         imageUrl: Uri.parse(
             'https://firebasestorage.googleapis.com/v0/b/bars-5e3e5.appspot.com/o/IMG_8574.PNG?alt=media&token=ccb4e3b1-b5dc-470f-abd0-63edb5ed549f'),
         title: 'Forum',

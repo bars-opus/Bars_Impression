@@ -1,4 +1,3 @@
-import 'package:bars/general/models/user_author_model.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';

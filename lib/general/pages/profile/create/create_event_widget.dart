@@ -1521,49 +1521,49 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                                               false)
                                                                       .setBool1(
                                                                           value)),
-                                                              !Provider.of<UserData>(
-                                                                          context,
-                                                                          listen:
-                                                                              false)
-                                                                      .bool1
-                                                                  ? const SizedBox
-                                                                      .shrink()
-                                                                  : Padding(
-                                                                      padding: const EdgeInsets
-                                                                              .only(
-                                                                          top:
-                                                                              10.0,
-                                                                          bottom:
-                                                                              10),
-                                                                      child:
-                                                                          Divider(
-                                                                        color: Colors
-                                                                            .grey,
-                                                                      ),
-                                                                    ),
-                                                              !Provider.of<UserData>(
-                                                                          context,
-                                                                          listen:
-                                                                              false)
-                                                                      .bool1
-                                                                  ? const SizedBox
-                                                                      .shrink()
-                                                                  : SettingSwitch(
-                                                                      title:
-                                                                          'Show on explore page',
-                                                                      subTitle:
-                                                                          'Should your private event be shown on the explore page?',
-                                                                      value: Provider.of<UserData>(
-                                                                              context,
-                                                                              listen:
-                                                                                  false)
-                                                                          .bool5,
-                                                                      onChanged: (value) => Provider.of<UserData>(
-                                                                              context,
-                                                                              listen:
-                                                                                  false)
-                                                                          .setBool5(
-                                                                              value)),
+                                                              // !Provider.of<UserData>(
+                                                              //             context,
+                                                              //             listen:
+                                                              //                 false)
+                                                              //         .bool1
+                                                              //     ? const SizedBox
+                                                              //         .shrink()
+                                                              //     : Padding(
+                                                              //         padding: const EdgeInsets
+                                                              //                 .only(
+                                                              //             top:
+                                                              //                 10.0,
+                                                              //             bottom:
+                                                              //                 10),
+                                                              //         child:
+                                                              //             Divider(
+                                                              //           color: Colors
+                                                              //               .grey,
+                                                              //         ),
+                                                              //       ),
+                                                              // !Provider.of<UserData>(
+                                                              //             context,
+                                                              //             listen:
+                                                              //                 false)
+                                                              //         .bool1
+                                                              //     ? const SizedBox
+                                                              //         .shrink()
+                                                              //     : SettingSwitch(
+                                                              //         title:
+                                                              //             'Show on explore page',
+                                                              //         subTitle:
+                                                              //             'Should your private event be shown on the explore page?',
+                                                              //         value: Provider.of<UserData>(
+                                                              //                 context,
+                                                              //                 listen:
+                                                              //                     false)
+                                                              //             .bool5,
+                                                              //         onChanged: (value) => Provider.of<UserData>(
+                                                              //                 context,
+                                                              //                 listen:
+                                                              //                     false)
+                                                              //             .setBool5(
+                                                              //                 value)),
                                                               Padding(
                                                                 padding:
                                                                     const EdgeInsets

@@ -205,7 +205,9 @@ class _EventsAllLocationState extends State<EventsAllLocation>
     return _hasNext;
   }
 
-  _displayEvents(Event event, AccountHolder author) {
+  _displayEvents(
+    Event event,
+  ) {
     return EventProfileView(
       exploreLocation: widget.locationType.startsWith('City')
           ? 'City'
@@ -235,18 +237,21 @@ class _EventsAllLocationState extends State<EventsAllLocation>
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   Event event = _events[index];
-                  return FutureBuilder(
-                      future: DatabaseService.getUserWithId(event.authorId),
-                      builder: (BuildContext context, AsyncSnapshot snapshot) {
-                        if (!snapshot.hasData) {
-                          return EventSchimmerBlurHash(
-                            event: event,
-                          );
-                        }
-                        AccountHolder author = snapshot.data;
+                  return _displayEvents(
+                    event,
+                  );
+                  // FutureBuilder(
+                  //     future: DatabaseService.getUserWithId(event.authorId),
+                  //     builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  //       if (!snapshot.hasData) {
+                  //         return EventSchimmerBlurHash(
+                  //           event: event,
+                  //         );
+                  //       }
+                  //       AccountHolder author = snapshot.data;
 
-                        return _displayEvents(event, author);
-                      });
+                  //       return _displayEvents(event, author);
+                  //     });
                 },
                 childCount: _events.length,
               ),

@@ -875,7 +875,7 @@ class EventViewWidget extends StatelessWidget {
                                     : Colors.black)),
                         TextSpan(
                             text: NumberFormat.compact().format(askCount),
-                            style: TextStyle(  
+                            style: TextStyle(
                                 fontSize: 12,
                                 color: ConfigBloc().darkModeOn
                                     ? Colors.white
@@ -902,7 +902,7 @@ class EventViewWidget extends StatelessWidget {
                         TextSpan(
                             text: completed
                                 ? '\nCompleted'
-                                : difference < 1
+                                : difference < 0
                                     ? '\nOngoing...'
                                     : '\n',
                             style: TextStyle(

@@ -350,8 +350,7 @@ class UserProfessionalViewWidget extends StatelessWidget {
                                           horizontal: 10.0),
                                       child: HyperLinkText(
                                         from: 'Link',
-                                        text:
-                                            'Punch your mood by posting a picture and associating the mood of the picture with music lyrics. You can honor your favorite artist by punching your mood using their punchline',
+                                        text: user.bio,
                                       ),
                                     ),
                                     const SizedBox(height: 20),
@@ -381,16 +380,26 @@ class UserProfessionalViewWidget extends StatelessWidget {
                                                                 0xFF1a1a1a),
                                                           ),
                                                         ),
-                                                        onPressed:
-                                                            onPressedRating,
+                                                        onPressed: () =>
+                                                            Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                    builder: (_) =>
+                                                                        UserBooking(
+                                                                          from:
+                                                                              'Booking',
+                                                                          user:
+                                                                              user,
+                                                                          currentUserId:
+                                                                              currentUserId,
+                                                                          userIsCall:
+                                                                              1,
+                                                                        ))),
                                                         child: Material(
                                                           color: Colors
                                                               .transparent,
                                                           child: Text(
-                                                            user.id ==
-                                                                    currentUserId
-                                                                ? 'Your Rating'
-                                                                : 'Rate Me',
+                                                            'Book me',
                                                             style: TextStyle(
                                                               color:
                                                                   Colors.black,
@@ -448,53 +457,53 @@ class UserProfessionalViewWidget extends StatelessWidget {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: [
-                                          RichText(
-                                            textScaleFactor:
-                                                MediaQuery.of(context)
-                                                    .textScaleFactor
-                                                    .clamp(0.5, 1.5),
-                                            text: TextSpan(
-                                              children: [
-                                                TextSpan(
-                                                    text: NumberFormat.compact()
-                                                        .format(point),
-                                                    style: TextStyle(
-                                                        fontSize: 30,
-                                                        color: Colors.black,
-                                                        fontWeight:
-                                                            FontWeight.bold)),
-                                                TextSpan(
-                                                    text: "\nBars score. ",
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      color: Colors.black,
-                                                    )),
-                                                TextSpan(
-                                                  text:
-                                                      "\nBased on $userTotal ratings. ",
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: Colors.black,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Stars(
-                                                score: user.score!,
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            height: 40,
-                                          ),
+                                          // RichText(
+                                          //   textScaleFactor:
+                                          //       MediaQuery.of(context)
+                                          //           .textScaleFactor
+                                          //           .clamp(0.5, 1.5),
+                                          //   text: TextSpan(
+                                          //     children: [
+                                          //       TextSpan(
+                                          //           text: NumberFormat.compact()
+                                          //               .format(point),
+                                          //           style: TextStyle(
+                                          //               fontSize: 30,
+                                          //               color: Colors.black,
+                                          //               fontWeight:
+                                          //                   FontWeight.bold)),
+                                          //       TextSpan(
+                                          //           text: "\nBars score. ",
+                                          //           style: TextStyle(
+                                          //             fontSize: 14,
+                                          //             color: Colors.black,
+                                          //           )),
+                                          //       TextSpan(
+                                          //         text:
+                                          //             "\nBased on $userTotal ratings. ",
+                                          //         style: TextStyle(
+                                          //           fontSize: 14,
+                                          //           color: Colors.black,
+                                          //         ),
+                                          //       ),
+                                          //     ],
+                                          //   ),
+                                          //   textAlign: TextAlign.center,
+                                          // ),
+                                          // Row(
+                                          //   mainAxisAlignment:
+                                          //       MainAxisAlignment.center,
+                                          //   crossAxisAlignment:
+                                          //       CrossAxisAlignment.center,
+                                          //   children: [
+                                          //     Stars(
+                                          //       score: user.score!,
+                                          //     ),
+                                          //   ],
+                                          // ),
+                                          // SizedBox(
+                                          //   height: 40,
+                                          // ),
                                           // ShakeTransition(
                                           //   child: Container(
                                           //     color: Colors.grey,
@@ -1017,114 +1026,158 @@ class UserProfessionalViewWidget extends StatelessWidget {
                                                     ),
                                             ),
                                             Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
+                                              mainAxisAlignment: user
+                                                          .website!.isEmpty &&
+                                                      user.otherSites1!
+                                                          .isEmpty &&
+                                                      user.otherSites2!.isEmpty
+                                                  ? MainAxisAlignment.center
+                                                  : MainAxisAlignment
+                                                      .spaceEvenly,
                                               children: [
-                                                Column(
-                                                  children: [
-                                                    InkWell(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10),
-                                                      onTap: () {
-                                                        Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                            builder: (_) => WebDisclaimer(
-                                                                link: user
-                                                                    .website!,
-                                                                contentType: user
-                                                                        .userName! +
-                                                                    '\'s Work'),
-                                                          ),
-                                                        );
-                                                      },
-                                                      child: Ink(
-                                                        child: Container(
-                                                          height: width / 4,
-                                                          width: width / 4,
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Color(
-                                                                0xFF1a1a1a),
+                                                user.website!.isEmpty
+                                                    ? const SizedBox.shrink()
+                                                    : Column(
+                                                        children: [
+                                                          InkWell(
                                                             borderRadius:
                                                                 BorderRadius
                                                                     .circular(
-                                                                        5),
-                                                          ),
-                                                          child: Icon(
-                                                            MdiIcons.web,
-                                                            color: Colors.white,
-                                                            size: 30,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    SizedBox(height: 10),
-                                                    Text('Visit\n My website',
-                                                        textScaleFactor:
-                                                            MediaQuery.of(
-                                                                    context)
-                                                                .textScaleFactor
-                                                                .clamp(
-                                                                    0.5, 1.2),
-                                                        style: TextStyle(
-                                                            fontSize: 12,
-                                                            color:
-                                                                Colors.black),
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        overflow: TextOverflow
-                                                            .ellipsis),
-                                                  ],
-                                                ),
-                                                Column(
-                                                  children: [
-                                                    Material(
-                                                      color: Colors.transparent,
-                                                      child: InkWell(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10),
-                                                        onTap: () {
-                                                          Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder: (_) => WebDisclaimer(
-                                                                  link: user
-                                                                      .otherSites1!,
-                                                                  contentType: user
-                                                                          .userName! +
-                                                                      '\'s Work'),
+                                                                        10),
+                                                            onTap: () {
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder: (_) => WebDisclaimer(
+                                                                      link: user
+                                                                          .website!,
+                                                                      contentType:
+                                                                          user.userName! +
+                                                                              '\'s Work'),
+                                                                ),
+                                                              );
+                                                            },
+                                                            child: Ink(
+                                                              child: Container(
+                                                                height:
+                                                                    width / 4,
+                                                                width:
+                                                                    width / 4,
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: Color(
+                                                                      0xFF1a1a1a),
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              5),
+                                                                ),
+                                                                child: Icon(
+                                                                  MdiIcons.web,
+                                                                  color: Colors
+                                                                      .white,
+                                                                  size: 30,
+                                                                ),
+                                                              ),
                                                             ),
-                                                          );
-                                                        },
-                                                        child: Ink(
-                                                          child: Container(
-                                                            height: width / 4,
-                                                            width: width / 4,
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              color: Color(
-                                                                  0xFF1a1a1a),
+                                                          ),
+                                                          SizedBox(height: 10),
+                                                          Text(
+                                                              'Visit\n My website',
+                                                              textScaleFactor:
+                                                                  MediaQuery.of(
+                                                                          context)
+                                                                      .textScaleFactor
+                                                                      .clamp(
+                                                                          0.5,
+                                                                          1.2),
+                                                              style: TextStyle(
+                                                                  fontSize: 12,
+                                                                  color: Colors
+                                                                      .black),
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis),
+                                                        ],
+                                                      ),
+                                                user.otherSites1!.isEmpty
+                                                    ? const SizedBox.shrink()
+                                                    : Column(
+                                                        children: [
+                                                          Material(
+                                                            color: Colors
+                                                                .transparent,
+                                                            child: InkWell(
                                                               borderRadius:
                                                                   BorderRadius
                                                                       .circular(
-                                                                          5),
-                                                            ),
-                                                            child: Icon(
-                                                              MdiIcons
-                                                                  .playBoxOutline,
-                                                              color:
-                                                                  Colors.white,
-                                                              size: 30,
+                                                                          10),
+                                                              onTap: () {
+                                                                Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                    builder: (_) => WebDisclaimer(
+                                                                        link: user
+                                                                            .otherSites1!,
+                                                                        contentType:
+                                                                            user.userName! +
+                                                                                '\'s Work'),
+                                                                  ),
+                                                                );
+                                                              },
+                                                              child: Ink(
+                                                                child:
+                                                                    Container(
+                                                                  height:
+                                                                      width / 4,
+                                                                  width:
+                                                                      width / 4,
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    color: Color(
+                                                                        0xFF1a1a1a),
+                                                                    borderRadius:
+                                                                        BorderRadius
+                                                                            .circular(5),
+                                                                  ),
+                                                                  child: Icon(
+                                                                    MdiIcons
+                                                                        .playBoxOutline,
+                                                                    color: Colors
+                                                                        .white,
+                                                                    size: 30,
+                                                                  ),
+                                                                ),
+                                                              ),
                                                             ),
                                                           ),
-                                                        ),
+                                                          SizedBox(height: 10),
+                                                          Text(
+                                                              'Watch \n My Videos',
+                                                              textScaleFactor:
+                                                                  MediaQuery.of(
+                                                                          context)
+                                                                      .textScaleFactor
+                                                                      .clamp(
+                                                                          0.5,
+                                                                          1.2),
+                                                              style: TextStyle(
+                                                                  fontSize: 12,
+                                                                  color: Colors
+                                                                      .black),
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis),
+                                                        ],
                                                       ),
-                                                    ),
-                                                    SizedBox(height: 10),
-                                                    Text('Watch \n My Videos',
+                                                user.otherSites2!.isEmpty
+                                                    ? Text('No works ',
                                                         textScaleFactor:
                                                             MediaQuery.of(
                                                                     context)
@@ -1138,67 +1191,74 @@ class UserProfessionalViewWidget extends StatelessWidget {
                                                         textAlign:
                                                             TextAlign.center,
                                                         overflow: TextOverflow
-                                                            .ellipsis),
-                                                  ],
-                                                ),
-                                                Column(
-                                                  children: [
-                                                    InkWell(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10),
-                                                      onTap: () {
-                                                        Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                            builder: (_) => WebDisclaimer(
-                                                                link: user
-                                                                    .otherSites2!,
-                                                                contentType: user
-                                                                        .userName! +
-                                                                    '\'s Work'),
-                                                          ),
-                                                        );
-                                                      },
-                                                      child: Ink(
-                                                        child: Container(
-                                                          height: width / 4,
-                                                          width: width / 4,
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Color(
-                                                                0xFF1a1a1a),
+                                                            .ellipsis)
+                                                    : Column(
+                                                        children: [
+                                                          InkWell(
                                                             borderRadius:
                                                                 BorderRadius
                                                                     .circular(
-                                                                        5),
+                                                                        10),
+                                                            onTap: () {
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder: (_) => WebDisclaimer(
+                                                                      link: user
+                                                                          .otherSites2!,
+                                                                      contentType:
+                                                                          user.userName! +
+                                                                              '\'s Work'),
+                                                                ),
+                                                              );
+                                                            },
+                                                            child: Ink(
+                                                              child: Container(
+                                                                height:
+                                                                    width / 4,
+                                                                width:
+                                                                    width / 4,
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: Color(
+                                                                      0xFF1a1a1a),
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              5),
+                                                                ),
+                                                                child: Icon(
+                                                                  Icons.work,
+                                                                  color: Colors
+                                                                      .white,
+                                                                  size: 30,
+                                                                ),
+                                                              ),
+                                                            ),
                                                           ),
-                                                          child: Icon(
-                                                            Icons.work,
-                                                            color: Colors.white,
-                                                            size: 30,
-                                                          ),
-                                                        ),
+                                                          const SizedBox(
+                                                              height: 10),
+                                                          Text(
+                                                              'Or\n Check Here',
+                                                              textScaleFactor:
+                                                                  MediaQuery.of(
+                                                                          context)
+                                                                      .textScaleFactor
+                                                                      .clamp(
+                                                                          0.5,
+                                                                          1.2),
+                                                              style: TextStyle(
+                                                                  fontSize: 12,
+                                                                  color: Colors
+                                                                      .black),
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis),
+                                                        ],
                                                       ),
-                                                    ),
-                                                    const SizedBox(height: 10),
-                                                    Text('Or\n Check Here',
-                                                        textScaleFactor:
-                                                            MediaQuery.of(
-                                                                    context)
-                                                                .textScaleFactor
-                                                                .clamp(
-                                                                    0.5, 1.2),
-                                                        style: TextStyle(
-                                                            fontSize: 12,
-                                                            color:
-                                                                Colors.black),
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        overflow: TextOverflow
-                                                            .ellipsis),
-                                                  ],
-                                                ),
                                               ],
                                             ),
                                           ],
@@ -1538,38 +1598,7 @@ class UserProfessionalViewWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Container(
-                    width: width,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.white,
-                        onPrimary: Colors.blue,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5.0),
-                        ),
-                      ),
-                      onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => ProfileRating(
-                                    user: user,
-                                    currentUserId: currentUserId,
-                                  ))),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: Text(
-                          'Rate',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+
                 const SizedBox(
                   height: 20,
                 ),

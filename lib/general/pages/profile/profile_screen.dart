@@ -1890,21 +1890,21 @@ class _ProfileScreenState extends State<ProfileScreen>
                                                           width > 600 ? 16 : 14,
                                                     ),
                                                   ),
-                                            user.profileHandle!
-                                                        .startsWith('F') ||
-                                                    user.profileHandle!.isEmpty
-                                                ? const SizedBox.shrink()
-                                                : Row(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Stars(score: user.score!),
-                                                    ],
-                                                  ),
+                                            // user.profileHandle!
+                                            //             .startsWith('F') ||
+                                            //         user.profileHandle!.isEmpty
+                                            //     ? const SizedBox.shrink()
+                                            //     : Row(
+                                            //         crossAxisAlignment:
+                                            //             CrossAxisAlignment
+                                            //                 .start,
+                                            //         mainAxisAlignment:
+                                            //             MainAxisAlignment
+                                            //                 .center,
+                                            //         children: [
+                                            //           Stars(score: user.score!),
+                                            //         ],
+                                            //       ),
                                             user.profileHandle!
                                                         .startsWith('F') ||
                                                     user.profileHandle!.isEmpty
