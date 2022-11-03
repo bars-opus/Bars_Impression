@@ -146,7 +146,7 @@ class _AllHashTagPostState extends State<AllHashTagPost> {
                       text: TextSpan(
                         children: [
                           TextSpan(
-                              text: "These are the mood punches with the tag:",
+                              text: "These are the moods punched with the tag:",
                               style: TextStyle(
                                 color: ConfigBloc().darkModeOn
                                     ? Colors.white

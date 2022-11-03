@@ -156,7 +156,7 @@ class _AllEvenEnlargedState extends State<AllEvenEnlarged> {
                   context,
                   MaterialPageRoute(
                       builder: (_) => AsksScreen(
-                            event: widget.event,
+                            event: widget.event,askCount: widget.askCount,
                             ask: null,
                             currentUserId: widget.currentUserId,
                           )),

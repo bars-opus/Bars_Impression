@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 class AttendEvent extends StatefulWidget {
   final Event event;
   final String currentUserId;
+
   final PaletteGenerator palette;
 
   AttendEvent({
@@ -26,12 +27,15 @@ class _AttendEventState extends State<AttendEvent> {
     super.initState();
 
     _setUpAttendeeRequest();
-    widget.event.isPrivate ? _setUpInviteAttendee() : _setUpAttendee();
+    widget.event.isPrivate
+        ? _setUpInviteAttendeePrivate()
+        : _setUpAttendeePublic();
   }
 
   _setUpAttendeeRequest() async {
-    DatabaseService.numEventAttendee(widget.event.id, '')
-        .listen((requestCount) {
+    DatabaseService.numEventAttendeeRequested(
+      widget.event.id,
+    ).listen((requestCount) {
       if (mounted) {
         setState(() {
           _attendeeRequesCount = requestCount;
@@ -40,8 +44,8 @@ class _AttendEventState extends State<AttendEvent> {
     });
   }
 
-  _setUpAttendee() async {
-    DatabaseService.numEventAttendee(widget.event.id, 'Accepted')
+  _setUpAttendeePublic() async {
+    DatabaseService.numEventpublicAttendee(widget.event.id, )
         .listen((inviteCount) {
       if (mounted) {
         setState(() {
@@ -51,8 +55,8 @@ class _AttendEventState extends State<AttendEvent> {
     });
   }
 
-  _setUpInviteAttendee() async {
-    DatabaseService.numEventInvites(widget.event.id, 'Accepted')
+  _setUpInviteAttendeePrivate() async {
+    DatabaseService.numEventAttendeeAll(widget.event.id, 'Accepted')
         .listen((inviteCount) {
       if (mounted) {
         setState(() {
@@ -276,9 +280,166 @@ class _AttendEventState extends State<AttendEvent> {
     }
   }
 
+  _scaffold(EventInvite _eventInvite) {
+    final width = Responsive.isDesktop(context)
+        ? 600.0
+        : MediaQuery.of(context).size.width;
+    return Scaffold(
+      backgroundColor: widget.palette.darkMutedColor == null
+          ? Color(0xFF1a1a1a)
+          : widget.palette.darkMutedColor!.color,
+      appBar: AppBar(
+        automaticallyImplyLeading: true,
+        elevation: 0,
+        backgroundColor: widget.palette.darkMutedColor == null
+            ? Color(0xFF1a1a1a)
+            : widget.palette.darkMutedColor!.color,
+        title: Text(
+          'Attend Event',
+          style: TextStyle(
+              color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: ListView(
+          children: <Widget>[
+            const SizedBox(height: 40),
+            ShakeTransition(
+              child: new Material(
+                color: Colors.transparent,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 30.0, left: 30),
+                  child: Container(
+                    width: width,
+                    decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        offset: Offset(10, 10),
+                        blurRadius: 10.0,
+                        spreadRadius: 4.0,
+                      )
+                    ]),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 50),
+                        Text(
+                          'Request\nInvitation',
+                          style: TextStyle(
+                              fontSize: 30,
+                              color: widget.palette.darkMutedColor == null
+                                  ? Color(0xFF1a1a1a)
+                                  : widget.palette.darkMutedColor!.color,
+                              height: 0.8),
+                          textAlign: TextAlign.start,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 12.0, right: 12),
+                          child: Text(
+                            'To attend ${widget.event.title} at  ${widget.event.venue} on ${MyDateFormat.toDate(DateTime.parse(widget.event.date))} at ${MyDateFormat.toTime(DateTime.parse(widget.event.time))}.',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 12,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 30.0, bottom: 30),
+                          child: Divider(
+                            color: Colors.grey,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 12.0, right: 12),
+                          child: Text(
+                            'You can give a reason why your request should be accepted.',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 12,
+                            ),
+                            textAlign: TextAlign.start,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 12.0, right: 12),
+                          child: ContentField(
+                            labelText: 'Reason',
+                            hintText: "Reason to attend",
+                            initialValue: _message,
+                            onSavedText: (input) => _message = input,
+                            onValidateText: () {},
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 50),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30.0),
+              child: Center(
+                child: Container(
+                  width: width,
+                  child: TextButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.blue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(3.0),
+                      ),
+                    ),
+                    onPressed: () => _showSelectImageDialog2(_eventInvite),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Text(
+                        'Request Invitation',
+                        style: TextStyle(
+                          color: widget.palette.darkMutedColor == null
+                              ? Color(0xFF1a1a1a)
+                              : widget.palette.darkMutedColor!.color,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.only(right: 30.0, left: 30),
+              child: Text(
+                'This event is private. You need an invitation to attend.\ If you are interested in this event but you have not received an invitation, you can request for an invitation. Your invitation request needs to be accepted by this event organizer before you can attend this event.',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+            SizedBox(height: 100),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+    final width = Responsive.isDesktop(context)
+        ? 600.0
+        : MediaQuery.of(context).size.width;
 
     return FutureBuilder(
         future: DatabaseService.getEventAttendeee(
@@ -306,171 +467,7 @@ class _AttendEventState extends State<AttendEvent> {
                   palette: widget.palette,
                   inviteCount: _inviteCount,
                 )
-              : Scaffold(
-                  backgroundColor: widget.palette.darkMutedColor == null
-                      ? Color(0xFF1a1a1a)
-                      : widget.palette.darkMutedColor!.color,
-                  appBar: AppBar(
-                    automaticallyImplyLeading: true,
-                    elevation: 0,
-                    backgroundColor: widget.palette.darkMutedColor == null
-                        ? Color(0xFF1a1a1a)
-                        : widget.palette.darkMutedColor!.color,
-                    title: Text(
-                      'Attend Event',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    centerTitle: true,
-                  ),
-                  body: GestureDetector(
-                    onTap: () => FocusScope.of(context).unfocus(),
-                    child: ListView(
-                      children: <Widget>[
-                        const SizedBox(height: 40),
-                        ShakeTransition(
-                          child: new Material(
-                            color: Colors.transparent,
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(right: 30.0, left: 30),
-                              child: Container(
-                                width: width,
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black26,
-                                        offset: Offset(10, 10),
-                                        blurRadius: 10.0,
-                                        spreadRadius: 4.0,
-                                      )
-                                    ]),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(height: 50),
-                                    Text(
-                                      'Request\nInvitation',
-                                      style: TextStyle(
-                                          fontSize: 30,
-                                          color:
-                                              widget.palette.darkMutedColor ==
-                                                      null
-                                                  ? Color(0xFF1a1a1a)
-                                                  : widget.palette
-                                                      .darkMutedColor!.color,
-                                          height: 0.8),
-                                      textAlign: TextAlign.start,
-                                    ),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 12.0, right: 12),
-                                      child: Text(
-                                        'To attend ${widget.event.title} at  ${widget.event.venue} on ${MyDateFormat.toDate(DateTime.parse(widget.event.date))} at ${MyDateFormat.toTime(DateTime.parse(widget.event.time))}.',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 12,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 30.0, bottom: 30),
-                                      child: Divider(
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 12.0, right: 12),
-                                      child: Text(
-                                        'You can give a reason why your request should be accepted.',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 12,
-                                        ),
-                                        textAlign: TextAlign.start,
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 12.0, right: 12),
-                                      child: ContentField(
-                                        labelText: 'Reason',
-                                        hintText: "Reason to attend",
-                                        initialValue: _message,
-                                        onSavedText: (input) =>
-                                            _message = input,
-                                        onValidateText: () {},
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 50),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                          child: Center(
-                            child: Container(
-                              width: width,
-                              child: TextButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  foregroundColor: Colors.blue,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(3.0),
-                                  ),
-                                ),
-                                onPressed: () =>
-                                    _showSelectImageDialog2(_eventInvite),
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: Text(
-                                    'Request Invitation',
-                                    style: TextStyle(
-                                      color:
-                                          widget.palette.darkMutedColor == null
-                                              ? Color(0xFF1a1a1a)
-                                              : widget.palette.darkMutedColor!
-                                                  .color,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 30.0, left: 30),
-                          child: Text(
-                            'This event is private. You need an invitation to attend.\ If you are interested in this event but you have not received an invitation, you can request for an invitation. Your invitation request needs to be accepted by this event organizer before you can attend this event.',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 100),
-                      ],
-                    ),
-                  ),
-                );
+              : _scaffold(_eventInvite);
         });
   }
 }

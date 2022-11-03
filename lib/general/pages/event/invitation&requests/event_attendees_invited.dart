@@ -280,13 +280,11 @@ class _EventAttendeesInvitedState extends State<EventAttendeesInvited>
                             ? Icon(
                                 Icons.account_circle,
                                 size: 60.0,
-                                color: Colors.white,
+                                color: Colors.grey,
                               )
                             : CircleAvatar(
                                 radius: 25.0,
-                                backgroundColor: ConfigBloc().darkModeOn
-                                    ? Color(0xFF1a1a1a)
-                                    : Color(0xFFf2f2f2),
+                                backgroundColor: Color(0xFFf2f2f2),
                                 backgroundImage: CachedNetworkImageProvider(
                                     invite.anttendeeprofileImageUrl),
                               ),
@@ -326,6 +324,7 @@ class _EventAttendeesInvitedState extends State<EventAttendeesInvited>
                                           Provider.of<UserData>(context)
                                               .currentUserId!,
                                       userId: invite.anttendeeId,
+                                      user: null,
                                     ))),
                       ),
                     ),
@@ -342,7 +341,7 @@ class _EventAttendeesInvitedState extends State<EventAttendeesInvited>
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: invite.invited!
+                              text: invite.invited
                                   ? 'Invite message'
                                   : 'Request reason:',
                               style: TextStyle(
@@ -496,9 +495,7 @@ class _EventAttendeesInvitedState extends State<EventAttendeesInvited>
                   title: Text(
                     'Invitation responds',
                     style: TextStyle(
-                        color: ConfigBloc().darkModeOn
-                            ? Colors.black
-                            : Colors.white,
+                        color: Colors.grey,
                         fontSize: 12,
                         fontWeight: FontWeight.bold),
                   ),

@@ -212,7 +212,7 @@ class _HyperLinkTextState extends State<HyperLinkText> {
                       context,
                       MaterialPageRoute(
                         builder: (_) => TaggedUser(
-                          user: linkToOpen,
+                          userId: linkToOpen,
                           currentUserId: '',
                         ),
                       ),

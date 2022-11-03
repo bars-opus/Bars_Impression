@@ -83,9 +83,7 @@ class _UpdateAppInfoState extends State<UpdateAppInfo> {
                 width: width - 100,
                 child: TextButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: ConfigBloc().darkModeOn
-                        ? Color(0xFF1a1a1a)
-                        : Colors.white,
+                    backgroundColor: Colors.white,
                     foregroundColor: Colors.blue,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(3.0),
@@ -102,9 +100,7 @@ class _UpdateAppInfoState extends State<UpdateAppInfo> {
                     child: Text(
                       'Update',
                       style: TextStyle(
-                        color: ConfigBloc().darkModeOn
-                            ? Colors.white
-                            : Colors.black,
+                        color: Colors.black,
                       ),
                     ),
                   ),

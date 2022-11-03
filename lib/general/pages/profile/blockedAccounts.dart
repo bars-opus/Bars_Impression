@@ -105,7 +105,7 @@ class _BlockedAccountsState extends State<BlockedAccounts>
                   builder: (_) => ProfileScreen(
                         currentUserId:
                             Provider.of<UserData>(context).currentUserId!,
-                        userId: user.id!,
+                        userId: user.id!, user: null,
                       )));
         });
   }

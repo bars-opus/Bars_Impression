@@ -150,6 +150,7 @@ class Authorview extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                     builder: (_) => ProfileScreen(
+                         user: null,
                           currentUserId: currentUserId,
                           userId: authorId,
                         ))),

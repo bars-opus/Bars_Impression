@@ -27,10 +27,10 @@ class _EventAttendeeValidateWidgetState
   @override
   void initState() {
     super.initState();
-    widget.invite.validated! ? _validated = true : _nothing();
+    widget.invite.validated ? _validated = true : _nothing();
   }
 
-_nothing(){}
+  _nothing() {}
   _showSelectImageDialog() {
     return Platform.isIOS ? _iosBottomSheet() : _androidDialog(context);
   }
@@ -173,9 +173,10 @@ _nothing(){}
                 : Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (_) => EventPublicInvite(
+                        builder: (_) => EventPublicInviteAvailable(
                               event: widget.event,
                               palette: widget.palette!,
+                              eventInvite: widget.invite,
                             )),
                   ),
             child: Material(
@@ -193,7 +194,7 @@ _nothing(){}
                             ? Icon(
                                 Icons.account_circle,
                                 size: 60.0,
-                                color: Colors.white,
+                                color: Colors.grey,
                               )
                             : CircleAvatar(
                                 radius: 25.0,
@@ -241,6 +242,7 @@ _nothing(){}
                                               listen: false)
                                           .currentUserId!,
                                       userId: widget.invite.anttendeeId,
+                                      user: null,
                                     ))),
                       ),
                     ),

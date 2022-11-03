@@ -56,7 +56,7 @@ class _NoConnectionState extends State<NoConnection> {
             color: _networkConnection ? Colors.white : Colors.transparent,
             onPressed: () => () {},
           ),
-          title: Text('No internet connection',
+          title: Text('No internet (offline mode)',
               style: TextStyle(
                 fontSize: 12.0,
                 color: Colors.white,

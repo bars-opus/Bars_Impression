@@ -39,7 +39,7 @@ class _EventDashboardState extends State<EventDashboard> {
     super.initState();
     _setUpAttendeeRequest();
     _setUpEventInvites();
-    _setUpAttendeeAccepted();
+    widget.event.isPrivate ? _setUpAttendeeAccepted() : _setUpAttendeePublic();
     _setUpAttendeeRejected();
     _setUpAttendeeUnAnswered();
     _setUpInviteAccepted();
@@ -76,7 +76,7 @@ class _EventDashboardState extends State<EventDashboard> {
   }
 
   _setUpAttendeeUnAnswered() async {
-    DatabaseService.numEventAttendee(widget.event.id, '')
+    DatabaseService.numEventAttendeeRequestOption(widget.event.id, '')
         .listen((attendeeUnAnswered) {
       if (mounted) {
         setState(() {
@@ -99,7 +99,7 @@ class _EventDashboardState extends State<EventDashboard> {
   }
 
   _setUpAttendeeAccepted() async {
-    DatabaseService.numEventAttendee(widget.event.id, 'Accepted')
+    DatabaseService.numEventAttendeeRequestOption(widget.event.id, 'Accepted')
         .listen((attendeeAcceptedCount) {
       if (mounted) {
         setState(() {
@@ -109,8 +109,20 @@ class _EventDashboardState extends State<EventDashboard> {
     });
   }
 
+  _setUpAttendeePublic() async {
+    DatabaseService.numEventpublicAttendee(
+      widget.event.id,
+    ).listen((attendeeAcceptedCount) {
+      if (mounted) {
+        setState(() {
+          _attendeeAcceptedCount = attendeeAcceptedCount;
+        });
+      }
+    });
+  }
+
   _setUpAttendeesValidatedPrivate() async {
-    DatabaseService.numEventAttendeeValidate(widget.event.id, 'Accepted')
+    DatabaseService.numEventAttendeeValidatePrivate(widget.event.id, 'Accepted')
         .listen((attendeesValidatedPrivate) {
       if (mounted) {
         setState(() {
@@ -121,8 +133,9 @@ class _EventDashboardState extends State<EventDashboard> {
   }
 
   _setUpAttendeesValidatedPublic() async {
-    DatabaseService.numEventAttendeeValidate(widget.event.id, '')
-        .listen((attendeesValidatedPublic) {
+    DatabaseService.numEventAttendeeValidatePublic(
+      widget.event.id,
+    ).listen((attendeesValidatedPublic) {
       if (mounted) {
         setState(() {
           _attendeesValidated = attendeesValidatedPublic;
@@ -143,7 +156,7 @@ class _EventDashboardState extends State<EventDashboard> {
   }
 
   _setUpAttendeeRejected() async {
-    DatabaseService.numEventAttendee(widget.event.id, 'Rejected')
+    DatabaseService.numEventAttendeeRequestOption(widget.event.id, 'Rejected')
         .listen((attendeeAcceptedRejected) {
       if (mounted) {
         setState(() {
@@ -379,7 +392,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                                   dontShowAnswerWidget: true,
                                                   palette: widget.palette,
                                                   event: widget.event,
-                                                  answer: '',
+                                                  answer: 'All',
                                                 ))),
                                 child: RichText(
                                   textScaleFactor:
@@ -389,7 +402,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                       TextSpan(
                                         text: widget.event.isPrivate
                                             ? sum.toString()
-                                            : _attendeeUnAnswered.toString(),
+                                            : _attendeeAcceptedCount.toString(),
                                         style: TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold,
@@ -479,7 +492,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                 children: [
                                   TextSpan(
                                       text:
-                                          'Your validator is ready. Your validator helps you validate attendees at the entrance of the event. An attendee\'s number is unique. You must match the attendee\'s number on the ticket of the attendee to the attendee\'s number among the list of this event attendees to see if it correspond.  If the two numbers are equal, you can validate the attendee before they access the event. This helps keep track of the people(attedees) you permit to your event.',
+                                          'Your validator is ready. Your validator helps you validate attendees at the entrance of the event. An attendee\'s Check-in number (attendee\'s number) is unique. You must match the check-in number on the ticket of the attendee to the check-in number among the list of this event attendees to see if it corresponds.  If the two numbers are equal, you can validate the attendee before they access the event. This helps keep track of the people(attendees) you permit to your event.',
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: Colors.black,
@@ -564,34 +577,39 @@ class _EventDashboardState extends State<EventDashboard> {
                                     )),
                               ),
                             ),
-                            _attendeeUnAnswered == 0
+                            !widget.event.isPrivate
                                 ? const SizedBox.shrink()
-                                : Positioned(
-                                    top: 10,
-                                    right: 16,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.only(
-                                              topRight: Radius.circular(10.0),
-                                              topLeft: Radius.circular(10.0),
-                                              bottomRight:
-                                                  Radius.circular(10.0)),
-                                          color: Colors.red),
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                          left: 8,
-                                          right: 8,
-                                          top: 3,
-                                          bottom: 3,
-                                        ),
-                                        child: Text(
-                                          NumberFormat.compact()
-                                              .format(_attendeeUnAnswered),
-                                          style: TextStyle(color: Colors.white),
+                                : _attendeeUnAnswered == 0
+                                    ? const SizedBox.shrink()
+                                    : Positioned(
+                                        top: 10,
+                                        right: 16,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.only(
+                                                  topRight:
+                                                      Radius.circular(10.0),
+                                                  topLeft:
+                                                      Radius.circular(10.0),
+                                                  bottomRight:
+                                                      Radius.circular(10.0)),
+                                              color: Colors.red),
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                              left: 8,
+                                              right: 8,
+                                              top: 3,
+                                              bottom: 3,
+                                            ),
+                                            child: Text(
+                                              NumberFormat.compact()
+                                                  .format(_attendeeUnAnswered),
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ),
                           ],
                         ),
                       ),
@@ -642,9 +660,10 @@ class _EventDashboardState extends State<EventDashboard> {
                           width: width - 80,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: widget.palette.darkMutedColor == null
-                                  ? Color(0xFF1a1a1a)
-                                  : widget.palette.darkMutedColor!.color,
+                              backgroundColor:
+                                  widget.palette.darkMutedColor == null
+                                      ? Color(0xFF1a1a1a)
+                                      : widget.palette.darkMutedColor!.color,
                               elevation: 0.0,
                               foregroundColor: Colors.blue,
                               shape: RoundedRectangleBorder(
@@ -791,7 +810,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                 child: Text(
                                   widget.event.isPrivate
                                       ? sum.toString()
-                                      : _attendeeUnAnswered.toString(),
+                                      : _attendeeAcceptedCount.toString(),
                                   style: TextStyle(
                                       color: Colors.blue,
                                       fontSize: 40.0,
@@ -815,478 +834,224 @@ class _EventDashboardState extends State<EventDashboard> {
                       const SizedBox(
                         height: 10,
                       ),
-                      !widget.event.isPrivate
-                          ? Padding(
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
                               padding:
-                                  const EdgeInsets.symmetric(horizontal: 30.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 20.0, bottom: 30),
-                                    child: Divider(
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Invitation table',
-                                    style: TextStyle(
-                                        color: widget.palette.darkMutedColor ==
-                                                null
-                                            ? Color(0xFF1a1a1a)
-                                            : widget
-                                                .palette.darkMutedColor!.color,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14.0,
-                                        height: 1),
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Table(
-                                    border: TableBorder.all(
-                                      color: Colors.grey,
-                                    ),
-                                    children: [
-                                      TableRow(children: [
-                                        GestureDetector(
-                                          onTap: () => Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      EventAttendeesInvited(
-                                                        letShowAppBar: true,
-                                                        palette: widget.palette,
-                                                        event: widget.event,
-                                                        answer: '',
-                                                      ))),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 10.0, horizontal: 20),
-                                            child: RichText(
-                                              textScaleFactor:
-                                                  MediaQuery.of(context)
-                                                      .textScaleFactor,
-                                              text: TextSpan(
-                                                children: [
-                                                  TextSpan(
-                                                    text:
-                                                        _inviteCount.toString(),
-                                                    style: TextStyle(
-                                                      fontSize: 20,
-                                                      color: _inviteCount < 1
-                                                          ? Colors.grey
-                                                          : Colors.blue,
-                                                    ),
-                                                  ),
-                                                  TextSpan(
-                                                    text: '\nInvitations\nsent',
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: _inviteCount < 1
-                                                          ? Colors.grey
-                                                          : Colors.blue,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
-                                        GestureDetector(
-                                          onTap: () => Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      EventAttendeesInvited(
-                                                        letShowAppBar: true,
-                                                        event: widget.event,
-                                                        palette: widget.palette,
-                                                        answer: '',
-                                                      ))),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 10.0, horizontal: 20),
-                                            child: RichText(
-                                              textScaleFactor:
-                                                  MediaQuery.of(context)
-                                                      .textScaleFactor,
-                                              text: TextSpan(
-                                                children: [
-                                                  TextSpan(
-                                                    text: _inviteUnAnswered
-                                                        .toString(),
-                                                    style: TextStyle(
-                                                      fontSize: 20,
-                                                      color:
-                                                          _inviteUnAnswered < 1
-                                                              ? Colors.grey
-                                                              : Colors.blue,
-                                                    ),
-                                                  ),
-                                                  TextSpan(
-                                                    text:
-                                                        '\nInvitations\nunanswered\n(pending)',
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      color:
-                                                          _inviteUnAnswered < 1
-                                                              ? Colors.grey
-                                                              : Colors.blue,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
-                                      ]),
-                                      TableRow(children: [
-                                        GestureDetector(
-                                          onTap: () => Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      EventAttendeesInvited(
-                                                        letShowAppBar: true,
-                                                        palette: widget.palette,
-                                                        event: widget.event,
-                                                        answer: 'Accepted',
-                                                      ))),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 10.0, horizontal: 20),
-                                            child: RichText(
-                                              textScaleFactor:
-                                                  MediaQuery.of(context)
-                                                      .textScaleFactor,
-                                              text: TextSpan(
-                                                children: [
-                                                  TextSpan(
-                                                    text: _inviteAcceptedCount
-                                                        .toString(),
-                                                    style: TextStyle(
-                                                      fontSize: 20,
-                                                      color:
-                                                          _inviteAcceptedCount <
-                                                                  1
-                                                              ? Colors.grey
-                                                              : Colors.blue,
-                                                    ),
-                                                  ),
-                                                  TextSpan(
-                                                    text:
-                                                        '\nInvitations\naccepted',
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      color:
-                                                          _inviteAcceptedCount <
-                                                                  1
-                                                              ? Colors.grey
-                                                              : Colors.blue,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
-                                        GestureDetector(
-                                          onTap: () => Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      EventAttendeesInvited(
-                                                        letShowAppBar: true,
-                                                        palette: widget.palette,
-                                                        event: widget.event,
-                                                        answer: 'Rejected',
-                                                      ))),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 10.0, horizontal: 20),
-                                            child: RichText(
-                                              textScaleFactor:
-                                                  MediaQuery.of(context)
-                                                      .textScaleFactor,
-                                              text: TextSpan(
-                                                children: [
-                                                  TextSpan(
-                                                    text: _inviteRejectedCount
-                                                        .toString(),
-                                                    style: TextStyle(
-                                                      fontSize: 20,
-                                                      color:
-                                                          _inviteRejectedCount <
-                                                                  1
-                                                              ? Colors.grey
-                                                              : Colors.blue,
-                                                    ),
-                                                  ),
-                                                  TextSpan(
-                                                    text:
-                                                        '\nInvitations\nrejected',
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      color:
-                                                          _inviteRejectedCount <
-                                                                  1
-                                                              ? Colors.grey
-                                                              : Colors.blue,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
-                                      ]),
-                                    ],
-                                  ),
-                                ],
+                                  const EdgeInsets.only(top: 20.0, bottom: 30),
+                              child: Divider(
+                                color: Colors.grey,
                               ),
-                            )
-                          : Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 30.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 20.0, bottom: 30),
-                                    child: Divider(
-                                      color: Colors.grey,
+                            ),
+                            Text(
+                              'Invitation table',
+                              style: TextStyle(
+                                  color: widget.palette.darkMutedColor == null
+                                      ? Color(0xFF1a1a1a)
+                                      : widget.palette.darkMutedColor!.color,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14.0,
+                                  height: 1),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Table(
+                              border: TableBorder.all(
+                                color: Colors.grey,
+                              ),
+                              children: [
+                                TableRow(children: [
+                                  GestureDetector(
+                                    onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) =>
+                                                EventAttendeesInvited(
+                                                  letShowAppBar: true,
+                                                  palette: widget.palette,
+                                                  event: widget.event,
+                                                  answer: 'All',
+                                                ))),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10.0, horizontal: 20),
+                                      child: RichText(
+                                        textScaleFactor: MediaQuery.of(context)
+                                            .textScaleFactor,
+                                        text: TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: _inviteCount.toString(),
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: _inviteCount < 1
+                                                    ? Colors.grey
+                                                    : Colors.blue,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text: '\nInvitations\nsent',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: _inviteCount < 1
+                                                    ? Colors.grey
+                                                    : Colors.blue,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
                                     ),
                                   ),
-                                  Text(
-                                    'Invitation table',
-                                    style: TextStyle(
-                                        color: widget.palette.darkMutedColor ==
-                                                null
-                                            ? Color(0xFF1a1a1a)
-                                            : widget
-                                                .palette.darkMutedColor!.color,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14.0,
-                                        height: 1),
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Table(
-                                    border: TableBorder.all(
-                                      color: Colors.grey,
+                                  GestureDetector(
+                                    onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) =>
+                                                EventAttendeesInvited(
+                                                  letShowAppBar: true,
+                                                  event: widget.event,
+                                                  palette: widget.palette,
+                                                  answer: '',
+                                                ))),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10.0, horizontal: 20),
+                                      child: RichText(
+                                        textScaleFactor: MediaQuery.of(context)
+                                            .textScaleFactor,
+                                        text: TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text:
+                                                  _inviteUnAnswered.toString(),
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: _inviteUnAnswered < 1
+                                                    ? Colors.grey
+                                                    : Colors.blue,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text:
+                                                  '\nInvitations\nunanswered\n(pending)',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: _inviteUnAnswered < 1
+                                                    ? Colors.grey
+                                                    : Colors.blue,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
                                     ),
-                                    children: [
-                                      TableRow(children: [
-                                        GestureDetector(
-                                          onTap: () => Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      EventAttendeesInvited(
-                                                        letShowAppBar: true,
-                                                        palette: widget.palette,
-                                                        event: widget.event,
-                                                        answer: 'All',
-                                                      ))),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 10.0, horizontal: 20),
-                                            child: RichText(
-                                              textScaleFactor:
-                                                  MediaQuery.of(context)
-                                                      .textScaleFactor,
-                                              text: TextSpan(
-                                                children: [
-                                                  TextSpan(
-                                                    text:
-                                                        _inviteCount.toString(),
-                                                    style: TextStyle(
-                                                      fontSize: 20,
-                                                      color: _inviteCount < 1
-                                                          ? Colors.grey
-                                                          : Colors.blue,
-                                                    ),
-                                                  ),
-                                                  TextSpan(
-                                                    text: '\nInvitations\nsent',
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: _inviteCount < 1
-                                                          ? Colors.grey
-                                                          : Colors.blue,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
-                                        GestureDetector(
-                                          onTap: () => Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      EventAttendeesInvited(
-                                                        letShowAppBar: true,
-                                                        event: widget.event,
-                                                        palette: widget.palette,
-                                                        answer: '',
-                                                      ))),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 10.0, horizontal: 20),
-                                            child: RichText(
-                                              textScaleFactor:
-                                                  MediaQuery.of(context)
-                                                      .textScaleFactor,
-                                              text: TextSpan(
-                                                children: [
-                                                  TextSpan(
-                                                    text: _inviteUnAnswered
-                                                        .toString(),
-                                                    style: TextStyle(
-                                                      fontSize: 20,
-                                                      color:
-                                                          _inviteUnAnswered < 1
-                                                              ? Colors.grey
-                                                              : Colors.blue,
-                                                    ),
-                                                  ),
-                                                  TextSpan(
-                                                    text:
-                                                        '\nInvitations\nunanswered\n(pending)',
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      color:
-                                                          _inviteUnAnswered < 1
-                                                              ? Colors.grey
-                                                              : Colors.blue,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
-                                      ]),
-                                      TableRow(children: [
-                                        GestureDetector(
-                                          onTap: () => Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      EventAttendeesInvited(
-                                                        letShowAppBar: true,
-                                                        palette: widget.palette,
-                                                        event: widget.event,
-                                                        answer: 'Accepted',
-                                                      ))),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 10.0, horizontal: 20),
-                                            child: RichText(
-                                              textScaleFactor:
-                                                  MediaQuery.of(context)
-                                                      .textScaleFactor,
-                                              text: TextSpan(
-                                                children: [
-                                                  TextSpan(
-                                                    text: _inviteAcceptedCount
-                                                        .toString(),
-                                                    style: TextStyle(
-                                                      fontSize: 20,
-                                                      color:
-                                                          _inviteAcceptedCount <
-                                                                  1
-                                                              ? Colors.grey
-                                                              : Colors.blue,
-                                                    ),
-                                                  ),
-                                                  TextSpan(
-                                                    text:
-                                                        '\nInvitations\naccepted',
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      color:
-                                                          _inviteAcceptedCount <
-                                                                  1
-                                                              ? Colors.grey
-                                                              : Colors.blue,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
-                                        GestureDetector(
-                                          onTap: () => Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      EventAttendeesInvited(
-                                                        letShowAppBar: true,
-                                                        palette: widget.palette,
-                                                        event: widget.event,
-                                                        answer: 'Rejected',
-                                                      ))),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 10.0, horizontal: 20),
-                                            child: RichText(
-                                              textScaleFactor:
-                                                  MediaQuery.of(context)
-                                                      .textScaleFactor,
-                                              text: TextSpan(
-                                                children: [
-                                                  TextSpan(
-                                                    text: _inviteRejectedCount
-                                                        .toString(),
-                                                    style: TextStyle(
-                                                      fontSize: 20,
-                                                      color:
-                                                          _inviteRejectedCount <
-                                                                  1
-                                                              ? Colors.grey
-                                                              : Colors.blue,
-                                                    ),
-                                                  ),
-                                                  TextSpan(
-                                                    text:
-                                                        '\nInvitations\nrejected',
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      color:
-                                                          _inviteRejectedCount <
-                                                                  1
-                                                              ? Colors.grey
-                                                              : Colors.blue,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
-                                      ]),
-                                    ],
                                   ),
-                                  const SizedBox(
-                                    height: 50,
+                                ]),
+                                TableRow(children: [
+                                  GestureDetector(
+                                    onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) =>
+                                                EventAttendeesInvited(
+                                                  letShowAppBar: true,
+                                                  palette: widget.palette,
+                                                  event: widget.event,
+                                                  answer: 'Accepted',
+                                                ))),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10.0, horizontal: 20),
+                                      child: RichText(
+                                        textScaleFactor: MediaQuery.of(context)
+                                            .textScaleFactor,
+                                        text: TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: _inviteAcceptedCount
+                                                  .toString(),
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: _inviteAcceptedCount < 1
+                                                    ? Colors.grey
+                                                    : Colors.blue,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text: '\nInvitations\naccepted',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: _inviteAcceptedCount < 1
+                                                    ? Colors.grey
+                                                    : Colors.blue,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
                                   ),
-                                  Text(
+                                  GestureDetector(
+                                    onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) =>
+                                                EventAttendeesInvited(
+                                                  letShowAppBar: true,
+                                                  palette: widget.palette,
+                                                  event: widget.event,
+                                                  answer: 'Rejected',
+                                                ))),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10.0, horizontal: 20),
+                                      child: RichText(
+                                        textScaleFactor: MediaQuery.of(context)
+                                            .textScaleFactor,
+                                        text: TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: _inviteRejectedCount
+                                                  .toString(),
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: _inviteRejectedCount < 1
+                                                    ? Colors.grey
+                                                    : Colors.blue,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text: '\nInvitations\nrejected',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: _inviteRejectedCount < 1
+                                                    ? Colors.grey
+                                                    : Colors.blue,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                                ]),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 50,
+                            ),
+                            !widget.event.isPrivate
+                                ? const SizedBox.shrink()
+                                : Text(
                                     'Attendee Request table',
                                     style: TextStyle(
                                         color: widget.palette.darkMutedColor ==
@@ -1298,10 +1063,12 @@ class _EventDashboardState extends State<EventDashboard> {
                                         fontSize: 14.0,
                                         height: 1),
                                   ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Table(
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            !widget.event.isPrivate
+                                ? const SizedBox.shrink()
+                                : Table(
                                     border: TableBorder.all(
                                       color: Colors.grey,
                                     ),
@@ -1520,9 +1287,9 @@ class _EventDashboardState extends State<EventDashboard> {
                                       ]),
                                     ],
                                   ),
-                                ],
-                              ),
-                            ),
+                          ],
+                        ),
+                      ),
                       Padding(
                         padding: const EdgeInsets.only(top: 50.0, bottom: 50),
                         child: Divider(
@@ -1539,7 +1306,7 @@ class _EventDashboardState extends State<EventDashboard> {
                             children: [
                               TextSpan(
                                   text:
-                                      'Every attendee of this event would be given an check-in number also known as an attendee number. An event organizer should validate each attendee by checking if the check-in number they have corresponds to the check-in number you have among your people attending list. Your validator would be ready 3 days before this event.',
+                                      'Every attendee of this event would be given a check-in number also known as an attendee number. An event organizer should validate each attendee by checking if the check-in number they have corresponds to the check-in number you have among your people attending list. Your validator would be ready 3 days before this event.',
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: Colors.black,

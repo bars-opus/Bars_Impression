@@ -41,7 +41,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
               'Are you sure you want to log out of this account?',
               style: TextStyle(
                 fontSize: 16,
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                color: Colors.black,
               ),
             ),
             actions: <Widget>[
@@ -70,7 +70,6 @@ class _ProfileSettingsState extends State<ProfileSettings> {
         });
   }
 
- 
   _androidDialog(BuildContext parentContext) {
     return showDialog(
         context: parentContext,
@@ -138,7 +137,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
         ),
         duration: Duration(seconds: 3),
       )..show(context);
- 
+
       await _auth.signOut();
       Navigator.pushReplacementNamed(context, WelcomeScreen.id);
     } catch (e) {
@@ -227,6 +226,38 @@ class _ProfileSettingsState extends State<ProfileSettings> {
     }
   }
 
+  _dynamicLink() async {
+    var linkUrl = widget.user.profileImageUrl!.isEmpty
+        ? Uri.parse(
+            'https://firebasestorage.googleapis.com/v0/b/bars-5e3e5.appspot.com/o/IMG_8574.PNG?alt=media&token=ccb4e3b1-b5dc-470f-abd0-63edb5ed549f')
+        : Uri.parse(widget.user.profileImageUrl!);
+
+    final dynamicLinkParams = DynamicLinkParameters(
+      socialMetaTagParameters: SocialMetaTagParameters(
+        imageUrl: linkUrl,
+        title: widget.user.userName,
+        description: widget.user.bio,
+      ),
+      link: Uri.parse('https://www.barsopus.com/user_${widget.user.id}'),
+      uriPrefix: 'https://barsopus.com/barsImpression',
+      androidParameters:
+          AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
+      iosParameters: IOSParameters(
+        bundleId: 'com.bars-Opus.barsImpression',
+        appStoreId: '1610868894',
+      ),
+    );
+    if (Platform.isIOS) {
+      var link =
+          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
+      Share.share(link.toString());
+    } else {
+      var link =
+          await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+      Share.share(link.shortUrl.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ResponsiveScaffold(
@@ -296,11 +327,9 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                         .update({
                                       'disableChat': _disableChat,
                                     });
-
                                   },
                                 ),
                               ),
-                              
                               widget.user.profileHandle!.startsWith('Fan')
                                   ? const SizedBox.shrink()
                                   : Divider(color: Colors.grey),
@@ -392,7 +421,6 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                             
                               GestureDetector(
                                 onTap: () => Navigator.push(
                                     context,
@@ -509,7 +537,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (_) => FeatureSurvey())),
-                                  title: 'Take a survey',
+                                  title: 'Take a Survey',
                                   subTitle:
                                       "Take a survey and let us know what you think about Bars Impression.",
                                   icon: Icon(
@@ -520,41 +548,21 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                 ),
                               ),
                               Divider(color: Colors.grey),
-                              Platform.isIOS
-                                  ? GestureDetector(
-                                      onTap: () => Share.share(
-                                          'https://apps.apple.com/us/app/bars-impression/id1610868894'),
-                                      child: IntroInfo(
-                                        title: 'Share',
-                                        onPressed: () => Share.share(
-                                            'https://apps.apple.com/us/app/bars-impression/id1610868894'),
-                                        subTitle:
-                                            "Share Bars Impression with others",
-                                        icon: Icon(
-                                          Icons.share,
-                                          color: Colors.blue,
-                                          size: 20,
-                                        ),
-                                      ),
-                                    )
-                                  : GestureDetector(
-                                      onTap: () => Share.share(
-                                          'https://play.google.com/store/apps/details?id=com.barsOpus.barsImpression'),
-                                      child: IntroInfo(
-                                        title: 'Share',
-                                        onPressed: () => Share.share(
-                                            'https://play.google.com/store/apps/details?id=com.barsOpus.barsImpression'),
-                                        subTitle:
-                                            "Share Bars Impression with others",
-                                        icon: Icon(
-                                          Icons.share,
-                                          color: ConfigBloc().darkModeOn
-                                              ? Color(0xFFf2f2f2)
-                                              : Color(0xFF1a1a1a),
-                                          size: 20,
-                                        ),
-                                      ),
-                                    ),
+                              GestureDetector(
+                                onTap: () => () => _dynamicLink(),
+                                child: IntroInfo(
+                                  title: 'Share Account',
+                                  onPressed: () => Share.share(
+                                      'https://play.google.com/store/apps/details?id=com.barsOpus.barsImpression'),
+                                  subTitle:
+                                      "Share your account with other people.",
+                                  icon: Icon(
+                                    Icons.share,
+                                    color: Colors.blue,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         )),

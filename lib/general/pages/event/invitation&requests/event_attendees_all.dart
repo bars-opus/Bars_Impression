@@ -34,7 +34,7 @@ class _EventAttendeesAllState extends State<EventAttendeesAll>
   @override
   void initState() {
     super.initState();
-    _setUpInviteAll();
+    widget.event.isPrivate ? _setUpInviteAllPrivate() : _setUpInviteAllPublic();
     __setShowInfo();
     _hideButtonController = ScrollController();
   }
@@ -42,7 +42,7 @@ class _EventAttendeesAllState extends State<EventAttendeesAll>
   bool _handleScrollNotification(ScrollNotification notification) {
     if (notification is ScrollEndNotification) {
       if (_hideButtonController.position.extentAfter == 0) {
-        _loadMoreAll();
+        widget.event.isPrivate ? _loadMoreAllPrivate() : _loadMoreAllPublic();
       }
     }
     return false;
@@ -66,7 +66,7 @@ class _EventAttendeesAllState extends State<EventAttendeesAll>
     }
   }
 
-  _setUpInviteAll() async {
+  _setUpInviteAllPrivate() async {
     QuerySnapshot inviteSnapShot = await eventInviteRef
         .doc(widget.event.id)
         .collection('eventInvite')
@@ -86,13 +86,56 @@ class _EventAttendeesAllState extends State<EventAttendeesAll>
     return users;
   }
 
-  _loadMoreAll() async {
+  _setUpInviteAllPublic() async {
+    QuerySnapshot inviteSnapShot = await eventInviteRef
+        .doc(widget.event.id)
+        .collection('eventInvite')
+        .limit(limit)
+        .get();
+    List<EventInvite> users =
+        inviteSnapShot.docs.map((doc) => EventInvite.fromDoc(doc)).toList();
+    _inviteSnapshot.addAll((inviteSnapShot.docs));
+    if (mounted) {
+      print(users.length.toString());
+      setState(() {
+        _hasNext = false;
+        _inviteList = users;
+      });
+    }
+    return users;
+  }
+
+  _loadMoreAllPrivate() async {
     if (_isFectchingUser) return;
     _isFectchingUser = true;
     QuerySnapshot inviteSnapShot = await eventInviteRef
         .doc(widget.event.id)
         .collection('eventInvite')
         .where('attendeeStatus', isEqualTo: widget.answer)
+        .limit(limit)
+        .startAfterDocument(_inviteSnapshot.last)
+        .get();
+    List<EventInvite> moreusers =
+        inviteSnapShot.docs.map((doc) => EventInvite.fromDoc(doc)).toList();
+    if (_inviteSnapshot.length < limit) _hasNext = false;
+    List<EventInvite> allusers = _inviteList..addAll(moreusers);
+    _inviteSnapshot.addAll((inviteSnapShot.docs));
+    if (mounted) {
+      setState(() {
+        _inviteList = allusers;
+      });
+    }
+    _hasNext = false;
+    _isFectchingUser = false;
+    return _hasNext;
+  }
+
+  _loadMoreAllPublic() async {
+    if (_isFectchingUser) return;
+    _isFectchingUser = true;
+    QuerySnapshot inviteSnapShot = await eventInviteRef
+        .doc(widget.event.id)
+        .collection('eventInvite')
         .limit(limit)
         .startAfterDocument(_inviteSnapshot.last)
         .get();
@@ -137,7 +180,7 @@ class _EventAttendeesAllState extends State<EventAttendeesAll>
                 ? Icon(
                     Icons.account_circle,
                     size: 60.0,
-                    color: Colors.white,
+                    color: Colors.grey,
                   )
                 : CircleAvatar(
                     radius: 25.0,
@@ -158,30 +201,17 @@ class _EventAttendeesAllState extends State<EventAttendeesAll>
                         style: TextStyle(
                           fontSize: width > 800 ? 18 : 14.0,
                           fontWeight: FontWeight.bold,
-                          color: ConfigBloc().darkModeOn
-                              ? Colors.white
-                              : Colors.black,
+                          color: Colors.black,
                         )),
                   ),
                 ],
               ),
             ),
-            subtitle: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(invite.anttendeeprofileHandle,
-                    style: TextStyle(
-                      fontSize: width > 800 ? 14 : 12,
-                      color: Colors.blue,
-                    )),
-                Divider(
-                  color: ConfigBloc().darkModeOn
-                      ? Colors.grey[850]
-                      : Colors.grey[350],
-                )
-              ],
-            ),
+            subtitle: Text(invite.anttendeeprofileHandle,
+                style: TextStyle(
+                  fontSize: width > 800 ? 14 : 12,
+                  color: Colors.blue,
+                )),
             onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -189,6 +219,7 @@ class _EventAttendeesAllState extends State<EventAttendeesAll>
                           currentUserId:
                               Provider.of<UserData>(context).currentUserId!,
                           userId: invite.anttendeeId,
+                          user: null,
                         ))),
           ),
         ),

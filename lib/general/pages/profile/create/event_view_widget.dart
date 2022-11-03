@@ -899,7 +899,7 @@ class EventViewWidget extends StatelessWidget {
                                     : '\n',
                             style: TextStyle(
                                 fontSize: 10,
-                                color: completed ? Colors.red : Colors.green)),
+                                color: completed ? Colors.green : Colors.blue)),
                       ],
                     ),
                     overflow: TextOverflow.ellipsis,

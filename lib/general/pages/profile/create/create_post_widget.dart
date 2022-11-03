@@ -627,11 +627,9 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
     );
   }
 
-  _validateVideoLink() {
-    if (_formKey.currentState!.validate() &&
-        Provider.of<UserData>(context, listen: false).post5.isNotEmpty) {
-      _formKey.currentState?.save();
-      setState(() {
+  _validateVideo() {
+    if (_formKey.currentState!.validate()) {
+      return setState(() {
         _show = 3;
       });
     } else {
@@ -669,6 +667,9 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
         leftBarIndicatorColor: Colors.blue,
       )..show(context);
     }
+    // return !musiVideoLink.hasMatch(input)
+    //     ? "Enter a valid music video link"
+    //     : null;
   }
 
   static const values = <String>[
@@ -803,9 +804,10 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                                           CrossAxisAlignment.center,
                                       children: <Widget>[
                                         Provider.of<UserData>(context,
-                                                    listen: false)
-                                                .post5
-                                                .isEmpty
+                                                        listen: false)
+                                                    .post5
+                                                    .isEmpty &&
+                                                !widget.isEditting
                                             ? const SizedBox.shrink()
                                             : GestureDetector(
                                                 onTap: () {
@@ -1123,8 +1125,9 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                                                     height: 70,
                                                   ),
                                                   Provider.of<UserData>(
-                                                    context,
-                                                  ).post2.isEmpty
+                                                            context,
+                                                          ).post2.isEmpty &&
+                                                          !widget.isEditting
                                                       ? const SizedBox.shrink()
                                                       : IconButton(
                                                           icon: const Icon(
@@ -1293,7 +1296,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                                                         ? setState(() {
                                                             _show = 3;
                                                           })
-                                                        : _validateVideoLink();
+                                                        : _validateVideo();
                                                   }
                                                 : () {
                                                     FocusScope.of(context)

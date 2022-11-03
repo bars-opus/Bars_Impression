@@ -7,17 +7,19 @@ import 'package:timeago/timeago.dart' as timeago;
 
 class CommentsScreen extends StatefulWidget {
   final Post post;
+  final int commentCount;
+
   final int likeCount;
   final int dislikeCount;
   final String currentUserId;
-  final Comment? comment;
 
-  CommentsScreen(
-      {required this.post,
-      required this.likeCount,
-      required this.dislikeCount,
-      required this.currentUserId,
-      required this.comment});
+  CommentsScreen({
+    required this.post,
+    required this.likeCount,
+    required this.dislikeCount,
+    required this.currentUserId,
+    required this.commentCount,
+  });
 
   @override
   _CommentsScreenState createState() => _CommentsScreenState();
@@ -76,7 +78,7 @@ class _CommentsScreenState extends State<CommentsScreen>
             builder: (_) => ProfileProfessionalProfile(
                   currentUserId: Provider.of<UserData>(context).currentUserId!,
                   // user: widget.post.authorId,
-                  userId: widget.comment!.authorId, user: user,
+                  user: user, userId: user.id!,
                 )));
   }
 
@@ -131,6 +133,7 @@ class _CommentsScreenState extends State<CommentsScreen>
                                         Provider.of<UserData>(context)
                                             .currentUserId!,
                                     userId: comment.authorId,
+                                    user: null,
                                   )))
                     : _viewProfessionalProfile),
         FocusedMenuItem(
@@ -191,7 +194,8 @@ class _CommentsScreenState extends State<CommentsScreen>
             profileHandle: comment.authorProfileHanlde,
             profileImageUrl: comment.authorProfileImageUrl,
             verified: comment.authorVerification,
-            userName: comment.authorName, from: 'Comment',
+            userName: comment.authorName,
+            from: 'Comment',
           ),
         ),
       ),
@@ -225,6 +229,7 @@ class _CommentsScreenState extends State<CommentsScreen>
                   SizedBox(width: 10.0),
                   Expanded(
                     child: TextField(
+                      autofocus: widget.commentCount == 0 ? true : false,
                       controller: _commentController,
                       textCapitalization: TextCapitalization.sentences,
                       keyboardType: TextInputType.multiline,
@@ -454,11 +459,22 @@ class _CommentsScreenState extends State<CommentsScreen>
                           builder:
                               (BuildContext context, AsyncSnapshot snapshot) {
                             if (!snapshot.hasData) {
-                              return Expanded(
-                                child: Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                              );
+                              return _commentCount == 0
+                                  ? Expanded(
+                                      child: Center(
+                                        child: NoContents(
+                                          icon: (MdiIcons.emoticonHappyOutline),
+                                          title: 'No Vibes yet.',
+                                          subTitle:
+                                              'Can you relate to this punchline and the mood of the punch? then vibe with it.',
+                                        ),
+                                      ),
+                                    )
+                                  : Expanded(
+                                      child: Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    );
                             }
                             return _commentCount == 0
                                 ? Expanded(
@@ -487,7 +503,6 @@ class _CommentsScreenState extends State<CommentsScreen>
                                                   return _buildComment(
                                                     comment,
                                                   );
-                                                 
                                                 },
                                                 childCount:
                                                     snapshot.data.docs.length,

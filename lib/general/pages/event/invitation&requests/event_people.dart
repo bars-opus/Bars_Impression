@@ -79,7 +79,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${guests[0].toUpperCase().trim()}',
+                              userId: '@${guests[0].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -103,7 +103,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${guests[1].toUpperCase().trim()}',
+                              userId: '@${guests[1].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -127,7 +127,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${guests[2].toUpperCase().trim()}',
+                              userId: '@${guests[2].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -151,7 +151,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${guests[3].toUpperCase().trim()}',
+                              userId: '@${guests[3].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -175,7 +175,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${guests[4].toUpperCase().trim()}',
+                              userId: '@${guests[4].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -199,7 +199,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${guests[5].toUpperCase().trim()}',
+                              userId: '@${guests[5].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -223,7 +223,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${guests[6].toUpperCase().trim()}',
+                              userId: '@${guests[6].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -247,7 +247,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${guests[7].toUpperCase().trim()}',
+                              userId: '@${guests[7].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -271,7 +271,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${guests[8].toUpperCase().trim()}',
+                              userId: '@${guests[8].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -295,7 +295,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${guests[9].toUpperCase().trim()}',
+                              userId: '@${guests[9].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -319,7 +319,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${guests[10].toUpperCase().trim()}',
+                              userId: '@${guests[10].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -343,7 +343,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${guests[11].toUpperCase().trim()}',
+                              userId: '@${guests[11].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -367,7 +367,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${guests[12].toUpperCase().trim()}',
+                              userId: '@${guests[12].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -408,7 +408,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[0].toUpperCase().trim()}',
+                              userId: '@${artists[0].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -432,7 +432,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[1].toUpperCase().trim()}',
+                              userId: '@${artists[1].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -456,7 +456,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[2].toUpperCase().trim()}',
+                              userId: '@${artists[2].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -480,7 +480,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[3].toUpperCase().trim()}',
+                              userId: '@${artists[3].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -504,7 +504,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[4].toUpperCase().trim()}',
+                              userId: '@${artists[4].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -528,7 +528,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[5].toUpperCase().trim()}',
+                              userId: '@${artists[5].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -552,7 +552,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[6].toUpperCase().trim()}',
+                              userId: '@${artists[6].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -576,7 +576,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[7].toUpperCase().trim()}',
+                              userId: '@${artists[7].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -600,7 +600,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[8].toUpperCase().trim()}',
+                              userId: '@${artists[8].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -624,7 +624,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[9].toUpperCase().trim()}',
+                              userId: '@${artists[9].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -648,7 +648,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[10].toUpperCase().trim()}',
+                              userId: '@${artists[10].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -672,7 +672,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[11].toUpperCase().trim()}',
+                              userId: '@${artists[11].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -696,7 +696,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[12].toUpperCase().trim()}',
+                              userId: '@${artists[12].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -720,7 +720,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[13].toUpperCase().trim()}',
+                              userId: '@${artists[13].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -744,7 +744,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[14].toUpperCase().trim()}',
+                              userId: '@${artists[14].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -768,7 +768,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[15].toUpperCase().trim()}',
+                              userId: '@${artists[15].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -792,7 +792,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[16].toUpperCase().trim()}',
+                              userId: '@${artists[16].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -816,7 +816,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[17].toUpperCase().trim()}',
+                              userId: '@${artists[17].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -840,7 +840,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[18].toUpperCase().trim()}',
+                              userId: '@${artists[18].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -864,7 +864,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[19].toUpperCase().trim()}',
+                              userId: '@${artists[19].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -888,7 +888,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[20].toUpperCase().trim()}',
+                              userId: '@${artists[20].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -912,7 +912,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[21].toUpperCase().trim()}',
+                              userId: '@${artists[21].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -936,7 +936,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[22].toUpperCase().trim()}',
+                              userId: '@${artists[22].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -960,7 +960,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[23].toUpperCase().trim()}',
+                              userId: '@${artists[23].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -984,7 +984,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[24].toUpperCase().trim()}',
+                              userId: '@${artists[24].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -1008,7 +1008,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[25].toUpperCase().trim()}',
+                              userId: '@${artists[25].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -1032,7 +1032,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[26].toUpperCase().trim()}',
+                              userId: '@${artists[26].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -1056,7 +1056,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[27].toUpperCase().trim()}',
+                              userId: '@${artists[27].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -1080,7 +1080,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[28].toUpperCase().trim()}',
+                              userId: '@${artists[28].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -1104,7 +1104,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[29].toUpperCase().trim()}',
+                              userId: '@${artists[29].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),
@@ -1128,7 +1128,7 @@ class EventPeople extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TaggedUser(
-                              user: '@${artists[30].toUpperCase().trim()}',
+                              userId: '@${artists[30].toUpperCase().trim()}',
                               currentUserId: '',
                             ),
                           ),

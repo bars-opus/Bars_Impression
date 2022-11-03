@@ -875,11 +875,11 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                                                 "RATE: ",
                                                                             style:
                                                                                 TextStyle(fontSize: 12.0, color: Colors.black)),
-                                                                        TextSpan(
-                                                                            text:
-                                                                                " ${rate[1]} ",
-                                                                            style:
-                                                                                TextStyle(fontSize: 14.0, color: Colors.black)),
+                                                                        if (rate.length >
+                                                                            1)
+                                                                          TextSpan(
+                                                                              text: " ${rate[1]} ",
+                                                                              style: TextStyle(fontSize: 14.0, color: Colors.black)),
                                                                       ],
                                                                     ))),
                                                       ),

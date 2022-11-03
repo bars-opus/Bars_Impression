@@ -186,7 +186,7 @@ class _ActivityFollowerScreenState extends State<ActivityFollowerScreen>
                       builder: (_) => ProfileScreen(
                             currentUserId:
                                 Provider.of<UserData>(context).currentUserId!,
-                            userId: activity.fromUserId,
+                            userId: activity.fromUserId, user: null,
                           )));
             },
             leading: activity.authorProfileImageUrl.isEmpty

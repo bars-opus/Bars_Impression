@@ -299,7 +299,7 @@ class _EditForumState extends State<EditForum> {
               onTap: () => _showSelectImageDialog(),
               child: Ink(
                 decoration: BoxDecoration(
-                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                  color: ConfigBloc().darkModeOn ? Colors.blue : Colors.black,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Container(

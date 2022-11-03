@@ -640,6 +640,7 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                                                                                             //     :
 
                                                                                             ProfileScreen(
+                                                                                                 user: null,
                                                                                               currentUserId: widget.currentUserId,
                                                                                               userId: widget.post.authorId,
                                                                                             ))),

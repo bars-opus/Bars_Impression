@@ -111,7 +111,7 @@ class _FavoriteArtistsState extends State<FavoriteArtists> {
                 builder: (_) => ProfileScreen(
                       currentUserId:
                           Provider.of<UserData>(context).currentUserId!,
-                      userId: user.id!,
+                      userId: user.id!, user: user,
                     ))),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,

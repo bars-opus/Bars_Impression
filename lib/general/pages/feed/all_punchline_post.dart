@@ -147,7 +147,7 @@ class _AllPunclinePostState extends State<AllPunclinePost> {
                         children: [
                           TextSpan(
                               text:
-                                  "These are the mood punches which contains the punchline:",
+                                  "These are the moods punched with the punchline:",
                               style: TextStyle(
                                 color: ConfigBloc().darkModeOn
                                     ? Colors.white

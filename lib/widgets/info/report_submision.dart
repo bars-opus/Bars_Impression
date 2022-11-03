@@ -289,7 +289,7 @@ class _ReportContentSubmissionState extends State<ReportContentSubmission> {
                               vertical: 10.0, horizontal: 30),
                           child: widget.reportType.startsWith('Spam')
                               ? Text(
-                                  'We do not allow or promote any form or content related to ' +
+                                  'Bars Impression does not allow or promote any form or content related to ' +
                                       widget.reportType +
                                       ': Misleading or repetitive content',
                                   style: TextStyle(
@@ -301,7 +301,7 @@ class _ReportContentSubmissionState extends State<ReportContentSubmission> {
                                 )
                               : widget.reportType.startsWith('Nudity')
                                   ? Text(
-                                      'We do not allow or promote any form or content related to ' +
+                                      'Bars Impression does not allow or promote any form or content related to ' +
                                           widget.reportType +
                                           ': Sexually explicit content',
                                       style: TextStyle(
@@ -314,7 +314,7 @@ class _ReportContentSubmissionState extends State<ReportContentSubmission> {
                                   : widget.reportType
                                           .startsWith('Misinformation')
                                       ? Text(
-                                          'We do not allow or promote any form or content related to ' +
+                                          'Bars Impression does not allow or promote any form or content related to ' +
                                               widget.reportType +
                                               ': Health misinformation or conspiracies',
                                           style: TextStyle(
@@ -327,7 +327,7 @@ class _ReportContentSubmissionState extends State<ReportContentSubmission> {
                                       : widget.reportType
                                               .startsWith('Hateful Activities')
                                           ? Text(
-                                              'We do not allow or promote any form or content related to ' +
+                                              'Bars Impression does not allow or promote any form or content related to ' +
                                                   widget.reportType +
                                                   ': Prejudice, stereotypes, white supremacy, slurs, racism',
                                               style: TextStyle(
@@ -340,7 +340,7 @@ class _ReportContentSubmissionState extends State<ReportContentSubmission> {
                                           : widget.reportType
                                                   .startsWith('Dangerous goods')
                                               ? Text(
-                                                  'We do not allow or promote any form or content related to ' +
+                                                  'Bars Impression does not allow or promote any form or content related to ' +
                                                       widget.reportType +
                                                       ': Drugs, regulated products',
                                                   style: TextStyle(
@@ -354,7 +354,7 @@ class _ReportContentSubmissionState extends State<ReportContentSubmission> {
                                               : widget.reportType
                                                       .startsWith('Harassment')
                                                   ? Text(
-                                                      'We do not allow or promote any form or content related to ' +
+                                                      'Bars Impression does not allow or promote any form or content related to ' +
                                                           widget.reportType +
                                                           ': Insults, threats, personally identifiable info',
                                                       style: TextStyle(
@@ -371,7 +371,7 @@ class _ReportContentSubmissionState extends State<ReportContentSubmission> {
                                                   : widget.reportType
                                                           .startsWith('Graphic')
                                                       ? Text(
-                                                          'We do not allow or promote any form or content related to ' +
+                                                          'Bars Impression does not allow or promote any form or content related to ' +
                                                               widget
                                                                   .reportType +
                                                               ': Violent images or promotion of violence',
@@ -390,7 +390,7 @@ class _ReportContentSubmissionState extends State<ReportContentSubmission> {
                                                               .startsWith(
                                                                   'My intellectual property')
                                                           ? Text(
-                                                              'We do not allow or promote any form or content related to ' +
+                                                              'Bars Impression does not allow or promote any form or content related to ' +
                                                                   widget
                                                                       .reportType +
                                                                   ': Copyright or trademark infringement',

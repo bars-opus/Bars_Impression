@@ -32,7 +32,9 @@ class _ValidateEventAttendeesState extends State<ValidateEventAttendees>
   @override
   void initState() {
     super.initState();
-    _setAttendesNotValidate();
+    widget.event.isPrivate
+        ? _setAttendesNotValidatePrivate()
+        : _setAttendesNotValidatePublic();
     __setShowInfo();
     _hideButtonController = ScrollController();
   }
@@ -40,7 +42,9 @@ class _ValidateEventAttendeesState extends State<ValidateEventAttendees>
   bool _handleScrollNotification(ScrollNotification notification) {
     if (notification is ScrollEndNotification) {
       if (_hideButtonController.position.extentAfter == 0) {
-        _loadAttendeesNotValidated();
+        widget.event.isPrivate
+            ? _loadAttendeesNotValidatedPrivate()
+            : _loadAttendeesNotValidatedPublic();
       }
     }
     return false;
@@ -64,7 +68,7 @@ class _ValidateEventAttendeesState extends State<ValidateEventAttendees>
     }
   }
 
-  _setAttendesNotValidate() async {
+  _setAttendesNotValidatePrivate() async {
     QuerySnapshot inviteSnapShot = await eventInviteRef
         .doc(widget.event.id)
         .collection('eventInvite')
@@ -85,13 +89,58 @@ class _ValidateEventAttendeesState extends State<ValidateEventAttendees>
     return users;
   }
 
-  _loadAttendeesNotValidated() async {
+  _setAttendesNotValidatePublic() async {
+    QuerySnapshot inviteSnapShot = await eventInviteRef
+        .doc(widget.event.id)
+        .collection('eventInvite')
+        .where('validated', isEqualTo: false)
+        .limit(limit)
+        .get();
+    List<EventInvite> users =
+        inviteSnapShot.docs.map((doc) => EventInvite.fromDoc(doc)).toList();
+    _inviteSnapshot.addAll((inviteSnapShot.docs));
+    if (mounted) {
+      print(users.length.toString());
+      setState(() {
+        _hasNext = false;
+        _inviteList = users;
+      });
+    }
+    return users;
+  }
+
+  _loadAttendeesNotValidatedPrivate() async {
     if (_isFectchingUser) return;
     _isFectchingUser = true;
     QuerySnapshot inviteSnapShot = await eventInviteRef
         .doc(widget.event.id)
         .collection('eventInvite')
         .where('attendeeStatus', isEqualTo: widget.from)
+        .where('validated', isEqualTo: false)
+        .limit(limit)
+        .startAfterDocument(_inviteSnapshot.last)
+        .get();
+    List<EventInvite> moreusers =
+        inviteSnapShot.docs.map((doc) => EventInvite.fromDoc(doc)).toList();
+    if (_inviteSnapshot.length < limit) _hasNext = false;
+    List<EventInvite> allusers = _inviteList..addAll(moreusers);
+    _inviteSnapshot.addAll((inviteSnapShot.docs));
+    if (mounted) {
+      setState(() {
+        _inviteList = allusers;
+      });
+    }
+    _hasNext = false;
+    _isFectchingUser = false;
+    return _hasNext;
+  }
+
+  _loadAttendeesNotValidatedPublic() async {
+    if (_isFectchingUser) return;
+    _isFectchingUser = true;
+    QuerySnapshot inviteSnapShot = await eventInviteRef
+        .doc(widget.event.id)
+        .collection('eventInvite')
         .where('validated', isEqualTo: false)
         .limit(limit)
         .startAfterDocument(_inviteSnapshot.last)

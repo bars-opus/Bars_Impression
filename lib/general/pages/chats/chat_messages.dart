@@ -27,7 +27,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   final TextEditingController _adviceControler = TextEditingController();
   bool _isAdvicingUser = false;
   bool _isreplying = false;
-  bool _isLiked = false;
   bool _isBlockedUser = false;
   bool _isBlockingUser = false;
   int _chatMessageCount = 0;
@@ -35,7 +34,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   bool _restrictChat = false;
   late ScrollController _hideButtonController;
   late ScrollController _hideAppBarController;
-  // var _isVisible;
   final FocusNode _focusNode = FocusNode();
   bool _heartAnim = false;
 
@@ -46,13 +44,13 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
     _setupIsBlockedUser();
     _setupIsBlockingUser();
     _setUpMessageCount();
-    // _isVisible = true;
     _restrictChat = widget.chat == null ? false : widget.chat!.restrictChat;
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _clear();
       Provider.of<UserData>(context, listen: false).setPost9('');
       Provider.of<UserData>(context, listen: false).setIsLoading(false);
+      Provider.of<UserData>(context, listen: false).setPostImage(null);
       Provider.of<UserData>(context, listen: false).setBool1(true);
     });
 
@@ -213,11 +211,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
         liked: false,
         userId: widget.user.id!,
         message: message);
-    if (mounted) {
-      setState(() {
-        _isLiked = false;
-      });
-    }
   }
 
   _likeMessage(
@@ -228,11 +221,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
         liked: true,
         userId: widget.user.id!,
         message: message);
-    if (mounted) {
-      setState(() {
-        _isLiked = true;
-      });
-    }
   }
 
   _showSelectImageDialog() {
@@ -477,7 +465,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                             .setPost8(message.content);
                         Provider.of<UserData>(context, listen: false)
                             .setPost7(message.authorId);
-                        // _isVisible = true;
                         Provider.of<UserData>(context, listen: false)
                             .setBool1(true);
                       });
@@ -635,7 +622,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                       onPressed: () {
                                         HapticFeedback.heavyImpact();
                                         SystemSound.play(SystemSoundType.click);
-                                        if (_isLiked) {
+                                        if (message.liked) {
                                           setState(() {
                                             _unLikeMessage(message);
                                           });
@@ -931,7 +918,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                     onPressed: () {
                                       HapticFeedback.heavyImpact();
                                       SystemSound.play(SystemSoundType.click);
-                                      if (_isLiked) {
+                                      if (message.liked) {
                                         setState(() {
                                           _unLikeMessage(message);
                                         });
@@ -1446,12 +1433,12 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                                                                 .currentUserId,
                                                             chat: widget.chat!,
                                                             user: widget.user,
-                                                            currentUser: Provider.of<
-                                                                        UserData>(
-                                                                    context,
-                                                                    listen:
-                                                                        false)
-                                                                .user!,
+                                                            // currentUser: Provider.of<
+                                                            //             UserData>(
+                                                            //         context,
+                                                            //         listen:
+                                                            //             false)
+                                                            //     .user!,
                                                           ))),
                                           child: ListTile(
                                             leading: Container(

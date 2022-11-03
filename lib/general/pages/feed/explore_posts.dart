@@ -372,7 +372,7 @@ _nothing(){}
                     builder: (_) => ProfileScreen(
                           currentUserId:
                               Provider.of<UserData>(context).currentUserId!,
-                          userId: accountHolder.id!,
+                          userId: accountHolder.id!, user: null,
                         )))),
         FocusedMenuItem(
             title: Container(

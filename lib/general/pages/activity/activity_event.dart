@@ -20,7 +20,6 @@ class ActivityEventScreen extends StatefulWidget {
 class _ActivityEventScreenState extends State<ActivityEventScreen>
     with AutomaticKeepAliveClientMixin {
   List<ActivityEvent> _activitiesEvent = [];
-  // int _askCount = 0;
   final _activitySnapshot = <DocumentSnapshot>[];
   int limit = 10;
   bool _hasNext = true;
@@ -183,28 +182,51 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
                 return const SizedBox.shrink();
               }
               EventInvite invite = snapshot.data;
-              return activityEvent.invited!
-                  ? EventInvitationActivityCard(
-                      invite: invite,
-                      activityEvent: activityEvent,
+              return invite.id.isEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Container(
+                        color: Colors.white,
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: RichText(
+                            textScaleFactor:
+                                MediaQuery.of(context).textScaleFactor,
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: 'Cordially\nInvited',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: '\nThis invitation has been deleted.',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
                     )
-                  : EventAttendeeRequestAnswereWidget(
-                      invite: invite,
-                      palette: null,
-                      activityEvent: activityEvent,
-                    );
+                  : activityEvent.invited!
+                      ? EventInvitationActivityCard(
+                          invite: invite,
+                          activityEvent: activityEvent,
+                        )
+                      : EventAttendeeRequestAnswereWidget(
+                          invite: invite,
+                          palette: null,
+                          activityEvent: activityEvent,
+                        );
             })
-        :
-
-        // FutureBuilder(
-        //     future: DatabaseService.getUserWithId(activityEvent.fromUserId),
-        //     builder: (BuildContext context, AsyncSnapshot snapshot) {
-        //       if (!snapshot.hasData) {
-        //         return const SizedBox.shrink();
-        //       }
-        //       AccountHolder user = snapshot.data;
-        //       return
-        ActivityImageTile(
+        : ActivityImageTile(
             seen: activityEvent.seen,
             verified: activityEvent.authorVerification,
             profileImageUrl: activityEvent.authorProfileImageUrl,
@@ -225,8 +247,6 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
               _goToAskSCreen(activityEvent);
             },
           );
-    //   },
-    // );
   }
 
   _goToAskSCreen(ActivityEvent activityEvent) async {
@@ -239,9 +259,7 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
     );
     DatabaseService.numAsks(event.id).listen((askCount) {
       if (mounted) {
-        setState(() {
-          // _askCount = askCount;
-        });
+        setState(() {});
       }
     });
     activityEvent.seen != 'seen'
@@ -253,14 +271,12 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
         builder: (_) => AsksScreen(
           event: event,
           ask: null,
-          // askCount: _askCount,
           currentUserId: widget.currentUserId,
+          askCount: 0,
         ),
       ),
     );
-    // setState(() {
-    //   _isLoading = false;
-    // });
+
     Provider.of<UserData>(context, listen: false).setIsLoading(false);
   }
 

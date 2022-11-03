@@ -21,19 +21,6 @@ class ReplyThoughtsScreen extends StatefulWidget {
 }
 
 class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
-  RandomColor _randomColor = RandomColor();
-  final List<ColorHue> _hueType = <ColorHue>[
-    ColorHue.green,
-    ColorHue.red,
-    ColorHue.pink,
-    ColorHue.purple,
-    ColorHue.blue,
-    ColorHue.yellow,
-    ColorHue.orange
-  ];
-
-  ColorSaturation _colorSaturation = ColorSaturation.random;
-
   final TextEditingController _replythoughtController = TextEditingController();
   bool _isThinking = false;
   late ScrollController _hideButtonController;
@@ -101,98 +88,166 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
     });
   }
 
+  _deleteThought(
+    ReplyThought replyThought,
+  ) {
+    HapticFeedback.heavyImpact();
+
+    DatabaseService.deleteReplyThought(
+        replyThought: replyThought,
+        thought: widget.thought,
+        forum: widget.forum,
+        count: widget.thought.count! - 1);
+    Navigator.pop(context);
+    final double width = MediaQuery.of(context).size.width;
+    Flushbar(
+      margin: EdgeInsets.all(8),
+      boxShadows: [
+        BoxShadow(
+          color: Colors.black,
+          offset: Offset(0.0, 2.0),
+          blurRadius: 3.0,
+        )
+      ],
+      flushbarPosition: FlushbarPosition.TOP,
+      flushbarStyle: FlushbarStyle.FLOATING,
+      titleText: Text(
+        'Done!!',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: width > 800 ? 22 : 14,
+        ),
+      ),
+      messageText: Text(
+        "Deleted successfully",
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: width > 800 ? 20 : 12,
+        ),
+      ),
+      icon: Icon(
+        Icons.info_outline,
+        size: 28.0,
+        color: Colors.blue,
+      ),
+      duration: Duration(seconds: 1),
+      leftBarIndicatorColor: Colors.blue,
+    )..show(context);
+  }
+
   _buildComment(
     ReplyThought replyThought,
   ) {
+    final width = Responsive.isDesktop(context)
+        ? 600.0
+        : MediaQuery.of(context).size.width;
     final String currentUserId = Provider.of<UserData>(context).currentUserId!;
     return Padding(
         padding: const EdgeInsets.only(left: 30.0),
-        child: ListTile(
-          leading: currentUserId == replyThought.authorId
-              ? const SizedBox.shrink()
-              : CircleAvatar(
-                  radius: 20.0,
-                  backgroundColor: Colors.grey,
-                  backgroundImage: replyThought.authorProfileImageUrl.isEmpty
-                      ? AssetImage(
-                          'assets/images/user_placeholder2.png',
-                        ) as ImageProvider
-                      : CachedNetworkImageProvider(
-                          replyThought.authorProfileImageUrl),
+        child: FocusedMenuHolder(
+          menuWidth: width,
+          menuOffset: 10,
+          blurBackgroundColor:
+              ConfigBloc().darkModeOn ? Colors.grey[900] : Colors.blueGrey[700],
+          openWithTap: false,
+          onPressed: () {},
+          menuItems: [
+            FocusedMenuItem(
+                title: Container(
+                  width: width / 2,
+                  child: Text(
+                    'Delete',
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-          title: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: currentUserId != replyThought.authorId
-                ? CrossAxisAlignment.start
-                : CrossAxisAlignment.end,
-            children: <Widget>[
-              Text(
-                currentUserId == replyThought.authorId
-                    ? 'Me'
-                    : replyThought.authorName,
-                style: TextStyle(
-                  fontSize: 12.0,
-                  fontWeight: FontWeight.bold,
-                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                ),
-              ),
-              Text(replyThought.authorProfileHanlde,
+                onPressed: () => _deleteThought(replyThought)),
+          ],
+          child: ListTile(
+            leading: currentUserId == replyThought.authorId
+                ? const SizedBox.shrink()
+                : CircleAvatar(
+                    radius: 20.0,
+                    backgroundColor: Colors.grey,
+                    backgroundImage: replyThought.authorProfileImageUrl.isEmpty
+                        ? AssetImage(
+                            'assets/images/user_placeholder2.png',
+                          ) as ImageProvider
+                        : CachedNetworkImageProvider(
+                            replyThought.authorProfileImageUrl),
+                  ),
+            title: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: currentUserId != replyThought.authorId
+                  ? CrossAxisAlignment.start
+                  : CrossAxisAlignment.end,
+              children: <Widget>[
+                Text(
+                  currentUserId == replyThought.authorId
+                      ? 'Me'
+                      : replyThought.authorName,
                   style: TextStyle(
-                    fontSize: 10.0,
-                    color: Colors.blueGrey,
-                  )),
-              SizedBox(
-                height: 5.0,
-              ),
-            ],
-          ),
-          subtitle: Column(
-            crossAxisAlignment: currentUserId == replyThought.authorId
-                ? CrossAxisAlignment.end
-                : CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(bottom: 2.0),
-                child: Container(
-                  color: _randomColor.randomColor(
-                    colorHue: ColorHue.multiple(colorHues: _hueType),
-                    colorSaturation: _colorSaturation,
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.bold,
+                    color:
+                        ConfigBloc().darkModeOn ? Colors.white : Colors.black,
                   ),
-                  height: 1.0,
-                  width: 30.0,
                 ),
-              ),
-              replyThought.report.isNotEmpty
-                  ? BarsTextStrikeThrough(
-                      fontSize: 12,
-                      text: replyThought.content,
-                    )
-                  : HyperLinkText(
-                      from: '',
-                      text: replyThought.content,
-                    ),
-              SizedBox(height: 10.0),
-              Text(
-                  timeago.format(
-                    replyThought.timestamp.toDate(),
+                Text(replyThought.authorProfileHanlde,
+                    style: TextStyle(
+                      fontSize: 10.0,
+                      color: Colors.blueGrey,
+                    )),
+                SizedBox(
+                  height: 5.0,
+                ),
+              ],
+            ),
+            subtitle: Column(
+              crossAxisAlignment: currentUserId == replyThought.authorId
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 2.0),
+                  child: Container(
+                    color: Colors.blue,
+                    height: 1.0,
+                    width: 30.0,
                   ),
-                  style: TextStyle(fontSize: 10, color: Colors.grey)),
-              SizedBox(
-                height: 2.0,
-              ),
-              Divider(
-                color: Colors.grey,
-              ),
-            ],
+                ),
+                replyThought.report.isNotEmpty
+                    ? BarsTextStrikeThrough(
+                        fontSize: 12,
+                        text: replyThought.content,
+                      )
+                    : HyperLinkText(
+                        from: '',
+                        text: replyThought.content,
+                      ),
+                SizedBox(height: 10.0),
+                Text(
+                    timeago.format(
+                      replyThought.timestamp.toDate(),
+                    ),
+                    style: TextStyle(fontSize: 10, color: Colors.grey)),
+                SizedBox(
+                  height: 2.0,
+                ),
+                Divider(
+                  color: Colors.grey,
+                ),
+              ],
+            ),
+            onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => ProfileScreen(
+                          currentUserId:
+                              Provider.of<UserData>(context).currentUserId!,
+                          userId: replyThought.authorId,
+                          user: null,
+                        ))),
           ),
-          onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => ProfileScreen(
-                        currentUserId:
-                            Provider.of<UserData>(context).currentUserId!,
-                        userId: replyThought.authorId,
-                      ))),
         )
         //   },
         // ),
@@ -414,6 +469,7 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
                                                             .currentUserId!,
                                                         userId: widget
                                                             .thought.authorId,
+                                                        user: null,
                                                       ))),
                                           child: CircleAvatar(
                                             radius: 30.0,
@@ -466,12 +522,7 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
                                               padding: const EdgeInsets.only(
                                                   bottom: 2.0),
                                               child: Container(
-                                                color: _randomColor.randomColor(
-                                                  colorHue: ColorHue.multiple(
-                                                      colorHues: _hueType),
-                                                  colorSaturation:
-                                                      _colorSaturation,
-                                                ),
+                                                color: Colors.blue,
                                                 height: 1.0,
                                                 width: 50.0,
                                               ),

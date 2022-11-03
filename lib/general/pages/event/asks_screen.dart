@@ -9,9 +9,13 @@ class AsksScreen extends StatefulWidget {
   final Event event;
   final Ask? ask;
   final String currentUserId;
+  final int askCount;
 
   AsksScreen(
-      {required this.event, required this.ask, required this.currentUserId});
+      {required this.event,
+      required this.ask,
+      required this.currentUserId,
+      required this.askCount});
 
   @override
   _AsksScreenState createState() => _AsksScreenState();
@@ -76,7 +80,8 @@ class _AsksScreenState extends State<AsksScreen> {
         MaterialPageRoute(
             builder: (_) => ProfileProfessionalProfile(
                   currentUserId: Provider.of<UserData>(context).currentUserId!,
-                  userId: ask.authorId, user: user,
+                  userId: ask.authorId,
+                  user: user,
                 )));
   }
 
@@ -132,9 +137,9 @@ class _AsksScreenState extends State<AsksScreen> {
                                         Provider.of<UserData>(context)
                                             .currentUserId!,
                                     userId: ask.authorId,
+                                    user: null,
                                   )))
-                    : _viewProfessionalProfile(ask)
-            ),
+                    : _viewProfessionalProfile(ask)),
         FocusedMenuItem(
             title: Container(
               width: width / 2,
@@ -218,6 +223,7 @@ class _AsksScreenState extends State<AsksScreen> {
                   SizedBox(width: 10.0),
                   Expanded(
                     child: TextField(
+                      autofocus: widget.askCount == 0 ? true : false,
                       controller: _askController,
                       textCapitalization: TextCapitalization.sentences,
                       keyboardType: TextInputType.multiline,
@@ -401,6 +407,7 @@ class _AsksScreenState extends State<AsksScreen> {
                                                   Provider.of<UserData>(context)
                                                       .currentUserId!,
                                               userId: widget.event.authorId,
+                                              user: null,
                                             ))),
                                 child: RichText(
                                   textScaleFactor:
@@ -460,11 +467,23 @@ class _AsksScreenState extends State<AsksScreen> {
                           builder:
                               (BuildContext context, AsyncSnapshot snapshot) {
                             if (!snapshot.hasData) {
-                              return Expanded(
-                                child: Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                              );
+                              return _askCount == 0
+                                  ? Expanded(
+                                      child: Center(
+                                        child: NoContents(
+                                          icon: (MdiIcons.calendarQuestion),
+                                          title:
+                                              'No questions on this event yet,',
+                                          subTitle:
+                                              'You can be the first person to ask a question or tell others how you feel about this upcoming event, ',
+                                        ),
+                                      ),
+                                    )
+                                  : Expanded(
+                                      child: Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    );
                             }
                             return _askCount == 0
                                 ? Expanded(

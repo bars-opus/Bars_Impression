@@ -67,13 +67,41 @@ class CreateForumWidget extends StatelessWidget {
               padding: const EdgeInsets.all(10.0),
               child: Column(
                 children: <Widget>[
-                  ContentField(
-                    labelText: 'Topic',
-                    hintText: "Enter the topic of your forum",
+                  // ContentField(
+                  //   labelText: 'Topic',
+                  //   hintText: "Enter the topic of your forum",
+                  //   initialValue: initialTitle,
+                  //   onSavedText: onSavedTitle,
+                  //   onValidateText: onValidateTitle,
+                  // ),
+
+                  TextFormField(
+                    keyboardType: TextInputType.multiline,
+                    autofocus: true,
+                    maxLines: null,
+                    textCapitalization: TextCapitalization.sentences,
                     initialValue: initialTitle,
-                    onSavedText: onSavedTitle,
-                    onValidateText: onValidateTitle,
+                    style: TextStyle(
+                      color:
+                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                    ),
+                    decoration: InputDecoration(
+                        hintText: 'Enter the topic of your forum',
+                        hintStyle:
+                            TextStyle(fontSize: 12.0, color: Colors.grey),
+                        labelText: 'Topic',
+                        labelStyle: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14.0,
+                          color: Colors.grey,
+                        ),
+                        enabledBorder: new UnderlineInputBorder(
+                            borderSide: new BorderSide(color: Colors.grey))),
+                    validator: (string) => onValidateTitle(string!),
+                    onChanged: onSavedTitle,
+                    onSaved: (_) => onSavedTitle,
                   ),
+
                   ContentField(
                     labelText: 'Summary',
                     hintText: "Enter a summary of your forum",

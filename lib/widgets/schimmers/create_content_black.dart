@@ -1,14 +1,14 @@
 import 'package:bars/utilities/exports.dart';
 
 // ignore: must_be_immutable
-class ContentField extends StatelessWidget {
+class ContentFieldBlack extends StatelessWidget {
   String initialValue = '';
   String labelText = '';
   String hintText = '';
   final Function(String) onSavedText;
   final Function onValidateText;
 
-  ContentField({
+  ContentFieldBlack({
     required this.onSavedText,
     required this.onValidateText,
     required this.initialValue,
@@ -27,7 +27,7 @@ class ContentField extends StatelessWidget {
             textCapitalization: TextCapitalization.sentences,
             initialValue: initialValue,
             style: TextStyle(
-              color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+              color: Colors.black,
             ),
             decoration: InputDecoration(
                 hintText: hintText,

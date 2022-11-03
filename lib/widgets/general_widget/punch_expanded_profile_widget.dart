@@ -644,6 +644,7 @@ class _PunchExpandedProfileWidgetState
                                                                                             //     :
 
                                                                                             ProfileScreen(
+                                                                                                 user: null,
                                                                                               currentUserId: widget.currentUserId,
                                                                                               userId: widget.post.authorId,
                                                                                             ))),

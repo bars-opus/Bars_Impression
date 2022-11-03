@@ -159,7 +159,7 @@ class _FollowerFollowingState extends State<FollowerFollowing>
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (_) => ProfileScreen(
+                  builder: (_) => ProfileScreen(   user: null,
                         currentUserId:
                             Provider.of<UserData>(context).currentUserId!,
                         userId: user.id!,

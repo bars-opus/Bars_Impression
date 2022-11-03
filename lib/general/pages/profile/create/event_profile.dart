@@ -149,7 +149,7 @@ class _EventProfileViewState extends State<EventProfileView> {
                           builder: (_) =>
                               ProfileScreen(
                                 currentUserId: widget.currentUserId,
-                                userId: widget.event.authorId,
+                                userId: widget.event.authorId, user: widget.user,
                               ))),
                 ),
           FocusedMenuItem(

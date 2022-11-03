@@ -1043,143 +1043,143 @@ class DatabaseService {
     });
   }
 
-  static void possitivelyRateUser(
-      {required String currentUserId, required String userId}) {
-    possitiveRatingRef
-        .doc(currentUserId)
-        .collection('userPossitiveRating')
-        .doc(userId)
-        .set({
-      'uid': userId,
-    });
+  // static void possitivelyRateUser(
+  //     {required String currentUserId, required String userId}) {
+  //   possitiveRatingRef
+  //       .doc(currentUserId)
+  //       .collection('userPossitiveRating')
+  //       .doc(userId)
+  //       .set({
+  //     'uid': userId,
+  //   });
 
-    possitveRatedRef
-        .doc(userId)
-        .collection('userPossitiveRated')
-        .doc(currentUserId)
-        .set({
-      'uid': currentUserId,
-    });
-  }
+  //   possitveRatedRef
+  //       .doc(userId)
+  //       .collection('userPossitiveRated')
+  //       .doc(currentUserId)
+  //       .set({
+  //     'uid': currentUserId,
+  //   });
+  // }
 
-  static void unPossitivelyRateUser(
-      {required String currentUserId, required String userId}) {
-    possitiveRatingRef
-        .doc(currentUserId)
-        .collection('userPossitiveRating')
-        .doc(userId)
-        .get()
-        .then((doc) {
-      if (doc.exists) {
-        doc.reference.delete();
-      }
-    });
+  // static void unPossitivelyRateUser(
+  //     {required String currentUserId, required String userId}) {
+  //   possitiveRatingRef
+  //       .doc(currentUserId)
+  //       .collection('userPossitiveRating')
+  //       .doc(userId)
+  //       .get()
+  //       .then((doc) {
+  //     if (doc.exists) {
+  //       doc.reference.delete();
+  //     }
+  //   });
 
-    possitveRatedRef
-        .doc(userId)
-        .collection('userPossitiveRated')
-        .doc(currentUserId)
-        .get()
-        .then((doc) {
-      if (doc.exists) {
-        doc.reference.delete();
-      }
-    });
-  }
+  //   possitveRatedRef
+  //       .doc(userId)
+  //       .collection('userPossitiveRated')
+  //       .doc(currentUserId)
+  //       .get()
+  //       .then((doc) {
+  //     if (doc.exists) {
+  //       doc.reference.delete();
+  //     }
+  //   });
+  // }
 
-  static void negativelyRateUser(
-      {required String currentUserId, required String userId}) {
-    negativeRatingRef
-        .doc(currentUserId)
-        .collection('userNegativeRating')
-        .doc(userId)
-        .set({
-      'uid': userId,
-    });
-    negativeRatedRef
-        .doc(userId)
-        .collection('userNegativeRated')
-        .doc(currentUserId)
-        .set({
-      'uid': currentUserId,
-    });
-  }
+  // static void negativelyRateUser(
+  //     {required String currentUserId, required String userId}) {
+  //   negativeRatingRef
+  //       .doc(currentUserId)
+  //       .collection('userNegativeRating')
+  //       .doc(userId)
+  //       .set({
+  //     'uid': userId,
+  //   });
+  //   negativeRatedRef
+  //       .doc(userId)
+  //       .collection('userNegativeRated')
+  //       .doc(currentUserId)
+  //       .set({
+  //     'uid': currentUserId,
+  //   });
+  // }
 
-  static void unNegativelyRateUser(
-      {required String currentUserId, required String userId}) {
-    negativeRatingRef
-        .doc(currentUserId)
-        .collection('userNegativeRating')
-        .doc(userId)
-        .get()
-        .then((doc) {
-      if (doc.exists) {
-        doc.reference.delete();
-      }
-    });
-    negativeRatedRef
-        .doc(userId)
-        .collection('userNegativeRated')
-        .doc(currentUserId)
-        .get()
-        .then((doc) {
-      if (doc.exists) {
-        doc.reference.delete();
-      }
-    });
-  }
+  // static void unNegativelyRateUser(
+  //     {required String currentUserId, required String userId}) {
+  //   negativeRatingRef
+  //       .doc(currentUserId)
+  //       .collection('userNegativeRating')
+  //       .doc(userId)
+  //       .get()
+  //       .then((doc) {
+  //     if (doc.exists) {
+  //       doc.reference.delete();
+  //     }
+  //   });
+  //   negativeRatedRef
+  //       .doc(userId)
+  //       .collection('userNegativeRated')
+  //       .doc(currentUserId)
+  //       .get()
+  //       .then((doc) {
+  //     if (doc.exists) {
+  //       doc.reference.delete();
+  //     }
+  //   });
+  // }
 
-  static Future<bool> isPossitivelyRatingUser(
-      {required String currentUserId, required String userId}) async {
-    DocumentSnapshot followingDoc = await possitveRatedRef
-        .doc(userId)
-        .collection('userPossitiveRated')
-        .doc(currentUserId)
-        .get();
-    return followingDoc.exists;
-  }
+  // static Future<bool> isPossitivelyRatingUser(
+  //     {required String currentUserId, required String userId}) async {
+  //   DocumentSnapshot followingDoc = await possitveRatedRef
+  //       .doc(userId)
+  //       .collection('userPossitiveRated')
+  //       .doc(currentUserId)
+  //       .get();
+  //   return followingDoc.exists;
+  // }
 
-  static Future<int> numPossitiveRating(String userId) async {
-    QuerySnapshot ratingSnapshot = await possitiveRatingRef
-        .doc(userId)
-        .collection('userPossitiveRating')
-        .get();
-    return ratingSnapshot.docs.length;
-  }
+  // static Future<int> numPossitiveRating(String userId) async {
+  //   QuerySnapshot ratingSnapshot = await possitiveRatingRef
+  //       .doc(userId)
+  //       .collection('userPossitiveRating')
+  //       .get();
+  //   return ratingSnapshot.docs.length;
+  // }
 
-  static Future<int> numPosstiveRated(String userId) async {
-    QuerySnapshot ratedSnapshot = await possitveRatedRef
-        .doc(userId)
-        .collection('userPossitiveRated')
-        .get();
-    return ratedSnapshot.docs.length;
-  }
+  // static Future<int> numPosstiveRated(String userId) async {
+  //   QuerySnapshot ratedSnapshot = await possitveRatedRef
+  //       .doc(userId)
+  //       .collection('userPossitiveRated')
+  //       .get();
+  //   return ratedSnapshot.docs.length;
+  // }
 
-  static Future<bool> isNegativelyRatingUser(
-      {required String currentUserId, required String userId}) async {
-    DocumentSnapshot ratingDoc = await negativeRatedRef
-        .doc(userId)
-        .collection('userNegativeRated')
-        .doc(currentUserId)
-        .get();
-    return ratingDoc.exists;
-  }
+  // static Future<bool> isNegativelyRatingUser(
+  //     {required String currentUserId, required String userId}) async {
+  //   DocumentSnapshot ratingDoc = await negativeRatedRef
+  //       .doc(userId)
+  //       .collection('userNegativeRated')
+  //       .doc(currentUserId)
+  //       .get();
+  //   return ratingDoc.exists;
+  // }
 
-  static Future<int> numNegativeRating(String userId) async {
-    QuerySnapshot ratingSnapshot = await negativeRatingRef
-        .doc(userId)
-        .collection('userNegativeRating')
-        .get();
-    return ratingSnapshot.docs.length;
-  }
+  // static Future<int> numNegativeRating(String userId) async {
+  //   QuerySnapshot ratingSnapshot = await negativeRatingRef
+  //       .doc(userId)
+  //       .collection('userNegativeRating')
+  //       .get();
+  //   return ratingSnapshot.docs.length;
+  // }
 
-  static Future<int> numNegativeRated(String userId) async {
-    QuerySnapshot ratedSnapshot = await negativeRatedRef
-        .doc(userId)
-        .collection('userNegativeRated')
-        .get();
-    return ratedSnapshot.docs.length;
-  }
+  // static Future<int> numNegativeRated(String userId) async {
+  //   QuerySnapshot ratedSnapshot = await negativeRatedRef
+  //       .doc(userId)
+  //       .collection('userNegativeRated')
+  //       .get();
+  //   return ratedSnapshot.docs.length;
+  // }
 
   static Future<AccountHolder> getUseractivityFollowers(
       String userId, replyingMessage) async {
@@ -1427,7 +1427,7 @@ class DatabaseService {
         eventImageUrl: '',
         eventTimestamp: null,
         id: '',
-        invited: null,
+        invited: false,
         inviteeName: '',
         inviteStatus: '',
         message: '',
@@ -1856,6 +1856,37 @@ class DatabaseService {
     addActivityForumItem(user: user, forum: forum, thought: thought);
   }
 
+  // static void replyThought(
+  //     {required String currentUserId,
+  //     required String thoughtId,
+  //     required Forum forum,
+  //     required int count,
+  //     required AccountHolder user,
+  //     required String replyThought,
+  //     required String reportConfirmed}) {
+  //   replyThoughtsRef.doc(thoughtId).collection('replyThoughts').add({
+  //     'content': replyThought,
+  //     'reportConfirmed': reportConfirmed,
+  //     'mediaType': '',
+  //     'mediaUrl': '',
+  //     'report': '',
+  //     'authorId': currentUserId,
+  //     'timestamp': Timestamp.fromDate(DateTime.now()),
+  //     'authorName': user.userName,
+  //     'authorProfileHanlde': user.profileHandle,
+  //     'authorProfileImageUrl': user.profileImageUrl,
+  //     'authorVerification': user.verified
+  //   }).then((value) => thoughtsRef
+  //           .doc(forum.id)
+  //           .collection('forumThoughts')
+  //           .doc(thoughtId)
+  //           .update({
+  //         'count': count,
+  //       }));
+
+  //   addActivityForumItem(user: user, forum: forum, thought: replyThought);
+  // }
+
   static void deleteThought(
       {required String currentUserId,
       required Forum forum,
@@ -1869,6 +1900,40 @@ class DatabaseService {
       if (doc.exists) {
         doc.reference.delete();
       }
+    });
+
+    // QuerySnapshot replyThoughtsSnapShot = await replyThoughtsRef
+    //     .doc(thought.id)
+    //     .collection('replyThoughts')
+    //     .get();
+    // replyThoughtsSnapShot.docs.forEach((doc) {
+    //   if (doc.exists) {
+    //     doc.reference.delete();
+    //   }
+    // });
+  }
+
+  static void deleteReplyThought(
+      {required Forum forum,
+      required int count,
+      required ReplyThought replyThought,
+      required Thought thought}) async {
+    replyThoughtsRef
+        .doc(thought.id)
+        .collection('replyThoughts')
+        .doc(replyThought.id)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+    thoughtsRef
+        .doc(forum.id)
+        .collection('forumThoughts')
+        .doc(thought.id)
+        .update({
+      'count': count,
     });
   }
 
@@ -1917,7 +1982,10 @@ class DatabaseService {
         .map((documentSnapshot) => documentSnapshot.docs.length);
   }
 
-  static Stream<int> numEventAttendee(String eventId, String from) {
+  static Stream<int> numEventAttendeeRequestOption(
+    String eventId,
+    String from,
+  ) {
     return eventInviteRef
         .doc(eventId)
         .collection('eventInvite')
@@ -1927,11 +1995,78 @@ class DatabaseService {
         .map((documentSnapshot) => documentSnapshot.docs.length);
   }
 
-  static Stream<int> numEventAttendeeValidate(String eventId, String from) {
+  static Stream<int> numEventpublicAttendee(
+    String eventId,
+  ) {
+    return eventInviteRef
+        .doc(eventId)
+        .collection('eventInvite')
+        .snapshots()
+        .map((documentSnapshot) => documentSnapshot.docs.length);
+  }
+
+  static Stream<int> numEventAttendeeAll(
+    String eventId,
+    String from,
+  ) {
     return eventInviteRef
         .doc(eventId)
         .collection('eventInvite')
         .where('attendeeStatus', isEqualTo: from)
+        .snapshots()
+        .map((documentSnapshot) => documentSnapshot.docs.length);
+  }
+
+  static Stream<int> numEventAttendeeAllPublic(
+    String eventId,
+  ) {
+    return eventInviteRef
+        .doc(eventId)
+        .collection('eventInvite')
+        .snapshots()
+        .map((documentSnapshot) => documentSnapshot.docs.length);
+  }
+
+  static Stream<int> numEventAttendeePublicAll(
+    String eventId,
+    String from,
+  ) {
+    return eventInviteRef
+        .doc(eventId)
+        .collection('eventInvite')
+        .where('attendeeStatus', isEqualTo: from)
+        .snapshots()
+        .map((documentSnapshot) => documentSnapshot.docs.length);
+  }
+
+  static Stream<int> numEventAttendeeRequested(
+    String eventId,
+  ) {
+    return eventInviteRef
+        .doc(eventId)
+        .collection('eventInvite')
+        .snapshots()
+        .map((documentSnapshot) => documentSnapshot.docs.length);
+  }
+
+  static Stream<int> numEventAttendeeValidatePrivate(
+      String eventId, String from) {
+    return eventInviteRef
+        .doc(eventId)
+        .collection('eventInvite')
+        .where('attendeeStatus', isEqualTo: from)
+        .where('validated', isEqualTo: true)
+        .snapshots()
+        .map((documentSnapshot) => documentSnapshot.docs.length);
+  }
+
+  static Stream<int> numEventAttendeeValidatePublic(
+    String eventId,
+  ) {
+    return eventInviteRef
+        .doc(eventId)
+        .collection('eventInvite')
+        // .where('attendeeStatus', isEqualTo: from)
         .where('validated', isEqualTo: true)
         .snapshots()
         .map((documentSnapshot) => documentSnapshot.docs.length);
@@ -1960,7 +2095,7 @@ class DatabaseService {
     return EventInvite(
       inviteeName: '',
       message: '',
-      invited: null,
+      invited: false,
       timestamp: null,
       attendeeStatus: '',
       anttendeeId: '',
@@ -1976,7 +2111,7 @@ class DatabaseService {
       inviteStatus: '',
       eventTimestamp: null,
       commonId: '',
-      validated: null,
+      validated: false,
       personnelStatus: '',
     );
   }
@@ -2052,6 +2187,7 @@ class DatabaseService {
             'ask': '',
             'timestamp': Timestamp.fromDate(DateTime.now()),
           })
+        // ignore: unnecessary_statements
         : () {};
   }
 
@@ -2217,17 +2353,19 @@ class DatabaseService {
     // addActivityEventItem(currentUserId: currentUserId, event: event, ask: ask);
   }
 
-  static void answerEventAttendeeReques(
-      {required EventInvite eventInvite,
-      required String answer,
-      required String attendNumber}) {
+  static void answerEventAttendeeReques({
+    required EventInvite eventInvite,
+    required String answer,
+  }) {
+    String commonId = Uuid().v4();
     eventInviteRef
         .doc(eventInvite.eventId)
         .collection('eventInvite')
         .doc(eventInvite.anttendeeId)
         .update({
       'attendeeStatus': answer,
-      'attendNumber': attendNumber,
+      'attendNumber':
+          answer.startsWith('Rejected') ? '' : commonId.substring(0, 3),
     });
 
     userInviteRef
@@ -2236,7 +2374,8 @@ class DatabaseService {
         .doc(eventInvite.eventId)
         .update({
       'attendeeStatus': answer,
-      'attendNumber': attendNumber,
+      'attendNumber':
+          answer.startsWith('Rejected') ? '' : commonId.substring(0, 3),
       'timestamp': Timestamp.fromDate(DateTime.now()),
     });
 

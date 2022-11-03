@@ -150,7 +150,7 @@ _nothing(){}
                         ? ProfileScreen(
                             currentUserId:
                                 Provider.of<UserData>(context).currentUserId!,
-                            userId: widget.contentId,
+                            userId: widget.contentId, user: null,
                           )
                         : const SizedBox.shrink());
   }

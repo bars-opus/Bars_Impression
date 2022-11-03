@@ -126,6 +126,7 @@ class _AllArtistPostsState extends State<AllArtistPosts> {
                       currentUserId:
                           Provider.of<UserData>(context).currentUserId!,
                       userId: user.id!,
+                      user: user,
                     )));
       },
       verified: '',
@@ -228,7 +229,7 @@ class _AllArtistPostsState extends State<AllArtistPosts> {
                                           children: [
                                             TextSpan(
                                                 text:
-                                                    "These are the mood punches which contains the punchline of",
+                                                    "These are the moods punched with the punchline of",
                                                 style: TextStyle(
                                                   color: ConfigBloc().darkModeOn
                                                       ? Colors.white
@@ -267,16 +268,21 @@ class _AllArtistPostsState extends State<AllArtistPosts> {
                                       SingleChildScrollView(
                                         child: Container(
                                           height: width / 3.8,
-                                          child: ListView.builder(
-                                            itemCount:
-                                                snapshot.data!.docs.length,
-                                            itemBuilder: (BuildContext context,
-                                                int index) {
-                                              AccountHolder? user =
-                                                  AccountHolder.fromDoc(snapshot
-                                                      .data!.docs[index]);
-                                              return _buildUserTile(user);
-                                            },
+                                          child: Align(
+                                            alignment: Alignment.topLeft,
+                                            child: ListView.builder(
+                                              itemCount:
+                                                  snapshot.data!.docs.length,
+                                              itemBuilder:
+                                                  (BuildContext context,
+                                                      int index) {
+                                                AccountHolder? user =
+                                                    AccountHolder.fromDoc(
+                                                        snapshot
+                                                            .data!.docs[index]);
+                                                return _buildUserTile(user);
+                                              },
+                                            ),
                                           ),
                                         ),
                                       ),

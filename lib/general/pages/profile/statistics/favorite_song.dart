@@ -101,7 +101,7 @@ class _FavoriteSongState extends State<FavoriteSong> {
         onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (_) => ProfileScreen(
+                builder: (_) => ProfileScreen(   user: user,
                       currentUserId:
                           Provider.of<UserData>(context).currentUserId!,
                       userId: user.id!,

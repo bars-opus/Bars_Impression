@@ -103,7 +103,7 @@ class _ForumViewState extends State<ForumView> {
                   MaterialPageRoute(
                       builder: (_) => ProfileScreen(
                             currentUserId: widget.currentUserId,
-                            userId: widget.forum.authorId,
+                            userId: widget.forum.authorId, user: null,
                           ))),
         ),
         FocusedMenuItem(

@@ -150,21 +150,23 @@ class _EventRateState extends State<EventRate> {
                                 textScaleFactor:
                                     MediaQuery.of(context).textScaleFactor,
                                 text: TextSpan(children: [
-                                  TextSpan(
-                                    text: rate[1],
-                                    style: TextStyle(
-                                      fontSize: 50.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
+                                  if (rate.length > 1)
+                                    TextSpan(
+                                      text: rate[1],
+                                      style: TextStyle(
+                                        fontSize: 50.0,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
                                     ),
-                                  ),
-                                  TextSpan(
-                                    text: "\n${rate[0]}\n\n",
-                                    style: TextStyle(
-                                      fontSize: 14.0,
-                                      color: Colors.white,
+                                  if (rate.length > 0)
+                                    TextSpan(
+                                      text: "\n${rate[0]}\n\n",
+                                      style: TextStyle(
+                                        fontSize: 14.0,
+                                        color: Colors.white,
+                                      ),
                                     ),
-                                  ),
                                   TextSpan(
                                     text: widget.event.isCashPayment
                                         ? 'The payment method for this event is cash. '
@@ -222,9 +224,10 @@ class _EventRateState extends State<EventRate> {
                           : Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (_) => EventPublicInvite(
+                                  builder: (_) => EventPublicInviteAvailable(
                                         event: widget.event,
                                         palette: widget.palette,
+                                        eventInvite: null,
                                       )),
                             );
                     }),

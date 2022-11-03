@@ -5,14 +5,12 @@ import 'package:timeago/timeago.dart' as timeago;
 
 class ChatDetails extends StatefulWidget {
   final AccountHolderAuthor user;
-  final AccountHolder currentUser;
   final Chat chat;
   final String currentUserId;
 
   ChatDetails({
     required this.user,
     required this.chat,
-    required this.currentUser,
     required this.currentUserId,
   });
 
@@ -243,6 +241,7 @@ class _ChatDetailsState extends State<ChatDetails> {
                               builder: (_) => ProfileScreen(
                                     currentUserId: widget.currentUserId,
                                     userId: widget.user.id!,
+                                    user: null,
                                   ))),
                       child: Center(
                         child: Hero(
@@ -312,6 +311,7 @@ class _ChatDetailsState extends State<ChatDetails> {
                               builder: (_) => ProfileScreen(
                                     currentUserId: widget.currentUserId,
                                     userId: widget.user.id!,
+                                    user: null,
                                   ))),
                       child: Center(
                         child: RichText(

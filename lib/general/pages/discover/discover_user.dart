@@ -1,5 +1,6 @@
 import 'package:bars/general/pages/discover/seach/store_search.dart';
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/scheduler.dart';
 
 class DiscoverUser extends StatefulWidget {
   final String currentUserId;
@@ -18,6 +19,15 @@ class DiscoverUser extends StatefulWidget {
 class _DiscoverUserState extends State<DiscoverUser>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      Provider.of<UserData>(context, listen: false).setShowUsersTab(true);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

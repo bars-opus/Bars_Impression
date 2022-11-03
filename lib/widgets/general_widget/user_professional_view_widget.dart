@@ -7,19 +7,19 @@ class UserProfessionalViewWidget extends StatelessWidget {
   final VoidCallback onPressedRating;
   final AccountHolder user;
   final String containerHero1;
-  final int userTotal;
+  // final int userTotal;
   final String currentUserId;
   final String workHero;
   final Widget exploreWidget;
-  final int point;
+  // final int point;
 
   UserProfessionalViewWidget({
     required this.containerHero1,
     required this.onPressedRating,
-    required this.point,
+    // required this.point,
     required this.currentUserId,
     required this.user,
-    required this.userTotal,
+    // required this.userTotal,
     required this.exploreWidget,
     required this.workHero,
   });
@@ -178,6 +178,7 @@ class UserProfessionalViewWidget extends StatelessWidget {
                                                                       context)
                                                               .currentUserId!,
                                                           userId: user.id!,
+                                                           user: user,
                                                         ))),
                                           ),
                                         ),

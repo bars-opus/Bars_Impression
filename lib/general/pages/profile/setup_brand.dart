@@ -186,7 +186,6 @@ class _SetUpBrandState extends State<SetUpBrand> {
   }
 
   _submitProfileImage(AccountHolder user) async {
-
     String currentUserId =
         Provider.of<UserData>(context, listen: false).currentUserId!;
     if (_formKey.currentState!.validate() &&
@@ -651,7 +650,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                         ),
                                         DirectionWidget(
                                           text:
-                                              'Select a unique username for your brand. The username can be your stage name if you are a music creator. Please note that all usernames are converted to uppercase',
+                                              'Select a unique username for your brand. The username can be your stage name if you are a music creative. Please note that all usernames are converted to uppercase',
                                           fontSize: 14,
                                         ),
                                         SizedBox(height: 10),
@@ -684,6 +683,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                               child: Container(
                                                 color: Colors.transparent,
                                                 child: TextFormField(
+                                                  autofocus: true,
                                                   controller: _controller,
                                                   textCapitalization:
                                                       TextCapitalization
@@ -1013,7 +1013,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                             borderSide: new BorderSide(
                                                 color: Colors.grey)),
                                         hintText:
-                                            'A piece of short information about yourself',
+                                            'A piece of information about yourself',
                                         hintStyle: TextStyle(
                                             fontSize: 12, color: Colors.grey),
                                         labelText: 'Bio',

@@ -3,11 +3,11 @@ import 'package:bars/utilities/exports.dart';
 class TaggedUser extends StatefulWidget {
   static final id = 'TaggedUser';
   final String currentUserId;
-  final String user;
+  final String userId;
 
   TaggedUser({
     required this.currentUserId,
-    required this.user,
+    required this.userId,
   });
 
   @override
@@ -36,7 +36,7 @@ class _TaggedUserState extends State<TaggedUser> {
   _setupArtist() async {
     setState(() {
       _users =
-          DatabaseService.searchArtist(widget.user.substring(1).toUpperCase());
+          DatabaseService.searchArtist(widget.userId.substring(1).toUpperCase());
     });
   }
 
@@ -169,7 +169,7 @@ class _TaggedUserState extends State<TaggedUser> {
                                   SizedBox(
                                     height: 20,
                                   ),
-                                  Text(widget.user.substring(1),
+                                  Text(widget.userId.substring(1),
                                       style: TextStyle(
                                         fontSize: 40,
                                         color: Colors.white,
@@ -307,7 +307,7 @@ class _TaggedUserState extends State<TaggedUser> {
                                                           Provider.of<UserData>(
                                                                   context)
                                                               .currentUserId!,
-                                                      userId: user.id!,
+                                                      userId: user.id!, user: null,
                                                     ))),
                                         child: Text(
                                           'Go to profile',

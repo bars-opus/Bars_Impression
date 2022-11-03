@@ -9,7 +9,9 @@ class ProfileScreen extends StatefulWidget {
   final String currentUserId;
   static final id = 'Profile_screen';
   final String userId;
-  ProfileScreen({required this.currentUserId, required this.userId});
+  final AccountHolder? user;
+  ProfileScreen(
+      {required this.currentUserId, required this.userId, required this.user});
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -18,6 +20,8 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   bool _isFollowing = false;
+  bool _isFecthing = true;
+
   bool _isAFollower = false;
   bool _isBlockedUser = false;
   bool _isBlockingUser = false;
@@ -29,8 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   List<Event> _events = [];
   late AccountHolder _profileUser;
   int _moodPunched = 0;
-  int _negativeRatedCount = 0;
-  int _possitiveRatedCount = 0;
+
   int _artistFavoriteCount = 0;
   int _artistPunch = 0;
   double coseTope = 10;
@@ -51,8 +54,8 @@ class _ProfileScreenState extends State<ProfileScreen>
     _setupPosts();
     _setUpForums();
     _setUpEvents();
-    _setUpPossitiveRated();
-    _setUpNegativeRated();
+    // _setUpPossitiveRated();
+    // _setUpNegativeRated();
     _setUpProfileUser();
   }
 
@@ -67,6 +70,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     if (mounted) {
       setState(() {
         _isFollowing = isFollowingUser;
+        _isFecthing = false;
       });
     }
   }
@@ -153,8 +157,9 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   _setUpProfileUser() async {
-    AccountHolder profileUser =
-        await DatabaseService.getUserWithId(widget.userId);
+    AccountHolder profileUser = widget.user != null
+        ? widget.user!
+        : await DatabaseService.getUserWithId(widget.userId);
     if (mounted) {
       setState(() {
         _profileUser = profileUser;
@@ -172,7 +177,6 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   _blockOrUnBlock(AccountHolder user) {
-    HapticFeedback.heavyImpact();
     if (_isBlockingUser) {
       _showSelectImageDialog2(user, 'unBlock');
     } else {
@@ -181,6 +185,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   _unBlockser(AccountHolder user) {
+    HapticFeedback.heavyImpact();
     DatabaseService.unBlockUser(
       currentUserId: widget.currentUserId,
       userId: widget.userId,
@@ -199,6 +204,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   _blockser(AccountHolder user) async {
+    HapticFeedback.heavyImpact();
     AccountHolder fromUser =
         await DatabaseService.getUserWithId(widget.currentUserId);
     DatabaseService.blockUser(
@@ -226,25 +232,25 @@ class _ProfileScreenState extends State<ProfileScreen>
     ));
   }
 
-  _setUpPossitiveRated() async {
-    int userPossitiveRatedCount =
-        await DatabaseService.numPosstiveRated(widget.userId);
-    if (mounted) {
-      setState(() {
-        _possitiveRatedCount = userPossitiveRatedCount;
-      });
-    }
-  }
+  // _setUpPossitiveRated() async {
+  //   int userPossitiveRatedCount =
+  //       await DatabaseService.numPosstiveRated(widget.userId);
+  //   if (mounted) {
+  //     setState(() {
+  //       _possitiveRatedCount = userPossitiveRatedCount;
+  //     });
+  // //   }
+  // }
 
-  _setUpNegativeRated() async {
-    int userNegativeRatedCount =
-        await DatabaseService.numNegativeRated(widget.userId);
-    if (mounted) {
-      setState(() {
-        _negativeRatedCount = userNegativeRatedCount;
-      });
-    }
-  }
+  // _setUpNegativeRated() async {
+  //   int userNegativeRatedCount =
+  //       await DatabaseService.numNegativeRated(widget.userId);
+  //   if (mounted) {
+  //     setState(() {
+  //       _negativeRatedCount = userNegativeRatedCount;
+  //     });
+  //   }
+  // }
 
   _unfollowUser(AccountHolder user) {
     DatabaseService.unfollowUser(
@@ -286,7 +292,9 @@ class _ProfileScreenState extends State<ProfileScreen>
     ));
   }
 
-  _displayButton(AccountHolder user, int point) {
+  _displayButton(
+    AccountHolder user,
+  ) {
     final width = MediaQuery.of(context).size.width;
     return user.id == Provider.of<UserData>(context).currentUserId
         ? Padding(
@@ -501,8 +509,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                   width: 150.0,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          _isFollowing ? Colors.grey : Color(0xFFD38B41),
+                      backgroundColor: _isFollowing || _isFecthing
+                          ? Colors.grey
+                          : Color(0xFFD38B41),
                       foregroundColor: Colors.blue,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.0),
@@ -510,11 +519,16 @@ class _ProfileScreenState extends State<ProfileScreen>
                     ),
                     onPressed: () => _followOrUnfollow(user),
                     child: Text(
-                      _isFollowing ? ' unfollow' : 'follow',
+                      _isFecthing
+                          ? 'loading..'
+                          : _isFollowing
+                              ? ' unfollow'
+                              : 'follow',
                       style: TextStyle(
                         fontSize: 14.0,
                         color: _isFollowing ? Colors.black : Colors.white,
-                        fontWeight: FontWeight.bold,
+                        fontWeight:
+                            _isFecthing ? FontWeight.normal : FontWeight.bold,
                       ),
                     ),
                   ),
@@ -1186,7 +1200,8 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   _dynamicLink() async {
     var linkUrl = _profileUser.profileImageUrl!.isEmpty
-        ? Uri.parse('https://firebasestorage.googleapis.com/v0/b/bars-5e3e5.appspot.com/o/IMG_8574.PNG?alt=media&token=ccb4e3b1-b5dc-470f-abd0-63edb5ed549f')
+        ? Uri.parse(
+            'https://firebasestorage.googleapis.com/v0/b/bars-5e3e5.appspot.com/o/IMG_8574.PNG?alt=media&token=ccb4e3b1-b5dc-470f-abd0-63edb5ed549f')
         : Uri.parse(_profileUser.profileImageUrl!);
 
     final dynamicLinkParams = DynamicLinkParameters(
@@ -1225,6 +1240,441 @@ class _ProfileScreenState extends State<ProfileScreen>
     return Platform.isIOS
         ? _iosBottomSheet2(user, from)
         : _androidDialog2(context, user, from);
+  }
+
+  _scaffold(AccountHolder user) {
+    final width =
+        Responsive.isDesktop(context) ? 600 : MediaQuery.of(context).size.width;
+    return Scaffold(
+        appBar: AppBar(
+          iconTheme: IconThemeData(
+            color: Colors.white,
+          ),
+          automaticallyImplyLeading:
+              widget.currentUserId == widget.userId ? false : true,
+          actions: <Widget>[
+            widget.currentUserId == widget.userId
+                ? Row(
+                    children: <Widget>[
+                      ConfigBloc().darkModeOn
+                          ? Shimmer.fromColors(
+                              period: Duration(milliseconds: 1000),
+                              baseColor: Colors.blueGrey,
+                              highlightColor: Colors.white,
+                              child: Text('lights off',
+                                  style: TextStyle(
+                                    color: Colors.blueGrey,
+                                  )),
+                            )
+                          : Shimmer.fromColors(
+                              period: Duration(milliseconds: 1000),
+                              baseColor: Colors.white,
+                              highlightColor: Colors.grey,
+                              child: Text(
+                                'lights on',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                      IconButton(
+                          icon: Icon(
+                            ConfigBloc().darkModeOn
+                                ? FontAwesomeIcons.lightbulb
+                                : FontAwesomeIcons.solidLightbulb,
+                          ),
+                          iconSize: 20,
+                          color: ConfigBloc().darkModeOn
+                              ? Colors.blueGrey
+                              : Colors.white,
+                          onPressed: () async {
+                            HapticFeedback.heavyImpact();
+                            ConfigBloc()
+                                .add(DarkModeEvent(!ConfigBloc().darkModeOn));
+                          }),
+                    ],
+                  )
+                : IconButton(
+                    icon: Icon(
+                      Icons.more_vert,
+                    ),
+                    color: Colors.white,
+                    onPressed: () => _showSelectImageDialog(user),
+                  ),
+          ],
+          elevation: 0,
+          backgroundColor: Color(0xFF1a1a1a),
+        ),
+        backgroundColor:
+            ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+        body: SingleChildScrollView(
+          child: Container(
+            height: MediaQuery.of(context).size.height - 150,
+            width: width.toDouble(),
+            child: RefreshIndicator(
+              backgroundColor: Colors.white,
+              onRefresh: () async {
+                _setupIsFollowing();
+                _setUpFollowers();
+                _setUpFollowing();
+                _setupIsBlocking();
+                _setupPosts();
+                _setUpForums();
+                _setUpEvents();
+                // _setUpPossitiveRated();
+                // _setUpNegativeRated();
+              },
+              child: ListView(children: <Widget>[
+                Container(
+                  color: Color(0xFF1a1a1a),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      left: 30.0,
+                      right: 30,
+                      bottom: 30,
+                      top: 10,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Stack(
+                          alignment: Alignment.bottomCenter,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  right:
+                                      user.verified!.isNotEmpty ? 18.0 : 0.0),
+                              child: new Material(
+                                color: Colors.transparent,
+                                child: Text(
+                                  user.userName!.toUpperCase(),
+                                  style: TextStyle(
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.blueGrey
+                                        : Colors.white,
+                                    fontSize: width > 600 ? 40 : 30.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                            user.verified!.isEmpty
+                                ? const SizedBox.shrink()
+                                : Positioned(
+                                    top: 5,
+                                    right: 0,
+                                    child: Icon(
+                                      MdiIcons.checkboxMarkedCircle,
+                                      size: 20,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Color(0xFF1a1a1a),
+                            borderRadius: BorderRadius.circular(100.0),
+                          ),
+                          child: Hero(
+                            tag: widget.user == null
+                                ? ''
+                                : 'container1' + widget.user!.id.toString(),
+                            child: CircleAvatar(
+                              backgroundColor: Color(0xFF1a1a1a),
+                              radius: width > 600 ? 120 : 80.0,
+                              backgroundImage: user.profileImageUrl!.isEmpty
+                                  ? AssetImage(
+                                      'assets/images/user_placeholder.png',
+                                    ) as ImageProvider
+                                  : CachedNetworkImageProvider(
+                                      user.profileImageUrl!),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20.0,
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Hero(
+                              tag: 'nickName',
+                              child: new Material(
+                                color: Colors.transparent,
+                                child: Text(
+                                  user.name!,
+                                  style: TextStyle(
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.blueGrey
+                                        : Colors.white,
+                                    fontSize: width > 600 ? 16 : 14.0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Hero(
+                              tag: 'profileHandle',
+                              child: new Material(
+                                color: Colors.transparent,
+                                child: Text(
+                                  user.profileHandle!,
+                                  style: TextStyle(
+                                    color: ConfigBloc().darkModeOn
+                                        ? Colors.blueGrey[300]
+                                        : Colors.white,
+                                    fontSize: width > 600 ? 30 : 20.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            user.profileHandle!.startsWith('F') ||
+                                    user.profileHandle!.isEmpty
+                                ? const SizedBox.shrink()
+                                : Text(
+                                    user.company!,
+                                    style: TextStyle(
+                                      color: ConfigBloc().darkModeOn
+                                          ? Colors.blueGrey
+                                          : Colors.white,
+                                      fontSize: width > 600 ? 16 : 14,
+                                    ),
+                                  ),
+                            user.profileHandle!.startsWith('F') ||
+                                    user.profileHandle!.isEmpty
+                                ? const SizedBox.shrink()
+                                : SizedBox(
+                                    height: 10.0,
+                                  ),
+                            user.profileHandle!.startsWith('F') ||
+                                    user.profileHandle!.isEmpty
+                                ? const SizedBox.shrink()
+                                : Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (_) =>
+                                                    ProfileProfessionalProfile(
+                                                      user: user,
+                                                      currentUserId:
+                                                          widget.currentUserId,
+                                                      userId: '',
+                                                    ))),
+                                        child: Container(
+                                          width: 35,
+                                          height: 35,
+                                          decoration: BoxDecoration(
+                                            color: Colors.transparent,
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                                width: 1.0,
+                                                color: Colors.white),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(1.0),
+                                            child: Align(
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                'B',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 14,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (_) =>
+                                                    UserAdviceScreen(
+                                                      user: user,
+                                                      currentUserId:
+                                                          widget.currentUserId,
+                                                    ))),
+                                        child: Container(
+                                          width: 35,
+                                          height: 35,
+                                          decoration: BoxDecoration(
+                                            color: Colors.transparent,
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                                width: 1.0,
+                                                color: Colors.white),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(1.0),
+                                            child: Align(
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                'A',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 14,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                        Divider(
+                          color: Colors.white,
+                        ),
+                        SizedBox(
+                          height: 5.0,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            'Bio',
+                            style: TextStyle(
+                              color: ConfigBloc().darkModeOn
+                                  ? Colors.blueGrey[100]
+                                  : Colors.grey,
+                              fontSize: width > 600 ? 16 : 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        HyperLinkText(
+                          from: 'Profile',
+                          text: user.bio!,
+                        ),
+                        _displayButton(
+                          user,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                ConfigBloc().darkModeOn
+                    ? Divider(color: Colors.white)
+                    : const SizedBox.shrink(),
+                SizedBox(
+                  height: 30.0,
+                ),
+                !user.profileHandle!.startsWith('Ar') ||
+                        user.profileHandle!.isEmpty
+                    ? _buildStatistics(user)
+                    : _buildArtistStatistics(user),
+                SizedBox(
+                  height: 20.0,
+                ),
+                _buildMusicPreference(user),
+                SizedBox(
+                  height: 30.0,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Text(
+                    'Favorite Punchline',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                      left: 20.0, right: 20, bottom: 20, top: 20),
+                  child: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                            text: '"${user.favouritePunchline}"',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: ConfigBloc().darkModeOn
+                                  ? Colors.white
+                                  : Colors.black,
+                            )),
+                      ],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Container(
+                      color: Colors.grey,
+                      height: 1,
+                      width: width / 4,
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey, width: 1)),
+                      width: width / 3,
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            'contents',
+                            style: TextStyle(
+                              color: ConfigBloc().darkModeOn
+                                  ? Colors.grey
+                                  : Colors.black,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      color: Colors.grey,
+                      height: 1,
+                      width: width / 4,
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 40.0,
+                ),
+                _buildMoodPunched(user),
+                SizedBox(
+                  height: 30.0,
+                ),
+                _buildDisplay(user),
+                SizedBox(
+                  height: 40.0,
+                ),
+              ]),
+            ),
+          ),
+        ));
   }
 
   _iosBottomSheet2(AccountHolder user, String from) {
@@ -1561,592 +2011,129 @@ class _ProfileScreenState extends State<ProfileScreen>
         });
   }
 
+  _displayScaffold() {
+    AccountHolder user = widget.user!;
+
+    DatabaseService.numFavoriteArtist(user.userName!.toUpperCase())
+        .listen((artistCount) {
+      if (mounted) {
+        setState(() {
+          _artistFavoriteCount = artistCount;
+        });
+      }
+    });
+
+    DatabaseService.numArtistPunch(
+            widget.currentUserId, user.userName!.toUpperCase())
+        .listen((artistPunch) {
+      if (mounted) {
+        setState(() {
+          _artistPunch = artistPunch;
+        });
+      }
+    });
+
+    return _isBlockedUser || user.disabledAccount!
+        ? UserNotFound(
+            userName: user.userName!,
+          )
+        : user.reportConfirmed!.isNotEmpty
+            ? UserBanned(
+                userName: user.userName!,
+              )
+            : _scaffold(user);
+  }
+
   bool get wantKeepAlive => true;
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    int _point = _possitiveRatedCount - _negativeRatedCount;
 
-    final width =
-        Responsive.isDesktop(context) ? 600 : MediaQuery.of(context).size.width;
     return ResponsiveScaffold(
-      child: FutureBuilder(
-          future:
-              widget.userId.isEmpty ? null : usersRef.doc(widget.userId).get(),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (!snapshot.hasData) {
-              return Container(
-                color: Color(0xFF1a1a1a),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      SizedBox(
-                        height: 250,
-                        width: 250,
-                        child: CircularProgressIndicator(
-                          backgroundColor: Colors.transparent,
-                          valueColor: new AlwaysStoppedAnimation<Color>(
-                            Colors.grey,
-                          ),
-                          strokeWidth: 1,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 5.0,
-                      ),
-                      Shimmer.fromColors(
-                        period: Duration(milliseconds: 1000),
-                        baseColor: Colors.grey[300]!,
-                        highlightColor: Colors.white,
-                        child: RichText(
-                            text: TextSpan(
-                          children: [
-                            TextSpan(
-                                text: "Loading ",
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.blueGrey)),
-                            TextSpan(text: 'Profile\nPlease Wait... '),
-                          ],
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey),
-                        )),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }
-
-            AccountHolder user = AccountHolder.fromDoc(snapshot.data);
-
-            DatabaseService.numFavoriteArtist(user.userName!.toUpperCase())
-                .listen((artistCount) {
-              if (mounted) {
-                setState(() {
-                  _artistFavoriteCount = artistCount;
-                });
-              }
-            });
-
-            DatabaseService.numArtistPunch(
-                    widget.currentUserId, user.userName!.toUpperCase())
-                .listen((artistPunch) {
-              if (mounted) {
-                setState(() {
-                  _artistPunch = artistPunch;
-                });
-              }
-            });
-
-            return _isBlockedUser || user.disabledAccount!
-                ? UserNotFound(
-                    userName: user.userName!,
-                  )
-                : user.reportConfirmed!.isNotEmpty
-                    ? UserBanned(
-                        userName: user.userName!,
-                      )
-                    : Scaffold(
-                        appBar: AppBar(
-                          iconTheme: IconThemeData(
-                            color: Colors.white,
-                          ),
-                          automaticallyImplyLeading:
-                              widget.currentUserId == widget.userId
-                                  ? false
-                                  : true,
-                          actions: <Widget>[
-                            widget.currentUserId == widget.userId
-                                ? Row(
-                                    children: <Widget>[
-                                      ConfigBloc().darkModeOn
-                                          ? Shimmer.fromColors(
-                                              period:
-                                                  Duration(milliseconds: 1000),
-                                              baseColor: Colors.blueGrey,
-                                              highlightColor: Colors.white,
-                                              child: Text('lights off',
-                                                  style: TextStyle(
-                                                    color: Colors.blueGrey,
-                                                  )),
-                                            )
-                                          : Shimmer.fromColors(
-                                              period:
-                                                  Duration(milliseconds: 1000),
-                                              baseColor: Colors.white,
-                                              highlightColor: Colors.grey,
-                                              child: Text(
-                                                'lights on',
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                      IconButton(
-                                          icon: Icon(
-                                            ConfigBloc().darkModeOn
-                                                ? FontAwesomeIcons.lightbulb
-                                                : FontAwesomeIcons
-                                                    .solidLightbulb,
-                                          ),
-                                          iconSize: 20,
-                                          color: ConfigBloc().darkModeOn
-                                              ? Colors.blueGrey
-                                              : Colors.white,
-                                          onPressed: () async {
-                                            HapticFeedback.heavyImpact();
-                                            ConfigBloc().add(DarkModeEvent(
-                                                !ConfigBloc().darkModeOn));
-                                          }),
-                                    ],
-                                  )
-                                : IconButton(
-                                    icon: Icon(
-                                      Icons.more_vert,
-                                    ),
-                                    color: Colors.white,
-                                    onPressed: () =>
-                                        _showSelectImageDialog(user),
-                                  ),
-                          ],
-                          elevation: 0,
-                          backgroundColor: Color(0xFF1a1a1a),
-                        ),
-                        backgroundColor: ConfigBloc().darkModeOn
-                            ? Color(0xFF1a1a1a)
-                            : Colors.white,
-                        body: SingleChildScrollView(
-                          child: Container(
-                            height: MediaQuery.of(context).size.height - 150,
-                            width: width.toDouble(),
-                            child: RefreshIndicator(
-                              backgroundColor: Colors.white,
-                              onRefresh: () async {
-                                _setupIsFollowing();
-                                _setUpFollowers();
-                                _setUpFollowing();
-                                _setupIsBlocking();
-                                _setupPosts();
-                                _setUpForums();
-                                _setUpEvents();
-                                _setUpPossitiveRated();
-                                _setUpNegativeRated();
-                              },
-                              child: ListView(children: <Widget>[
-                                Container(
-                                  color: Color(0xFF1a1a1a),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                      left: 30.0,
-                                      right: 30,
-                                      bottom: 30,
-                                      top: 10,
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Stack(
-                                          alignment: Alignment.bottomCenter,
-                                          children: [
-                                            Padding(
-                                              padding: EdgeInsets.only(
-                                                  right:
-                                                      user.verified!.isNotEmpty
-                                                          ? 18.0
-                                                          : 0.0),
-                                              child: new Material(
-                                                color: Colors.transparent,
-                                                child: Text(
-                                                  user.userName!.toUpperCase(),
-                                                  style: TextStyle(
-                                                    color:
-                                                        ConfigBloc().darkModeOn
-                                                            ? Colors.blueGrey
-                                                            : Colors.white,
-                                                    fontSize:
-                                                        width > 600 ? 40 : 30.0,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ),
-                                            ),
-                                            user.verified!.isEmpty
-                                                ? const SizedBox.shrink()
-                                                : Positioned(
-                                                    top: 5,
-                                                    right: 0,
-                                                    child: Icon(
-                                                      MdiIcons
-                                                          .checkboxMarkedCircle,
-                                                      size: 20,
-                                                      color: Colors.blue,
-                                                    ),
-                                                  ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: Color(0xFF1a1a1a),
-                                            borderRadius:
-                                                BorderRadius.circular(100.0),
-                                          ),
-                                          child: Hero(
-                                            tag: 'useravater',
-                                            child: CircleAvatar(
-                                              backgroundColor:
-                                                  Color(0xFF1a1a1a),
-                                              radius: width > 600 ? 120 : 80.0,
-                                              backgroundImage: user
-                                                      .profileImageUrl!.isEmpty
-                                                  ? AssetImage(
-                                                      'assets/images/user_placeholder.png',
-                                                    ) as ImageProvider
-                                                  : CachedNetworkImageProvider(
-                                                      user.profileImageUrl!),
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 20.0,
-                                        ),
-                                        Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Hero(
-                                              tag: 'nickName',
-                                              child: new Material(
-                                                color: Colors.transparent,
-                                                child: Text(
-                                                  user.name!,
-                                                  style: TextStyle(
-                                                    color:
-                                                        ConfigBloc().darkModeOn
-                                                            ? Colors.blueGrey
-                                                            : Colors.white,
-                                                    fontSize:
-                                                        width > 600 ? 16 : 14.0,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            Hero(
-                                              tag: 'profileHandle',
-                                              child: new Material(
-                                                color: Colors.transparent,
-                                                child: Text(
-                                                  user.profileHandle!,
-                                                  style: TextStyle(
-                                                    color: ConfigBloc()
-                                                            .darkModeOn
-                                                        ? Colors.blueGrey[300]
-                                                        : Colors.white,
-                                                    fontSize:
-                                                        width > 600 ? 30 : 20.0,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            user.profileHandle!
-                                                        .startsWith('F') ||
-                                                    user.profileHandle!.isEmpty
-                                                ? const SizedBox.shrink()
-                                                : Text(
-                                                    user.company!,
-                                                    style: TextStyle(
-                                                      color: ConfigBloc()
-                                                              .darkModeOn
-                                                          ? Colors.blueGrey
-                                                          : Colors.white,
-                                                      fontSize:
-                                                          width > 600 ? 16 : 14,
-                                                    ),
-                                                  ),
-                                          
-                                            user.profileHandle!
-                                                        .startsWith('F') ||
-                                                    user.profileHandle!.isEmpty
-                                                ? const SizedBox.shrink()
-                                                : SizedBox(
-                                                    height: 10.0,
-                                                  ),
-                                            user.profileHandle!
-                                                        .startsWith('F') ||
-                                                    user.profileHandle!.isEmpty
-                                                ? const SizedBox.shrink()
-                                                : Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      GestureDetector(
-                                                        onTap: () =>
-                                                            Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                    builder: (_) =>
-                                                                        ProfileProfessionalProfile(
-                                                                          user:
-                                                                              user,
-                                                                          currentUserId:
-                                                                              widget.currentUserId,
-                                                                          userId:
-                                                                              '',
-                                                                        ))),
-                                                        child: Container(
-                                                          width: 35,
-                                                          height: 35,
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Colors
-                                                                .transparent,
-                                                            shape:
-                                                                BoxShape.circle,
-                                                            border: Border.all(
-                                                                width: 1.0,
-                                                                color: Colors
-                                                                    .white),
-                                                          ),
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(1.0),
-                                                            child: Align(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child: Text(
-                                                                'B',
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontSize: 14,
-                                                                ),
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .center,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        width: 10,
-                                                      ),
-                                                     
-                                                      SizedBox(
-                                                        width: 10,
-                                                      ),
-                                                      GestureDetector(
-                                                        onTap: () =>
-                                                            Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                    builder: (_) =>
-                                                                        UserAdviceScreen(
-                                                                          user:
-                                                                              user,
-                                                                          currentUserId:
-                                                                              widget.currentUserId,
-                                                                        ))),
-                                                        child: Container(
-                                                          width: 35,
-                                                          height: 35,
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Colors
-                                                                .transparent,
-                                                            shape:
-                                                                BoxShape.circle,
-                                                            border: Border.all(
-                                                                width: 1.0,
-                                                                color: Colors
-                                                                    .white),
-                                                          ),
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(1.0),
-                                                            child: Align(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              child: Text(
-                                                                'A',
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontSize: 14,
-                                                                ),
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .center,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 10.0,
-                                        ),
-                                        Divider(
-                                          color: Colors.white,
-                                        ),
-                                        SizedBox(
-                                          height: 5.0,
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(
-                                            'Bio',
-                                            style: TextStyle(
-                                              color: ConfigBloc().darkModeOn
-                                                  ? Colors.blueGrey[100]
-                                                  : Colors.grey,
-                                              fontSize: width > 600 ? 16 : 12,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                        HyperLinkText(
-                                          from: 'Profile',
-                                          text: user.bio!,
-                                        ),
-                                        _displayButton(user, _point),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                ConfigBloc().darkModeOn
-                                    ? Divider(color: Colors.white)
-                                    : const SizedBox.shrink(),
-                                SizedBox(
-                                  height: 30.0,
-                                ),
-                                !user.profileHandle!.startsWith('Ar') ||
-                                        user.profileHandle!.isEmpty
-                                    ? _buildStatistics(user)
-                                    : _buildArtistStatistics(user),
-                                SizedBox(
-                                  height: 20.0,
-                                ),
-                                _buildMusicPreference(user),
-                                SizedBox(
-                                  height: 30.0,
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20.0),
-                                  child: Text(
-                                    'Favorite Punchline',
-                                    style: TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 20.0,
-                                      right: 20,
-                                      bottom: 20,
-                                      top: 20),
-                                  child: RichText(
-                                    text: TextSpan(
-                                      children: [
-                                        TextSpan(
-                                            text:
-                                                '"${user.favouritePunchline}"',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              color: ConfigBloc().darkModeOn
-                                                  ? Colors.white
-                                                  : Colors.black,
-                                            )),
-                                      ],
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 30,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Container(
-                                      color: Colors.grey,
-                                      height: 1,
-                                      width: width / 4,
-                                    ),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: Colors.grey, width: 1)),
-                                      width: width / 3,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(5.0),
-                                        child: Align(
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            'contents',
-                                            style: TextStyle(
-                                              color: ConfigBloc().darkModeOn
-                                                  ? Colors.grey
-                                                  : Colors.black,
-                                              fontSize: 12,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      color: Colors.grey,
-                                      height: 1,
-                                      width: width / 4,
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 40.0,
-                                ),
-                                _buildMoodPunched(user),
-                                SizedBox(
-                                  height: 30.0,
-                                ),
-                                _buildDisplay(user),
-                                SizedBox(
-                                  height: 40.0,
-                                ),
-                              ]),
+      child: widget.user == null
+          ? FutureBuilder(
+              future: usersRef.doc(widget.userId).get(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (!snapshot.hasData) {
+                  return Container(
+                    color: Color(0xFF1a1a1a),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          SizedBox(
+                            height: 250,
+                            width: 250,
+                            child: CircularProgressIndicator(
+                              backgroundColor: Colors.transparent,
+                              valueColor: new AlwaysStoppedAnimation<Color>(
+                                Colors.grey,
+                              ),
+                              strokeWidth: 1,
                             ),
                           ),
-                        ));
-          }),
+                          SizedBox(
+                            height: 5.0,
+                          ),
+                          Shimmer.fromColors(
+                            period: Duration(milliseconds: 1000),
+                            baseColor: Colors.grey[300]!,
+                            highlightColor: Colors.white,
+                            child: RichText(
+                                text: TextSpan(
+                              children: [
+                                TextSpan(
+                                    text: "Loading ",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.blueGrey)),
+                                TextSpan(text: 'Profile\nPlease Wait... '),
+                              ],
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey),
+                            )),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+
+                AccountHolder user = AccountHolder.fromDoc(snapshot.data);
+
+                DatabaseService.numFavoriteArtist(user.userName!.toUpperCase())
+                    .listen((artistCount) {
+                  if (mounted) {
+                    setState(() {
+                      _artistFavoriteCount = artistCount;
+                    });
+                  }
+                });
+
+                DatabaseService.numArtistPunch(
+                        widget.currentUserId, user.userName!.toUpperCase())
+                    .listen((artistPunch) {
+                  if (mounted) {
+                    setState(() {
+                      _artistPunch = artistPunch;
+                    });
+                  }
+                });
+
+                return _isBlockedUser || user.disabledAccount!
+                    ? UserNotFound(
+                        userName: user.userName!,
+                      )
+                    : user.reportConfirmed!.isNotEmpty
+                        ? UserBanned(
+                            userName: user.userName!,
+                          )
+                        : _scaffold(user);
+              })
+          : _displayScaffold(),
     );
   }
 }

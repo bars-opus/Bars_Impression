@@ -18,6 +18,7 @@ class UserView extends StatefulWidget {
 }
 
 class _UserViewState extends State<UserView> {
+  int count = 0;
   _userFans() {
     final width = MediaQuery.of(context).size.width;
     return Container(
@@ -45,6 +46,7 @@ class _UserViewState extends State<UserView> {
                               currentUserId:
                                   Provider.of<UserData>(context).currentUserId!,
                               userId: widget.userId,
+                              user: widget.user,
                             )))),
             FocusedMenuItem(
                 title: Container(
@@ -77,19 +79,28 @@ class _UserViewState extends State<UserView> {
                           children: [
                             ListTile(
                                 leading: widget.user.profileImageUrl!.isEmpty
-                                    ? const Icon(
-                                        Icons.account_circle,
-                                        size: 50.0,
-                                        color: Colors.grey,
+                                    ? Hero(
+                                        tag: 'container1' +
+                                            widget.user.id.toString(),
+                                        child: const Icon(
+                                          Icons.account_circle,
+                                          size: 50.0,
+                                          color: Colors.grey,
+                                        ),
                                       )
-                                    : CircleAvatar(
-                                        radius: 25.0,
-                                        backgroundColor: ConfigBloc().darkModeOn
-                                            ? Color(0xFF1a1a1a)
-                                            : Color(0xFFf2f2f2),
-                                        backgroundImage:
-                                            CachedNetworkImageProvider(
-                                                widget.user.profileImageUrl!),
+                                    : Hero(
+                                        tag: 'container1' +
+                                            widget.user.id.toString(),
+                                        child: CircleAvatar(
+                                          radius: 25.0,
+                                          backgroundColor:
+                                              ConfigBloc().darkModeOn
+                                                  ? Color(0xFF1a1a1a)
+                                                  : Color(0xFFf2f2f2),
+                                          backgroundImage:
+                                              CachedNetworkImageProvider(
+                                                  widget.user.profileImageUrl!),
+                                        ),
                                       ),
                                 title: Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
@@ -272,6 +283,7 @@ class _UserViewState extends State<UserView> {
                                                   Provider.of<UserData>(context)
                                                       .currentUserId!,
                                               userId: widget.userId,
+                                              user: widget.user,
                                             )))),
                           ])))),
         ));
@@ -336,6 +348,7 @@ class _UserViewState extends State<UserView> {
                             currentUserId:
                                 Provider.of<UserData>(context).currentUserId!,
                             userId: widget.userId,
+                            user: widget.user,
                           )))),
           FocusedMenuItem(
               title: Container(
@@ -755,6 +768,7 @@ class _UserViewState extends State<UserView> {
                         onTap: () async {
                           await new Future.delayed(
                               const Duration(milliseconds: 100));
+
                           Navigator.push(
                               context,
                               new MaterialPageRoute(
@@ -766,6 +780,10 @@ class _UserViewState extends State<UserView> {
                                         user: widget.user,
                                         userId: widget.user.id!,
                                       )));
+
+                          kpiStatisticsRef.doc('0SuQxtu52SyYjhOKiLsj').update({
+                            'Booking': count + 1,
+                          });
                         }),
                   ],
                 ),

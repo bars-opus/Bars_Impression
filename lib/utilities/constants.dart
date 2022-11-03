@@ -30,7 +30,7 @@ final commentsRef = _firestore.collection('comments');
 final userAdviceRef = _firestore.collection('userAdvice');
 final blogCommentsRef = _firestore.collection('blogComments');
 final thoughtsRef = _firestore.collection('thoughts');
-final replyThoughtsRef = _firestore.collection('replyThoughts');
+final replyThoughtsRef = _firestore.collection('43');
 final asksRef = _firestore.collection('asks');
 final activitiesRef = _firestore.collection('activities');
 final chatActivitiesRef = _firestore.collection('activitiesChat');
@@ -54,5 +54,7 @@ final eventTypesRef = _firestore.collection('eventTypes');
 final surveysRef = _firestore.collection('_surveys');
 final suggestionsRef = _firestore.collection('_suggestions');
 final reportContentsRef = _firestore.collection('_reportedContents');
+
+final kpiStatisticsRef = _firestore.collection('_kPI_statistics');
 final deletedDeactivatedAccountRef =
     _firestore.collection('_DeletedDeactivatedAccounts');

@@ -32,6 +32,23 @@ class ThoughtView extends StatelessWidget {
             title: Container(
               width: width / 2,
               child: Text(
+                'Reply',
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => ReplyThoughtsScreen(
+                          currentUserId: currentUserId,
+                          forum: forum,
+                          isBlocked: isBlockedUser,
+                          thought: thought,
+                        )))),
+        FocusedMenuItem(
+            title: Container(
+              width: width / 2,
+              child: Text(
                 currentUserId == thought.authorId
                     ? 'Edit your thought'
                     : thought.authorProfileHanlde.startsWith('Fan') ||
@@ -61,6 +78,7 @@ class ThoughtView extends StatelessWidget {
                                   currentUserId: Provider.of<UserData>(context)
                                       .currentUserId!,
                                   userId: thought.authorId,
+                                  user: null,
                                 )))
                     : () async {
                         AccountHolder user =
@@ -221,6 +239,7 @@ class ThoughtView extends StatelessWidget {
                                 currentUserId: Provider.of<UserData>(context)
                                     .currentUserId!,
                                 userId: thought.authorId,
+                                user: null,
                               ))),
                 ),
               ),

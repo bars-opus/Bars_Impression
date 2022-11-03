@@ -66,7 +66,6 @@ class _EventAttendeesValidatedState extends State<EventAttendeesValidated>
     QuerySnapshot inviteSnapShot = await eventInviteRef
         .doc(widget.event.id)
         .collection('eventInvite')
-        .where('attendeeStatus', isEqualTo: widget.from)
         .where('validated', isEqualTo: true)
         .limit(limit)
         .get();
@@ -89,7 +88,6 @@ class _EventAttendeesValidatedState extends State<EventAttendeesValidated>
     QuerySnapshot inviteSnapShot = await eventInviteRef
         .doc(widget.event.id)
         .collection('eventInvite')
-        .where('attendeeStatus', isEqualTo: widget.from)
         .where('validated', isEqualTo: true)
         .limit(limit)
         .startAfterDocument(_inviteSnapshot.last)

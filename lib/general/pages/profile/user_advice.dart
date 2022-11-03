@@ -16,7 +16,6 @@ class UserAdviceScreen extends StatefulWidget {
 }
 
 class _UserAdviceScreenState extends State<UserAdviceScreen> {
-
   final TextEditingController _adviceControler = TextEditingController();
   bool _isAdvicingUser = false;
   bool _isBlockedUser = false;
@@ -103,7 +102,8 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
         MaterialPageRoute(
             builder: (_) => ProfileProfessionalProfile(
                   currentUserId: Provider.of<UserData>(context).currentUserId!,
-                  userId: userAdvice.authorId, user: user,
+                  userId: userAdvice.authorId,
+                  user: user,
                 )));
   }
 
@@ -148,16 +148,13 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                     ? Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (_) =>
-                          
-                                ProfileScreen(
+                            builder: (_) => ProfileScreen(
                                   currentUserId: Provider.of<UserData>(context)
                                       .currentUserId!,
                                   userId: userAdvice.authorId,
+                                  user: widget.user,
                                 )))
-                    : _viewProfessionalProfile(userAdvice)
-
-            ),
+                    : _viewProfessionalProfile(userAdvice)),
         FocusedMenuItem(
             title: Container(
               width: width / 2,
@@ -355,11 +352,10 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                       onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (_) =>
-                                 
-                                  ProfileScreen(
+                              builder: (_) => ProfileScreen(
                                     currentUserId: currentUserId,
                                     userId: userAdvice.authorId,
+                                    user: widget.user,
                                   ))),
                     ),
                   ],
@@ -613,12 +609,25 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                                         builder: (BuildContext context,
                                             AsyncSnapshot snapshot) {
                                           if (!snapshot.hasData) {
-                                            return Expanded(
-                                              child: Center(
-                                                child:
-                                                    CircularProgressIndicator(),
-                                              ),
-                                            );
+                                            return _userAdviceCount == 0
+                                                ? Expanded(
+                                                    child: Center(
+                                                      child: NoContents(
+                                                        icon: (MdiIcons
+                                                            .sendOutline),
+                                                        title:
+                                                            'No advices for ${widget.user.userName} yet,',
+                                                        subTitle:
+                                                            'You can be the first to leave an advice for ${widget.user.name},  ',
+                                                      ),
+                                                    ),
+                                                  )
+                                                : Expanded(
+                                                    child: Center(
+                                                      child:
+                                                          CircularProgressIndicator(),
+                                                    ),
+                                                  );
                                           }
                                           return _userAdviceCount == 0
                                               ? Expanded(

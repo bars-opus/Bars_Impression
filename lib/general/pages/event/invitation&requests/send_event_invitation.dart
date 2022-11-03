@@ -28,7 +28,7 @@ class _SendEventInviationState extends State<SendEventInviation> {
   }
 
   _setUpAttendeeRequest() async {
-    DatabaseService.numEventAttendee(widget.event.id, '')
+    DatabaseService.numEventAttendeeAll(widget.event.id, '')
         .listen((requestCount) {
       if (mounted) {
         setState(() {
@@ -371,7 +371,7 @@ class _SendEventInviationState extends State<SendEventInviation> {
                           Padding(
                             padding:
                                 const EdgeInsets.only(left: 12.0, right: 12),
-                            child: ContentField(
+                            child: ContentFieldBlack(
                               labelText: 'Message',
                               hintText: "short ivitation message",
                               initialValue: '',

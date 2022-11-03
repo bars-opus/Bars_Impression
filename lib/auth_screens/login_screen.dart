@@ -438,9 +438,11 @@ class _LoginScreenState extends State<LoginScreen>
                                                     child: ElevatedButton(
                                                       style: ElevatedButton
                                                           .styleFrom(
-                                                        backgroundColor: Colors.white,
+                                                        backgroundColor:
+                                                            Colors.white,
                                                         elevation: 20.0,
-                                                        foregroundColor: Colors.blue,
+                                                        foregroundColor:
+                                                            Colors.blue,
                                                         shape:
                                                             RoundedRectangleBorder(
                                                           borderRadius:
@@ -479,7 +481,8 @@ class _LoginScreenState extends State<LoginScreen>
                                                     child: OutlinedButton(
                                                       style: OutlinedButton
                                                           .styleFrom(
-                                                        backgroundColor: Colors.blue,
+                                                        foregroundColor:
+                                                            Colors.blue,
                                                         side: BorderSide(
                                                           width: 1.0,
                                                           color: Colors.white,

@@ -11,7 +11,6 @@ class StoreSearchUsers extends StatefulWidget {
 }
 
 class _StoreSearchUsersState extends State<StoreSearchUsers> {
-
   _buildUserTile(AccountHolder user) {
     return SearchUserTile(
         userName: user.userName!.toUpperCase(),
@@ -29,10 +28,10 @@ class _StoreSearchUsersState extends State<StoreSearchUsers> {
                         currentUserId:
                             Provider.of<UserData>(context).currentUserId!,
                         userId: user.id!,
+                        user: user,
                       )));
         });
   }
-
 
   @override
   Widget build(BuildContext context) {

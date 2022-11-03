@@ -22,7 +22,7 @@ class _EventAttendeeRequestAnswereWidgetState
   bool _rejected = false;
   bool _accepted = false;
   late ActivityEvent? _inviteActivity;
-  int _attendeeNumber = 0;
+  // int _attendeeNumber = 0;
 
   @override
   void initState() {
@@ -34,21 +34,20 @@ class _EventAttendeeRequestAnswereWidgetState
             : _nothing();
 
     widget.activityEvent == null ? _getInvitationActivity() : _nothing();
-    _setUpAttendee();
+    // _setUpAttendee();
   }
 
-
-_nothing(){}
-  _setUpAttendee() async {
-    DatabaseService.numEventAttendee(widget.invite.eventId, 'Accepted')
-        .listen((attendeeNumber) {
-      if (mounted) {
-        setState(() {
-          _attendeeNumber = attendeeNumber;
-        });
-      }
-    });
-  }
+  _nothing() {}
+  // _setUpAttendee() async {
+  //   DatabaseService.numEventAttendeeAll(widget.invite.eventId, 'Accepted')
+  //       .listen((attendeeNumber) {
+  //     if (mounted) {
+  //       setState(() {
+  //         _attendeeNumber = attendeeNumber;
+  //       });
+  //     }
+  //   });
+  // }
 
   _getInvitationActivity() async {
     ActivityEvent inviteActivity =
@@ -95,8 +94,8 @@ _nothing(){}
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    var attendeeNumber = _attendeeNumber.toString() +
-        "  ${widget.invite.anttendeeId.substring(0, 3)}";
+    // var attendeeNumber = _attendeeNumber.toString() +
+    //     "  ${widget.invite.anttendeeId.substring(0, 3)}";
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Container(
@@ -125,21 +124,18 @@ _nothing(){}
                       decoration: BoxDecoration(),
                       height: 60,
                       child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: ConfigBloc().darkModeOn
-                              ? Color(0xFF1a1a1a)
-                              : Color(0xFFf2f2f2),
-                          radius: 20.0,
-                          backgroundImage:
-                              widget.invite.anttendeeprofileImageUrl.isEmpty
-                                  ? AssetImage(
-                                      ConfigBloc().darkModeOn
-                                          ? 'assets/images/user_placeholder.png'
-                                          : 'assets/images/user_placeholder2.png',
-                                    ) as ImageProvider
-                                  : CachedNetworkImageProvider(
-                                      widget.invite.anttendeeprofileImageUrl),
-                        ),
+                        leading: widget.invite.anttendeeprofileImageUrl.isEmpty
+                            ? const Icon(
+                                Icons.account_circle,
+                                size: 50.0,
+                                color: Colors.grey,
+                              )
+                            : CircleAvatar(
+                                radius: 25.0,
+                                backgroundColor: Color(0xFFf2f2f2),
+                                backgroundImage: CachedNetworkImageProvider(
+                                    widget.invite.anttendeeprofileImageUrl),
+                              ),
                         title: Padding(
                           padding: const EdgeInsets.only(right: 2.0),
                           child: RichText(
@@ -178,6 +174,7 @@ _nothing(){}
                                               listen: false)
                                           .currentUserId!,
                                       userId: widget.invite.anttendeeId,
+                                      user: null,
                                     ))),
                       ),
                     ),
@@ -263,7 +260,7 @@ _nothing(){}
                                             .answerEventAttendeeReques(
                                                 answer: 'Accepted',
                                                 eventInvite: widget.invite,
-                                                attendNumber: attendeeNumber);
+                                              );
                                         _checkSubmit();
                                         setState(() {
                                           _accepted = true;
@@ -309,7 +306,7 @@ _nothing(){}
                                         HapticFeedback.heavyImpact();
                                         DatabaseService
                                             .answerEventAttendeeReques(
-                                                attendNumber: '',
+                                              
                                                 answer: 'Rejected',
                                                 eventInvite: widget.invite);
                                         _checkSubmit();
@@ -367,7 +364,7 @@ _nothing(){}
                                             .answerEventAttendeeReques(
                                                 answer: 'Accepted',
                                                 eventInvite: widget.invite,
-                                                attendNumber: attendeeNumber);
+                                              );
                                         _checkSubmit();
                                         setState(() {
                                           _accepted = true;
@@ -419,7 +416,7 @@ _nothing(){}
                                             .answerEventAttendeeReques(
                                                 answer: 'Rejected',
                                                 eventInvite: widget.invite,
-                                                attendNumber: '');
+                                            );
                                         _checkSubmit();
                                         setState(() {
                                           _rejected = true;

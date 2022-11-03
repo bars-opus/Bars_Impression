@@ -145,7 +145,7 @@ class _EventViewState extends State<EventView> {
                     MaterialPageRoute(
                         builder: (_) => ProfileScreen(
                               currentUserId: widget.currentUserId,
-                              userId: widget.event.authorId,
+                              userId: widget.event.authorId, user: null,
                             ))),
               ),
         FocusedMenuItem(

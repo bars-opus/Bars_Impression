@@ -541,7 +541,7 @@ class _ProfilePostViewState extends State<ProfilePostView> {
                         MaterialPageRoute(
                             builder: (_) => ProfileScreen(
                                   currentUserId: widget.currentUserId,
-                                  userId: widget.post.authorId,
+                                  userId: widget.post.authorId, user: widget.author,
                                 ))),
                   ),
             FocusedMenuItem(
@@ -553,7 +553,8 @@ class _ProfilePostViewState extends State<ProfilePostView> {
                             post: widget.post,
                             likeCount: _dbLikeCount,
                             dislikeCount: _dbDisLikeCount,
-                            comment: null,
+                             commentCount: _commentCount,
+                            // comment: null,
                             currentUserId: widget.currentUserId,
                           ))),
             ),
@@ -620,7 +621,7 @@ class _ProfilePostViewState extends State<ProfilePostView> {
                   MaterialPageRoute(
                       builder: (_) => ProfileScreen(
                             currentUserId: widget.currentUserId,
-                            userId: widget.post.authorId,
+                            userId: widget.post.authorId, user: widget.author,
                           ))),
             ),
             FocusedMenuItem(
@@ -639,7 +640,7 @@ class _ProfilePostViewState extends State<ProfilePostView> {
                 MaterialPageRoute(
                     builder: (_) => ProfileScreen(
                           currentUserId: widget.currentUserId,
-                          userId: widget.post.authorId,
+                          userId: widget.post.authorId, user: widget.author,
                         ))),
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
@@ -907,8 +908,8 @@ class _ProfilePostViewState extends State<ProfilePostView> {
                                     post: widget.post,
                                     likeCount: _dbLikeCount,
                                     dislikeCount: _dbDisLikeCount,
-                                    comment: null,
-                                    currentUserId: widget.currentUserId,
+                                    // comment: null,
+                                    currentUserId: widget.currentUserId, commentCount: _commentCount,
                                   ))),
                       child: Container(
                         height: 25.0,

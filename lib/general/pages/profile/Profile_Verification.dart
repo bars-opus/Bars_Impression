@@ -305,7 +305,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
               'Pick image',
               style: TextStyle(
                 fontSize: 16,
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                color: Colors.black,
               ),
             ),
             actions: <Widget>[
@@ -426,8 +426,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                     text:
                         'We have noticed that some information about your account has not been provided. You must provide the necessary information required for account verification.\n(bio, username, profile photo, company, contact, email, management, skills, website, or any other social media platform and 3 professional photos).\n\nRestart your verification request process after providing the information required.',
                     style: TextStyle(
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                      color: Colors.black,
                     ),
                   ),
                 ],
@@ -1197,9 +1196,11 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                               child: ElevatedButton(
                                                   style:
                                                       ElevatedButton.styleFrom(
-                                                    backgroundColor: Colors.blue,
+                                                    backgroundColor:
+                                                        Colors.blue,
                                                     elevation: 20.0,
-                                                    foregroundColor: Colors.blue,
+                                                    foregroundColor:
+                                                        Colors.blue,
                                                     shape:
                                                         RoundedRectangleBorder(
                                                       borderRadius:

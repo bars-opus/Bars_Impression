@@ -314,6 +314,28 @@ exports.onUploadForum = functions.firestore
 });
 
 
+exports.onDeleteFeedThought = functions.firestore
+.document('/thoughts/{forumId}/forumThoughts/{thoughtId}')
+.onDelete(async (snapshot, context) => {
+const forumId = context.params.forumId;
+const thoughtId = context.params.thoughtId;
+console.log(snapshot.data());
+const thoghtsRef =  admin
+    .firestore()
+    .collection('replyThoughts')
+    .doc(thoughtId)
+    .collection('replyThoughts')
+    const thoghtsSnapshot = await thoghtsRef.get();
+    thoghtsSnapshot.forEach(async userDoc => {    
+      if (userDoc.exists) {
+        userDoc.ref.delete();
+      }
+    })
+  
+
+});
+
+
 
 // exports.onUploadBlog = functions.firestore
 // .document('/blogs/{userId}/userBlogs/{blogId}')

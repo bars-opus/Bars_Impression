@@ -200,8 +200,8 @@ class _ActivityScreenState extends State<ActivityScreen>
                           post: post,
                           likeCount: post.likeCount,
                           dislikeCount: post.disLikeCount,
-                          comment: null,
-                          currentUserId: widget.currentUserId,
+                          // comment: null,
+                          currentUserId: widget.currentUserId, commentCount: 0,
                         ),
                       ),
                     );

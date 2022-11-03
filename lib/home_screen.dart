@@ -179,6 +179,7 @@ class _HomeMobileState extends State<HomeMobile> {
   @override
   Widget build(BuildContext context) {
     final String currentUserId = Provider.of<UserData>(context).currentUserId!;
+    final AccountHolder user = Provider.of<UserData>(context).user!;
     final double width = Responsive.isDesktop(
       context,
     )
@@ -232,6 +233,7 @@ class _HomeMobileState extends State<HomeMobile> {
                               ProfileScreen(
                                 currentUserId: currentUserId,
                                 userId: currentUserId,
+                                user: user,
                               ),
                             ],
                             onPageChanged: (int index) {
@@ -560,7 +562,7 @@ class _HomeDesktopState extends State<HomeDesktop> {
         .listen((activityEventCount) {
       if (mounted) {
         setState(() {
-          _activityEventCount = activityEventCount;
+          // _activityEventCount = activityEventCount;
         });
       }
     });
@@ -999,6 +1001,7 @@ class _HomeDesktopState extends State<HomeDesktop> {
                               ProfileScreen(
                                 currentUserId: currentUserId,
                                 userId: currentUserId,
+                                user: _user,
                               ),
                             ],
                             onPageChanged: (int index) {

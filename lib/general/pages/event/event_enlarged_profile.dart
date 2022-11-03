@@ -36,15 +36,37 @@ class _AllEvenEnlargedProfileState extends State<AllEvenEnlargedProfile> {
       size: Size(1110, 150),
       maximumColorCount: 20,
     );
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (_) => AttendEvent(
-                event: widget.event,
-                currentUserId: widget.currentUserId,
-                palette: _paletteGenerator,
-              )),
-    );
+
+    widget.event.isPrivate
+        ? Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => AttendEvent(
+                      event: widget.event,
+                      currentUserId:
+                          Provider.of<UserData>(context, listen: false)
+                              .currentUserId!,
+                      palette: _paletteGenerator,
+                    )),
+          )
+        : Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => EventPublicInviteAvailable(
+                      event: widget.event,
+                      palette: _paletteGenerator,
+                      eventInvite: null,
+                    )),
+
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //       builder: (_) => AttendEvent(  eventInvite: null,
+            //             event: widget.event,
+            //             currentUserId: widget.currentUserId,
+            //             palette: _paletteGenerator,
+            //           )),
+          );
   }
 
   Future<void> _generatePalette2(context, String from) async {
@@ -151,6 +173,7 @@ class _AllEvenEnlargedProfileState extends State<AllEvenEnlargedProfile> {
                             event: widget.event,
                             ask: null,
                             currentUserId: widget.currentUserId,
+                            askCount: widget.askCount!,
                           )),
                 ),
                 event: widget.event,

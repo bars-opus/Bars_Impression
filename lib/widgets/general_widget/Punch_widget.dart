@@ -487,6 +487,7 @@ class _PunchWidgetState extends State<PunchWidget> {
                                                   Provider.of<UserData>(context)
                                                       .currentUserId!,
                                               userId: widget.post.authorId,
+                                              user: null,
                                             )))),
                     FocusedMenuItem(
                         title: Container(
@@ -809,12 +810,13 @@ class _PunchWidgetState extends State<PunchWidget> {
                                                 MaterialPageRoute(
                                                     builder: (_) =>
                                                         CommentsScreen(
+                                                          commentCount:
+                                                              _commentCount,
                                                           post: widget.post,
                                                           likeCount:
                                                               _dbLikeCount,
                                                           dislikeCount:
                                                               _dbDisLikeCount,
-                                                          comment: null,
                                                           currentUserId: widget
                                                               .currentUserId,
                                                         ))),

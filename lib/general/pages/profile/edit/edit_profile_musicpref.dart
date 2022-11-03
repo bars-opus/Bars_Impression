@@ -147,7 +147,7 @@ class _EditProfileMusicPrefState extends State<EditProfileMusicPref> {
                                     keyboardType: TextInputType.multiline,
                                     maxLines: null,
                                     textCapitalization:
-                                        TextCapitalization.sentences,
+                                        TextCapitalization.characters,
                                     initialValue: _favouritePunchline,
                                     style: TextStyle(
                                       fontSize: 12.0,
@@ -188,7 +188,7 @@ class _EditProfileMusicPrefState extends State<EditProfileMusicPref> {
                                   child: TextFormField(
                                     keyboardType: TextInputType.multiline,
                                     textCapitalization:
-                                        TextCapitalization.sentences,
+                                        TextCapitalization.characters,
                                     maxLines: null,
                                     initialValue: _favouriteArtist,
                                     style: TextStyle(
@@ -230,7 +230,7 @@ class _EditProfileMusicPrefState extends State<EditProfileMusicPref> {
                                   child: TextFormField(
                                     keyboardType: TextInputType.multiline,
                                     textCapitalization:
-                                        TextCapitalization.sentences,
+                                        TextCapitalization.characters,
                                     maxLines: null,
                                     initialValue: _favouriteSong,
                                     style: TextStyle(
@@ -274,7 +274,7 @@ class _EditProfileMusicPrefState extends State<EditProfileMusicPref> {
                                     keyboardType: TextInputType.multiline,
                                     maxLines: null,
                                     textCapitalization:
-                                        TextCapitalization.sentences,
+                                        TextCapitalization.characters,
                                     initialValue: _favouriteAlbum,
                                     style: TextStyle(
                                       fontSize: 12.0,

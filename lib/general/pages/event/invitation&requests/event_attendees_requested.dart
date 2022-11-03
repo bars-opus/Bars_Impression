@@ -71,7 +71,7 @@ class _EventAttendeesRequestedState extends State<EventAttendeesRequested>
     QuerySnapshot inviteSnapShot = await eventInviteRef
         .doc(widget.event.id)
         .collection('eventInvite')
-        .where('invited', isEqualTo: false)
+        // .where('invited', isEqualTo: false)
         .where('attendeeStatus', isEqualTo: widget.answer)
         .limit(limit)
         .get();
@@ -92,7 +92,7 @@ class _EventAttendeesRequestedState extends State<EventAttendeesRequested>
     QuerySnapshot inviteSnapShot = await eventInviteRef
         .doc(widget.event.id)
         .collection('eventInvite')
-        .where('invited', isEqualTo: false)
+        // .where('invited', isEqualTo: false)
         .limit(limit)
         .get();
     List<EventInvite> users =
@@ -114,7 +114,7 @@ class _EventAttendeesRequestedState extends State<EventAttendeesRequested>
     QuerySnapshot inviteSnapShot = await eventInviteRef
         .doc(widget.event.id)
         .collection('eventInvite')
-        .where('invited', isEqualTo: false)
+        // .where('invited', isEqualTo: false)
         .where('attendeeStatus', isEqualTo: widget.answer)
         .limit(limit)
         .startAfterDocument(_inviteSnapshot.last)
@@ -140,7 +140,7 @@ class _EventAttendeesRequestedState extends State<EventAttendeesRequested>
     QuerySnapshot inviteSnapShot = await eventInviteRef
         .doc(widget.event.id)
         .collection('eventInvite')
-        .where('invited', isEqualTo: false)
+        // .where('invited', isEqualTo: false)
         .limit(limit)
         .startAfterDocument(_inviteSnapshot.last)
         .get();
@@ -185,7 +185,7 @@ class _EventAttendeesRequestedState extends State<EventAttendeesRequested>
                 ? Icon(
                     Icons.account_circle,
                     size: 60.0,
-                    color: Colors.white,
+                    color: Colors.grey,
                   )
                 : CircleAvatar(
                     radius: 25.0,
@@ -206,30 +206,17 @@ class _EventAttendeesRequestedState extends State<EventAttendeesRequested>
                         style: TextStyle(
                           fontSize: width > 800 ? 18 : 14.0,
                           fontWeight: FontWeight.bold,
-                          color: ConfigBloc().darkModeOn
-                              ? Colors.white
-                              : Colors.black,
+                          color: Colors.black,
                         )),
                   ),
                 ],
               ),
             ),
-            subtitle: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(invite.anttendeeprofileHandle,
-                    style: TextStyle(
-                      fontSize: width > 800 ? 14 : 12,
-                      color: Colors.blue,
-                    )),
-                Divider(
-                  color: ConfigBloc().darkModeOn
-                      ? Colors.grey[850]
-                      : Colors.grey[350],
-                )
-              ],
-            ),
+            subtitle: Text(invite.anttendeeprofileHandle,
+                style: TextStyle(
+                  fontSize: width > 800 ? 14 : 12,
+                  color: Colors.blue,
+                )),
             onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -237,6 +224,7 @@ class _EventAttendeesRequestedState extends State<EventAttendeesRequested>
                           currentUserId:
                               Provider.of<UserData>(context).currentUserId!,
                           userId: invite.anttendeeId,
+                          user: null,
                         ))),
           ),
         ),
@@ -312,9 +300,7 @@ class _EventAttendeesRequestedState extends State<EventAttendeesRequested>
                   title: Text(
                     'Attendee requests',
                     style: TextStyle(
-                        color: ConfigBloc().darkModeOn
-                            ? Colors.black
-                            : Colors.white,
+                        color: Colors.grey,
                         fontSize: 12,
                         fontWeight: FontWeight.bold),
                   ),

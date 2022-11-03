@@ -106,7 +106,7 @@ class _ProfileForumViewState extends State<ProfileForumView> {
                             )
                           : ProfileScreen(
                               currentUserId: widget.currentUserId,
-                              userId: widget.forum.authorId,
+                              userId: widget.forum.authorId, user: widget.author,
                             ))),
         ),
         FocusedMenuItem(

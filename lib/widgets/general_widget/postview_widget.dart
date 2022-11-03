@@ -568,7 +568,7 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                                           MaterialPageRoute(
                                                                               builder: (_) =>
                                                                             
-                                                                                  ProfileScreen(
+                                                                                  ProfileScreen(   user: null,
                                                                                     currentUserId: widget.currentUserId,
                                                                                     userId: widget.post.authorId,
                                                                                   ))),

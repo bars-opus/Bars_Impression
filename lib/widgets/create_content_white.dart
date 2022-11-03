@@ -34,7 +34,6 @@ class ContentFieldWhite extends StatelessWidget {
                 hintStyle: TextStyle(fontSize: 12.0, color: Colors.grey),
                 labelText: labelText,
                 labelStyle: TextStyle(
-                  fontWeight: FontWeight.bold,
                   fontSize: 14.0,
                   color: Colors.grey,
                 ),

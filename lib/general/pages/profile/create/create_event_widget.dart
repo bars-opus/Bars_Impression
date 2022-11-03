@@ -1,6 +1,5 @@
 // ignore_for_file: unnecessary_null_comparison
 
-import 'package:bars/widgets/create_content_white.dart';
 import 'package:blurhash/blurhash.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:currency_picker/currency_picker.dart';
@@ -1293,7 +1292,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                             children: [
                                                               SizedBox(
                                                                   height: 30),
-                                                              SettingSwitch(
+                                                              SettingSwitchBlack(
                                                                   title:
                                                                       'Private event',
                                                                   subTitle:
@@ -1324,7 +1323,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                                       .grey,
                                                                 ),
                                                               ),
-                                                              SettingSwitch(
+                                                              SettingSwitchBlack(
                                                                   title:
                                                                       'Virtual event',
                                                                   subTitle:
@@ -1362,7 +1361,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                                       .bool4
                                                                   ? const SizedBox
                                                                       .shrink()
-                                                                  : SettingSwitch(
+                                                                  : SettingSwitchBlack(
                                                                       title:
                                                                           'Free event',
                                                                       subTitle:
@@ -1406,7 +1405,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                                   ? const SizedBox
                                                                       .shrink()
                                                                   : Container(
-                                                                      child: SettingSwitch(
+                                                                      child: SettingSwitchBlack(
                                                                           title:
                                                                               'Cash payment',
                                                                           subTitle:
@@ -1541,7 +1540,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                   ContentFieldWhite(
                                                     labelText: 'Rate',
                                                     hintText:
-                                                        "currency - amount: example (\$: 00.0) ",
+                                                        "amount: example (10.0) ",
                                                     initialValue:
                                                         Provider.of<UserData>(
                                                                 context,
@@ -2139,7 +2138,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                                                 title: Text(
                                                                                   Provider.of<UserData>(context, listen: false).addressSearchResults![index].description,
                                                                                   style: TextStyle(
-                                                                                    color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                                                                                    color: Colors.black,
                                                                                   ),
                                                                                 ),
                                                                                 onTap: () {
@@ -2347,7 +2346,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                             const SizedBox(
                                                               height: 20,
                                                             ),
-                                                            ContentField(
+                                                            ContentFieldBlack(
                                                               labelText:
                                                                   'Title',
                                                               hintText:
@@ -2373,7 +2372,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                                   ? "The title cannot be empty"
                                                                   : null,
                                                             ),
-                                                            ContentField(
+                                                            ContentFieldBlack(
                                                               labelText:
                                                                   'Theme',
                                                               hintText:
@@ -2399,7 +2398,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                                   ? "The theme is too short( > 10 characters)"
                                                                   : null,
                                                             ),
-                                                            ContentField(
+                                                            ContentFieldBlack(
                                                               labelText: 'Host',
                                                               hintText:
                                                                   "Name of event host",
@@ -2437,7 +2436,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                                         .bool2
                                                                     ? const SizedBox
                                                                         .shrink()
-                                                                    : ContentField(
+                                                                    : ContentFieldBlack(
                                                                         labelText:
                                                                             'Country',
                                                                         hintText:
@@ -2656,7 +2655,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                                     child: IconButton(
                                                                         icon: Icon(Icons.delete_forever),
                                                                         iconSize: 25,
-                                                                        color: Colors.white,
+                                                                        color: ConfigBloc().darkModeOn ? Colors.black : Colors.white,
                                                                         onPressed: () {
                                                                           _showSelectImageDialog(
                                                                               '');

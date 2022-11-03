@@ -289,7 +289,8 @@ export 'package:bars/auth_screens/sign_up_verify_email.dart';
 export 'package:bars/widgets/pafe_feature-widget.dart';
 export 'package:bars/general/pages/event/invitation&requests/event_attendees_all.dart';
 export 'package:bars/general/pages/event/invitation&requests/event_rate.dart';
-
+export 'package:bars/widgets/create_content_white.dart';
+export 'package:bars/widgets/schimmers/create_content_black.dart';
 // discover user
 export 'package:bars/general/pages/discover/discover_page/account_categories/artists.dart';
 export 'package:bars/general/pages/event/invitation&requests/event_attendees_validated.dart';
@@ -316,3 +317,4 @@ export 'package:bars/general/pages/discover/seach/store_search%20_forum.dart';
 export 'package:bars/general/pages/discover/seach/store_search%20_post.dart';
 export 'package:bars/general/pages/discover/seach/store_search%20_user.dart';
 export 'package:bars/general/models/user_author_model.dart';
+export 'package:bars/widgets/buttons/setting_switch_black.dart';

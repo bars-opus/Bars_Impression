@@ -28,7 +28,7 @@ class _EventCompletedState extends State<EventCompleted> {
               'Are you sure you want to delete this event?',
               style: TextStyle(
                 fontSize: 16,
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                color: Colors.black,
               ),
             ),
             actions: <Widget>[

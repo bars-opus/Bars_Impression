@@ -152,11 +152,11 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
 
   _answereInvitation(String from, EventInvite eventInvite) async {
     final double width = MediaQuery.of(context).size.width;
-    DatabaseService.numEventAttendee(eventInvite.eventId, from)
-        .listen((attendeeNumber) {
-      Provider.of<UserData>(
-        context,
-      ).setChatCount(attendeeNumber + 1);
+    DatabaseService.numEventAttendeeAll(eventInvite.eventId, from).listen((
+      attendeeNumber,
+    ) {
+      Provider.of<UserData>(context, listen: false)
+          .setChatCount(attendeeNumber + 1);
     });
 
     AccountHolder user =
@@ -172,7 +172,7 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
               event: widget.event,
               eventDate: DateTime.parse(widget.event.date),
               message: '',
-              requestNumber: '',
+              requestNumber: eventInvite.requestNumber,
               user: user,
               attendeeNumber: Provider.of<UserData>(context, listen: false)
                       .chatCount
@@ -482,7 +482,7 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                   height: 10,
                 )
               : const SizedBox.shrink(),
-          widget.eventInvite.invited! &&
+          widget.eventInvite.invited &&
                   widget.eventInvite.attendeeStatus.isEmpty
               ? _unAnsweredWidget(context, width)
               : ShakeTransition(
@@ -506,7 +506,7 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                             const SizedBox(
                               height: 60,
                             ),
-                            widget.eventInvite.validated!
+                            widget.eventInvite.validated
                                 ? Padding(
                                     padding: const EdgeInsets.only(right: 30.0),
                                     child: Align(
@@ -519,8 +519,22 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                                     ),
                                   )
                                 : const SizedBox.shrink(),
+                            widget.eventInvite.invited
+                                ? Text(
+                                    'Cordially\n_Invited_',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        color: widget.palette.darkMutedColor ==
+                                                null
+                                            ? Color(0xFF1a1a1a)
+                                            : widget
+                                                .palette.darkMutedColor!.color,
+                                        height: 0.8),
+                                    textAlign: TextAlign.center,
+                                  )
+                                : const SizedBox.shrink(),
                             const SizedBox(
-                              height: 10,
+                              height: 20,
                             ),
                             widget.eventInvite.attendeeStatus
                                         .startsWith('Reject') ||
@@ -587,7 +601,7 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                                   text: TextSpan(
                                     children: [
                                       TextSpan(
-                                        text: widget.eventInvite.validated!
+                                        text: widget.eventInvite.validated
                                             ? 'Check-in Status:   '
                                             : '',
                                         style: TextStyle(
@@ -596,18 +610,66 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                                         ),
                                       ),
                                       TextSpan(
-                                        text: widget.eventInvite.validated!
+                                        text: widget.eventInvite.validated
                                             ? 'Validated\n'
                                             : '',
                                         style: TextStyle(
                                           fontSize: 12,
-                                          color: widget.eventInvite.validated!
+                                          color: widget.eventInvite.validated
                                               ? Colors.blue
                                               : Colors.grey,
                                         ),
                                       ),
                                       TextSpan(
-                                        text: 'Invitation Status:   ',
+                                        text: 'Check-in number:   ',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text:
+                                            "${widget.eventInvite.attendNumber} \n",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: 'Invitation type:',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: widget.eventInvite.invited
+                                            ? ' Invited'
+                                            : ' Requested',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: widget.eventInvite.invited
+                                            ? '\nInvitation number:   '
+                                            : '\nInvitation request number:   ',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text:
+                                            "${widget.eventInvite.requestNumber} ",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: '\nInvitation Status:   ',
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: Colors.grey,
@@ -652,38 +714,6 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                                       TextSpan(
                                         text:
                                             "${widget.eventInvite.anttendeeprofileHandle} ",
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: '\nCheck-in number:   ',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text:
-                                            "${widget.eventInvite.attendNumber} ",
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: widget.eventInvite.invited!
-                                            ? '\nInvitation number:   '
-                                            : '\nInvitation request number:   ',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text:
-                                            "${widget.eventInvite.requestNumber} ",
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: Colors.black,
@@ -971,7 +1001,7 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                     ),
                   ),
                 ),
-          widget.eventInvite.invited!
+          widget.eventInvite.invited
               ? widget.eventInvite.attendeeStatus.isNotEmpty
                   ? const SizedBox.shrink()
                   : Padding(

@@ -276,7 +276,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 child: Column(
                                   children: [
                                     Hero(
-                                      tag: 'useravater',
+                                      tag: 'container1' +
+                                          widget.user.id.toString(),
                                       child: GestureDetector(
                                         onTap: () => _handleImageFromGallery,
                                         child: CircleAvatar(

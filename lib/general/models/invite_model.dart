@@ -17,8 +17,8 @@ class EventInvite {
   final String message;
   final String commonId;
   final String personnelStatus;
-  final bool? invited;
-  final bool? validated;
+  final bool invited;
+  final bool validated;
   final Timestamp? timestamp;
   final Timestamp? eventTimestamp;
 

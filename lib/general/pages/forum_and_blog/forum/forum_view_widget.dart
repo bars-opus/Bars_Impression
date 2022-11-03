@@ -65,7 +65,9 @@ class ForumViewWidget extends StatelessWidget {
                               text: forum.authorName,
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.black,
+                                color: ConfigBloc().darkModeOn
+                                    ? Colors.white
+                                    : Colors.black,
                               )),
                           TextSpan(
                               text: '\nWhat do you think ?',

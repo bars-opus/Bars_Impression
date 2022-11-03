@@ -138,6 +138,7 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                         SizedBox(width: 10.0),
                         Expanded(
                           child: TextField(
+                            autofocus: widget.thoughtCount == 0 ? true : false,
                             controller: _thoughtController,
                             keyboardType: TextInputType.multiline,
                             maxLines: _thoughtController.text.length > 300
@@ -465,6 +466,7 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                                                                           builder: (_) => ProfileScreen(
                                                                                 currentUserId: Provider.of<UserData>(context).currentUserId!,
                                                                                 userId: widget.forum.authorId,
+                                                                                user: null,
                                                                               ))),
                                                                   child:
                                                                       RichText(
@@ -645,11 +647,24 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                                     builder: (BuildContext context,
                                         AsyncSnapshot snapshot) {
                                       if (!snapshot.hasData) {
-                                        return Expanded(
-                                          child: Center(
-                                            child: CircularProgressIndicator(),
-                                          ),
-                                        );
+                                        return _thoughtCount == 0
+                                            ? Expanded(
+                                                child: Center(
+                                                  child: NoContents(
+                                                    icon: (MdiIcons.brain),
+                                                    title:
+                                                        'No thoughts on this forum yet,',
+                                                    subTitle:
+                                                        'You can be the first person to tell us what you think about this forum, ',
+                                                  ),
+                                                ),
+                                              )
+                                            : Expanded(
+                                                child: Center(
+                                                  child:
+                                                      CircularProgressIndicator(),
+                                                ),
+                                              );
                                       }
                                       return _thoughtCount == 0
                                           ? Expanded(
