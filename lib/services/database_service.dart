@@ -1299,6 +1299,28 @@ class DatabaseService {
         version: '');
   }
 
+  static Future<KPI> getKPI() async {
+    DocumentSnapshot userDocSnapshot =
+        await usersRef.doc('0SuQxtu52SyYjhOKiLsj').get();
+    if (userDocSnapshot.exists) {
+      return KPI.fromDoc(userDocSnapshot);
+    }
+    return KPI(
+      id: '',
+      actualllyBooked: 0,
+      asksSent: 0,
+      booking: 0,
+      event: 0,
+      eventAttend: 0,
+      advicesSent: 0,
+      moodPunched: 0,
+      moodPunchedVideoAccessed: 0,
+      comentSent: 0,
+      thoughtSent: 0,
+      forum: 0,
+    );
+  }
+
   static Future<AccountHolder> getUserWithId(String userId) async {
     DocumentSnapshot userDocSnapshot = await usersRef.doc(userId).get();
     if (userDocSnapshot.exists) {

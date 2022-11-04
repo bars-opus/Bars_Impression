@@ -318,3 +318,4 @@ export 'package:bars/general/pages/discover/seach/store_search%20_post.dart';
 export 'package:bars/general/pages/discover/seach/store_search%20_user.dart';
 export 'package:bars/general/models/user_author_model.dart';
 export 'package:bars/widgets/buttons/setting_switch_black.dart';
+export 'package:bars/general/models/kpi_statistics.dart';

@@ -146,10 +146,10 @@ class _EventProfileViewState extends State<EventProfileView> {
                   onPressed: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (_) =>
-                              ProfileScreen(
+                          builder: (_) => ProfileScreen(
                                 currentUserId: widget.currentUserId,
-                                userId: widget.event.authorId, user: widget.user,
+                                userId: widget.event.authorId,
+                                user: null,
                               ))),
                 ),
           FocusedMenuItem(
@@ -245,10 +245,8 @@ class _EventProfileViewState extends State<EventProfileView> {
                   EventViewWidget(
                     completed: _toDaysDate.isAfter(_closingDate) ? true : false,
                     currentUserId: widget.currentUserId,
-
                     titleHero: 'title1  ${widget.event.id.toString()}',
                     event: widget.event,
-                   
                     askCount: _askCount,
                     difference: _different,
                     exploreLocation: widget.exploreLocation,

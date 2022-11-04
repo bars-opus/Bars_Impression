@@ -106,7 +106,8 @@ class _ProfileForumViewState extends State<ProfileForumView> {
                             )
                           : ProfileScreen(
                               currentUserId: widget.currentUserId,
-                              userId: widget.forum.authorId, user: widget.author,
+                              userId: widget.forum.authorId,
+                              user: widget.author,
                             ))),
         ),
         FocusedMenuItem(
@@ -190,10 +191,8 @@ class _ProfileForumViewState extends State<ProfileForumView> {
         child: ForumViewWidget(
             currentUserId: widget.currentUserId,
             forum: widget.forum,
-           
             feed: widget.feed,
-            thoughtCount: _thoughtCount
-            ),
+            thoughtCount: _thoughtCount),
       ),
     );
   }

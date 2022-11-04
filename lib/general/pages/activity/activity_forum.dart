@@ -113,13 +113,7 @@ class _ActivityForumScreenState extends State<ActivityForumScreen>
   }
 
   _buildActivity(ActivityForum activityForum) {
-    // return FutureBuilder(
-    //   future: DatabaseService.getUserWithId(activityForum.fromUserId),
-    //   builder: (BuildContext context, AsyncSnapshot snapshot) {
-    //     if (!snapshot.hasData) {
-    //       return const SizedBox.shrink();
-    //     }
-    //     AccountHolder user = snapshot.data;
+   
     return ActivityTile(
       seen: activityForum.seen,
       verified: activityForum.authorVerification,

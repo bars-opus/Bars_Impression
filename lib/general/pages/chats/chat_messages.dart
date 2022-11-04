@@ -59,9 +59,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
       if (_hideButtonController.position.userScrollDirection ==
           ScrollDirection.forward) {
         if (mounted) {
-          // setState(() {
-          //   _isVisible = true;
-          // });
+        
           Provider.of<UserData>(context, listen: false).setBool1(true);
         }
       }
@@ -69,9 +67,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
           ScrollDirection.reverse) {
         if (mounted) {
           Provider.of<UserData>(context, listen: false).setBool1(false);
-          // setState(() {
-          //   _isVisible = false;
-          // });
+         
         }
       }
     });
@@ -80,18 +76,14 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
       if (_hideButtonController.position.userScrollDirection ==
           ScrollDirection.forward) {
         if (mounted) {
-          // setState(() {
-          //   _isVisible = true;
-          // });
+        
           Provider.of<UserData>(context, listen: false).setBool1(true);
         }
       }
       if (_hideButtonController.position.userScrollDirection ==
           ScrollDirection.reverse) {
         if (mounted) {
-          // setState(() {
-          //   _isVisible = false;
-          // });
+         
           Provider.of<UserData>(context, listen: false).setBool1(false);
         }
       }

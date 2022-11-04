@@ -18,7 +18,6 @@ class UserView extends StatefulWidget {
 }
 
 class _UserViewState extends State<UserView> {
-  int count = 0;
   _userFans() {
     final width = MediaQuery.of(context).size.width;
     return Container(
@@ -780,10 +779,6 @@ class _UserViewState extends State<UserView> {
                                         user: widget.user,
                                         userId: widget.user.id!,
                                       )));
-
-                          kpiStatisticsRef.doc('0SuQxtu52SyYjhOKiLsj').update({
-                            'Booking': count + 1,
-                          });
                         }),
                   ],
                 ),
