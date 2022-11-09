@@ -824,9 +824,9 @@ exports.onCreateActivityFollowerNotification = functions.firestore
   const doc = await usersRef.get();
   const androidNotificationToken = doc.data().androidNotificationToken;
 
-  const userRef = admin.firestore().doc(`users/${createdActivityItem.fromUserId}`);
-  const docs = await userRef.get();
-  const followerName = docs.data().userName;
+  // const userRef = admin.firestore().doc(`users/${createdActivityItem.fromUserId}`);
+  // const docs = await userRef.get();
+  // const followerName = docs.data().userName;
  
   if(androidNotificationToken){
    sendNotification(androidNotificationToken, createdActivityItem )
@@ -835,7 +835,7 @@ exports.onCreateActivityFollowerNotification = functions.firestore
   }
   function sendNotification(androidNotificationToken, activitiesFollower )
  {
-    body = ` ${followerName} `
+    body = ` ${activitiesFollower.authorName} `
     title = `New follower  `
   
    const message = {

@@ -516,7 +516,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
                   key: _formKey,
                   child: PageView(
                     controller: _pageController,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     onPageChanged: (int index) {
                       setState(() {
                         _index = index;
@@ -777,7 +777,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                                               color: Colors
                                                                   .transparent,
                                                               child: Text(
-                                                                'Save Userame',
+                                                                'Save Username',
                                                                 style:
                                                                     TextStyle(
                                                                   color: Colors

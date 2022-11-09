@@ -15,7 +15,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _updateAppVersion = Platform.isIOS ? 6 : 6;
+  int _updateAppVersion = Platform.isIOS ? 8 : 8;
   String notificationMsg = '';
 
   @override

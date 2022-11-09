@@ -15,32 +15,68 @@ class Chats extends StatefulWidget {
 }
 
 class _ChatsState extends State<Chats> {
+  late ScrollController _hideButtonController;
+  void initState() {
+    super.initState();
 
+    _hideButtonController = new ScrollController();
+  }
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveScaffold(
-      child: Scaffold(
-          backgroundColor:
-              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-          appBar: AppBar(
+      child: NestedScrollView(
+        controller: _hideButtonController,
+        headerSliverBuilder: (context, innerBoxScrolled) => [
+          //  AppBar(
+          //       iconTheme: IconThemeData(
+          //         color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+          //       ),
+          //       automaticallyImplyLeading: true,
+          //       elevation: 0,
+          //       backgroundColor:
+          //           ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+          //       title: Text(
+          //         'Chats',
+          //         style: TextStyle(
+          //             color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+          //             fontSize: 20,
+          //             fontWeight: FontWeight.bold),
+          //       ),
+          //       centerTitle: true,
+          //     ),
+          SliverAppBar(
+            title: Material(
+              color: Colors.transparent,
+              child: Text(
+                'Chats',
+                style: TextStyle(
+                    color:
+                        ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            centerTitle: true,
+            elevation: 0.0,
+            automaticallyImplyLeading: true,
+            leading: BackButton(
+              onPressed: () {},
+            ),
+            floating: true,
+            snap: true,
             iconTheme: IconThemeData(
               color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
             ),
-            automaticallyImplyLeading: true,
-            elevation: 0,
             backgroundColor:
                 ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-            title: Text(
-              'Chats',
-              style: TextStyle(
-                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-            ),
-            centerTitle: true,
+          )
+        ],
+        body: Container(
+          decoration: BoxDecoration(
+            color: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
           ),
-          body: Column(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -66,40 +102,44 @@ class _ChatsState extends State<Chats> {
                     }
                     return Expanded(
                         child: Scrollbar(
-                            child: CustomScrollView(slivers: [
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            Chat chats =
-                                Chat.fromDoc(snapshot.data.docs[index]);
+                            child: CustomScrollView(
+                                physics: AlwaysScrollableScrollPhysics(),
+                                slivers: [
+                          SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) {
+                                Chat chats =
+                                    Chat.fromDoc(snapshot.data.docs[index]);
 
-                            String userId = snapshot.data.docs[index].id;
-                            var lastMessage =
-                                snapshot.data.docs[index]['lastMessage'];
-                            var seen = snapshot.data.docs[index]['seen'];
+                                String userId = snapshot.data.docs[index].id;
+                                var lastMessage =
+                                    snapshot.data.docs[index]['lastMessage'];
+                                var seen = snapshot.data.docs[index]['seen'];
 
-                            return FutureBuilder(
-                                future: DatabaseService.getUserAuthorWithId(userId),
-                                builder: (BuildContext context,
-                                    AsyncSnapshot snapshot) {
-                                  if (!snapshot.hasData) {
-                                    return const SizedBox.shrink();
-                                  }
-                                  AccountHolderAuthor author = snapshot.data;
+                                return FutureBuilder(
+                                    future: DatabaseService.getUserAuthorWithId(
+                                        userId),
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot snapshot) {
+                                      if (!snapshot.hasData) {
+                                        return const SizedBox.shrink();
+                                      }
+                                      AccountHolderAuthor author =
+                                          snapshot.data;
 
-                                  return Display(
-                                    author: author,
-                                    chats: chats,
-                                    lastMessage: lastMessage,
-                                    seen: seen,
-                                    userId: userId,
-                                  );
-                                });
-                          },
-                          childCount: snapshot.data.docs.length,
-                        ),
-                      )
-                    ])));
+                                      return Display(
+                                        author: author,
+                                        chats: chats,
+                                        lastMessage: lastMessage,
+                                        seen: seen,
+                                        userId: userId,
+                                      );
+                                    });
+                              },
+                              childCount: snapshot.data.docs.length,
+                            ),
+                          )
+                        ])));
                   }
                   return Expanded(
                     child: Center(
@@ -119,7 +159,9 @@ class _ChatsState extends State<Chats> {
                 },
               ),
             ],
-          )),
+          ),
+        ),
+      ),
     );
   }
 }

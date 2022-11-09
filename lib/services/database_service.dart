@@ -486,6 +486,9 @@ class DatabaseService {
       'authorName': post.authorName,
       'authorVerification': post.authorVerification,
     });
+    kpiStatisticsRef
+        .doc('0SuQxtu52SyYjhOKiLsj')
+        .update({'createdMoodPunched': FieldValue.increment(1)});
   }
 
   static void editPunch(Post post) {
@@ -586,6 +589,9 @@ class DatabaseService {
       'showOnExplorePage': event.showOnExplorePage,
       'clossingDay': event.clossingDay,
     });
+    kpiStatisticsRef
+        .doc('0SuQxtu52SyYjhOKiLsj')
+        .update({'createEvent': FieldValue.increment(1)});
     // eventTypesRef
     //     .doc(
     //       event.type,
@@ -668,6 +674,9 @@ class DatabaseService {
       'timestamp': forum.timestamp,
       'linkedContentId': forum.linkedContentId
     });
+    kpiStatisticsRef
+        .doc('0SuQxtu52SyYjhOKiLsj')
+        .update({'createForum': FieldValue.increment(1)});
   }
 
   static void editForum(Forum forum) {
@@ -886,7 +895,9 @@ class DatabaseService {
   }
 
   static void followUser(
-      {required String currentUserId, required AccountHolder user}) {
+      {required String currentUserId,
+      required AccountHolder user,
+      required AccountHolder currentUser}) {
     // Add use to current user's following collection
     followingRef
         .doc(currentUserId)
@@ -899,6 +910,7 @@ class DatabaseService {
     addActivityFollowerItem(
       currentUserId: currentUserId,
       user: user,
+      currentUser: currentUser,
     );
     //Add current user to user's followers collection
     followersRef
@@ -1318,6 +1330,9 @@ class DatabaseService {
       comentSent: 0,
       thoughtSent: 0,
       forum: 0,
+      createdMoodPunched: 0,
+      createEvennt: 0,
+      createForum: 0,
     );
   }
 
@@ -2489,17 +2504,19 @@ class DatabaseService {
   }
 
   static void addActivityFollowerItem(
-      {required String currentUserId, required AccountHolder user}) {
+      {required String currentUserId,
+      required AccountHolder user,
+      required AccountHolder currentUser}) {
     if (currentUserId != user.id) {
       activitiesFollowerRef.doc(user.id).collection('activitiesFollower').add({
         'fromUserId': currentUserId,
         'userId': user.id,
         'seen': '',
         'timestamp': Timestamp.fromDate(DateTime.now()),
-        'authorProfileImageUrl': user.profileImageUrl,
-        'authorName': user.userName,
-        'authorProfileHanlde': user.profileHandle,
-        'authorVerification': user.verified,
+        'authorProfileImageUrl': currentUser.profileImageUrl,
+        'authorName': currentUser.userName,
+        'authorProfileHanlde': currentUser.profileHandle,
+        'authorVerification': currentUser.verified,
       });
     }
   }

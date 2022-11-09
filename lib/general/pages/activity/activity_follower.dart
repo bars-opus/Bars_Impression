@@ -329,7 +329,7 @@ class _ActivityFollowerScreenState extends State<ActivityFollowerScreen>
                     child: RichText(
                         text: TextSpan(
                       children: [
-                        TextSpan(text: 'Fetching post please Wait... '),
+                        TextSpan(text: 'Fetching user please Wait... '),
                       ],
                       style: TextStyle(fontSize: 12, color: Colors.blue),
                     )),

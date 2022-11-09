@@ -237,68 +237,70 @@ class _UserBookingState extends State<UserBooking> {
               const SizedBox(
                 height: 10,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Container(
-                  width: width,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.blue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                    ),
-                    onPressed: () => setState(() {
-                      _sendMail('mailto:${widget.user.email}');
-                      kpiStatisticsRef
-                          .doc('0SuQxtu52SyYjhOKiLsj')
-                          .update({'actualllyBooked': FieldValue.increment(1)});
-                    }),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Text(
-                        'Email',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 12,
+              widget.user.email!.isEmpty
+                  ? const SizedBox.shrink()
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Container(
+                        width: width,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.blue,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                          ),
+                          onPressed: () => setState(() {
+                            _sendMail('mailto:${widget.user.email}');
+                            kpiStatisticsRef.doc('0SuQxtu52SyYjhOKiLsj').update(
+                                {'actualllyBooked': FieldValue.increment(1)});
+                          }),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Text(
+                              'Email',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Container(
-                  width: width,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.blue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                    ),
-                    onPressed: () => setState(() {
-                      _makePhoneCall('tel:${widget.user.contacts}');
-                      kpiStatisticsRef
-                          .doc('0SuQxtu52SyYjhOKiLsj')
-                          .update({'actualllyBooked': FieldValue.increment(1)});
-                    }),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Text(
-                        'Call',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 12,
+              widget.user.contacts!.isEmpty
+                  ? const SizedBox.shrink()
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Container(
+                        width: width,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.blue,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                          ),
+                          onPressed: () => setState(() {
+                            _makePhoneCall('tel:${widget.user.contacts}');
+                            kpiStatisticsRef.doc('0SuQxtu52SyYjhOKiLsj').update(
+                                {'actualllyBooked': FieldValue.increment(1)});
+                          }),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Text(
+                              'Call',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-              ),
               const SizedBox(
                 height: 40,
               ),

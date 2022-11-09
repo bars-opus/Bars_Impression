@@ -10,7 +10,7 @@ class _AboutUsState extends State<AboutUs> {
     showAboutDialog(
         context: context,
         applicationName: 'Bars Impression',
-        applicationVersion: 'Version 1.2.1',
+        applicationVersion: 'Version 1.2.4',
         applicationIcon: Container(
           width: 40,
           height: 40,
@@ -25,7 +25,7 @@ class _AboutUsState extends State<AboutUs> {
                 text: TextSpan(
               children: [
                 TextSpan(
-                    text: "Version Release Date: September 2022\n",
+                    text: "Version Release Date: November 2022\n",
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.black,
@@ -185,7 +185,7 @@ class _AboutUsState extends State<AboutUs> {
               'BARS IMPRESSION',
               style: TextStyle(fontSize: 12.0, color: Colors.white),
               textAlign: TextAlign.center,
-            ), 
+            ),
           ],
         ),
       ),

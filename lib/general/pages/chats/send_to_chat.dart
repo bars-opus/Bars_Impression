@@ -585,7 +585,8 @@ class DisplayState extends State<Display> {
         Provider.of<UserData>(context, listen: false).user!;
     HapticFeedback.mediumImpact();
 
-    DatabaseService.firstChatMessage(author: Provider.of<UserData>(context, listen: false).user!,
+    DatabaseService.firstChatMessage(
+      author: Provider.of<UserData>(context, listen: false).user!,
       currentUserId:
           Provider.of<UserData>(context, listen: false).currentUserId!,
       userId: widget.author.id!,
@@ -612,7 +613,8 @@ class DisplayState extends State<Display> {
   _submitContentMessageMore() async {
     HapticFeedback.mediumImpact();
 
-    DatabaseService.chatMessage(author: Provider.of<UserData>(context, listen: false).user!,
+    DatabaseService.chatMessage(
+      author: Provider.of<UserData>(context, listen: false).user!,
       currentUserId:
           Provider.of<UserData>(context, listen: false).currentUserId!,
       userId: widget.author.id!,

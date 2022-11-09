@@ -13,6 +13,9 @@ class KPI {
   int comentSent;
   int thoughtSent;
   int eventAttend;
+  int createdMoodPunched;
+  int createForum;
+  int createEvennt;
 
   KPI({
     required this.booking,
@@ -27,6 +30,9 @@ class KPI {
     required this.advicesSent,
     required this.eventAttend,
     required this.thoughtSent,
+    required this.createEvennt,
+    required this.createForum,
+    required this.createdMoodPunched,
   });
 
   factory KPI.fromDoc(DocumentSnapshot doc) {
@@ -43,6 +49,9 @@ class KPI {
       advicesSent: doc['advicesSent'] ?? 0,
       thoughtSent: doc['thoughtSent'] ?? 0,
       eventAttend: doc['eventAttend'] ?? 0,
+      createEvennt: doc['createEvent'] ?? 0,
+      createForum: doc['createForum'] ?? 0,
+      createdMoodPunched: doc['createdMoodPunched'] ?? 0,
     );
   }
 }

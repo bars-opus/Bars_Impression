@@ -15,12 +15,19 @@ class _ConfigPageState extends State<ConfigPage> {
   @override
   void initState() {
     super.initState();
+
     setupApp();
   }
 
   setupApp() async {
     configBloc = ConfigBloc();
-    configBloc.darkModeOn = Bars.prefs!.getBool(Bars.darkModePref) ?? false;
+    configBloc.darkModeOn =
+        SchedulerBinding.instance.window.platformBrightness == Brightness.dark
+            ? true
+            : SchedulerBinding.instance.window.platformBrightness ==
+                    Brightness.light
+                ? false
+                : Bars.prefs!.getBool(Bars.darkModePref) ?? false;
   }
 
   @override
@@ -76,6 +83,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Bars',
         debugShowCheckedModeBanner: false,
+
         // showPerformanceOverlay: true,
         home: _getScreenId(),
         routes: {

@@ -275,6 +275,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     DatabaseService.followUser(
       currentUserId: widget.currentUserId,
       user: user,
+      currentUser: Provider.of<UserData>(context, listen: false).user!,
     );
 
     if (mounted) {
