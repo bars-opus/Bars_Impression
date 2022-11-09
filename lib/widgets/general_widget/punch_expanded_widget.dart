@@ -171,16 +171,20 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
         appStoreId: '1610868894',
       ),
     );
+    var link =
+        await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
 
-    if (Platform.isIOS) {
-      var link =
-          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
-      Share.share(link.toString());
-    } else {
-      var link =
-          await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
-      Share.share(link.shortUrl.toString());
-    }
+    Share.share(link.shortUrl.toString());
+
+    // if (Platform.isIOS) {
+    //   var link =
+    //       await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
+    //   Share.share(link.toString());
+    // } else {
+    //   var link =
+    //       await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+    //   Share.share(link.shortUrl.toString());
+    // }
   }
 
   _viewProfessionalProfile() async {

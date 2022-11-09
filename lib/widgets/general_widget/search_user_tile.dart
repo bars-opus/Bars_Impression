@@ -20,18 +20,18 @@ class SearchUserTile extends StatelessWidget {
       required this.score,
       required this.onPressed});
 
-  final RandomColor _randomColor = RandomColor();
-  final List<ColorHue> _hueType = <ColorHue>[
-    ColorHue.green,
-    ColorHue.red,
-    ColorHue.pink,
-    ColorHue.purple,
-    ColorHue.blue,
-    ColorHue.yellow,
-    ColorHue.orange
-  ];
+  // final RandomColor _randomColor = RandomColor();
+  // final List<ColorHue> _hueType = <ColorHue>[
+  //   ColorHue.green,
+  //   ColorHue.red,
+  //   ColorHue.pink,
+  //   ColorHue.purple,
+  //   ColorHue.blue,
+  //   ColorHue.yellow,
+  //   ColorHue.orange
+  // ];
 
-  final ColorSaturation _colorSaturation = ColorSaturation.random;
+  // final ColorSaturation _colorSaturation = ColorSaturation.random;
 
   @override
   Widget build(BuildContext context) {
@@ -90,10 +90,7 @@ class SearchUserTile extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 2.0),
                 child: Container(
-                  color: _randomColor.randomColor(
-                    colorHue: ColorHue.multiple(colorHues: _hueType),
-                    colorSaturation: _colorSaturation,
-                  ),
+                  color: Colors.purple,
                   height: 1.0,
                   width: 25.0,
                 ),
@@ -110,7 +107,6 @@ class SearchUserTile extends StatelessWidget {
                 fontSize: width > 800 ? 14 : 12,
                 color: Colors.blueGrey,
               )),
-        
           RichText(
             textScaleFactor: MediaQuery.of(context).textScaleFactor,
             maxLines: 3,

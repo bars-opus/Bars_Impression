@@ -60,9 +60,9 @@ class _ChatsState extends State<Chats> {
             centerTitle: true,
             elevation: 0.0,
             automaticallyImplyLeading: true,
-            leading: BackButton(
-              onPressed: () {},
-            ),
+            // leading: BackButton(
+            //   onPressed: () => Navigator.pop(context),
+            // ),
             floating: true,
             snap: true,
             iconTheme: IconThemeData(

@@ -247,15 +247,19 @@ class _ProfileSettingsState extends State<ProfileSettings> {
         appStoreId: '1610868894',
       ),
     );
-    if (Platform.isIOS) {
-      var link =
-          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
-      Share.share(link.toString());
-    } else {
-      var link =
-          await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
-      Share.share(link.shortUrl.toString());
-    }
+    var link =
+        await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+
+    Share.share(link.shortUrl.toString());
+    // if (Platform.isIOS) {
+    //   var link =
+    //       await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
+    //   Share.share(link.toString());
+    // } else {
+    //   var link =
+    //       await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+    //   Share.share(link.shortUrl.toString());
+    // }
   }
 
   @override
