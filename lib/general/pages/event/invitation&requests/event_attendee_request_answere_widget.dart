@@ -22,7 +22,6 @@ class _EventAttendeeRequestAnswereWidgetState
   bool _rejected = false;
   bool _accepted = false;
   late ActivityEvent? _inviteActivity;
-  // int _attendeeNumber = 0;
 
   @override
   void initState() {
@@ -34,20 +33,9 @@ class _EventAttendeeRequestAnswereWidgetState
             : _nothing();
 
     widget.activityEvent == null ? _getInvitationActivity() : _nothing();
-    // _setUpAttendee();
   }
 
   _nothing() {}
-  // _setUpAttendee() async {
-  //   DatabaseService.numEventAttendeeAll(widget.invite.eventId, 'Accepted')
-  //       .listen((attendeeNumber) {
-  //     if (mounted) {
-  //       setState(() {
-  //         _attendeeNumber = attendeeNumber;
-  //       });
-  //     }
-  //   });
-  // }
 
   _getInvitationActivity() async {
     ActivityEvent inviteActivity =
@@ -62,7 +50,7 @@ class _EventAttendeeRequestAnswereWidgetState
   }
 
   _checkSubmit() {
-    widget.activityEvent == null
+    widget.activityEvent!.id.isEmpty
         ? _activitySubmit()
         : _activityAvailableSubmit();
   }
@@ -91,11 +79,41 @@ class _EventAttendeeRequestAnswereWidgetState
     }
   }
 
+  _accept() async {
+    HapticFeedback.heavyImpact();
+    try {
+      DatabaseService.answerEventAttendeeReques(
+        answer: 'Accepted',
+        eventInvite: widget.invite,
+      );
+      _checkSubmit();
+    } catch (e) {}
+
+    setState(() {
+      _accepted = true;
+      _rejected = false;
+    });
+  }
+
+  _reject() async {
+    HapticFeedback.heavyImpact();
+    try {
+      DatabaseService.answerEventAttendeeReques(
+        answer: 'Rejected',
+        eventInvite: widget.invite,
+      );
+      _checkSubmit();
+    } catch (e) {}
+
+    setState(() {
+      _rejected = true;
+      _accepted = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    // var attendeeNumber = _attendeeNumber.toString() +
-    //     "  ${widget.invite.anttendeeId.substring(0, 3)}";
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Container(
@@ -258,9 +276,9 @@ class _EventAttendeeRequestAnswereWidgetState
                                         HapticFeedback.heavyImpact();
                                         DatabaseService
                                             .answerEventAttendeeReques(
-                                                answer: 'Accepted',
-                                                eventInvite: widget.invite,
-                                              );
+                                          answer: 'Accepted',
+                                          eventInvite: widget.invite,
+                                        );
                                         _checkSubmit();
                                         setState(() {
                                           _accepted = true;
@@ -306,7 +324,6 @@ class _EventAttendeeRequestAnswereWidgetState
                                         HapticFeedback.heavyImpact();
                                         DatabaseService
                                             .answerEventAttendeeReques(
-                                              
                                                 answer: 'Rejected',
                                                 eventInvite: widget.invite);
                                         _checkSubmit();
@@ -359,17 +376,7 @@ class _EventAttendeeRequestAnswereWidgetState
                                         ),
                                       ),
                                       onPressed: () {
-                                        HapticFeedback.heavyImpact();
-                                        DatabaseService
-                                            .answerEventAttendeeReques(
-                                                answer: 'Accepted',
-                                                eventInvite: widget.invite,
-                                              );
-                                        _checkSubmit();
-                                        setState(() {
-                                          _accepted = true;
-                                          _rejected = false;
-                                        });
+                                        _accept();
                                       },
                                     ),
                                   ),
@@ -411,17 +418,7 @@ class _EventAttendeeRequestAnswereWidgetState
                                         ),
                                       ),
                                       onPressed: () {
-                                        HapticFeedback.heavyImpact();
-                                        DatabaseService
-                                            .answerEventAttendeeReques(
-                                                answer: 'Rejected',
-                                                eventInvite: widget.invite,
-                                            );
-                                        _checkSubmit();
-                                        setState(() {
-                                          _rejected = true;
-                                          _accepted = false;
-                                        });
+                                        _reject();
                                       },
                                     ),
                                   ),

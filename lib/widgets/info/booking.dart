@@ -228,7 +228,6 @@ class _UserBookingState extends State<UserBooking> {
                             ),
                           ),
                           const SizedBox(height: 40),
-                         
                         ],
                       ),
                     ),
@@ -252,6 +251,9 @@ class _UserBookingState extends State<UserBooking> {
                     ),
                     onPressed: () => setState(() {
                       _sendMail('mailto:${widget.user.email}');
+                      kpiStatisticsRef
+                          .doc('0SuQxtu52SyYjhOKiLsj')
+                          .update({'actualllyBooked': FieldValue.increment(1)});
                     }),
                     child: Material(
                       color: Colors.transparent,
@@ -280,6 +282,9 @@ class _UserBookingState extends State<UserBooking> {
                     ),
                     onPressed: () => setState(() {
                       _makePhoneCall('tel:${widget.user.contacts}');
+                      kpiStatisticsRef
+                          .doc('0SuQxtu52SyYjhOKiLsj')
+                          .update({'actualllyBooked': FieldValue.increment(1)});
                     }),
                     child: Material(
                       color: Colors.transparent,

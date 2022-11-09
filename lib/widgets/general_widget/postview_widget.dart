@@ -186,7 +186,8 @@ class _PostViewWidgetState extends State<PostViewWidget> {
         MaterialPageRoute(
             builder: (_) => ProfileProfessionalProfile(
                   currentUserId: Provider.of<UserData>(context).currentUserId!,
-                  userId: widget.post.authorId, user: user,
+                  userId: widget.post.authorId,
+                  user: user,
                 )));
   }
 
@@ -205,8 +206,7 @@ class _PostViewWidgetState extends State<PostViewWidget> {
             onPressed: _setContentWarning,
             imageUrl: widget.post.imageUrl,
           )
-        :
-        Stack(alignment: FractionalOffset.center, children: <Widget>[
+        : Stack(alignment: FractionalOffset.center, children: <Widget>[
             Stack(children: <Widget>[
               GestureDetector(
                 onLongPress: () => Navigator.of(context).push(PageRouteBuilder(
@@ -566,9 +566,8 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                                       onTap: () => Navigator.push(
                                                                           context,
                                                                           MaterialPageRoute(
-                                                                              builder: (_) =>
-                                                                            
-                                                                                  ProfileScreen(   user: null,
+                                                                              builder: (_) => ProfileScreen(
+                                                                                    user: null,
                                                                                     currentUserId: widget.currentUserId,
                                                                                     userId: widget.post.authorId,
                                                                                   ))),
@@ -884,6 +883,13 @@ class _PostViewWidgetState extends State<PostViewWidget> {
                                                   size: 30,
                                                 ),
                                                 onPressed: () {
+                                                  kpiStatisticsRef
+                                                      .doc(
+                                                          '0SuQxtu52SyYjhOKiLsj')
+                                                      .update({
+                                                    'moodPunchedVideoAccessed':
+                                                        FieldValue.increment(1)
+                                                  });
                                                   Navigator.push(
                                                     context,
                                                     MaterialPageRoute(

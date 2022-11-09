@@ -1,6 +1,5 @@
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:uuid/uuid.dart';
 
 class EventPublicInviteAvailable extends StatefulWidget {
@@ -382,32 +381,35 @@ class _EventPublicInviteAvailableState
             const SizedBox(
               height: 30,
             ),
-            _different < 1
-                ? RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: 'Ongoing...',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
+            _different < 0
+                ? Padding(
+                    padding: const EdgeInsets.all(30.0),
+                    child: RichText(
+                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Ongoing...',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
-                        TextSpan(
-                          text:
-                              '\nThis event is in progress. It would be completed on ${MyDateFormat.toDate(DateTime.parse(widget.event.clossingDay))}. Attend, meet and explore.',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.white,
+                          TextSpan(
+                            text:
+                                '\nThis event is in progress. It would be completed on ${MyDateFormat.toDate(DateTime.parse(widget.event.clossingDay))}.',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
                   )
                 : const SizedBox.shrink(),
-            _different < 1
+            _different < 0
                 ? const SizedBox(
                     height: 10,
                   )

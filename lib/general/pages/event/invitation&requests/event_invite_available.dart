@@ -205,7 +205,9 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
           ),
         ),
         messageText: Text(
-          "",
+          from.startsWith('Accept')
+              ? 'This event has been added to the list of events you will be attending. Refresh your event page to track this event.'
+              : '',
           style: TextStyle(
             color: Colors.white,
             fontSize: width > 800 ? 20 : 12,
@@ -452,32 +454,35 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
               ],
             ),
           ),
-          _different < 1
-              ? RichText(
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'Ongoing...',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.white,
+          _different < 0
+              ? Padding(
+                  padding: const EdgeInsets.all(30.0),
+                  child: RichText(
+                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Ongoing...',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                      TextSpan(
-                        text:
-                            '\nThis event is in progress. It would be completed on ${MyDateFormat.toDate(DateTime.parse(widget.event.clossingDay))}. Attend, meet and explore.',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.white,
+                        TextSpan(
+                          text:
+                              '\nThis event is in progress. It would be completed on ${MyDateFormat.toDate(DateTime.parse(widget.event.clossingDay))}.',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
                 )
               : const SizedBox.shrink(),
-          _different < 1
+          _different < 0
               ? const SizedBox(
                   height: 10,
                 )

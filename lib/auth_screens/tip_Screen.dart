@@ -16,7 +16,30 @@ class _TipScreenState extends State<TipScreen> {
       body: Padding(
         padding: const EdgeInsets.all(30.0),
         child: ListView(children: [
-          SizedBox(height: 100),
+          SizedBox(height: 50),
+          RichText(
+            textScaleFactor: MediaQuery.of(context).textScaleFactor,
+            text: TextSpan(children: [
+              TextSpan(
+                text: 'Registration Successful.\n',
+                style: TextStyle(
+                  fontSize: 18.0,
+                  // fontWeight: FontWeight.bold,
+                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.blue,
+                ),
+              ),
+              TextSpan(
+                text:
+                    'We have put together some tips to help you understand certain features of Bars Impression and to use this platform effectively.',
+                style: TextStyle(
+                  fontSize: 12.0,
+                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                ),
+              ),
+            ]),
+          ),
+          Divider(),
+          SizedBox(height: 30),
           Center(
             child: ShakeTransition(
               child: Text('Tips',
@@ -40,7 +63,7 @@ class _TipScreenState extends State<TipScreen> {
                     ConfigBloc().darkModeOn ? Colors.white : Colors.black,
                 title: 'Reveal more information',
                 subTitle:
-                    "Slide a created content (mood punch, a forum, an event, or a comment) to the right to see more information.\n You can also tap and hold to reveal more information",
+                    "Tap and hold on a content to reveal more information.You can also slide contents (mood punch, a comment, an event question, or a forum thought) to the right for an edit action.",
                 icon: Icon(
                   Icons.info,
                   color: Colors.grey,

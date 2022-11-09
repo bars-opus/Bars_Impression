@@ -45,8 +45,9 @@ class _AttendEventState extends State<AttendEvent> {
   }
 
   _setUpAttendeePublic() async {
-    DatabaseService.numEventpublicAttendee(widget.event.id, )
-        .listen((inviteCount) {
+    DatabaseService.numEventpublicAttendee(
+      widget.event.id,
+    ).listen((inviteCount) {
       if (mounted) {
         setState(() {
           _inviteCount = inviteCount;
@@ -370,7 +371,7 @@ class _AttendEventState extends State<AttendEvent> {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(left: 12.0, right: 12),
-                          child: ContentField(
+                          child: ContentFieldBlack(
                             labelText: 'Reason',
                             hintText: "Reason to attend",
                             initialValue: _message,

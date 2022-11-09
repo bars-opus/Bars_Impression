@@ -1301,7 +1301,7 @@ class DatabaseService {
 
   static Future<KPI> getKPI() async {
     DocumentSnapshot userDocSnapshot =
-        await usersRef.doc('0SuQxtu52SyYjhOKiLsj').get();
+        await kpiStatisticsRef.doc('0SuQxtu52SyYjhOKiLsj').get();
     if (userDocSnapshot.exists) {
       return KPI.fromDoc(userDocSnapshot);
     }
@@ -2259,7 +2259,7 @@ class DatabaseService {
       'eventImageUrl': event.imageUrl,
       'eventTitle': event.title,
       'commonId': commonId,
-      'ask': '',
+      'ask': null,
       'timestamp': Timestamp.fromDate(DateTime.now()),
       'authorProfileImageUrl': user.profileImageUrl,
       'authorName': user.userName,

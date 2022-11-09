@@ -48,7 +48,7 @@ class ActivityEvent {
       eventInviteType: doc['eventInviteType'] ?? '',
       commonId: doc['commonId'] ?? '',
       toUserId: doc['toUserId'] ?? '',
-      ask: doc['ask'] ?? '',
+      ask: doc['ask'],
       timestamp: doc['timestamp'] ?? '',
       invited: doc['invited'] ?? false,
       authorName: doc['authorName'] ?? '',

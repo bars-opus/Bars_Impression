@@ -528,6 +528,36 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                               ),
                               Divider(color: Colors.grey),
                               GestureDetector(
+                                onTap: () => _dynamicLink(),
+                                child: IntroInfo(
+                                  title: 'Share Account',
+                                  onPressed: () => _dynamicLink(),
+                                  subTitle:
+                                      "Share your account with other people.",
+                                  icon: Icon(
+                                    Icons.share,
+                                    color: Colors.blue,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                              Divider(color: Colors.grey),
+                              GestureDetector(
+                                onTap: () => _dynamicLink(),
+                                child: IntroInfo(
+                                  title: 'Invite people',
+                                  onPressed: () => _dynamicLink(),
+                                  subTitle:
+                                      "Invite your friends and other music creatives to use Bars impression.",
+                                  icon: Icon(
+                                    Icons.people,
+                                    color: Colors.blue,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                              Divider(color: Colors.grey),
+                              GestureDetector(
                                 onTap: () => Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -542,22 +572,6 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                       "Take a survey and let us know what you think about Bars Impression.",
                                   icon: Icon(
                                     Icons.arrow_forward_ios_outlined,
-                                    color: Colors.blue,
-                                    size: 20,
-                                  ),
-                                ),
-                              ),
-                              Divider(color: Colors.grey),
-                              GestureDetector(
-                                onTap: () => () => _dynamicLink(),
-                                child: IntroInfo(
-                                  title: 'Share Account',
-                                  onPressed: () => Share.share(
-                                      'https://play.google.com/store/apps/details?id=com.barsOpus.barsImpression'),
-                                  subTitle:
-                                      "Share your account with other people.",
-                                  icon: Icon(
-                                    Icons.share,
                                     color: Colors.blue,
                                     size: 20,
                                   ),

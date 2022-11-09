@@ -190,7 +190,7 @@ class _CommentsScreenState extends State<CommentsScreen>
             report: comment.report,
             content: comment.content,
             timestamp: comment.timestamp,
-            authorId: '',
+            authorId: comment.authorId,
             profileHandle: comment.authorProfileHanlde,
             profileImageUrl: comment.authorProfileImageUrl,
             verified: comment.authorVerification,
@@ -284,6 +284,9 @@ class _CommentsScreenState extends State<CommentsScreen>
                           _commentController.clear();
                           Provider.of<UserData>(context, listen: false)
                               .setPost9('');
+                          kpiStatisticsRef
+                              .doc('0SuQxtu52SyYjhOKiLsj')
+                              .update({'comentSent': FieldValue.increment(1)});
                           if (mounted) {
                             setState(() {
                               _isCommenting = false;

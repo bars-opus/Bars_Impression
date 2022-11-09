@@ -270,7 +270,6 @@ export 'package:bars/general/pages/event/invitation&requests/event_attend.dart';
 export 'package:bars/general/pages/event/invitation&requests/event_calender.dart';
 export 'package:bars/general/pages/event/invitation&requests/event_dashboard.dart';
 export 'package:bars/general/pages/event/invitation&requests/event_people.dart';
-export 'package:bars/general/pages/event/invitation&requests/event_public_invite.dart';
 export 'package:bars/general/pages/event/invitation&requests/event_public_invite_available.dart';
 export 'package:bars/general/pages/event/invitation&requests/send_event_invitation.dart';
 export 'package:bars/general/pages/event/invitation&requests/events_atteding.dart';

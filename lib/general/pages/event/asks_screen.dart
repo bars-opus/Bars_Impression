@@ -274,6 +274,9 @@ class _AsksScreenState extends State<AsksScreen> {
                           );
                           Provider.of<UserData>(context, listen: false)
                               .setPost9('');
+                               kpiStatisticsRef
+                          .doc('0SuQxtu52SyYjhOKiLsj')
+                          .update({'actualllyBooked': FieldValue.increment(1)});
                           _askController.clear();
                           setState(() {
                             _isAsking = false;

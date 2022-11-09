@@ -2427,34 +2427,32 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                                         context,
                                                                         listen:
                                                                             false)
-                                                                    .post10
-                                                                    .isEmpty
-                                                                ? Provider.of<UserData>(
+                                                                    .bool2
+                                                                ? const SizedBox
+                                                                    .shrink()
+                                                                : ContentFieldBlack(
+                                                                    labelText:
+                                                                        'Country',
+                                                                    hintText:
+                                                                        "Country of event",
+                                                                    initialValue: Provider.of<UserData>(
                                                                             context,
                                                                             listen:
                                                                                 false)
-                                                                        .bool2
-                                                                    ? const SizedBox
-                                                                        .shrink()
-                                                                    : ContentFieldBlack(
-                                                                        labelText:
-                                                                            'Country',
-                                                                        hintText:
-                                                                            "Country of event",
-                                                                        initialValue: Provider.of<UserData>(context,
-                                                                                listen: false)
-                                                                            .post10
-                                                                            .toString(),
-                                                                        onSavedText:
-                                                                            (input) =>
-                                                                                Provider.of<UserData>(context, listen: false).setPost10(input),
-                                                                        onValidateText: (input) => input.trim().length <
+                                                                        .post10
+                                                                        .toString(),
+                                                                    onSavedText: (input) => Provider.of<UserData>(
+                                                                            context,
+                                                                            listen:
+                                                                                false)
+                                                                        .setPost10(
+                                                                            input),
+                                                                    onValidateText: (input) =>
+                                                                        input.trim().length <
                                                                                 1
                                                                             ? "Enter the country of event"
                                                                             : null,
-                                                                      )
-                                                                : const SizedBox
-                                                                    .shrink(),
+                                                                  ),
                                                             const SizedBox(
                                                               height: 50,
                                                             ),

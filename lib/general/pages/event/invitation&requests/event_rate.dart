@@ -94,7 +94,7 @@ class _EventRateState extends State<EventRate> {
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text: _different < 1 ? '' : _different.toString(),
+                          text: _different < 0 ? '' : _different.toString(),
                           style: TextStyle(
                             fontSize: 40,
                             fontWeight: FontWeight.w100,
@@ -102,7 +102,7 @@ class _EventRateState extends State<EventRate> {
                           ),
                         ),
                         TextSpan(
-                          text: _different < 1 ? 'Ongoing...' : '\nDays More',
+                          text: _different < 0 ? 'Ongoing...' : '\nDays More',
                           style: TextStyle(
                             fontSize: 12,
                             // fontWeight: FontWeight.w100,
@@ -184,54 +184,58 @@ class _EventRateState extends State<EventRate> {
               const SizedBox(
                 height: 40,
               ),
-              Container(
-                width: width,
-                child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      elevation: 0.0,
-                      foregroundColor: Colors.blue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
+              widget.event.authorId ==
+                      Provider.of<UserData>(context).currentUserId!
+                  ? const SizedBox.shrink()
+                  : Container(
+                      width: width,
+                      child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            elevation: 0.0,
+                            foregroundColor: Colors.blue,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 5.0, vertical: 2),
+                            child: Text(
+                              'Attend',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontSize: 12,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          onPressed: () {
+                            widget.event.isPrivate
+                                ? Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => AttendEvent(
+                                              event: widget.event,
+                                              currentUserId:
+                                                  Provider.of<UserData>(context,
+                                                          listen: false)
+                                                      .currentUserId!,
+                                              palette: widget.palette,
+                                            )),
+                                  )
+                                : Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) =>
+                                            EventPublicInviteAvailable(
+                                              event: widget.event,
+                                              palette: widget.palette,
+                                              eventInvite: null,
+                                            )),
+                                  );
+                          }),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 5.0, vertical: 2),
-                      child: Text(
-                        'Attend',
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontSize: 12,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    onPressed: () {
-                      widget.event.isPrivate
-                          ? Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => AttendEvent(
-                                        event: widget.event,
-                                        currentUserId: Provider.of<UserData>(
-                                                context,
-                                                listen: false)
-                                            .currentUserId!,
-                                        palette: widget.palette,
-                                      )),
-                            )
-                          : Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => EventPublicInviteAvailable(
-                                        event: widget.event,
-                                        palette: widget.palette,
-                                        eventInvite: null,
-                                      )),
-                            );
-                    }),
-              ),
             ],
           ),
         ),

@@ -53,6 +53,13 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
     super.initState();
     _countDown();
     _displayWarning = widget.event.report.isNotEmpty ? true : false;
+    _kpi();
+  }
+
+  _kpi() {
+    kpiStatisticsRef
+        .doc('0SuQxtu52SyYjhOKiLsj')
+        .update({'event': FieldValue.increment(1)});
   }
 
   _countDown() async {

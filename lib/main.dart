@@ -11,6 +11,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await FirebaseAppCheck.instance.activate();
+  
   FirebaseMessaging.onBackgroundMessage(_backgroundHandler);
   Bars.prefs = await SharedPreferences.getInstance();
   SystemChrome.setPreferredOrientations(

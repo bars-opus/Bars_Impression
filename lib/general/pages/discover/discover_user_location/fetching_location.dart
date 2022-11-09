@@ -122,7 +122,7 @@ class _FetchingLocationState extends State<FetchingLocation> {
                     showTwoGlows: true,
                     shape: BoxShape.circle,
                     glowColor: Colors.green,
-                    endRadius: MediaQuery.of(context).size.width,
+                    endRadius: 300,
                     duration: const Duration(milliseconds: 2000),
                     repeatPauseDuration: const Duration(milliseconds: 1000),
                     child: NoContents(

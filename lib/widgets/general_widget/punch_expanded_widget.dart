@@ -33,6 +33,13 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
   void initState() {
     super.initState();
     _displayWarning = widget.post.report.isNotEmpty ? true : false;
+    _kpi();
+  }
+
+  _kpi() {
+    kpiStatisticsRef
+        .doc('0SuQxtu52SyYjhOKiLsj')
+        .update({'moodPunched': FieldValue.increment(1)});
   }
 
   _setImage() {
@@ -640,7 +647,7 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                                                                                             //     :
 
                                                                                             ProfileScreen(
-                                                                                                 user: null,
+                                                                                              user: null,
                                                                                               currentUserId: widget.currentUserId,
                                                                                               userId: widget.post.authorId,
                                                                                             ))),
@@ -912,6 +919,15 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                                                             size: 30,
                                                           ),
                                                           onPressed: () {
+                                                            kpiStatisticsRef
+                                                                .doc(
+                                                                    '0SuQxtu52SyYjhOKiLsj')
+                                                                .update({
+                                                              'moodPunchedVideoAccessed':
+                                                                  FieldValue
+                                                                      .increment(
+                                                                          1)
+                                                            });
                                                             Navigator.push(
                                                               context,
                                                               MaterialPageRoute(

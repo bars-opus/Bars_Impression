@@ -1428,7 +1428,7 @@ class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
                                     SizedBox(
                                       height: 30.0,
                                     ),
-                                    _different < 1
+                                    _different < 0
                                         ? RichText(
                                             textScaleFactor:
                                                 MediaQuery.of(context)

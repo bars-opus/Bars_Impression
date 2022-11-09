@@ -161,7 +161,7 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                             color: _toDaysDate.isAfter(
                                     DateTime.parse(widget.event.clossingDay))
                                 ? Colors.green
-                                : _different < 1
+                                : _different < 0
                                     ? Colors.blue
                                     : ConfigBloc().darkModeOn
                                         ? Colors.white

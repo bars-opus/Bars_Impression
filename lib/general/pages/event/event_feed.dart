@@ -62,7 +62,6 @@ class _EventsFeedState extends State<EventsFeed>
         .doc(widget.currentUserId)
         .collection('eventInvite')
         .orderBy('eventTimestamp', descending: false)
-        .where('eventTimestamp')
         .limit(10)
         .get();
     List<EventInvite> invites = invitesFeedSnapShot.docs

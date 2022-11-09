@@ -37,6 +37,7 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
     _setUpThoughts();
     _isVisible = true;
     _setupIsBlockedUser();
+    _kpi();
     _displayWarning = widget.forum.report.isNotEmpty ? true : false;
     SchedulerBinding.instance.addPostFrameCallback((_) {
       Provider.of<UserData>(context, listen: false).setPost9('');
@@ -88,6 +89,12 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
         });
       }
     });
+  }
+
+  _kpi() {
+    kpiStatisticsRef
+        .doc('0SuQxtu52SyYjhOKiLsj')
+        .update({'forum': FieldValue.increment(1)});
   }
 
   _setupIsBlockedUser() async {
@@ -196,6 +203,11 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                                 _thoughtController.clear();
                                 setState(() {
                                   _isThinking = false;
+                                });
+                                kpiStatisticsRef
+                                    .doc('0SuQxtu52SyYjhOKiLsj')
+                                    .update({
+                                  'thoughtSent': FieldValue.increment(1)
                                 });
                                 Provider.of<UserData>(context, listen: false)
                                     .setPost8('');

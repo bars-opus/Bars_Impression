@@ -445,6 +445,8 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                               reportConfirmed: '',
                               advice: _adviceControler.text.trim(),
                             );
+                            kpiStatisticsRef.doc('0SuQxtu52SyYjhOKiLsj').update(
+                                {'advicesSent': FieldValue.increment(1)});
                             _adviceControler.clear();
                             Provider.of<UserData>(context, listen: false)
                                 .setPost9('');

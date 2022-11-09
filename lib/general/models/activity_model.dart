@@ -30,10 +30,10 @@ class Activity {
   factory Activity.fromDoc(DocumentSnapshot doc) {
     return Activity(
       id: doc.id,
-      fromUserId: doc['fromUserId'],
-      postId: doc['postId'],
-      seen: doc['seen'],
-      postImageUrl: doc['postImageUrl'],
+      fromUserId: doc['fromUserId']??'',
+      postId: doc['postId']??'',
+      seen: doc['seen']??'',
+      postImageUrl: doc['postImageUrl']??'',
       comment: doc['comment'],
       timestamp: doc['timestamp'],
       authorName: doc['authorName'] ?? '',

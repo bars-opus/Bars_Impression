@@ -132,36 +132,36 @@ class _AuthCreateUserCredentialsState extends State<AuthCreateUserCredentials> {
         await Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => TipScreen()),
             (Route<dynamic> route) => false);
-        return Flushbar(
-          maxWidth: MediaQuery.of(context).size.width,
-          backgroundColor: Colors.white,
-          margin: EdgeInsets.all(8),
-          flushbarPosition: FlushbarPosition.TOP,
-          flushbarStyle: FlushbarStyle.FLOATING,
-          titleText: Text(
-            'Registration Successful',
-            style: TextStyle(
-              color: Colors.black,
-            ),
-          ),
-          icon: Icon(
-            MdiIcons.checkCircleOutline,
-            size: 30.0,
-            color: Colors.blue,
-          ),
-          messageText: RichText(
-            textScaleFactor: MediaQuery.of(context).textScaleFactor,
-            text: TextSpan(children: [
-              TextSpan(
-                  text:
-                      "We have put together some tips to help you understand certain features of Bars Impression and to use this platform effectively.",
-                  style: TextStyle(fontSize: 14, color: Colors.black)),
-            ]),
-          ),
-          isDismissible: false,
-          leftBarIndicatorColor: Colors.blue,
-          duration: Duration(seconds: 3),
-        )..show(context);
+        // return Flushbar(
+        //   maxWidth: MediaQuery.of(context).size.width,
+        //   backgroundColor: Colors.white,
+        //   margin: EdgeInsets.all(8),
+        //   flushbarPosition: FlushbarPosition.TOP,
+        //   flushbarStyle: FlushbarStyle.FLOATING,
+        //   titleText: Text(
+        //     'Registration Successful',
+        //     style: TextStyle(
+        //       color: Colors.black,
+        //     ),
+        //   ),
+        //   icon: Icon(
+        //     MdiIcons.checkCircleOutline,
+        //     size: 30.0,
+        //     color: Colors.blue,
+        //   ),
+        //   messageText: RichText(
+        //     textScaleFactor: MediaQuery.of(context).textScaleFactor,
+        //     text: TextSpan(children: [
+        //       TextSpan(
+        //           text:
+        //               "We have put together some tips to help you understand certain features of Bars Impression and to use this platform effectively.",
+        //           style: TextStyle(fontSize: 14, color: Colors.black)),
+        //     ]),
+        //   ),
+        //   isDismissible: false,
+        //   leftBarIndicatorColor: Colors.blue,
+        //   duration: Duration(seconds: 3),
+        // )..show(context);
       }
     } catch (e) {
       String error = e.toString();

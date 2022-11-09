@@ -779,6 +779,9 @@ class _UserViewState extends State<UserView> {
                                         user: widget.user,
                                         userId: widget.user.id!,
                                       )));
+                          kpiStatisticsRef
+                              .doc('0SuQxtu52SyYjhOKiLsj')
+                              .update({'booking': FieldValue.increment(1)});
                         }),
                   ],
                 ),
