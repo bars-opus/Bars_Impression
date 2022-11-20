@@ -178,7 +178,7 @@ class UserProfessionalViewWidget extends StatelessWidget {
                                                                       context)
                                                               .currentUserId!,
                                                           userId: user.id!,
-                                                           user: user,
+                                                          user: user,
                                                         ))),
                                           ),
                                         ),
@@ -1027,13 +1027,18 @@ class UserProfessionalViewWidget extends StatelessWidget {
                                             ),
                                             Row(
                                               mainAxisAlignment: user
-                                                          .website!.isEmpty &&
-                                                      user.otherSites1!
-                                                          .isEmpty &&
-                                                      user.otherSites2!.isEmpty
+                                                          .otherSites2!
+                                                          .isNotEmpty &&
+                                                      user.website!.isEmpty
                                                   ? MainAxisAlignment.center
-                                                  : MainAxisAlignment
-                                                      .spaceEvenly,
+                                                  : user.website!.isEmpty &&
+                                                          user.otherSites1!
+                                                              .isEmpty &&
+                                                          user.otherSites2!
+                                                              .isEmpty
+                                                      ? MainAxisAlignment.center
+                                                      : MainAxisAlignment
+                                                          .spaceEvenly,
                                               children: [
                                                 user.website!.isEmpty
                                                     ? const SizedBox.shrink()
@@ -1285,10 +1290,24 @@ class UserProfessionalViewWidget extends StatelessWidget {
                                         height: width / 1.3,
                                         width: width,
                                         color: Colors.grey,
-                                        child: Icon(
-                                          MdiIcons.image,
-                                          color: Colors.white,
-                                          size: 70,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              'No professional\nImages.',
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            Icon(
+                                              MdiIcons.image,
+                                              color: Colors.black,
+                                              size: 70,
+                                            ),
+                                          ],
                                         ),
                                       )
                                     : GestureDetector(
@@ -1342,7 +1361,7 @@ class UserProfessionalViewWidget extends StatelessWidget {
                                                 color: Colors.grey,
                                                 child: Icon(
                                                   MdiIcons.image,
-                                                  color: Colors.white,
+                                                  color: Colors.black,
                                                   size: 40,
                                                 ),
                                               )
@@ -1375,7 +1394,7 @@ class UserProfessionalViewWidget extends StatelessWidget {
                                                 color: Colors.grey,
                                                 child: Icon(
                                                   MdiIcons.image,
-                                                  color: Colors.white,
+                                                  color: Colors.black,
                                                   size: 40,
                                                 ),
                                               )

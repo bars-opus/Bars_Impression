@@ -39,7 +39,8 @@ class _EventProfileViewState extends State<EventProfileView> {
 
   _countDown() async {
     DateTime date = DateTime.parse(widget.event.date);
-    DateTime clossingDate = DateTime.parse(widget.event.clossingDay);
+    DateTime clossingDate =
+        DateTime.parse(widget.event.clossingDay).add(const Duration(hours: 3));
     var different = date.difference(DateTime.now()).inDays;
 
     final toDayDate = DateTime.now();
@@ -117,7 +118,7 @@ class _EventProfileViewState extends State<EventProfileView> {
                       ),
                     ),
                   ),
-                  onPressed: () => _toDaysDate.isAfter(_date) || _different < 0
+                  onPressed: () => _different < 1
                       ? Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -252,7 +253,9 @@ class _EventProfileViewState extends State<EventProfileView> {
                     titleHero: 'title1  ${widget.event.id.toString()}',
                     event: widget.event,
                     askCount: _askCount,
-                    difference: _different,
+                    difference: _date.difference(_toDaysDate).inMinutes < 0
+                        ? true
+                        : false,
                     exploreLocation: widget.exploreLocation,
                     feed: widget.feed,
                   ),

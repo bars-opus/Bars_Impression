@@ -428,8 +428,63 @@ class DatabaseService {
     postRef.get().then((doc) {
       int likeCount = doc['likeCount'];
       postRef.update({'likeCount': likeCount + 1});
-      likesRef.doc(post.id).collection('postLikes').doc(user.id).set({});
+      likesRef.doc(post.id).collection('postLikes').doc(user.id).set({
+        'uid': user.id,
+      });
       addActivityItem(user: user, post: post, comment: null);
+    });
+  }
+
+  static void likeThought({
+    required AccountHolder user,
+    required Thought thought,
+    required Forum forum,
+  }) {
+    thoughtsRef
+        .doc(forum.id)
+        .collection('forumThoughts')
+        .doc(thought.id)
+        .update({'likeCount': FieldValue.increment(1)});
+    //     .update({
+    //   'likeCount': thought.count! + 1,
+    // });
+
+    thoughtsLikeRef
+        .doc(thought.id)
+        .collection('thoughtLikes')
+        .doc(user.id)
+        .set({
+      'uid': user.id,
+    });
+    addActivityThoughtLikeItem(
+      user: user,
+      forum: forum,
+      thought: thought,
+      isThoughtLiked: true,
+    );
+  }
+
+  static void unlikeThought(
+      {required AccountHolder user,
+      required Forum forum,
+      required Thought thought}) {
+    thoughtsRef
+        .doc(forum.id)
+        .collection('forumThoughts')
+        .doc(thought.id)
+        .update({'likeCount': FieldValue.increment(-1)});
+    //     .update({
+    //   'likeCount': thought.count! - 1,
+    // });
+    thoughtsLikeRef
+        .doc(thought.id)
+        .collection('thoughtLikes')
+        .doc(user.id)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
     });
   }
 
@@ -520,6 +575,7 @@ class DatabaseService {
       'imageUrl': event.imageUrl,
       'title': event.title,
       'type': event.type,
+      'category': event.category,
       'rate': event.rate,
       'venue': event.venue,
       'theme': event.theme,
@@ -575,6 +631,7 @@ class DatabaseService {
       'authorId': event.authorId,
       'timestamp': event.timestamp,
       'previousEvent': event.previousEvent,
+      'category': event.category,
       'triller': event.triller,
       'city': event.city,
       'country': event.country,
@@ -592,18 +649,6 @@ class DatabaseService {
     kpiStatisticsRef
         .doc('0SuQxtu52SyYjhOKiLsj')
         .update({'createEvent': FieldValue.increment(1)});
-    // eventTypesRef
-    //     .doc(
-    //       event.type,
-    //     )
-    //     .collection(
-    //       event.type,
-    //     )
-    //     .doc(docId)
-    //     .set({
-    //   'uid': docId,
-    //   'timestamp': Timestamp.fromDate(DateTime.now()),
-    // });
   }
 
   static void editEvent(Event event) {
@@ -612,30 +657,20 @@ class DatabaseService {
         .collection('userEvents')
         .doc(event.id)
         .update({
-      // 'imageUrl': event.imageUrl,
       'title': event.title,
-      // 'type': event.type,
       'rate': event.rate,
       'venue': event.venue,
       'theme': event.theme,
-      // 'date': event.date,
       'dressCode': event.dressCode,
-      // 'time': event.time,
       'dj': event.dj,
       'guess': event.guess,
       'host': event.host,
       'artist': event.artist,
-      // 'authorId': event.authorId,
-      // 'timestamp': event.timestamp,
       'previousEvent': event.previousEvent,
       'clossingDay': event.clossingDay,
-
       'triller': event.triller,
-      // 'isVirtual': event.isVirtual,
       'city': event.city,
       'country': event.country,
-      // 'virtualVenue': event.virtualVenue,
-      // 'isPrivate': event.isPrivate,
       'ticketSite': event.ticketSite,
       'blurHash': event.blurHash,
     });
@@ -1519,7 +1554,8 @@ class DatabaseService {
         clossingDay: '',
         mediaUrl: '',
         mediaType: '',
-        authorName: '');
+        authorName: '',
+        category: '');
   }
 
   static Future<Event> getEventWithId(String eventId) async {
@@ -1562,7 +1598,8 @@ class DatabaseService {
         clossingDay: '',
         mediaType: '',
         mediaUrl: '',
-        authorName: '');
+        authorName: '',
+        category: '');
   }
 
   static Future<Verification> getVerificationUser(String? userId) async {
@@ -1609,6 +1646,34 @@ class DatabaseService {
         mediaUrl: '',
         forumType: '',
         authorName: '');
+  }
+
+  static Future<Thought> getThoughtWithId(
+      String forumId, String thoughtId) async {
+    DocumentSnapshot userDocSnapshot = await thoughtsRef
+        .doc(forumId)
+        .collection('forumThoughts')
+        .doc(thoughtId)
+        .get();
+    if (userDocSnapshot.exists) {
+      return Thought.fromDoc(userDocSnapshot);
+    }
+    return Thought(
+        authorId: '',
+        id: '',
+        report: '',
+        reportConfirmed: '',
+        mediaType: '',
+        mediaUrl: '',
+        authorName: '',
+        authorProfileHanlde: '',
+        authorProfileImageUrl: '',
+        authorVerification: '',
+        count: null,
+        content: '',
+        likeCount: null,
+        timestamp: null,
+        imported: false);
   }
 
   static Future<Post> getPostWithId(String postId) async {
@@ -1684,6 +1749,16 @@ class DatabaseService {
     return userDoc.exists;
   }
 
+  static Future<bool> didLikeThought(
+      {required String currentUserId, required Thought thought}) async {
+    DocumentSnapshot userDoc = await thoughtsLikeRef
+        .doc(thought.id)
+        .collection('thoughtLikes')
+        .doc(currentUserId)
+        .get();
+    return userDoc.exists;
+  }
+
   static void disLikePost({required String currentUserId, required Post post}) {
     DocumentReference postRef =
         postsRef.doc(post.authorId).collection('userPosts').doc(post.id);
@@ -1694,7 +1769,9 @@ class DatabaseService {
           .doc(post.id)
           .collection('postDisLikes')
           .doc(currentUserId)
-          .set({});
+          .set({
+        'uid': currentUserId,
+      });
     });
   }
 
@@ -1841,13 +1918,13 @@ class DatabaseService {
 
   static void replyThought(
       {required String currentUserId,
-      required String thoughtId,
       required Forum forum,
+      required Thought thought,
       required int count,
       required AccountHolder user,
       required String replyThought,
       required String reportConfirmed}) {
-    replyThoughtsRef.doc(thoughtId).collection('replyThoughts').add({
+    replyThoughtsRef.doc(thought.id).collection('replyThoughts').add({
       'content': replyThought,
       'reportConfirmed': reportConfirmed,
       'mediaType': '',
@@ -1862,25 +1939,55 @@ class DatabaseService {
     }).then((value) => thoughtsRef
             .doc(forum.id)
             .collection('forumThoughts')
-            .doc(thoughtId)
+            .doc(thought.id)
             .update({
           'count': count,
         }));
 
-    addActivityForumItem(user: user, forum: forum, thought: replyThought);
+    // addActivityForumItem(
+    //     user: user,
+    //     forum: forum,
+    //     thought: replyThought,
+    //     isThoughtLiked: false,
+    //     thoughtId: thoughtId);
+
+    addActivityThoughtReplyItem(
+      user: user,
+      forum: forum,
+      thought: thought,
+      isThoughtLiked: false,
+      replyThought: replyThought,
+      isThoughtReplied: true,
+    );
+  }
+
+  static Future<Thought> getUserThought(
+      String thoughtId, String forumId) async {
+    DocumentSnapshot forumDocSnapshot = await thoughtsRef
+        .doc(forumId)
+        .collection('forumThoughts')
+        .doc(thoughtId)
+        .get();
+    return Thought.fromDoc(forumDocSnapshot);
   }
 
   static void thoughtOnForum(
       {required String currentUserId,
       required Forum forum,
       required String thought,
+      required String mediaType,
+      required bool imported,
+      required String mediaUrl,
+      required bool isThoughtLiked,
       required AccountHolder user,
       required String reportConfirmed}) {
     thoughtsRef.doc(forum.id).collection('forumThoughts').add({
       'content': thought,
-      'mediaType': '',
-      'mediaUrl': '',
+      'mediaType': mediaType,
+      'mediaUrl': mediaUrl,
+      'imported': imported,
       'count': 0,
+      'likeCount': 0,
       'reportConfirmed': reportConfirmed,
       'report': '',
       'authorId': currentUserId,
@@ -1890,7 +1997,12 @@ class DatabaseService {
       'authorProfileImageUrl': user.profileImageUrl,
       'authorVerification': user.verified,
     });
-    addActivityForumItem(user: user, forum: forum, thought: thought);
+    addActivityForumItem(
+        user: user,
+        forum: forum,
+        thought: thought,
+        isThoughtLiked: false,
+        thoughtId: '');
   }
 
   // static void replyThought(
@@ -1939,15 +2051,23 @@ class DatabaseService {
       }
     });
 
-    // QuerySnapshot replyThoughtsSnapShot = await replyThoughtsRef
-    //     .doc(thought.id)
-    //     .collection('replyThoughts')
-    //     .get();
-    // replyThoughtsSnapShot.docs.forEach((doc) {
-    //   if (doc.exists) {
-    //     doc.reference.delete();
-    //   }
-    // });
+    QuerySnapshot replyThoughtsSnapShot = await replyThoughtsRef
+        .doc(thought.id)
+        .collection('replyThoughts')
+        .get();
+    replyThoughtsSnapShot.docs.forEach((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+
+    QuerySnapshot likeThoughtsSnapShot =
+        await thoughtsLikeRef.doc(thought.id).collection('thoughtLikes').get();
+    likeThoughtsSnapShot.docs.forEach((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
   }
 
   static void deleteReplyThought(
@@ -2305,12 +2425,12 @@ class DatabaseService {
       'attendNumber': attendeeNumber,
       'anttendeeId': user.id,
       'message': message,
-      'inviteStatus': '',
+      'inviteStatus': 'Accepted',
       'personnelStatus': '',
       'inviteeName': '',
       'invited': true,
       'validated': false,
-      'attendeeStatus': '',
+      'attendeeStatus': 'Accepted',
       'anttendeeName': user.userName,
       'anttendeeprofileHandle': user.profileHandle,
       'anttendeeprofileImageUrl': user.profileImageUrl,
@@ -2650,6 +2770,8 @@ class DatabaseService {
   static void addActivityForumItem(
       {required Forum forum,
       required AccountHolder user,
+      required bool isThoughtLiked,
+      required String thoughtId,
       required String thought}) {
     if (user.id != forum.authorId) {
       activitiesForumRef
@@ -2658,9 +2780,70 @@ class DatabaseService {
           .add({
         'fromUserId': user.id,
         'forumId': forum.id,
+        'forumAuthorId': forum.authorId,
         'seen': '',
+        'isThoughtLike': isThoughtLiked,
         'forumTitle': forum.title,
         'thought': thought,
+        'thoughtId': thoughtId,
+        'timestamp': Timestamp.fromDate(DateTime.now()),
+        'authorProfileImageUrl': user.profileImageUrl,
+        'authorName': user.userName,
+        'authorProfileHanlde': user.profileHandle,
+        'authorVerification': user.verified,
+      });
+    }
+  }
+
+  static void addActivityThoughtReplyItem(
+      {required Forum forum,
+      required AccountHolder user,
+      required String replyThought,
+      required bool isThoughtLiked,
+      required bool isThoughtReplied,
+      required Thought thought}) {
+    if (user.id != thought.authorId) {
+      activitiesForumRef
+          .doc(thought.authorId)
+          .collection('userActivitiesForum')
+          .add({
+        'fromUserId': user.id,
+        'forumId': forum.id,
+        'forumAuthorId': forum.authorId,
+        'seen': '',
+        'isThoughtLike': isThoughtLiked,
+        'isThoughtReplied': isThoughtReplied,
+        'forumTitle': forum.title,
+        'thought': replyThought,
+        'thoughtId': thought.id,
+        'timestamp': Timestamp.fromDate(DateTime.now()),
+        'authorProfileImageUrl': user.profileImageUrl,
+        'authorName': user.userName,
+        'authorProfileHanlde': user.profileHandle,
+        'authorVerification': user.verified,
+      });
+    }
+  }
+
+  static void addActivityThoughtLikeItem(
+      {required Forum forum,
+      required AccountHolder user,
+      required bool isThoughtLiked,
+      required Thought thought}) {
+    if (user.id != thought.authorId) {
+      activitiesForumRef
+          .doc(thought.authorId)
+          .collection('userActivitiesForum')
+          .add({
+        'fromUserId': user.id,
+        'forumId': forum.id,
+        'forumAuthorId': forum.authorId,
+        'seen': '',
+        'isThoughtLike': isThoughtLiked,
+        'isThoughtReplied': false,
+        'forumTitle': forum.title,
+        'thought': thought.content,
+        'thoughtId': thought.id,
         'timestamp': Timestamp.fromDate(DateTime.now()),
         'authorProfileImageUrl': user.profileImageUrl,
         'authorName': user.userName,
@@ -2748,6 +2931,19 @@ class DatabaseService {
     });
   }
 
+  static void deleteActivityEvent(ActivityEvent activityEvent, String useId) {
+    activitiesEventRef
+        .doc(useId)
+        .collection('userActivitiesEvent')
+        .doc(activityEvent.id)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+  }
+
   static Stream<int> numEventActivities(String userId) {
     return activitiesEventRef
         .doc(userId)
@@ -2772,7 +2968,7 @@ class DatabaseService {
         .doc(userId)
         .collection('userActivitiesEvent')
         .where('seen', isEqualTo: '')
-        .where('ask', isEqualTo: '')
+        .where('invited', isEqualTo: true)
         .snapshots()
         .map((documentSnapshot) => documentSnapshot.docs.length);
   }

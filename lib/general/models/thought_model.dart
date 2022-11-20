@@ -11,16 +11,20 @@ class Thought {
   final String report;
   final String mediaType;
   final String mediaUrl;
+  bool imported;
   final int? count;
+  final int? likeCount;
   final String reportConfirmed;
-  final Timestamp timestamp;
+  final Timestamp? timestamp;
 
   Thought({
     required this.id,
     required this.content,
+    required this.imported,
     required this.authorId,
     required this.report,
     required this.count,
+    required this.likeCount,
     required this.mediaType,
     required this.mediaUrl,
     required this.reportConfirmed,
@@ -37,9 +41,11 @@ class Thought {
       content: doc['content'],
       authorId: doc['authorId'],
       report: doc['report'] ?? '',
+      imported: doc['imported'] ?? false,
       mediaUrl: doc['mediaUrl'] ?? '',
       mediaType: doc['mediaType'] ?? '',
       count: doc['count'] ?? 0,
+      likeCount: doc['likeCount'] ?? 0,
       reportConfirmed: doc['reportConfirmed'] ?? '',
       timestamp: doc['timestamp'],
       authorName: doc['authorName'] ?? '',

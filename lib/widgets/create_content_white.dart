@@ -5,6 +5,7 @@ class ContentFieldWhite extends StatelessWidget {
   String initialValue = '';
   String labelText = '';
   String hintText = '';
+  bool autofocus;
   final Function(String) onSavedText;
   final Function onValidateText;
 
@@ -14,6 +15,7 @@ class ContentFieldWhite extends StatelessWidget {
     required this.initialValue,
     required this.hintText,
     required this.labelText,
+     this.autofocus = false,
   });
 
   @override
@@ -22,6 +24,7 @@ class ContentFieldWhite extends StatelessWidget {
         padding: const EdgeInsets.all(5.0),
         child: Container(
           child: TextFormField(
+            autofocus: autofocus,
             keyboardType: TextInputType.multiline,
             maxLines: null,
             textCapitalization: TextCapitalization.sentences,

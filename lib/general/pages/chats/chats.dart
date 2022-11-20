@@ -76,89 +76,76 @@ class _ChatsState extends State<Chats> {
           decoration: BoxDecoration(
             color: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              StreamBuilder(
-                stream: usersRef
-                    .doc(widget.currentUserId)
-                    .collection('chats')
-                    .orderBy('newMessageTimestamp', descending: true)
-                    .snapshots(),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  if (snapshot.hasData) {
-                    if (snapshot.data.docs.length < 1) {
-                      return Expanded(
-                        child: Center(
-                          child: NoContents(
-                            icon: (MdiIcons.send),
-                            title: 'No Chats.',
-                            subTitle:
-                                'Your chats and messages would appear here. ',
+          child: SafeArea(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                StreamBuilder(
+                  stream: usersRef
+                      .doc(widget.currentUserId)
+                      .collection('chats')
+                      .orderBy('newMessageTimestamp', descending: true)
+                      .snapshots(),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    if (snapshot.hasData) {
+                      if (snapshot.data.docs.length < 1) {
+                        return Expanded(
+                          child: Center(
+                            child: NoContents(
+                              icon: (MdiIcons.send),
+                              title: 'No Chats.',
+                              subTitle:
+                                  'Your chats and messages would appear here. ',
+                            ),
                           ),
-                        ),
-                      );
+                        );
+                      }
+                      return Expanded(
+                          child: Scrollbar(
+                              child: CustomScrollView(
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  slivers: [
+                            SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) {
+                                  Chat chats =
+                                      Chat.fromDoc(snapshot.data.docs[index]);
+
+                                  String userId = snapshot.data.docs[index].id;
+                                  var lastMessage =
+                                      snapshot.data.docs[index]['lastMessage'];
+                                  var seen = snapshot.data.docs[index]['seen'];
+
+                                  return GetAuthor(
+                                    chats: chats,
+                                    lastMessage: lastMessage,
+                                    seen: seen,
+                                    userId: userId,
+                                  );
+                                },
+                                childCount: snapshot.data.docs.length,
+                              ),
+                            )
+                          ])));
                     }
                     return Expanded(
-                        child: Scrollbar(
-                            child: CustomScrollView(
-                                physics: AlwaysScrollableScrollPhysics(),
-                                slivers: [
-                          SliverList(
-                            delegate: SliverChildBuilderDelegate(
-                              (context, index) {
-                                Chat chats =
-                                    Chat.fromDoc(snapshot.data.docs[index]);
-
-                                String userId = snapshot.data.docs[index].id;
-                                var lastMessage =
-                                    snapshot.data.docs[index]['lastMessage'];
-                                var seen = snapshot.data.docs[index]['seen'];
-
-                                return FutureBuilder(
-                                    future: DatabaseService.getUserAuthorWithId(
-                                        userId),
-                                    builder: (BuildContext context,
-                                        AsyncSnapshot snapshot) {
-                                      if (!snapshot.hasData) {
-                                        return const SizedBox.shrink();
-                                      }
-                                      AccountHolderAuthor author =
-                                          snapshot.data;
-
-                                      return Display(
-                                        author: author,
-                                        chats: chats,
-                                        lastMessage: lastMessage,
-                                        seen: seen,
-                                        userId: userId,
-                                      );
-                                    });
-                              },
-                              childCount: snapshot.data.docs.length,
-                            ),
-                          )
-                        ])));
-                  }
-                  return Expanded(
-                    child: Center(
-                      child: SizedBox(
-                        height: 250,
-                        width: 250,
-                        child: CircularProgressIndicator(
-                          backgroundColor: Colors.transparent,
-                          valueColor: new AlwaysStoppedAnimation<Color>(
-                            Colors.teal,
+                      child: Center(
+                        child: Text(
+                          'Loading...',
+                          style: TextStyle(
+                            fontSize: 14.0,
+                            color: ConfigBloc().darkModeOn
+                                ? Colors.white
+                                : Colors.black,
                           ),
-                          strokeWidth: 1,
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ],
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -166,10 +153,286 @@ class _ChatsState extends State<Chats> {
   }
 }
 
+class GetAuthor extends StatefulWidget {
+  final Chat chats;
+  final String userId;
+  final String seen;
+  final String lastMessage;
+
+  const GetAuthor(
+      {super.key,
+      required this.chats,
+      required this.userId,
+      required this.seen,
+      required this.lastMessage});
+
+  @override
+  State<GetAuthor> createState() => _GetAuthorState();
+}
+
+class _GetAuthorState extends State<GetAuthor> {
+  AccountHolderAuthor? _author;
+
+  @override
+  void initState() {
+    super.initState();
+    _setUpProfileUser();
+  }
+
+  _setUpProfileUser() async {
+    AccountHolderAuthor profileUser =
+        await DatabaseService.getUserAuthorWithId(widget.userId);
+    if (mounted) {
+      setState(() {
+        _author = profileUser;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    //  FutureBuilder(
+    //     future: DatabaseService.getUserAuthorWithId(userId),
+    //     builder: (BuildContext context, AsyncSnapshot snapshot) {
+    //       if (!snapshot.hasData) {
+    return _author == null
+        ? Container(
+            child: ListTile(
+                leading: Container(
+                  decoration: BoxDecoration(
+                    color: ConfigBloc().darkModeOn
+                        ? Color(0xFF1a1a1a)
+                        : Colors.white,
+                    borderRadius: BorderRadius.circular(100.0),
+                  ),
+                  child: Hero(
+                    tag: widget.userId,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: CircleAvatar(
+                        radius: 20.0,
+                        backgroundColor: Colors.grey,
+                      ),
+                    ),
+                  ),
+                ),
+                trailing: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Container(
+                      height: 10,
+                      width: 10,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: widget.seen == 'seen'
+                            ? Colors.transparent
+                            : Colors.red,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 2.0,
+                    ),
+                    Text(
+                        timeago.format(
+                          widget.chats.newMessageTimestamp.toDate(),
+                        ),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.grey,
+                          decoration: widget.chats.restrictChat
+                              ? TextDecoration.lineThrough
+                              : TextDecoration.none,
+                        )),
+                  ],
+                ),
+                title: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: Text(
+                        'Loading...',
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          color: ConfigBloc().darkModeOn
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 2.0,
+                    ),
+                    Wrap(
+                      children: [
+                        widget.chats.mediaType.isEmpty
+                            ? const SizedBox.shrink()
+                            : Icon(
+                                MdiIcons.image,
+                                size: 20,
+                                color: widget.seen == 'seen'
+                                    ? Colors.grey
+                                    : Colors.blue,
+                              ),
+                        Text(
+                          widget.lastMessage,
+                          style: TextStyle(
+                            fontSize: 12.0,
+                            fontWeight: widget.seen == 'seen'
+                                ? FontWeight.normal
+                                : FontWeight.bold,
+                            color: widget.seen == 'seen'
+                                ? Colors.grey
+                                : Colors.teal[800],
+                            overflow: TextOverflow.ellipsis,
+                            decoration: widget.chats.restrictChat
+                                ? TextDecoration.lineThrough
+                                : TextDecoration.none,
+                          ),
+                          maxLines: 2,
+                        ),
+                        ConfigBloc().darkModeOn
+                            ? Divider(
+                                color: Colors.grey[850],
+                              )
+                            : Divider(),
+                      ],
+                    ),
+                  ],
+                ),
+                onTap: () {}),
+          )
+        : Display(
+            author: _author,
+            chats: widget.chats,
+            lastMessage: widget.lastMessage,
+            seen: widget.seen,
+            userId: widget.userId,
+          );
+    // Container(
+    //   child: ListTile(
+    //       leading: Container(
+    //         decoration: BoxDecoration(
+    //           color: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+    //           borderRadius: BorderRadius.circular(100.0),
+    //         ),
+    //         child: Hero(
+    //           tag: widget.userId,
+    //           child: Material(
+    //             color: Colors.transparent,
+    //             child: CircleAvatar(
+    //               radius: 20.0,
+    //               backgroundColor: Colors.grey,
+    //             ),
+    //           ),
+    //         ),
+    //       ),
+    //       trailing: Column(
+    //         mainAxisAlignment: MainAxisAlignment.center,
+    //         crossAxisAlignment: CrossAxisAlignment.end,
+    //         children: [
+    //           Container(
+    //             height: 10,
+    //             width: 10,
+    //             decoration: BoxDecoration(
+    //               shape: BoxShape.circle,
+    //               color:
+    //                   widget.seen == 'seen' ? Colors.transparent : Colors.red,
+    //             ),
+    //           ),
+    //           SizedBox(
+    //             height: 2.0,
+    //           ),
+    //           Text(
+    //               timeago.format(
+    //                 widget.chats.newMessageTimestamp.toDate(),
+    //               ),
+    //               style: TextStyle(
+    //                 fontSize: 10,
+    //                 color: Colors.grey,
+    //                 decoration: widget.chats.restrictChat
+    //                     ? TextDecoration.lineThrough
+    //                     : TextDecoration.none,
+    //               )),
+    //         ],
+    //       ),
+    //       title: Column(
+    //         mainAxisAlignment: MainAxisAlignment.start,
+    //         crossAxisAlignment: CrossAxisAlignment.start,
+    //         children: <Widget>[
+    //           Padding(
+    //             padding: const EdgeInsets.only(right: 12.0),
+    //             child: Text(
+    //               'Loading...',
+    //               style: TextStyle(
+    //                 fontSize: 14.0,
+    //                 color:
+    //                     ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+    //               ),
+    //             ),
+    //           ),
+    //           const SizedBox(
+    //             height: 2.0,
+    //           ),
+    //           Wrap(
+    //             children: [
+    //               widget.chats.mediaType.isEmpty
+    //                   ? const SizedBox.shrink()
+    //                   : Icon(
+    //                       MdiIcons.image,
+    //                       size: 20,
+    //                       color:
+    //                           widget.seen == 'seen' ? Colors.grey : Colors.blue,
+    //                     ),
+    //               Text(
+    //                 widget.lastMessage,
+    //                 style: TextStyle(
+    //                   fontSize: 12.0,
+    //                   fontWeight: widget.seen == 'seen'
+    //                       ? FontWeight.normal
+    //                       : FontWeight.bold,
+    //                   color: widget.seen == 'seen'
+    //                       ? Colors.grey
+    //                       : Colors.teal[800],
+    //                   overflow: TextOverflow.ellipsis,
+    //                   decoration: widget.chats.restrictChat
+    //                       ? TextDecoration.lineThrough
+    //                       : TextDecoration.none,
+    //                 ),
+    //                 maxLines: 2,
+    //               ),
+    //               ConfigBloc().darkModeOn
+    //                   ? Divider(
+    //                       color: Colors.grey[850],
+    //                     )
+    //                   : Divider(),
+    //             ],
+    //           ),
+
+    //         ],
+    //       ),
+    //       onTap: () {}),
+    // );
+  }
+  // AccountHolderAuthor author = snapshot.data;
+
+  // return Display(
+  //   author: author,
+  //   chats: chats,
+  //   lastMessage: lastMessage,
+  //   seen: seen,
+  //   userId: userId,
+  // );
+  // });
+  // }
+}
+
 //display
 // ignore: must_be_immutable
 class Display extends StatelessWidget {
-  final AccountHolderAuthor author;
+  final AccountHolderAuthor? author;
   final Chat chats;
   String lastMessage;
   String seen;
@@ -211,7 +474,7 @@ class Display extends StatelessWidget {
                 MaterialPageRoute(
                     builder: (_) => ReportContentPage(
                           contentId: userId,
-                          contentType: author.userName!,
+                          contentType: author!.userName!,
                           parentContentId: userId,
                           repotedAuthorId: currentUserId,
                         ))),
@@ -249,160 +512,152 @@ class Display extends StatelessWidget {
                     color:
                         seen == 'seen' ? Colors.transparent : Colors.teal[50],
                   ),
-            child: Column(
-              children: [
-                ListTile(
-                    leading: Container(
-                      decoration: BoxDecoration(
-                        color: ConfigBloc().darkModeOn
+            child: ListTile(
+                leading: Container(
+                  decoration: BoxDecoration(
+                    color: ConfigBloc().darkModeOn
+                        ? Color(0xFF1a1a1a)
+                        : Colors.white,
+                    borderRadius: BorderRadius.circular(100.0),
+                  ),
+                  child: Hero(
+                    tag: userId,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: CircleAvatar(
+                        radius: 20.0,
+                        backgroundColor: ConfigBloc().darkModeOn
                             ? Color(0xFF1a1a1a)
-                            : Colors.white,
-                        borderRadius: BorderRadius.circular(100.0),
-                      ),
-                      child: Hero(
-                        tag: userId,
-                        child: Material(
-                          color: Colors.transparent,
-                          child: CircleAvatar(
-                            radius: 20.0,
-                            backgroundColor: ConfigBloc().darkModeOn
-                                ? Color(0xFF1a1a1a)
-                                : Color(0xFFf2f2f2),
-                            backgroundImage: author.profileImageUrl!.isEmpty
-                                ? AssetImage(
-                                    ConfigBloc().darkModeOn
-                                        ? 'assets/images/user_placeholder.png'
-                                        : 'assets/images/user_placeholder2.png',
-                                  ) as ImageProvider
-                                : CachedNetworkImageProvider(
-                                    author.profileImageUrl!),
-                          ),
-                        ),
+                            : Color(0xFFf2f2f2),
+                        backgroundImage: author!.profileImageUrl!.isEmpty
+                            ? AssetImage(
+                                ConfigBloc().darkModeOn
+                                    ? 'assets/images/user_placeholder.png'
+                                    : 'assets/images/user_placeholder2.png',
+                              ) as ImageProvider
+                            : CachedNetworkImageProvider(
+                                author!.profileImageUrl!),
                       ),
                     ),
-                    trailing: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                  ),
+                ),
+                trailing: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Container(
+                      height: 10,
+                      width: 10,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: seen == 'seen' ? Colors.transparent : Colors.red,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 2.0,
+                    ),
+                    Text(
+                        timeago.format(
+                          chats.newMessageTimestamp.toDate(),
+                        ),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.grey,
+                          decoration: chats.restrictChat
+                              ? TextDecoration.lineThrough
+                              : TextDecoration.none,
+                        )),
+                  ],
+                ),
+                title: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Stack(
+                      alignment: Alignment.bottomRight,
                       children: [
-                        Container(
-                          height: 10,
-                          width: 10,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: seen == 'seen'
-                                ? Colors.transparent
-                                : Colors.red,
+                        Padding(
+                          padding: const EdgeInsets.only(right: 12.0),
+                          child: Text(
+                            author!.userName!,
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.bold,
+                              color: ConfigBloc().darkModeOn
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
                           ),
                         ),
-                        SizedBox(
-                          height: 2.0,
-                        ),
-                        Text(
-                            timeago.format(
-                              chats.newMessageTimestamp.toDate(),
-                            ),
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: Colors.grey,
-                              decoration: chats.restrictChat
-                                  ? TextDecoration.lineThrough
-                                  : TextDecoration.none,
-                            )),
-                      ],
-                    ),
-                    title: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Stack(
-                          alignment: Alignment.bottomRight,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(right: 12.0),
-                              child: Text(
-                                author.userName!,
-                                style: TextStyle(
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: ConfigBloc().darkModeOn
-                                      ? Colors.white
-                                      : Colors.black,
+                        author!.verified!.isEmpty
+                            ? const SizedBox.shrink()
+                            : Positioned(
+                                top: 3,
+                                right: 0,
+                                child: Icon(
+                                  MdiIcons.checkboxMarkedCircle,
+                                  size: 11,
+                                  color: Colors.blue,
                                 ),
                               ),
-                            ),
-                            author.verified!.isEmpty
-                                ? const SizedBox.shrink()
-                                : Positioned(
-                                    top: 3,
-                                    right: 0,
-                                    child: Icon(
-                                      MdiIcons.checkboxMarkedCircle,
-                                      size: 11,
-                                      color: Colors.blue,
-                                    ),
-                                  ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 2.0,
-                        ),
-                        Wrap(
-                          children: [
-                            chats.mediaType.isEmpty
-                                ? const SizedBox.shrink()
-                                : Icon(
-                                    MdiIcons.image,
-                                    size: 20,
-                                    color: seen == 'seen'
-                                        ? Colors.grey
-                                        : Colors.blue,
-                                  ),
-                            Text(
-                              lastMessage,
-                              style: TextStyle(
-                                fontSize: 12.0,
-                                fontWeight: seen == 'seen'
-                                    ? FontWeight.normal
-                                    : FontWeight.bold,
-                                color: seen == 'seen'
-                                    ? Colors.grey
-                                    : Colors.teal[800],
-                                overflow: TextOverflow.ellipsis,
-                                decoration: chats.restrictChat
-                                    ? TextDecoration.lineThrough
-                                    : TextDecoration.none,
-                              ),
-                              maxLines: 2,
-                            ),
-                          ],
-                        ),
                       ],
                     ),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => ChatMessageScreen(
-                                    fromProfile: false,
-                                    currentUserId: currentUserId,
-                                    chat: chats,
-                                    user: author,
-                                  )));
-                      usersRef
-                          .doc(currentUserId)
-                          .collection('chats')
-                          .doc(userId)
-                          .update({
-                        'seen': 'seen',
-                      });
-                    }),
-                ConfigBloc().darkModeOn
-                    ? Divider(
-                        color: Colors.grey[850],
-                      )
-                    : Divider(),
-              ],
-            ),
+                    const SizedBox(
+                      height: 2.0,
+                    ),
+                    Wrap(
+                      children: [
+                        chats.mediaType.isEmpty
+                            ? const SizedBox.shrink()
+                            : Icon(
+                                MdiIcons.image,
+                                size: 20,
+                                color:
+                                    seen == 'seen' ? Colors.grey : Colors.blue,
+                              ),
+                        Text(
+                          lastMessage,
+                          style: TextStyle(
+                            fontSize: 12.0,
+                            fontWeight: seen == 'seen'
+                                ? FontWeight.normal
+                                : FontWeight.bold,
+                            color:
+                                seen == 'seen' ? Colors.grey : Colors.teal[800],
+                            overflow: TextOverflow.ellipsis,
+                            decoration: chats.restrictChat
+                                ? TextDecoration.lineThrough
+                                : TextDecoration.none,
+                          ),
+                          maxLines: 2,
+                        ),
+                        ConfigBloc().darkModeOn
+                            ? Divider(
+                                color: Colors.grey[850],
+                              )
+                            : Divider(),
+                      ],
+                    ),
+                  ],
+                ),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => ChatMessageScreen(
+                                fromProfile: false,
+                                currentUserId: currentUserId,
+                                chat: chats,
+                                user: author!,
+                              )));
+                  usersRef
+                      .doc(currentUserId)
+                      .collection('chats')
+                      .doc(userId)
+                      .update({
+                    'seen': 'seen',
+                  });
+                }),
           ),
         ),
       ),

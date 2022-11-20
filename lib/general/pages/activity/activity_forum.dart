@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:bars/widgets/general_widget/activity_reacted.dart';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -17,7 +18,6 @@ class _ActivityForumScreenState extends State<ActivityForumScreen>
     with AutomaticKeepAliveClientMixin {
   List<ActivityForum> _activitiesForum = [];
   int _thoughtCount = 0;
-  bool _isLoading = false;
   final _activitySnapshot = <DocumentSnapshot>[];
   int limit = 10;
   bool _hasNext = true;
@@ -92,6 +92,7 @@ class _ActivityForumScreenState extends State<ActivityForumScreen>
 
   _submit(activiitiesForum) async {
     ActivityForum activityForum = ActivityForum(
+      forumAuthorId: activiitiesForum.forumAuthorId,
       id: activiitiesForum.id,
       fromUserId: activiitiesForum.fromUserId,
       seen: 'seen',
@@ -103,6 +104,9 @@ class _ActivityForumScreenState extends State<ActivityForumScreen>
       authorProfileHanlde: activiitiesForum.authorProfileHanlde,
       authorVerification: activiitiesForum.authorVerification,
       authorProfileImageUrl: activiitiesForum.authorProfileImageUrl,
+      isThoughtLike: activiitiesForum.isThoughtLike,
+      thoughtId: activiitiesForum.thoughtId,
+      isThoughtReplied: activiitiesForum.isThoughtReplied,
     );
     print('sumiting');
     try {
@@ -113,12 +117,16 @@ class _ActivityForumScreenState extends State<ActivityForumScreen>
   }
 
   _buildActivity(ActivityForum activityForum) {
-   
     return ActivityTile(
+      isLiked: activityForum.isThoughtLike,
       seen: activityForum.seen,
       verified: activityForum.authorVerification,
       profileImageUrl: activityForum.authorProfileImageUrl,
-      activityIndicator: 'thought on:  ',
+      activityIndicator: activityForum.isThoughtReplied
+          ? 'Replied your thought on: '
+          : activityForum.isThoughtLike
+              ? 'Liked your thought on: '
+              : 'thought on:  ',
       activityTitle: activityForum.forumTitle,
       activityContent: activityForum.thought,
       activityTime: timeago.format(
@@ -126,46 +134,93 @@ class _ActivityForumScreenState extends State<ActivityForumScreen>
       ),
       userName: activityForum.authorName,
       onPressed: () async {
-        setState(() {
-          _isLoading = true;
-        });
         String currentUserId =
             Provider.of<UserData>(context, listen: false).currentUserId!;
-        Forum forum = await DatabaseService.getUserForum(
-          currentUserId,
-          activityForum.forumId,
-        );
-        DatabaseService.numThoughts(forum.id).listen((thoughtCount) {
-          if (mounted) {
-            setState(() {
-              _thoughtCount = thoughtCount;
-            });
-          }
-        });
-        // AccountHolder user =
-        //     await DatabaseService.getUserWithId(forum.authorId);
-        activityForum.seen != 'seen'
-            ? _submit(activityForum)
-            : const SizedBox.shrink();
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ThoughtsScreen(
-              feed: '',
-              forum: forum,
-              // author: user,
-              thoughtCount: _thoughtCount,
-              currentUserId: widget.currentUserId,
-            ),
-          ),
-        );
-        setState(() {
-          _isLoading = false;
-        });
+        activityForum.isThoughtReplied
+            ? _gotToRepliedForum(currentUserId, activityForum)
+            : activityForum.isThoughtLike
+                ? _goReactionPage(currentUserId, activityForum)
+                : _goToThought(currentUserId, activityForum);
       },
     );
     //   },
     // );
+  }
+
+  _goReactionPage(currentUserId, ActivityForum activityForum) {
+    activityForum.seen != 'seen'
+        ? _submit(activityForum)
+        : const SizedBox.shrink();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ActivityReactedContent(
+          authorId: activityForum.fromUserId,
+          contentId: activityForum.thoughtId,
+          parentContentId: activityForum.forumId,
+          contentType: 'Thought',
+          forumAuthorId: activityForum.forumAuthorId,
+        ),
+      ),
+    );
+  }
+
+  _gotToRepliedForum(String currentUserId, activityForum) async {
+    Forum forum = await DatabaseService.getUserForum(
+      activityForum.forumAuthorId,
+      activityForum.forumId,
+    );
+
+    activityForum.seen != 'seen'
+        ? _submit(activityForum)
+        : const SizedBox.shrink();
+
+    Thought _thought = await DatabaseService.getUserThought(
+      activityForum.thoughtId,
+      activityForum.forumId,
+    );
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (_) => ReplyThoughtsScreen(
+                  currentUserId: currentUserId,
+                  forum: forum,
+                  isBlocked: false,
+                  thought: _thought,
+                )));
+  }
+
+  _goToThought(String currentUserId, activityForum) async {
+    Forum forum = await DatabaseService.getUserForum(
+      currentUserId,
+      activityForum.forumId,
+    );
+
+    DatabaseService.numThoughts(forum.id).listen((thoughtCount) {
+      if (mounted) {
+        setState(() {
+          _thoughtCount = thoughtCount;
+        });
+      }
+    });
+    // AccountHolder user =
+    //     await DatabaseService.getUserWithId(forum.authorId);
+    activityForum.seen != 'seen'
+        ? _submit(activityForum)
+        : const SizedBox.shrink();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ThoughtsScreen(
+          feed: '',
+          forum: forum,
+          // author: user,
+          thoughtCount: _thoughtCount,
+          currentUserId: widget.currentUserId,
+        ),
+      ),
+    );
   }
 
   bool get wantKeepAlive => true;
@@ -201,24 +256,7 @@ class _ActivityForumScreenState extends State<ActivityForumScreen>
                     ),
                   ),
                 ),
-          _isLoading
-              ? Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Shimmer.fromColors(
-                    period: Duration(milliseconds: 1000),
-                    baseColor: Colors.grey,
-                    highlightColor: Colors.blue,
-                    child: RichText(
-                        text: TextSpan(
-                      children: [
-                        TextSpan(text: 'Fetching forum please Wait... '),
-                      ],
-                      style: TextStyle(fontSize: 12, color: Colors.blue),
-                    )),
-                  ),
-                )
-              : const SizedBox.shrink(),
-          SizedBox(
+          const SizedBox(
             height: 20.0,
           ),
           Expanded(

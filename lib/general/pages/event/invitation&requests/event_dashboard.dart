@@ -207,15 +207,6 @@ class _EventDashboardState extends State<EventDashboard> {
         await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
 
     Share.share(link.shortUrl.toString());
-    // if (Platform.isIOS) {
-    //   var link =
-    //       await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
-    //   Share.share(link.toString());
-    // } else {
-    //   var link =
-    //       await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
-    //   Share.share(link.shortUrl.toString());
-    // }
   }
 
   @override
@@ -268,253 +259,224 @@ class _EventDashboardState extends State<EventDashboard> {
           const SizedBox(
             height: 30,
           ),
-          _date.subtract(Duration(days: 3)).isBefore(_toDaysDate)
-              ? ShakeTransition(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Container(
-                      width: width,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(5.0),
-                            topLeft: Radius.circular(5.0),
-                            bottomLeft: Radius.circular(5.0),
-                            bottomRight: Radius.circular(5.0),
-                          ),
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black26,
-                              offset: Offset(10, 10),
-                              blurRadius: 10.0,
-                              spreadRadius: 4.0,
-                            )
-                          ]),
-                      child: Column(
-                        children: [
-                          const SizedBox(
-                            height: 60,
-                          ),
-                          Text(
-                            'CHECK-IN\nVALIDATOR',
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: widget.palette.darkMutedColor == null
-                                  ? Color(0xFF1a1a1a)
-                                  : widget.palette.darkMutedColor!.color,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(
-                            height: 60,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              GestureDetector(
-                                onTap: () => widget.event.isPrivate
-                                    ? Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (_) =>
-                                                EventAttendeesValidated(
-                                                  palette: widget.palette,
-                                                  event: widget.event,
-                                                  from: 'Accepted',
-                                                )))
-                                    : Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (_) =>
-                                                EventAttendeesValidated(
-                                                  palette: widget.palette,
-                                                  event: widget.event,
-                                                  from: '',
-                                                ))),
-                                child: RichText(
-                                  textScaleFactor:
-                                      MediaQuery.of(context).textScaleFactor,
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: _attendeesValidated.toString(),
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color:
-                                              widget.palette.darkMutedColor ==
-                                                      null
-                                                  ? Color(0xFF1a1a1a)
-                                                  : widget.palette
-                                                      .darkMutedColor!.color,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: '\nValidated\nAttendees',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color:
-                                              widget.palette.darkMutedColor ==
-                                                      null
-                                                  ? Color(0xFF1a1a1a)
-                                                  : widget.palette
-                                                      .darkMutedColor!.color,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              Container(
-                                height: 100,
-                                width: 1,
-                                color: widget.palette.darkMutedColor == null
-                                    ? Color(0xFF1a1a1a)
-                                    : widget.palette.darkMutedColor!.color,
-                              ),
-                              GestureDetector(
-                                onTap: () => widget.event.isPrivate
-                                    ? Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (_) =>
-                                                EventAttendeesRequested(
-                                                  palette: widget.palette,
-                                                  event: widget.event,
-                                                  answer: 'Accepted',
-                                                  showAppBar: true,
-                                                  dontShowAnswerWidget: true,
-                                                )))
-                                    : Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (_) =>
-                                                EventAttendeesRequested(
-                                                  showAppBar: true,
-                                                  dontShowAnswerWidget: true,
-                                                  palette: widget.palette,
-                                                  event: widget.event,
-                                                  answer: 'All',
-                                                ))),
-                                child: RichText(
-                                  textScaleFactor:
-                                      MediaQuery.of(context).textScaleFactor,
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: widget.event.isPrivate
-                                            ? sum.toString()
-                                            : _attendeeAcceptedCount.toString(),
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color:
-                                              widget.palette.darkMutedColor ==
-                                                      null
-                                                  ? Color(0xFF1a1a1a)
-                                                  : widget.palette
-                                                      .darkMutedColor!.color,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: '\nExpected\nAttendees',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color:
-                                              widget.palette.darkMutedColor ==
-                                                      null
-                                                  ? Color(0xFF1a1a1a)
-                                                  : widget.palette
-                                                      .darkMutedColor!.color,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 60,
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 30.0),
-                            child: Container(
-                              width: width,
-                              child: OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: Colors.blue,
-                                  side: BorderSide(
-                                    width: 1.0,
+          // _date.subtract(Duration(days: 3)).isBefore(_toDaysDate)
+          //     ?
+          ShakeTransition(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: Container(
+                width: width,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(5.0),
+                      topLeft: Radius.circular(5.0),
+                      bottomLeft: Radius.circular(5.0),
+                      bottomRight: Radius.circular(5.0),
+                    ),
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        offset: Offset(10, 10),
+                        blurRadius: 10.0,
+                        spreadRadius: 4.0,
+                      )
+                    ]),
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 60,
+                    ),
+                    Text(
+                      'CHECK-IN\nVALIDATOR',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: widget.palette.darkMutedColor == null
+                            ? Color(0xFF1a1a1a)
+                            : widget.palette.darkMutedColor!.color,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(
+                      height: 60,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        GestureDetector(
+                          onTap: () => widget.event.isPrivate
+                              ? Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => EventAttendeesValidated(
+                                            palette: widget.palette,
+                                            event: widget.event,
+                                            from: 'Accepted',
+                                          )))
+                              : Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => EventAttendeesValidated(
+                                            palette: widget.palette,
+                                            event: widget.event,
+                                            from: '',
+                                          ))),
+                          child: RichText(
+                            textScaleFactor:
+                                MediaQuery.of(context).textScaleFactor,
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: _attendeesValidated.toString(),
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
                                     color: widget.palette.darkMutedColor == null
                                         ? Color(0xFF1a1a1a)
                                         : widget.palette.darkMutedColor!.color,
                                   ),
                                 ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 5.0, vertical: 2),
-                                  child: Text(
-                                    'Validate attendees',
-                                    style: TextStyle(
-                                      color:
-                                          widget.palette.darkMutedColor == null
-                                              ? Color(0xFF1a1a1a)
-                                              : widget.palette.darkMutedColor!
-                                                  .color,
-                                      fontSize: 12.0,
-                                    ),
+                                TextSpan(
+                                  text: '\nValidated\nAttendees',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: widget.palette.darkMutedColor == null
+                                        ? Color(0xFF1a1a1a)
+                                        : widget.palette.darkMutedColor!.color,
                                   ),
                                 ),
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (_) =>
-                                              ValidateEventAttendees(
-                                                event: widget.event,
-                                                palette: widget.palette,
-                                                from: widget.event.isPrivate
-                                                    ? 'Accepted'
-                                                    : '',
-                                              )));
-                                },
+                              ],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        Container(
+                          height: 100,
+                          width: 1,
+                          color: widget.palette.darkMutedColor == null
+                              ? Color(0xFF1a1a1a)
+                              : widget.palette.darkMutedColor!.color,
+                        ),
+                        GestureDetector(
+                          onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => EventAttendeesAll(
+                                        dontShowAnswerWidget: true,
+                                        palette: widget.palette,
+                                        event: widget.event,
+                                        showAppBar: true,
+                                        answer: 'Accepted',
+                                      ))),
+                          child: RichText(
+                            textScaleFactor:
+                                MediaQuery.of(context).textScaleFactor,
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: widget.event.isPrivate
+                                      ? sum.toString()
+                                      : _attendeeAcceptedCount.toString(),
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: widget.palette.darkMutedColor == null
+                                        ? Color(0xFF1a1a1a)
+                                        : widget.palette.darkMutedColor!.color,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: '\nExpected\nAttendees',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: widget.palette.darkMutedColor == null
+                                        ? Color(0xFF1a1a1a)
+                                        : widget.palette.darkMutedColor!.color,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 60,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                      child: Container(
+                        width: width,
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.blue,
+                            side: BorderSide(
+                              width: 1.0,
+                              color: widget.palette.darkMutedColor == null
+                                  ? Color(0xFF1a1a1a)
+                                  : widget.palette.darkMutedColor!.color,
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 5.0, vertical: 2),
+                            child: Text(
+                              'Validate attendees',
+                              style: TextStyle(
+                                color: widget.palette.darkMutedColor == null
+                                    ? Color(0xFF1a1a1a)
+                                    : widget.palette.darkMutedColor!.color,
+                                fontSize: 12.0,
                               ),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: RichText(
-                              textScaleFactor: MediaQuery.of(context)
-                                  .textScaleFactor
-                                  .clamp(0.5, 1.5),
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                      text:
-                                          'Your validator is ready. Your validator helps you validate attendees at the entrance of the event. An attendee\'s Check-in number (attendee\'s number) is unique. You must match the check-in number on the ticket of the attendee to the check-in number among the list of this event attendees to see if it corresponds.  If the two numbers are equal, you can validate the attendee before they access the event. This helps keep track of the people(attendees) you permit to your event.',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.black,
-                                      )),
-                                ],
-                              ),
-                              textAlign: TextAlign.start,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 60,
-                          ),
-                        ],
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => ValidateEventAttendees(
+                                          event: widget.event,
+                                          palette: widget.palette,
+                                          from: widget.event.isPrivate
+                                              ? 'Accepted'
+                                              : '',
+                                        )));
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                )
-              : const SizedBox.shrink(),
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: RichText(
+                        textScaleFactor: MediaQuery.of(context)
+                            .textScaleFactor
+                            .clamp(0.5, 1.5),
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                                text:
+                                    'Your validator is ready. Your validator helps you validate attendees at the entrance of the event. An attendee\'s Check-in number (attendee\'s number) is unique. You must match the check-in number on the ticket of the attendee to the check-in number among the list of this event attendees to see if it corresponds.  If the two numbers are equal, you can validate the attendee before they access the event. This helps keep track of the people(attendees) you permit to your event.',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.black,
+                                )),
+                          ],
+                        ),
+                        textAlign: TextAlign.start,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 60,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          )
+          // : const SizedBox.shrink()
+          ,
           ShakeTransition(
             child: new Material(
               color: Colors.transparent,
@@ -1083,7 +1045,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (_) =>
-                                                      EventAttendeesRequested(
+                                                      EventAttendeesRequestedNotInvited(
                                                         dontShowAnswerWidget:
                                                             false,
                                                         showAppBar: true,
@@ -1135,7 +1097,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (_) =>
-                                                      EventAttendeesRequested(
+                                                      EventAttendeesRequestedNotInvited(
                                                         dontShowAnswerWidget:
                                                             false,
                                                         showAppBar: true,
@@ -1189,7 +1151,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (_) =>
-                                                      EventAttendeesRequested(
+                                                      EventAttendeesRequestedNotInvited(
                                                         dontShowAnswerWidget:
                                                             false,
                                                         showAppBar: true,
@@ -1241,7 +1203,7 @@ class _EventDashboardState extends State<EventDashboard> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (_) =>
-                                                      EventAttendeesRequested(
+                                                      EventAttendeesRequestedNotInvited(
                                                         dontShowAnswerWidget:
                                                             false,
                                                         showAppBar: true,
@@ -1298,6 +1260,35 @@ class _EventDashboardState extends State<EventDashboard> {
                         padding: const EdgeInsets.only(top: 50.0, bottom: 50),
                         child: Divider(
                           color: Colors.grey,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 3.0),
+                        child: Text(
+                          widget.event.type.startsWith('Fe')
+                              ? 'Festival'
+                              : widget.event.type.startsWith('Al')
+                                  ? 'Album Launch'
+                                  : widget.event.type.startsWith('Aw')
+                                      ? 'Award'
+                                      : widget.event.type.startsWith('O')
+                                          ? 'Others'
+                                          : widget.event.type.startsWith('T')
+                                              ? 'Tour'
+                                              : '',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontFamily: 'Bessita',
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 3.0),
+                        child: Text(
+                          widget.event.category,
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                       Padding(

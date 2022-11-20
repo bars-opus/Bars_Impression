@@ -21,7 +21,9 @@ class EventPublicInviteAvailable extends StatefulWidget {
 class _EventPublicInviteAvailableState
     extends State<EventPublicInviteAvailable> {
   int _inviteCount = 0;
-  int _different = 0;
+  // int _different = 0;
+  late DateTime _date;
+  late DateTime _toDaysDate;
 
   @override
   void initState() {
@@ -33,10 +35,12 @@ class _EventPublicInviteAvailableState
   _countDown() async {
     final DateTime date = DateTime.parse(widget.event.date);
     final toDayDate = DateTime.now();
-    var different = date.difference(toDayDate).inDays;
+    // var different = date.difference(toDayDate).inDays;
 
     setState(() {
-      _different = different;
+      _date = date;
+      // _different = different;_date = date;
+      _toDaysDate = toDayDate;
     });
   }
 
@@ -334,466 +338,538 @@ class _EventPublicInviteAvailableState
     final width = Responsive.isDesktop(context)
         ? 600.0
         : MediaQuery.of(context).size.width;
-    return Scaffold(
-      backgroundColor: widget.palette.darkMutedColor == null
-          ? Color(0xFF1a1a1a)
-          : widget.palette.darkMutedColor!.color,
-      appBar: AppBar(
-        automaticallyImplyLeading: true,
-        elevation: 0,
-        backgroundColor: widget.palette.darkMutedColor == null
-            ? Color(0xFF1a1a1a)
-            : widget.palette.darkMutedColor!.color,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: ListView(
-          children: <Widget>[
-            Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Icon(
-                      Icons.event_available,
-                      color: widget.palette.darkMutedColor == null
-                          ? Color(0xFF1a1a1a)
-                          : widget.palette.darkMutedColor!.color,
-                      size: 20.0,
-                    ),
-                  ),
-                ),
-                SizedBox(width: 10),
-                Text(
-                  // ignore: unnecessary_null_comparison
-                  _eventInvite != null
-                      ? 'Attending \nEvent.'
-                      : 'Attend \nEvent.',
-                  style:
-                      TextStyle(color: Colors.white, fontSize: 16.0, height: 1),
-                ),
-              ],
+    return _eventInvite.invited && _eventInvite.inviteStatus.isEmpty
+        ? EventInviteAvailable(
+            from: 'Activity',
+            event: widget.event,
+            palette: widget.palette,
+            eventInvite: _eventInvite,
+            inviteCount: 0,
+          )
+        : Scaffold(
+            backgroundColor: widget.palette.darkMutedColor == null
+                ? Color(0xFF1a1a1a)
+                : widget.palette.darkMutedColor!.color,
+            appBar: AppBar(
+              automaticallyImplyLeading: true,
+              elevation: 0,
+              backgroundColor: widget.palette.darkMutedColor == null
+                  ? Color(0xFF1a1a1a)
+                  : widget.palette.darkMutedColor!.color,
             ),
-            const SizedBox(
-              height: 30,
-            ),
-            _different < 0
-                ? Padding(
-                    padding: const EdgeInsets.all(30.0),
-                    child: RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'Ongoing...',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                            ),
-                          ),
-                          TextSpan(
-                            text:
-                                '\nThis event is in progress. It would be completed on ${MyDateFormat.toDate(DateTime.parse(widget.event.clossingDay))}.',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  )
-                : const SizedBox.shrink(),
-            _different < 0
-                ? const SizedBox(
-                    height: 10,
-                  )
-                : const SizedBox.shrink(),
-            ShakeTransition(
-              child: Material(
-                color: Colors.transparent,
-                child: Container(
-                  width: width,
-                  decoration: BoxDecoration(color: Colors.white, boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      offset: Offset(10, 10),
-                      blurRadius: 10.0,
-                      spreadRadius: 4.0,
-                    )
-                  ]),
-                  child: Column(
+            body: Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: ListView(
+                children: <Widget>[
+                  Row(
                     children: [
-                      _eventInvite.validated
-                          ? Padding(
-                              padding: const EdgeInsets.only(right: 30.0),
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: Icon(
-                                  Icons.check_circle,
-                                  color: Colors.blue,
-                                  size: 20.0,
-                                ),
-                              ),
-                            )
-                          : const SizedBox.shrink(),
-                      const SizedBox.shrink(),
-                      _eventInvite.anttendeeId.isEmpty
-                          ? const SizedBox.shrink()
-                          : const SizedBox(
-                              height: 60,
-                            ),
-                      _eventInvite.invited
-                          ? Text(
-                              'Cordially\n_Invited_',
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  color: widget.palette.darkMutedColor == null
-                                      ? Color(0xFF1a1a1a)
-                                      : widget.palette.darkMutedColor!.color,
-                                  height: 0.8),
-                              textAlign: TextAlign.center,
-                            )
-                          : const SizedBox.shrink(),
-                      const SizedBox(
-                        height: 20,
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Icon(
+                            Icons.event_available,
+                            color: widget.palette.darkMutedColor == null
+                                ? Color(0xFF1a1a1a)
+                                : widget.palette.darkMutedColor!.color,
+                            size: 20.0,
+                          ),
+                        ),
                       ),
-                      _eventInvite.anttendeeId.isEmpty
-                          ? const SizedBox.shrink()
-                          : Container(
-                              decoration: BoxDecoration(
-                                  color: widget.palette.darkMutedColor == null
-                                      ? Color(0xFF1a1a1a)
-                                      : widget.palette.darkMutedColor!.color,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black26,
-                                      offset: Offset(10, 10),
-                                      blurRadius: 10.0,
-                                      spreadRadius: 4.0,
-                                    )
-                                  ]),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 10.0, horizontal: 20),
-                                child: Text(
-                                  _eventInvite.attendNumber,
+                      SizedBox(width: 10),
+                      Text(
+                        // ignore: unnecessary_null_comparison
+                        _eventInvite != null
+                            ? 'Attending \nEvent.'
+                            : 'Attend \nEvent.',
+                        style: TextStyle(
+                            color: Colors.white, fontSize: 16.0, height: 1),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  _date.difference(_toDaysDate).inMinutes < 0
+                      ? Padding(
+                          padding: const EdgeInsets.all(30.0),
+                          child: RichText(
+                            textScaleFactor:
+                                MediaQuery.of(context).textScaleFactor,
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: 'Ongoing...',
                                   style: TextStyle(
-                                    fontSize: 80,
+                                    fontSize: 18,
                                     color: Colors.white,
                                   ),
-                                  textAlign: TextAlign.center,
+                                ),
+                                TextSpan(
+                                  text:
+                                      '\nThis event is in progress. It would be completed on ${MyDateFormat.toDate(DateTime.parse(widget.event.clossingDay))}.',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                  _date.difference(_toDaysDate).inMinutes < 0
+                      ? const SizedBox(
+                          height: 10,
+                        )
+                      : const SizedBox.shrink(),
+                  ShakeTransition(
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Container(
+                        width: width,
+                        decoration:
+                            BoxDecoration(color: Colors.white, boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            offset: Offset(10, 10),
+                            blurRadius: 10.0,
+                            spreadRadius: 4.0,
+                          )
+                        ]),
+                        child: Column(
+                          children: [
+                            _eventInvite.validated
+                                ? Padding(
+                                    padding: const EdgeInsets.only(right: 30.0),
+                                    child: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Icon(
+                                        Icons.check_circle,
+                                        color: Colors.blue,
+                                        size: 20.0,
+                                      ),
+                                    ),
+                                  )
+                                : const SizedBox.shrink(),
+                            const SizedBox.shrink(),
+                            _eventInvite.anttendeeId.isEmpty
+                                ? const SizedBox.shrink()
+                                : const SizedBox(
+                                    height: 60,
+                                  ),
+                            _eventInvite.invited
+                                ? Text(
+                                    'Cordially\n_Invited_',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        color: widget.palette.darkMutedColor ==
+                                                null
+                                            ? Color(0xFF1a1a1a)
+                                            : widget
+                                                .palette.darkMutedColor!.color,
+                                        height: 0.8),
+                                    textAlign: TextAlign.center,
+                                  )
+                                : const SizedBox.shrink(),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            widget.event.category.isEmpty
+                                ? const SizedBox.shrink()
+                                : Text(
+                                    widget.event.type.startsWith('Fe')
+                                        ? 'Festival'
+                                        : widget.event.type.startsWith('Al')
+                                            ? 'Album Launch'
+                                            : widget.event.type.startsWith('Aw')
+                                                ? 'Award'
+                                                : widget.event.type
+                                                        .startsWith('O')
+                                                    ? 'Others'
+                                                    : widget.event.type
+                                                            .startsWith('T')
+                                                        ? 'Tour'
+                                                        : '',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontFamily: 'Bessita',
+                                    ),
+                                  ),
+                            widget.event.category.isEmpty
+                                ? const SizedBox.shrink()
+                                : Padding(
+                                    padding:
+                                        const EdgeInsets.only(bottom: 10.0),
+                                    child: Text(
+                                      widget.event.category,
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            _eventInvite.anttendeeId.isEmpty
+                                ? const SizedBox.shrink()
+                                : Container(
+                                    decoration: BoxDecoration(
+                                        color: widget.palette.darkMutedColor ==
+                                                null
+                                            ? Color(0xFF1a1a1a)
+                                            : widget
+                                                .palette.darkMutedColor!.color,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black26,
+                                            offset: Offset(10, 10),
+                                            blurRadius: 10.0,
+                                            spreadRadius: 4.0,
+                                          )
+                                        ]),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10.0, horizontal: 20),
+                                      child: Text(
+                                        _eventInvite.attendNumber,
+                                        style: TextStyle(
+                                          fontSize: 80,
+                                          color: Colors.white,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                            _eventInvite.invited
+                                ? const SizedBox(
+                                    height: 60,
+                                  )
+                                : const SizedBox.shrink(),
+                            _eventInvite.invited
+                                ? Container(
+                                    height: 150,
+                                    width: width,
+                                    decoration: BoxDecoration(
+                                        color: ConfigBloc().darkModeOn
+                                            ? Color(0xFF1a1a1a)
+                                            : Color(0xFFeff0f2),
+                                        image: DecorationImage(
+                                          image: CachedNetworkImageProvider(
+                                              widget.event.imageUrl),
+                                          fit: BoxFit.cover,
+                                        )),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                              begin: Alignment.bottomRight,
+                                              colors: [
+                                            Colors.black.withOpacity(.5),
+                                            Colors.black.withOpacity(.4),
+                                          ])),
+                                    ))
+                                : const SizedBox.shrink(),
+                            const SizedBox(
+                              height: 60,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 12.0, right: 12),
+                              child: Text(
+                                // ignore: unnecessary_null_comparison
+                                _eventInvite.anttendeeId.isNotEmpty
+                                    ? 'You would be attending ${widget.event.title} at  ${widget.event.venue} on ${MyDateFormat.toDate(DateTime.parse(widget.event.date))} at ${MyDateFormat.toTime(DateTime.parse(widget.event.time))}.'
+                                    : 'This event would be added to the list of events you would be attending. This event is public and you do not need an invitation to attend this event ',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            _eventInvite.message.isEmpty
+                                ? const SizedBox.shrink()
+                                : Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 12.0, right: 12),
+                                    child: RichText(
+                                      textScaleFactor: MediaQuery.of(context)
+                                          .textScaleFactor,
+                                      text: TextSpan(children: [
+                                        TextSpan(
+                                          text: '\nInvitation message:\n'
+                                              .toUpperCase(),
+                                          style: TextStyle(
+                                              fontSize: 14.0,
+                                              color: Colors.blueGrey,
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                        TextSpan(
+                                          text: _eventInvite.message,
+                                          style: TextStyle(
+                                            fontSize: 12.0,
+                                            color: Colors.black,
+                                          ),
+                                        )
+                                      ]),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 30.0, bottom: 30),
+                              child: Divider(
+                                color: Colors.grey,
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => EventAttendeesAll(
+                                            dontShowAnswerWidget: true,
+                                            palette: widget.palette,
+                                            event: widget.event,
+                                            showAppBar: true,
+                                            answer: 'Accepted',
+                                          ))),
+                              child: Container(
+                                width: width,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 12.0, right: 12),
+                                  child: _eventInvite.invited
+                                      ? RichText(
+                                          textScaleFactor:
+                                              MediaQuery.of(context)
+                                                  .textScaleFactor,
+                                          text: TextSpan(
+                                            children: [
+                                              TextSpan(
+                                                text: 'Event type:   ',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text: 'Public',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text: '\nInvitation type:   ',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text: 'Invited',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text: '\nInvitation status:   ',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text: _eventInvite.inviteStatus,
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text: '\nInvitation number:   ',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text: _eventInvite.requestNumber
+                                                    .toString(),
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text: '\nCheck-in number:   ',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text: _eventInvite.attendNumber,
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text:
+                                                    '\nNumber of people attending:   ',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text:
+                                                    "${_inviteCount.toString()}",
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text:
+                                                    '\nSee people attending:   ',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.blue,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          maxLines: 10,
+                                        )
+                                      : RichText(
+                                          textScaleFactor:
+                                              MediaQuery.of(context)
+                                                  .textScaleFactor,
+                                          text: TextSpan(
+                                            children: [
+                                              TextSpan(
+                                                text: 'Event type:   ',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text: 'Public',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text: '\nCheck-in number:   ',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text: _eventInvite.attendNumber,
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text:
+                                                    '\nNumber of people attending:   ',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text:
+                                                    "${_inviteCount.toString()}",
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text:
+                                                    '\nSee people attending:   ',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.blue,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                 ),
                               ),
                             ),
-                      _eventInvite.invited
-                          ? const SizedBox(
+                            const SizedBox(
                               height: 60,
-                            )
-                          : const SizedBox.shrink(),
-                      _eventInvite.invited
-                          ? Container(
-                              height: 150,
-                              width: width,
-                              decoration: BoxDecoration(
-                                  color: ConfigBloc().darkModeOn
-                                      ? Color(0xFF1a1a1a)
-                                      : Color(0xFFeff0f2),
-                                  image: DecorationImage(
-                                    image: CachedNetworkImageProvider(
-                                        widget.event.imageUrl),
-                                    fit: BoxFit.cover,
-                                  )),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                        begin: Alignment.bottomRight,
-                                        colors: [
-                                      Colors.black.withOpacity(.5),
-                                      Colors.black.withOpacity(.4),
-                                    ])),
-                              ))
-                          : const SizedBox.shrink(),
-                      const SizedBox(
-                        height: 60,
+                            ),
+                          ],
+                        ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 12.0, right: 12),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Container(
+                    width: width,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        elevation: 0.0,
+                        foregroundColor: Colors.blue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5.0),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 5.0, vertical: 2),
                         child: Text(
-                          // ignore: unnecessary_null_comparison
                           _eventInvite.anttendeeId.isNotEmpty
-                              ? 'You would be attending ${widget.event.title} at  ${widget.event.venue} on ${MyDateFormat.toDate(DateTime.parse(widget.event.date))} at ${MyDateFormat.toTime(DateTime.parse(widget.event.time))}.'
-                              : 'This event would be added to the list of events you would be attending. This event is public and you do not need an invitation to attend this event ',
+                              ? 'Stop Attending'
+                              : 'Attend',
                           style: TextStyle(
-                            color: Colors.black,
+                            color: Colors.blue,
                             fontSize: 12,
                           ),
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      _eventInvite.message.isEmpty
-                          ? const SizedBox.shrink()
-                          : Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 12.0, right: 12),
-                              child: RichText(
-                                textScaleFactor:
-                                    MediaQuery.of(context).textScaleFactor,
-                                text: TextSpan(children: [
-                                  TextSpan(
-                                    text:
-                                        '\nInvitation message:\n'.toUpperCase(),
-                                    style: TextStyle(
-                                        fontSize: 14.0,
-                                        color: Colors.blueGrey,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                  TextSpan(
-                                    text: _eventInvite.message,
-                                    style: TextStyle(
-                                      fontSize: 12.0,
-                                      color: Colors.black,
-                                    ),
-                                  )
-                                ]),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 30.0, bottom: 30),
-                        child: Divider(
-                          color: Colors.grey,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => EventAttendeesRequested(
-                                      showAppBar: true,
-                                      palette: widget.palette,
-                                      dontShowAnswerWidget: true,
-                                      event: widget.event,
-                                      answer: 'All',
-                                    ))),
-                        child: Container(
-                          width: width,
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 12.0, right: 12),
-                            child: _eventInvite.invited
-                                ? RichText(
-                                    textScaleFactor:
-                                        MediaQuery.of(context).textScaleFactor,
-                                    text: TextSpan(
-                                      children: [
-                                        TextSpan(
-                                          text: 'Event type:   ',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: 'Public',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: '\nInvitation type:   ',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: 'Invited',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: '\nInvitation status:   ',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: 'Accepted',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: '\nInvitation number:   ',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: _eventInvite.requestNumber
-                                              .toString(),
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: '\nCheck-in number:   ',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: _eventInvite.attendNumber,
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text:
-                                              '\nNumber of people attending:   ',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: "${_inviteCount.toString()}",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: '\nSee people attending:   ',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.blue,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    maxLines: 10,
-                                  )
-                                : RichText(
-                                    textScaleFactor:
-                                        MediaQuery.of(context).textScaleFactor,
-                                    text: TextSpan(
-                                      children: [
-                                        TextSpan(
-                                          text: 'Event type:   ',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: 'Public',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text:
-                                              '\nNumber of people attending:   ',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: "${_inviteCount.toString()}",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: '\nSee people attending:   ',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.blue,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 60,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            Container(
-              width: width,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  elevation: 0.0,
-                  foregroundColor: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                ),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 5.0, vertical: 2),
-                  child: Text(
-                    _eventInvite.anttendeeId.isNotEmpty
-                        ? 'Stop Attending'
-                        : 'Attend',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 12,
+                      onPressed: () => _showSelectImageDialog2(
+                          context,
+                          _eventInvite.anttendeeId.isNotEmpty ? 'Stop' : '',
+                          _eventInvite),
                     ),
-                    textAlign: TextAlign.center,
                   ),
-                ),
-                onPressed: () => _showSelectImageDialog2(
-                    context,
-                    _eventInvite.anttendeeId.isNotEmpty ? 'Stop' : '',
-                    _eventInvite),
+                  const SizedBox(height: 50),
+                  Center(
+                    child: IconButton(
+                      icon: Icon(Icons.close),
+                      iconSize: 30.0,
+                      color: Colors.white,
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 50.0,
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 50),
-            Center(
-              child: IconButton(
-                icon: Icon(Icons.close),
-                iconSize: 30.0,
-                color: Colors.white,
-                onPressed: () => Navigator.pop(context),
-              ),
-            ),
-            const SizedBox(
-              height: 50.0,
-            ),
-          ],
-        ),
-      ),
-    );
+          );
   }
 
   @override

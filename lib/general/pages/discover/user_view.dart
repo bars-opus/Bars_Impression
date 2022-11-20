@@ -134,8 +134,8 @@ class _UserViewState extends State<UserView> {
                                         widget.user.verified!.isEmpty
                                             ? SizedBox.shrink()
                                             : Positioned(
-                                                top: -17,
-                                                right: -10,
+                                                top: -0,
+                                                right: 6,
                                                 child: Icon(
                                                   MdiIcons.checkboxMarkedCircle,
                                                   size: 12,
@@ -484,9 +484,9 @@ class _UserViewState extends State<UserView> {
                                 widget.user.verified!.isEmpty
                                     ? const SizedBox.shrink()
                                     : Positioned(
-                                        top: -17,
-                                        right: -10,
-                                        child: const Icon(
+                                        top: -0,
+                                        right: 6,
+                                        child: Icon(
                                           MdiIcons.checkboxMarkedCircle,
                                           size: 12,
                                           color: Colors.blue,

@@ -25,14 +25,17 @@ final negativeRatedRef = _firestore.collection('negativeRated');
 final negativeRatingRef = _firestore.collection('negativeRating');
 final feedsRef = _firestore.collection('feeds');
 final likesRef = _firestore.collection('likes');
+final thoughtsLikeRef = _firestore.collection('thoughtsLike');
 final disLikesRef = _firestore.collection('disLikes');
 final commentsRef = _firestore.collection('comments');
 final userAdviceRef = _firestore.collection('userAdvice');
 final blogCommentsRef = _firestore.collection('blogComments');
 final thoughtsRef = _firestore.collection('thoughts');
-final replyThoughtsRef = _firestore.collection('43');
+final replyThoughtsRef = _firestore.collection('thoughtsReplies');
 final asksRef = _firestore.collection('asks');
 final activitiesRef = _firestore.collection('activities');
+final activitiesThoughtLikesRef =
+    _firestore.collection('activitiesThoughtLikes');
 final chatActivitiesRef = _firestore.collection('activitiesChat');
 final activitiesForumRef = _firestore.collection('activitiesForum');
 final activitiesAdviceRef = _firestore.collection('activitiesAdvice');
@@ -50,11 +53,9 @@ final userBlockingRef = _firestore.collection('usersBlocking');
 final verificationRef = _firestore.collection('_VerificationRequest');
 final accountTypesRef = _firestore.collection('userAccountTypes');
 final eventTypesRef = _firestore.collection('eventTypes');
-
 final surveysRef = _firestore.collection('_surveys');
 final suggestionsRef = _firestore.collection('_suggestions');
 final reportContentsRef = _firestore.collection('_reportedContents');
-
 final kpiStatisticsRef = _firestore.collection('_kPI_statistics');
 final deletedDeactivatedAccountRef =
     _firestore.collection('_DeletedDeactivatedAccounts');

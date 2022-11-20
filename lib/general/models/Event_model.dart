@@ -4,6 +4,7 @@ class Event {
   final String id;
   final String imageUrl;
   final String type;
+  final String category;
   final String title;
   final String rate;
   final String theme;
@@ -41,6 +42,7 @@ class Event {
     required this.id,
     required this.imageUrl,
     required this.type,
+    required this.category,
     required this.title,
     required this.rate,
     required this.venue,
@@ -80,6 +82,7 @@ class Event {
       id: doc.id,
       imageUrl: doc['imageUrl'] ?? '',
       type: doc['type'] ?? "",
+      category: doc['category'] ?? "",
       title: doc['title'] ?? '',
       rate: doc['rate'] ?? '',
       venue: doc['venue'] ?? '',

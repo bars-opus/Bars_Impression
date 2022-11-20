@@ -43,25 +43,23 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: GestureDetector(
-        onTap: () =>
-             
-            widget.event.id.isEmpty
-                ? Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => EventsAttendingDeleted(
-                              invite: widget.invite,
-                            )))
-                : Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => EventsAttending(
-                              invite: widget.invite,
-                              event: widget.event,
-                              date: _date,
-                              different: _different,
-                              toDaysDate: _toDaysDate,
-                            ))),
+        onTap: () => widget.event.id.isEmpty
+            ? Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => EventsAttendingDeleted(
+                          invite: widget.invite,
+                        )))
+            : Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => EventsAttending(
+                          invite: widget.invite,
+                          event: widget.event,
+                          date: _date,
+                          different: _different,
+                          toDaysDate: _toDaysDate,
+                        ))),
         child: Column(
           children: [
             Container(
@@ -141,7 +139,9 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text: _different < 0 ? '' : _different.toString(),
+                          text: _date.difference(_toDaysDate).inMinutes < 0
+                              ? ''
+                              : _different.toString(),
                           style: TextStyle(
                             fontSize: 14,
                             color: ConfigBloc().darkModeOn
@@ -153,7 +153,7 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                           text: _toDaysDate.isAfter(
                                   DateTime.parse(widget.event.clossingDay))
                               ? 'Completed'
-                              : _different < 0
+                              : _date.difference(_toDaysDate).inMinutes < 0
                                   ? 'Ongoing...'
                                   : ' days',
                           style: TextStyle(
@@ -161,7 +161,7 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                             color: _toDaysDate.isAfter(
                                     DateTime.parse(widget.event.clossingDay))
                                 ? Colors.green
-                                : _different < 0
+                                : _date.difference(_toDaysDate).inMinutes < 0
                                     ? Colors.blue
                                     : ConfigBloc().darkModeOn
                                         ? Colors.white

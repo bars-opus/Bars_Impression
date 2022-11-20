@@ -9,7 +9,7 @@ class EventViewWidget extends StatelessWidget {
   final int askCount;
   final String currentUserId;
   final String titleHero;
-  final int difference;
+  final bool difference;
   final bool completed;
   final int feed;
   final String exploreLocation;
@@ -45,6 +45,7 @@ class EventViewWidget extends StatelessWidget {
     final width =
         Responsive.isDesktop(context) ? 600 : MediaQuery.of(context).size.width;
     return OpenContainer(
+      closedElevation: 0.0,
       openColor: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
       closedColor: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
       transitionType: ContainerTransitionType.fade,
@@ -894,7 +895,7 @@ class EventViewWidget extends StatelessWidget {
                         TextSpan(
                             text: completed
                                 ? '\nCompleted'
-                                : difference < 0
+                                : difference
                                     ? '\nOngoing...'
                                     : '\n',
                             style: TextStyle(

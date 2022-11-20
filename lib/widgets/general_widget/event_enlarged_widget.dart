@@ -64,10 +64,13 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
 
   _countDown() async {
     DateTime date = DateTime.parse(widget.event.date);
-    DateTime clossingDate = DateTime.parse(widget.event.clossingDay);
+    DateTime clossingDate =
+        DateTime.parse(widget.event.clossingDay).add(const Duration(hours: 3));
     final toDayDate = DateTime.now();
 
     var different = date.difference(toDayDate).inDays;
+
+// var _showOngoing  = date ==  toDayDate;
 
     setState(() {
       _different = different;
@@ -1160,7 +1163,11 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                         const EdgeInsets.only(
                                                       bottom: 3,
                                                     ),
-                                                    child: _different < 0
+                                                    child: _date
+                                                                .difference(
+                                                                    _toDaysDate)
+                                                                .inMinutes <
+                                                            0
                                                         ? RichText(
                                                             textScaleFactor:
                                                                 MediaQuery.of(
@@ -1290,6 +1297,17 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                       style: TextStyle(
                                                         color: Colors.white,
                                                         fontFamily: 'Bessita',
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                            .symmetric(
+                                                        vertical: 3.0),
+                                                    child: Text(
+                                                      widget.event.category,
+                                                      style: TextStyle(
+                                                        color: Colors.white,
                                                       ),
                                                     ),
                                                   ),

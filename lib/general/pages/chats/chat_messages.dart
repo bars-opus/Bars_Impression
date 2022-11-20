@@ -59,7 +59,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
       if (_hideButtonController.position.userScrollDirection ==
           ScrollDirection.forward) {
         if (mounted) {
-        
           Provider.of<UserData>(context, listen: false).setBool1(true);
         }
       }
@@ -67,7 +66,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
           ScrollDirection.reverse) {
         if (mounted) {
           Provider.of<UserData>(context, listen: false).setBool1(false);
-         
         }
       }
     });
@@ -76,14 +74,12 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
       if (_hideButtonController.position.userScrollDirection ==
           ScrollDirection.forward) {
         if (mounted) {
-        
           Provider.of<UserData>(context, listen: false).setBool1(true);
         }
       }
       if (_hideButtonController.position.userScrollDirection ==
           ScrollDirection.reverse) {
         if (mounted) {
-         
           Provider.of<UserData>(context, listen: false).setBool1(false);
         }
       }
@@ -360,7 +356,8 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
             context,
             MaterialPageRoute(
                 builder: (_) => MessageImage(
-                      message: message,
+                      mediaUrl: message.mediaUrl,
+                      messageId: message.id,
                     ))),
         child: Hero(
           tag: 'image ${message.id}',
@@ -958,7 +955,9 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
             height: 2,
             color: currentUserId == message.authorId
                 ? Colors.teal[800]
-                : Colors.black,
+                : ConfigBloc().darkModeOn
+                    ? Colors.white
+                    : Colors.black,
           ),
         ),
         AnimatedContainer(

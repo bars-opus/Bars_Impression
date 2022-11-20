@@ -51,7 +51,7 @@ class _SendEventInviationState extends State<SendEventInviation> {
               'Are you sure you want to send invitation?',
               style: TextStyle(
                 fontSize: 16,
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                color: Colors.black,
               ),
             ),
             actions: <Widget>[

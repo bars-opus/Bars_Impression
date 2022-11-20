@@ -696,8 +696,25 @@ exports.onCreateActivityForumNotification = functions.firestore
   }
   function sendNotification(androidNotificationToken, userActivitiesForum)
  {
-    body = `[ ${userActivitiesForum.authorName} ] ${userActivitiesForum.thought} `
-    title = `New forum thought `
+    // body = `[ ${userActivitiesForum.authorName} ] ${userActivitiesForum.thought} `
+    // title = `New forum thought `
+    let body;
+    switch (userActivitiesForum.isThoughtLike){
+     case true:
+       body = `[ ${userActivitiesForum.authorName} ] likes: ${userActivitiesForum.thought} `
+       break;
+      
+       default: body = `[ ${userActivitiesForum.authorName} ] ${userActivitiesForum.thought} `
+    }
+    let title;
+    switch (userActivitiesForum.isThoughtLike){
+     case true:
+       title =  `Thought like`
+       break;
+      
+       default: title = userActivitiesForum.isThoughtReplied? 'New thought reply': `New forum thought `
+    }
+  
   
    const message = {
     notification: {body: body, title: title},
@@ -738,16 +755,16 @@ exports.onCreateActivityEventNotification = functions.firestore
     // body = ` ${userActivitiesEvent.ask} `
     // title = `New event question  `
     let body;
-    switch (userActivitiesEvent.ask){
-     case null:
+    switch (userActivitiesEvent.invited){
+     case true:
        body = ` ${userActivitiesEvent.eventInviteType} `
        break;
       
        default: body = `[ ${userActivitiesEvent.authorName} ] ${userActivitiesEvent.ask} `
     }
     let title;
-    switch (userActivitiesEvent.ask){
-     case null:
+    switch (userActivitiesEvent.invited){
+     case true:
        title = `New event invitation`
        break;
       
@@ -792,8 +809,25 @@ exports.onCreateChatMessage = functions.firestore
   }
   function sendNotification(androidNotificationToken, chatActivities)
  {
-    body = `[ ${chatActivities.authorName}] ${chatActivities.comment} `
-    title = `New message  `
+    // body = `[ ${chatActivities.authorName}] ${chatActivities.comment} `
+    // title = `New message  `
+
+    let body;
+    switch (chatActivities.liked){
+     case true:
+       body = `[ ${chatActivities.authorName}] like ${chatActivities.comment} `
+       break;
+      
+       default: body = `[ ${chatActivities.authorName}] ${chatActivities.comment} `
+    }
+    let title;
+    switch (chatActivities.liked){
+     case false:
+       title =  `Message Like  `
+       break;
+      
+       default: title =  `New message  `
+    }
   
    const message = {
     notification: {body: body, title: title},

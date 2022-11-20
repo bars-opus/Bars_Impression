@@ -1220,15 +1220,18 @@ class _ProfileScreenState extends State<ProfileScreen>
         appStoreId: '1610868894',
       ),
     );
-    if (Platform.isIOS) {
-      var link =
-          await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
-      Share.share(link.toString());
-    } else {
-      var link =
-          await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
-      Share.share(link.shortUrl.toString());
-    }
+    var link =
+        await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+    Share.share(link.shortUrl.toString());
+    // if (Platform.isIOS) {
+    //   var link =
+    //       await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
+    //   Share.share(link.toString());
+    // } else {
+    //   var link =
+    //       await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+    //   Share.share(link.shortUrl.toString());
+    // }
   }
 
   _showSelectImageDialog(AccountHolder user) {
@@ -1583,10 +1586,20 @@ class _ProfileScreenState extends State<ProfileScreen>
                 SizedBox(
                   height: 30.0,
                 ),
-                !user.profileHandle!.startsWith('Ar') ||
-                        user.profileHandle!.isEmpty
-                    ? _buildStatistics(user)
-                    : _buildArtistStatistics(user),
+                _isFecthing
+                    ? Center(
+                        child: Text(
+                          'Loading...',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12,
+                          ),
+                        ),
+                      )
+                    : !user.profileHandle!.startsWith('Ar') ||
+                            user.profileHandle!.isEmpty
+                        ? _buildStatistics(user)
+                        : _buildArtistStatistics(user),
                 SizedBox(
                   height: 20.0,
                 ),

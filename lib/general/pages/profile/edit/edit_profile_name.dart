@@ -193,7 +193,7 @@ class _EditProfileNameState extends State<EditProfileName> {
       widget.user.id,
     )
         .update({
-      'userName': _userName,
+      'userName': _userName.toUpperCase(),
     });
 
     usersAuthorRef
@@ -201,7 +201,7 @@ class _EditProfileNameState extends State<EditProfileName> {
       widget.user.id,
     )
         .update({
-      'userName': _userName,
+      'userName': _userName.toUpperCase(),
     });
   }
 
@@ -211,7 +211,7 @@ class _EditProfileNameState extends State<EditProfileName> {
       widget.user.id,
     )
         .update({
-      'userName': _userName,
+      'userName': _userName.toUpperCase(),
       'verified': '',
     });
     usersAuthorRef
@@ -219,7 +219,7 @@ class _EditProfileNameState extends State<EditProfileName> {
       widget.user.id,
     )
         .update({
-      'userName': _userName,
+      'userName': _userName.toUpperCase(),
       'verified': '',
     });
     verificationRef.doc(widget.user.id).get().then((doc) {
@@ -233,7 +233,7 @@ class _EditProfileNameState extends State<EditProfileName> {
         .then((value) {
       value.items.forEach((element) {
         FirebaseStorage.instance.ref(element.fullPath).delete();
-      });
+      }); 
     });
   }
 
@@ -384,8 +384,8 @@ class _EditProfileNameState extends State<EditProfileName> {
                                                               .contains('@')
                                                           ? 'Username cannot contain @'
                                                           : null,
-                                              onSaved: (input) =>
-                                                  _userName = input!.trim(),
+                                              onSaved: (input) => _userName =
+                                                  input!.trim().toUpperCase(),
                                             ),
                                           ),
                                         ),

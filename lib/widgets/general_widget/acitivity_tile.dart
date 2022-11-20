@@ -8,6 +8,7 @@ class ActivityTile extends StatelessWidget {
   final String activityContent;
   final String activityTime;
   final String userName;
+  final bool isLiked;
   final String verified;
   final VoidCallback onPressed;
 
@@ -16,6 +17,7 @@ class ActivityTile extends StatelessWidget {
       required this.activityContent,
       required this.activityTime,
       required this.activityTitle,
+      required this.isLiked,
       required this.profileImageUrl,
       required this.verified,
       required this.userName,
@@ -75,6 +77,13 @@ class ActivityTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ListTile(
+                  trailing: isLiked
+                      ? Icon(
+                          Icons.favorite,
+                          size: 20.0,
+                          color: seen == 'seen' ? Colors.grey : Colors.pink,
+                        )
+                      : null,
                   leading: profileImageUrl.isEmpty
                       ? Icon(
                           Icons.account_circle,
@@ -131,9 +140,13 @@ class ActivityTile extends StatelessWidget {
                                 text: activityIndicator,
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: ConfigBloc().darkModeOn
-                                      ? Colors.white
-                                      : Colors.black,
+                                  color: seen == 'seen'
+                                      ? Colors.grey
+                                      : isLiked
+                                          ? Colors.pink
+                                          : ConfigBloc().darkModeOn
+                                              ? Colors.white
+                                              : Colors.black,
                                 )),
                             TextSpan(
                                 text: activityTitle,

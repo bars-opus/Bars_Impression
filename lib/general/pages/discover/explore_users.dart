@@ -35,7 +35,9 @@ class _UsersExpandState extends State<UsersExpand> {
   void initState() {
     _pageController.addListener(_listenScroll);
     _setShowInfo();
-    widget.exploreLocation.endsWith('Live') ? _getCurrentLocation() : _nothing();
+    widget.exploreLocation.endsWith('Live')
+        ? _getCurrentLocation()
+        : _nothing();
     widget.exploreLocation.endsWith('City')
         ? _setupCityUsers()
         : widget.exploreLocation.endsWith('Country')
@@ -49,7 +51,7 @@ class _UsersExpandState extends State<UsersExpand> {
     super.initState();
   }
 
-  _nothing(){}
+  _nothing() {}
 
   _setShowInfo() {
     if (_showInfo) {
@@ -757,8 +759,54 @@ class _UserExpandedWidgetState extends State<UserExpandedWidget> {
                           textAlign: TextAlign.center,
                         ),
                       ),
-                 const     SizedBox(height: 30),
-                     
+                      const SizedBox(height: 30),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: RichText(
+                            textScaleFactor:
+                                MediaQuery.of(context).textScaleFactor,
+                            text: TextSpan(children: [
+                              TextSpan(
+                                text: "Skills",
+                                style: TextStyle(
+                                  fontSize: width > 600 ? 14 : 12.0,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              TextSpan(
+                                  text: widget.user.skills! + "\n",
+                                  style: TextStyle(
+                                    fontSize: width > 600 ? 16 : 12.0,
+                                    color: Colors.black,
+                                  )),
+                              TextSpan(
+                                text: "Collaborations",
+                                style: TextStyle(
+                                  fontSize: width > 600 ? 14 : 12.0,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              TextSpan(
+                                  text: widget.user.performances! + "\n",
+                                  style: TextStyle(
+                                    fontSize: width > 600 ? 16 : 12.0,
+                                    color: Colors.black,
+                                  )),
+                              TextSpan(
+                                text: "Awards",
+                                style: TextStyle(
+                                  fontSize: width > 600 ? 14 : 12.0,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              TextSpan(
+                                  text: widget.user.awards! + "\n",
+                                  style: TextStyle(
+                                    fontSize: width > 600 ? 16 : 12.0,
+                                    color: Colors.black,
+                                  )),
+                            ])),
+                      ),
                     ],
                   ),
                 ),

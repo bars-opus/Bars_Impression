@@ -119,6 +119,17 @@ class StorageService {
     return downloadUrl;
   }
 
+  static Future<String> uploadThoughtImage(File imageFile) async {
+    String thoughtId = Uuid().v4();
+    File? image = await compressImage(thoughtId, imageFile);
+    String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    UploadTask uploadTask = storageRef
+        .child('images/thoughtImage/$currentUserId/message_$thoughtId.jpg')
+        .putFile(image!);
+    String downloadUrl = await (await uploadTask).ref.getDownloadURL();
+    return downloadUrl;
+  }
+
   static Future<String> gvIdImageUrl(File imageFile) async {
     String gvId = Uuid().v4();
     File? image = await compressImage(gvId, imageFile);

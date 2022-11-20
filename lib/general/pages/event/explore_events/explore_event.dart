@@ -42,7 +42,9 @@ class _ExploreEventState extends State<ExploreEvent> {
   void initState() {
     _pageController.addListener(_listenScroll);
     _setShowInfo();
-    widget.exploreLocation.endsWith('Live') ? _getCurrentLocation() : _nothing();
+    widget.exploreLocation.endsWith('Live')
+        ? _getCurrentLocation()
+        : _nothing();
     widget.exploreLocation.endsWith('City')
         ? _setUpCityFeed()
         : widget.exploreLocation.endsWith('Country')
@@ -56,8 +58,7 @@ class _ExploreEventState extends State<ExploreEvent> {
     super.initState();
   }
 
-
-_nothing(){}
+  _nothing() {}
   _setShowInfo() {
     if (_showInfo) {
       Timer(Duration(seconds: 3), () {
@@ -619,7 +620,7 @@ _nothing(){}
   _setupCategoryVirtualEvent() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
         .where('isVirtual', isEqualTo: true)
-        .where('type', isEqualTo:  widget.event.type)
+        .where('type', isEqualTo: widget.event.type)
         .limit(limit)
         .get();
     List<Event> events =
@@ -640,7 +641,7 @@ _nothing(){}
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
         .where('isVirtual', isEqualTo: true)
-        .where('type', isEqualTo:  widget.event.type)
+        .where('type', isEqualTo: widget.event.type)
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();
@@ -981,7 +982,7 @@ class ExploreEventEnlarged extends StatefulWidget {
 }
 
 class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
-  // late DateTime _date;
+  late DateTime _date;
   late DateTime _toDaysDate;
   int _different = 0;
   late DateTime _closingDate;
@@ -1000,7 +1001,7 @@ class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
     var different = date.difference(toDayDate).inDays;
 
     setState(() {
-      // _date = date;
+      _date = date;
       _different = different;
       _toDaysDate = toDayDate;
       _closingDate = clossingDate;
@@ -1113,7 +1114,7 @@ class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
                             : _toDaysDate.isAfter(_closingDate)
                                 ? EventCompletedWidget(
                                     date: widget.event.date,
-                                    onPressed: (){},
+                                    onPressed: () {},
                                     previousEvent: widget.event.previousEvent,
                                     type: widget.event.type,
                                     title: widget.event.title,
@@ -1221,7 +1222,7 @@ class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
                                                 ),
                                                 textAlign: TextAlign.center,
                                               ),
-                                              onPressed: (){},
+                                              onPressed: () {},
                                             ),
                                           ),
                                         ),
@@ -1428,7 +1429,7 @@ class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
                                     SizedBox(
                                       height: 30.0,
                                     ),
-                                    _different < 0
+                                    _date.difference(_toDaysDate).inMinutes < 0
                                         ? RichText(
                                             textScaleFactor:
                                                 MediaQuery.of(context)

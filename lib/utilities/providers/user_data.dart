@@ -20,10 +20,10 @@ class UserData extends ChangeNotifier {
   late String _post11;
   late String _post12;
   late String _post13;
-
+  late String _post14;
   late int _int1;
 
-  late String _post14;
+  late String _post15;
   late AccountHolder? _user;
 
   late AccountHolder? _author;
@@ -72,6 +72,7 @@ class UserData extends ChangeNotifier {
     _post12 = ' ';
     _post13 = ' ';
     _post14 = ' ';
+    _post15 = ' ';
     _int1 = 0;
     _availableDynamicLink = ' ';
     _author = null;
@@ -113,6 +114,7 @@ class UserData extends ChangeNotifier {
   String get post12 => _post12;
   String get post13 => _post13;
   String get post14 => _post14;
+  String get post15 => _post15;
 
   int get int1 => _int1;
   String get availableDynamicLink => _availableDynamicLink;
@@ -212,6 +214,11 @@ class UserData extends ChangeNotifier {
 
   void setPost14(String post14) {
     _post14 = post14;
+    notifyListeners();
+  }
+
+  void setPost15(String post15) {
+    _post15 = post15;
     notifyListeners();
   }
 
@@ -358,7 +365,9 @@ class UserData extends ChangeNotifier {
 
     if (userCredential.additionalUserInfo!.isNewUser) {
       return AuthCreateUserCredentials();
-    }
+    } kpiStatisticsRef
+            .doc('0SuQxtu52SyYjhOKiLsj')
+            .update({'totalGoogleSignIn': FieldValue.increment(1)});
   }
 
   notifyListeners();

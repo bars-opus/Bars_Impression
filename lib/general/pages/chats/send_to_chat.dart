@@ -624,7 +624,7 @@ class DisplayState extends State<Display> {
       replyingMessage: Provider.of<UserData>(context, listen: false).post8,
       reportConfirmed: '',
       liked: '',
-      message: "Transported\n${widget.sendContentType}",
+      message: "Imported\n${widget.sendContentType}",
       sendPostType: widget.sendContentType,
       sendContentId: widget.sendContentId,
       sendContentTitle: widget.title,

@@ -28,6 +28,7 @@ class _EventAttendeesAllState extends State<EventAttendeesAll>
   int limit = 10;
   bool _hasNext = true;
   bool _isFectchingUser = false;
+  bool _isLoading = true;
   bool _showInfo = true;
   late ScrollController _hideButtonController;
 
@@ -81,6 +82,7 @@ class _EventAttendeesAllState extends State<EventAttendeesAll>
       setState(() {
         _hasNext = false;
         _inviteList = users;
+        _isLoading = false;
       });
     }
     return users;
@@ -100,6 +102,7 @@ class _EventAttendeesAllState extends State<EventAttendeesAll>
       setState(() {
         _hasNext = false;
         _inviteList = users;
+        _isLoading = false;
       });
     }
     return users;
@@ -320,9 +323,18 @@ class _EventAttendeesAllState extends State<EventAttendeesAll>
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    _inviteList.length == 0
-                        ? const SizedBox.shrink()
-                        : Expanded(child: _buildEventBuilder())
+                    _isLoading
+                        ? Expanded(
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 1,
+                              ),
+                            ),
+                          )
+                        : _inviteList.length == 0
+                            ? const SizedBox.shrink()
+                            : Expanded(child: _buildEventBuilder())
                   ],
                 ),
               ),

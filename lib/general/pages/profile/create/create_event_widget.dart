@@ -94,6 +94,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
   DateTime minTime = DateTime.now().subtract(Duration(minutes: 1));
   DateTime dayTime = DateTime.now();
   String selectedValue = '';
+  // String _subOtherCategory = '';
   String selectedclosingDay = '';
   String _type = '';
 
@@ -105,7 +106,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
   @override
   void initState() {
     _type = widget.type;
-    selectedValue = _type.isEmpty ? values.last : _type;
+    selectedValue = _type.isEmpty ? values.first : _type;
     selectedclosingDay =
         _closingDay.isEmpty ? eventClossingDay.first : _closingDay;
     _pageController = PageController(
@@ -120,6 +121,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
       Provider.of<UserData>(context, listen: false).setPostImage(null);
       Provider.of<UserData>(context, listen: false).setPost1(widget.title);
       Provider.of<UserData>(context, listen: false).setPost2(widget.theme);
+      Provider.of<UserData>(context, listen: false).setPost15('');
       Provider.of<UserData>(context, listen: false).setPost3(widget.rate);
       Provider.of<UserData>(context, listen: false).setPost4(widget.host);
       Provider.of<UserData>(context, listen: false).setPost5(widget.venue);
@@ -132,6 +134,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
       Provider.of<UserData>(context, listen: false).setPost12(widget.artist);
       Provider.of<UserData>(context, listen: false).setBool1(widget.isPrivate);
       Provider.of<UserData>(context, listen: false).setBool2(widget.isVirtual);
+      Provider.of<UserData>(context, listen: false).setPost15('');
       Provider.of<UserData>(context, listen: false).setBool3(widget.isFree);
       Provider.of<UserData>(context, listen: false)
           .setPost13(widget.clossingDay);
@@ -357,7 +360,8 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
         id: widget.event!.id,
         imageUrl: _imageUrl,
         type: Provider.of<UserData>(context, listen: false).post6,
-        title: Provider.of<UserData>(context, listen: false).post1,
+        title:
+            Provider.of<UserData>(context, listen: false).post1.toUpperCase(),
         rate: Provider.of<UserData>(context, listen: false).post3,
         venue: Provider.of<UserData>(context, listen: false).bool2
             ? ''
@@ -393,6 +397,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
         mediaUrl: '',
         authorName:
             Provider.of<UserData>(context, listen: false).user!.userName!,
+        category: Provider.of<UserData>(context, listen: false).post15,
       );
 
       try {
@@ -541,9 +546,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
         Event event = Event(
           blurHash: blurHash,
           imageUrl: imageUrl,
-          type: Provider.of<UserData>(context, listen: false).post6.isEmpty
-              ? "Others"
-              : Provider.of<UserData>(context, listen: false).post6,
+          type: Provider.of<UserData>(context, listen: false).post6,
           title: Provider.of<UserData>(context, listen: false).post1,
           rate: Provider.of<UserData>(context, listen: false).post3,
           venue: Provider.of<UserData>(context, listen: false).post5,
@@ -580,6 +583,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
           mediaType: '',
           mediaUrl: '',
           authorName: widget.user!.userName!,
+          category: Provider.of<UserData>(context, listen: false).post15,
         );
         DatabaseService.createEvent(event);
 
@@ -768,7 +772,11 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
               onChanged: (value) {
                 Provider.of<UserData>(context, listen: false)
                     .setPost6(this.selectedValue = value!);
-                animateToPage();
+                Provider.of<UserData>(context, listen: false)
+                        .post6
+                        .startsWith('Others')
+                    ? () {}
+                    : animateToPage();
               });
         }).toList()),
       );
@@ -1035,6 +1043,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
     Provider.of<UserData>(context, listen: false).setPost11('');
     Provider.of<UserData>(context, listen: false).setPost12('');
     Provider.of<UserData>(context, listen: false).setPost13('');
+    Provider.of<UserData>(context, listen: false).setPost15('');
 
     Provider.of<UserData>(context, listen: false).setPost14('');
     Provider.of<UserData>(context, listen: false).setBool1(false);
@@ -1539,6 +1548,14 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                   ),
                                                   ContentFieldWhite(
                                                     labelText: 'Rate',
+                                                    autofocus:
+                                                        Provider.of<UserData>(
+                                                                    context,
+                                                                    listen:
+                                                                        false)
+                                                                .bool3
+                                                            ? false
+                                                            : true,
                                                     hintText:
                                                         "amount: example (10.0) ",
                                                     initialValue:
@@ -1655,7 +1672,60 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                             FontWeight.bold),
                                                   ),
                                                   const SizedBox(height: 20),
-                                                  buildEventTypePicker(),
+                                                  Provider.of<UserData>(context,
+                                                              listen: false)
+                                                          .post6
+                                                          .startsWith('Others')
+                                                      ? ContentFieldWhite(
+                                                          autofocus: true,
+                                                          labelText:
+                                                              "Custom Category",
+                                                          hintText:
+                                                              "Example:  House party, birthday party,  wedding, etc.",
+                                                          initialValue:
+                                                              Provider.of<UserData>(
+                                                                      context,
+                                                                      listen:
+                                                                          false)
+                                                                  .post15,
+                                                          onSavedText: (input) =>
+                                                              Provider.of<UserData>(
+                                                                      context,
+                                                                      listen:
+                                                                          false)
+                                                                  .setPost15(
+                                                                      input),
+                                                          onValidateText:
+                                                              (_) {},
+                                                        )
+                                                      : buildEventTypePicker(),
+                                                  Provider.of<UserData>(context,
+                                                              listen: false)
+                                                          .post6
+                                                          .startsWith('Others')
+                                                      ? Center(
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .symmetric(
+                                                                    vertical:
+                                                                        70.0),
+                                                            child: Container(
+                                                                width: 250,
+                                                                child: Center(
+                                                                  child:
+                                                                      AlwaysWhiteButton(
+                                                                          onPressed:
+                                                                              () {
+                                                                            FocusScope.of(context).unfocus();
+                                                                            animateToPage();
+                                                                          },
+                                                                          buttonText:
+                                                                              "Continue"),
+                                                                )),
+                                                          ),
+                                                        )
+                                                      : const SizedBox.shrink(),
                                                 ],
                                               ),
                                             ),
@@ -1821,6 +1891,85 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                                   "Start editing"),
                                                         )
                                                       : buildClosingDayPicker(),
+                                                  widget.isEditting
+                                                      ? Column(
+                                                          children: [
+                                                            const SizedBox(
+                                                              height: 70,
+                                                            ),
+                                                            Container(
+                                                              width: 50,
+                                                              height: 50,
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            10),
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                              child: InkWell(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            10),
+                                                                onTap: () =>
+                                                                    () {},
+                                                                child: Ink(
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    color: Colors
+                                                                        .blue,
+                                                                    borderRadius:
+                                                                        BorderRadius
+                                                                            .circular(8),
+                                                                  ),
+                                                                  child:
+                                                                      Container(
+                                                                    height: 40,
+                                                                    width: 40,
+                                                                    child: IconButton(
+                                                                        icon: Icon(Icons.delete_forever),
+                                                                        iconSize: 25,
+                                                                        color: Colors.blue,
+                                                                        onPressed: () {
+                                                                          _showSelectImageDialog(
+                                                                              '');
+                                                                        }),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              height: 30.0,
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .only(
+                                                                      left:
+                                                                          50.0,
+                                                                      right:
+                                                                          50),
+                                                              child: Text(
+                                                                " Provide accurate information.\nRefresh your page to see the effect of your event edited or deleted",
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .grey,
+                                                                    fontSize:
+                                                                        12.0),
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center,
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              height: 50.0,
+                                                            ),
+                                                          ],
+                                                        )
+                                                      : const SizedBox.shrink()
                                                 ],
                                               ),
                                             ),
@@ -1960,6 +2109,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                                   listen: false)
                                                               .bool2
                                                           ? ContentFieldWhite(
+                                                              autofocus: true,
                                                               labelText:
                                                                   "Virtual venue",
                                                               hintText:
@@ -1977,6 +2127,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                                   (_) {},
                                                             )
                                                           : TextFormField(
+                                                              autofocus: true,
                                                               keyboardType:
                                                                   TextInputType
                                                                       .multiline,
@@ -2167,11 +2318,16 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                               curve: Curves
                                                                   .easeInOut,
                                                               child: Center(
-                                                                child: AlwaysWhiteButton(
-                                                                    onPressed:
-                                                                        _validate,
-                                                                    buttonText:
-                                                                        'Next'),
+                                                                child:
+                                                                    AlwaysWhiteButton(
+                                                                        onPressed:
+                                                                            () {
+                                                                          FocusScope.of(context)
+                                                                              .unfocus();
+                                                                          _validate();
+                                                                        },
+                                                                        buttonText:
+                                                                            'Next'),
                                                               ),
                                                             )
                                                           : AnimatedContainer(
@@ -2190,13 +2346,17 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                               curve: Curves
                                                                   .easeInOut,
                                                               child: Center(
-                                                                child: AlwaysWhiteButton(
-                                                                    onPressed:
-                                                                        _validate,
-                                                                    buttonText: widget
-                                                                            .isEditting
-                                                                        ? 'Next'
-                                                                        : "Continue"),
+                                                                child:
+                                                                    AlwaysWhiteButton(
+                                                                        onPressed:
+                                                                            () {
+                                                                          FocusScope.of(context)
+                                                                              .unfocus();
+                                                                          _validate();
+                                                                        },
+                                                                        buttonText: widget.isEditting
+                                                                            ? 'Next'
+                                                                            : "Continue"),
                                                               ),
                                                             ),
                                                     ],
@@ -2615,82 +2775,6 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                             ),
                                                           ),
                                                         ),
-                                                  widget.isEditting
-                                                      ? Column(
-                                                          children: [
-                                                            Container(
-                                                              width: 50,
-                                                              height: 50,
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            10),
-                                                                color:
-                                                                    Colors.blue,
-                                                              ),
-                                                              child: InkWell(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            10),
-                                                                onTap: () =>
-                                                                    () {},
-                                                                child: Ink(
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    color: Colors
-                                                                        .blue,
-                                                                    borderRadius:
-                                                                        BorderRadius
-                                                                            .circular(8),
-                                                                  ),
-                                                                  child:
-                                                                      Container(
-                                                                    height: 40,
-                                                                    width: 40,
-                                                                    child: IconButton(
-                                                                        icon: Icon(Icons.delete_forever),
-                                                                        iconSize: 25,
-                                                                        color: ConfigBloc().darkModeOn ? Colors.black : Colors.white,
-                                                                        onPressed: () {
-                                                                          _showSelectImageDialog(
-                                                                              '');
-                                                                        }),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            SizedBox(
-                                                              height: 30.0,
-                                                            ),
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                          .only(
-                                                                      left:
-                                                                          50.0,
-                                                                      right:
-                                                                          50),
-                                                              child: Text(
-                                                                " Provide accurate information.\nRefresh your page to see the effect of your event edited or deleted",
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .grey,
-                                                                    fontSize:
-                                                                        12.0),
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .center,
-                                                              ),
-                                                            ),
-                                                            SizedBox(
-                                                              height: 50.0,
-                                                            ),
-                                                          ],
-                                                        )
-                                                      : const SizedBox.shrink()
                                                 ],
                                               ),
                                             ),

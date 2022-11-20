@@ -278,6 +278,7 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
                     SizedBox(width: 10.0),
                     Expanded(
                       child: TextField(
+                        autofocus: widget.thought.count == 0 ? true : false,
                         controller: _replythoughtController,
                         keyboardType: TextInputType.multiline,
                         maxLines: _replythoughtController.text.length > 300
@@ -332,7 +333,7 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
                               currentUserId: currentUserId!,
                               forum: widget.forum,
                               replyThought: _replythoughtController.text,
-                              thoughtId: widget.thought.id,
+                              thought: widget.thought,
                               reportConfirmed: '',
                             );
                             setState(() {
@@ -376,6 +377,36 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
         _displayWarning = false;
       });
     }
+  }
+
+  _displayMessageImage(String currentUserId) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 8.0),
+        child: GestureDetector(
+          onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => MessageImage(
+                        mediaUrl: widget.thought.mediaUrl,
+                        messageId: widget.thought.id,
+                      ))),
+          child: Hero(
+            tag: 'image ${widget.thought.id}',
+            child: Container(
+              height: 100,
+              width: 100,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: CachedNetworkImageProvider(widget.thought.mediaUrl),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -451,6 +482,10 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
+                                    widget.thought.mediaUrl.isEmpty
+                                        ? const SizedBox.shrink()
+                                        : _displayMessageImage(
+                                            widget.currentUserId),
                                     Padding(
                                       padding: const EdgeInsets.only(
                                           right: 50.0,
@@ -556,7 +591,7 @@ class _ReplyThoughtsScreenState extends State<ReplyThoughtsScreen> {
                                           horizontal: 20.0),
                                       child: Text(
                                           timeago.format(
-                                            widget.thought.timestamp.toDate(),
+                                            widget.thought.timestamp!.toDate(),
                                           ),
                                           style: TextStyle(
                                               fontSize: 10,

@@ -24,6 +24,8 @@ class _EventAttendeesValidatedState extends State<EventAttendeesValidated>
   int limit = 10;
   bool _hasNext = true;
   bool _isFectchingUser = false;
+  bool _isLoading = true;
+
   bool _showInfo = true;
   late ScrollController _hideButtonController;
 
@@ -77,6 +79,7 @@ class _EventAttendeesValidatedState extends State<EventAttendeesValidated>
       setState(() {
         _hasNext = false;
         _inviteList = users;
+        _isLoading = false;
       });
     }
     return users;
@@ -146,7 +149,7 @@ class _EventAttendeesValidatedState extends State<EventAttendeesValidated>
             snap: true,
             pinned: true,
             iconTheme: new IconThemeData(
-              color: ConfigBloc().darkModeOn ? Colors.black : Colors.white,
+              color: Colors.white,
             ),
             backgroundColor: widget.palette.darkMutedColor == null
                 ? Color(0xFF1a1a1a)
@@ -154,7 +157,7 @@ class _EventAttendeesValidatedState extends State<EventAttendeesValidated>
             title: Text(
               'Validated Attendees',
               style: TextStyle(
-                  color: ConfigBloc().darkModeOn ? Colors.black : Colors.white,
+                  color: Colors.white,
                   fontSize: 20,
                   fontWeight: FontWeight.bold),
             ),
@@ -177,9 +180,18 @@ class _EventAttendeesValidatedState extends State<EventAttendeesValidated>
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    _inviteList.length == 0
-                        ? const SizedBox.shrink()
-                        : Expanded(child: _buildEventBuilder())
+                    _isLoading
+                        ? Expanded(
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 1,
+                              ),
+                            ),
+                          )
+                        : _inviteList.length == 0
+                            ? const SizedBox.shrink()
+                            : Expanded(child: _buildEventBuilder())
                   ],
                 ),
               ),

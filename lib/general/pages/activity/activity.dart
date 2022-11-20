@@ -178,6 +178,12 @@ class _ActivityScreenState extends State<ActivityScreen>
           child: ListTile(
             onTap: activity.comment != null
                 ? () async {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(
+                        "Fetching mood punched...",
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ));
                     // setState(() {
                     //   _isLoadingContent = true;
                     // });
@@ -212,6 +218,7 @@ class _ActivityScreenState extends State<ActivityScreen>
                         .setIsLoading(false);
                   }
                 : () async {
+                   
                     // setState(() {
                     //   _isLoadingContent = true;
                     // });

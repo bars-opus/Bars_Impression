@@ -27,12 +27,12 @@ class _ProfileProfessionalProfileState
 
   // void initState() {
   //   super.initState();
-    // _setUpIsPossitivelyRating();
-    // _setUpPossitiveRated();
-    // _setUpPossitiveRating();
-    // _setUpIsNegativelyRating();
-    // _setUpNegativeRated();
-    // _setUpNegativeRating();
+  // _setUpIsPossitivelyRating();
+  // _setUpPossitiveRated();
+  // _setUpPossitiveRating();
+  // _setUpIsNegativelyRating();
+  // _setUpNegativeRated();
+  // _setUpNegativeRating();
   // }
 
   // _setUpIsPossitivelyRating() async {
@@ -118,15 +118,47 @@ class _ProfileProfessionalProfileState
 
     // usersRef.doc(widget.user.id).update({'score': _point});
 
-    return UserProfessionalViewWidget(
-      workHero: 'work' + widget.user.id.toString(),
-      containerHero1: 'container1' + widget.user.id.toString(),
-      exploreWidget: const SizedBox.shrink(),
-      user: widget.user,
-      // point: _point,
-      // userTotal: _total,
-      currentUserId: currentUserId,
-      onPressedRating: () {}
+    return GestureDetector(
+      onLongPress: () => Navigator.of(context).push(PageRouteBuilder(
+          transitionDuration: const Duration(milliseconds: 500),
+          pageBuilder: (context, animation, _) {
+            HapticFeedback.heavyImpact();
+
+            return FadeTransition(
+              opacity: animation,
+              child: UsersExpand(
+                currentUserId: widget.currentUserId,
+                user: widget.user,
+                exploreLocation: '',
+              ),
+            );
+          })),
+      child: UserProfessionalViewWidget(
+          workHero: 'work' + widget.user.id.toString(),
+          containerHero1: 'container1' + widget.user.id.toString(),
+          exploreWidget: IconButton(
+            icon: Icon(
+              Icons.center_focus_strong,
+              color: Colors.white,
+            ),
+            onPressed: () => Navigator.of(context).push(PageRouteBuilder(
+                transitionDuration: const Duration(milliseconds: 500),
+                pageBuilder: (context, animation, _) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: UsersExpand(
+                      currentUserId: widget.currentUserId,
+                      user: widget.user,
+                      exploreLocation: '',
+                    ),
+                  );
+                })),
+          ),
+          user: widget.user,
+          // point: _point,
+          // userTotal: _total,
+          currentUserId: currentUserId,
+          onPressedRating: () {}),
     );
   }
 }

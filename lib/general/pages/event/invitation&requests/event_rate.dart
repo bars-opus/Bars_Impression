@@ -15,6 +15,8 @@ class EventRate extends StatefulWidget {
 
 class _EventRateState extends State<EventRate> {
   int _different = 0;
+  late DateTime _date;
+  late DateTime _toDaysDate;
 
   @override
   void initState() {
@@ -29,6 +31,8 @@ class _EventRateState extends State<EventRate> {
 
     setState(() {
       _different = different;
+      _date = date;
+      _toDaysDate = toDayDate;
     });
   }
 
@@ -94,7 +98,9 @@ class _EventRateState extends State<EventRate> {
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text: _different < 0 ? '' : _different.toString(),
+                          text: _date.difference(_toDaysDate).inMinutes < 0
+                              ? ''
+                              : _different.toString(),
                           style: TextStyle(
                             fontSize: 40,
                             fontWeight: FontWeight.w100,
@@ -102,7 +108,9 @@ class _EventRateState extends State<EventRate> {
                           ),
                         ),
                         TextSpan(
-                          text: _different < 0 ? 'Ongoing...' : '\nDays More',
+                          text: _date.difference(_toDaysDate).inMinutes < 0
+                              ? 'Ongoing...'
+                              : '\nDays More',
                           style: TextStyle(
                             fontSize: 12,
                             // fontWeight: FontWeight.w100,

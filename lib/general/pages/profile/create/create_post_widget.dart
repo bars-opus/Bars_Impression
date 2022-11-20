@@ -271,7 +271,8 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
         id: widget.post!.id,
         imageUrl: _imageUrl,
         caption: Provider.of<UserData>(context, listen: false).post4!,
-        artist: Provider.of<UserData>(context, listen: false).post1,
+        artist:
+            Provider.of<UserData>(context, listen: false).post1.toUpperCase(),
         hashTag: Provider.of<UserData>(context, listen: false).post5,
         punch: Provider.of<UserData>(context, listen: false).post3,
         musicLink: Provider.of<UserData>(context, listen: false).post2,
@@ -403,7 +404,8 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
         blurHash: blurHash,
         imageUrl: imageUrl,
         caption: Provider.of<UserData>(context, listen: false).post4!,
-        artist: Provider.of<UserData>(context, listen: false).post1,
+        artist:
+            Provider.of<UserData>(context, listen: false).post1.toUpperCase(),
         hashTag: Provider.of<UserData>(context, listen: false).post5,
         punch: Provider.of<UserData>(context, listen: false).post3,
         musicLink: Provider.of<UserData>(context, listen: false).post2,
@@ -934,6 +936,10 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                                                                         .transparent,
                                                                     child:
                                                                         TextFormField(
+                                                                      autofocus: widget
+                                                                              .isEditting
+                                                                          ? false
+                                                                          : true,
                                                                       keyboardType:
                                                                           TextInputType
                                                                               .multiline,
@@ -1424,13 +1430,15 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                                               child: _users == null
                                                   ? DirectionWidget(
                                                       text:
-                                                          "${_user!.userName}, enter the name of the artist punchline you are using. If there are multiple artists featured on the song, make sure you enter the  name of the specific artist\'s punchline you used.",
+                                                          "${_user!.userName}, enter the name of the artist punchline you are using. If there are multiple artists featured on the song, make sure you enter the  name of the specific artist\'s punchline you used.  It helps other users to interact with the artist's account if they like the punchline.",
                                                       fontSize: null,
                                                     )
-                                                  : DirectionWidget(
-                                                      fontSize: null,
-                                                      text:
-                                                          "${_user!.userName}, we are trying to see if the artist's name you entered is on Bars Impression. You can still punch your mood even if the artist is not available. If the artist is available, you can tap on the artist to make sure the name you've entered is correct. It helps other users to interact with the artist if they like the punchline.",
+                                                  : ShakeTransition(
+                                                      child: DirectionWidget(
+                                                        fontSize: null,
+                                                        text:
+                                                            "${_user!.userName}, we are trying to see if the artist's name you entered is on Bars Impression. You can still punch your mood even if the artist is not available. If the artist is available, you can tap on the artist to make sure the name you've entered is correct. It helps other users to interact with the artist if they like the punchline.",
+                                                      ),
                                                     )),
                                       SizedBox(height: 10),
                                       TextFormField(

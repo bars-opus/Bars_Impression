@@ -116,7 +116,6 @@ class _ForumFeedState extends State<ForumFeed>
                       currentUserId: widget.currentUserId,
                       forum: forum,
                     );
-                   
                   },
                   childCount: _forumList.length,
                 ),

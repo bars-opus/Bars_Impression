@@ -131,10 +131,10 @@ class _SetUpBrandState extends State<SetUpBrand> {
 
         try {
           await usersRef.doc(currentUserId).update({
-            'userName': _userName,
+            'userName': _userName.toUpperCase(),
           });
           usersAuthorRef.doc(currentUserId).update({
-            'userName': _userName,
+            'userName': _userName.toUpperCase(),
           });
 
           animateToPage();
@@ -741,7 +741,9 @@ class _SetUpBrandState extends State<SetUpBrand> {
                                                               ? 'Username cannot contain @'
                                                               : null,
                                                   onSaved: (input) =>
-                                                      _userName = input!.trim(),
+                                                      _userName = input!
+                                                          .trim()
+                                                          .toUpperCase(),
                                                 ),
                                               ),
                                             ),

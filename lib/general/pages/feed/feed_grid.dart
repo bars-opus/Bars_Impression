@@ -37,6 +37,7 @@ class _FeedGridState extends State<FeedGrid> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     return OpenContainer(
+      closedElevation: 0.0,
       openColor: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
       closedColor: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
       transitionType: ContainerTransitionType.fade,
@@ -180,10 +181,10 @@ class _FeedGridState extends State<FeedGrid> {
       },
       openBuilder: (BuildContext _, VoidCallback openContainer) {
         return AllPostEnlarged(
-            currentUserId: widget.currentUserId,
-            post: widget.post,
-            feed: widget.feed, 
-     );
+          currentUserId: widget.currentUserId,
+          post: widget.post,
+          feed: widget.feed,
+        );
       },
     );
   }

@@ -84,6 +84,39 @@ class EventInvitationActivityCard extends StatelessWidget {
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 3.0),
+                                  child: Text(
+                                    event.type.startsWith('Fe')
+                                        ? 'Festival'
+                                        : event.type.startsWith('Al')
+                                            ? 'Album Launch'
+                                            : event.type.startsWith('Aw')
+                                                ? 'Award'
+                                                : event.type.startsWith('O')
+                                                    ? 'Others'
+                                                    : event.type.startsWith('T')
+                                                        ? 'Tour'
+                                                        : '',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontFamily: 'Bessita',
+                                    ),
+                                  ),
+                                ),
+                                event.category.isEmpty
+                                    ? const SizedBox.shrink()
+                                    : Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 10.0),
+                                        child: Text(
+                                          event.category,
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
                                 const SizedBox(
                                   height: 20,
                                 ),
@@ -128,8 +161,41 @@ class EventInvitationActivityCard extends StatelessWidget {
                                   textAlign: TextAlign.center,
                                 ),
                                 const SizedBox(
-                                  height: 20,
+                                  height: 10,
                                 ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 3.0),
+                                  child: Text(
+                                    event.type.startsWith('Fe')
+                                        ? 'Festival'
+                                        : event.type.startsWith('Al')
+                                            ? 'Album Launch'
+                                            : event.type.startsWith('Aw')
+                                                ? 'Award'
+                                                : event.type.startsWith('O')
+                                                    ? 'Others'
+                                                    : event.type.startsWith('T')
+                                                        ? 'Tour'
+                                                        : '',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontFamily: 'Bessita',
+                                    ),
+                                  ),
+                                ),
+                                event.category.isEmpty
+                                    ? const SizedBox.shrink()
+                                    : Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 10.0),
+                                        child: Text(
+                                          event.category,
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
                                 Text(
                                   timeago.format(
                                     activityEvent!.timestamp!.toDate(),

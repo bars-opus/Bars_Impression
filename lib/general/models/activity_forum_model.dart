@@ -5,7 +5,12 @@ class ActivityForum {
   final String fromUserId;
   final String seen;
   final String forumId;
+
+  final String forumAuthorId;
   final String forumTitle;
+  final String thoughtId;
+  final bool isThoughtLike;
+  final bool isThoughtReplied;
   final String thought;
   final Timestamp timestamp;
   final String authorName;
@@ -16,7 +21,11 @@ class ActivityForum {
   ActivityForum({
     required this.id,
     required this.fromUserId,
+    required this.forumAuthorId,
     required this.forumId,
+    required this.thoughtId,
+    required this.isThoughtLike,
+    required this.isThoughtReplied,
     required this.seen,
     required this.forumTitle,
     required this.thought,
@@ -31,7 +40,11 @@ class ActivityForum {
     return ActivityForum(
       id: doc.id,
       fromUserId: doc['fromUserId'],
+      forumAuthorId: doc['forumAuthorId'],
+      isThoughtLike: doc['isThoughtLike'],
+      isThoughtReplied: doc['isThoughtReplied'],
       forumId: doc['forumId'],
+      thoughtId: doc['thoughtId'],
       seen: doc['seen'],
       forumTitle: doc['forumTitle'],
       thought: doc['thought'],

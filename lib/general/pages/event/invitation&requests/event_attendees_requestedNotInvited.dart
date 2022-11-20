@@ -1,7 +1,7 @@
 import 'package:bars/utilities/exports.dart';
 
-class EventAttendeesRequested extends StatefulWidget {
-  static final id = 'EventAttendeesRequested';
+class EventAttendeesRequestedNotInvited extends StatefulWidget {
+  static final id = 'EventAttendeesRequestedNotInvited';
   final Event event;
   final String answer;
 
@@ -9,7 +9,7 @@ class EventAttendeesRequested extends StatefulWidget {
   final bool dontShowAnswerWidget;
   final PaletteGenerator palette;
 
-  EventAttendeesRequested({
+  EventAttendeesRequestedNotInvited({
     required this.event,
     required this.palette,
     required this.showAppBar,
@@ -18,11 +18,11 @@ class EventAttendeesRequested extends StatefulWidget {
   });
 
   @override
-  _EventAttendeesRequestedState createState() =>
-      _EventAttendeesRequestedState();
+  _EventAttendeesRequestedNotInvitedState createState() =>
+      _EventAttendeesRequestedNotInvitedState();
 }
 
-class _EventAttendeesRequestedState extends State<EventAttendeesRequested>
+class _EventAttendeesRequestedNotInvitedState extends State<EventAttendeesRequestedNotInvited>
     with AutomaticKeepAliveClientMixin {
   List<EventInvite> _inviteList = [];
   final _inviteSnapshot = <DocumentSnapshot>[];
@@ -30,6 +30,8 @@ class _EventAttendeesRequestedState extends State<EventAttendeesRequested>
   bool _hasNext = true;
   bool _isFectchingUser = false;
   bool _showInfo = true;
+  bool _isLoading = true;
+
   late ScrollController _hideButtonController;
 
   @override
@@ -71,7 +73,8 @@ class _EventAttendeesRequestedState extends State<EventAttendeesRequested>
     QuerySnapshot inviteSnapShot = await eventInviteRef
         .doc(widget.event.id)
         .collection('eventInvite')
-        // .where('invited', isEqualTo: false)
+        // .where('invited', isEqualTo: true)
+        .where('invited', isEqualTo: false)
         .where('attendeeStatus', isEqualTo: widget.answer)
         .limit(limit)
         .get();
@@ -83,6 +86,7 @@ class _EventAttendeesRequestedState extends State<EventAttendeesRequested>
       setState(() {
         _hasNext = false;
         _inviteList = users;
+        _isLoading = false;
       });
     }
     return users;
@@ -93,6 +97,8 @@ class _EventAttendeesRequestedState extends State<EventAttendeesRequested>
         .doc(widget.event.id)
         .collection('eventInvite')
         // .where('invited', isEqualTo: false)
+
+        .where('invited', isEqualTo: false)
         .limit(limit)
         .get();
     List<EventInvite> users =
@@ -102,6 +108,8 @@ class _EventAttendeesRequestedState extends State<EventAttendeesRequested>
       print(users.length.toString());
       setState(() {
         _hasNext = false;
+        _isLoading = false;
+
         _inviteList = users;
       });
     }
@@ -114,7 +122,9 @@ class _EventAttendeesRequestedState extends State<EventAttendeesRequested>
     QuerySnapshot inviteSnapShot = await eventInviteRef
         .doc(widget.event.id)
         .collection('eventInvite')
-        // .where('invited', isEqualTo: false)
+        // .where('invited', isEqualTo: true)
+
+        .where('invited', isEqualTo: false)
         .where('attendeeStatus', isEqualTo: widget.answer)
         .limit(limit)
         .startAfterDocument(_inviteSnapshot.last)
@@ -141,6 +151,8 @@ class _EventAttendeesRequestedState extends State<EventAttendeesRequested>
         .doc(widget.event.id)
         .collection('eventInvite')
         // .where('invited', isEqualTo: false)
+
+        .where('invited', isEqualTo: false)
         .limit(limit)
         .startAfterDocument(_inviteSnapshot.last)
         .get();
@@ -300,7 +312,9 @@ class _EventAttendeesRequestedState extends State<EventAttendeesRequested>
                   title: Text(
                     'Attendee requests',
                     style: TextStyle(
-                        color: Colors.grey,
+                        color: ConfigBloc().darkModeOn
+                            ? Color(0xFF1a1a1a)
+                            : Colors.white,
                         fontSize: 12,
                         fontWeight: FontWeight.bold),
                   ),
@@ -323,9 +337,18 @@ class _EventAttendeesRequestedState extends State<EventAttendeesRequested>
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    _inviteList.length == 0
-                        ? const SizedBox.shrink()
-                        : Expanded(child: _buildEventBuilder())
+                    _isLoading
+                        ? Expanded(
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 1,
+                              ),
+                            ),
+                          )
+                        : _inviteList.length == 0
+                            ? const SizedBox.shrink()
+                            : Expanded(child: _buildEventBuilder())
                   ],
                 ),
               ),

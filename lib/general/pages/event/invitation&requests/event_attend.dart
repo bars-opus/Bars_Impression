@@ -234,7 +234,7 @@ class _AttendEventState extends State<AttendEvent> {
           size: 30.0,
           color: Colors.blue,
         ),
-        duration: Duration(seconds: 2),
+        duration: Duration(seconds: 3),
         leftBarIndicatorColor: Colors.blue,
       )..show(context);
     } catch (e) {
@@ -459,7 +459,9 @@ class _AttendEventState extends State<AttendEvent> {
             );
           }
           EventInvite _eventInvite = snapshot.data;
-          return _eventInvite.anttendeeId.isNotEmpty ||
+          return 
+          
+          _eventInvite.anttendeeId.isNotEmpty ||
                   _eventInvite.eventId.isNotEmpty
               ? EventInviteAvailable(
                   from: '',

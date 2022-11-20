@@ -34,6 +34,9 @@ class _StoreSearchState extends State<StoreSearch> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _controller.clear());
     setState(() {
       _users = null;
+      _posts = null;
+      _events = null;
+      _forums = null;
     });
   }
 
@@ -98,8 +101,6 @@ class _StoreSearchState extends State<StoreSearch> {
                             onChanged: (input) {
                               input.isEmpty ? _nothing() : _search(input);
                             },
-
-                        
                             decoration: InputDecoration(
                               contentPadding: EdgeInsets.symmetric(
                                   horizontal: 16.0, vertical: 12.0),
@@ -161,7 +162,6 @@ class _StoreSearchState extends State<StoreSearch> {
                             const Text('Moods punched'),
                           ]),
                     ),
-                   
                     body: TabBarView(
                       physics: const AlwaysScrollableScrollPhysics(),
                       children: <Widget>[
@@ -187,4 +187,3 @@ class _StoreSearchState extends State<StoreSearch> {
     );
   }
 }
-

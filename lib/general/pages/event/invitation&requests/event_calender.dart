@@ -15,6 +15,8 @@ class EventCalender extends StatefulWidget {
 
 class _EventCalenderState extends State<EventCalender> {
   int _different = 0;
+  late DateTime _date;
+  late DateTime _toDaysDate;
 
   @override
   void initState() {
@@ -29,6 +31,8 @@ class _EventCalenderState extends State<EventCalender> {
 
     setState(() {
       _different = different;
+      _date = date;
+      _toDaysDate = toDayDate;
     });
   }
 
@@ -89,14 +93,18 @@ class _EventCalenderState extends State<EventCalender> {
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text: _different < 0 ? '' : _different.toString(),
+                          text: _date.difference(_toDaysDate).inMinutes < 0
+                              ? ''
+                              : _different.toString(),
                           style: TextStyle(
                             fontSize: 50,
                             color: Colors.white,
                           ),
                         ),
                         TextSpan(
-                          text: _different < 0 ? 'Ongoing...' : '\nDays More',
+                          text: _date.difference(_toDaysDate).inMinutes < 0
+                              ? 'Ongoing...'
+                              : '\nDays More',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,

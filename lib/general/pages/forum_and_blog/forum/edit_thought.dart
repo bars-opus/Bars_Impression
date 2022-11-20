@@ -108,6 +108,46 @@ class _EditThoughtState extends State<EditThought> {
 
   _deleteThought() {
     HapticFeedback.heavyImpact();
+    FirebaseStorage.instance
+        .refFromURL(widget.thought.mediaUrl)
+        .delete()
+        .catchError(
+          (e) => Flushbar(
+            margin: EdgeInsets.all(8),
+            boxShadows: [
+              BoxShadow(
+                color: Colors.black,
+                offset: Offset(0.0, 2.0),
+                blurRadius: 3.0,
+              )
+            ],
+            flushbarPosition: FlushbarPosition.TOP,
+            flushbarStyle: FlushbarStyle.FLOATING,
+            titleText: Text(
+              'Sorry',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+              ),
+            ),
+            messageText: Text(
+              e.contains(']')
+                  ? e.substring(e.lastIndexOf(']') + 1).toString()
+                  : e.toString(),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+              ),
+            ),
+            icon: Icon(
+              Icons.error_outline,
+              size: 28.0,
+              color: Colors.blue,
+            ),
+            duration: Duration(seconds: 3),
+            leftBarIndicatorColor: Colors.blue,
+          )..show(context),
+        );
 
     DatabaseService.deleteThought(
         currentUserId: widget.currentUserId,
@@ -175,6 +215,8 @@ class _EditThoughtState extends State<EditThought> {
         authorProfileHanlde: user.profileHandle!,
         authorProfileImageUrl: user.profileImageUrl!,
         authorVerification: '',
+        likeCount: null,
+        imported: widget.thought.imported,
       );
 
       try {
@@ -255,101 +297,147 @@ class _EditThoughtState extends State<EditThought> {
             child: SingleChildScrollView(
               child: Container(
                 height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     const SizedBox(
                       height: 20.0,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: ConfigBloc().darkModeOn
-                                ? Color(0xFF1a1a1a)
-                                : Colors.white,
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 30.0, vertical: 10.0),
-                          child: Hero(
-                            tag: 'title' + widget.thought.id.toString(),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: TextFormField(
-                                keyboardType: TextInputType.multiline,
-                                maxLines: null,
-                                autofocus: true,
-                                initialValue: _content,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: ConfigBloc().darkModeOn
-                                      ? Colors.white
-                                      : Colors.black,
+                    widget.thought.imported
+                        ? const SizedBox.shrink()
+                        : const SizedBox.shrink(),
+                    widget.thought.imported
+                        ? Text(
+                            'An imported content cannot be edited.\nIt can only be deleted.',
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              color: ConfigBloc().darkModeOn
+                                  ? Color(0xFF1a1a1a)
+                                  : Colors.white,
+                            ),
+                            textAlign: TextAlign.center,
+                          )
+                        : widget.thought.mediaUrl.isEmpty
+                            ? const SizedBox.shrink()
+                            : Hero(
+                                tag: 'image ${widget.thought.id}',
+                                child: Container(
+                                  color: Colors.white,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      height: 100,
+                                      width: 100,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        image: DecorationImage(
+                                          image: CachedNetworkImageProvider(
+                                              widget.thought.mediaUrl),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                                decoration: InputDecoration(
-                                    hintText: "What do you think?",
-                                    hintStyle: TextStyle(
-                                      fontSize: 14.0,
-                                      color: ConfigBloc().darkModeOn
-                                          ? Colors.white
-                                          : Colors.grey,
+                              ),
+                    widget.thought.imported
+                        ? const SizedBox.shrink()
+                        : Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: ConfigBloc().darkModeOn
+                                      ? Color(0xFF1a1a1a)
+                                      : Colors.white,
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 30.0, vertical: 10.0),
+                                child: Hero(
+                                  tag: 'title' + widget.thought.id.toString(),
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: TextFormField(
+                                      keyboardType: TextInputType.multiline,
+                                      maxLines: null,
+                                      autofocus: true,
+                                      initialValue: _content,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: ConfigBloc().darkModeOn
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
+                                      decoration: InputDecoration(
+                                          hintText: "What do you think?",
+                                          hintStyle: TextStyle(
+                                            fontSize: 14.0,
+                                            color: ConfigBloc().darkModeOn
+                                                ? Colors.white
+                                                : Colors.grey,
+                                          ),
+                                          labelText: 'Thought',
+                                          labelStyle: TextStyle(
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.grey,
+                                          ),
+                                          enabledBorder:
+                                              new UnderlineInputBorder(
+                                                  borderSide: new BorderSide(
+                                                      color:
+                                                          Colors.transparent))),
+                                      validator: (input) =>
+                                          input!.trim().length < 1
+                                              ? "Thought field can't be empty"
+                                              : null,
+                                      onChanged: (input) => _content = input,
                                     ),
-                                    labelText: 'Thought',
-                                    labelStyle: TextStyle(
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.grey,
-                                    ),
-                                    enabledBorder: new UnderlineInputBorder(
-                                        borderSide: new BorderSide(
-                                            color: Colors.transparent))),
-                                validator: (input) => input!.trim().length < 1
-                                    ? "Thought field can't be empty"
-                                    : null,
-                                onChanged: (input) => _content = input,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ),
-                    ),
                     const SizedBox(
                       height: 10.0,
                     ),
-                    Container(
-                      width: 250.0,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: ConfigBloc().darkModeOn
-                              ? Color(0xFF1a1a1a)
-                              : Colors.white,
-                          elevation: 20.0,
-                          foregroundColor: Colors.blue,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                        ),
-                        onPressed: () => _submit(),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            SizedBox(
-                              width: 10.0,
-                            ),
-                            Text(
-                              'Save',
-                              style: TextStyle(
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.bold,
-                                color: ConfigBloc().darkModeOn
-                                    ? Colors.white
-                                    : Colors.black,
+                    widget.thought.imported
+                        ? const SizedBox.shrink()
+                        : Container(
+                            width: 250.0,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: ConfigBloc().darkModeOn
+                                    ? Color(0xFF1a1a1a)
+                                    : Colors.white,
+                                elevation: 20.0,
+                                foregroundColor: Colors.blue,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                ),
+                              ),
+                              onPressed: () => _submit(),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  SizedBox(
+                                    width: 10.0,
+                                  ),
+                                  Text(
+                                    'Save',
+                                    style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: ConfigBloc().darkModeOn
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                    ),
+                          ),
                     SizedBox(
                       height: 40.0,
                     ),

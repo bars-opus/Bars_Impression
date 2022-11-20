@@ -1,26 +1,26 @@
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/cupertino.dart';
 
-class EventAttendeesInvited extends StatefulWidget {
-  static final id = 'EventAttendeesInvited';
+class EventAttendeesRequestNotification extends StatefulWidget {
+  static final id = 'EventAttendeesRequestNotification';
   final Event event;
   final String answer;
-  final bool letShowAppBar;
 
   final PaletteGenerator palette;
 
-  EventAttendeesInvited({
+  EventAttendeesRequestNotification({
     required this.event,
     required this.palette,
-    required this.letShowAppBar,
     required this.answer,
   });
 
   @override
-  _EventAttendeesInvitedState createState() => _EventAttendeesInvitedState();
+  _EventAttendeesRequestNotificationState createState() =>
+      _EventAttendeesRequestNotificationState();
 }
 
-class _EventAttendeesInvitedState extends State<EventAttendeesInvited>
+class _EventAttendeesRequestNotificationState
+    extends State<EventAttendeesRequestNotification>
     with AutomaticKeepAliveClientMixin {
   List<EventInvite> _inviteList = [];
   final _inviteSnapshot = <DocumentSnapshot>[];
@@ -35,7 +35,7 @@ class _EventAttendeesInvitedState extends State<EventAttendeesInvited>
   @override
   void initState() {
     super.initState();
-    widget.answer.startsWith('All') ? _setUpInvited() : _setUpInvite();
+    _setUpInvite();
     __setShowInfo();
     _hideButtonController = ScrollController();
   }
@@ -43,7 +43,7 @@ class _EventAttendeesInvitedState extends State<EventAttendeesInvited>
   bool _handleScrollNotification(ScrollNotification notification) {
     if (notification is ScrollEndNotification) {
       if (_hideButtonController.position.extentAfter == 0) {
-        widget.answer.startsWith('All') ? _loadMoreAll() : _loadMoreInvite();
+        _loadMoreInvite();
       }
     }
     return false;
@@ -71,29 +71,8 @@ class _EventAttendeesInvitedState extends State<EventAttendeesInvited>
     QuerySnapshot inviteSnapShot = await eventInviteRef
         .doc(widget.event.id)
         .collection('eventInvite')
-        .where('invited', isEqualTo: true)
+        .where('invited', isEqualTo: false)
         .where('attendeeStatus', isEqualTo: widget.answer)
-        .limit(limit)
-        .get();
-    List<EventInvite> users =
-        inviteSnapShot.docs.map((doc) => EventInvite.fromDoc(doc)).toList();
-    _inviteSnapshot.addAll((inviteSnapShot.docs));
-    if (mounted) {
-      print(users.length.toString());
-      setState(() {
-        _hasNext = false;
-        _inviteList = users;
-        _isLoading = false;
-      });
-    }
-    return users;
-  }
-
-  _setUpInvited() async {
-    QuerySnapshot inviteSnapShot = await eventInviteRef
-        .doc(widget.event.id)
-        .collection('eventInvite')
-        .where('invited', isEqualTo: true)
         .limit(limit)
         .get();
     List<EventInvite> users =
@@ -116,33 +95,8 @@ class _EventAttendeesInvitedState extends State<EventAttendeesInvited>
     QuerySnapshot inviteSnapShot = await eventInviteRef
         .doc(widget.event.id)
         .collection('eventInvite')
-        .where('invited', isEqualTo: true)
+        .where('invited', isEqualTo: false)
         .where('attendeeStatus', isEqualTo: widget.answer)
-        .limit(limit)
-        .startAfterDocument(_inviteSnapshot.last)
-        .get();
-    List<EventInvite> moreusers =
-        inviteSnapShot.docs.map((doc) => EventInvite.fromDoc(doc)).toList();
-    if (_inviteSnapshot.length < limit) _hasNext = false;
-    List<EventInvite> allusers = _inviteList..addAll(moreusers);
-    _inviteSnapshot.addAll((inviteSnapShot.docs));
-    if (mounted) {
-      setState(() {
-        _inviteList = allusers;
-      });
-    }
-    _hasNext = false;
-    _isFectchingUser = false;
-    return _hasNext;
-  }
-
-  _loadMoreAll() async {
-    if (_isFectchingUser) return;
-    _isFectchingUser = true;
-    QuerySnapshot inviteSnapShot = await eventInviteRef
-        .doc(widget.event.id)
-        .collection('eventInvite')
-        .where('invited', isEqualTo: true)
         .limit(limit)
         .startAfterDocument(_inviteSnapshot.last)
         .get();
@@ -461,51 +415,7 @@ class _EventAttendeesInvitedState extends State<EventAttendeesInvited>
     return ResponsiveScaffold(
       child: NestedScrollView(
         controller: _hideButtonController,
-        headerSliverBuilder: (context, innerBoxScrolled) => [
-          widget.letShowAppBar
-              ? SliverAppBar(
-                  elevation: 0.0,
-                  automaticallyImplyLeading: true,
-                  floating: true,
-                  snap: true,
-                  pinned: true,
-                  iconTheme: new IconThemeData(
-                    color: Colors.white,
-                  ),
-                  backgroundColor: widget.palette.darkMutedColor == null
-                      ? Color(0xFF1a1a1a)
-                      : widget.palette.darkMutedColor!.color,
-                  title: Text(
-                    'Invites ${widget.answer}',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  centerTitle: true,
-                )
-              : SliverAppBar(
-                  elevation: 0.0,
-                  automaticallyImplyLeading: false,
-                  floating: false,
-                  snap: false,
-                  pinned: false,
-                  iconTheme: new IconThemeData(
-                    color: Colors.transparent,
-                  ),
-                  backgroundColor: widget.palette.darkMutedColor == null
-                      ? Color(0xFF1a1a1a)
-                      : widget.palette.darkMutedColor!.color,
-                  title: Text(
-                    'Invitation responds',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  centerTitle: true,
-                ),
-        ],
+        headerSliverBuilder: (context, innerBoxScrolled) => [],
         body: MediaQuery.removePadding(
           context: context,
           removeTop: true,

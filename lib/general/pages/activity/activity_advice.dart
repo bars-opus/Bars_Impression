@@ -132,10 +132,11 @@ class _ActivityAdviceScreenState extends State<ActivityAdviceScreen>
       ),
       userName: activityAdvice.authorName,
       onPressed: () async {
+       
         // setState(() {
         //   _isLoading = true;
         // });
-        Provider.of<UserData>(context, listen: false).setIsLoading(true);
+        // Provider.of<UserData>(context, listen: false).setIsLoading(true);
         String currentUserId =
             Provider.of<UserData>(context, listen: false).currentUserId!;
         AccountHolder user = await DatabaseService.getUserWithId(currentUserId);
@@ -155,8 +156,9 @@ class _ActivityAdviceScreenState extends State<ActivityAdviceScreen>
         // setState(() {
         //   _isLoading = false;
         // });
-        Provider.of<UserData>(context, listen: false).setIsLoading(false);
+        // Provider.of<UserData>(context, listen: false).setIsLoading(false);
       },
+      isLiked: false,
     );
     //   },
     // );
@@ -195,23 +197,23 @@ class _ActivityAdviceScreenState extends State<ActivityAdviceScreen>
                     ),
                   ),
                 ),
-          Provider.of<UserData>(context, listen: false).isLoading
-              ? Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Shimmer.fromColors(
-                    period: Duration(milliseconds: 1000),
-                    baseColor: Colors.grey,
-                    highlightColor: Colors.blue,
-                    child: RichText(
-                        text: TextSpan(
-                      children: [
-                        TextSpan(text: 'Fetching user please Wait... '),
-                      ],
-                      style: TextStyle(fontSize: 12, color: Colors.blue),
-                    )),
-                  ),
-                )
-              : const SizedBox.shrink(),
+          // Provider.of<UserData>(context, listen: false).isLoading
+          //     ? Padding(
+          //         padding: const EdgeInsets.all(8.0),
+          //         child: Shimmer.fromColors(
+          //           period: Duration(milliseconds: 1000),
+          //           baseColor: Colors.grey,
+          //           highlightColor: Colors.blue,
+          //           child: RichText(
+          //               text: TextSpan(
+          //             children: [
+          //               TextSpan(text: 'Fetching user please Wait... '),
+          //             ],
+          //             style: TextStyle(fontSize: 12, color: Colors.blue),
+          //           )),
+          //         ),
+          //       )
+          //     : const SizedBox.shrink(),
           SizedBox(
             height: 20.0,
           ),

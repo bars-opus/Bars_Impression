@@ -18,6 +18,7 @@ class ForumViewWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OpenContainer(
+      closedElevation: 0.0,
       openColor: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
       closedColor: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
       transitionType: ContainerTransitionType.fade,

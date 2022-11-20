@@ -18,7 +18,7 @@ class ActivityFollowerScreen extends StatefulWidget {
 class _ActivityFollowerScreenState extends State<ActivityFollowerScreen>
     with AutomaticKeepAliveClientMixin {
   List<ActivityFollower> _activities = [];
-  bool _isLoading = false;
+  // bool _isLoading = false;
   final _activitySnapshot = <DocumentSnapshot>[];
   int limit = 10;
   bool _hasNext = true;
@@ -177,6 +177,7 @@ class _ActivityFollowerScreenState extends State<ActivityFollowerScreen>
                     ]),
           child: ListTile(
             onTap: () async {
+              
               activity.seen != 'seen'
                   ? _submit(activity)
                   : const SizedBox.shrink();
@@ -186,7 +187,8 @@ class _ActivityFollowerScreenState extends State<ActivityFollowerScreen>
                       builder: (_) => ProfileScreen(
                             currentUserId:
                                 Provider.of<UserData>(context).currentUserId!,
-                            userId: activity.fromUserId, user: null,
+                            userId: activity.fromUserId,
+                            user: null,
                           )));
             },
             leading: activity.authorProfileImageUrl.isEmpty
@@ -319,23 +321,23 @@ class _ActivityFollowerScreenState extends State<ActivityFollowerScreen>
                     ),
                   ],
                 ),
-          _isLoading
-              ? Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Shimmer.fromColors(
-                    period: Duration(milliseconds: 1000),
-                    baseColor: Colors.grey,
-                    highlightColor: Colors.blue,
-                    child: RichText(
-                        text: TextSpan(
-                      children: [
-                        TextSpan(text: 'Fetching user please Wait... '),
-                      ],
-                      style: TextStyle(fontSize: 12, color: Colors.blue),
-                    )),
-                  ),
-                )
-              : const SizedBox.shrink(),
+          // _isLoading
+          //     ? Padding(
+          //         padding: const EdgeInsets.all(8.0),
+          //         child: Shimmer.fromColors(
+          //           period: Duration(milliseconds: 1000),
+          //           baseColor: Colors.grey,
+          //           highlightColor: Colors.blue,
+          //           child: RichText(
+          //               text: TextSpan(
+          //             children: [
+          //               TextSpan(text: 'Fetching user please Wait... '),
+          //             ],
+          //             style: TextStyle(fontSize: 12, color: Colors.blue),
+          //           )),
+          //         ),
+          //       )
+          //     : const SizedBox.shrink(),
           SizedBox(
             height: 20.0,
           ),

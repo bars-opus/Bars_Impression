@@ -1,11 +1,10 @@
 import 'package:bars/utilities/exports.dart';
 
 class MessageImage extends StatefulWidget {
-  final ChatMessage message;
+  final String messageId;
+  final String mediaUrl;
 
-  MessageImage({
-    required this.message,
-  });
+  MessageImage({required this.messageId, required this.mediaUrl});
 
   @override
   _MessageImageState createState() => _MessageImageState();
@@ -41,14 +40,13 @@ class _MessageImageState extends State<MessageImage> {
               child: ListView(
                 children: <Widget>[
                   Hero(
-                    tag: 'image ${widget.message.id}',
+                    tag: 'image ${widget.messageId}',
                     child: Container(
                       height: width,
                       width: double.infinity,
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: CachedNetworkImageProvider(
-                              widget.message.mediaUrl),
+                          image: CachedNetworkImageProvider(widget.mediaUrl),
                           fit: BoxFit.cover,
                         ),
                       ),

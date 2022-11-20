@@ -1,3 +1,4 @@
+import 'package:bars/general/pages/event/invitation&requests/event_attendees_request_notification.dart';
 import 'package:bars/utilities/exports.dart';
 
 class EventInvitationNotification extends StatelessWidget {
@@ -123,18 +124,46 @@ class EventInvitationNotification extends StatelessWidget {
               body: TabBarView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 children: <Widget>[
-                  EventAttendeesRequested(
-                    palette: palette,
-                    dontShowAnswerWidget: false,
-                    event: event,
-                    answer: 'All',
-                    showAppBar: false,
-                  ),
+                  event.isPrivate
+                      ? EventAttendeesRequestNotification(
+                          palette: palette,
+                          event: event,
+                          answer: '',
+                        )
+                      : Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(30.0),
+                            child: RichText(
+                              textScaleFactor:
+                                  MediaQuery.of(context).textScaleFactor,
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Not available.',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        '\nThis information is available for private events only. Public events don\'t need attendee approval before an attendee can attend.',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
                   EventAttendeesInvited(
                     palette: palette,
                     event: event,
                     letShowAppBar: false,
-                    answer: '',
+                    answer: 'Accepted',
                   ),
                 ],
               )),

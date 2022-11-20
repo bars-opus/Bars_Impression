@@ -15,7 +15,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _updateAppVersion = Platform.isIOS ? 9 : 9;
+  int _updateAppVersion = Platform.isIOS ? 11 : 11;
   String notificationMsg = '';
 
   @override
@@ -63,12 +63,6 @@ class _HomeScreenState extends State<HomeScreen> {
     FirebaseMessaging.onMessage.listen((event) {
       final String recipientId = event.data['recipient'];
       if (recipientId == currentUserId) {
-        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        //   content: Text(
-        //     "${event.notification!.title}: " + "${event.notification!.body}",
-        //     overflow: TextOverflow.ellipsis,
-        //   ),
-        // ));
         LocalNotificationService.showNotificationOnForeground(event);
         setState(() {
           notificationMsg =
@@ -562,7 +556,7 @@ class _HomeDesktopState extends State<HomeDesktop> {
         .listen((activityEventCount) {
       if (mounted) {
         setState(() {
-          // _activityEventCount = activityEventCount;
+          _activityEventCount = activityEventCount;
         });
       }
     });

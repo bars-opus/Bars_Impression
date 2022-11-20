@@ -21,7 +21,9 @@ class EventInviteAvailable extends StatefulWidget {
 }
 
 class _EventInviteAvailableState extends State<EventInviteAvailable> {
-  int _different = 0;
+  // int _different = 0;
+  late DateTime _date;
+  late DateTime _toDaysDate;
 
   @override
   void initState() {
@@ -32,10 +34,12 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
   _countDown() async {
     final DateTime date = DateTime.parse(widget.event.date);
     final toDayDate = DateTime.now();
-    var different = date.difference(toDayDate).inDays;
+    // var different = date.difference(toDayDate).inDays;
 
     setState(() {
-      _different = different;
+      // _different = different;
+      _date = date;
+      _toDaysDate = toDayDate;
     });
   }
 
@@ -218,7 +222,7 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
           size: 30.0,
           color: Colors.blue,
         ),
-        duration: Duration(seconds: 2),
+        duration: Duration(seconds: 3),
         leftBarIndicatorColor: Colors.blue,
       )..show(context);
     } catch (e) {
@@ -454,7 +458,7 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
               ],
             ),
           ),
-          _different < 0
+          _date.difference(_toDaysDate).inMinutes < 0
               ? Padding(
                   padding: const EdgeInsets.all(30.0),
                   child: RichText(
@@ -482,7 +486,11 @@ class _EventInviteAvailableState extends State<EventInviteAvailable> {
                   ),
                 )
               : const SizedBox.shrink(),
-          _different < 0
+ _date
+                                                                .difference(
+                                                                    _toDaysDate)
+                                                                .inMinutes <
+                                                            0
               ? const SizedBox(
                   height: 10,
                 )

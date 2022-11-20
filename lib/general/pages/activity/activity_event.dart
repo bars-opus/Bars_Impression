@@ -1,5 +1,4 @@
 import 'package:bars/utilities/exports.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -33,9 +32,9 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
         ? _setupInvitaionActivities()
         : _setupActivities();
     _hideButtonController = ScrollController();
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      Provider.of<UserData>(context, listen: false).setIsLoading(false);
-    });
+    // SchedulerBinding.instance.addPostFrameCallback((_) {
+    //   Provider.of<UserData>(context, listen: false).setIsLoading(false);
+    // });
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {
@@ -173,7 +172,7 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
   }
 
   _buildActivity(ActivityEvent activityEvent) {
-    return activityEvent.ask!.isEmpty
+    return activityEvent.ask == null
         ? FutureBuilder(
             future: DatabaseService.getEventInviteWithId(
                 activityEvent.eventId, activityEvent.toUserId),
@@ -189,28 +188,43 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
                         color: Colors.white,
                         child: Padding(
                           padding: const EdgeInsets.all(20.0),
-                          child: RichText(
-                            textScaleFactor:
-                                MediaQuery.of(context).textScaleFactor,
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: 'Cordially\nInvited',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.grey,
+                          child: GestureDetector(
+                            onTap: () {
+                              DatabaseService.deleteActivityEvent(
+                                  activityEvent, widget.currentUserId);
+                              Navigator.pop(context);
+                            },
+                            child: RichText(
+                              textScaleFactor:
+                                  MediaQuery.of(context).textScaleFactor,
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Cordially\nInvited',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey,
+                                    ),
                                   ),
-                                ),
-                                TextSpan(
-                                  text: '\nThis invitation has been deleted.',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey,
+                                  TextSpan(
+                                    text:
+                                        '\nThis invitation has been deleted by the inviter. ',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                  TextSpan(
+                                    text: '\n\nTap to delete this invitation.',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
                           ),
                         ),
                       ),
@@ -250,7 +264,7 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
   }
 
   _goToAskSCreen(ActivityEvent activityEvent) async {
-    Provider.of<UserData>(context, listen: false).setIsLoading(true);
+    // Provider.of<UserData>(context, listen: false).setIsLoading(true);
     String currentUserId =
         Provider.of<UserData>(context, listen: false).currentUserId!;
     Event event = await DatabaseService.getUserEvent(
@@ -277,7 +291,7 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
       ),
     );
 
-    Provider.of<UserData>(context, listen: false).setIsLoading(false);
+    // Provider.of<UserData>(context, listen: false).setIsLoading(false);
   }
 
   bool get wantKeepAlive => true;
@@ -313,23 +327,6 @@ class _ActivityEventScreenState extends State<ActivityEventScreen>
                     ),
                   ),
                 ),
-          Provider.of<UserData>(context, listen: false).isLoading
-              ? Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Shimmer.fromColors(
-                    period: Duration(milliseconds: 1000),
-                    baseColor: Colors.grey,
-                    highlightColor: Colors.blue,
-                    child: RichText(
-                        text: TextSpan(
-                      children: [
-                        TextSpan(text: 'Fetching event please Wait... '),
-                      ],
-                      style: TextStyle(fontSize: 12, color: Colors.blue),
-                    )),
-                  ),
-                )
-              : const SizedBox.shrink(),
           SizedBox(
             height: 20.0,
           ),

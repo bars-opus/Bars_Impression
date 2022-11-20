@@ -47,7 +47,8 @@ class _EventViewState extends State<EventView> {
 
   _countDown() async {
     DateTime date = DateTime.parse(widget.event.date);
-    DateTime clossingDate = DateTime.parse(widget.event.clossingDay);
+    DateTime clossingDate =
+        DateTime.parse(widget.event.clossingDay).add(const Duration(hours: 3));
 
     final toDayDate = DateTime.now();
     setState(() {
@@ -114,7 +115,7 @@ class _EventViewState extends State<EventView> {
                     ),
                   ),
                 ),
-                onPressed: () => _toDaysDate.isAfter(_date) || _different < 0
+                onPressed: () => _different < 1
                     ? Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -236,7 +237,8 @@ class _EventViewState extends State<EventView> {
               event: widget.event,
               askCount: _askCount,
               titleHero: 'title ${widget.event.id.toString()}',
-              difference: _different,
+              difference:
+                  _date.difference(_toDaysDate).inMinutes < 0 ? true : false,
               completed: _toDaysDate.isAfter(_closingDate) ? true : false,
               exploreLocation: widget.exploreLocation,
               feed: widget.feed,
