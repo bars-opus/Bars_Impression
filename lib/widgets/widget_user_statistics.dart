@@ -31,7 +31,7 @@ class UserStatistics extends StatelessWidget {
                 style: TextStyle(
                   color: countColor,
                   fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               SizedBox(
@@ -42,7 +42,7 @@ class UserStatistics extends StatelessWidget {
                 style: TextStyle(
                   color: titleColor,
                   fontSize: 14,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.center,
               ),

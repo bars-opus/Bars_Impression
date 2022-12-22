@@ -12,6 +12,7 @@ import Firebase
     #if DEBUG
     let providerFactory = AppCheckDebugProviderFactory()
     AppCheck.setAppCheckProviderFactory(providerFactory)
+    return true
     #endif
     // GMSServices.provideAPIKey("AIzaSyBzHyTS-J9Ge8ohh8A1fZANeLqQbGHcGQY")
     var flutter_native_splash = 1

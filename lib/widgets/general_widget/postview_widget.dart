@@ -148,6 +148,9 @@ class _PostViewWidgetState extends State<PostViewWidget> {
       );
 
   _dynamicLink() async {
+
+
+    
     final dynamicLinkParams = DynamicLinkParameters(
       socialMetaTagParameters: SocialMetaTagParameters(
         imageUrl: Uri.parse(widget.post.imageUrl),

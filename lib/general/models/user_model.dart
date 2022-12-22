@@ -163,7 +163,7 @@ class AccountHolder {
           doc['dontShowContentOnExplorePage'] ?? false,
       enableBookingOnChat: doc['enableBookingOnChat'] ?? false,
       hideAdvice: doc['hideAdvice'] ?? false,
-      noBooking: doc['noBooking'] ?? false,
+      noBooking: doc['noBooking'] ?? true,
       isEmailVerified: doc['isEmailVerified'] ?? false,
       disabledAccount: doc['disabledAccount'] ?? false,
       androidNotificationToken: doc['androidNotificationToken'] ?? '',

@@ -318,10 +318,10 @@ class _SetUpBrandState extends State<SetUpBrand> {
     }
     try {
       await usersRef.doc(currentUserId).update({
-        'profileHandle': _profileHandle,
+        'profileHandle': _profileHandle.isEmpty ? 'Fan' : _profileHandle,
       });
       await usersAuthorRef.doc(currentUserId).update({
-        'profileHandle': _profileHandle,
+        'profileHandle': _profileHandle.isEmpty ? 'Fan' : _profileHandle,
       });
 
       animateToPage();

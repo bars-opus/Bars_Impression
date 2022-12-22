@@ -324,3 +324,4 @@ export 'package:bars/general/pages/forum_and_blog/import_content_search_user.dar
 export 'package:bars/general/pages/forum_and_blog/forum/import_content_search_event.dart';
 export 'package:bars/general/pages/forum_and_blog/forum/import_content_search_forum.dart';
 export 'package:bars/general/pages/forum_and_blog/forum/import_content_search_post.dart';
+export 'package:bars/widgets/general_widget/view_image.dart';

@@ -2785,11 +2785,95 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                         .size
                                                         .height -
                                                     200,
-                                                child: Center(
-                                                    child: Loading(
-                                                  title: 'Publishing event',
-                                                  icon: (Icons.event),
-                                                ))),
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: [
+                                                    Loading(
+                                                      title: 'Publishing event',
+                                                      icon: (Icons.event),
+                                                    ),
+                                                    SizedBox(height: 40),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              10.0),
+                                                      child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: ListTile(
+                                                            title: AnimatedTextKit(
+                                                                animatedTexts: [
+                                                                  FadeAnimatedText(
+                                                                    duration: const Duration(
+                                                                        seconds:
+                                                                            8),
+                                                                    'Your event dashboard allows you to manage your event activities.',
+                                                                    textStyle:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          12.0,
+                                                                      color: Colors
+                                                                          .white,
+                                                                    ),
+                                                                  ),
+                                                                  FadeAnimatedText(
+                                                                    duration: const Duration(
+                                                                        seconds:
+                                                                            8),
+                                                                    'You can send invitations to people to attend this event.',
+                                                                    textStyle:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          12.0,
+                                                                      color: Colors
+                                                                          .white,
+                                                                    ),
+                                                                  ),
+                                                                  FadeAnimatedText(
+                                                                    duration: const Duration(
+                                                                        seconds:
+                                                                            8),
+                                                                    'Your validator would be ready three days before your event.',
+                                                                    textStyle:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          12.0,
+                                                                      color: Colors
+                                                                          .white,
+                                                                    ),
+                                                                  ),
+                                                                  FadeAnimatedText(
+                                                                    duration: const Duration(
+                                                                        seconds:
+                                                                            8),
+                                                                    'You can accept attendee requests on your event dashboard.',
+                                                                    textStyle:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          12.0,
+                                                                      color: Colors
+                                                                          .white,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                                repeatForever:
+                                                                    true,
+                                                                pause:
+                                                                    const Duration(
+                                                                        seconds:
+                                                                            2),
+                                                                displayFullTextOnTap:
+                                                                    true,
+                                                                stopPauseOnTap:
+                                                                    true),
+                                                          )),
+                                                    )
+                                                  ],
+                                                )),
                                           )
                                         ])),
                         ),

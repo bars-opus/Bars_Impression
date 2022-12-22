@@ -24,6 +24,15 @@ class UserProfessionalViewWidget extends StatelessWidget {
     required this.workHero,
   });
 
+  _showSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(
+        'No profile image',
+        overflow: TextOverflow.ellipsis,
+      ),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = Responsive.isDesktop(context)
@@ -43,89 +52,130 @@ class UserProfessionalViewWidget extends StatelessWidget {
         ),
         body: SingleChildScrollView(
           child: SafeArea(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(
-                  height: 30.0,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 30.0, right: 30),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      user.noBooking!
-                          ? const SizedBox.shrink()
-                          : PageFeatureWidget(
+            child: user.noBooking!
+                ? SingleChildScrollView(
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(30.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(height: 30),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(30.0),
+                                child: ShakeTransition(
+                                  child: Icon(
+                                    Icons.work,
+                                    color: Color(0xFF1a1a1a),
+                                    size: 80.0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 50,
+                            ),
+                            currentUserId == user.id &&
+                                    user.professionalPicture1!.isEmpty
+                                ? GestureDetector(
+                                    onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              EditProfileProfessional(
+                                            user: user,
+                                          ),
+                                        )),
+                                    child: RichText(
+                                      textScaleFactor: MediaQuery.of(context)
+                                          .textScaleFactor,
+                                      text: TextSpan(
+                                        children: [
+                                          TextSpan(
+                                              text: 'No booking\nPortfolio\n',
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.white,
+                                              )),
+                                          TextSpan(
+                                            text: user.userName! +
+                                                ', enter your professional info to be available for booking and get discovered on the discover page. Your booking portfolio displays professional information about your work.\n\n',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text: 'Tap to enter info.',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.blue,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  )
+                                : RichText(
+                                    textScaleFactor:
+                                        MediaQuery.of(context).textScaleFactor,
+                                    text: TextSpan(
+                                      children: [
+                                        TextSpan(
+                                            text:
+                                                'Not Available\nFor Booking\n',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white,
+                                            )),
+                                        TextSpan(
+                                          text: user.userName! +
+                                              ' is working on a project and therefore not available for business at the moment, but hopes to work with you in the future.',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const SizedBox(
+                        height: 30.0,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 30.0, right: 30),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            PageFeatureWidget(
                               heroTag: workHero,
                               title: 'Booking \nPortfolio',
                             ),
-                      exploreWidget,
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                user.noBooking!
-                    ? SingleChildScrollView(
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                SizedBox(height: 30),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(5.0),
-                                    child: ShakeTransition(
-                                      child: Icon(
-                                        Icons.work,
-                                        color: Color(0xFF1a1a1a),
-                                        size: 100.0,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 50,
-                                ),
-                                RichText(
-                                  textScaleFactor:
-                                      MediaQuery.of(context).textScaleFactor,
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                          text: 'Not Available\nFor Booking\n',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            color: Colors.white,
-                                          )),
-                                      TextSpan(
-                                        text: user.userName! +
-                                            ' is working on a project and therefore not available for business at the moment, but hopes to work with you in the future.',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
-                          ),
+                            exploreWidget,
+                          ],
                         ),
-                      )
-                    : Column(
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Column(
                         children: [
                           Padding(
                             padding: const EdgeInsets.only(
@@ -189,16 +239,27 @@ class UserProfessionalViewWidget extends StatelessWidget {
                                     ),
                                     Hero(
                                       tag: containerHero1,
-                                      child: CircleAvatar(
-                                        backgroundColor: Color(0xFFf2f2f2),
-                                        radius: width > 600 ? 120 : 80.0,
-                                        backgroundImage:
-                                            user.profileImageUrl!.isEmpty
-                                                ? AssetImage(
-                                                    'assets/images/user_placeholder2.png',
-                                                  ) as ImageProvider
-                                                : CachedNetworkImageProvider(
-                                                    user.profileImageUrl!),
+                                      child: GestureDetector(
+                                        onTap: () => user
+                                                .profileImageUrl!.isNotEmpty
+                                            ? Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (_) => ViewImage(
+                                                          user: user,
+                                                        )))
+                                            : _showSnackBar(context),
+                                        child: CircleAvatar(
+                                          backgroundColor: Color(0xFFf2f2f2),
+                                          radius: width > 600 ? 120 : 80.0,
+                                          backgroundImage:
+                                              user.profileImageUrl!.isEmpty
+                                                  ? AssetImage(
+                                                      'assets/images/user_placeholder2.png',
+                                                    ) as ImageProvider
+                                                  : CachedNetworkImageProvider(
+                                                      user.profileImageUrl!),
+                                        ),
                                       ),
                                     ),
                                     // Stack(
@@ -1550,202 +1611,204 @@ class UserProfessionalViewWidget extends StatelessWidget {
                           ),
                         ],
                       ),
-                const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Container(
-                    width: width,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.blue,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5.0),
-                        ),
-                      ),
-                      onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => UserBooking(
-                                    from: 'Booking',
-                                    user: user,
-                                    currentUserId: currentUserId,
-                                    userIsCall: 1,
-                                  ))),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: Text(
-                          'Work with me',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 12,
+                      const SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Container(
+                          width: width,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.blue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                            ),
+                            onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => UserBooking(
+                                          from: 'Booking',
+                                          user: user,
+                                          currentUserId: currentUserId,
+                                          userIsCall: 1,
+                                        ))),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: Text(
+                                'Work with me',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Container(
-                    width: width,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.blue,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5.0),
-                        ),
-                      ),
-                      onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => UserAdviceScreen(
-                                    currentUserId: currentUserId,
-                                    user: user,
-                                  ))),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: Text(
-                          'Advice',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 12,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Container(
+                          width: width,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.blue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                            ),
+                            onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => UserAdviceScreen(
+                                          currentUserId: currentUserId,
+                                          user: user,
+                                        ))),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: Text(
+                                'Advice',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
+
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Center(
+                        child: GestureDetector(
+                            onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => ReportContentPage(
+                                          parentContentId: user.id,
+                                          repotedAuthorId: user.id!,
+                                          contentId: user.id!,
+                                          contentType: user.userName!,
+                                        ))),
+                            child: Material(
+                                color: Colors.transparent,
+                                child: Text('Report',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                    )))),
+                      ),
+
+                      // Container(
+                      //   width: width,
+                      //   child: Column(
+                      //     mainAxisAlignment: MainAxisAlignment.center,
+                      //     crossAxisAlignment: CrossAxisAlignment.center,
+                      //     children: [
+                      //       GestureDetector(
+                      //         onTap: () => Navigator.push(
+                      //             context,
+                      //             MaterialPageRoute(
+                      //                 builder: (_) => ProfileRating(
+                      //                       user: user,
+                      //                       currentUserId: currentUserId,
+                      //                     ))),
+                      //         child: user.id == currentUserId
+                      //             ? Text(
+                      //                 'Your rating',
+                      //                 style: TextStyle(
+                      //                   fontSize: 12.0,
+                      //                   color: Colors.grey,
+                      //                 ),
+                      //               )
+                      //             : Text(
+                      //                 'Rate ${user.userName!} here',
+                      //                 style: TextStyle(
+                      //                   fontSize: 12.0,
+                      //                   color: Colors.grey,
+                      //                 ),
+                      //               ),
+                      //       ),
+                      //       const SizedBox(height: 20),
+                      //       user.profileHandle!.startsWith('F') ||
+                      //               user.profileHandle!.isEmpty
+                      //           ? SizedBox.shrink()
+                      //           : GestureDetector(
+                      //               onTap: () => Navigator.push(
+                      //                   context,
+                      //                   MaterialPageRoute(
+                      //                       builder: (_) => UserAdviceScreen(
+                      //                             currentUserId: currentUserId,
+                      //                             user: user,
+                      //                           ))),
+                      //               child: Material(
+                      //                   color: Colors.transparent,
+                      //                   child: Text(
+                      //                       user.id == currentUserId
+                      //                           ? 'See advices'
+                      //                           : 'Leave an advice for ' +
+                      //                               user.userName!,
+                      //                       style: TextStyle(
+                      //                         color: Colors.grey,
+                      //                         fontSize: 12,
+                      //                       )))),
+                      //       const SizedBox(height: 20),
+                      //       GestureDetector(
+                      //           onTap: () => Navigator.push(
+                      //               context,
+                      //               MaterialPageRoute(
+                      //                   builder: (_) => ReportContentPage(
+                      //                         parentContentId: user.id,
+                      //                         repotedAuthorId: user.id!,
+                      //                         contentId: user.id!,
+                      //                         contentType: user.userName!,
+                      //                       ))),
+                      //           child: Material(
+                      //               color: Colors.transparent,
+                      //               child: Text('Report  ' + user.userName!,
+                      //                   style: TextStyle(
+                      //                     color: Colors.red,
+                      //                     fontSize: 12,
+                      //                   )))),
+                      //       const SizedBox(height: 20),
+                      //     ],
+                      //   ),
+                      // ),
+
+                      const SizedBox(height: 70),
+                      Center(
+                        child: IconButton(
+                          icon: Icon(Icons.close),
+                          iconSize: 30.0,
+                          color: Colors.white,
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 70.0,
+                      ),
+                      GestureDetector(
+                          onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => SuggestionBox())),
+                          child: Center(
+                            child: Material(
+                                color: Colors.transparent,
+                                child: Text('Suggestion Box',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                    ))),
+                          )),
+                      const SizedBox(
+                        height: 70.0,
+                      ),
+                    ],
                   ),
-                ),
-
-                const SizedBox(
-                  height: 20,
-                ),
-                Center(
-                  child: GestureDetector(
-                      onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => ReportContentPage(
-                                    parentContentId: user.id,
-                                    repotedAuthorId: user.id!,
-                                    contentId: user.id!,
-                                    contentType: user.userName!,
-                                  ))),
-                      child: Material(
-                          color: Colors.transparent,
-                          child: Text('Report',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                              )))),
-                ),
-
-                // Container(
-                //   width: width,
-                //   child: Column(
-                //     mainAxisAlignment: MainAxisAlignment.center,
-                //     crossAxisAlignment: CrossAxisAlignment.center,
-                //     children: [
-                //       GestureDetector(
-                //         onTap: () => Navigator.push(
-                //             context,
-                //             MaterialPageRoute(
-                //                 builder: (_) => ProfileRating(
-                //                       user: user,
-                //                       currentUserId: currentUserId,
-                //                     ))),
-                //         child: user.id == currentUserId
-                //             ? Text(
-                //                 'Your rating',
-                //                 style: TextStyle(
-                //                   fontSize: 12.0,
-                //                   color: Colors.grey,
-                //                 ),
-                //               )
-                //             : Text(
-                //                 'Rate ${user.userName!} here',
-                //                 style: TextStyle(
-                //                   fontSize: 12.0,
-                //                   color: Colors.grey,
-                //                 ),
-                //               ),
-                //       ),
-                //       const SizedBox(height: 20),
-                //       user.profileHandle!.startsWith('F') ||
-                //               user.profileHandle!.isEmpty
-                //           ? SizedBox.shrink()
-                //           : GestureDetector(
-                //               onTap: () => Navigator.push(
-                //                   context,
-                //                   MaterialPageRoute(
-                //                       builder: (_) => UserAdviceScreen(
-                //                             currentUserId: currentUserId,
-                //                             user: user,
-                //                           ))),
-                //               child: Material(
-                //                   color: Colors.transparent,
-                //                   child: Text(
-                //                       user.id == currentUserId
-                //                           ? 'See advices'
-                //                           : 'Leave an advice for ' +
-                //                               user.userName!,
-                //                       style: TextStyle(
-                //                         color: Colors.grey,
-                //                         fontSize: 12,
-                //                       )))),
-                //       const SizedBox(height: 20),
-                //       GestureDetector(
-                //           onTap: () => Navigator.push(
-                //               context,
-                //               MaterialPageRoute(
-                //                   builder: (_) => ReportContentPage(
-                //                         parentContentId: user.id,
-                //                         repotedAuthorId: user.id!,
-                //                         contentId: user.id!,
-                //                         contentType: user.userName!,
-                //                       ))),
-                //           child: Material(
-                //               color: Colors.transparent,
-                //               child: Text('Report  ' + user.userName!,
-                //                   style: TextStyle(
-                //                     color: Colors.red,
-                //                     fontSize: 12,
-                //                   )))),
-                //       const SizedBox(height: 20),
-                //     ],
-                //   ),
-                // ),
-
-                const SizedBox(height: 70),
-                Center(
-                  child: IconButton(
-                    icon: Icon(Icons.close),
-                    iconSize: 30.0,
-                    color: Colors.white,
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ),
-                const SizedBox(
-                  height: 70.0,
-                ),
-                GestureDetector(
-                    onTap: () => Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => SuggestionBox())),
-                    child: Center(
-                      child: Material(
-                          color: Colors.transparent,
-                          child: Text('Suggestion Box',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                              ))),
-                    )),
-                const SizedBox(
-                  height: 70.0,
-                ),
-              ],
-            ),
           ),
         ),
       ),
@@ -1802,7 +1865,7 @@ class UserProfessionalViewWidget extends StatelessWidget {
   //                 child: Row(
   //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
   //                   children: [
-  //                     user.noBooking!
+  //                     !user.noBooking!
   //                         ? const SizedBox.shrink()
   //                         : PageFeatureWidget(
   //                             heroTag: workHero,
@@ -1815,7 +1878,7 @@ class UserProfessionalViewWidget extends StatelessWidget {
   //               SizedBox(
   //                 height: 20,
   //               ),
-  //               user.noBooking!
+  //               !user.noBooking!
   //                   ? NoBooking(
   //                       user: user,
   //                     )
@@ -3631,7 +3694,7 @@ class UserProfessionalViewWidget extends StatelessWidget {
 //                 child: Row(
 //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
 //                   children: [
-//                     user.noBooking!
+//                     !user.noBooking!
 //                         ? const SizedBox.shrink()
 //                         : PageFeatureWidget(
 //                             heroTag: workHero,
@@ -3644,7 +3707,7 @@ class UserProfessionalViewWidget extends StatelessWidget {
 //               SizedBox(
 //                 height: 20,
 //               ),
-//               user.noBooking!
+//               !user.noBooking!
 //                   ? NoBooking(
 //                       user: user,
 //                     )

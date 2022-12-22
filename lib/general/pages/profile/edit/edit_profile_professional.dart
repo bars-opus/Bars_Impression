@@ -143,6 +143,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
           'professionalPicture2': _professionalPicture2Url,
           'professionalPicture3': _professionalPicture3Url,
           'mail': Provider.of<UserData>(context, listen: false).post12,
+          'noBooking': false,
         });
       } catch (e) {
         final double width = Responsive.isDesktop(context)

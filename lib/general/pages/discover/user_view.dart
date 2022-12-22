@@ -562,7 +562,7 @@ class _UserViewState extends State<UserView> {
                                     color: Colors.grey,
                                   )),
                               TextSpan(
-                                text: " ${widget.user.bio}",
+                                text: " ${widget.user.bio!.trim()}",
                                 style: TextStyle(
                                   fontSize: width > 800 ? 14 : 12,
                                   color: ConfigBloc().darkModeOn

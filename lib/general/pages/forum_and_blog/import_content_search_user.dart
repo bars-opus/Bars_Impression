@@ -191,7 +191,9 @@ class _ImportContentSearchUserState extends State<ImportContentSearchUser>
                       style: TextStyle(
                         fontSize: width > 800 ? 18 : 14.0,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: ConfigBloc().darkModeOn
+                            ? Colors.white
+                            : Colors.black,
                       )),
                 ),
                 user.verified!.isEmpty
@@ -226,16 +228,16 @@ class _ImportContentSearchUserState extends State<ImportContentSearchUser>
                           fontSize: width > 800 ? 14 : 12,
                           color: Colors.blueGrey,
                         )),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    Divider(
-                      color: ConfigBloc().darkModeOn
-                          ? Colors.grey[850]
-                          : Colors.grey[350],
-                    )
                   ],
                 ),
+                SizedBox(
+                  height: 10.0,
+                ),
+                Divider(
+                  color: ConfigBloc().darkModeOn
+                      ? Colors.grey[850]
+                      : Colors.grey[350],
+                )
               ]),
           onTap: () {
             _showSelectImageDialog(user);

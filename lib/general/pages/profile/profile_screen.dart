@@ -716,6 +716,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   'Favorite Musician',
                   style: TextStyle(
                     color: Colors.grey,
+                    fontSize: 12,
                   ),
                 ),
               ),
@@ -727,7 +728,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   style: TextStyle(
                     color:
                         ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                    fontSize: 14,
+                    fontSize: 12,
                   ),
                 ),
               ),
@@ -740,6 +741,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   'Favorite Song',
                   style: TextStyle(
                     color: Colors.grey,
+                    fontSize: 12,
                   ),
                 ),
               ),
@@ -751,7 +753,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   style: TextStyle(
                     color:
                         ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                    fontSize: 14,
+                    fontSize: 12,
                   ),
                 ),
               ),
@@ -764,6 +766,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   'Favorite Album',
                   style: TextStyle(
                     color: Colors.grey,
+                    fontSize: 12,
                   ),
                 ),
               ),
@@ -775,7 +778,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   style: TextStyle(
                     color:
                         ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                    fontSize: 14,
+                    fontSize: 12,
                   ),
                 ),
               ),
@@ -1355,8 +1358,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     color: ConfigBloc().darkModeOn
                                         ? Colors.blueGrey
                                         : Colors.white,
-                                    fontSize: width > 600 ? 40 : 30.0,
-                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.w400,
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
@@ -1414,12 +1417,12 @@ class _ProfileScreenState extends State<ProfileScreen>
                               child: new Material(
                                 color: Colors.transparent,
                                 child: Text(
-                                  user.name!,
+                                  user.name!.trim(),
                                   style: TextStyle(
                                     color: ConfigBloc().darkModeOn
                                         ? Colors.blueGrey
                                         : Colors.white,
-                                    fontSize: width > 600 ? 16 : 14.0,
+                                    fontSize: 14.0,
                                   ),
                                 ),
                               ),
@@ -1434,8 +1437,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     color: ConfigBloc().darkModeOn
                                         ? Colors.blueGrey[300]
                                         : Colors.white,
-                                    fontSize: width > 600 ? 30 : 20.0,
-                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14.0,
+                                    fontWeight: FontWeight.w400,
                                   ),
                                 ),
                               ),
@@ -1444,12 +1447,12 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     user.profileHandle!.isEmpty
                                 ? const SizedBox.shrink()
                                 : Text(
-                                    user.company!,
+                                    user.company!.trim(),
                                     style: TextStyle(
                                       color: ConfigBloc().darkModeOn
                                           ? Colors.blueGrey
                                           : Colors.white,
-                                      fontSize: width > 600 ? 16 : 14,
+                                      fontSize: 14,
                                     ),
                                   ),
                             user.profileHandle!.startsWith('F') ||
@@ -1571,7 +1574,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                         ),
                         HyperLinkText(
                           from: 'Profile',
-                          text: user.bio!,
+                          text: user.bio!.trim(),
                         ),
                         _displayButton(
                           user,

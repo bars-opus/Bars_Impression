@@ -283,7 +283,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       tag: 'container1' +
                                           widget.user.id.toString(),
                                       child: GestureDetector(
-                                        onTap: () => _handleImageFromGallery,
+                                        onTap: _handleImageFromGallery,
                                         child: CircleAvatar(
                                             backgroundColor:
                                                 ConfigBloc().darkModeOn

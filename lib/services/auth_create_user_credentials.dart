@@ -92,7 +92,7 @@ class _AuthCreateUserCredentialsState extends State<AuthCreateUserCredentials> {
           'disableChat': false,
           'enableBookingOnChat': false,
           'hideAdvice': false,
-          'noBooking': false,
+          'noBooking': true,
           'disabledAccount': false,
           'disableContentSharing': false,
           'disableMoodPunchReaction': false,

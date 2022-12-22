@@ -43,11 +43,15 @@ class _AllPostState extends State<AllPost> {
 
   _setupFeed() async {
     QuerySnapshot postFeedSnapShot = await allPostsRef
-        .orderBy('timestamp', descending: true)
+        .where('disbleSharing', isEqualTo: true)
+
+        // .orderBy('timestamp', descending: true)
         .limit(limit)
         .get();
-    List<Post> posts =
-        postFeedSnapShot.docs.map((doc) => Post.fromDoc(doc)).toList();
+    List<Post> posts = postFeedSnapShot.docs
+        .map((doc) => Post.fromDoc(doc))
+        .toList()
+      ..shuffle();
     _postSnapshot.addAll((postFeedSnapShot.docs));
     if (mounted) {
       setState(() {
@@ -63,12 +67,15 @@ class _AllPostState extends State<AllPost> {
     _isFetchingPost = true;
     _hasNext = true;
     QuerySnapshot postFeedSnapShot = await allPostsRef
-        .orderBy('timestamp', descending: true)
+        .where('disbleSharing', isEqualTo: true)
+        // .orderBy('timestamp', descending: true)
         .limit(limit)
         .startAfterDocument(_postSnapshot.last)
         .get();
-    List<Post> morePosts =
-        postFeedSnapShot.docs.map((doc) => Post.fromDoc(doc)).toList();
+    List<Post> morePosts = postFeedSnapShot.docs
+        .map((doc) => Post.fromDoc(doc))
+        .toList()
+      ..shuffle();
     List<Post> allPost = _posts..addAll(morePosts);
     _postSnapshot.addAll((postFeedSnapShot.docs));
     if (mounted) {
@@ -142,7 +149,6 @@ class _AllPostState extends State<AllPost> {
                                                     widget.currentUserId,
                                                 post: post,
                                               );
-                                             
                                             },
                                             childCount: _posts.length,
                                           ),

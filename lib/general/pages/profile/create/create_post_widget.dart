@@ -786,250 +786,254 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                 child: Stack(
                   alignment: FractionalOffset.center,
                   children: <Widget>[
-                    Stack(
-                        alignment: FractionalOffset.center,
-                        children: <Widget>[
-                          _displayPostImage(),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                top: 0.0, left: 10.0, right: 10.0),
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: PageView(
-                                controller: _pageController,
-                                physics: NeverScrollableScrollPhysics(),
-                                children: [
-                                  Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: <Widget>[
-                                        Provider.of<UserData>(context,
-                                                        listen: false)
-                                                    .post5
-                                                    .isEmpty &&
-                                                !widget.isEditting
-                                            ? const SizedBox.shrink()
-                                            : GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    _show = 3;
-                                                    _showSheet = true;
-                                                  });
-                                                },
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    const Text(
-                                                      '#',
-                                                      style: TextStyle(
-                                                        fontSize: 40,
-                                                        color: Colors.white,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                      width: 10,
-                                                    ),
-                                                    Text(
-                                                      Provider.of<UserData>(
-                                                              context,
-                                                              listen: false)
-                                                          .post5,
-                                                      style: TextStyle(
-                                                        fontSize: 18,
-                                                        color: Colors.white,
-                                                      ),
-                                                    ),
-                                                  ],
+                    Stack(alignment: FractionalOffset.center, children: <
+                        Widget>[
+                      _displayPostImage(),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            top: 0.0, left: 10.0, right: 10.0),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: PageView(
+                            controller: _pageController,
+                            physics: NeverScrollableScrollPhysics(),
+                            children: [
+                              Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    Provider.of<UserData>(context,
+                                                    listen: false)
+                                                .post5
+                                                .isEmpty &&
+                                            !widget.isEditting
+                                        ? const SizedBox.shrink()
+                                        : GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                _show = 3;
+                                                _showSheet = true;
+                                              });
+                                            },
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                const Text(
+                                                  '#',
+                                                  style: TextStyle(
+                                                    fontSize: 40,
+                                                    color: Colors.white,
+                                                  ),
                                                 ),
-                                              ),
-                                        Provider.of<UserData>(context,
-                                                            listen: false)
-                                                        .postImage ==
-                                                    null &&
-                                                widget.imageUrl.isEmpty
-                                            ? AvatarGlow(
-                                                animate: true,
-                                                showTwoGlows: true,
-                                                shape: BoxShape.circle,
-                                                glowColor: Colors.blue,
-                                                endRadius: 100,
-                                                duration: const Duration(
-                                                    milliseconds: 2000),
-                                                repeatPauseDuration:
-                                                    const Duration(
-                                                        milliseconds: 3000),
-                                                child: Container(
-                                                    width: 100,
-                                                    height: 100,
-                                                    decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(12),
-                                                        border: Border.all(
-                                                          width: 2,
-                                                          color: Colors.white,
-                                                        )),
-                                                    child: IconButton(
-                                                      icon: Icon(
-                                                        MdiIcons.image,
-                                                        color: Colors.white,
-                                                        size: 80,
-                                                      ),
-                                                      onPressed: () =>
-                                                          _handleImage(),
+                                                const SizedBox(
+                                                  width: 10,
+                                                ),
+                                                Text(
+                                                  Provider.of<UserData>(context,
+                                                          listen: false)
+                                                      .post5,
+                                                  style: TextStyle(
+                                                    fontSize: 18,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                    Provider.of<UserData>(context,
+                                                        listen: false)
+                                                    .postImage ==
+                                                null &&
+                                            widget.imageUrl.isEmpty
+                                        ? AvatarGlow(
+                                            animate: true,
+                                            showTwoGlows: true,
+                                            shape: BoxShape.circle,
+                                            glowColor: Colors.blue,
+                                            endRadius: 100,
+                                            duration: const Duration(
+                                                milliseconds: 2000),
+                                            repeatPauseDuration: const Duration(
+                                                milliseconds: 3000),
+                                            child: Container(
+                                                width: 100,
+                                                height: 100,
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12),
+                                                    border: Border.all(
+                                                      width: 2,
+                                                      color: Colors.white,
                                                     )),
-                                              )
-                                            : Padding(
-                                                padding: EdgeInsets.all(10),
-                                                child: Padding(
-                                                  padding: const EdgeInsets.all(
-                                                      10.0),
-                                                  child: buildBlur(
+                                                child: IconButton(
+                                                  icon: Icon(
+                                                    MdiIcons.image,
+                                                    color: Colors.white,
+                                                    size: 80,
+                                                  ),
+                                                  onPressed: () =>
+                                                      _handleImage(),
+                                                )),
+                                          )
+                                        : Padding(
+                                            padding: EdgeInsets.all(10),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(10.0),
+                                              child: buildBlur(
+                                                borderRadius:
+                                                    BorderRadius.circular(30),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             30),
-                                                    child: Container(
-                                                      decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(30),
-                                                        color: Colors.white
-                                                            .withOpacity(0.2),
-                                                      ),
-                                                      height: width / 1.5,
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(30.0),
-                                                        child:
-                                                            SingleChildScrollView(
-                                                          child: Column(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
-                                                            children: <Widget>[
-                                                              Padding(
-                                                                padding:
-                                                                    const EdgeInsets
-                                                                            .all(
-                                                                        0.0),
-                                                                child: Hero(
-                                                                  tag: !widget
+                                                    color: Colors.white
+                                                        .withOpacity(0.2),
+                                                  ),
+                                                  height: width / 1.5,
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            30.0),
+                                                    child:
+                                                        SingleChildScrollView(
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        children: <Widget>[
+                                                          Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(0.0),
+                                                            child: Hero(
+                                                              tag: !widget
+                                                                      .isEditting
+                                                                  ? '1'
+                                                                  : 'punch' +
+                                                                      widget
+                                                                          .post!
+                                                                          .id
+                                                                          .toString(),
+                                                              child: Material(
+                                                                color: Colors
+                                                                    .transparent,
+                                                                child:
+                                                                    TextFormField(
+                                                                  autofocus: widget
                                                                           .isEditting
-                                                                      ? '1'
-                                                                      : 'punch' +
-                                                                          widget
-                                                                              .post!
-                                                                              .id
-                                                                              .toString(),
-                                                                  child:
-                                                                      Material(
+                                                                      ? false
+                                                                      : true,
+                                                                  keyboardType:
+                                                                      TextInputType
+                                                                          .multiline,
+                                                                  maxLines:
+                                                                      null,
+                                                                  textCapitalization:
+                                                                      TextCapitalization
+                                                                          .sentences,
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontSize:
+                                                                        14,
                                                                     color: Colors
-                                                                        .transparent,
-                                                                    child:
-                                                                        TextFormField(
-                                                                      autofocus: widget
-                                                                              .isEditting
-                                                                          ? false
-                                                                          : true,
-                                                                      keyboardType:
-                                                                          TextInputType
-                                                                              .multiline,
-                                                                      maxLines:
-                                                                          null,
-                                                                      textCapitalization:
-                                                                          TextCapitalization
-                                                                              .sentences,
-                                                                      style:
-                                                                          TextStyle(
-                                                                        fontSize:
-                                                                            14,
-                                                                        color: Colors
-                                                                            .white,
-                                                                      ),
-                                                                      initialValue: widget
-                                                                              .isEditting
-                                                                          ? widget
-                                                                              .punch
-                                                                          : '',
-                                                                      decoration: InputDecoration(
-                                                                          hintText:
-                                                                              "Enter a punchline to express your mood",
-                                                                          hintStyle: TextStyle(
-                                                                              fontSize:
-                                                                                  14,
-                                                                              color: Colors
-                                                                                  .grey),
-                                                                          labelText:
-                                                                              'Punchline',
-                                                                          labelStyle: TextStyle(
-                                                                              fontSize: 14,
-                                                                              fontWeight: FontWeight.bold,
-                                                                              color: Colors.white),
-                                                                          enabledBorder: new UnderlineInputBorder(borderSide: new BorderSide(color: Colors.grey))),
-                                                                      onChanged: (input) => Provider.of<UserData>(
-                                                                              context,
-                                                                              listen:
-                                                                                  false)
-                                                                          .setPost3(
-                                                                              input),
-                                                                      onSaved: (input) => Provider.of<UserData>(
-                                                                              context,
-                                                                              listen:
-                                                                                  false)
-                                                                          .setPost3(
-                                                                              input!),
-                                                                    ),
+                                                                        .white,
                                                                   ),
+                                                                  initialValue: widget
+                                                                          .isEditting
+                                                                      ? widget
+                                                                          .punch
+                                                                      : '',
+                                                                  decoration: InputDecoration(
+                                                                      hintText:
+                                                                          "Enter a punchline to express your mood",
+                                                                      hintStyle: TextStyle(
+                                                                          fontSize:
+                                                                              14,
+                                                                          color: Colors
+                                                                              .grey),
+                                                                      labelText:
+                                                                          'Punchline',
+                                                                      labelStyle: TextStyle(
+                                                                          fontSize:
+                                                                              14,
+                                                                          fontWeight: FontWeight
+                                                                              .bold,
+                                                                          color: Colors
+                                                                              .white),
+                                                                      enabledBorder:
+                                                                          new UnderlineInputBorder(
+                                                                              borderSide: new BorderSide(color: Colors.grey))),
+                                                                  onChanged: (input) => Provider.of<
+                                                                              UserData>(
+                                                                          context,
+                                                                          listen:
+                                                                              false)
+                                                                      .setPost3(
+                                                                          input),
+                                                                  onSaved: (input) => Provider.of<
+                                                                              UserData>(
+                                                                          context,
+                                                                          listen:
+                                                                              false)
+                                                                      .setPost3(
+                                                                          input!),
                                                                 ),
                                                               ),
-                                                              SizedBox(
-                                                                height: 10,
-                                                              ),
-                                                              Hero(
-                                                                tag: !widget
-                                                                        .isEditting
-                                                                    ? '2'
-                                                                    : 'caption' +
-                                                                        widget
-                                                                            .post!
-                                                                            .id
-                                                                            .toString(),
-                                                                child: Material(
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            height: 10,
+                                                          ),
+                                                          Hero(
+                                                            tag: !widget
+                                                                    .isEditting
+                                                                ? '2'
+                                                                : 'caption' +
+                                                                    widget.post!
+                                                                        .id
+                                                                        .toString(),
+                                                            child: Material(
+                                                              color: Colors
+                                                                  .transparent,
+                                                              child:
+                                                                  TextFormField(
+                                                                keyboardType:
+                                                                    TextInputType
+                                                                        .multiline,
+                                                                maxLines: null,
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize: 14,
                                                                   color: Colors
-                                                                      .transparent,
-                                                                  child:
-                                                                      TextFormField(
-                                                                    keyboardType:
-                                                                        TextInputType
-                                                                            .multiline,
-                                                                    maxLines:
-                                                                        null,
-                                                                    style:
-                                                                        TextStyle(
-                                                                      fontSize:
-                                                                          14,
-                                                                      color: Colors
-                                                                          .white,
-                                                                    ),
-                                                                    initialValue: widget
-                                                                            .isEditting
-                                                                        ? widget
-                                                                            .caption
-                                                                        : '',
-                                                                    decoration: InputDecoration(
-                                                                        hintText: "A brief story about your punch and mood",
-                                                                        hintStyle: TextStyle(fontSize: 14, color: Colors.grey),
-                                                                        labelText: 'Punch Annotation (optional)',
-                                                                        labelStyle: TextStyle(
+                                                                      .white,
+                                                                ),
+                                                                initialValue: widget
+                                                                        .isEditting
+                                                                    ? widget
+                                                                        .caption
+                                                                    : '',
+                                                                decoration:
+                                                                    InputDecoration(
+                                                                        hintText:
+                                                                            "A brief story about your punch and mood",
+                                                                        hintStyle: TextStyle(
+                                                                            fontSize:
+                                                                                14,
+                                                                            color: Colors
+                                                                                .grey),
+                                                                        labelText:
+                                                                            'Punch Annotation (optional)',
+                                                                        labelStyle:
+                                                                            TextStyle(
                                                                           fontSize:
                                                                               14,
                                                                           fontWeight:
@@ -1037,173 +1041,255 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
                                                                           color:
                                                                               Colors.grey,
                                                                         ),
-                                                                        enabledBorder: new UnderlineInputBorder(borderSide: new BorderSide(color: Colors.grey))),
-                                                                    onChanged: (input) => Provider.of<UserData>(
-                                                                            context,
-                                                                            listen:
-                                                                                false)
-                                                                        .setPost4(
-                                                                            input),
-                                                                    onSaved: (input) => Provider.of<UserData>(
-                                                                            context,
-                                                                            listen:
-                                                                                false)
-                                                                        .setPost4(
-                                                                            input!),
-                                                                  ),
-                                                                ),
+                                                                        enabledBorder:
+                                                                            new UnderlineInputBorder(borderSide: new BorderSide(color: Colors.grey))),
+                                                                onChanged: (input) => Provider.of<
+                                                                            UserData>(
+                                                                        context,
+                                                                        listen:
+                                                                            false)
+                                                                    .setPost4(
+                                                                        input),
+                                                                onSaved: (input) => Provider.of<
+                                                                            UserData>(
+                                                                        context,
+                                                                        listen:
+                                                                            false)
+                                                                    .setPost4(
+                                                                        input!),
                                                               ),
-                                                            ],
+                                                            ),
                                                           ),
-                                                        ),
+                                                        ],
                                                       ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
-                                        GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              _show = 1;
-                                              _showSheet = true;
-                                            });
-                                          },
-                                          child: Text(
-                                            Provider.of<UserData>(context,
-                                                    listen: false)
-                                                .post1,
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold),
+                                            ),
                                           ),
-                                        ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _show = 1;
+                                          _showSheet = true;
+                                        });
+                                      },
+                                      child: Text(
                                         Provider.of<UserData>(context,
-                                                            listen: false)
-                                                        .postImage ==
-                                                    null &&
-                                                widget.imageUrl.isEmpty
-                                            ? GestureDetector(
-                                                onTap: () => Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (_) =>
-                                                            FeatureInfo(
-                                                              feature: 'Punch',
-                                                            ))),
-                                                child: RichText(
-                                                    textScaleFactor:
-                                                        MediaQuery.of(context)
-                                                            .textScaleFactor
-                                                            .clamp(0.5, 1.5),
-                                                    text: TextSpan(children: [
-                                                      TextSpan(
-                                                        text: _user!.name,
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
-                                                      ),
-                                                      TextSpan(
-                                                        text:
-                                                            '\nPunch your mood by posting a picture and associating the mood of the picture with music lyrics. You can honor your favorite artist by punching your mood using their punchline. Tap on the image icon above, and let\'s start.',
-                                                        style: TextStyle(
-                                                          color: Colors.grey,
-                                                          fontSize: 12,
-                                                        ),
-                                                      ),
-                                                      TextSpan(
-                                                        text: '...more',
-                                                        style: TextStyle(
-                                                          color: Colors.blue,
-                                                          fontSize: 12,
-                                                        ),
-                                                      ),
-                                                    ]),
-                                                    textAlign:
-                                                        TextAlign.center),
-                                              )
-                                            : Column(
-                                                children: [
-                                                  const SizedBox(
-                                                    height: 70,
+                                                listen: false)
+                                            .post1,
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                    Provider.of<UserData>(context,
+                                                        listen: false)
+                                                    .postImage ==
+                                                null &&
+                                            widget.imageUrl.isEmpty
+                                        ? GestureDetector(
+                                            onTap: () => Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (_) => FeatureInfo(
+                                                          feature: 'Punch',
+                                                        ))),
+                                            child: RichText(
+                                                textScaleFactor:
+                                                    MediaQuery.of(context)
+                                                        .textScaleFactor
+                                                        .clamp(0.5, 1.5),
+                                                text: TextSpan(children: [
+                                                  TextSpan(
+                                                    text: _user!.name,
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.bold),
                                                   ),
-                                                  Provider.of<UserData>(
-                                                            context,
-                                                          ).post2.isEmpty &&
-                                                          !widget.isEditting
-                                                      ? const SizedBox.shrink()
-                                                      : IconButton(
-                                                          icon: const Icon(
-                                                            MdiIcons
-                                                                .playCircleOutline,
-                                                            color: Colors.white,
-                                                            size: 30,
-                                                          ),
-                                                          onPressed: () {
-                                                            setState(() {
-                                                              _show = 2;
-                                                              _showSheet = true;
-                                                            });
-                                                          },
-                                                        ),
-                                                  const SizedBox(
-                                                    height: 70,
+                                                  TextSpan(
+                                                    text:
+                                                        '\nPunch your mood by posting a picture and associating the mood of the picture with music lyrics. You can honor your favorite artist by punching your mood using their punchline. Tap on the image icon above, and let\'s start.',
+                                                    style: TextStyle(
+                                                      color: Colors.grey,
+                                                      fontSize: 12,
+                                                    ),
                                                   ),
-                                                  widget.isEditting
-                                                      ? Container(
-                                                          width: 50,
-                                                          height: 50,
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        10),
-                                                            color: Colors.white,
-                                                          ),
-                                                          child: Container(
-                                                            height: Responsive
-                                                                    .isDesktop(
-                                                                        context)
-                                                                ? 40
-                                                                : 30,
-                                                            width: Responsive
-                                                                    .isDesktop(
-                                                                        context)
-                                                                ? 40
-                                                                : 30,
-                                                            child: IconButton(
-                                                                icon: Icon(Icons
-                                                                    .delete_forever),
-                                                                iconSize: 25,
-                                                                color: Colors
-                                                                    .black,
-                                                                onPressed:
-                                                                    _showSelectImageDialog),
-                                                          ),
-                                                        )
-                                                      : const SizedBox.shrink()
-                                                ],
+                                                  TextSpan(
+                                                    text: '...more',
+                                                    style: TextStyle(
+                                                      color: Colors.blue,
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
+                                                ]),
+                                                textAlign: TextAlign.center),
+                                          )
+                                        : Column(
+                                            children: [
+                                              const SizedBox(
+                                                height: 70,
                                               ),
-                                      ]),
-                                  Container(
-                                      color: Colors.transparent,
-                                      height:
-                                          MediaQuery.of(context).size.height -
-                                              200,
-                                      child: Center(
-                                          child: Loading(
+                                              Provider.of<UserData>(
+                                                        context,
+                                                      ).post2.isEmpty &&
+                                                      !widget.isEditting
+                                                  ? const SizedBox.shrink()
+                                                  : IconButton(
+                                                      icon: const Icon(
+                                                        MdiIcons
+                                                            .playCircleOutline,
+                                                        color: Colors.white,
+                                                        size: 30,
+                                                      ),
+                                                      onPressed: () {
+                                                        setState(() {
+                                                          _show = 2;
+                                                          _showSheet = true;
+                                                        });
+                                                      },
+                                                    ),
+                                              const SizedBox(
+                                                height: 70,
+                                              ),
+                                              widget.isEditting
+                                                  ? Container(
+                                                      width: 50,
+                                                      height: 50,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                        color: Colors.white,
+                                                      ),
+                                                      child: Container(
+                                                        height: Responsive
+                                                                .isDesktop(
+                                                                    context)
+                                                            ? 40
+                                                            : 30,
+                                                        width: Responsive
+                                                                .isDesktop(
+                                                                    context)
+                                                            ? 40
+                                                            : 30,
+                                                        child: IconButton(
+                                                            icon: Icon(Icons
+                                                                .delete_forever),
+                                                            iconSize: 25,
+                                                            color: Colors.black,
+                                                            onPressed:
+                                                                _showSelectImageDialog),
+                                                      ),
+                                                    )
+                                                  : Container(
+                                                      width: 50,
+                                                      height: 50,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                        color: Colors.white,
+                                                      ),
+                                                      child: Container(
+                                                        height: Responsive
+                                                                .isDesktop(
+                                                                    context)
+                                                            ? 40
+                                                            : 30,
+                                                        width: Responsive
+                                                                .isDesktop(
+                                                                    context)
+                                                            ? 40
+                                                            : 30,
+                                                        child: IconButton(
+                                                            icon: Icon(
+                                                                Icons.image),
+                                                            iconSize: 25,
+                                                            color: Colors.black,
+                                                            onPressed:
+                                                                _handleImage),
+                                                      ),
+                                                    )
+                                            ],
+                                          ),
+                                  ]),
+                              Container(
+                                  color: Colors.transparent,
+                                  height:
+                                      MediaQuery.of(context).size.height - 200,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Loading(
                                         title: 'Punching mood',
                                         icon: (FontAwesomeIcons.faceLaugh),
-                                      ))),
-                                ],
-                              ),
-                            ),
+                                      ),
+                                      SizedBox(height: 40),
+                                      Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: ListTile(
+                                              title: AnimatedTextKit(
+                                                  animatedTexts: [
+                                                    FadeAnimatedText(
+                                                      duration: const Duration(
+                                                          seconds: 8),
+                                                      'Double-tap on the background of a mood punch to hide the punchline associated with the picture and to view the picture only.',
+                                                      textStyle: TextStyle(
+                                                        fontSize: 12.0,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                    FadeAnimatedText(
+                                                      duration: const Duration(
+                                                          seconds: 8),
+                                                      'Tap and hold on to a punchline to perform more actions on the punchline.',
+                                                      textStyle: TextStyle(
+                                                        fontSize: 12.0,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                    FadeAnimatedText(
+                                                      duration: const Duration(
+                                                          seconds: 8),
+                                                      'Tap and hold on to the background of a mood punch to browse through your feed sideways.',
+                                                      textStyle: TextStyle(
+                                                        fontSize: 12.0,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                    FadeAnimatedText(
+                                                      duration: const Duration(
+                                                          seconds: 8),
+                                                      'Tap on an artist, punchline, or tag to see other moods punched with them.',
+                                                      textStyle: TextStyle(
+                                                        fontSize: 12.0,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                  repeatForever: true,
+                                                  pause: const Duration(
+                                                      seconds: 2),
+                                                  displayFullTextOnTap: true,
+                                                  stopPauseOnTap: true),
+                                            )),
+                                      )
+                                    ],
+                                  )),
+                            ],
                           ),
-                        ]),
+                        ),
+                      ),
+                    ]),
                     _isLoading
                         ? const SizedBox.shrink()
                         : Positioned(
