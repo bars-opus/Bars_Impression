@@ -69,6 +69,7 @@ class UserProfessionalViewWidget extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             shape: BoxShape.circle,
+                          ),
                           child: Padding(
                             padding: const EdgeInsets.all(30.0),
                             child: ShakeTransition(
