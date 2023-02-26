@@ -8,6 +8,7 @@ class ActivityTile extends StatelessWidget {
   final String activityContent;
   final String activityTime;
   final String userName;
+  final String fromUserId;
   final bool isLiked;
   final String verified;
   final VoidCallback onPressed;
@@ -22,7 +23,8 @@ class ActivityTile extends StatelessWidget {
       required this.verified,
       required this.userName,
       required this.activityIndicator,
-      required this.onPressed});
+      required this.onPressed,
+      required this.fromUserId});
 
   @override
   Widget build(BuildContext context) {
@@ -85,10 +87,34 @@ class ActivityTile extends StatelessWidget {
                         )
                       : null,
                   leading: profileImageUrl.isEmpty
-                      ? Icon(
-                          Icons.account_circle,
-                          size: 60.0,
-                          color: Colors.grey,
+                      ? GestureDetector(
+                          onTap: (() => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => ProfileScreen(
+                                        currentUserId:
+                                            Provider.of<UserData>(context)
+                                                .currentUserId!,
+                                        userId: fromUserId,
+                                        user: null,
+                                      )))),
+                          child: GestureDetector(
+                            onTap: (() => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => ProfileScreen(
+                                          currentUserId:
+                                              Provider.of<UserData>(context)
+                                                  .currentUserId!,
+                                          userId: fromUserId,
+                                          user: null,
+                                        )))),
+                            child: Icon(
+                              Icons.account_circle,
+                              size: 60.0,
+                              color: Colors.grey,
+                            ),
+                          ),
                         )
                       : CircleAvatar(
                           radius: 25.0,

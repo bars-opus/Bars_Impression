@@ -38,9 +38,17 @@ class _EventProfileViewState extends State<EventProfileView> {
   }
 
   _countDown() async {
-    DateTime date = DateTime.parse(widget.event.date);
+    DateTime date = widget.event.date.isEmpty
+        ? DateTime.parse('2023-02-19 00:00:00.000')
+        : DateTime.parse(widget.event.date);
     DateTime clossingDate =
-        DateTime.parse(widget.event.clossingDay).add(const Duration(hours: 3));
+
+        // 2023-02-27 00:00:00.000
+        widget.event.clossingDay.isEmpty
+            ? DateTime.parse('2023-02-27 00:00:00.000')
+                .add(const Duration(hours: 3))
+            : DateTime.parse(widget.event.clossingDay)
+                .add(const Duration(hours: 3));
     var different = date.difference(DateTime.now()).inDays;
 
     final toDayDate = DateTime.now();
@@ -123,19 +131,50 @@ class _EventProfileViewState extends State<EventProfileView> {
                           context,
                           MaterialPageRoute(
                             builder: (_) => EventCompleted(
+                                from: '',
                                 date: DateFormat.yMMMMEEEEd().format(_date),
                                 event: widget.event,
                                 currentUserId: widget.currentUserId),
                           ),
                         )
-                      : Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => EditEvent(
-                                event: widget.event,
-                                currentUserId: widget.currentUserId),
-                          ),
-                        ),
+                      : widget.event.date.isEmpty ||
+                              widget.event.time.isEmpty ||
+                              widget.event.clossingDay.isEmpty
+                          ? Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => EventCompleted(
+                                    from: 'wrongDate',
+                                    date: DateFormat.yMMMMEEEEd().format(_date),
+                                    event: widget.event,
+                                    currentUserId: widget.currentUserId),
+                              ),
+                            )
+                          : widget.event.date
+                                      .startsWith('2023-02-02 00:00:00.000') ||
+                                  widget.event.time.startsWith(
+                                      '2023-02-02 19:32:48.757749') ||
+                                  widget.event.clossingDay
+                                      .startsWith('2023-02-02 00:00:00.000')
+                              ? Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => EventCompleted(
+                                        from: 'wrongDate',
+                                        date: DateFormat.yMMMMEEEEd()
+                                            .format(_date),
+                                        event: widget.event,
+                                        currentUserId: widget.currentUserId),
+                                  ),
+                                )
+                              : Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => EditEvent(
+                                        event: widget.event,
+                                        currentUserId: widget.currentUserId),
+                                  ),
+                                ),
                 )
               : FocusedMenuItem(
                   title: Container(
@@ -157,6 +196,57 @@ class _EventProfileViewState extends State<EventProfileView> {
                                 user: null,
                               ))),
                 ),
+          // widget.event.authorId == widget.currentUserId
+          //     ? FocusedMenuItem(
+          //         title: Container(
+          //           width: width - 40,
+          //           child: Center(
+          //             child: Text(
+          //               'Edit event',
+          //               overflow: TextOverflow.ellipsis,
+          //               textScaleFactor: MediaQuery.of(context).textScaleFactor,
+          //             ),
+          //           ),
+          //         ),
+          //         onPressed: () => _different < 1
+          //             ? Navigator.push(
+          //                 context,
+          //                 MaterialPageRoute(
+          //                   builder: (_) => EventCompleted( from: '',
+          //                       date: DateFormat.yMMMMEEEEd().format(_date),
+          //                       event: widget.event,
+          //                       currentUserId: widget.currentUserId),
+          //                 ),
+          //               )
+          //             : Navigator.push(
+          //                 context,
+          //                 MaterialPageRoute(
+          //                   builder: (_) => EditEvent(
+          //                       event: widget.event,
+          //                       currentUserId: widget.currentUserId),
+          //                 ),
+          //               ),
+          //       )
+          //     : FocusedMenuItem(
+          //         title: Container(
+          //           width: width - 40,
+          //           child: Center(
+          //             child: Text(
+          //               "View profile",
+          //               overflow: TextOverflow.ellipsis,
+          //               textScaleFactor: MediaQuery.of(context).textScaleFactor,
+          //             ),
+          //           ),
+          //         ),
+          //         onPressed: () => Navigator.push(
+          //             context,
+          //             MaterialPageRoute(
+          //                 builder: (_) => ProfileScreen(
+          //                       currentUserId: widget.currentUserId,
+          //                       userId: widget.event.authorId,
+          //                       user: null,
+          //                     ))),
+          //       ),
           FocusedMenuItem(
               title: Container(
                 width: width - 40,

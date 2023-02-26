@@ -5,10 +5,14 @@ class EventCompleted extends StatefulWidget {
   final Event event;
   final String currentUserId;
   final String date;
+  final String from;
   static final id = 'Edit_event';
 
   EventCompleted(
-      {required this.event, required this.currentUserId, required this.date});
+      {required this.event,
+      required this.currentUserId,
+      required this.date,
+      required this.from});
 
   @override
   _EventCompletedState createState() => _EventCompletedState();
@@ -195,7 +199,7 @@ class _EventCompletedState extends State<EventCompleted> {
             backgroundColor:
                 ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
             title: Text(
-              'Event Completed',
+              widget.from.startsWith('wrongDate') ? '' : 'Event Completed',
               style: TextStyle(
                   color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
                   fontSize: 20,
@@ -211,12 +215,18 @@ class _EventCompletedState extends State<EventCompleted> {
                 children: [
                   SizedBox(height: 30),
                   NoContents(
-                      title: 'Congratulation',
-                      subTitle: widget.event.title +
-                          ' Which was dated on\n' +
-                          widget.date +
-                          ' has been successfully completed.\nAn event that is ongoing or completed can not be edited',
-                      icon: Icons.done),
+                      title: widget.from.startsWith('wrongDate')
+                          ? 'Delete\nEvent'
+                          : 'Congratulation',
+                      subTitle: widget.from.startsWith('wrongDate')
+                          ? 'Your event date, event time, or closing date is incorrect. We advise that your delete this event and recreate it since an event date and time cannot be modified once created.'
+                          : widget.event.title +
+                              ' Which was dated on\n' +
+                              widget.date +
+                              ' has been successfully completed.\nAn event that is ongoing or completed can not be edited',
+                      icon: widget.from.startsWith('wrongDate')
+                          ? Icons.delete_forever
+                          : Icons.done),
                   SizedBox(
                     height: 50,
                   ),

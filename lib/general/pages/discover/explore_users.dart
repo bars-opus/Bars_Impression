@@ -89,6 +89,7 @@ class _UsersExpandState extends State<UsersExpand> {
 
   _setupUsers() async {
     QuerySnapshot userFeedSnapShot = await usersRef
+        .where('dontShowContentOnExplorePage', isEqualTo: true)
         .where('profileHandle', isEqualTo: widget.user.profileHandle)
         .limit(limit)
         .get();
@@ -108,6 +109,7 @@ class _UsersExpandState extends State<UsersExpand> {
     if (_isFectchingUser) return;
     _isFectchingUser = true;
     QuerySnapshot userFeedSnapShot = await usersRef
+        .where('dontShowContentOnExplorePage', isEqualTo: true)
         .where('profileHandle', isEqualTo: widget.user.profileHandle)
         // .where('city', isEqualTo: widget.user.city)
         .limit(limit)
@@ -130,6 +132,7 @@ class _UsersExpandState extends State<UsersExpand> {
 
   _setupCityUsers() async {
     QuerySnapshot userFeedSnapShot = await usersRef
+        .where('dontShowContentOnExplorePage', isEqualTo: true)
         .where('profileHandle', isEqualTo: widget.user.profileHandle)
         .where('city', isEqualTo: widget.user.city)
         .where('country', isEqualTo: widget.user.country)
@@ -151,6 +154,7 @@ class _UsersExpandState extends State<UsersExpand> {
     if (_isFectchingUser) return;
     _isFectchingUser = true;
     QuerySnapshot userFeedSnapShot = await usersRef
+        .where('dontShowContentOnExplorePage', isEqualTo: true)
         .where('profileHandle', isEqualTo: widget.user.profileHandle)
         .where('city', isEqualTo: widget.user.city)
         .where('country', isEqualTo: widget.user.country)
@@ -174,6 +178,7 @@ class _UsersExpandState extends State<UsersExpand> {
 
   _setupCountryUsers() async {
     QuerySnapshot userFeedSnapShot = await usersRef
+        .where('dontShowContentOnExplorePage', isEqualTo: true)
         .where('profileHandle', isEqualTo: widget.user.profileHandle)
         .where('country', isEqualTo: widget.user.country)
         .limit(limit)
@@ -194,6 +199,7 @@ class _UsersExpandState extends State<UsersExpand> {
     if (_isFectchingUser) return;
     _isFectchingUser = true;
     QuerySnapshot userFeedSnapShot = await usersRef
+        .where('dontShowContentOnExplorePage', isEqualTo: true)
         .where('profileHandle', isEqualTo: widget.user.profileHandle)
         .where('country', isEqualTo: widget.user.country)
         .limit(limit)
@@ -216,6 +222,7 @@ class _UsersExpandState extends State<UsersExpand> {
 
   _setupContinentUsers() async {
     QuerySnapshot userFeedSnapShot = await usersRef
+        .where('dontShowContentOnExplorePage', isEqualTo: true)
         .where('profileHandle', isEqualTo: widget.user.profileHandle)
         .where('continent', isEqualTo: widget.user.continent)
         .limit(limit)
@@ -236,6 +243,7 @@ class _UsersExpandState extends State<UsersExpand> {
     if (_isFectchingUser) return;
     _isFectchingUser = true;
     QuerySnapshot userFeedSnapShot = await usersRef
+        .where('dontShowContentOnExplorePage', isEqualTo: true)
         .where('profileHandle', isEqualTo: widget.user.profileHandle)
         .where('continent', isEqualTo: widget.user.continent)
         .limit(limit)
@@ -258,6 +266,7 @@ class _UsersExpandState extends State<UsersExpand> {
 
   _setupLiveUsers() async {
     QuerySnapshot userFeedSnapShot = await usersRef
+        .where('dontShowContentOnExplorePage', isEqualTo: true)
         .where('profileHandle', isEqualTo: widget.user.profileHandle)
         .where('city', isEqualTo: _city)
         .where('country', isEqualTo: _country)
@@ -279,6 +288,7 @@ class _UsersExpandState extends State<UsersExpand> {
     if (_isFectchingUser) return;
     _isFectchingUser = true;
     QuerySnapshot userFeedSnapShot = await usersRef
+        .where('dontShowContentOnExplorePage', isEqualTo: true)
         .where('profileHandle', isEqualTo: widget.user.profileHandle)
         .where('city', isEqualTo: _city)
         .where('country', isEqualTo: _country)
@@ -438,19 +448,28 @@ class _UsersExpandState extends State<UsersExpand> {
                     SizedBox(
                       height: 5,
                     ),
-                    AnimatedContainer(
+                    ShakeTransition(
+                    axis: Axis.vertical,
+                    curve: Curves.easeInOut,
+                    offset: 40,
+                    child: AnimatedContainer(
                         curve: Curves.easeInOut,
                         duration: Duration(milliseconds: 800),
                         height: _showInfo ? 40 : 0.0,
                         width: double.infinity,
                         color: Colors.transparent,
                         child: Center(
-                          child: Swipinfo(
-                            color:
-                                _showInfo ? Colors.white : Colors.transparent,
-                            text: 'Swipe',
+                          child: AnimatedInfoWidget(
+                            buttonColor: Colors.white,
+                            text: '< < < Swipe',
+                            requiredBool: _showInfo,
                           ),
+                          // Swipinfo(
+                          //   color: _showInfo ? Colors.white : Colors.transparent,
+                          //   text: 'Swipe',
+                          // ),
                         )),
+                  ),
                     _userList.length > 0
                         ? Expanded(
                             child: PageView.builder(

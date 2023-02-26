@@ -209,19 +209,28 @@ class _ExpandAllCityUsersState extends State<ExpandAllCityUsers> {
                     SizedBox(
                       height: 5,
                     ),
-                    AnimatedContainer(
+                    ShakeTransition(
+                    axis: Axis.vertical,
+                    curve: Curves.easeInOut,
+                    offset: 40,
+                    child: AnimatedContainer(
                         curve: Curves.easeInOut,
                         duration: Duration(milliseconds: 800),
                         height: _showInfo ? 40 : 0.0,
                         width: double.infinity,
                         color: Colors.transparent,
                         child: Center(
-                          child: Swipinfo(
-                            color:
-                                _showInfo ? Colors.white : Colors.transparent,
-                            text: 'Swipe',
+                          child: AnimatedInfoWidget(
+                            buttonColor: Colors.white,
+                            text: '< < < Swipe',
+                            requiredBool: _showInfo,
                           ),
+                          // Swipinfo(
+                          //   color: _showInfo ? Colors.white : Colors.transparent,
+                          //   text: 'Swipe',
+                          // ),
                         )),
+                  ),
                     _userList.length > 0
                         ? Expanded(
                             child: PageView.builder(

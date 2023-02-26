@@ -10,7 +10,7 @@ class _AboutUsState extends State<AboutUs> {
     showAboutDialog(
         context: context,
         applicationName: 'Bars Impression',
-        applicationVersion: 'Version 1.2.4',
+        applicationVersion: 'Version 1.3.5',
         applicationIcon: Container(
           width: 40,
           height: 40,
@@ -25,7 +25,7 @@ class _AboutUsState extends State<AboutUs> {
                 text: TextSpan(
               children: [
                 TextSpan(
-                    text: "Version Release Date: November 2022\n",
+                    text: "Version Release Date: February 2023\n",
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.black,
@@ -171,21 +171,36 @@ class _AboutUsState extends State<AboutUs> {
               ),
             ),
             const SizedBox(height: 100),
-            Text(
-              'B A R S\nO P U S',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16.0,
-                fontWeight: FontWeight.w100,
-              ),
-              textAlign: TextAlign.center,
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.copyright,
+                  size: 15,
+                  color: Colors.white,
+                ),
+                Text(
+                  ' BARS OPUS LTD',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12.0,
+                    // fontWeight: FontWeight.w100,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
+            // Text(
+            //   'B A R S\nO P U S',
+            //   style: TextStyle(
+            //     color: Colors.white,
+            //     fontSize: 16.0,
+            //     fontWeight: FontWeight.w100,
+            //   ),
+            //   textAlign: TextAlign.center,
+            // ),
             const SizedBox(height: 10),
-            Text(
-              'BARS IMPRESSION',
-              style: TextStyle(fontSize: 12.0, color: Colors.white),
-              textAlign: TextAlign.center,
-            ),
           ],
         ),
       ),

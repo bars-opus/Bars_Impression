@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -70,6 +71,137 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
         }
       }
     });
+  }
+
+  _showSelectImageDialog() {
+    return Platform.isIOS ? _iosBottomSheet() : _androidDialog(context);
+  }
+
+  _iosBottomSheet() {
+    showCupertinoModalPopup(
+        context: context,
+        builder: (BuildContext context) {
+          return CupertinoActionSheet(
+            title: Text(
+              'Are you sure you want to enable advice?',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black,
+              ),
+            ),
+            actions: <Widget>[
+              CupertinoActionSheetAction(
+                child: Text(
+                  'enable',
+                  style: TextStyle(
+                    color: Colors.blue,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  _enableAdvice();
+                },
+              )
+            ],
+            cancelButton: CupertinoActionSheetAction(
+              child: Text(
+                'Cancle',
+                style: TextStyle(
+                  color: Colors.red,
+                ),
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
+          );
+        });
+  }
+
+  _androidDialog(BuildContext parentContext) {
+    return showDialog(
+        context: parentContext,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text(
+              'Are you sure you want to enable advice',
+              style: TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            children: <Widget>[
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'enable',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.blue),
+                    textAlign: TextAlign.center,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _enableAdvice();
+                  },
+                ),
+              ),
+              Divider(),
+              Center(
+                child: SimpleDialogOption(
+                  child: Text(
+                    'Cancel',
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ),
+            ],
+          );
+        });
+  }
+
+  _enableAdvice() async {
+    usersRef
+        .doc(
+      widget.currentUserId,
+    )
+        .update({
+      'disableAdvice': false,
+    });
+
+    await Future.delayed(Duration(seconds: 1));
+    Navigator.pop(context);
+
+    final double width = MediaQuery.of(context).size.width;
+    Flushbar(
+      margin: EdgeInsets.all(8),
+      boxShadows: [
+        BoxShadow(
+          color: Colors.black,
+          offset: Offset(0.0, 2.0),
+          blurRadius: 3.0,
+        )
+      ],
+      flushbarPosition: FlushbarPosition.TOP,
+      flushbarStyle: FlushbarStyle.FLOATING,
+      titleText: Text(
+        'Done!!',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: width > 800 ? 22 : 14,
+        ),
+      ),
+      messageText: Text(
+        "Advice enabled",
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: width > 800 ? 20 : 12,
+        ),
+      ),
+      icon: Icon(
+        MdiIcons.checkCircleOutline,
+        size: 30.0,
+        color: Colors.blue,
+      ),
+      duration: Duration(seconds: 2),
+      leftBarIndicatorColor: Colors.blue,
+    )..show(context);
   }
 
   _setupIsBlockedUser() async {
@@ -179,7 +311,7 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
             textScaleFactor:
                 MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
         child: Slidable(
-          startActionPane: ActionPane(
+          endActionPane: ActionPane(
             motion: const ScrollMotion(),
             children: [
               SlidableAction(
@@ -355,7 +487,7 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                               builder: (_) => ProfileScreen(
                                     currentUserId: currentUserId,
                                     userId: userAdvice.authorId,
-                                    user: widget.user,
+                                    user: null,
                                   ))),
                     ),
                   ],
@@ -617,10 +749,8 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                                                       child: NoContents(
                                                         icon: (MdiIcons
                                                             .sendOutline),
-                                                        title:
-                                                            'No advices for ${widget.user.userName} yet,',
-                                                        subTitle:
-                                                            'You can be the first to leave an advice for ${widget.user.name},  ',
+                                                        title: '',
+                                                        subTitle: ' ',
                                                       ),
                                                     ),
                                                   )
@@ -637,10 +767,17 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                                                     child: NoContents(
                                                       icon: (MdiIcons
                                                           .sendOutline),
-                                                      title:
-                                                          'No advices for ${widget.user.userName} yet,',
-                                                      subTitle:
-                                                          'You can be the first to leave an advice for ${widget.user.name},  ',
+                                                      title: widget.user.id ==
+                                                              widget
+                                                                  .currentUserId
+                                                          ? 'No advice for you.'
+                                                          : 'No advices for ${widget.user.userName} yet,',
+                                                      subTitle: widget
+                                                                  .user.id ==
+                                                              widget
+                                                                  .currentUserId
+                                                          ? ''
+                                                          : 'You can be the first to leave an advice for ${widget.user.name},  ',
                                                     ),
                                                   ),
                                                 )
@@ -678,20 +815,45 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
                                         },
                                       ),
                                       widget.user.disableAdvice!
-                                          ? Padding(
-                                              padding: EdgeInsets.all(40.0),
-                                              child: Text(
-                                                widget.user.userName! +
-                                                    ' is not interested in recieving new advices at the moment.',
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: Colors.grey,
-                                                ),
-                                              ),
-                                            )
+                                          ? widget.user.id ==
+                                                  widget.currentUserId
+                                              ? Padding(
+                                                  padding: EdgeInsets.all(40.0),
+                                                  child: GestureDetector(
+                                                    onTap:
+                                                        _showSelectImageDialog,
+                                                    child: Text(
+                                                      widget.user.userName! +
+                                                          ', Receiving new advice is disabled. To enable advice, tap here.\n\nYour advice inbox displays opinions of your fans or other creatives about you or your work. This helps you understand how other people are relating to your works or brand. ',
+                                                      style: TextStyle(
+                                                        fontSize: 12,
+                                                        color: Colors.grey,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                )
+                                              : Padding(
+                                                  padding: EdgeInsets.all(40.0),
+                                                  child: Text(
+                                                    widget.user.userName! +
+                                                        ' is not interested in recieving new advices at the moment.',
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: Colors.grey,
+                                                    ),
+                                                  ),
+                                                )
                                           : _isBlockedUser
                                               ? const SizedBox.shrink()
-                                              : _buildUserAdvice(),
+                                              : Provider.of<UserData>(context,
+                                                              listen: false)
+                                                          .user!
+                                                          .score!
+                                                          .isNegative ||
+                                                      widget.user.score!
+                                                          .isNegative
+                                                  ? const SizedBox.shrink()
+                                                  : _buildUserAdvice(),
                                     ],
                                   ),
                                 ),

@@ -1,5 +1,6 @@
 import 'package:bars/general/pages/discover/discover_user.dart';
 import 'package:bars/general/pages/forum_and_blog/forum/forum_feed.dart';
+import 'package:bars/general/pages/profile/create/create_home.dart';
 import 'package:bars/utilities/local_notification.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,7 +16,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _updateAppVersion = Platform.isIOS ? 11 : 11;
+  int _updateAppVersion = Platform.isIOS ? 17 : 17;
   String notificationMsg = '';
 
   @override
@@ -119,19 +120,50 @@ class _HomeMobileState extends State<HomeMobile> {
   int _currentTab = 0;
   late PageController _pageController;
   int _version = 0;
+  bool _showInfo = false;
+  // bool _showInfoWidgets = false;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
+
     int? version = Platform.isIOS
         ? widget.updateApp.updateVersionIos
         : widget.updateApp.updateVersionAndroid;
     _version = version!;
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _setUpInvitesActivities();
+      _setUpLastActiveDate();
+
       initDynamicLinks();
     });
+    __setShowDelsyInfo();
+  }
+
+  __setShowDelsyInfo() async {
+    if (!_showInfo) {
+      Timer(Duration(seconds: 3), () {
+        if (mounted) {
+          // setState(() {
+          _showInfo = true;
+          // });
+          __setShowInfo();
+        }
+      });
+    }
+  }
+
+  __setShowInfo() async {
+    if (_showInfo) {
+      Timer(Duration(seconds: 3), () {
+        if (mounted) {
+          // setState(() {
+          _showInfo = false;
+          // });
+        }
+      });
+    }
   }
 
   Future<void> initDynamicLinks() async {
@@ -155,6 +187,14 @@ class _HomeMobileState extends State<HomeMobile> {
                                   ? 'User'
                                   : '')));
     }).onError((error) {});
+  }
+
+  _setUpLastActiveDate() {
+    final String currentUserId =
+        Provider.of<UserData>(context, listen: false).currentUserId!;
+    usersRef
+        .doc(currentUserId)
+        .update({'professionalVideo1': DateTime.now().toString()});
   }
 
   _setUpInvitesActivities() async {
@@ -314,6 +354,116 @@ class _HomeMobileState extends State<HomeMobile> {
                             ),
                           ),
                         ),
+                        Positioned(
+                          bottom: 30,
+                          // right: 5,
+                          child: GestureDetector(
+                            onTap: () {
+                              HapticFeedback.heavyImpact();
+                              if (mounted) {
+                                // setState(() {
+                                // _showInfoWidgets = true;
+                                Provider.of<UserData>(context, listen: false)
+                                    .setShortcutBool(true);
+                                // });
+                              }
+                            },
+                            child: AnimatedContainer(
+                              curve: Curves.easeInOut,
+                              duration: Duration(milliseconds: 400),
+                              height:
+                                  Provider.of<UserData>(context, listen: false)
+                                          .showUsersTab
+                                      ? null
+                                      : 0.0,
+                              width:
+                                  Provider.of<UserData>(context, listen: false)
+                                          .showUsersTab
+                                      ? null
+                                      : 0.0,
+                              child: ShakeTransition(
+                                axis: Axis.vertical,
+                                curve: Curves.easeInOut,
+                                duration: Duration(milliseconds: 800),
+                                child: AnimatedContainer(
+                                  curve: Curves.easeInOut,
+                                  duration: Duration(milliseconds: 800),
+                                  height: _currentTab == 4
+                                      ? 0.0
+                                      : _showInfo
+                                          ? 50.0
+                                          : 20.0,
+                                  width: _currentTab == 4
+                                      ? 0.0
+                                      : _showInfo
+                                          ? 50.0
+                                          : 20.0,
+                                  decoration: BoxDecoration(
+                                      color: _currentTab == 0 ||
+                                              ConfigBloc().darkModeOn
+                                          ? Colors.grey[300]
+                                          : Colors.grey[700],
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: IconButton(
+                                        icon: Icon(Icons.create),
+                                        iconSize: 25.0,
+                                        color: !_showInfo
+                                            ? Colors.transparent
+                                            : ConfigBloc().darkModeOn ||
+                                                    _currentTab == 0
+                                                ? Colors.black
+                                                : Colors.white,
+                                        onPressed: () {
+                                          HapticFeedback.heavyImpact();
+                                          if (mounted) {
+                                            // setState(() {
+                                            // _showInfoWidgets = true;
+                                            Provider.of<UserData>(context,
+                                                    listen: false)
+                                                .setShortcutBool(true);
+                                            // });
+                                          }
+                                        }
+
+                                        //  => Navigator.push(
+                                        //   context,
+                                        //   MaterialPageRoute(
+                                        //     builder: (_) => CreateContents(
+                                        //       user: user,
+                                        //       from: 'Home',
+                                        //     ),
+                                        //   ),
+                                        // ),
+                                        ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Provider.of<UserData>(context, listen: false)
+                                .shortcutBool
+                            ? Positioned(
+                                bottom: 0.0,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    if (mounted) {
+                                      // setState(() {
+                                      // _showInfoWidgets = false;
+                                      Provider.of<UserData>(context,
+                                              listen: false)
+                                          .setShortcutBool(false);
+                                      // });
+                                    }
+                                  },
+                                  child: CreateContentsHome(
+                                    width: width,
+                                  ),
+                                ),
+                              )
+                            : const SizedBox.shrink()
                       ],
                     ),
             ),

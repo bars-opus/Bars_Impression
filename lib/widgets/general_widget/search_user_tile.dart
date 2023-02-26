@@ -7,7 +7,7 @@ class SearchUserTile extends StatelessWidget {
   final String company;
   final String bio;
   final String? verified;
-  final int score;
+  // final int score;
   final VoidCallback onPressed;
 
   SearchUserTile(
@@ -17,7 +17,7 @@ class SearchUserTile extends StatelessWidget {
       required this.profileImageUrl,
       required this.profileHandle,
       required this.verified,
-      required this.score,
+      // required this.score,
       required this.onPressed});
 
   // final RandomColor _randomColor = RandomColor();

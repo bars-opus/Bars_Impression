@@ -133,7 +133,7 @@ class AuthService {
           'disableChat': false,
           'enableBookingOnChat': false,
           'hideAdvice': false,
-          'noBooking': true,
+          'noBooking': false,
           'disabledAccount': false,
           'disableContentSharing': false,
           'disableMoodPunchReaction': false,

@@ -62,7 +62,7 @@ class _EventsAllLocationState extends State<EventsAllLocation>
     return false;
   }
 
-  _nothing(){}
+  _nothing() {}
 
   @override
   void dispose() {
@@ -74,6 +74,7 @@ class _EventsAllLocationState extends State<EventsAllLocation>
     QuerySnapshot eventFeedSnapShot = await allEventsRef
         .where('city', isEqualTo: widget.user.city)
         .where('country', isEqualTo: widget.user.country)
+        .where('showOnExplorePage', isEqualTo: true)
         .limit(limit)
         .get();
     List<Event> events = eventFeedSnapShot.docs
@@ -97,6 +98,7 @@ class _EventsAllLocationState extends State<EventsAllLocation>
     QuerySnapshot eventFeedSnapShot = await allEventsRef
         .where('city', isEqualTo: widget.user.city)
         .where('country', isEqualTo: widget.user.country)
+        .where('showOnExplorePage', isEqualTo: true)
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();
@@ -119,6 +121,7 @@ class _EventsAllLocationState extends State<EventsAllLocation>
 
   _setupCountryEvent() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('country', isEqualTo: widget.user.country)
         .limit(limit)
         .get();
@@ -141,6 +144,7 @@ class _EventsAllLocationState extends State<EventsAllLocation>
     _isFetchingEvent = true;
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('country', isEqualTo: widget.user.country)
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
@@ -165,6 +169,7 @@ class _EventsAllLocationState extends State<EventsAllLocation>
   _setupVirtalEvent() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
         .where('isVirtual', isEqualTo: true)
+        .where('showOnExplorePage', isEqualTo: true)
         .limit(limit)
         .get();
     List<Event> events = eventFeedSnapShot.docs
@@ -187,6 +192,7 @@ class _EventsAllLocationState extends State<EventsAllLocation>
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
         .where('isVirtual', isEqualTo: true)
+        .where('showOnExplorePage', isEqualTo: true)
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();

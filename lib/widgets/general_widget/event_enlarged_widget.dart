@@ -45,6 +45,7 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
   int _different = 0;
   bool _displayWarning = false;
   bool _warningAnim = false;
+  bool _showInfo = false;
   Color lightVibrantColor = Colors.white;
   late Color lightMutedColor;
 
@@ -63,9 +64,14 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
   }
 
   _countDown() async {
-    DateTime date = DateTime.parse(widget.event.date);
-    DateTime clossingDate =
-        DateTime.parse(widget.event.clossingDay).add(const Duration(hours: 3));
+    DateTime date = widget.event.date.isEmpty
+        ? DateTime.parse('2023-12-19 00:00:00.000')
+        : DateTime.parse(widget.event.date);
+    DateTime clossingDate = widget.event.clossingDay.isEmpty
+        ? DateTime.parse('2023-02-27 00:00:00.000')
+            .add(const Duration(hours: 3))
+        : DateTime.parse(widget.event.clossingDay)
+            .add(const Duration(hours: 3));
     final toDayDate = DateTime.now();
 
     var different = date.difference(toDayDate).inDays;
@@ -77,8 +83,29 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
       _date = date;
       _toDaysDate = toDayDate;
       _closingDate = clossingDate;
+      Timer(Duration(seconds: 10), () {
+        if (mounted) {
+          // setState(() {
+          _showInfo = true;
+          __setShowInfo();
+          // });
+        }
+      });
     });
+
     return _date;
+  }
+
+  __setShowInfo() async {
+    if (_showInfo) {
+      Timer(Duration(seconds: 3), () {
+        if (mounted) {
+          // setState(() {
+          _showInfo = false;
+          // });
+        }
+      });
+    }
   }
 
   _setContentWarning() {
@@ -170,12 +197,21 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
 
   @override
   Widget build(BuildContext context) {
+    //'2023-02-19 00:00:00.000'
+    //'2022-07-31 19:32:48.757749'
+
+    //2023-02-27 00:00:00.000
+
     final height = MediaQuery.of(context).size.height;
     final List<String> namePartition = widget.event.title.split(" ");
-    final List<String> datePartition =
-        MyDateFormat.toDate(DateTime.parse(widget.event.date)).split(" ");
-    final List<String> timePartition =
-        MyDateFormat.toTime(DateTime.parse(widget.event.time)).split(" ");
+    final List<String> datePartition = widget.event.date.isEmpty
+        ? MyDateFormat.toDate(DateTime.parse('2023-12-19 00:00:00.000'))
+            .split(" ")
+        : MyDateFormat.toDate(DateTime.parse(widget.event.date)).split(" ");
+    final List<String> timePartition = widget.event.time.isEmpty
+        ? MyDateFormat.toTime(DateTime.parse('2022-07-31 19:32:48.757749'))
+            .split(" ")
+        : MyDateFormat.toTime(DateTime.parse(widget.event.time)).split(" ");
     final List<String> rate = widget.event.rate.isEmpty
         ? widget.event.title.split("")
         : widget.event.rate.startsWith('free') || widget.event.isFree
@@ -343,10 +379,18 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                     widget.event.authorId ==
                                             Provider.of<UserData>(context)
                                                 .currentUserId!
-                                        ?
-                                        // await Future.delayed(Duration(seconds: 2));
-
-                                        _dashBoard()
+                                        ? _dashBoard()
+                                        : const SizedBox.shrink(),
+                                    AnimatedInfoWidget(
+                                      buttonColor: Colors.white,
+                                      text:
+                                          'Tap and hold\nto explore more events.',
+                                      requiredBool: _showInfo,
+                                    ),
+                                    _showInfo
+                                        ? const SizedBox(
+                                            height: 30,
+                                          )
                                         : const SizedBox.shrink(),
                                     ShakeTransition(
                                       child: Row(
@@ -663,45 +707,70 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: [
-                                        RichText(
-                                          textScaleFactor:
-                                              MediaQuery.of(context)
-                                                  .textScaleFactor,
-                                          text: TextSpan(
-                                            children: [
-                                              TextSpan(
-                                                text: datePartition[0]
-                                                    .toUpperCase(),
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
+                                        widget.event.date.isEmpty
+                                            ? RichText(
+                                                textScaleFactor:
+                                                    MediaQuery.of(context)
+                                                        .textScaleFactor,
+                                                text: TextSpan(
+                                                  children: [
+                                                    TextSpan(
+                                                      text: '',
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
+                                                textAlign: TextAlign.right,
+                                              )
+                                            : RichText(
+                                                textScaleFactor:
+                                                    MediaQuery.of(context)
+                                                        .textScaleFactor,
+                                                text: TextSpan(
+                                                  children: [
+                                                    TextSpan(
+                                                      text: datePartition[0]
+                                                          .toUpperCase(),
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    if (datePartition.length >
+                                                        1)
+                                                      TextSpan(
+                                                        text:
+                                                            "\n${datePartition[1].toUpperCase()} ",
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    if (datePartition.length >
+                                                        2)
+                                                      TextSpan(
+                                                        text:
+                                                            "\n${datePartition[2].toUpperCase()} ",
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                  ],
+                                                ),
+                                                textAlign: TextAlign.right,
                                               ),
-                                              if (datePartition.length > 1)
-                                                TextSpan(
-                                                  text:
-                                                      "\n${datePartition[1].toUpperCase()} ",
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              if (datePartition.length > 2)
-                                                TextSpan(
-                                                  text:
-                                                      "\n${datePartition[2].toUpperCase()} ",
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                            ],
-                                          ),
-                                          textAlign: TextAlign.right,
-                                        ),
                                         Padding(
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 8.0),
@@ -711,44 +780,69 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                             color: Colors.white,
                                           ),
                                         ),
-                                        RichText(
-                                          textScaleFactor:
-                                              MediaQuery.of(context)
-                                                  .textScaleFactor,
-                                          text: TextSpan(
-                                            children: [
-                                              TextSpan(
-                                                text: timePartition[0]
-                                                    .toUpperCase(),
-                                                style: TextStyle(
-                                                  fontSize: 25,
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
+                                        widget.event.time.isEmpty
+                                            ? RichText(
+                                                textScaleFactor:
+                                                    MediaQuery.of(context)
+                                                        .textScaleFactor,
+                                                text: TextSpan(
+                                                  children: [
+                                                    TextSpan(
+                                                      text: '',
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                textAlign: TextAlign.right,
+                                              )
+                                            : RichText(
+                                                textScaleFactor:
+                                                    MediaQuery.of(context)
+                                                        .textScaleFactor,
+                                                text: TextSpan(
+                                                  children: [
+                                                    TextSpan(
+                                                      text: timePartition[0]
+                                                          .toUpperCase(),
+                                                      style: TextStyle(
+                                                        fontSize: 25,
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    if (timePartition.length >
+                                                        1)
+                                                      TextSpan(
+                                                        text:
+                                                            "\n${timePartition[1].toUpperCase()} ",
+                                                        style: TextStyle(
+                                                          fontSize: 25,
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    if (timePartition.length >
+                                                        2)
+                                                      TextSpan(
+                                                        text:
+                                                            "\n${timePartition[2].toUpperCase()} ",
+                                                        style: TextStyle(
+                                                          fontSize: 25,
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                  ],
                                                 ),
                                               ),
-                                              if (timePartition.length > 1)
-                                                TextSpan(
-                                                  text:
-                                                      "\n${timePartition[1].toUpperCase()} ",
-                                                  style: TextStyle(
-                                                    fontSize: 25,
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              if (timePartition.length > 2)
-                                                TextSpan(
-                                                  text:
-                                                      "\n${timePartition[2].toUpperCase()} ",
-                                                  style: TextStyle(
-                                                    fontSize: 25,
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                            ],
-                                          ),
-                                        ),
                                       ],
                                     ),
                                     SizedBox(
@@ -1048,11 +1142,84 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                             context)
                                                         .currentUserId!
                                                 ? const SizedBox.shrink()
+                                                : Provider.of<UserData>(context,
+                                                            listen: false)
+                                                        .user!
+                                                        .score!
+                                                        .isNegative
+                                                    ? const SizedBox.shrink()
+                                                    : Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                bottom: 10.0,
+                                                                top: 70),
+                                                        child: Align(
+                                                            alignment: Alignment
+                                                                .bottomCenter,
+                                                            child:
+                                                                ShakeTransition(
+                                                              axis:
+                                                                  Axis.vertical,
+                                                              child: Container(
+                                                                width: 150.0,
+                                                                child:
+                                                                    OutlinedButton(
+                                                                  style: OutlinedButton
+                                                                      .styleFrom(
+                                                                    foregroundColor:
+                                                                        Colors
+                                                                            .blue,
+                                                                    side: BorderSide(
+                                                                        width:
+                                                                            1.0,
+                                                                        color: Colors
+                                                                            .white),
+                                                                    shape:
+                                                                        RoundedRectangleBorder(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              20.0),
+                                                                    ),
+                                                                  ),
+                                                                  child:
+                                                                      Padding(
+                                                                    padding: const EdgeInsets
+                                                                            .all(
+                                                                        10.0),
+                                                                    child: Text(
+                                                                      'Attend',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: Colors
+                                                                            .white,
+                                                                        fontSize:
+                                                                            14.0,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  onPressed: widget
+                                                                      .onPressedAttend,
+                                                                ),
+                                                              ),
+                                                            ))),
+                                            widget.event.authorId ==
+                                                    Provider.of<UserData>(
+                                                            context)
+                                                        .currentUserId!
+                                                ? const SizedBox(height: 70)
+                                                : const SizedBox.shrink(),
+                                            Provider.of<UserData>(context,
+                                                        listen: false)
+                                                    .user!
+                                                    .score!
+                                                    .isNegative
+                                                ? const SizedBox.shrink()
                                                 : Padding(
                                                     padding:
                                                         const EdgeInsets.only(
-                                                            bottom: 10.0,
-                                                            top: 70),
+                                                      bottom: 70.0,
+                                                    ),
                                                     child: Align(
                                                         alignment: Alignment
                                                             .bottomCenter,
@@ -1085,7 +1252,7 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                                             .all(
                                                                         10.0),
                                                                 child: Text(
-                                                                  'Attend',
+                                                                  'Ask more',
                                                                   style:
                                                                       TextStyle(
                                                                     color: Colors
@@ -1096,222 +1263,185 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                                                 ),
                                                               ),
                                                               onPressed: widget
-                                                                  .onPressedAttend,
+                                                                  .onPressedAsk,
                                                             ),
                                                           ),
                                                         ))),
-                                            widget.event.authorId ==
-                                                    Provider.of<UserData>(
-                                                            context)
-                                                        .currentUserId!
-                                                ? const SizedBox(height: 70)
-                                                : const SizedBox.shrink(),
-                                            Padding(
-                                                padding: const EdgeInsets.only(
-                                                  bottom: 70.0,
-                                                ),
-                                                child: Align(
-                                                    alignment:
-                                                        Alignment.bottomCenter,
-                                                    child: ShakeTransition(
-                                                      axis: Axis.vertical,
-                                                      child: Container(
-                                                        width: 150.0,
-                                                        child: OutlinedButton(
-                                                          style: OutlinedButton
-                                                              .styleFrom(
-                                                            foregroundColor:
-                                                                Colors.blue,
-                                                            side: BorderSide(
-                                                                width: 1.0,
-                                                                color: Colors
-                                                                    .white),
-                                                            shape:
-                                                                RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          20.0),
-                                                            ),
+                                            widget.event.date.isEmpty
+                                                ? const SizedBox.shrink()
+                                                : Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .only(
+                                                            bottom: 3,
                                                           ),
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(10.0),
-                                                            child: Text(
-                                                              'Ask more',
-                                                              style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontSize: 14.0,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          onPressed: widget
-                                                              .onPressedAsk,
+                                                          child: _date
+                                                                      .difference(
+                                                                          _toDaysDate)
+                                                                      .inMinutes <
+                                                                  0
+                                                              ? RichText(
+                                                                  textScaleFactor:
+                                                                      MediaQuery.of(
+                                                                              context)
+                                                                          .textScaleFactor,
+                                                                  text:
+                                                                      TextSpan(
+                                                                    children: [
+                                                                      TextSpan(
+                                                                        text:
+                                                                            'Ongoing...',
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              18,
+                                                                          color:
+                                                                              Colors.white,
+                                                                        ),
+                                                                      ),
+                                                                      TextSpan(
+                                                                        text: widget.event.clossingDay.isEmpty ||
+                                                                                widget.event.clossingDay.startsWith('2023-02-02 00:00:00.000')
+                                                                            ? ''
+                                                                            : '\nThis event is still in progress.\nIt would be completed on\n${MyDateFormat.toDate(DateTime.parse(widget.event.clossingDay))}.\nAttend, meet and explore.',
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              12,
+                                                                          color:
+                                                                              Colors.white,
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                )
+                                                              : RichText(
+                                                                  textScaleFactor:
+                                                                      MediaQuery.of(
+                                                                              context)
+                                                                          .textScaleFactor,
+                                                                  text:
+                                                                      TextSpan(
+                                                                    children: [
+                                                                      TextSpan(
+                                                                        text: _different
+                                                                            .toString(),
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              18,
+                                                                          color:
+                                                                              Colors.white,
+                                                                        ),
+                                                                      ),
+                                                                      TextSpan(
+                                                                        text:
+                                                                            '\nDays\nMore',
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              12,
+                                                                          color:
+                                                                              Colors.white,
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                ),
                                                         ),
-                                                      ),
-                                                    ))),
-                                            Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                      bottom: 3,
-                                                    ),
-                                                    child: _date
-                                                                .difference(
-                                                                    _toDaysDate)
-                                                                .inMinutes <
-                                                            0
-                                                        ? RichText(
-                                                            textScaleFactor:
-                                                                MediaQuery.of(
-                                                                        context)
-                                                                    .textScaleFactor,
-                                                            text: TextSpan(
-                                                              children: [
-                                                                TextSpan(
-                                                                  text:
-                                                                      'Ongoing...',
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontSize:
-                                                                        18,
-                                                                    color: Colors
-                                                                        .white,
-                                                                  ),
-                                                                ),
-                                                                TextSpan(
-                                                                  text:
-                                                                      '\nThis event is still in progress.\nIt would be completed on\n${MyDateFormat.toDate(DateTime.parse(widget.event.clossingDay))}.\nAttend, meet and explore.',
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontSize:
-                                                                        12,
-                                                                    color: Colors
-                                                                        .white,
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            textAlign: TextAlign
-                                                                .center,
-                                                          )
-                                                        : RichText(
-                                                            textScaleFactor:
-                                                                MediaQuery.of(
-                                                                        context)
-                                                                    .textScaleFactor,
-                                                            text: TextSpan(
-                                                              children: [
-                                                                TextSpan(
-                                                                  text: _different
-                                                                      .toString(),
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontSize:
-                                                                        18,
-                                                                    color: Colors
-                                                                        .white,
-                                                                  ),
-                                                                ),
-                                                                TextSpan(
-                                                                  text:
-                                                                      '\nDays\nMore',
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontSize:
-                                                                        12,
-                                                                    color: Colors
-                                                                        .white,
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            textAlign: TextAlign
-                                                                .center,
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(1.0),
+                                                          child: Container(
+                                                            color: Colors.white,
+                                                            width: 30,
+                                                            height: 1,
                                                           ),
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            1.0),
-                                                    child: Container(
-                                                      color: Colors.white,
-                                                      width: 30,
-                                                      height: 1,
-                                                    ),
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            1.0),
-                                                    child: Container(
-                                                      color: Colors.white,
-                                                      width: 30,
-                                                      height: 1,
-                                                    ),
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            1.0),
-                                                    child: Container(
-                                                      color: Colors.white,
-                                                      width: 30,
-                                                      height: 1,
-                                                    ),
-                                                  ),
-                                                  Padding(
-                                                    padding: const EdgeInsets
-                                                            .symmetric(
-                                                        vertical: 3.0),
-                                                    child: Text(
-                                                      widget.event.type
-                                                              .startsWith('Fe')
-                                                          ? 'Festival'
-                                                          : widget.event.type
-                                                                  .startsWith(
-                                                                      'Al')
-                                                              ? 'Album Launch'
-                                                              : widget.event
-                                                                      .type
-                                                                      .startsWith(
-                                                                          'Aw')
-                                                                  ? 'Award'
-                                                                  : widget.event
-                                                                          .type
-                                                                          .startsWith(
-                                                                              'O')
-                                                                      ? 'Others'
-                                                                      : widget.event
-                                                                              .type
-                                                                              .startsWith('T')
-                                                                          ? 'Tour'
-                                                                          : '',
-                                                      style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontFamily: 'Bessita',
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Padding(
-                                                    padding: const EdgeInsets
-                                                            .symmetric(
-                                                        vertical: 3.0),
-                                                    child: Text(
-                                                      widget.event.category,
-                                                      style: TextStyle(
-                                                        color: Colors.white,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ]),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(1.0),
+                                                          child: Container(
+                                                            color: Colors.white,
+                                                            width: 30,
+                                                            height: 1,
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(1.0),
+                                                          child: Container(
+                                                            color: Colors.white,
+                                                            width: 30,
+                                                            height: 1,
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  vertical:
+                                                                      3.0),
+                                                          child: Text(
+                                                            widget.event.type
+                                                                    .startsWith(
+                                                                        'Fe')
+                                                                ? 'Festival'
+                                                                : widget.event
+                                                                        .type
+                                                                        .startsWith(
+                                                                            'Al')
+                                                                    ? 'Album Launch'
+                                                                    : widget.event
+                                                                            .type
+                                                                            .startsWith('Aw')
+                                                                        ? 'Award'
+                                                                        : widget.event.type.startsWith('O')
+                                                                            ? 'Others'
+                                                                            : widget.event.type.startsWith('T')
+                                                                                ? 'Tour'
+                                                                                : '',
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontFamily:
+                                                                  'Bessita',
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  vertical:
+                                                                      3.0),
+                                                          child: Text(
+                                                            widget
+                                                                .event.category,
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ]),
                                             const SizedBox(
                                               height: 70,
                                             ),
@@ -1373,7 +1503,9 @@ class _EventEnlargedWidgetState extends State<EventEnlargedWidget> {
                                               height: 10,
                                             ),
                                             Text(
-                                              "This event would be completed on\n${MyDateFormat.toDate(DateTime.parse(widget.event.clossingDay))}",
+                                              widget.event.clossingDay.isEmpty
+                                                  ? ''
+                                                  : "This event would be completed on\n${MyDateFormat.toDate(DateTime.parse(widget.event.clossingDay))}",
                                               style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 12.0,

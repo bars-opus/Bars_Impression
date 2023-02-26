@@ -334,54 +334,54 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                   },
                                 ),
                               ),
-                              widget.user.profileHandle!.startsWith('Fan')
-                                  ? const SizedBox.shrink()
-                                  : Divider(color: Colors.grey),
-                              widget.user.profileHandle!.startsWith('Fan')
-                                  ? const SizedBox.shrink()
-                                  : SettingSwitch(
-                                      title: 'Disable Advice',
-                                      subTitle:
-                                          'Other users can\'t leave advice but can read previously sent advice.',
-                                      value: _disableAdvice,
-                                      onChanged: (value) => setState(
-                                        () {
-                                          _disableAdvice =
-                                              this._disableAdvice = value;
-                                          usersRef
-                                              .doc(
-                                            widget.user.id,
-                                          )
-                                              .update({
-                                            'disableAdvice': _disableAdvice,
-                                          });
-                                        },
-                                      ),
-                                    ),
-                              widget.user.profileHandle!.startsWith('Fan')
-                                  ? const SizedBox.shrink()
-                                  : Divider(color: Colors.grey),
-                              widget.user.profileHandle!.startsWith('Fan')
-                                  ? const SizedBox.shrink()
-                                  : SettingSwitch(
-                                      title: 'Hide Advices',
-                                      subTitle:
-                                          'Other users can\'t read your advice but can still send new advice.',
-                                      value: _hideAdvice,
-                                      onChanged: (value) => setState(
-                                        () {
-                                          _hideAdvice =
-                                              this._hideAdvice = value;
-                                          usersRef
-                                              .doc(
-                                            widget.user.id,
-                                          )
-                                              .update({
-                                            'hideAdvice': _hideAdvice,
-                                          });
-                                        },
-                                      ),
-                                    ),
+                              // widget.user.profileHandle!.startsWith('Fan')
+                              //     ? const SizedBox.shrink()
+                              //     : Divider(color: Colors.grey),
+                              // widget.user.profileHandle!.startsWith('Fan')
+                              //     ? const SizedBox.shrink()
+                              //     : SettingSwitch(
+                              //         title: 'Disable Advice',
+                              //         subTitle:
+                              //             'Other users can\'t leave advice but can read previously sent advice.',
+                              //         value: _disableAdvice,
+                              //         onChanged: (value) => setState(
+                              //           () {
+                              //             _disableAdvice =
+                              //                 this._disableAdvice = value;
+                              //             usersRef
+                              //                 .doc(
+                              //               widget.user.id,
+                              //             )
+                              //                 .update({
+                              //               'disableAdvice': _disableAdvice,
+                              //             });
+                              //           },
+                              //         ),
+                              //       ),
+                              // widget.user.profileHandle!.startsWith('Fan')
+                              //     ? const SizedBox.shrink()
+                              //     : Divider(color: Colors.grey),
+                              // widget.user.profileHandle!.startsWith('Fan')
+                              //     ? const SizedBox.shrink()
+                              //     : SettingSwitch(
+                              //         title: 'Hide Advices',
+                              //         subTitle:
+                              //             'Other users can\'t read your advice but can still send new advice.',
+                              //         value: _hideAdvice,
+                              //         onChanged: (value) => setState(
+                              //           () {
+                              //             _hideAdvice =
+                              //                 this._hideAdvice = value;
+                              //             usersRef
+                              //                 .doc(
+                              //               widget.user.id,
+                              //             )
+                              //                 .update({
+                              //               'hideAdvice': _hideAdvice,
+                              //             });
+                              //           },
+                              //         ),
+                              //       ),
                               widget.user.profileHandle!.startsWith('Fan')
                                   ? const SizedBox.shrink()
                                   : Divider(color: Colors.grey),
@@ -626,7 +626,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                         : Color(0xFF1a1a1a),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 50.0,
                   ),
                   Center(
@@ -662,11 +662,11 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                   )));
                     },
                     child: Text(
-                      'BARS IMPRESSION',
+                      '          BARS IMPRESSION',
                       style: TextStyle(
                         color: Colors.blueGrey,
-                        fontSize: 12,
-                        letterSpacing: 7,
+                        fontSize: 11,
+                        // letterSpacing: 7,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -680,14 +680,37 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                     url: 'https://www.barsopus.com/',
                                   )));
                     },
-                    child: Text(
-                      'from Bars Opus',
-                      style: TextStyle(
-                        color: Colors.blueGrey,
-                        fontSize: 10,
-                      ),
-                      textAlign: TextAlign.center,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.copyright,
+                          size: 15,
+                          color: Colors.blueGrey,
+                        ),
+                        Text(
+                          ' BARS OPUS LTD',
+                          style: TextStyle(
+                            color: Colors.blueGrey,
+                            fontSize: 11.0,
+                            // fontWeight: FontWeight.w100,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     ),
+
+                    // Text(
+                    //   'from Bars Opus',
+                    //   style: TextStyle(
+                    //     color: Colors.blueGrey,
+                    //     fontSize: 10,
+                    //   ),
+                    //   textAlign: TextAlign.center,
+                    // ),
+                  ),
+                  const SizedBox(
+                    height: 50.0,
                   ),
                   _isLoading
                       ? SizedBox(

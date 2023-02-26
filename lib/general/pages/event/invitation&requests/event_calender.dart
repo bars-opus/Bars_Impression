@@ -25,7 +25,9 @@ class _EventCalenderState extends State<EventCalender> {
   }
 
   _countDown() async {
-    final DateTime date = DateTime.parse(widget.event.date);
+    final DateTime date = widget.event.date.isEmpty
+        ? DateTime.parse('2023-12-19 00:00:00.000')
+        : DateTime.parse(widget.event.date);
     final toDayDate = DateTime.now();
     var different = date.difference(toDayDate).inDays;
 
@@ -88,57 +90,70 @@ class _EventCalenderState extends State<EventCalender> {
                       ),
                     ],
                   ),
-                  RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: _date.difference(_toDaysDate).inMinutes < 0
-                              ? ''
-                              : _different.toString(),
+                  widget.event.date.isEmpty
+                      ? Text(
+                          '',
                           style: TextStyle(
-                            fontSize: 50,
-                            color: Colors.white,
+                            color: Colors.transparent,
+                            fontSize: 0,
                           ),
-                        ),
-                        TextSpan(
-                          text: _date.difference(_toDaysDate).inMinutes < 0
-                              ? 'Ongoing...'
-                              : '\nDays More',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                        )
+                      : RichText(
+                          textScaleFactor:
+                              MediaQuery.of(context).textScaleFactor,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text:
+                                    _date.difference(_toDaysDate).inMinutes < 0
+                                        ? ''
+                                        : _different.toString(),
+                                style: TextStyle(
+                                  fontSize: 50,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              TextSpan(
+                                text:
+                                    _date.difference(_toDaysDate).inMinutes < 0
+                                        ? 'Ongoing...'
+                                        : '\nDays More',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
                           ),
+                          textAlign: TextAlign.right,
                         ),
-                      ],
-                    ),
-                    textAlign: TextAlign.right,
-                  ),
                 ],
               ),
               const SizedBox(
                 height: 30,
               ),
-              ShakeTransition(
-                child: Container(
-                  height: width,
-                  width: width,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SfCalendar(
-                        view: CalendarView.month,
-                        initialSelectedDate:
-                            DateTime.parse(widget.event.date.toString()),
-                        initialDisplayDate:
-                            DateTime.parse(widget.event.date.toString())),
-                  ),
-                ),
-              ),
+              widget.event.date.isEmpty
+                  ? const SizedBox.shrink()
+                  : ShakeTransition(
+                      child: Container(
+                        height: width,
+                        width: width,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SfCalendar(
+                              view: CalendarView.month,
+                              initialSelectedDate:
+                                  DateTime.parse(widget.event.date.toString()),
+                              initialDisplayDate:
+                                  DateTime.parse(widget.event.date.toString())),
+                        ),
+                      ),
+                    ),
               const SizedBox(
                 height: 30,
               ),

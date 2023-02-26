@@ -33,7 +33,9 @@ class _EventPublicInviteAvailableState
   }
 
   _countDown() async {
-    final DateTime date = DateTime.parse(widget.event.date);
+    final DateTime date = widget.event.date.isEmpty
+        ? DateTime.parse('2023-12-19 00:00:00.000')
+        : DateTime.parse(widget.event.date);
     final toDayDate = DateTime.now();
     // var different = date.difference(toDayDate).inDays;
 
@@ -581,8 +583,12 @@ class _EventPublicInviteAvailableState
                                   const EdgeInsets.only(left: 12.0, right: 12),
                               child: Text(
                                 // ignore: unnecessary_null_comparison
+
                                 _eventInvite.anttendeeId.isNotEmpty
-                                    ? 'You would be attending ${widget.event.title} at  ${widget.event.venue} on ${MyDateFormat.toDate(DateTime.parse(widget.event.date))} at ${MyDateFormat.toTime(DateTime.parse(widget.event.time))}.'
+                                    ? widget.event.time.isEmpty ||
+                                            widget.event.date.isEmpty
+                                        ? 'You would be attending ${widget.event.title} at  ${widget.event.venue}'
+                                        : 'You would be attending ${widget.event.title} at  ${widget.event.venue} on ${MyDateFormat.toDate(DateTime.parse(widget.event.date))} at ${MyDateFormat.toTime(DateTime.parse(widget.event.time))}.'
                                     : 'This event would be added to the list of events you would be attending. This event is public and you do not need an invitation to attend this event ',
                                 style: TextStyle(
                                   color: Colors.black,

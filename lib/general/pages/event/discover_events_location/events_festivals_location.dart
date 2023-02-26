@@ -64,6 +64,7 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
 
   _setupEventFeed() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('city', isEqualTo: widget.user.city)
         .where('type', isEqualTo: widget.type)
         .limit(limit)
@@ -87,6 +88,7 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
     _isFetchingEvent = true;
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('city', isEqualTo: widget.user.city)
         .where('type', isEqualTo: widget.type)
         .limit(limit)
@@ -111,6 +113,7 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
 
   _setupCountryEvent() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('country', isEqualTo: widget.user.country)
         .where('type', isEqualTo: widget.type)
         .limit(limit)
@@ -134,6 +137,7 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
     _isFetchingEvent = true;
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('country', isEqualTo: widget.user.country)
         .where('type', isEqualTo: widget.type)
         .limit(limit)
@@ -158,6 +162,7 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
 
   _setupVirtalEvent() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('isVirtual', isEqualTo: true)
         .where('type', isEqualTo: widget.type)
         .limit(limit)
@@ -181,6 +186,7 @@ class _FestivalEventsLocationState extends State<FestivalEventsLocation>
     _isFetchingEvent = true;
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('isVirtual', isEqualTo: true)
         .where('type', isEqualTo: widget.type)
         .limit(limit)

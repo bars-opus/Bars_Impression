@@ -29,6 +29,7 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
     }
     try {
       widget.user.verified!.isEmpty ? _update() : _unVerify();
+      // _update();
     } catch (e) {
       final double width = Responsive.isDesktop(context)
           ? 600.0
@@ -221,8 +222,57 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
                           EditProfileInfo(
                             editTitle: 'Select \nAccount Type',
                             info:
-                                'Select an account type to help other users easily identify you for business. You can only select one account type at a time.',
+                                'Select an account type to help other users easily identify you for business. You can add one main account with multiple  sub-accounts skills if you offer more than one skill. For instance, main account Artist, sub-accounts: producer, video director.',
                             icon: Icons.account_circle,
+                          ),
+                          // const SizedBox(
+                          //   height: 10.0,
+                          // ),
+                          // widget.user.profileHandle!.startsWith('Fan') ||
+                          //         widget.user.profileHandle!
+                          //             .startsWith('Record_Label') ||
+                          _profileHandle.startsWith('Fan') ||
+                                  _profileHandle.startsWith('Record_Label')
+                              ? const SizedBox.shrink()
+                              : GestureDetector(
+                                  onTap: () => widget
+                                          .user.subAccountType!.isEmpty
+                                      ? Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (_) =>
+                                                  EditProfileHandleSubAccount(
+                                                    user: widget.user,
+                                                    profileHandle:
+                                                        _profileHandle,
+                                                  )))
+                                      : Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (_) => SubAccounts(
+                                                    user: widget.user,
+                                                    profileHandle:
+                                                        _profileHandle,
+                                                  ))),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.add,
+                                        color: Colors.blue,
+                                        size: 20,
+                                      ),
+                                      Text(
+                                        'Add sub-accounts',
+                                        style: TextStyle(
+                                          color: Colors.blue,
+                                          fontSize: 12.0,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                          const SizedBox(
+                            height: 30.0,
                           ),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.start,

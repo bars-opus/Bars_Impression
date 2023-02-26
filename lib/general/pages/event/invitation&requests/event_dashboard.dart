@@ -52,7 +52,9 @@ class _EventDashboardState extends State<EventDashboard> {
   }
 
   _countDown() async {
-    DateTime date = DateTime.parse(widget.event.date);
+    DateTime date = widget.event.date.isEmpty
+        ? DateTime.parse('2023-12-19 00:00:00.000')
+        : DateTime.parse(widget.event.date);
     final toDayDate = DateTime.now();
     var different = date.difference(toDayDate).inDays;
 
@@ -257,8 +259,61 @@ class _EventDashboardState extends State<EventDashboard> {
             ),
           ),
           const SizedBox(
-            height:  30,
+            height: 30,
           ),
+          widget.event.date.startsWith('2023-02-02 00:00:00.000') ||
+                  widget.event.time.startsWith('2023-02-02 19:32:48.757749') ||
+                  widget.event.clossingDay.startsWith('2023-02-02 00:00:00.000')
+              ? GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => EventCompleted(
+                        date: DateFormat.yMMMMEEEEd().format(_date),
+                        event: widget.event,
+                        currentUserId: widget.currentUserId,
+                        from: 'wrongDate',
+                      ),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Text(
+                      'Your event date, event time, or closing date is incorrect. We advise that your delete this event and recreate it since an event date and time cannot be modified once created. \n\n',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12.0,
+                      ),
+                    ),
+                  ),
+                )
+              : const SizedBox.shrink(),
+          widget.event.date.isEmpty ||
+                  widget.event.time.isEmpty ||
+                  widget.event.clossingDay.isEmpty
+              ? GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => EventCompleted(
+                          from: 'wrongDate',
+                          date: DateFormat.yMMMMEEEEd().format(_date),
+                          event: widget.event,
+                          currentUserId: widget.currentUserId),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Text(
+                      'Your event date, event time, or closing date is incorrect. We advise that your delete this event and recreate it since an event date and time cannot be modified once created. ',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12.0,
+                      ),
+                    ),
+                  ),
+                )
+              : const SizedBox.shrink(),
           _date.subtract(Duration(days: 3)).isBefore(_toDaysDate)
               ? ShakeTransition(
                   child: Padding(
@@ -598,41 +653,47 @@ class _EventDashboardState extends State<EventDashboard> {
                       const SizedBox(
                         height: 30,
                       ),
-                      Center(
-                        child: RichText(
-                          textScaleFactor:
-                              MediaQuery.of(context).textScaleFactor,
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: _toDaysDate.isAfter(
-                                        DateTime.parse(widget.event.date))
-                                    ? 'Ongiong...'
-                                    : _different.toString(),
-                                style: TextStyle(
-                                  fontSize: 50,
-                                  color: widget.palette.darkMutedColor == null
-                                      ? Color(0xFF1a1a1a)
-                                      : widget.palette.darkMutedColor!.color,
+                      widget.event.date.isEmpty
+                          ? const SizedBox.shrink()
+                          : Center(
+                              child: RichText(
+                                textScaleFactor:
+                                    MediaQuery.of(context).textScaleFactor,
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: _toDaysDate.isAfter(
+                                              DateTime.parse(widget.event.date))
+                                          ? 'Ongiong...'
+                                          : _different.toString(),
+                                      style: TextStyle(
+                                        fontSize: 50,
+                                        color: widget.palette.darkMutedColor ==
+                                                null
+                                            ? Color(0xFF1a1a1a)
+                                            : widget
+                                                .palette.darkMutedColor!.color,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: _toDaysDate.isAfter(
+                                              DateTime.parse(widget.event.date))
+                                          ? ''
+                                          : '\nDays\nMore',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: widget.palette.darkMutedColor ==
+                                                null
+                                            ? Color(0xFF1a1a1a)
+                                            : widget
+                                                .palette.darkMutedColor!.color,
+                                      ),
+                                    ),
+                                  ],
                                 ),
+                                textAlign: TextAlign.center,
                               ),
-                              TextSpan(
-                                text: _toDaysDate.isAfter(
-                                        DateTime.parse(widget.event.date))
-                                    ? ''
-                                    : '\nDays\nMore',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: widget.palette.darkMutedColor == null
-                                      ? Color(0xFF1a1a1a)
-                                      : widget.palette.darkMutedColor!.color,
-                                ),
-                              ),
-                            ],
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
+                            ),
                       const SizedBox(
                         height: 20,
                       ),
@@ -1338,7 +1399,11 @@ class _EventDashboardState extends State<EventDashboard> {
           ),
           const SizedBox(height: 20),
           Text(
-            "This dashboard would be closed on\n${MyDateFormat.toDate(DateTime.parse(widget.event.clossingDay))} after this event is completed.",
+            widget.event.clossingDay.isEmpty ||
+                    widget.event.clossingDay
+                        .startsWith('2023-02-02 00:00:00.000')
+                ? ''
+                : "This dashboard would be closed on\n${MyDateFormat.toDate(DateTime.parse(widget.event.clossingDay))} after this event is completed.",
             style: TextStyle(
               color: Colors.white,
               fontSize: 12.0,

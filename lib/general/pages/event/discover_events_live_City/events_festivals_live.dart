@@ -51,6 +51,7 @@ class _FestivalEventsLiveCityState extends State<FestivalEventsLiveCity>
 
   _setupEventFeed() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('city', isEqualTo: widget.liveCity)
         .where('country', isEqualTo: widget.liveCountry)
         .where('type', isEqualTo: widget.type)
@@ -75,6 +76,7 @@ class _FestivalEventsLiveCityState extends State<FestivalEventsLiveCity>
     _isFetchingEvent = true;
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('city', isEqualTo: widget.liveCity)
         .where('country', isEqualTo: widget.liveCountry)
         .where('type', isEqualTo: widget.type)

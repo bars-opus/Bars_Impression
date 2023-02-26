@@ -142,34 +142,36 @@ class _StartChatState extends State<StartChat> {
                   ),
                 ),
                 SizedBox(height: 2),
-                Container(
-                  width: width - 100,
-                  child: TextButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: ConfigBloc().darkModeOn
-                          ? Color(0xFF1a1a1a)
-                          : Colors.white,
-                      foregroundColor: Colors.blue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(3.0),
-                      ),
-                    ),
-                    onPressed: () {
-                      _chat();
-                    },
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Text(
-                        'Send Message',
-                        style: TextStyle(
-                          color: ConfigBloc().darkModeOn
-                              ? Colors.white
-                              : Colors.black,
+                widget.user.score!.isNegative
+                    ? const SizedBox.shrink()
+                    : Container(
+                        width: width - 100,
+                        child: TextButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: ConfigBloc().darkModeOn
+                                ? Color(0xFF1a1a1a)
+                                : Colors.white,
+                            foregroundColor: Colors.blue,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(3.0),
+                            ),
+                          ),
+                          onPressed: () {
+                            _chat();
+                          },
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Text(
+                              'Send Message',
+                              style: TextStyle(
+                                color: ConfigBloc().darkModeOn
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),

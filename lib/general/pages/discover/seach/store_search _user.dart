@@ -19,7 +19,7 @@ class _StoreSearchUsersState extends State<StoreSearchUsers> {
         company: user.company!,
         profileImageUrl: user.profileImageUrl!,
         bio: user.bio!,
-        score: user.score!,
+        // score: user.score!,
         onPressed: () {
           Navigator.push(
               context,

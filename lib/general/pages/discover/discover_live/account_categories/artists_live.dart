@@ -56,6 +56,7 @@ class _ArtistsLiveState extends State<ArtistsLive>
         .where('profileHandle', isEqualTo: widget.profileHandle)
         .where('city', isEqualTo: widget.liveCity)
         .where('country', isEqualTo: widget.liveCountry)
+        .where('dontShowContentOnExplorePage', isEqualTo: true)
         .limit(limit)
         .get();
     List<AccountHolder> users = userFeedSnapShot.docs
@@ -79,6 +80,7 @@ class _ArtistsLiveState extends State<ArtistsLive>
         .where('profileHandle', isEqualTo: widget.profileHandle)
         .where('city', isEqualTo: widget.liveCity)
         .where('country', isEqualTo: widget.liveCountry)
+        .where('dontShowContentOnExplorePage', isEqualTo: true)
         .limit(limit)
         .startAfterDocument(_userSnapshot.last)
         .get();

@@ -62,6 +62,7 @@ class _EventsAllLiveCityState extends State<EventsAllLiveCity>
     QuerySnapshot eventFeedSnapShot = await allEventsRef
         .where('city', isEqualTo: widget.liveCity)
         .where('country', isEqualTo: widget.liveCountry)
+        .where('showOnExplorePage', isEqualTo: true)
         .limit(limit)
         .get();
     List<Event> events = eventFeedSnapShot.docs
@@ -85,6 +86,7 @@ class _EventsAllLiveCityState extends State<EventsAllLiveCity>
     QuerySnapshot eventFeedSnapShot = await allEventsRef
         .where('city', isEqualTo: widget.liveCity)
         .where('country', isEqualTo: widget.liveCountry)
+        .where('showOnExplorePage', isEqualTo: true)
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();

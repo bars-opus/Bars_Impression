@@ -254,8 +254,10 @@ class _EventsAttendingState extends State<EventsAttending> {
     final width = Responsive.isDesktop(context)
         ? 600.0
         : MediaQuery.of(context).size.width;
-    final List<String> datePartition =
-        MyDateFormat.toDate(DateTime.parse(widget.event.date)).split(" ");
+    final List<String> datePartition = widget.event.date.isEmpty
+        ? MyDateFormat.toDate(DateTime.parse('2023-02-19 00:00:00.000'))
+            .split(" ")
+        : MyDateFormat.toDate(DateTime.parse(widget.event.date)).split(" ");
     return ResponsiveScaffold(
       child: Material(
         child: Stack(
@@ -314,54 +316,60 @@ class _EventsAttendingState extends State<EventsAttending> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      widget.different < 0
+                      widget.event.date.isEmpty
                           ? const SizedBox.shrink()
-                          : Container(
-                              decoration: BoxDecoration(
-                                  // color: Colors.white,
-                                  border: Border.all(
-                                      width: .3, color: Colors.white),
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 10.0, horizontal: 10),
-                                child: RichText(
-                                  textScaleFactor:
-                                      MediaQuery.of(context).textScaleFactor,
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: widget.different.toString(),
-                                        style: TextStyle(
-                                          fontSize: 60,
-                                          color: Colors.white,
-                                        ),
+                          : widget.different < 0
+                              ? const SizedBox.shrink()
+                              : Container(
+                                  decoration: BoxDecoration(
+                                      // color: Colors.white,
+                                      border: Border.all(
+                                          width: .3, color: Colors.white),
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10.0, horizontal: 10),
+                                    child: RichText(
+                                      textScaleFactor: MediaQuery.of(context)
+                                          .textScaleFactor,
+                                      text: TextSpan(
+                                        children: [
+                                          TextSpan(
+                                            text: widget.different.toString(),
+                                            style: TextStyle(
+                                              fontSize: 60,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ],
+                                      textAlign: TextAlign.center,
+                                    ),
                                   ),
-                                  textAlign: TextAlign.center,
                                 ),
+                      widget.event.date.isEmpty ||
+                              widget.event.clossingDay.isEmpty
+                          ? const SizedBox.shrink()
+                          : RichText(
+                              textScaleFactor:
+                                  MediaQuery.of(context).textScaleFactor,
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: _toDaysDate.isAfter(DateTime.parse(
+                                            widget.event.clossingDay))
+                                        ? 'Completed'
+                                        : widget.different < 0
+                                            ? 'Ongoing'
+                                            : '\nDays More',
+                                    style: TextStyle(
+                                      fontSize: widget.different < 0 ? 30 : 14,
+                                    ),
+                                  ),
+                                ],
                               ),
+                              textAlign: TextAlign.center,
                             ),
-                      RichText(
-                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: _toDaysDate.isAfter(
-                                      DateTime.parse(widget.event.clossingDay))
-                                  ? 'Completed'
-                                  : widget.different < 0
-                                      ? 'Ongoing'
-                                      : '\nDays More',
-                              style: TextStyle(
-                                fontSize: widget.different < 0 ? 30 : 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
                       Divider(),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -445,8 +453,9 @@ class _EventsAttendingState extends State<EventsAttending> {
                             text: TextSpan(
                               children: [
                                 TextSpan(
-                                  text:
-                                      '${MyDateFormat.toTime(DateTime.parse(widget.event.time))}\n',
+                                  text: widget.event.time.isEmpty
+                                      ? ''
+                                      : '${MyDateFormat.toTime(DateTime.parse(widget.event.time))}\n',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.white,
@@ -490,221 +499,242 @@ class _EventsAttendingState extends State<EventsAttending> {
                       const SizedBox(
                         height: 40,
                       ),
-                      ShakeTransition(
-                        child: Container(
-                          height: width / 1.5,
-                          width: width,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: SfCalendar(
-                                view: CalendarView.month,
-                                initialSelectedDate: DateTime.parse(
-                                    widget.event.date.toString()),
-                                initialDisplayDate: DateTime.parse(
-                                    widget.event.date.toString())),
-                          ),
-                        ),
-                      ),
+                      widget.event.date.isEmpty
+                          ? const SizedBox.shrink()
+                          : ShakeTransition(
+                              child: Container(
+                                height: width / 1.5,
+                                width: width,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: SfCalendar(
+                                      view: CalendarView.month,
+                                      initialSelectedDate: DateTime.parse(
+                                          widget.event.date.toString()),
+                                      initialDisplayDate: DateTime.parse(
+                                          widget.event.date.toString())),
+                                ),
+                              ),
+                            ),
                       const SizedBox(
                         height: 30,
                       ),
-                      _toDaysDate
-                              .isAfter(DateTime.parse(widget.event.clossingDay))
+                      widget.event.clossingDay.isEmpty
                           ? const SizedBox.shrink()
-                          : Container(
-                              width: width,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  elevation: 0.0,
-                                  foregroundColor: Colors.blue,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5.0),
-                                  ),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 5.0, vertical: 2),
-                                  child: Text(
-                                    'Invitation',
-                                    style: TextStyle(
-                                      color: Colors.blue,
-                                      fontSize: 12,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                                onPressed: () => _generatePalette(context),
-                              ),
-                            ),
-                      _toDaysDate
-                              .isAfter(DateTime.parse(widget.event.clossingDay))
-                          ? const SizedBox.shrink()
-                          : Container(
-                              width: width,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  elevation: 0.0,
-                                  foregroundColor: Colors.blue,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5.0),
-                                  ),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 5.0, vertical: 2),
-                                  child: Text(
-                                    widget.event.isVirtual
-                                        ? 'Host link'
-                                        : 'Event location',
-                                    style: TextStyle(
-                                      color: Colors.blue,
-                                      fontSize: 12,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                                onPressed: () {
-                                  widget.event.isVirtual
-                                      ? Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (_) => MyWebView(
-                                                    url: widget
-                                                        .event.virtualVenue,
-                                                  )))
-                                      : _launchMap();
-                                },
-                              ),
-                            ),
-                      _toDaysDate
-                              .isAfter(DateTime.parse(widget.event.clossingDay))
-                          ? const SizedBox.shrink()
-                          : Container(
-                              width: width,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  elevation: 0.0,
-                                  foregroundColor: Colors.blue,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5.0),
-                                  ),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 5.0, vertical: 2),
-                                  child: Text(
-                                    'Ask question',
-                                    style: TextStyle(
-                                      color: Colors.blue,
-                                      fontSize: 12,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                                onPressed: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => AsksScreen(
-                                            askCount: 0,
-                                            event: widget.event,
-                                            ask: null,
-                                            currentUserId:
-                                                Provider.of<UserData>(context,
-                                                        listen: false)
-                                                    .currentUserId!,
-                                          )),
-                                ),
-                              ),
-                            ),
-                      _toDaysDate
-                              .isAfter(DateTime.parse(widget.event.clossingDay))
-                          ? Text(
-                              widget.event.title +
-                                  ' Which was dated on\n' +
-                                  MyDateFormat.toDate(
-                                      DateTime.parse(widget.event.date)) +
-                                  ' has been successfully completed. Congratulations on your attendance at this event.',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12.0,
-                                  height: 1),
-                              textAlign: TextAlign.center,
-                            )
-                          : const SizedBox.shrink(),
-                      _toDaysDate
-                              .isAfter(DateTime.parse(widget.event.clossingDay))
-                          ? Padding(
-                              padding: const EdgeInsets.only(top: 70.0),
-                              child: Container(
-                                  width: 50,
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: Colors.white,
-                                  ),
-                                  child: Container(
-                                    height:
-                                        Responsive.isDesktop(context) ? 40 : 30,
-                                    width:
-                                        Responsive.isDesktop(context) ? 40 : 30,
-                                    child: IconButton(
-                                      icon: Icon(Icons.delete_forever),
-                                      iconSize: 25,
-                                      color: Colors.black,
-                                      onPressed: () => _showSelectImageDialog(
-                                          context,
-                                          widget.invite.anttendeeId.isNotEmpty
-                                              ? 'Stop'
-                                              : '',
-                                          widget.invite),
-                                    ),
-                                  )),
-                            )
-                          : Container(
-                              width: width,
-                              child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white,
-                                    elevation: 0.0,
-                                    foregroundColor: Colors.blue,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5.0),
-                                    ),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 5.0, vertical: 2),
-                                    child: Text(
-                                      'Event flier',
-                                      style: TextStyle(
-                                        color: Colors.blue,
-                                        fontSize: 12,
+                          : _toDaysDate.isAfter(
+                                  DateTime.parse(widget.event.clossingDay))
+                              ? const SizedBox.shrink()
+                              : Container(
+                                  width: width,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      elevation: 0.0,
+                                      foregroundColor: Colors.blue,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(5.0),
                                       ),
-                                      textAlign: TextAlign.center,
                                     ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5.0, vertical: 2),
+                                      child: Text(
+                                        'Invitation',
+                                        style: TextStyle(
+                                          color: Colors.blue,
+                                          fontSize: 12,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    onPressed: () => _generatePalette(context),
                                   ),
-                                  onPressed: () => Navigator.push(
+                                ),
+                      widget.event.clossingDay.isEmpty
+                          ? const SizedBox.shrink()
+                          : _toDaysDate.isAfter(
+                                  DateTime.parse(widget.event.clossingDay))
+                              ? const SizedBox.shrink()
+                              : Container(
+                                  width: width,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      elevation: 0.0,
+                                      foregroundColor: Colors.blue,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(5.0),
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5.0, vertical: 2),
+                                      child: Text(
+                                        widget.event.isVirtual
+                                            ? 'Host link'
+                                            : 'Event location',
+                                        style: TextStyle(
+                                          color: Colors.blue,
+                                          fontSize: 12,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      widget.event.isVirtual
+                                          ? Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (_) => MyWebView(
+                                                        url: widget
+                                                            .event.virtualVenue,
+                                                      )))
+                                          : _launchMap();
+                                    },
+                                  ),
+                                ),
+                      widget.event.clossingDay.isEmpty
+                          ? const SizedBox.shrink()
+                          : _toDaysDate.isAfter(
+                                  DateTime.parse(widget.event.clossingDay))
+                              ? const SizedBox.shrink()
+                              : Container(
+                                  width: width,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      elevation: 0.0,
+                                      foregroundColor: Colors.blue,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(5.0),
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5.0, vertical: 2),
+                                      child: Text(
+                                        'Ask question',
+                                        style: TextStyle(
+                                          color: Colors.blue,
+                                          fontSize: 12,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    onPressed: () => Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (_) => AllEvenEnlarged(
-                                                exploreLocation: 'No',
-                                                feed: 1,
+                                          builder: (_) => AsksScreen(
                                                 askCount: 0,
+                                                event: widget.event,
+                                                ask: null,
                                                 currentUserId:
                                                     Provider.of<UserData>(
                                                             context,
                                                             listen: false)
                                                         .currentUserId!,
-                                                event: widget.event,
-                                              )))),
-                            ),
+                                              )),
+                                    ),
+                                  ),
+                                ),
+                      widget.event.clossingDay.isEmpty
+                          ? const SizedBox.shrink()
+                          : _toDaysDate.isAfter(
+                                  DateTime.parse(widget.event.clossingDay))
+                              ? Text(
+                                  widget.event.title +
+                                      ' Which was dated on\n' +
+                                      MyDateFormat.toDate(
+                                          DateTime.parse(widget.event.date)) +
+                                      ' has been successfully completed. Congratulations on your attendance at this event.',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12.0,
+                                      height: 1),
+                                  textAlign: TextAlign.center,
+                                )
+                              : const SizedBox.shrink(),
+                      widget.event.clossingDay.isEmpty
+                          ? const SizedBox.shrink()
+                          : _toDaysDate.isAfter(
+                                  DateTime.parse(widget.event.clossingDay))
+                              ? Padding(
+                                  padding: const EdgeInsets.only(top: 70.0),
+                                  child: Container(
+                                      width: 50,
+                                      height: 50,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: Colors.white,
+                                      ),
+                                      child: Container(
+                                        height: Responsive.isDesktop(context)
+                                            ? 40
+                                            : 30,
+                                        width: Responsive.isDesktop(context)
+                                            ? 40
+                                            : 30,
+                                        child: IconButton(
+                                          icon: Icon(Icons.delete_forever),
+                                          iconSize: 25,
+                                          color: Colors.black,
+                                          onPressed: () =>
+                                              _showSelectImageDialog(
+                                                  context,
+                                                  widget.invite.anttendeeId
+                                                          .isNotEmpty
+                                                      ? 'Stop'
+                                                      : '',
+                                                  widget.invite),
+                                        ),
+                                      )),
+                                )
+                              : Container(
+                                  width: width,
+                                  child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.white,
+                                        elevation: 0.0,
+                                        foregroundColor: Colors.blue,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5.0),
+                                        ),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 5.0, vertical: 2),
+                                        child: Text(
+                                          'Event flier',
+                                          style: TextStyle(
+                                            color: Colors.blue,
+                                            fontSize: 12,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                      onPressed: () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (_) => AllEvenEnlarged(
+                                                    exploreLocation: 'No',
+                                                    feed: 1,
+                                                    askCount: 0,
+                                                    currentUserId:
+                                                        Provider.of<UserData>(
+                                                                context,
+                                                                listen: false)
+                                                            .currentUserId!,
+                                                    event: widget.event,
+                                                  )))),
+                                ),
                     ],
                   ),
                   const SizedBox(

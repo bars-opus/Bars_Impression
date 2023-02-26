@@ -23,11 +23,14 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
   void initState() {
     super.initState();
     widget.event.id.isEmpty ? _nothing() : _countDown();
+    widget.event.date.isEmpty ? _nothing() : _countDown();
   }
 
   _nothing() {}
   _countDown() async {
-    DateTime date = DateTime.parse(widget.event.date);
+    DateTime date = widget.event.date.isEmpty
+        ? DateTime.parse('2023-12-19 00:00:00.000')
+        : DateTime.parse(widget.event.date);
     final toDayDate = DateTime.now();
     var different = date.difference(toDayDate).inDays;
 
@@ -134,44 +137,53 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                           ConfigBloc().darkModeOn ? Colors.white : Colors.black,
                     ),
                   )
-                : RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: _date.difference(_toDaysDate).inMinutes < 0
-                              ? ''
-                              : _different.toString(),
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: ConfigBloc().darkModeOn
-                                ? Colors.white
-                                : Colors.black,
-                          ),
+                : widget.event.date.isEmpty || widget.event.clossingDay.isEmpty
+                    ? Text(
+                        '',
+                        style: TextStyle(
+                          fontSize: 0,
+                          color: Colors.transparent,
                         ),
-                        TextSpan(
-                          text: _toDaysDate.isAfter(
-                                  DateTime.parse(widget.event.clossingDay))
-                              ? 'Completed'
-                              : _date.difference(_toDaysDate).inMinutes < 0
-                                  ? 'Ongoing...'
-                                  : ' days',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: _toDaysDate.isAfter(
-                                    DateTime.parse(widget.event.clossingDay))
-                                ? Colors.green
-                                : _date.difference(_toDaysDate).inMinutes < 0
-                                    ? Colors.blue
-                                    : ConfigBloc().darkModeOn
-                                        ? Colors.white
-                                        : Colors.black,
-                          ),
+                      )
+                    : RichText(
+                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: _date.difference(_toDaysDate).inMinutes < 0
+                                  ? ''
+                                  : _different.toString(),
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: ConfigBloc().darkModeOn
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
+                            ),
+                            TextSpan(
+                              text: _toDaysDate.isAfter(
+                                      DateTime.parse(widget.event.clossingDay))
+                                  ? 'Completed'
+                                  : _date.difference(_toDaysDate).inMinutes < 0
+                                      ? 'Ongoing...'
+                                      : ' days',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: _toDaysDate.isAfter(DateTime.parse(
+                                        widget.event.clossingDay))
+                                    ? Colors.green
+                                    : _date.difference(_toDaysDate).inMinutes <
+                                            0
+                                        ? Colors.blue
+                                        : ConfigBloc().darkModeOn
+                                            ? Colors.white
+                                            : Colors.black,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    textAlign: TextAlign.left,
-                  ),
+                        textAlign: TextAlign.left,
+                      ),
           ],
         ),
       ),

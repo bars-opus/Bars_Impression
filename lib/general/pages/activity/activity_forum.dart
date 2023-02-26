@@ -141,7 +141,7 @@ class _ActivityForumScreenState extends State<ActivityForumScreen>
             : activityForum.isThoughtLike
                 ? _goReactionPage(currentUserId, activityForum)
                 : _goToThought(currentUserId, activityForum);
-      },
+      }, fromUserId: activityForum.fromUserId,
     );
     //   },
     // );

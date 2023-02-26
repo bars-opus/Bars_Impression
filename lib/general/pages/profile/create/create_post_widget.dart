@@ -407,7 +407,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
         artist:
             Provider.of<UserData>(context, listen: false).post1.toUpperCase(),
         hashTag: Provider.of<UserData>(context, listen: false).post5,
-        punch: Provider.of<UserData>(context, listen: false).post3,
+        punch: Provider.of<UserData>(context, listen: false).post3.trim(),
         musicLink: Provider.of<UserData>(context, listen: false).post2,
         reportConfirmed: '',
         report: '',
@@ -536,7 +536,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget>
         company: user.company!,
         profileImageUrl: user.profileImageUrl!,
         bio: user.bio!,
-        score: user.score!,
+        // score: user.score!,
         onPressed: () {
           Provider.of<UserData>(context, listen: false)
               .setPost1(user.userName!);

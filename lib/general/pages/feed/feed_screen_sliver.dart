@@ -1,5 +1,6 @@
 import 'package:bars/general/pages/chats/chats.dart';
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 
 class FeedScreenSliver extends StatefulWidget {
@@ -53,6 +54,16 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
     _setUpactivityAdviceCount();
     _hideButtonController = ScrollController();
     _listController = new ScrollController();
+    _hideButtonController.addListener(() {
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        Provider.of<UserData>(context, listen: false).setShowUsersTab(true);
+      }
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        Provider.of<UserData>(context, listen: false).setShowUsersTab(false);
+      }
+    });
   }
 
   @override
@@ -88,7 +99,6 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
         _postsList = posts;
       });
     }
-    
   }
 
   _loadMorePosts() async {
@@ -206,7 +216,6 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
     });
   }
 
-
   _buildPostBuilder() {
     super.build(context);
     return NotificationListener<ScrollNotification>(
@@ -224,14 +233,13 @@ class _FeedScreenSliverState extends State<FeedScreenSliver>
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   Post post = _postsList[index];
-        return PostView(
-                        key: PageStorageKey('FeedList'),
-                        currentUserId: widget.currentUserId,
-                        post: post,
-                        postList: _postsList,
-                        showExplore: _showExplore,
-                      );
-                  
+                  return PostView(
+                    key: PageStorageKey('FeedList'),
+                    currentUserId: widget.currentUserId,
+                    post: post,
+                    // postList: _postsList,
+                    showExplore: _showExplore,
+                  );
                 },
                 childCount: _postsList.length,
               ),
@@ -530,45 +538,50 @@ class BuildToggleButton extends StatelessWidget {
       children: [
         Row(
           children: <Widget>[
-            Tooltip(
-              padding: EdgeInsets.all(20.0),
-              message: 'Explore punches by people you have not followed',
-              child: GestureDetector(
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => AllPost(
-                      currentUserId: currentUserId,
-                      post: null,
+            Provider.of<UserData>(context, listen: false)
+                    .user!
+                    .score!
+                    .isNegative
+                ? const SizedBox.shrink()
+                : Tooltip(
+                    padding: EdgeInsets.all(20.0),
+                    message: 'Explore punches by people you have not followed',
+                    child: GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AllPost(
+                            currentUserId: currentUserId,
+                            post: null,
+                          ),
+                        ),
+                      ),
+                      child: FadeAnimation(
+                        1,
+                        Container(
+                            child: Padding(
+                          padding: const EdgeInsets.only(right: 20.0),
+                          child: GestureDetector(
+                              onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => AllPost(
+                                        currentUserId: currentUserId,
+                                        post: null,
+                                      ),
+                                    ),
+                                  ),
+                              child: Material(
+                                  color: Colors.transparent,
+                                  child: Text('Explore moods punched',
+                                      style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: width > 800 ? 16 : 11,
+                                          fontWeight: FontWeight.bold)))),
+                        )),
+                      ),
                     ),
                   ),
-                ),
-                child: FadeAnimation(
-                  1,
-                  Container(
-                      child: Padding(
-                    padding: const EdgeInsets.only(right: 20.0),
-                    child: GestureDetector(
-                        onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => AllPost(
-                                  currentUserId: currentUserId,
-                                  post: null,
-                                ),
-                              ),
-                            ),
-                        child: Material(
-                            color: Colors.transparent,
-                            child: Text('Explore moods punched',
-                                style: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: width > 800 ? 16 : 11,
-                                    fontWeight: FontWeight.bold)))),
-                  )),
-                ),
-              ),
-            ),
             IconButton(
               icon: const Icon(Icons.send),
               iconSize: 30.0,

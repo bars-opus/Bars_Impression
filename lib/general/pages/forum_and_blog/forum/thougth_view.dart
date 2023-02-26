@@ -323,291 +323,258 @@ class _ThoughtViewState extends State<ThoughtView> {
                           contentType: 'thought',
                         )))),
       ],
-      child: Slidable(
-        startActionPane: ActionPane(
-          motion: const ScrollMotion(),
-          children: [
-            SlidableAction(
-              onPressed: (_) {
-                currentUserId == widget.thought.authorId
-                    ? Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => EditThought(
-                            thought: widget.thought,
-                            currentUserId: currentUserId,
-                            forum: widget.forum,
-                          ),
-                        ),
-                      )
-                    : const SizedBox.shrink();
-              },
-              backgroundColor: Colors.blue,
-              foregroundColor:
-                  ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-              icon:
-                  currentUserId == widget.thought.authorId ? Icons.edit : null,
-              label: currentUserId == widget.thought.authorId
-                  ? 'Edit your thought'
-                  : '',
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: currentUserId == widget.thought.authorId
-              ? CrossAxisAlignment.end
-              : CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: currentUserId == widget.thought.authorId
-                  ? const EdgeInsets.only(
-                      left: 50.0, bottom: 5.0, top: 10.0, right: 15)
-                  : const EdgeInsets.only(
-                      right: 50.0, bottom: 5.0, top: 10.0, left: 15),
-              child: Container(
-                decoration: BoxDecoration(
-                    color: currentUserId == widget.thought.authorId
-                        ? Colors.blue[100]
-                        : Colors.white,
-                    borderRadius: currentUserId == widget.thought.authorId
-                        ? BorderRadius.only(
-                            topLeft: Radius.circular(30.0),
-                            topRight: Radius.circular(20.0),
-                            bottomLeft: Radius.circular(30.0))
-                        : BorderRadius.only(
-                            topRight: Radius.circular(30.0),
-                            topLeft: Radius.circular(20.0),
-                            bottomRight: Radius.circular(30.0))),
-                child: Column(
-                  children: [
-                    widget.thought.imported
-                        ? _buildTransportReceived(widget.thought)
-                        : const SizedBox.shrink(),
-                    widget.thought.imported
-                        ? const SizedBox.shrink()
-                        : widget.thought.mediaUrl.isEmpty
+      child: Column(
+        crossAxisAlignment: currentUserId == widget.thought.authorId
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: currentUserId == widget.thought.authorId
+                ? const EdgeInsets.only(
+                    left: 50.0, bottom: 5.0, top: 10.0, right: 15)
+                : const EdgeInsets.only(
+                    right: 50.0, bottom: 5.0, top: 10.0, left: 15),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: currentUserId == widget.thought.authorId
+                      ? Colors.blue[100]
+                      : Colors.white,
+                  borderRadius: currentUserId == widget.thought.authorId
+                      ? BorderRadius.only(
+                          topLeft: Radius.circular(30.0),
+                          topRight: Radius.circular(20.0),
+                          bottomLeft: Radius.circular(30.0))
+                      : BorderRadius.only(
+                          topRight: Radius.circular(30.0),
+                          topLeft: Radius.circular(20.0),
+                          bottomRight: Radius.circular(30.0))),
+              child: Column(
+                children: [
+                  widget.thought.imported
+                      ? _buildTransportReceived(widget.thought)
+                      : const SizedBox.shrink(),
+                  widget.thought.imported
+                      ? const SizedBox.shrink()
+                      : widget.thought.mediaUrl.isEmpty
+                          ? const SizedBox.shrink()
+                          : _displayMessageImage(currentUserId),
+                  ListTile(
+                    trailing: currentUserId == widget.thought.authorId
+                        ? null
+                        : _isgettingLike
+                            ? null
+                            : Stack(
+                                alignment: FractionalOffset.bottomCenter,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(
+                                        size: 20.0,
+                                        _isLiked
+                                            ? Icons.favorite
+                                            : Icons.favorite_border_outlined),
+                                    color: _isLiked ? Colors.pink : Colors.grey,
+                                    onPressed: () {
+                                      HapticFeedback.heavyImpact();
+                                      SystemSound.play(SystemSoundType.click);
+                                      if (_isLiked) {
+                                        setState(() {
+                                          _unLikePost();
+                                        });
+                                      } else {
+                                        _likePost();
+                                      }
+                                    },
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  GestureDetector(
+                                    onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => ThoughtLikeAccounts(
+                                          thought: widget.thought,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      NumberFormat.compact().format(
+                                        widget.thought.likeCount,
+                                      ),
+                                      style: TextStyle(
+                                        fontSize: 12.0,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                    leading: currentUserId == widget.thought.authorId
+                        ? widget.thought.likeCount == 0
                             ? const SizedBox.shrink()
-                            : _displayMessageImage(currentUserId),
-                    ListTile(
-                      trailing: currentUserId == widget.thought.authorId
-                          ? null
-                          : _isgettingLike
-                              ? null
-                              : Stack(
+                            : GestureDetector(
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => ThoughtLikeAccounts(
+                                      thought: widget.thought,
+                                    ),
+                                  ),
+                                ),
+                                child: Stack(
                                   alignment: FractionalOffset.bottomCenter,
                                   children: [
                                     IconButton(
-                                      icon: Icon(
-                                          size: 20.0,
-                                          _isLiked
-                                              ? Icons.favorite
-                                              : Icons.favorite_border_outlined),
-                                      color:
-                                          _isLiked ? Colors.pink : Colors.grey,
-                                      onPressed: () {
-                                        HapticFeedback.heavyImpact();
-                                        SystemSound.play(SystemSoundType.click);
-                                        if (_isLiked) {
-                                          setState(() {
-                                            _unLikePost();
-                                          });
-                                        } else {
-                                          _likePost();
-                                        }
-                                      },
+                                      icon: Icon(size: 20.0, Icons.favorite),
+                                      color: Colors.black,
+                                      onPressed: () {},
                                     ),
                                     const SizedBox(
                                       height: 10,
                                     ),
-                                    GestureDetector(
-                                      onTap: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => ThoughtLikeAccounts(
-                                            thought: widget.thought,
-                                          ),
-                                        ),
+                                    Text(
+                                      NumberFormat.compact().format(
+                                        widget.thought.likeCount,
                                       ),
-                                      child: Text(
-                                        NumberFormat.compact().format(
-                                          widget.thought.likeCount,
-                                        ),
-                                        style: TextStyle(
-                                          fontSize: 12.0,
-                                          color: Colors.black,
-                                        ),
+                                      style: TextStyle(
+                                        fontSize: 12.0,
+                                        color: Colors.black,
                                       ),
                                     ),
                                   ],
                                 ),
-                      leading: currentUserId == widget.thought.authorId
-                          ? widget.thought.likeCount == 0
-                              ? const SizedBox.shrink()
-                              : GestureDetector(
-                                  onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => ThoughtLikeAccounts(
-                                        thought: widget.thought,
-                                      ),
-                                    ),
-                                  ),
-                                  child: Stack(
-                                    alignment: FractionalOffset.bottomCenter,
-                                    children: [
-                                      IconButton(
-                                        icon: Icon(size: 20.0, Icons.favorite),
-                                        color: Colors.black,
-                                        onPressed: () {},
-                                      ),
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                      Text(
-                                        NumberFormat.compact().format(
-                                          widget.thought.likeCount,
-                                        ),
-                                        style: TextStyle(
-                                          fontSize: 12.0,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                          : CircleAvatar(
-                              radius: 20.0,
-                              backgroundColor: Colors.grey,
-                              backgroundImage:
-                                  widget.thought.authorProfileImageUrl.isEmpty
-                                      ? AssetImage(
-                                          'assets/images/user_placeholder2.png',
-                                        ) as ImageProvider
-                                      : CachedNetworkImageProvider(
-                                          widget.thought.authorProfileImageUrl),
-                            ),
-                      title: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment:
-                            currentUserId != widget.thought.authorId
-                                ? CrossAxisAlignment.start
-                                : CrossAxisAlignment.end,
-                        children: <Widget>[
-                          Text(
-                            currentUserId == widget.thought.authorId
-                                ? 'Me'
-                                : widget.thought.authorName,
+                              )
+                        : CircleAvatar(
+                            radius: 20.0,
+                            backgroundColor: Colors.grey,
+                            backgroundImage:
+                                widget.thought.authorProfileImageUrl.isEmpty
+                                    ? AssetImage(
+                                        'assets/images/user_placeholder2.png',
+                                      ) as ImageProvider
+                                    : CachedNetworkImageProvider(
+                                        widget.thought.authorProfileImageUrl),
+                          ),
+                    title: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment:
+                          currentUserId != widget.thought.authorId
+                              ? CrossAxisAlignment.start
+                              : CrossAxisAlignment.end,
+                      children: <Widget>[
+                        Text(
+                          currentUserId == widget.thought.authorId
+                              ? 'Me'
+                              : widget.thought.authorName,
+                          style: TextStyle(
+                            fontSize: 12.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Text(widget.thought.authorProfileHanlde,
                             style: TextStyle(
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                          Text(widget.thought.authorProfileHanlde,
-                              style: TextStyle(
-                                fontSize: 10.0,
-                                color: Colors.blueGrey,
-                              )),
-                          SizedBox(
-                            height: 5.0,
-                          ),
-                        ],
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment:
-                            currentUserId == widget.thought.authorId
-                                ? CrossAxisAlignment.end
-                                : CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 2.0),
-                            child: Container(
-                              color: Colors.blue,
-                              height: 1.0,
-                              width: 50.0,
-                            ),
-                          ),
-                          widget.thought.report.isNotEmpty
-                              ? BarsTextStrikeThrough(
-                                  fontSize: 12,
-                                  text: widget.thought.content,
-                                )
-                              : Text(
-                                  widget.thought.content,
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 12.0),
-                                ),
-                          SizedBox(height: 10.0),
-                        ],
-                      ),
-                      onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => ProfileScreen(
-                                    currentUserId:
-                                        Provider.of<UserData>(context)
-                                            .currentUserId!,
-                                    userId: widget.thought.authorId,
-                                    user: null,
-                                  ))),
+                              fontSize: 10.0,
+                              color: Colors.blueGrey,
+                            )),
+                        SizedBox(
+                          height: 5.0,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                    subtitle: Column(
+                      crossAxisAlignment:
+                          currentUserId == widget.thought.authorId
+                              ? CrossAxisAlignment.end
+                              : CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 2.0),
+                          child: Container(
+                            color: Colors.blue,
+                            height: 1.0,
+                            width: 50.0,
+                          ),
+                        ),
+                        widget.thought.report.isNotEmpty
+                            ? BarsTextStrikeThrough(
+                                fontSize: 12,
+                                text: widget.thought.content,
+                              )
+                            : Text(
+                                widget.thought.content,
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 12.0),
+                              ),
+                        SizedBox(height: 10.0),
+                      ],
+                    ),
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => ProfileScreen(
+                                  currentUserId: Provider.of<UserData>(context)
+                                      .currentUserId!,
+                                  userId: widget.thought.authorId,
+                                  user: null,
+                                ))),
+                  ),
+                ],
               ),
             ),
-            widget.thought.count! != 0
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => ReplyThoughtsScreen(
-                              thought: widget.thought,
-                              currentUserId: currentUserId,
-                              forum: widget.forum,
-                              isBlocked: widget.isBlockedUser,
-                            ),
+          ),
+          widget.thought.count! != 0
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ReplyThoughtsScreen(
+                            thought: widget.thought,
+                            currentUserId: currentUserId,
+                            forum: widget.forum,
+                            isBlocked: widget.isBlockedUser,
                           ),
-                        );
-                      },
-                      child: RichText(
-                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                                text: timeago.format(
-                                  widget.thought.timestamp!.toDate(),
-                                ),
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.grey,
-                                )),
-                            TextSpan(
-                                text: " View ${NumberFormat.compact().format(
-                                  widget.thought.count,
-                                )} replies",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.blue,
-                                )),
-                          ],
                         ),
+                      );
+                    },
+                    child: RichText(
+                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                              text: timeago.format(
+                                widget.thought.timestamp!.toDate(),
+                              ),
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.grey,
+                              )),
+                          TextSpan(
+                              text: " View ${NumberFormat.compact().format(
+                                widget.thought.count,
+                              )} replies",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.blue,
+                              )),
+                        ],
                       ),
                     ),
-                  )
-                : Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Text(
-                        timeago.format(
-                          widget.thought.timestamp!.toDate(),
-                        ),
-                        style: TextStyle(fontSize: 10, color: Colors.grey)),
                   ),
-            SizedBox(height: 4),
-          ],
-        ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Text(
+                      timeago.format(
+                        widget.thought.timestamp!.toDate(),
+                      ),
+                      style: TextStyle(fontSize: 10, color: Colors.grey)),
+                ),
+          SizedBox(height: 4),
+        ],
       ),
     );
   }

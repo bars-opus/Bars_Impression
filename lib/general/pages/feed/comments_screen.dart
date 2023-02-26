@@ -159,44 +159,16 @@ class _CommentsScreenState extends State<CommentsScreen>
         data: MediaQuery.of(context).copyWith(
             textScaleFactor:
                 MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
-        child: Slidable(
-          startActionPane: ActionPane(
-            motion: const ScrollMotion(),
-            children: [
-              SlidableAction(
-                onPressed: (_) {
-                  currentUserId == comment.authorId
-                      ? Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => EditComments(
-                                comment: comment,
-                                currentUserId: widget.currentUserId,
-                                post: widget.post),
-                          ),
-                        )
-                      : const SizedBox.shrink();
-                },
-                backgroundColor: Colors.cyan[800]!,
-                foregroundColor:
-                    ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-                icon: currentUserId == comment.authorId ? Icons.edit : null,
-                label:
-                    currentUserId == comment.authorId ? 'Edit your vibe' : '',
-              ),
-            ],
-          ),
-          child: Authorview(
-            report: comment.report,
-            content: comment.content,
-            timestamp: comment.timestamp,
-            authorId: comment.authorId,
-            profileHandle: comment.authorProfileHanlde,
-            profileImageUrl: comment.authorProfileImageUrl,
-            verified: comment.authorVerification,
-            userName: comment.authorName,
-            from: 'Comment',
-          ),
+        child: Authorview(
+          report: comment.report,
+          content: comment.content,
+          timestamp: comment.timestamp,
+          authorId: comment.authorId,
+          profileHandle: comment.authorProfileHanlde,
+          profileImageUrl: comment.authorProfileImageUrl,
+          verified: comment.authorVerification,
+          userName: comment.authorName,
+          from: 'Comment',
         ),
       ),
     );
@@ -518,7 +490,12 @@ class _CommentsScreenState extends State<CommentsScreen>
                                   );
                           },
                         ),
-                        _buildCommentTF(),
+                        Provider.of<UserData>(context, listen: false)
+                                .user!
+                                .score!
+                                .isNegative
+                            ? const SizedBox.shrink()
+                            : _buildCommentTF(),
                       ],
                     ),
                   ),

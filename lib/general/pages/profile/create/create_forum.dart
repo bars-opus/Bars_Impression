@@ -28,8 +28,8 @@ class _CreateForumState extends State<CreateForum> {
       });
 
       Forum forum = Forum(
-        title: _title,
-        subTitle: _subTitle,
+        title: _title.trim(),
+        subTitle: _subTitle.trim(),
         report: '',
         reportConfirmed: '',
         authorId: Provider.of<UserData>(context, listen: false).currentUserId!,
@@ -39,7 +39,9 @@ class _CreateForumState extends State<CreateForum> {
         linkedContentId: '',
         mediaType: '',
         mediaUrl: '',
-        forumType: '', authorName: widget.user.userName!,
+        forumType: '',
+        authorName: widget.user.userName!,
+        showOnExplorePage: false,
       );
       try {
         DatabaseService.createForum(forum);
@@ -151,9 +153,9 @@ class _CreateForumState extends State<CreateForum> {
           onValidatesubTitle: (input) => input.trim().isEmpty
               ? 'Please, give a brief explanation of your title'
               : input.trim().length > 500
-                  ? 'The subtitle is too long (fewer then 500 characters)'
+                  ? 'The summary is too long (fewer then 500 characters)'
                   : input.trim().length < 30
-                      ? 'The title is too short (more than 30 characters)'
+                      ? 'The summary is too short (more than 30 characters)'
                       : null,
           onPressedSubmite: () => _submit(),
           deletWidget: const SizedBox.shrink(),

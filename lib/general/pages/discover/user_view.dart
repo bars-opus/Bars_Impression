@@ -532,14 +532,43 @@ class _UserViewState extends State<UserView> {
                           text: TextSpan(
                             children: [
                               TextSpan(
-                                text: widget.user.company!.isEmpty
-                                    ? ''
-                                    : '${widget.user.company}\n',
-                                style: TextStyle(
-                                  fontSize: width > 800 ? 14 : 12,
-                                  color: Colors.blueGrey,
-                                ),
-                              ),
+                                  text: widget.user.subAccountType!.isEmpty
+                                      ? ''
+                                      : "sub-account:   ",
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  )),
+                              TextSpan(
+                                  text: widget.user.subAccountType!.isEmpty
+                                      ? ''
+                                      : "${widget.user.subAccountType}\n",
+                                  style: TextStyle(
+                                    fontSize: width > 800 ? 14 : 12,
+                                    color: Colors.blue,
+                                  )),
+                              TextSpan(
+                                  text: widget.user.company!.isEmpty
+                                      ? ''
+                                      : widget.user.profileHandle!
+                                                  .startsWith('Artist') ||
+                                              widget.user.profileHandle!
+                                                  .startsWith('Producer')
+                                          ? 'Record Label:  '
+                                          : "Company:   ",
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  )),
+                              TextSpan(
+                                  text: widget.user.company!.isEmpty
+                                      ? ''
+                                      : "james in\n",
+                                  style: TextStyle(
+                                    fontSize: width > 800 ? 14 : 12,
+                                    color: Colors.blueGrey,
+                                  )),
+        
                               TextSpan(
                                   text: "City/ Country/ Continent: ",
                                   style: const TextStyle(

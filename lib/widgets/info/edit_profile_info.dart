@@ -36,14 +36,14 @@ class EditProfileInfo extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Text(
               editTitle,
               style: TextStyle(color: Colors.blue, fontSize: 20.0, height: 1),
             ),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 20.0,
         ),
         Text(
@@ -53,7 +53,7 @@ class EditProfileInfo extends StatelessWidget {
             fontSize: 12.0,
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 30.0,
         ),
         Align(
@@ -64,7 +64,7 @@ class EditProfileInfo extends StatelessWidget {
             width: width / 3,
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 30.0,
         ),
       ],

@@ -25,7 +25,9 @@ class _EventRateState extends State<EventRate> {
   }
 
   _countDown() async {
-    final DateTime date = DateTime.parse(widget.event.date);
+    final DateTime date = widget.event.date.isEmpty
+        ? DateTime.parse('2023-12-19 00:00:00.000')
+        : DateTime.parse(widget.event.date);
     final toDayDate = DateTime.now();
     var different = date.difference(toDayDate).inDays;
 
@@ -93,34 +95,43 @@ class _EventRateState extends State<EventRate> {
                       ),
                     ],
                   ),
-                  RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: _date.difference(_toDaysDate).inMinutes < 0
-                              ? ''
-                              : _different.toString(),
-                          style: TextStyle(
-                            fontSize: 40,
-                            fontWeight: FontWeight.w100,
-                            color: Colors.white,
+                  widget.event.date.isEmpty
+                      ? Text(
+                          '',
+                          style:
+                              TextStyle(color: Colors.transparent, fontSize: 0),
+                        )
+                      : RichText(
+                          textScaleFactor:
+                              MediaQuery.of(context).textScaleFactor,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text:
+                                    _date.difference(_toDaysDate).inMinutes < 0
+                                        ? ''
+                                        : _different.toString(),
+                                style: TextStyle(
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.w100,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              TextSpan(
+                                text:
+                                    _date.difference(_toDaysDate).inMinutes < 0
+                                        ? 'Ongoing...'
+                                        : '\nDays More',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  // fontWeight: FontWeight.w100,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
                           ),
+                          textAlign: TextAlign.right,
                         ),
-                        TextSpan(
-                          text: _date.difference(_toDaysDate).inMinutes < 0
-                              ? 'Ongoing...'
-                              : '\nDays More',
-                          style: TextStyle(
-                            fontSize: 12,
-                            // fontWeight: FontWeight.w100,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                    textAlign: TextAlign.right,
-                  ),
                 ],
               ),
               const SizedBox(
@@ -195,55 +206,65 @@ class _EventRateState extends State<EventRate> {
               widget.event.authorId ==
                       Provider.of<UserData>(context).currentUserId!
                   ? const SizedBox.shrink()
-                  : Container(
-                      width: width,
-                      child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            elevation: 0.0,
-                            foregroundColor: Colors.blue,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 5.0, vertical: 2),
-                            child: Text(
-                              'Attend',
-                              style: TextStyle(
-                                color: Colors.blue,
-                                fontSize: 12,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          onPressed: () {
-                            widget.event.isPrivate
-                                ? Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => AttendEvent(
-                                              event: widget.event,
-                                              currentUserId:
-                                                  Provider.of<UserData>(context,
-                                                          listen: false)
-                                                      .currentUserId!,
-                                              palette: widget.palette,
-                                            )),
-                                  )
-                                : Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) =>
-                                            EventPublicInviteAvailable(
-                                              event: widget.event,
-                                              palette: widget.palette,
-                                              eventInvite: null,
-                                            )),
-                                  );
-                          }),
-                    ),
+                  : Provider.of<UserData>(context, listen: false)
+                          .user!
+                          .score!
+                          .isNegative
+                      ? const SizedBox.shrink()
+                      : Container(
+                          width: width,
+                          child: widget.event.date.isEmpty ||
+                                  widget.event.time.isEmpty ||
+                                  widget.event.clossingDay.isEmpty
+                              ? const SizedBox.shrink()
+                              : ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    elevation: 0.0,
+                                    foregroundColor: Colors.blue,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5.0),
+                                    ),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5.0, vertical: 2),
+                                    child: Text(
+                                      'Attend',
+                                      style: TextStyle(
+                                        color: Colors.blue,
+                                        fontSize: 12,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    widget.event.isPrivate
+                                        ? Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (_) => AttendEvent(
+                                                      event: widget.event,
+                                                      currentUserId:
+                                                          Provider.of<UserData>(
+                                                                  context,
+                                                                  listen: false)
+                                                              .currentUserId!,
+                                                      palette: widget.palette,
+                                                    )),
+                                          )
+                                        : Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (_) =>
+                                                    EventPublicInviteAvailable(
+                                                      event: widget.event,
+                                                      palette: widget.palette,
+                                                      eventInvite: null,
+                                                    )),
+                                          );
+                                  }),
+                        ),
             ],
           ),
         ),

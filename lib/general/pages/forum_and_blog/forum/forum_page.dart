@@ -42,7 +42,8 @@ class _ForumPageState extends State<ForumPage>
 
   _setupForumFeed() async {
     QuerySnapshot forumFeedSnapShot = await allForumsRef
-        .orderBy('timestamp', descending: true)
+        .where('showOnExplorePage', isEqualTo: true)
+        // .orderBy('timestamp', descending: true)
         .limit(limit)
         .get();
     List<Forum> forums =
@@ -62,7 +63,8 @@ class _ForumPageState extends State<ForumPage>
     _isFetchingForum = true;
     _hasNext = true;
     QuerySnapshot forumFeedSnapShot = await allForumsRef
-        .orderBy('timestamp', descending: true)
+        .where('showOnExplorePage', isEqualTo: true)
+        // .orderBy('timestamp', descending: true)
         .limit(limit)
         .startAfterDocument(_forumSnapshot.last)
         .get();
@@ -93,13 +95,11 @@ class _ForumPageState extends State<ForumPage>
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
                     Forum forum = _forumList[index];
-                    return   ForumView(
-                            feed: 'All',
-                            currentUserId: widget.currentUserId,
-                            forum: forum,
-                            
-                          );
-                    
+                    return ForumView(
+                      feed: 'All',
+                      currentUserId: widget.currentUserId,
+                      forum: forum,
+                    );
                   },
                   childCount: _forumList.length,
                 ),

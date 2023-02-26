@@ -38,7 +38,7 @@ class _ExploreForumsState extends State<ExploreForums> {
             ? _setupAllForum()
             : widget.feed.startsWith('Profile')
                 ? _setupProfileForum()
-                :_nothing();
+                : _nothing();
     super.initState();
   }
 
@@ -67,8 +67,7 @@ class _ExploreForumsState extends State<ExploreForums> {
     super.dispose();
   }
 
-
-_nothing(){}
+  _nothing() {}
   _setupForumFeed() async {
     QuerySnapshot forumFeedSnapShot = await forumFeedsRef
         .doc(
@@ -118,7 +117,8 @@ _nothing(){}
 
   _setupAllForum() async {
     QuerySnapshot forumFeedSnapShot = await allForumsRef
-        .orderBy('timestamp', descending: true)
+        // .orderBy('timestamp', descending: true)
+        .where('showOnExplorePage', isEqualTo: true)
         .limit(limit)
         .get();
     List<Forum> forums =
@@ -138,7 +138,8 @@ _nothing(){}
     _isFetchingForum = true;
     _hasNext = true;
     QuerySnapshot forumFeedSnapShot = await allForumsRef
-        .orderBy('timestamp', descending: true)
+        // .orderBy('timestamp', descending: true)
+        .where('showOnExplorePage', isEqualTo: true)
         .limit(limit)
         .startAfterDocument(_forumSnapshot.last)
         .get();
@@ -161,6 +162,7 @@ _nothing(){}
     QuerySnapshot userForumsSnapshot = await forumsRef
         .doc(widget.currentUserId)
         .collection('userForums')
+        .orderBy('timestamp', descending: true)
         .limit(limit)
         .get();
     List<Forum> forums =
@@ -182,6 +184,7 @@ _nothing(){}
     QuerySnapshot userForumsSnapshot = await forumsRef
         .doc(widget.currentUserId)
         .collection('userForums')
+        .orderBy('timestamp', descending: true)
         .limit(limit)
         .startAfterDocument(_forumSnapshot.last)
         .get();
@@ -220,13 +223,12 @@ _nothing(){}
       child: Stack(
         children: [
           Container(
-                  height: double.infinity,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                  ),
-                )
-             ,
+            height: double.infinity,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+            ),
+          ),
           Positioned.fill(
             child: BackdropFilter(
               filter: new ImageFilter.blur(sigmaX: 30, sigmaY: 30),
@@ -274,22 +276,32 @@ _nothing(){}
                   SizedBox(
                     height: 30,
                   ),
-                  AnimatedContainer(
-                      curve: Curves.easeInOut,
-                      duration: Duration(milliseconds: 800),
-                      height: _showInfo ? 40 : 0.0,
-                      width: double.infinity,
-                      color: Colors.transparent,
-                      child: Center(
-                        child: Swipinfo(
-                          color: _showInfo ? Colors.white : Colors.transparent,
-                          text: 'Swipe',
-                        ),
-                      )),
+                  ShakeTransition(
+                    axis: Axis.vertical,
+                    curve: Curves.easeInOut,
+                    offset: 40,
+                    child: AnimatedContainer(
+                        curve: Curves.easeInOut,
+                        duration: Duration(milliseconds: 800),
+                        height: _showInfo ? 40 : 0.0,
+                        width: double.infinity,
+                        color: Colors.transparent,
+                        child: Center(
+                          child: AnimatedInfoWidget(
+                            buttonColor: Colors.white,
+                            text: '< < < Swipe',
+                            requiredBool: _showInfo,
+                          ),
+                          // Swipinfo(
+                          //   color: _showInfo ? Colors.white : Colors.transparent,
+                          //   text: 'Swipe',
+                          // ),
+                        )),
+                  ),
                   _forumList.length > 0
                       ? Expanded(
                           child: PageView.builder(
-                              controller: _pageController,
+                              controller: _pageController, 
                               itemCount: _forumList.length,
                               onPageChanged: (i) {
                                 if (i == _forumList.length - 1) {

@@ -1,5 +1,5 @@
 import 'package:bars/utilities/exports.dart';
-import 'package:flutter/cupertino.dart';
+// import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
@@ -30,6 +30,7 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
   late ScrollController _hideAppBarController;
   int _thoughtCount = 0;
   bool _displayWarning = false;
+  bool _showInfo = false;
   bool _isLoading = false;
 
   GlobalKey<AnimatedListState> animatedListKey = GlobalKey<AnimatedListState>();
@@ -118,304 +119,324 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
       if (mounted) {
         setState(() {
           _thoughtCount = thoughtCount;
+          Timer(Duration(seconds: 10), () {
+            if (mounted) {
+              // setState(() {
+              _showInfo = true;
+              __setShowInfo();
+              // });
+            }
+          });
         });
       }
     });
   }
 
-  _handleImage() async {
-    HapticFeedback.heavyImpact();
-    final file = await PickCropImage.pickedMedia(cropImage: _cropImage);
-    if (file == null) return;
-
-    if (mounted) {
-      Provider.of<UserData>(context, listen: false).setPostImage(file as File);
+  __setShowInfo() async {
+    if (_showInfo) {
+      Timer(Duration(seconds: 3), () {
+        if (mounted) {
+          // setState(() {
+          _showInfo = false;
+          // });
+        }
+      });
     }
   }
 
-  Future<File> _cropImage(File imageFile) async {
-    File? croppedImage = await ImageCropper().cropImage(
-      sourcePath: imageFile.path,
-    );
-    return croppedImage!;
-  }
+  // _handleImage() async {
+  //   HapticFeedback.heavyImpact();
+  //   final file = await PickCropImage.pickedMedia(cropImage: _cropImage);
+  //   if (file == null) return;
 
-  _showSelectImageDialog() {
-    HapticFeedback.heavyImpact();
-    return Platform.isIOS ? _iosBottomSheet() : _androidDialog(context);
-  }
+  //   if (mounted) {
+  //     Provider.of<UserData>(context, listen: false).setPostImage(file as File);
+  //   }
+  // }
 
-  _iosBottomSheet() {
-    showCupertinoModalPopup(
-        context: context,
-        builder: (BuildContext context) {
-          return CupertinoActionSheet(
-            title: Text(
-              'Import Content',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.black,
-              ),
-            ),
-            actions: <Widget>[
-              CupertinoActionSheetAction(
-                child: Text(
-                  'User',
-                  style: TextStyle(
-                    color: Colors.blue,
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => ImportContentSearchUser(
-                                currentUserId: widget.currentUserId,
-                                forum: widget.forum,
-                              )));
-                },
-              ),
-              CupertinoActionSheetAction(
-                child: Text(
-                  'Mood punched',
-                  style: TextStyle(
-                    color: Colors.blue,
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => ImportContentSearchPost(
-                                currentUserId: widget.currentUserId,
-                                forum: widget.forum,
-                              )));
-                },
-              ),
-              CupertinoActionSheetAction(
-                child: Text(
-                  'Event',
-                  style: TextStyle(
-                    color: Colors.blue,
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => ImportContentSearchEvent(
-                                currentUserId: widget.currentUserId,
-                                forum: widget.forum,
-                              )));
-                },
-              ),
-              CupertinoActionSheetAction(
-                child: Text(
-                  'Forum',
-                  style: TextStyle(
-                    color: Colors.blue,
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => ImportContentSearchForum(
-                                currentUserId: widget.currentUserId,
-                                forum: widget.forum,
-                              )));
-                },
-              ),
-            ],
-            cancelButton: CupertinoActionSheetAction(
-              child: Text(
-                'Cancle',
-                style: TextStyle(
-                  color: Colors.red,
-                ),
-              ),
-              onPressed: () => Navigator.pop(context),
-            ),
-          );
-        });
-  }
+  // Future<File> _cropImage(File imageFile) async {
+  //   File? croppedImage = await ImageCropper().cropImage(
+  //     sourcePath: imageFile.path,
+  //   );
+  //   return croppedImage!;
+  // }
 
-  _androidDialog(BuildContext parentContext) {
-    return showDialog(
-        context: parentContext,
-        builder: (context) {
-          return SimpleDialog(
-            title: Text(
-              'Import Content',
-              style: TextStyle(fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            children: <Widget>[
-              Divider(),
-              Center(
-                child: SimpleDialogOption(
-                  child: Text(
-                    'User',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.blue),
-                    textAlign: TextAlign.center,
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => ImportContentSearchUser(
-                                  currentUserId: widget.currentUserId,
-                                  forum: widget.forum,
-                                )));
-                  },
-                ),
-              ),
-              Divider(),
-              Center(
-                child: SimpleDialogOption(
-                  child: Text(
-                    'Mood punched',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.blue),
-                    textAlign: TextAlign.center,
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => ImportContentSearchPost(
-                                  currentUserId: widget.currentUserId,
-                                  forum: widget.forum,
-                                )));
-                  },
-                ),
-              ),
-              Divider(),
-              Center(
-                child: SimpleDialogOption(
-                  child: Text(
-                    'Event',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.blue),
-                    textAlign: TextAlign.center,
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => ImportContentSearchEvent(
-                                  forum: widget.forum,
-                                  currentUserId: widget.currentUserId,
-                                )));
-                  },
-                ),
-              ),
-              Divider(),
-              Center(
-                child: SimpleDialogOption(
-                  child: Text(
-                    'Forum',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.blue),
-                    textAlign: TextAlign.center,
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => ImportContentSearchForum(
-                                  currentUserId: widget.currentUserId,
-                                  forum: widget.forum,
-                                )));
-                  },
-                ),
-              ),
-              Divider(),
-              Center(
-                child: SimpleDialogOption(
-                  child: Text(
-                    'Cancel',
-                  ),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ),
-            ],
-          );
-        });
-  }
+  // _showSelectImageDialog() {
+  //   HapticFeedback.heavyImpact();
+  //   return Platform.isIOS ? _iosBottomSheet() : _androidDialog(context);
+  // }
 
-  _displayImage() {
-    final width = MediaQuery.of(context).size.width;
+  // _iosBottomSheet() {
+  //   showCupertinoModalPopup(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return CupertinoActionSheet(
+  //           title: Text(
+  //             'Import Content',
+  //             style: TextStyle(
+  //               fontSize: 16,
+  //               color: Colors.black,
+  //             ),
+  //           ),
+  //           actions: <Widget>[
+  //             CupertinoActionSheetAction(
+  //               child: Text(
+  //                 'User',
+  //                 style: TextStyle(
+  //                   color: Colors.blue,
+  //                 ),
+  //               ),
+  //               onPressed: () {
+  //                 Navigator.pop(context);
+  //                 Navigator.push(
+  //                     context,
+  //                     MaterialPageRoute(
+  //                         builder: (_) => ImportContentSearchUser(
+  //                               currentUserId: widget.currentUserId,
+  //                               forum: widget.forum,
+  //                             )));
+  //               },
+  //             ),
+  //             CupertinoActionSheetAction(
+  //               child: Text(
+  //                 'Mood punched',
+  //                 style: TextStyle(
+  //                   color: Colors.blue,
+  //                 ),
+  //               ),
+  //               onPressed: () {
+  //                 Navigator.pop(context);
+  //                 Navigator.push(
+  //                     context,
+  //                     MaterialPageRoute(
+  //                         builder: (_) => ImportContentSearchPost(
+  //                               currentUserId: widget.currentUserId,
+  //                               forum: widget.forum,
+  //                             )));
+  //               },
+  //             ),
+  //             CupertinoActionSheetAction(
+  //               child: Text(
+  //                 'Event',
+  //                 style: TextStyle(
+  //                   color: Colors.blue,
+  //                 ),
+  //               ),
+  //               onPressed: () {
+  //                 Navigator.pop(context);
+  //                 Navigator.push(
+  //                     context,
+  //                     MaterialPageRoute(
+  //                         builder: (_) => ImportContentSearchEvent(
+  //                               currentUserId: widget.currentUserId,
+  //                               forum: widget.forum,
+  //                             )));
+  //               },
+  //             ),
+  //             CupertinoActionSheetAction(
+  //               child: Text(
+  //                 'Forum',
+  //                 style: TextStyle(
+  //                   color: Colors.blue,
+  //                 ),
+  //               ),
+  //               onPressed: () {
+  //                 Navigator.pop(context);
+  //                 Navigator.push(
+  //                     context,
+  //                     MaterialPageRoute(
+  //                         builder: (_) => ImportContentSearchForum(
+  //                               currentUserId: widget.currentUserId,
+  //                               forum: widget.forum,
+  //                             )));
+  //               },
+  //             ),
+  //           ],
+  //           cancelButton: CupertinoActionSheetAction(
+  //             child: Text(
+  //               'Cancle',
+  //               style: TextStyle(
+  //                 color: Colors.red,
+  //               ),
+  //             ),
+  //             onPressed: () => Navigator.pop(context),
+  //           ),
+  //         );
+  //       });
+  // }
 
-    return Provider.of<UserData>(context).postImage == null
-        ? const SizedBox.shrink()
-        : ShakeTransition(
-            curve: Curves.easeOutBack,
-            axis: Axis.vertical,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 5.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[800],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            IconButton(
-                                icon: Icon(Icons.close),
-                                iconSize: 30.0,
-                                color: Colors.white,
-                                onPressed: () {
-                                  Provider.of<UserData>(context, listen: false)
-                                      .setPostImage(null);
-                                }),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                "You need to write a thought\n in order to send a media.",
-                                style: TextStyle(
-                                  fontSize: 12.0,
-                                  color: Colors.white,
-                                ),
-                                textAlign: TextAlign.end,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Image(
-                          height: width / 2,
-                          width: width,
-                          image: FileImage(File(
-                              Provider.of<UserData>(context, listen: false)
-                                  .postImage!
-                                  .path)),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ]),
-              ),
-            ),
-          );
-  }
+  // _androidDialog(BuildContext parentContext) {
+  //   return showDialog(
+  //       context: parentContext,
+  //       builder: (context) {
+  //         return SimpleDialog(
+  //           title: Text(
+  //             'Import Content',
+  //             style: TextStyle(fontWeight: FontWeight.bold),
+  //             textAlign: TextAlign.center,
+  //           ),
+  //           children: <Widget>[
+  //             Divider(),
+  //             Center(
+  //               child: SimpleDialogOption(
+  //                 child: Text(
+  //                   'User',
+  //                   style: TextStyle(
+  //                       fontWeight: FontWeight.bold, color: Colors.blue),
+  //                   textAlign: TextAlign.center,
+  //                 ),
+  //                 onPressed: () {
+  //                   Navigator.pop(context);
+  //                   Navigator.push(
+  //                       context,
+  //                       MaterialPageRoute(
+  //                           builder: (_) => ImportContentSearchUser(
+  //                                 currentUserId: widget.currentUserId,
+  //                                 forum: widget.forum,
+  //                               )));
+  //                 },
+  //               ),
+  //             ),
+  //             Divider(),
+  //             Center(
+  //               child: SimpleDialogOption(
+  //                 child: Text(
+  //                   'Mood punched',
+  //                   style: TextStyle(
+  //                       fontWeight: FontWeight.bold, color: Colors.blue),
+  //                   textAlign: TextAlign.center,
+  //                 ),
+  //                 onPressed: () {
+  //                   Navigator.pop(context);
+  //                   Navigator.push(
+  //                       context,
+  //                       MaterialPageRoute(
+  //                           builder: (_) => ImportContentSearchPost(
+  //                                 currentUserId: widget.currentUserId,
+  //                                 forum: widget.forum,
+  //                               )));
+  //                 },
+  //               ),
+  //             ),
+  //             Divider(),
+  //             Center(
+  //               child: SimpleDialogOption(
+  //                 child: Text(
+  //                   'Event',
+  //                   style: TextStyle(
+  //                       fontWeight: FontWeight.bold, color: Colors.blue),
+  //                   textAlign: TextAlign.center,
+  //                 ),
+  //                 onPressed: () {
+  //                   Navigator.pop(context);
+  //                   Navigator.push(
+  //                       context,
+  //                       MaterialPageRoute(
+  //                           builder: (_) => ImportContentSearchEvent(
+  //                                 forum: widget.forum,
+  //                                 currentUserId: widget.currentUserId,
+  //                               )));
+  //                 },
+  //               ),
+  //             ),
+  //             Divider(),
+  //             Center(
+  //               child: SimpleDialogOption(
+  //                 child: Text(
+  //                   'Forum',
+  //                   style: TextStyle(
+  //                       fontWeight: FontWeight.bold, color: Colors.blue),
+  //                   textAlign: TextAlign.center,
+  //                 ),
+  //                 onPressed: () {
+  //                   Navigator.pop(context);
+  //                   Navigator.push(
+  //                       context,
+  //                       MaterialPageRoute(
+  //                           builder: (_) => ImportContentSearchForum(
+  //                                 currentUserId: widget.currentUserId,
+  //                                 forum: widget.forum,
+  //                               )));
+  //                 },
+  //               ),
+  //             ),
+  //             Divider(),
+  //             Center(
+  //               child: SimpleDialogOption(
+  //                 child: Text(
+  //                   'Cancel',
+  //                 ),
+  //                 onPressed: () => Navigator.pop(context),
+  //               ),
+  //             ),
+  //           ],
+  //         );
+  //       });
+  // }
+
+  // _displayImage() {
+  //   final width = MediaQuery.of(context).size.width;
+
+  //   return Provider.of<UserData>(context).postImage == null
+  //       ? const SizedBox.shrink()
+  //       : ShakeTransition(
+  //           curve: Curves.easeOutBack,
+  //           axis: Axis.vertical,
+  //           child: Padding(
+  //             padding: const EdgeInsets.only(top: 5.0),
+  //             child: Container(
+  //               decoration: BoxDecoration(
+  //                 color: Colors.grey[800],
+  //                 borderRadius: BorderRadius.circular(10),
+  //               ),
+  //               child: Column(
+  //                   mainAxisAlignment: MainAxisAlignment.start,
+  //                   crossAxisAlignment: CrossAxisAlignment.start,
+  //                   children: [
+  //                     Padding(
+  //                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
+  //                       child: Row(
+  //                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                         children: [
+  //                           IconButton(
+  //                               icon: Icon(Icons.close),
+  //                               iconSize: 30.0,
+  //                               color: Colors.white,
+  //                               onPressed: () {
+  //                                 Provider.of<UserData>(context, listen: false)
+  //                                     .setPostImage(null);
+  //                               }),
+  //                           Padding(
+  //                             padding: const EdgeInsets.all(8.0),
+  //                             child: Text(
+  //                               "You need to write a thought\n in order to send a media.",
+  //                               style: TextStyle(
+  //                                 fontSize: 12.0,
+  //                                 color: Colors.white,
+  //                               ),
+  //                               textAlign: TextAlign.end,
+  //                             ),
+  //                           ),
+  //                         ],
+  //                       ),
+  //                     ),
+  //                     Padding(
+  //                       padding: const EdgeInsets.all(8.0),
+  //                       child: Image(
+  //                         height: width / 2,
+  //                         width: width,
+  //                         image: FileImage(File(
+  //                             Provider.of<UserData>(context, listen: false)
+  //                                 .postImage!
+  //                                 .path)),
+  //                         fit: BoxFit.cover,
+  //                       ),
+  //                     ),
+  //                   ]),
+  //             ),
+  //           ),
+  //         );
+  // }
 
   _buildThoughtTF() {
     final currentUserId = Provider.of<UserData>(context).currentUserId!;
@@ -437,39 +458,39 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                 margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                 child: Column(
                   children: [
-                    _displayImage(),
+                    // _displayImage(),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        Provider.of<UserData>(context, listen: false)
-                                .post9
-                                .isNotEmpty
-                            ? const SizedBox.shrink()
-                            : GestureDetector(
-                                onTap: _handleImage,
-                                child: Icon(
-                                  Icons.image,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                        Provider.of<UserData>(context, listen: false)
-                                .post9
-                                .isNotEmpty
-                            ? const SizedBox.shrink()
-                            : const SizedBox(
-                                width: 20,
-                              ),
-                        Provider.of<UserData>(context, listen: false)
-                                .post9
-                                .isNotEmpty
-                            ? const SizedBox.shrink()
-                            : GestureDetector(
-                                onTap: _showSelectImageDialog,
-                                child: Icon(
-                                  Icons.add,
-                                  color: Colors.grey,
-                                ),
-                              ),
+                        // Provider.of<UserData>(context, listen: false)
+                        //         .post9
+                        //         .isNotEmpty
+                        //     ? const SizedBox.shrink()
+                        //     : GestureDetector(
+                        //         onTap: _handleImage,
+                        //         child: Icon(
+                        //           Icons.image,
+                        //           color: Colors.grey,
+                        //         ),
+                        //       ),
+                        // Provider.of<UserData>(context, listen: false)
+                        //         .post9
+                        //         .isNotEmpty
+                        //     ? const SizedBox.shrink()
+                        //     : const SizedBox(
+                        //         width: 20,
+                        //       ),
+                        // Provider.of<UserData>(context, listen: false)
+                        //         .post9
+                        //         .isNotEmpty
+                        //     ? const SizedBox.shrink()
+                        //     : GestureDetector(
+                        //         onTap: _showSelectImageDialog,
+                        //         child: Icon(
+                        //           Icons.add,
+                        //           color: Colors.grey,
+                        //         ),
+                        //       ),
                         SizedBox(width: 10.0),
                         Expanded(
                           child: TextField(
@@ -887,7 +908,7 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                                                                             TextSpan(
                                                                           children: [
                                                                             TextSpan(
-                                                                              text: widget.forum.authorName,
+                                                                              text: 'Tap to view ' + widget.forum.authorName + "\'s profile ",
                                                                               style: TextStyle(
                                                                                 fontSize: 12,
                                                                                 color: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFe8f3fa),
@@ -955,39 +976,47 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                                                                 ),
                                                               ),
                                                             ),
-                                                            Container(
-                                                              width: 50,
-                                                              child: IconButton(
-                                                                icon: Icon(
-                                                                  Icons
-                                                                      .center_focus_strong,
-                                                                  color: ConfigBloc()
-                                                                          .darkModeOn
-                                                                      ? Colors
-                                                                          .black
-                                                                      : Colors
+                                                            Column(
+                                                              children: [
+                                                                _showInfo
+                                                                    ? const SizedBox
+                                                                        .shrink()
+                                                                    : Container(
+                                                                        width:
+                                                                            50,
+                                                                        child:
+                                                                            IconButton(
+                                                                          icon:
+                                                                              Icon(
+                                                                            Icons.center_focus_strong,
+                                                                            color: ConfigBloc().darkModeOn
+                                                                                ? Colors.black
+                                                                                : Colors.white,
+                                                                          ),
+                                                                          onPressed: () => Navigator.of(context).push(PageRouteBuilder(
+                                                                              transitionDuration: const Duration(milliseconds: 500),
+                                                                              pageBuilder: (context, animation, _) {
+                                                                                return FadeTransition(
+                                                                                  opacity: animation,
+                                                                                  child: ExploreForums(
+                                                                                    feed: widget.feed,
+                                                                                    currentUserId: widget.currentUserId,
+                                                                                    forum: widget.forum,
+                                                                                  ),
+                                                                                );
+                                                                              })),
+                                                                        ),
+                                                                      ),
+                                                                AnimatedInfoWidget(
+                                                                  buttonColor:
+                                                                      Colors
                                                                           .white,
+                                                                  text:
+                                                                      'Tap and hold\nto explore more forums.',
+                                                                  requiredBool:
+                                                                      _showInfo,
                                                                 ),
-                                                                onPressed: () => Navigator.of(context).push(
-                                                                    PageRouteBuilder(
-                                                                        transitionDuration: const Duration(
-                                                                            milliseconds:
-                                                                                500),
-                                                                        pageBuilder: (context,
-                                                                            animation,
-                                                                            _) {
-                                                                          return FadeTransition(
-                                                                            opacity:
-                                                                                animation,
-                                                                            child:
-                                                                                ExploreForums(
-                                                                              feed: widget.feed,
-                                                                              currentUserId: widget.currentUserId,
-                                                                              forum: widget.forum,
-                                                                            ),
-                                                                          );
-                                                                        })),
-                                                              ),
+                                                              ],
                                                             ),
                                                           ],
                                                         ),
@@ -1101,7 +1130,13 @@ class _ThoughtsScreenState extends State<ThoughtsScreen> {
                                       ),
                                       _isBlockedUser
                                           ? const SizedBox.shrink()
-                                          : _buildThoughtTF(),
+                                          : Provider.of<UserData>(context,
+                                                      listen: false)
+                                                  .user!
+                                                  .score!
+                                                  .isNegative
+                                              ? const SizedBox.shrink()
+                                              : _buildThoughtTF(),
                                     ],
                                   ))),
                         ),

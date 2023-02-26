@@ -47,7 +47,7 @@ class _ActivityReactedContentState extends State<ActivityReactedContent> {
         company: user.company!,
         profileImageUrl: user.profileImageUrl!,
         bio: user.bio!,
-        score: user.score!,
+        // score: user.score!,
         onPressed: () {
           Navigator.push(
               context,

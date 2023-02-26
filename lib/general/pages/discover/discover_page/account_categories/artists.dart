@@ -59,7 +59,7 @@ class _ArtistsState extends State<Artists> with AutomaticKeepAliveClientMixin {
   _setupUsers() async {
     QuerySnapshot userFeedSnapShot = await usersRef
         .where('profileHandle', isEqualTo: widget.profileHandle)
-        // .where('noBooking', isEqualTo: false)
+        .where('dontShowContentOnExplorePage', isEqualTo: true)
         .limit(limit)
         .get();
     List<AccountHolder> users = userFeedSnapShot.docs
@@ -81,7 +81,7 @@ class _ArtistsState extends State<Artists> with AutomaticKeepAliveClientMixin {
     _isFectchingUser = true;
     QuerySnapshot userFeedSnapShot = await usersRef
         .where('profileHandle', isEqualTo: widget.profileHandle)
-        // .where('noBooking', isEqualTo: false)
+        .where('dontShowContentOnExplorePage', isEqualTo: true)
         .limit(limit)
         .startAfterDocument(_userSnapshot.last)
         .get();

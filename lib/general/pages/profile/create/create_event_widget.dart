@@ -366,8 +366,12 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
         venue: Provider.of<UserData>(context, listen: false).bool2
             ? ''
             : Provider.of<UserData>(context, listen: false).post5,
-        time: Provider.of<UserData>(context, listen: false).post7,
-        date: Provider.of<UserData>(context, listen: false).post8,
+        time: Provider.of<UserData>(context, listen: false).post7.isEmpty
+            ? '2023-12-31 19:32:48.757749'
+            : Provider.of<UserData>(context, listen: false).post7,
+        date: Provider.of<UserData>(context, listen: false).post8.isEmpty
+            ? '2023-12-19 00:00:00.000'
+            : Provider.of<UserData>(context, listen: false).post8,
         theme: Provider.of<UserData>(context, listen: false).post2,
         dressCode: widget.dressCode,
         dj: widget.dj,
@@ -390,7 +394,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
         report: '',
         isPrivate: Provider.of<UserData>(context, listen: false).bool1,
         isCashPayment: Provider.of<UserData>(context, listen: false).bool4,
-        showOnExplorePage: Provider.of<UserData>(context, listen: false).bool5,
+        showOnExplorePage: false,
         showToFollowers: Provider.of<UserData>(context, listen: false).bool6,
         clossingDay: Provider.of<UserData>(context, listen: false).post13,
         mediaType: '',
@@ -546,12 +550,21 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
         Event event = Event(
           blurHash: blurHash,
           imageUrl: imageUrl,
-          type: Provider.of<UserData>(context, listen: false).post6,
+          type: Provider.of<UserData>(context, listen: false).post6.isEmpty
+              ? 'Others'
+              : Provider.of<UserData>(context, listen: false).post6,
           title: Provider.of<UserData>(context, listen: false).post1,
           rate: Provider.of<UserData>(context, listen: false).post3,
           venue: Provider.of<UserData>(context, listen: false).post5,
-          time: Provider.of<UserData>(context, listen: false).post7,
-          date: Provider.of<UserData>(context, listen: false).post8,
+          time: Provider.of<UserData>(context, listen: false).post7.isEmpty
+              ? '2023-02-02 19:32:48.757749'
+              : Provider.of<UserData>(context, listen: false).post7,
+          date: Provider.of<UserData>(context, listen: false).post8.isEmpty
+              ? '2023-02-02 00:00:00.000'
+              : Provider.of<UserData>(context, listen: false).post8,
+
+          // time: Provider.of<UserData>(context, listen: false).post7,
+          // date: Provider.of<UserData>(context, listen: false).post8,
           theme: Provider.of<UserData>(context, listen: false).post2,
           dressCode: widget.dressCode,
           dj: widget.dj,
@@ -576,10 +589,12 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
           id: '',
           isFree: Provider.of<UserData>(context, listen: false).bool3,
           isCashPayment: Provider.of<UserData>(context, listen: false).bool4,
-          showOnExplorePage:
-              Provider.of<UserData>(context, listen: false).bool5,
+          showOnExplorePage: false,
           showToFollowers: Provider.of<UserData>(context, listen: false).bool6,
-          clossingDay: Provider.of<UserData>(context, listen: false).post13,
+          clossingDay:
+              Provider.of<UserData>(context, listen: false).post13.isEmpty
+                  ? '2023-02-02 00:00:00.000'
+                  : Provider.of<UserData>(context, listen: false).post13,
           mediaType: '',
           mediaUrl: '',
           authorName: widget.user!.userName!,
@@ -1935,7 +1950,7 @@ class _CreateEventWidgetState extends State<CreateEventWidget> {
                                                                         color: Colors.blue,
                                                                         onPressed: () {
                                                                           _showSelectImageDialog(
-                                                                              '');
+                                                                              'delete');
                                                                         }),
                                                                   ),
                                                                 ),

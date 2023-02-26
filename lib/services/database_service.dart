@@ -49,7 +49,7 @@ class DatabaseService {
   static Future<QuerySnapshot> searchUsers(String name) {
     Future<QuerySnapshot> users = usersRef
         .where('userName', isGreaterThanOrEqualTo: name)
-        .limit(20)
+        .limit(10)
         .get();
     return users;
   }
@@ -57,7 +57,7 @@ class DatabaseService {
   static Future<QuerySnapshot> searchEvent(String title) {
     Future<QuerySnapshot> events = allEventsRef
         .where('title', isGreaterThanOrEqualTo: title)
-        .limit(10)
+        .limit(7)
         .get();
     return events;
   }
@@ -73,7 +73,7 @@ class DatabaseService {
   static Future<QuerySnapshot> searchForum(String title) {
     Future<QuerySnapshot> forums = allForumsRef
         .where('title', isGreaterThanOrEqualTo: title)
-        .limit(15)
+        .limit(10)
         .get();
     return forums;
   }
@@ -604,7 +604,7 @@ class DatabaseService {
       'isFree': event.isFree,
       'isCashPayment': event.isCashPayment,
       'showToFollowers': event.showToFollowers,
-      'showOnExplorePage': event.showOnExplorePage,
+      'showOnExplorePage': false,
       'clossingDay': event.clossingDay,
     });
 
@@ -643,7 +643,7 @@ class DatabaseService {
       'isFree': event.isFree,
       'isCashPayment': event.isCashPayment,
       'showToFollowers': event.showToFollowers,
-      'showOnExplorePage': event.showOnExplorePage,
+      'showOnExplorePage': false,
       'clossingDay': event.clossingDay,
     });
     kpiStatisticsRef
@@ -684,6 +684,7 @@ class DatabaseService {
       'authorName': forum.authorName,
       'id': docId,
       'isPrivate': forum.isPrivate,
+      'showOnExplorePage': false,
       'subTitle': forum.subTitle,
       'authorId': forum.authorId,
       'mediaType': forum.mediaType,
@@ -697,6 +698,7 @@ class DatabaseService {
     allForumsRef.doc(docId).set({
       'title': forum.title,
       'authorName': forum.authorName,
+      'showOnExplorePage': false,
       'id': docId,
       'isPrivate': forum.isPrivate,
       'subTitle': forum.subTitle,
@@ -1634,6 +1636,7 @@ class DatabaseService {
     }
     return Forum(
         authorId: '',
+        showOnExplorePage: false,
         id: '',
         isPrivate: false,
         report: '',
@@ -1871,10 +1874,10 @@ class DatabaseService {
       'content': advice,
       'report': '',
       'reportConfirmed': reportConfirmed,
-      'authorName': user.userName,
-      'authorProfileHanlde': user.profileHandle,
-      'authorProfileImageUrl': user.profileImageUrl,
-      'authorVerification': user.verified,
+      'authorName': currentUser.userName,
+      'authorProfileHanlde': currentUser.profileHandle,
+      'authorProfileImageUrl': currentUser.profileImageUrl,
+      'authorVerification': currentUser.verified,
       'authorId': currentUser.id,
       'timestamp': Timestamp.fromDate(DateTime.now()),
     });
@@ -2730,10 +2733,10 @@ class DatabaseService {
         'seen': '',
         'advice': advice,
         'timestamp': Timestamp.fromDate(DateTime.now()),
-        'authorProfileImageUrl': user.profileImageUrl,
-        'authorName': user.userName,
-        'authorProfileHanlde': user.profileHandle,
-        'authorVerification': user.verified,
+        'authorProfileImageUrl': currentUser.profileImageUrl,
+        'authorName': currentUser.userName,
+        'authorProfileHanlde': currentUser.profileHandle,
+        'authorVerification': currentUser.verified,
       });
     }
   }
@@ -2781,6 +2784,7 @@ class DatabaseService {
         'fromUserId': user.id,
         'forumId': forum.id,
         'forumAuthorId': forum.authorId,
+        'isThoughtReplied': false,
         'seen': '',
         'isThoughtLike': isThoughtLiked,
         'forumTitle': forum.title,

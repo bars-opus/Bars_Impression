@@ -153,6 +153,7 @@ class _EditForumState extends State<EditForum> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState?.save();
       Forum forum = Forum(
+         showOnExplorePage: widget.forum.showOnExplorePage,
         id: widget.forum.id,
         title: _title,
         subTitle: _subTitle,

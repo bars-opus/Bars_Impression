@@ -290,6 +290,9 @@ export 'package:bars/general/pages/event/invitation&requests/event_attendees_all
 export 'package:bars/general/pages/event/invitation&requests/event_rate.dart';
 export 'package:bars/widgets/create_content_white.dart';
 export 'package:bars/widgets/schimmers/create_content_black.dart';
+export 'package:bars/widgets/buttons/animated_info_widget.dart';
+export 'package:bars/general/pages/profile/edit/edit_profile_handle_sub-account.dart';
+export 'package:bars/general/pages/profile/edit/sub_account.dart';
 // discover user
 export 'package:bars/general/pages/discover/discover_page/account_categories/artists.dart';
 export 'package:bars/general/pages/event/invitation&requests/event_attendees_validated.dart';

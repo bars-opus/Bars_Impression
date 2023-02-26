@@ -7,12 +7,12 @@ import 'package:timeago/timeago.dart' as timeago;
 class PostViewWidget extends StatefulWidget {
   final String currentUserId;
   final Post post;
-  final List<Post> postList;
+  // final List<Post> postList;
 
   PostViewWidget({
     required this.currentUserId,
     required this.post,
-    required this.postList,
+    // required this.postList,
   });
 
   @override
@@ -148,9 +148,6 @@ class _PostViewWidgetState extends State<PostViewWidget> {
       );
 
   _dynamicLink() async {
-
-
-    
     final dynamicLinkParams = DynamicLinkParameters(
       socialMetaTagParameters: SocialMetaTagParameters(
         imageUrl: Uri.parse(widget.post.imageUrl),

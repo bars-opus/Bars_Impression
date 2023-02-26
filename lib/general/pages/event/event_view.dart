@@ -32,6 +32,7 @@ class _EventViewState extends State<EventView> {
   void initState() {
     super.initState();
     _setUpAsks();
+    widget.event.id.isEmpty ? () {} : _countDown();
     _countDown();
   }
 
@@ -46,9 +47,15 @@ class _EventViewState extends State<EventView> {
   }
 
   _countDown() async {
-    DateTime date = DateTime.parse(widget.event.date);
-    DateTime clossingDate =
-        DateTime.parse(widget.event.clossingDay).add(const Duration(hours: 3));
+    //2023-02-27 00:00:00.000
+    DateTime date = widget.event.date.isEmpty
+        ? DateTime.parse('2023-02-19 00:00:00.000')
+        : DateTime.parse(widget.event.date);
+    DateTime clossingDate = widget.event.clossingDay.isEmpty
+        ? DateTime.parse('2023-02-27 00:00:00.000')
+            .add(const Duration(hours: 3))
+        : DateTime.parse(widget.event.clossingDay)
+            .add(const Duration(hours: 3));
 
     final toDayDate = DateTime.now();
     setState(() {
@@ -120,19 +127,50 @@ class _EventViewState extends State<EventView> {
                         context,
                         MaterialPageRoute(
                           builder: (_) => EventCompleted(
+                              from: '',
                               date: DateFormat.yMMMMEEEEd().format(_date),
                               event: widget.event,
                               currentUserId: widget.currentUserId),
                         ),
                       )
-                    : Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => EditEvent(
-                              event: widget.event,
-                              currentUserId: widget.currentUserId),
-                        ),
-                      ),
+                    : widget.event.date.isEmpty ||
+                            widget.event.time.isEmpty ||
+                            widget.event.clossingDay.isEmpty
+                        ? Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => EventCompleted(
+                                  from: 'wrongDate',
+                                  date: DateFormat.yMMMMEEEEd().format(_date),
+                                  event: widget.event,
+                                  currentUserId: widget.currentUserId),
+                            ),
+                          )
+                        : widget.event.date
+                                    .startsWith('2023-02-02 00:00:00.000') ||
+                                widget.event.time
+                                    .startsWith('2023-02-02 19:32:48.757749') ||
+                                widget.event.clossingDay
+                                    .startsWith('2023-02-02 00:00:00.000')
+                            ? Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => EventCompleted(
+                                      from: 'wrongDate',
+                                      date:
+                                          DateFormat.yMMMMEEEEd().format(_date),
+                                      event: widget.event,
+                                      currentUserId: widget.currentUserId),
+                                ),
+                              )
+                            : Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => EditEvent(
+                                      event: widget.event,
+                                      currentUserId: widget.currentUserId),
+                                ),
+                              ),
               )
             : FocusedMenuItem(
                 title: Container(

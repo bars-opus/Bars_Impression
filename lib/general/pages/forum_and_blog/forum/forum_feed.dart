@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/rendering.dart';
 
 class ForumFeed extends StatefulWidget {
   static final id = 'ForumFeed';
@@ -26,6 +27,16 @@ class _ForumFeedState extends State<ForumFeed>
     _setupForumFeed();
     _setUpFeedCount();
     _hideButtonController = ScrollController();
+     _hideButtonController.addListener(() {
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        Provider.of<UserData>(context, listen: false).setShowUsersTab(true);
+      }
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        Provider.of<UserData>(context, listen: false).setShowUsersTab(false);
+      }
+    });
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {
@@ -278,51 +289,57 @@ class Display extends StatelessWidget {
                     pause: const Duration(milliseconds: 3000),
                     displayFullTextOnTap: true,
                     stopPauseOnTap: true),
-                FadeAnimation(
-                  1,
-                  GestureDetector(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => ForumPage(currentUserId: currentUserId),
-                      ),
-                    ),
-                    child: Container(
-                        decoration: BoxDecoration(
-                          color: Color(0xFFff2f56),
-                        ),
-                        child: Tooltip(
-                          padding: EdgeInsets.all(20.0),
-                          message:
-                              'Explore forums by people you have not followed',
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 7.0, right: 20, top: 7, bottom: 7),
-                            child: GestureDetector(
-                                onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => ForumPage(
-                                            currentUserId: currentUserId),
-                                      ),
-                                    ),
-                                child: Hero(
-                                  tag: 'explore',
-                                  child: const Material(
-                                    color: Colors.transparent,
-                                    child: Text(
-                                      ' Tap  explore forums',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ),
-                                )),
+                Provider.of<UserData>(context, listen: false)
+                        .user!
+                        .score!
+                        .isNegative
+                    ? const SizedBox.shrink()
+                    : FadeAnimation(
+                        1,
+                        GestureDetector(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  ForumPage(currentUserId: currentUserId),
+                            ),
                           ),
-                        )),
-                  ),
-                )
+                          child: Container(
+                              decoration: BoxDecoration(
+                                color: Color(0xFFff2f56),
+                              ),
+                              child: Tooltip(
+                                padding: EdgeInsets.all(20.0),
+                                message:
+                                    'Explore forums by people you have not followed',
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 7.0, right: 20, top: 7, bottom: 7),
+                                  child: GestureDetector(
+                                      onTap: () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => ForumPage(
+                                                  currentUserId: currentUserId),
+                                            ),
+                                          ),
+                                      child: Hero(
+                                        tag: 'explore',
+                                        child: const Material(
+                                          color: Colors.transparent,
+                                          child: Text(
+                                            ' Tap  explore forums',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ),
+                                      )),
+                                ),
+                              )),
+                        ),
+                      )
               ],
             ),
           ),

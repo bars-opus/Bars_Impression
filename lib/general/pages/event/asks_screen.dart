@@ -159,43 +159,16 @@ class _AsksScreenState extends State<AsksScreen> {
                           repotedAuthorId: widget.event.authorId,
                         )))),
       ],
-      child: Slidable(
-        startActionPane: ActionPane(
-          motion: const ScrollMotion(),
-          children: [
-            SlidableAction(
-              onPressed: (_) {
-                currentUserId == ask.authorId
-                    ? Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => EditQuestion(
-                              ask: ask,
-                              currentUserId: widget.currentUserId,
-                              event: widget.event),
-                        ),
-                      )
-                    : const SizedBox.shrink();
-              },
-              backgroundColor: Color(0xFFFF2D55),
-              foregroundColor:
-                  ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-              icon: currentUserId == ask.authorId ? Icons.edit : null,
-              label: currentUserId == ask.authorId ? 'Edit question' : '',
-            ),
-          ],
-        ),
-        child: Authorview(
-          report: ask.report,
-          content: ask.content,
-          timestamp: ask.timestamp,
-          authorId: ask.authorId,
-          profileHandle: ask.authorProfileHanlde,
-          userName: ask.authorName,
-          profileImageUrl: ask.authorProfileImageUrl,
-          verified: ask.authorVerification,
-          from: '',
-        ),
+      child: Authorview(
+        report: ask.report,
+        content: ask.content,
+        timestamp: ask.timestamp,
+        authorId: ask.authorId,
+        profileHandle: ask.authorProfileHanlde,
+        userName: ask.authorName,
+        profileImageUrl: ask.authorProfileImageUrl,
+        verified: ask.authorVerification,
+        from: '',
       ),
     );
   }
@@ -274,9 +247,8 @@ class _AsksScreenState extends State<AsksScreen> {
                           );
                           Provider.of<UserData>(context, listen: false)
                               .setPost9('');
-                               kpiStatisticsRef
-                          .doc('0SuQxtu52SyYjhOKiLsj')
-                          .update({'actualllyBooked': FieldValue.increment(1)});
+                          kpiStatisticsRef.doc('0SuQxtu52SyYjhOKiLsj').update(
+                              {'actualllyBooked': FieldValue.increment(1)});
                           _askController.clear();
                           setState(() {
                             _isAsking = false;
@@ -523,7 +495,12 @@ class _AsksScreenState extends State<AsksScreen> {
                         ),
                         _isBlockedUser
                             ? const SizedBox.shrink()
-                            : _buildAskTF(),
+                            : Provider.of<UserData>(context, listen: false)
+                                    .user!
+                                    .score!
+                                    .isNegative
+                                ? const SizedBox.shrink()
+                                : _buildAskTF(),
                       ],
                     ),
                   ),

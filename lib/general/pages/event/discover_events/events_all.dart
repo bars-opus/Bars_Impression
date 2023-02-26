@@ -56,7 +56,8 @@ class _EventsAllState extends State<EventsAll>
 
   _setupEventFeed() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
-        .orderBy('timestamp', descending: true)
+        .where('showOnExplorePage', isEqualTo: true)
+        // .orderBy('timestamp', descending: true)
         .limit(limit)
         .get();
     List<Event> events =
@@ -76,7 +77,8 @@ class _EventsAllState extends State<EventsAll>
     _isFetchingEvent = true;
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
-        .orderBy('timestamp', descending: true)
+        .where('showOnExplorePage', isEqualTo: true)
+        // .orderBy('timestamp', descending: true)
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();
@@ -94,7 +96,6 @@ class _EventsAllState extends State<EventsAll>
     _isFetchingEvent = false;
     return _hasNext;
   }
-
 
   _buildUser() {
     return NotificationListener<ScrollNotification>(

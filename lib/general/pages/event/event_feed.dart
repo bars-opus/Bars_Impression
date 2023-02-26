@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/rendering.dart';
 
 class EventsFeed extends StatefulWidget {
   static final id = 'EventsFeed';
@@ -31,6 +32,16 @@ class _EventsFeedState extends State<EventsFeed>
     _setUpFeedCount();
     _setUpInvites();
     _hideButtonController = ScrollController();
+    _hideButtonController.addListener(() {
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        Provider.of<UserData>(context, listen: false).setShowUsersTab(true);
+      }
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        Provider.of<UserData>(context, listen: false).setShowUsersTab(false);
+      }
+    });
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {
@@ -143,9 +154,7 @@ class _EventsFeedState extends State<EventsFeed>
                     currentUserId: widget.currentUserId,
                     event: event,
                     user: user,
-                 
                   );
-                  
                 },
                 childCount: _events.length,
               ),
@@ -221,64 +230,64 @@ class _EventsFeedState extends State<EventsFeed>
         child: Container(
           color: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
           child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    _invites.length == 0
-                        ? const SizedBox.shrink()
-                        : Container(
-                            height: Responsive.isDesktop(
-                              context,
-                            )
-                                ? 100
-                                : 80,
-                            child: _buildInviteBuilder()),
-                    Divider(
-                      color: Colors.grey,
-                      thickness: .1,
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Expanded(
-                      child: _events.length > 0
-                          ? RefreshIndicator(
-                              backgroundColor: Colors.white,
-                              onRefresh: () async {
-                                _setupEventFeed();
-                                _setUpFeedCount();
-                                _setUpInvites();
-                              },
-                              child: _buildEventBuilder(user))
-                          : _feedCount.isNegative
-                              ? RefreshIndicator(
-                                  backgroundColor: Colors.white,
-                                  onRefresh: () async {
-                                    _setupEventFeed();
-                                    _setUpFeedCount();
-                                    _setUpInvites();
-                                  },
-                                  child: SingleChildScrollView(
-                                      child: NoFeed(
-                                    title: "Set up your event feed. ",
-                                    subTitle:
-                                        'Your event feed contains events by people you follow. You can set up your feed by exploring events and following people by tapping on the button below. You can also discover people based on account types you are interested in by tapping on the discover icon on the bottom navigation bar.',
-                                    buttonText: 'Explore Events',
-                                    onPressed: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => EventPage(
-                                          currentUserId: widget.currentUserId,
-                                          user: user,
-                                        ),
-                                      ),
-                                    ),
-                                  )),
-                                )
-                              : Center(child: EventSchimmer()),
-                    )
-                  ],
-                ),
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              _invites.length == 0
+                  ? const SizedBox.shrink()
+                  : Container(
+                      height: Responsive.isDesktop(
+                        context,
+                      )
+                          ? 100
+                          : 80,
+                      child: _buildInviteBuilder()),
+              Divider(
+                color: Colors.grey,
+                thickness: .1,
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Expanded(
+                child: _events.length > 0
+                    ? RefreshIndicator(
+                        backgroundColor: Colors.white,
+                        onRefresh: () async {
+                          _setupEventFeed();
+                          _setUpFeedCount();
+                          _setUpInvites();
+                        },
+                        child: _buildEventBuilder(user))
+                    : _feedCount.isNegative
+                        ? RefreshIndicator(
+                            backgroundColor: Colors.white,
+                            onRefresh: () async {
+                              _setupEventFeed();
+                              _setUpFeedCount();
+                              _setUpInvites();
+                            },
+                            child: SingleChildScrollView(
+                                child: NoFeed(
+                              title: "Set up your event feed. ",
+                              subTitle:
+                                  'Your event feed contains events by people you follow. You can set up your feed by exploring events and following people by tapping on the button below. You can also discover people based on account types you are interested in by tapping on the discover icon on the bottom navigation bar.',
+                              buttonText: 'Explore Events',
+                              onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => EventPage(
+                                    currentUserId: widget.currentUserId,
+                                    user: user,
+                                  ),
+                                ),
+                              ),
+                            )),
+                          )
+                        : Center(child: EventSchimmer()),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -289,7 +298,7 @@ class _EventsFeedState extends State<EventsFeed>
 class Display extends StatelessWidget {
   final AccountHolder user;
 
- Display({
+  Display({
     required this.user,
   });
   @override
@@ -345,52 +354,57 @@ class Display extends StatelessWidget {
                   pause: const Duration(milliseconds: 3000),
                   displayFullTextOnTap: true,
                   stopPauseOnTap: true),
-              Tooltip(
-                padding: EdgeInsets.all(20.0),
-                message: 'Explore events by people you have not followed',
-                child: GestureDetector(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => EventPage(
-                        currentUserId: currentUserId,
-                        user: user,
-                      ),
-                    ),
-                  ),
-                  child: FadeAnimation(
-                    1,
-                    Container(
-                        decoration: BoxDecoration(
-                          color: Color(0xFFff2f56),
+              Provider.of<UserData>(context, listen: false)
+                      .user!
+                      .score!
+                      .isNegative
+                  ? const SizedBox.shrink()
+                  : Tooltip(
+                      padding: EdgeInsets.all(20.0),
+                      message: 'Explore events by people you have not followed',
+                      child: GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => EventPage(
+                              currentUserId: currentUserId,
+                              user: user,
+                            ),
+                          ),
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              left: 7.0, right: 20, top: 7, bottom: 7),
-                          child: GestureDetector(
-                              onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => EventPage(
-                                        currentUserId: currentUserId,
-                                        user: user,
-                                      ),
-                                    ),
-                                  ),
-                              child: const Material(
-                                  color: Colors.transparent,
-                                  child: Hero(
-                                    tag: 'Explore Events',
-                                    child: Text(' Tap explore events',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 12,
-                                        )),
-                                  ))),
-                        )),
-                  ),
-                ),
-              )
+                        child: FadeAnimation(
+                          1,
+                          Container(
+                              decoration: BoxDecoration(
+                                color: Color(0xFFff2f56),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 7.0, right: 20, top: 7, bottom: 7),
+                                child: GestureDetector(
+                                    onTap: () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => EventPage(
+                                              currentUserId: currentUserId,
+                                              user: user,
+                                            ),
+                                          ),
+                                        ),
+                                    child: const Material(
+                                        color: Colors.transparent,
+                                        child: Hero(
+                                          tag: 'Explore Events',
+                                          child: Text(' Tap explore events',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                              )),
+                                        ))),
+                              )),
+                        ),
+                      ),
+                    )
             ],
           ),
         ),

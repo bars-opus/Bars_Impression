@@ -22,7 +22,7 @@ class _AllPostEnlargedState extends State<AllPostEnlarged> {
           backgroundColor:
               ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
           body: GestureDetector(
-            onLongPress: () => () {},
+ 
             child: PunchExpandedWidget(
               feed: widget.feed,
               post: widget.post,

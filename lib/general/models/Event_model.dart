@@ -103,7 +103,7 @@ class Event {
       city: doc['city'] ?? '',
       country: doc['country'] ?? '',
       virtualVenue: doc['virtualVenue'],
-      ticketSite: doc['ticketSite'],
+      ticketSite: doc['ticketSite']?? '',
       report: doc['report'] ?? '',
       reportConfirmed: doc['reportConfirmed'],
       isVirtual: doc['isVirtual'] ?? false,

@@ -218,7 +218,6 @@ class _ActivityScreenState extends State<ActivityScreen>
                         .setIsLoading(false);
                   }
                 : () async {
-                   
                     // setState(() {
                     //   _isLoadingContent = true;
                     // });
@@ -254,18 +253,40 @@ class _ActivityScreenState extends State<ActivityScreen>
                         .setIsLoading(false);
                   },
             leading: activity.authorProfileImageUrl.isEmpty
-                ? Icon(
-                    Icons.account_circle,
-                    size: 60.0,
-                    color: Colors.grey,
+                ? GestureDetector(
+                    onTap: (() => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => ProfileScreen(
+                                  currentUserId: Provider.of<UserData>(context)
+                                      .currentUserId!,
+                                  userId: activity.fromUserId!,
+                                  user: null,
+                                )))),
+                    child: Icon(
+                      Icons.account_circle,
+                      size: 60.0,
+                      color: Colors.grey,
+                    ),
                   )
-                : CircleAvatar(
-                    radius: 25.0,
-                    backgroundColor: ConfigBloc().darkModeOn
-                        ? Color(0xFF1a1a1a)
-                        : Color(0xFFf2f2f2),
-                    backgroundImage: CachedNetworkImageProvider(
-                        activity.authorProfileImageUrl),
+                : GestureDetector(
+                    onTap: (() => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => ProfileScreen(
+                                  currentUserId: Provider.of<UserData>(context)
+                                      .currentUserId!,
+                                  userId: activity.fromUserId!,
+                                  user: null,
+                                )))),
+                    child: CircleAvatar(
+                      radius: 25.0,
+                      backgroundColor: ConfigBloc().darkModeOn
+                          ? Color(0xFF1a1a1a)
+                          : Color(0xFFf2f2f2),
+                      backgroundImage: CachedNetworkImageProvider(
+                          activity.authorProfileImageUrl),
+                    ),
                   ),
             // ignore: unnecessary_null_comparison
             title: activity.comment != null

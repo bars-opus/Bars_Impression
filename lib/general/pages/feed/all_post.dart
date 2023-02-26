@@ -15,6 +15,8 @@ class _AllPostState extends State<AllPost> {
   final _postSnapshot = <DocumentSnapshot>[];
   int limit = 16;
   bool _hasNext = true;
+  bool _listView = false;
+  bool _showInfo = false;
   bool _isFetchingPost = false;
   late ScrollController _hideButtonController;
 
@@ -91,85 +93,215 @@ class _AllPostState extends State<AllPost> {
   @override
   Widget build(BuildContext context) {
     return ResponsiveScaffold(
-      child: NestedScrollView(
-          controller: _hideButtonController,
-          headerSliverBuilder: (context, innerBoxScrolled) => [
-                SliverAppBar(
-                  title: Material(
-                    color: Colors.transparent,
-                    child: Text(
-                      'Explore Punches',
-                      style: TextStyle(
-                          color: ConfigBloc().darkModeOn
+      child: Scaffold(
+          extendBodyBehindAppBar: _listView ? true : false,
+          appBar: AppBar(
+              iconTheme: new IconThemeData(
+                color: _listView
+                    ? Colors.white
+                    : ConfigBloc().darkModeOn
+                        ? Colors.white
+                        : Colors.black,
+              ),
+              backgroundColor: Colors.transparent,
+              title: Material(
+                color: Colors.transparent,
+                child: Text(
+                  _listView ? '' : 'Explore Punches',
+                  style: TextStyle(
+                      color: _listView
+                          ? Colors.white
+                          : ConfigBloc().darkModeOn
                               ? Colors.white
                               : Colors.black,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold),
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              centerTitle: true,
+              elevation: 0.0,
+              automaticallyImplyLeading: true,
+              actions: [
+                IconButton(
+                    icon: Icon(
+                      _listView ? FontAwesomeIcons.list : Icons.grid_view,
                     ),
-                  ),
-                  centerTitle: true,
-                  elevation: 0.0,
-                  automaticallyImplyLeading: true,
-                  floating: true,
-                  snap: true,
-                  iconTheme: new IconThemeData(
-                    color:
-                        ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                  ),
-                  backgroundColor: ConfigBloc().darkModeOn
-                      ? Color(0xFF1a1a1a)
-                      : Color(0xFFf2f2f2),
-                )
-              ],
-          body: Material(
-            color: Colors.transparent,
-            child: Container(
-                color: ConfigBloc().darkModeOn
-                    ? Color(0xFF1a1a1a)
-                    : Color(0xFFf2f2f2),
-                child: SafeArea(
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: _posts.length > 0
-                            ? RefreshIndicator(
-                                onRefresh: () => _setupFeed(),
-                                child: NotificationListener<ScrollNotification>(
-                                  onNotification: _handleScrollNotification,
-                                  child: Scrollbar(
-                                    child: CustomScrollView(
-                                      slivers: [
-                                        SliverGrid(
-                                          delegate: SliverChildBuilderDelegate(
-                                            (context, index) {
-                                              Post post = _posts[index];
-                                              return FeedGrid(
-                                                feed: 'All',
-                                                currentUserId:
-                                                    widget.currentUserId,
-                                                post: post,
-                                              );
-                                            },
-                                            childCount: _posts.length,
+                    iconSize: 20,
+                    color: _listView
+                        ? Colors.white
+                        : ConfigBloc().darkModeOn
+                            ? Colors.white
+                            : Colors.black,
+                    onPressed: () async {
+                      HapticFeedback.heavyImpact();
+                      if (mounted) {
+                        setState(() {
+                          // _isHidden = !_isHidden;
+                          _listView = !_listView;
+
+                          _showInfo = true;
+                        });
+                      }
+
+                      Timer(Duration(seconds: 5), () {
+                        if (mounted) {
+                          setState(() {
+                            _showInfo = false;
+                          });
+                        }
+                      });
+                    }),
+              ]),
+          // controller: _hideButtonController,
+
+          // headerSliverBuilder: (context, innerBoxScrolled) => [
+          //       SliverAppBar(
+          // title: Material(
+          //   color: Colors.transparent,
+          //   child: Text(
+          //     'Explore Punches',
+          //     style: TextStyle(
+          //         color: ConfigBloc().darkModeOn
+          //             ? Colors.white
+          //             : Colors.black,
+          //         fontSize: 20,
+          //         fontWeight: FontWeight.bold),
+          //   ),
+          // ),
+          // centerTitle: true,
+          // elevation: 0.0,
+          // automaticallyImplyLeading: true,
+          //         floating: true,
+          //         snap: true,
+          //         iconTheme: new IconThemeData(
+          //           color:
+          //               ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+          //         ),
+          //         backgroundColor: ConfigBloc().darkModeOn
+          //             ? Color(0xFF1a1a1a)
+          //             : Color(0xFFf2f2f2),
+          //         actions: [
+          //           IconButton(
+          //               icon: Icon(
+          //                 _listView ? Icons.grid_view : FontAwesomeIcons.list,
+          //               ),
+          //               iconSize: 20,
+          //               color: ConfigBloc().darkModeOn
+          //                   ? Colors.white
+          //                   : Colors.black,
+          //               onPressed: () async {
+          //                 HapticFeedback.heavyImpact();
+          //                 setState(() {
+          //                   // _isHidden = !_isHidden;
+          //                   _listView = !_listView;
+          //                 });
+          //               }),
+          //         ],
+          //       )
+          //     ],
+          body: Stack(
+            alignment: FractionalOffset.center,
+            children: [
+              Material(
+                color: Colors.transparent,
+                child: Container(
+                    color: ConfigBloc().darkModeOn
+                        ? Color(0xFF1a1a1a)
+                        : Color(0xFFf2f2f2),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: _posts.length > 0
+                              ? RefreshIndicator(
+                                  onRefresh: () => _setupFeed(),
+                                  child: _listView
+                                      ? NotificationListener<
+                                          ScrollNotification>(
+                                          onNotification:
+                                              _handleScrollNotification,
+                                          child: RawScrollbar(
+                                            controller: _hideButtonController,
+                                            thumbColor: Colors.white,
+                                            radius: Radius.circular(20),
+                                            thickness: 2,
+                                            child: CustomScrollView(
+                                              controller: _hideButtonController,
+                                              physics:
+                                                  const AlwaysScrollableScrollPhysics(),
+                                              slivers: [
+                                                SliverList(
+                                                  delegate:
+                                                      SliverChildBuilderDelegate(
+                                                    (context, index) {
+                                                      Post post = _posts[index];
+                                                      return PostView(
+                                                        key: PageStorageKey(
+                                                            'FeedList'),
+                                                        currentUserId: widget
+                                                            .currentUserId,
+                                                        post: post,
+                                                        // postList: _postsList,
+                                                        showExplore: false,
+                                                      );
+                                                    },
+                                                    childCount: _posts.length,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                          gridDelegate:
-                                              SliverGridDelegateWithFixedCrossAxisCount(
-                                            crossAxisCount: 2,
-                                            mainAxisSpacing: 5.0,
-                                            crossAxisSpacing: 5.0,
-                                            childAspectRatio: 1.0,
+                                        )
+                                      : NotificationListener<
+                                          ScrollNotification>(
+                                          onNotification:
+                                              _handleScrollNotification,
+                                          child: Scrollbar(
+                                            controller: _hideButtonController,
+                                            child: CustomScrollView(
+                                              controller: _hideButtonController,
+                                              slivers: [
+                                                SliverGrid(
+                                                  delegate:
+                                                      SliverChildBuilderDelegate(
+                                                    (context, index) {
+                                                      Post post = _posts[index];
+                                                      return FeedGrid(
+                                                        feed: 'All',
+                                                        currentUserId: widget
+                                                            .currentUserId,
+                                                        post: post,
+                                                      );
+                                                    },
+                                                    childCount: _posts.length,
+                                                  ),
+                                                  gridDelegate:
+                                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                                    crossAxisCount: 2,
+                                                    mainAxisSpacing: 5.0,
+                                                    crossAxisSpacing: 5.0,
+                                                    childAspectRatio: 1.0,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              )
-                            : GroupGridSchimmerSkeleton(),
-                      ),
-                    ],
-                  ),
-                )),
+                                )
+                              : GroupGridSchimmerSkeleton(),
+                        ),
+                      ],
+                    )),
+              ),
+              Positioned(
+                top: 60,
+                right: 50,
+                child: AnimatedInfoWidget(
+                  buttonColor: Colors.white,
+                  text: 'Scroll up or down',
+                  requiredBool: _showInfo,
+                ),
+              ),
+            ],
           )),
     );
   }

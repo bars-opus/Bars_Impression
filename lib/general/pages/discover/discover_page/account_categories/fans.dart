@@ -57,6 +57,7 @@ class _FansState extends State<Fans> with AutomaticKeepAliveClientMixin {
   _setupUsers() async {
     QuerySnapshot userFeedSnapShot = await usersRef
         .where('profileHandle', isEqualTo: 'Fan')
+        .where('dontShowContentOnExplorePage', isEqualTo: true)
         .limit(limit)
         .get();
     List<AccountHolder> users = userFeedSnapShot.docs
@@ -78,6 +79,7 @@ class _FansState extends State<Fans> with AutomaticKeepAliveClientMixin {
     _isFectchingUser = true;
     QuerySnapshot userFeedSnapShot = await usersRef
         .where('profileHandle', isEqualTo: 'Fan')
+        .where('dontShowContentOnExplorePage', isEqualTo: true)
         .limit(limit)
         .startAfterDocument(_userSnapshot.last)
         .get();

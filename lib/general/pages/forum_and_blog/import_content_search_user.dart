@@ -170,7 +170,7 @@ class _ImportContentSearchUserState extends State<ImportContentSearchUser>
               ? Icon(
                   Icons.account_circle,
                   size: 60.0,
-                  color: Colors.white,
+                  color: Colors.grey,
                 )
               : CircleAvatar(
                   radius: 25.0,

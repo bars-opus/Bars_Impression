@@ -14,6 +14,7 @@ class Forum {
   final String authorName;
   final bool isPrivate;
   final Timestamp? timestamp;
+  final bool showOnExplorePage;
 
   Forum(
       {required this.id,
@@ -25,6 +26,7 @@ class Forum {
       required this.mediaUrl,
       required this.reportConfirmed,
       required this.isPrivate,
+      required this.showOnExplorePage,
       required this.linkedContentId,
       required this.authorId,
       required this.authorName,
@@ -42,6 +44,7 @@ class Forum {
       report: doc['report'] ?? '',
       linkedContentId: doc['linkedContentId'] ?? '',
       reportConfirmed: doc['reportConfirmed'] ?? '',
+      showOnExplorePage: doc['showOnExplorePage'] ?? false,
       timestamp: doc['timestamp'],
       forumType: doc['forumType'] ?? '',
       authorName: doc['authorName'] ?? '',

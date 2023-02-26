@@ -51,8 +51,7 @@ class _ArtistsLocationState extends State<ArtistsLocation>
     });
   }
 
-
-  _nothing(){}
+  _nothing() {}
 
   bool _handleScrollNotification(ScrollNotification notification) {
     if (notification is ScrollEndNotification) {
@@ -80,6 +79,7 @@ class _ArtistsLocationState extends State<ArtistsLocation>
         .where('profileHandle', isEqualTo: widget.profileHandle)
         .where('city', isEqualTo: widget.user.city)
         .where('country', isEqualTo: widget.user.country)
+        .where('dontShowContentOnExplorePage', isEqualTo: true)
         .limit(limit)
         .get();
     List<AccountHolder> users = userFeedSnapShot.docs
@@ -103,6 +103,7 @@ class _ArtistsLocationState extends State<ArtistsLocation>
         .where('profileHandle', isEqualTo: widget.profileHandle)
         .where('city', isEqualTo: widget.user.city)
         .where('country', isEqualTo: widget.user.country)
+        .where('dontShowContentOnExplorePage', isEqualTo: true)
         .limit(limit)
         .startAfterDocument(_userSnapshot.last)
         .get();
@@ -127,6 +128,7 @@ class _ArtistsLocationState extends State<ArtistsLocation>
     QuerySnapshot userFeedSnapShot = await usersRef
         .where('profileHandle', isEqualTo: widget.profileHandle)
         .where('country', isEqualTo: widget.user.country)
+        .where('dontShowContentOnExplorePage', isEqualTo: true)
         .limit(limit)
         .get();
     List<AccountHolder> users = userFeedSnapShot.docs
@@ -149,6 +151,7 @@ class _ArtistsLocationState extends State<ArtistsLocation>
     QuerySnapshot userFeedSnapShot = await usersRef
         .where('profileHandle', isEqualTo: widget.profileHandle)
         .where('country', isEqualTo: widget.user.country)
+        .where('dontShowContentOnExplorePage', isEqualTo: true)
         .limit(limit)
         .startAfterDocument(_userSnapshot.last)
         .get();
@@ -173,6 +176,7 @@ class _ArtistsLocationState extends State<ArtistsLocation>
     QuerySnapshot userFeedSnapShot = await usersRef
         .where('profileHandle', isEqualTo: widget.profileHandle)
         .where('continent', isEqualTo: widget.user.continent)
+        .where('dontShowContentOnExplorePage', isEqualTo: true)
         .limit(limit)
         .get();
     List<AccountHolder> users = userFeedSnapShot.docs
@@ -195,6 +199,7 @@ class _ArtistsLocationState extends State<ArtistsLocation>
     QuerySnapshot userFeedSnapShot = await usersRef
         .where('profileHandle', isEqualTo: widget.profileHandle)
         .where('continent', isEqualTo: widget.user.continent)
+        .where('dontShowContentOnExplorePage', isEqualTo: true)
         .limit(limit)
         .startAfterDocument(_userSnapshot.last)
         .get();

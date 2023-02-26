@@ -27,6 +27,8 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
   double page = 0.0;
   bool _isLiked = false;
   bool _isDisLiked = false;
+  bool _showInfo = false;
+  bool _showInfo2 = false;
   bool _heartAnim = false;
 
   @override
@@ -34,6 +36,54 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
     super.initState();
     _displayWarning = widget.post.report.isNotEmpty ? true : false;
     _kpi();
+    _setInfo();
+  }
+
+  _setInfo() async {
+    if (mounted) {
+      setState(() {
+        Timer(Duration(seconds: 10), () {
+          if (mounted) {
+            setState(() {
+              _showInfo = true;
+              __setShowInfo();
+            });
+          }
+        });
+        Timer(Duration(seconds: 20), () {
+          if (mounted) {
+            setState(() {
+              _showInfo2 = true;
+              __setShowInfo2();
+            });
+          }
+        });
+      });
+    }
+  }
+
+  __setShowInfo() async {
+    if (_showInfo) {
+      Timer(Duration(seconds: 3), () {
+        if (mounted) {
+          setState(() {
+            _showInfo = false;
+          });
+        }
+      });
+    }
+  }
+
+  __setShowInfo2() async {
+    if (_showInfo2) {
+      Timer(Duration(seconds: 3), () {
+        if (mounted) {
+          setState(() {
+            _showInfo2 = false;
+          });
+        }
+      });
+    }
   }
 
   _kpi() {
@@ -175,16 +225,6 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
         await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
 
     Share.share(link.shortUrl.toString());
-
-    // if (Platform.isIOS) {
-    //   var link =
-    //       await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
-    //   Share.share(link.toString());
-    // } else {
-    //   var link =
-    //       await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
-    //   Share.share(link.shortUrl.toString());
-    // }
   }
 
   _viewProfessionalProfile() async {
@@ -364,6 +404,12 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.center,
                                                 children: <Widget>[
+                                                  AnimatedInfoWidget(
+                                                    buttonColor: Colors.white,
+                                                    text:
+                                                        'Tap and hold\nto explore more punches.',
+                                                    requiredBool: _showInfo2,
+                                                  ),
                                                   Slidable(
                                                     startActionPane: ActionPane(
                                                       motion:
@@ -775,7 +821,7 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                                                                                   color: Colors.transparent,
                                                                                   child: SingleChildScrollView(
                                                                                     child: Text(
-                                                                                      '" ${widget.post.punch} " '.toLowerCase(),
+                                                                                      '" ${widget.post.punch} " '.toLowerCase().trim(),
                                                                                       maxLines: 5,
                                                                                       style: const TextStyle(
                                                                                         fontSize: 14,
@@ -911,7 +957,16 @@ class _PunchExpandedWidgetState extends State<PunchExpandedWidget> {
                                                     ),
                                                   ),
                                                   const SizedBox(
-                                                    height: 70,
+                                                    height: 30,
+                                                  ),
+                                                  AnimatedInfoWidget(
+                                                    buttonColor: Colors.white,
+                                                    text:
+                                                        'Double tap to show only image.',
+                                                    requiredBool: _showInfo,
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 40,
                                                   ),
                                                   widget.post.musicLink.isEmpty
                                                       ? const SizedBox.shrink()

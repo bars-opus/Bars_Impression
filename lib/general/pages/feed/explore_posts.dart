@@ -124,7 +124,8 @@ class _ExplorePostsState extends State<ExplorePosts> {
 
   _setupAllPost() async {
     QuerySnapshot postFeedSnapShot = await allPostsRef
-        .orderBy('timestamp', descending: true)
+        // .orderBy('timestamp', descending: true)
+        .where('disbleSharing', isEqualTo: true)
         .limit(limit)
         .get();
     List<Post> posts =
@@ -144,7 +145,8 @@ class _ExplorePostsState extends State<ExplorePosts> {
     _isFetchingPost = true;
     _hasNext = true;
     QuerySnapshot postFeedSnapShot = await allPostsRef
-        .orderBy('timestamp', descending: true)
+        // .orderBy('timestamp', descending: true)
+        .where('disbleSharing', isEqualTo: true)
         .limit(limit)
         .startAfterDocument(_postSnapshot.last)
         .get();
@@ -209,6 +211,7 @@ class _ExplorePostsState extends State<ExplorePosts> {
   _setupPunchlinePost() async {
     QuerySnapshot postSnapShot = await allPostsRef
         .where('punch', isEqualTo: widget.post.punch)
+        .where('disbleSharing', isEqualTo: true)
         .limit(limit)
         .get();
     List<Post> posts =
@@ -228,6 +231,7 @@ class _ExplorePostsState extends State<ExplorePosts> {
     _hasNext = true;
     QuerySnapshot postSnapShot = await allPostsRef
         .where('punch', isEqualTo: widget.post.punch)
+        .where('disbleSharing', isEqualTo: true)
         .limit(limit)
         .startAfterDocument(_postSnapshot.last)
         .get();
@@ -248,6 +252,7 @@ class _ExplorePostsState extends State<ExplorePosts> {
   _setupHashtagPost() async {
     QuerySnapshot postSnapShot = await allPostsRef
         .where('hashTag', isEqualTo: widget.post.hashTag)
+        .where('disbleSharing', isEqualTo: true)
         .limit(limit)
         .get();
     List<Post> posts =
@@ -267,6 +272,7 @@ class _ExplorePostsState extends State<ExplorePosts> {
     _hasNext = true;
     QuerySnapshot postSnapShot = await allPostsRef
         .where('hashTag', isEqualTo: widget.post.hashTag)
+        .where('disbleSharing', isEqualTo: true)
         .limit(limit)
         .startAfterDocument(_postSnapshot.last)
         .get();
@@ -287,6 +293,7 @@ class _ExplorePostsState extends State<ExplorePosts> {
   _setupArtistPost() async {
     QuerySnapshot postSnapShot = await allPostsRef
         .where('artist', isEqualTo: widget.post.artist)
+        .where('disbleSharing', isEqualTo: true)
         .limit(limit)
         .get();
     List<Post> posts =
@@ -306,6 +313,7 @@ class _ExplorePostsState extends State<ExplorePosts> {
     _hasNext = true;
     QuerySnapshot postSnapShot = await allPostsRef
         .where('artist', isEqualTo: widget.post.artist)
+        .where('disbleSharing', isEqualTo: true)
         .limit(limit)
         .startAfterDocument(_postSnapshot.last)
         .get();
@@ -323,8 +331,7 @@ class _ExplorePostsState extends State<ExplorePosts> {
     return _hasNext;
   }
 
-_nothing(){}
-
+  _nothing() {}
 
   Widget buildBlur({
     required Widget child,
@@ -372,7 +379,8 @@ _nothing(){}
                     builder: (_) => ProfileScreen(
                           currentUserId:
                               Provider.of<UserData>(context).currentUserId!,
-                          userId: accountHolder.id!, user: null,
+                          userId: accountHolder.id!,
+                          user: null,
                         )))),
         FocusedMenuItem(
             title: Container(
@@ -386,9 +394,9 @@ _nothing(){}
                 context,
                 MaterialPageRoute(
                     builder: (_) => PunchWidget(
-                        currentUserId: widget.currentUserId,
-                        post: post,
-                       )))),
+                          currentUserId: widget.currentUserId,
+                          post: post,
+                        )))),
       ],
       child: Padding(
         padding: EdgeInsets.all(10),
@@ -399,10 +407,10 @@ _nothing(){}
                 context,
                 MaterialPageRoute(
                     builder: (_) => AllPostEnlarged(
-                        feed: widget.feed,
-                        currentUserId: widget.currentUserId,
-                        post: post, 
-                   ))),
+                          feed: widget.feed,
+                          currentUserId: widget.currentUserId,
+                          post: post,
+                        ))),
             child: Container(
               decoration: BoxDecoration(
                 boxShadow: [
@@ -783,18 +791,28 @@ _nothing(){}
                       ],
                     ),
                   ),
-                  AnimatedContainer(
-                      curve: Curves.easeInOut,
-                      duration: Duration(milliseconds: 800),
-                      height: _showInfo ? 40 : 0.0,
-                      width: double.infinity,
-                      color: Colors.transparent,
-                      child: Center(
-                        child: Swipinfo(
-                          color: _showInfo ? Colors.white : Colors.transparent,
-                          text: 'Swipe',
-                        ),
-                      )),
+                  ShakeTransition(
+                    axis: Axis.vertical,
+                    curve: Curves.easeInOut,
+                    offset: 40,
+                    child: AnimatedContainer(
+                        curve: Curves.easeInOut,
+                        duration: Duration(milliseconds: 800),
+                        height: _showInfo ? 40 : 0.0,
+                        width: double.infinity,
+                        color: Colors.transparent,
+                        child: Center(
+                          child: AnimatedInfoWidget(
+                            buttonColor: Colors.white,
+                            text: '< < < Swipe',
+                            requiredBool: _showInfo,
+                          ),
+                          // Swipinfo(
+                          //   color: _showInfo ? Colors.white : Colors.transparent,
+                          //   text: 'Swipe',
+                          // ),
+                        )),
+                  ),
                   SizedBox(
                     height: 30,
                   ),

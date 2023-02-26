@@ -33,6 +33,16 @@ class _AllEvenEnlargedState extends State<AllEvenEnlarged> {
       size: Size(1110, 150),
       maximumColorCount: 20,
     );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //       builder: (_) => EventDashboard(
+    //             event: widget.event,
+    //             currentUserId: widget.currentUserId,
+    //             palette: _paletteGenerator,
+    //             askCount: widget.askCount,
+    //           )),
+    // );
 
     widget.event.authorId == widget.currentUserId
         ? Navigator.push(
@@ -156,7 +166,8 @@ class _AllEvenEnlargedState extends State<AllEvenEnlarged> {
                   context,
                   MaterialPageRoute(
                       builder: (_) => AsksScreen(
-                            event: widget.event,askCount: widget.askCount,
+                            event: widget.event,
+                            askCount: widget.askCount,
                             ask: null,
                             currentUserId: widget.currentUserId,
                           )),
@@ -166,6 +177,7 @@ class _AllEvenEnlargedState extends State<AllEvenEnlarged> {
                 onPressedPeople: () => _generatePalette2(context, 'People'),
                 onPressedRate: () => _generatePalette2(context, ''),
               ),
+             
               Positioned(
                 top: 55,
                 right: 20,

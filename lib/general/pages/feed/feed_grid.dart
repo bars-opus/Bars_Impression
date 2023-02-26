@@ -112,7 +112,9 @@ class _FeedGridState extends State<FeedGrid> {
                                 : Material(
                                     color: Colors.transparent,
                                     child: Text(
-                                      ' " ${widget.post.punch} "'.toLowerCase(),
+                                      ' " ${widget.post.punch} "'
+                                          .trim()
+                                          .toLowerCase(),
                                       style: TextStyle(
                                         fontSize: width > 600 ? 16 : 12.0,
                                         color: Colors.white,

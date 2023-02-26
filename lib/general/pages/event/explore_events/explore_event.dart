@@ -238,7 +238,8 @@ class _ExploreEventState extends State<ExploreEvent> {
 
   _setupAllEvent() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
-        .orderBy('timestamp', descending: true)
+        // .orderBy('timestamp', descending: true)
+        .where('showOnExplorePage', isEqualTo: true)
         .limit(limit)
         .get();
     List<Event> events =
@@ -259,7 +260,8 @@ class _ExploreEventState extends State<ExploreEvent> {
     _isFetchingEvent = true;
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
-        .orderBy('timestamp', descending: true)
+        .where('showOnExplorePage', isEqualTo: true)
+        // .orderBy('timestamp', descending: true)
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();
@@ -280,6 +282,7 @@ class _ExploreEventState extends State<ExploreEvent> {
 
   _setupAllCategoryEvent() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('type', isEqualTo: widget.event.type)
         .limit(limit)
         .get();
@@ -300,6 +303,7 @@ class _ExploreEventState extends State<ExploreEvent> {
     _isFetchingEvent = true;
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('type', isEqualTo: widget.event.type)
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
@@ -321,6 +325,7 @@ class _ExploreEventState extends State<ExploreEvent> {
 
   _setupAllCityEvent() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('city', isEqualTo: widget.user.city)
         .limit(limit)
         .get();
@@ -342,6 +347,7 @@ class _ExploreEventState extends State<ExploreEvent> {
     _isFetchingEvent = true;
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('city', isEqualTo: widget.user.city)
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
@@ -363,6 +369,7 @@ class _ExploreEventState extends State<ExploreEvent> {
 
   _setupCategoryCityEvent() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('city', isEqualTo: widget.user.city)
         .where('type', isEqualTo: widget.event.type)
         .limit(limit)
@@ -384,6 +391,7 @@ class _ExploreEventState extends State<ExploreEvent> {
     _isFetchingEvent = true;
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('city', isEqualTo: widget.user.city)
         .where('type', isEqualTo: widget.event.type)
         .limit(limit)
@@ -406,6 +414,7 @@ class _ExploreEventState extends State<ExploreEvent> {
 
   _setupAllCountryEvent() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('country', isEqualTo: widget.user.country)
         .limit(limit)
         .get();
@@ -426,6 +435,7 @@ class _ExploreEventState extends State<ExploreEvent> {
     _isFetchingEvent = true;
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('country', isEqualTo: widget.user.country)
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
@@ -447,6 +457,7 @@ class _ExploreEventState extends State<ExploreEvent> {
 
   _setupCategoryCountryEvent() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('country', isEqualTo: widget.user.country)
         .where('type', isEqualTo: widget.event.type)
         .limit(limit)
@@ -468,6 +479,7 @@ class _ExploreEventState extends State<ExploreEvent> {
     _isFetchingEvent = true;
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('country', isEqualTo: widget.user.country)
         .where('type', isEqualTo: widget.event.type)
         .limit(limit)
@@ -490,6 +502,7 @@ class _ExploreEventState extends State<ExploreEvent> {
 
   _setupAllLiveEvent() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('city', isEqualTo: _city)
         .where('country', isEqualTo: _country)
         .limit(limit)
@@ -511,6 +524,7 @@ class _ExploreEventState extends State<ExploreEvent> {
     _isFetchingEvent = true;
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('city', isEqualTo: _city)
         .where('country', isEqualTo: _country)
         .limit(limit)
@@ -533,6 +547,7 @@ class _ExploreEventState extends State<ExploreEvent> {
 
   _setupCategoryLiveEvent() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('city', isEqualTo: _city)
         .where('country', isEqualTo: _country)
         .where('type', isEqualTo: widget.event.type)
@@ -555,6 +570,7 @@ class _ExploreEventState extends State<ExploreEvent> {
     _isFetchingEvent = true;
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('city', isEqualTo: _city)
         .where('country', isEqualTo: _country)
         .where('type', isEqualTo: widget.event.type)
@@ -578,6 +594,7 @@ class _ExploreEventState extends State<ExploreEvent> {
 
   _setupAllVirtualEvent() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('isVirtual', isEqualTo: true)
         .limit(limit)
         .get();
@@ -598,6 +615,7 @@ class _ExploreEventState extends State<ExploreEvent> {
     _isFetchingEvent = true;
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('isVirtual', isEqualTo: true)
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
@@ -619,6 +637,7 @@ class _ExploreEventState extends State<ExploreEvent> {
 
   _setupCategoryVirtualEvent() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('isVirtual', isEqualTo: true)
         .where('type', isEqualTo: widget.event.type)
         .limit(limit)
@@ -640,6 +659,7 @@ class _ExploreEventState extends State<ExploreEvent> {
     _isFetchingEvent = true;
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('isVirtual', isEqualTo: true)
         .where('type', isEqualTo: widget.event.type)
         .limit(limit)
@@ -879,18 +899,28 @@ class _ExploreEventState extends State<ExploreEvent> {
                   SizedBox(
                     height: 5,
                   ),
-                  AnimatedContainer(
-                      curve: Curves.easeInOut,
-                      duration: Duration(milliseconds: 800),
-                      height: _showInfo ? 40 : 0.0,
-                      width: double.infinity,
-                      color: Colors.transparent,
-                      child: Center(
-                        child: Swipinfo(
-                          color: _showInfo ? Colors.white : Colors.transparent,
-                          text: 'Swipe',
-                        ),
-                      )),
+                  ShakeTransition(
+                    axis: Axis.vertical,
+                    curve: Curves.easeInOut,
+                    offset: 40,
+                    child: AnimatedContainer(
+                        curve: Curves.easeInOut,
+                        duration: Duration(milliseconds: 800),
+                        height: _showInfo ? 40 : 0.0,
+                        width: double.infinity,
+                        color: Colors.transparent,
+                        child: Center(
+                          child: AnimatedInfoWidget(
+                            buttonColor: Colors.white,
+                            text: '< < < Swipe',
+                            requiredBool: _showInfo,
+                          ),
+                          // Swipinfo(
+                          //   color: _showInfo ? Colors.white : Colors.transparent,
+                          //   text: 'Swipe',
+                          // ),
+                        )),
+                  ),
                   SizedBox(
                     height: 5,
                   ),
@@ -994,7 +1024,9 @@ class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
   }
 
   _countDown() async {
-    DateTime date = DateTime.parse(widget.event.date);
+    DateTime date = widget.event.date.isEmpty
+        ? DateTime.parse('2023-12-19 00:00:00.000')
+        : DateTime.parse(widget.event.date);
     final toDayDate = DateTime.now();
     DateTime clossingDate = DateTime.parse(widget.event.clossingDay);
 
@@ -1010,10 +1042,14 @@ class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> datePartition =
-        MyDateFormat.toDate(DateTime.parse(widget.event.date)).split(" ");
-    final List<String> timePartition =
-        MyDateFormat.toTime(DateTime.parse(widget.event.time)).split(" ");
+    final List<String> datePartition = widget.event.date.isEmpty
+        ? MyDateFormat.toDate(DateTime.parse('2023-12-19 00:00:00.000'))
+            .split(" ")
+        : MyDateFormat.toDate(DateTime.parse(widget.event.date)).split(" ");
+    final List<String> timePartition = widget.event.time.isEmpty
+        ? MyDateFormat.toTime(DateTime.parse('2023-12-31 19:32:48.757749'))
+            .split(" ")
+        : MyDateFormat.toTime(DateTime.parse(widget.event.time)).split(" ");
     final List<String> namePartition = widget.event.title.split(" ");
     return Padding(
       padding: const EdgeInsets.only(left: 30.0, right: 30, top: 30),
@@ -1321,45 +1357,52 @@ class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: [
-                                        RichText(
-                                          textScaleFactor:
-                                              MediaQuery.of(context)
-                                                  .textScaleFactor,
-                                          text: TextSpan(
-                                            children: [
-                                              TextSpan(
-                                                text: datePartition[0]
-                                                    .toUpperCase(),
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
+                                        widget.event.date.isEmpty
+                                            ? const SizedBox.shrink()
+                                            : RichText(
+                                                textScaleFactor:
+                                                    MediaQuery.of(context)
+                                                        .textScaleFactor,
+                                                text: TextSpan(
+                                                  children: [
+                                                    TextSpan(
+                                                      text: datePartition[0]
+                                                          .toUpperCase(),
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    if (datePartition.length >
+                                                        1)
+                                                      TextSpan(
+                                                        text:
+                                                            "\n${datePartition[1].toUpperCase()} ",
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    if (datePartition.length >
+                                                        2)
+                                                      TextSpan(
+                                                        text:
+                                                            "\n${datePartition[2].toUpperCase()} ",
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                  ],
                                                 ),
+                                                textAlign: TextAlign.right,
                                               ),
-                                              if (datePartition.length > 1)
-                                                TextSpan(
-                                                  text:
-                                                      "\n${datePartition[1].toUpperCase()} ",
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              if (datePartition.length > 2)
-                                                TextSpan(
-                                                  text:
-                                                      "\n${datePartition[2].toUpperCase()} ",
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                            ],
-                                          ),
-                                          textAlign: TextAlign.right,
-                                        ),
                                         Padding(
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 8.0),
@@ -1369,44 +1412,51 @@ class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
                                             color: Colors.white,
                                           ),
                                         ),
-                                        RichText(
-                                          textScaleFactor:
-                                              MediaQuery.of(context)
-                                                  .textScaleFactor,
-                                          text: TextSpan(
-                                            children: [
-                                              TextSpan(
-                                                text: timePartition[0]
-                                                    .toUpperCase(),
-                                                style: TextStyle(
-                                                  fontSize: 25,
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
+                                        widget.event.time.isEmpty
+                                            ? const SizedBox.shrink()
+                                            : RichText(
+                                                textScaleFactor:
+                                                    MediaQuery.of(context)
+                                                        .textScaleFactor,
+                                                text: TextSpan(
+                                                  children: [
+                                                    TextSpan(
+                                                      text: timePartition[0]
+                                                          .toUpperCase(),
+                                                      style: TextStyle(
+                                                        fontSize: 25,
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    if (timePartition.length >
+                                                        1)
+                                                      TextSpan(
+                                                        text:
+                                                            "\n${timePartition[1].toUpperCase()} ",
+                                                        style: TextStyle(
+                                                          fontSize: 25,
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    if (timePartition.length >
+                                                        2)
+                                                      TextSpan(
+                                                        text:
+                                                            "\n${timePartition[2].toUpperCase()} ",
+                                                        style: TextStyle(
+                                                          fontSize: 25,
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                  ],
                                                 ),
                                               ),
-                                              if (timePartition.length > 1)
-                                                TextSpan(
-                                                  text:
-                                                      "\n${timePartition[1].toUpperCase()} ",
-                                                  style: TextStyle(
-                                                    fontSize: 25,
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              if (timePartition.length > 2)
-                                                TextSpan(
-                                                  text:
-                                                      "\n${timePartition[2].toUpperCase()} ",
-                                                  style: TextStyle(
-                                                    fontSize: 25,
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                            ],
-                                          ),
-                                        ),
                                       ],
                                     ),
                                     SizedBox(
@@ -1429,48 +1479,57 @@ class _ExploreEventEnlargedState extends State<ExploreEventEnlarged> {
                                     SizedBox(
                                       height: 30.0,
                                     ),
-                                    _date.difference(_toDaysDate).inMinutes < 0
-                                        ? RichText(
-                                            textScaleFactor:
-                                                MediaQuery.of(context)
-                                                    .textScaleFactor,
-                                            text: TextSpan(
-                                              children: [
-                                                TextSpan(
-                                                  text: '\n\nOngoing...\n\n',
-                                                  style: TextStyle(
-                                                    fontSize: 18,
-                                                    color: Colors.white,
-                                                  ),
+                                    widget.event.date.isEmpty
+                                        ? const SizedBox.shrink()
+                                        : _date
+                                                    .difference(_toDaysDate)
+                                                    .inMinutes <
+                                                0
+                                            ? RichText(
+                                                textScaleFactor:
+                                                    MediaQuery.of(context)
+                                                        .textScaleFactor,
+                                                text: TextSpan(
+                                                  children: [
+                                                    TextSpan(
+                                                      text:
+                                                          '\n\nOngoing...\n\n',
+                                                      style: TextStyle(
+                                                        fontSize: 18,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
-                                              ],
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          )
-                                        : RichText(
-                                            textScaleFactor:
-                                                MediaQuery.of(context)
-                                                    .textScaleFactor,
-                                            text: TextSpan(
-                                              children: [
-                                                TextSpan(
-                                                  text: _different.toString(),
-                                                  style: TextStyle(
-                                                    fontSize: 18,
-                                                    color: Colors.white,
+                                                textAlign: TextAlign.center,
+                                              )
+                                            : widget.event.date.isEmpty
+                                                ? const SizedBox.shrink()
+                                                : RichText(
+                                                    textScaleFactor:
+                                                        MediaQuery.of(context)
+                                                            .textScaleFactor,
+                                                    text: TextSpan(
+                                                      children: [
+                                                        TextSpan(
+                                                          text: _different
+                                                              .toString(),
+                                                          style: TextStyle(
+                                                            fontSize: 18,
+                                                            color: Colors.white,
+                                                          ),
+                                                        ),
+                                                        TextSpan(
+                                                          text: '\nDays\nMore',
+                                                          style: TextStyle(
+                                                            fontSize: 12,
+                                                            color: Colors.white,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    textAlign: TextAlign.left,
                                                   ),
-                                                ),
-                                                TextSpan(
-                                                  text: '\nDays\nMore',
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            textAlign: TextAlign.left,
-                                          ),
                                     Padding(
                                       padding: const EdgeInsets.all(1.0),
                                       child: Container(

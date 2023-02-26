@@ -391,12 +391,40 @@ class _FeatureSurveyState extends State<FeatureSurvey> {
                           ),
                           SizedBox(height: 30),
                           FadeAnimation(
-                            0.5,
-                            Swipinfo(
-                              text: 'Swipe left',
-                              color: Colors.blue,
-                            ),
-                          ),
+                              0.5,
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.arrow_left,
+                                    color: Colors.blue,
+                                    size: 30.0,
+                                  ),
+                                  Icon(
+                                    Icons.arrow_left,
+                                    color: Colors.blue,
+                                    size: 30.0,
+                                  ),
+                                  Icon(
+                                    Icons.arrow_left,
+                                    color: Colors.blue,
+                                    size: 30.0,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    "< < <  Swipe",
+                                    style: TextStyle(
+                                        color: Colors.blue, fontSize: 14),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              )
+                              // Swipinfo(
+                              //   text: 'Swipe left',
+                              //   color: Colors.blue,
+                              // ),
+                              ),
                         ],
                       ),
                     ),

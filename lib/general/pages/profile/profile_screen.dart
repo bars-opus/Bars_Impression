@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:animations/animations.dart';
 import 'package:bars/utilities/exports.dart';
+import 'package:bars/widgets/general_widget/postview_widget.dart';
 import 'package:bars/widgets/general_widget/punch_expanded_profile_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
@@ -33,10 +34,12 @@ class _ProfileScreenState extends State<ProfileScreen>
   List<Event> _events = [];
   late AccountHolder _profileUser;
   int _moodPunched = 0;
-
+  bool _moodPunchedListView = false;
   int _artistFavoriteCount = 0;
   int _artistPunch = 0;
   double coseTope = 10;
+  bool _showInfo = false;
+  bool _showSwipe = false;
 
   @override
   void initState() {
@@ -57,9 +60,54 @@ class _ProfileScreenState extends State<ProfileScreen>
     // _setUpPossitiveRated();
     // _setUpNegativeRated();
     _setUpProfileUser();
+    __setShowDelsyInfo();
   }
 
   _nothing() {}
+
+  __setShowDelsyInfo() async {
+    if (!_showInfo) {
+      Timer(Duration(seconds: 3), () {
+        if (mounted) {
+          // setState(() {
+          _showInfo = true;
+          // });
+          __setShowInfo();
+        }
+      });
+    }
+    if (!_showSwipe) {
+      Timer(Duration(seconds: 3), () {
+        if (mounted) {
+          // setState(() {
+          _showSwipe = true;
+          // });
+          __setShowInfo();
+        }
+      });
+    }
+  }
+
+  __setShowInfo() async {
+    if (_showInfo) {
+      Timer(Duration(seconds: 3), () {
+        if (mounted) {
+          // setState(() {
+          _showInfo = false;
+          // });
+        }
+      });
+    }
+    if (_showSwipe) {
+      Timer(Duration(seconds: 3), () {
+        if (mounted) {
+          // setState(() {
+          _showSwipe = false;
+          // });
+        }
+      });
+    }
+  }
 
   _setupIsFollowing() async {
     bool isFollowingUser = await DatabaseService.isFollowingUser(
@@ -381,6 +429,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                         MaterialPageRoute(
                                           builder: (_) => CreateContents(
                                             user: user,
+                                            from: 'Profile',
                                           ),
                                         ),
                                       ),
@@ -427,7 +476,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                             )),
                                         TextSpan(
                                             text:
-                                                '\nYou registered with a nickname, please tap on edit profile below to choose your username, select an account type and to provide the necessary information to set up your profile. Without your username, you cannot be discovered on the discover page, you cannot punch your mood, create a blog, forum, or event.',
+                                                '\nYou registered with a nickname, please tap on edit profile below to choose your username, select an account type, and provide the necessary information to set up your profile. Without your username, you cannot be discovered on the discover page, and you cannot punch your mood, or create a forum, or an event.',
                                             style: TextStyle(
                                               fontSize: width > 800 ? 14 : 12,
                                               color: Colors.blue,
@@ -495,48 +544,51 @@ class _ProfileScreenState extends State<ProfileScreen>
                     : const SizedBox.shrink()
               ],
             ))
-        : Padding(
-            padding: EdgeInsets.fromLTRB(
-              20.0,
-              30.0,
-              20.0,
-              20.0,
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  width: 150.0,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _isFollowing || _isFecthing
-                          ? Colors.grey
-                          : Color(0xFFD38B41),
-                      foregroundColor: Colors.blue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                    ),
-                    onPressed: () => _followOrUnfollow(user),
-                    child: Text(
-                      _isFecthing
-                          ? 'loading..'
-                          : _isFollowing
-                              ? ' unfollow'
-                              : 'follow',
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        color: _isFollowing ? Colors.black : Colors.white,
-                        fontWeight:
-                            _isFecthing ? FontWeight.normal : FontWeight.bold,
-                      ),
-                    ),
-                  ),
+        : user.score!.isNegative
+            ? const SizedBox.shrink()
+            : Padding(
+                padding: EdgeInsets.fromLTRB(
+                  20.0,
+                  30.0,
+                  20.0,
+                  20.0,
                 ),
-              ],
-            ),
-          );
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      width: 150.0,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _isFollowing || _isFecthing
+                              ? Colors.grey
+                              : Color(0xFFD38B41),
+                          foregroundColor: Colors.blue,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
+                        onPressed: () => _followOrUnfollow(user),
+                        child: Text(
+                          _isFecthing
+                              ? 'loading..'
+                              : _isFollowing
+                                  ? ' unfollow'
+                                  : 'follow',
+                          style: TextStyle(
+                            fontSize: 14.0,
+                            color: _isFollowing ? Colors.black : Colors.white,
+                            fontWeight: _isFecthing
+                                ? FontWeight.normal
+                                : FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
   }
 
   Widget buildBlur({
@@ -552,7 +604,9 @@ class _ProfileScreenState extends State<ProfileScreen>
           child: child,
         ),
       );
-  _buildTilePost(Post post) {
+  _buildTilePost(
+    Post post,
+  ) {
     final width = MediaQuery.of(context).size.width;
     return GridTile(
         child: Tooltip(
@@ -936,7 +990,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                 ),
                 title: 'Punches Used',
                 subTitle:
-                    "The number of moods punched with ${user.userName}'s puncline.",
+                    "The number of moods punched with ${user.userName}'s punchline.",
               ),
               ListviewDivider(),
               UserStatistics(
@@ -1086,9 +1140,21 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
-  _buildDisplayPosts() {
+  _buildDisplayPostsGrid() {
     List<GridTile> tiles = [];
-    _posts.forEach((post) => tiles.add(_buildTilePost(post)));
+    _posts.forEach((post) => tiles.add(_buildTilePost(
+          post,
+        )));
+    // _posts
+    //     .asMap()
+    //     .map((i, e) {
+    //       return MapEntry(
+    //           i,
+    //         );
+    //     })
+    //     .values
+    //     .toList();
+
     return GridView.count(
       crossAxisCount: 2,
       childAspectRatio: 1.0,
@@ -1098,6 +1164,41 @@ class _ProfileScreenState extends State<ProfileScreen>
       children: tiles,
       physics: NeverScrollableScrollPhysics(),
     );
+  }
+
+  _buildDisplayPostsList() {
+    List<PostViewWidget> postViews = [];
+    _posts.forEach((post) {
+      postViews.add(PostViewWidget(
+        post: post,
+        // postList: postList,
+        currentUserId: widget.currentUserId,
+      ));
+    });
+    return Column(children: postViews);
+    // List<GridTile> tiles = [];
+    // _posts.forEach((post) => tiles.add(_buildTilePost(
+    //       post,
+    //     )));
+    // // _posts
+    // //     .asMap()
+    // //     .map((i, e) {
+    // //       return MapEntry(
+    // //           i,
+    // //         );
+    // //     })
+    // //     .values
+    // //     .toList();
+
+    // return GridView.count(
+    //   crossAxisCount: 2,
+    //   childAspectRatio: 1.0,
+    //   mainAxisSpacing: 2.0,
+    //   crossAxisSpacing: 2.0,
+    //   shrinkWrap: true,
+    //   children: tiles,
+    //   physics: NeverScrollableScrollPhysics(),
+    // );
   }
 
   _buildDisplayForum() {
@@ -1179,7 +1280,9 @@ class _ProfileScreenState extends State<ProfileScreen>
     if (_moodPunched == 0) {
       return Column(
         children: <Widget>[
-          _buildDisplayPosts(),
+          _moodPunchedListView
+              ? _buildDisplayPostsList()
+              : _buildDisplayPostsGrid(),
         ],
       );
     } else if (_moodPunched == 1) {
@@ -1196,9 +1299,8 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   _displayBannnedUploadNote(AccountHolder user) {
-    return Text(
-        '${user.name}, your rating is less than -10, for this reason, you cannot be able to upload anything on this platform until your rating is a positive number.',
-        style: TextStyle(color: Colors.red),
+    return Text(' This account has been banned for violating user guidelines.',
+        style: TextStyle(color: Colors.red, fontSize: 12),
         textAlign: TextAlign.center);
   }
 
@@ -1249,6 +1351,21 @@ class _ProfileScreenState extends State<ProfileScreen>
         : _androidDialog2(context, user, from);
   }
 
+  _buildMoodToggleButton() {
+    return IconButton(
+        icon: Icon(
+          _moodPunchedListView ? FontAwesomeIcons.list : Icons.grid_view,
+        ),
+        // iconSize: 30,
+        color: Colors.grey,
+        onPressed: () async {
+          HapticFeedback.heavyImpact();
+          setState(() {
+            _moodPunchedListView = !_moodPunchedListView;
+          });
+        });
+  }
+
   _scaffold(AccountHolder user) {
     final width =
         Responsive.isDesktop(context) ? 600 : MediaQuery.of(context).size.width;
@@ -1262,28 +1379,45 @@ class _ProfileScreenState extends State<ProfileScreen>
           actions: <Widget>[
             widget.currentUserId == widget.userId
                 ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      ConfigBloc().darkModeOn
-                          ? Shimmer.fromColors(
-                              period: Duration(milliseconds: 1000),
-                              baseColor: Colors.blueGrey,
-                              highlightColor: Colors.white,
-                              child: Text('lights off',
-                                  style: TextStyle(
-                                    color: Colors.blueGrey,
-                                  )),
-                            )
-                          : Shimmer.fromColors(
-                              period: Duration(milliseconds: 1000),
-                              baseColor: Colors.white,
-                              highlightColor: Colors.grey,
-                              child: Text(
-                                'lights on',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
+                      // ConfigBloc().darkModeOn
+                      //     ?
+                      AnimatedContainer(
+                        curve: Curves.easeInOut,
+                        duration: Duration(milliseconds: 800),
+                        height: _showInfo ? 30.0 : 0.0,
+                        width: _showInfo ? 60.0 : 0.0,
+                        decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Text(
+                          ConfigBloc().darkModeOn
+                              ? 'lights\noff'
+                              : 'lights\non',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: ConfigBloc().darkModeOn
+                                ? Colors.blueGrey
+                                : Colors.white,
+                          ),
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                      // : Shimmer.fromColors(
+                      //     period: Duration(milliseconds: 1000),
+                      //     baseColor: Colors.white,
+                      //     highlightColor: Colors.grey,
+                      //     child: Text(
+                      //       'lights on',
+                      //       style: TextStyle(color: Colors.white),
+                      //     ),
+                      //   ),
                       IconButton(
                           icon: Icon(
+                            // !_showInfo
+                            //     ? FontAwesomeIcons.solidCircle
+                            //     :
                             ConfigBloc().darkModeOn
                                 ? FontAwesomeIcons.lightbulb
                                 : FontAwesomeIcons.solidLightbulb,
@@ -1296,16 +1430,32 @@ class _ProfileScreenState extends State<ProfileScreen>
                             HapticFeedback.heavyImpact();
                             ConfigBloc()
                                 .add(DarkModeEvent(!ConfigBloc().darkModeOn));
+
+                            if (!_showInfo) {
+                              Timer(Duration(milliseconds: 300), () {
+                                if (mounted) {
+                                  setState(() {
+                                    _showInfo = true;
+                                  });
+                                  __setShowInfo();
+                                }
+                              });
+                            }
                           }),
                     ],
                   )
-                : IconButton(
-                    icon: Icon(
-                      Icons.more_vert,
-                    ),
-                    color: Colors.white,
-                    onPressed: () => _showSelectImageDialog(user),
-                  ),
+                : Provider.of<UserData>(context, listen: false)
+                        .user!
+                        .score!
+                        .isNegative
+                    ? const SizedBox.shrink()
+                    : IconButton(
+                        icon: Icon(
+                          Icons.more_vert,
+                        ),
+                        color: Colors.white,
+                        onPressed: () => _showSelectImageDialog(user),
+                      ),
           ],
           elevation: 0,
           backgroundColor: Color(0xFF1a1a1a),
@@ -1314,7 +1464,9 @@ class _ProfileScreenState extends State<ProfileScreen>
             ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
         body: SingleChildScrollView(
           child: Container(
-            height: MediaQuery.of(context).size.height - 150,
+            height: _moodPunchedListView && _moodPunched == 0
+                ? MediaQuery.of(context).size.height
+                : MediaQuery.of(context).size.height - 150,
             width: width.toDouble(),
             child: RefreshIndicator(
               backgroundColor: Colors.white,
@@ -1337,12 +1489,42 @@ class _ProfileScreenState extends State<ProfileScreen>
                       left: 30.0,
                       right: 30,
                       bottom: 30,
-                      top: 10,
+                      // top: 10,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
+                        user.id == Provider.of<UserData>(context).currentUserId
+                            ? user.profileHandle!.startsWith('Fan')
+                                ? const SizedBox.shrink()
+                                : user.professionalPicture1!.isEmpty
+                                    ? GestureDetector(
+                                        onTap: () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) =>
+                                                  EditProfileProfessional(
+                                                user: user,
+                                              ),
+                                            )),
+                                        child: RichText(
+                                          text: TextSpan(
+                                            children: [
+                                              TextSpan(
+                                                  text:
+                                                      '\nYou must provide your booking information to appear on the discover page. Tap here to provide information.\n',
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.blue,
+                                                  )),
+                                            ],
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      )
+                                    : const SizedBox.shrink()
+                            : const SizedBox.shrink(),
                         Stack(
                           alignment: Alignment.bottomCenter,
                           children: [
@@ -1358,8 +1540,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     color: ConfigBloc().darkModeOn
                                         ? Colors.blueGrey
                                         : Colors.white,
-                                    fontSize: 20.0,
-                                    fontWeight: FontWeight.w400,
+                                    fontSize: 24.0,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
@@ -1372,7 +1554,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     right: 0,
                                     child: Icon(
                                       MdiIcons.checkboxMarkedCircle,
-                                      size: 20,
+                                      size: 15,
                                       color: Colors.blue,
                                     ),
                                   ),
@@ -1391,17 +1573,28 @@ class _ProfileScreenState extends State<ProfileScreen>
                           ),
                           child: Hero(
                             tag: widget.user == null
-                                ? ''
+                                ? 'container1' + user.id.toString()
                                 : 'container1' + widget.user!.id.toString(),
-                            child: CircleAvatar(
-                              backgroundColor: Color(0xFF1a1a1a),
-                              radius: width > 600 ? 120 : 80.0,
-                              backgroundImage: user.profileImageUrl!.isEmpty
-                                  ? AssetImage(
-                                      'assets/images/user_placeholder.png',
-                                    ) as ImageProvider
-                                  : CachedNetworkImageProvider(
-                                      user.profileImageUrl!),
+                            child: GestureDetector(
+                              onTap: () => user.profileImageUrl!.isNotEmpty
+                                  ? Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) => ViewImage(
+                                                user: user,
+                                                from: 'Profile',
+                                              )))
+                                  : () {},
+                              child: CircleAvatar(
+                                backgroundColor: Color(0xFF1a1a1a),
+                                radius: width > 600 ? 120 : 80.0,
+                                backgroundImage: user.profileImageUrl!.isEmpty
+                                    ? AssetImage(
+                                        'assets/images/user_placeholder.png',
+                                      ) as ImageProvider
+                                    : CachedNetworkImageProvider(
+                                        user.profileImageUrl!),
+                              ),
                             ),
                           ),
                         ),
@@ -1443,6 +1636,23 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 ),
                               ),
                             ),
+                            user.profileHandle!.startsWith("Fan") ||
+                                    user.subAccountType!.isEmpty
+                                ? const SizedBox.shrink()
+                                : Material(
+                                    color: Colors.transparent,
+                                    child: Text(
+                                      user.subAccountType!,
+                                      style: TextStyle(
+                                        color: ConfigBloc().darkModeOn
+                                            ? Colors.blueGrey[300]
+                                            : Colors.white,
+                                        fontSize: 12.0,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
                             user.profileHandle!.startsWith('F') ||
                                     user.profileHandle!.isEmpty
                                 ? const SizedBox.shrink()
@@ -1504,48 +1714,48 @@ class _ProfileScreenState extends State<ProfileScreen>
                                           ),
                                         ),
                                       ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      GestureDetector(
-                                        onTap: () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (_) =>
-                                                    UserAdviceScreen(
-                                                      user: user,
-                                                      currentUserId:
-                                                          widget.currentUserId,
-                                                    ))),
-                                        child: Container(
-                                          width: 35,
-                                          height: 35,
-                                          decoration: BoxDecoration(
-                                            color: Colors.transparent,
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                                width: 1.0,
-                                                color: Colors.white),
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(1.0),
-                                            child: Align(
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                'A',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 14,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+                                      // SizedBox(
+                                      //   width: 10,
+                                      // ),
+                                      // SizedBox(
+                                      //   width: 10,
+                                      // ),
+                                      // GestureDetector(
+                                      //   onTap: () => Navigator.push(
+                                      //       context,
+                                      //       MaterialPageRoute(
+                                      //           builder: (_) =>
+                                      //               UserAdviceScreen(
+                                      //                 user: user,
+                                      //                 currentUserId:
+                                      //                     widget.currentUserId,
+                                      //               ))),
+                                      //   child: Container(
+                                      //     width: 35,
+                                      //     height: 35,
+                                      //     decoration: BoxDecoration(
+                                      //       color: Colors.transparent,
+                                      //       shape: BoxShape.circle,
+                                      //       border: Border.all(
+                                      //           width: 1.0,
+                                      //           color: Colors.white),
+                                      //     ),
+                                      //     child: Padding(
+                                      //       padding: const EdgeInsets.all(1.0),
+                                      //       child: Align(
+                                      //         alignment: Alignment.center,
+                                      //         child: Text(
+                                      //           'A',
+                                      //           style: TextStyle(
+                                      //             color: Colors.white,
+                                      //             fontSize: 14,
+                                      //           ),
+                                      //           textAlign: TextAlign.center,
+                                      //         ),
+                                      //       ),
+                                      //     ),
+                                      //   ),
+                                      // ),
                                     ],
                                   ),
                           ],
@@ -1587,8 +1797,44 @@ class _ProfileScreenState extends State<ProfileScreen>
                     ? Divider(color: Colors.white)
                     : const SizedBox.shrink(),
                 SizedBox(
-                  height: 30.0,
+                  height: 20.0,
                 ),
+                AnimatedInfoWidget(
+                  text: '<     Swipe',
+                  requiredBool: _showSwipe,
+                ),
+                // Row(
+                //   crossAxisAlignment: CrossAxisAlignment.center,
+                //   mainAxisAlignment: MainAxisAlignment.center,
+                //   children: [
+                //     AnimatedContainer(
+                //       curve: Curves.easeInOut,
+                //       duration: Duration(milliseconds: 800),
+                //       height: _showSwipe ? 20.0 : 0.0,
+                //       width: _showSwipe ? 70.0 : 0.0,
+                //       decoration: BoxDecoration(
+                //           color: Colors.transparent,
+                //           borderRadius: BorderRadius.circular(5)),
+                //       child: Text(
+                //         '<     Swipe',
+                //         style: TextStyle(
+                //           fontSize: 12,
+                //           color: Colors.blue,
+                //         ),
+                //         textAlign: TextAlign.center,
+                //       ),
+                //     ),
+                //     AnimatedContainer(
+                //       curve: Curves.easeInOut,
+                //       duration: Duration(milliseconds: 800),
+                //       height: _showSwipe ? 20.0 : 0.0,
+                //       width: _showSwipe ? 20.0 : 0.0,
+                //       decoration: BoxDecoration(
+                //           color: Colors.blue,
+                //           borderRadius: BorderRadius.circular(100)),
+                //     ),
+                //   ],
+                // ),
                 _isFecthing
                     ? Center(
                         child: Text(
@@ -1629,7 +1875,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                         TextSpan(
                             text: '"${user.favouritePunchline}"',
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: 12,
                               color: ConfigBloc().darkModeOn
                                   ? Colors.white
                                   : Colors.black,
@@ -1680,11 +1926,33 @@ class _ProfileScreenState extends State<ProfileScreen>
                 SizedBox(
                   height: 40.0,
                 ),
-                _buildMoodPunched(user),
+                user.score!.isNegative
+                    ? const SizedBox.shrink()
+                    : Provider.of<UserData>(context, listen: false)
+                            .user!
+                            .score!
+                            .isNegative
+                        ? const SizedBox.shrink()
+                        : _buildMoodPunched(user),
+                _moodPunched == 0
+                    ? SizedBox(
+                        height: 30.0,
+                      )
+                    : const SizedBox.shrink(),
+                _moodPunched == 0
+                    ? _buildMoodToggleButton()
+                    : const SizedBox.shrink(),
                 SizedBox(
                   height: 30.0,
                 ),
-                _buildDisplay(user),
+                user.score!.isNegative
+                    ? const SizedBox.shrink()
+                    : Provider.of<UserData>(context, listen: false)
+                            .user!
+                            .score!
+                            .isNegative
+                        ? const SizedBox.shrink()
+                        : _buildDisplay(user),
                 SizedBox(
                   height: 40.0,
                 ),
@@ -1907,7 +2175,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             ],
             cancelButton: CupertinoActionSheetAction(
               child: Text(
-                'Cancle',
+                'Cancel',
                 style: TextStyle(
                   color: Colors.red,
                 ),

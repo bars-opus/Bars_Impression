@@ -59,6 +59,7 @@ class _EventTypesAllState extends State<EventTypesAll>
   _setupEventFeed() async {
     QuerySnapshot eventFeedSnapShot = await allEventsRef
         .where('type', isEqualTo: widget.types)
+        .where('showOnExplorePage', isEqualTo: true)
         .limit(limit)
         .get();
     List<Event> events = eventFeedSnapShot.docs
@@ -81,6 +82,7 @@ class _EventTypesAllState extends State<EventTypesAll>
     _hasNext = true;
     QuerySnapshot eventFeedSnapShot = await allEventsRef
         .where('type', isEqualTo: widget.types)
+        .where('showOnExplorePage', isEqualTo: true)
         .limit(limit)
         .startAfterDocument(_eventSnapshot.last)
         .get();

@@ -132,7 +132,6 @@ class _ActivityAdviceScreenState extends State<ActivityAdviceScreen>
       ),
       userName: activityAdvice.authorName,
       onPressed: () async {
-       
         // setState(() {
         //   _isLoading = true;
         // });
@@ -159,6 +158,7 @@ class _ActivityAdviceScreenState extends State<ActivityAdviceScreen>
         // Provider.of<UserData>(context, listen: false).setIsLoading(false);
       },
       isLiked: false,
+      fromUserId: activityAdvice.fromUserId,
     );
     //   },
     // );

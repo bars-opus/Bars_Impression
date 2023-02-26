@@ -40,6 +40,7 @@ class UserData extends ChangeNotifier {
   late bool _bool4;
   late bool _bool5;
   late bool _bool6;
+  late bool _shortcutBool;
   late bool _isLoading;
   late File? _postImage;
   late File? _image;
@@ -86,6 +87,7 @@ class UserData extends ChangeNotifier {
     _bool4 = false;
     _bool5 = false;
     _bool6 = false;
+    _shortcutBool = false;
     _isLoading = false;
     _isLoading = false;
     _chatCount = 0;
@@ -130,6 +132,7 @@ class UserData extends ChangeNotifier {
   bool get bool4 => _bool4;
   bool get bool5 => _bool5;
   bool get bool6 => _bool6;
+  bool get shortcutBool => _shortcutBool;
   bool get isLoading => _isLoading;
   File? get postImage => _postImage;
   File? get image => _image;
@@ -302,6 +305,11 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setShortcutBool(bool shortcutBool) {
+    _shortcutBool = shortcutBool;
+    notifyListeners();
+  }
+
   void setIsLoading(bool isLoading) {
     _isLoading = isLoading;
     notifyListeners();
@@ -365,9 +373,10 @@ class UserData extends ChangeNotifier {
 
     if (userCredential.additionalUserInfo!.isNewUser) {
       return AuthCreateUserCredentials();
-    } kpiStatisticsRef
-            .doc('0SuQxtu52SyYjhOKiLsj')
-            .update({'totalGoogleSignIn': FieldValue.increment(1)});
+    }
+    kpiStatisticsRef
+        .doc('0SuQxtu52SyYjhOKiLsj')
+        .update({'totalGoogleSignIn': FieldValue.increment(1)});
   }
 
   notifyListeners();

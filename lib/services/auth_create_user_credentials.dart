@@ -1,7 +1,6 @@
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/scheduler.dart';
 
-
 class AuthCreateUserCredentials extends StatefulWidget {
   const AuthCreateUserCredentials({Key? key}) : super(key: key);
 
@@ -88,15 +87,15 @@ class _AuthCreateUserCredentialsState extends State<AuthCreateUserCredentials> {
           'privateAccount': false,
           'androidNotificationToken': '',
           'hideUploads': false,
-          'disableAdvice': false,
-          'disableChat': false,
+          'disableAdvice': true,
+          'disableChat': true,
           'enableBookingOnChat': false,
           'hideAdvice': false,
-          'noBooking': true,
+          'noBooking': false,
           'disabledAccount': false,
           'disableContentSharing': false,
           'disableMoodPunchReaction': false,
-          'disableMoodPunchVibe': false,
+          'disableMoodPunchVibe': true,
           'dontShowContentOnExplorePage': false,
           'isEmailVerified': true,
           'specialtyTags': '',
@@ -126,7 +125,7 @@ class _AuthCreateUserCredentialsState extends State<AuthCreateUserCredentials> {
           'profileImageUrl': '',
           'bio': '',
           'profileHandle': '',
-          'disableChat': false,
+          'disableChat': true,
         });
         Provider.of<UserData>(context, listen: false).setShowUsersTab(true);
         await Navigator.of(context).pushAndRemoveUntil(

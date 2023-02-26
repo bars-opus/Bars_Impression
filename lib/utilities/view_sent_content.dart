@@ -17,7 +17,8 @@ class _ViewSentContentState extends State<ViewSentContent> {
     super.initState();
     widget.contentType.startsWith('Forum') ? _setUpThoughts() : _nothing();
   }
-_nothing(){}
+
+  _nothing() {}
   _setUpThoughts() async {
     DatabaseService.numThoughts(widget.contentId).listen((thoughtCount) {
       if (mounted) {
@@ -51,13 +52,14 @@ _nothing(){}
                         if (!snapshot.hasData) {
                           return PostSchimmerSkeleton();
                         }
-                        return AllPostEnlarged(
-                            currentUserId:
-                                Provider.of<UserData>(context, listen: false)
-                                    .currentUserId!,
-                            post: _post,
-                            feed: 'All',
-                         );
+                        return Container();
+                        // AllPostEnlarged(
+                        //     currentUserId:
+                        //         Provider.of<UserData>(context, listen: false)
+                        //             .currentUserId!,
+                        //     post: _post,
+                        //     feed: 'All',
+                        //  );
                       });
                 })
             : widget.contentType.startsWith('Forum')
@@ -143,14 +145,14 @@ _nothing(){}
                                 Provider.of<UserData>(context, listen: false)
                                     .currentUserId!,
                             event: _event,
-                           
                           );
                         })
                     : widget.contentType.startsWith('User')
                         ? ProfileScreen(
                             currentUserId:
                                 Provider.of<UserData>(context).currentUserId!,
-                            userId: widget.contentId, user: null,
+                            userId: widget.contentId,
+                            user: null,
                           )
                         : const SizedBox.shrink());
   }

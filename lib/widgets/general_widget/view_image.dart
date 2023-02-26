@@ -2,9 +2,11 @@ import 'package:bars/utilities/exports.dart';
 
 class ViewImage extends StatefulWidget {
   final AccountHolder user;
+  final String from;
 
   ViewImage({
     required this.user,
+    required this.from,
   });
 
   @override
@@ -20,7 +22,11 @@ class _ViewImageState extends State<ViewImage> {
 
     return ResponsiveScaffold(
       child: Container(
-        color: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+        color: widget.from.startsWith('Profile')
+            ? Color(0xFF1a1a1a)
+            : ConfigBloc().darkModeOn
+                ? Color(0xFF1a1a1a)
+                : Colors.white,
         child: NestedScrollView(
             headerSliverBuilder: (context, innerBoxScrolled) => [
                   SliverAppBar(
@@ -29,12 +35,17 @@ class _ViewImageState extends State<ViewImage> {
                     floating: true,
                     snap: true,
                     iconTheme: new IconThemeData(
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                      color: widget.from.startsWith('Profile')
+                          ? Colors.white
+                          : ConfigBloc().darkModeOn
+                              ? Colors.white
+                              : Colors.black,
                     ),
-                    backgroundColor: ConfigBloc().darkModeOn
+                    backgroundColor: widget.from.startsWith('Profile')
                         ? Color(0xFF1a1a1a)
-                        : Colors.white,
+                        : ConfigBloc().darkModeOn
+                            ? Color(0xFF1a1a1a)
+                            : Colors.white,
                   ),
                 ],
             body: SafeArea(
@@ -54,35 +65,37 @@ class _ViewImageState extends State<ViewImage> {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0, vertical: 30),
-                    child: Container(
-                      width: width,
-                      child: Center(
-                        child: GestureDetector(
-                          onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => ProfileScreen(
-                                        currentUserId: Provider.of<UserData>(
-                                                context,
-                                                listen: false)
-                                            .currentUserId!,
-                                        user: widget.user,
-                                        userId: widget.user.id!,
-                                      ))),
-                          child: Text(
-                            'Got to profile',
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontSize: 12,
+                  widget.from.startsWith('Profile')
+                      ? const SizedBox.shrink()
+                      : Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20.0, vertical: 30),
+                          child: Container(
+                            width: width,
+                            child: Center(
+                              child: GestureDetector(
+                                onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => ProfileScreen(
+                                              currentUserId:
+                                                  Provider.of<UserData>(context,
+                                                          listen: false)
+                                                      .currentUserId!,
+                                              user: widget.user,
+                                              userId: widget.user.id!,
+                                            ))),
+                                child: Text(
+                                  'Got to profile',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             )),

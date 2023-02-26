@@ -5,6 +5,10 @@ import 'package:bars/utilities/exports.dart';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
+
+
+  //2023-02-19 00:00:00.000
+
 class EventViewWidget extends StatelessWidget {
   final int askCount;
   final String currentUserId;
@@ -665,8 +669,12 @@ class EventViewWidget extends StatelessWidget {
                                                                           .black,
                                                                 )),
                                                             TextSpan(
-                                                                text:
-                                                                    "\n${MyDateFormat.toDate(DateTime.parse(event.date))}\n",
+
+                                                            
+                                                                text: event.date
+                                                                        .isEmpty
+                                                                    ? "\n\n"
+                                                                    : "\n${MyDateFormat.toDate(DateTime.parse(event.date))}\n",
                                                                 style:
                                                                     TextStyle(
                                                                   fontSize: 12,
@@ -730,7 +738,7 @@ class EventViewWidget extends StatelessWidget {
                                                                       .blueGrey,
                                                                 )),
                                                             TextSpan(
-                                                                text:
+                                                                text: event.time.isEmpty? '':
                                                                     "${MyDateFormat.toTime(DateTime.parse(event.time))}\n",
                                                                 style:
                                                                     TextStyle(
