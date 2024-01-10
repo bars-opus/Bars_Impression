@@ -19,7 +19,7 @@ class NoUsersDicovered extends StatelessWidget {
                         TextSpan(
                           text: 'NO\n',
                           style: TextStyle(
-                            fontSize: 40.0,
+                            fontSize:  ResponsiveHelper.responsiveFontSize(context, 40,),
                             fontWeight: FontWeight.bold,
                             color: Colors.grey,
                           ),
@@ -27,7 +27,7 @@ class NoUsersDicovered extends StatelessWidget {
                         TextSpan(
                           text: title,
                           style: TextStyle(
-                            fontSize: 14.0,
+                            fontSize: ResponsiveHelper.responsiveFontSize(context, 14,),
                             color: Colors.grey,
                           ),
                         )

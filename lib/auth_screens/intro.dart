@@ -8,6 +8,19 @@ class Intro extends StatefulWidget {
 }
 
 class _IntroState extends State<Intro> {
+  _fadeText(String text) {
+    return FadeAnimatedText(
+      text,
+      textStyle: TextStyle(
+        color: Colors.white,
+        fontSize: ResponsiveHelper.responsiveFontSize(context, 40.0),
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+ 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +37,7 @@ class _IntroState extends State<Intro> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Container(
-                      height: MediaQuery.of(context).size.width + 50,
+                      height: MediaQuery.of(context).size.height / 1.5,
                       child: SingleChildScrollView(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -35,72 +48,33 @@ class _IntroState extends State<Intro> {
                             ),
                             ShakeTransition(
                               child: Container(
-                                height: 50,
+                                height: ResponsiveHelper.responsiveHeight(
+                                    context, 50),
                                 child: AnimatedTextKit(
                                     animatedTexts: [
-                                      FadeAnimatedText(
+                                      _fadeText(
                                         'WELCOME',
-                                        textStyle: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 40,
-                                          fontWeight: FontWeight.bold,
-                                        ),
                                       ),
-                                      FadeAnimatedText(
+                                      _fadeText(
                                         'BIENVENU(E)',
-                                        textStyle: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 40,
-                                          fontWeight: FontWeight.bold,
-                                        ),
                                       ),
-                                      FadeAnimatedText(
-                                        'BIENVENIDOS',
-                                        textStyle: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 40,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                      _fadeText(
+                                        'BIENVENIDOS)',
                                       ),
-                                      FadeAnimatedText(
-                                        'WOEZOR',
-                                        textStyle: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 40,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                      _fadeText(
+                                        'WOEZOR)',
                                       ),
-                                      FadeAnimatedText(
-                                        'KAABO',
-                                        textStyle: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 40,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                      _fadeText(
+                                        'KAABO)',
                                       ),
-                                      FadeAnimatedText(
-                                        'KARIBU',
-                                        textStyle: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 40,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                      _fadeText(
+                                        'KARIBU)',
                                       ),
-                                      FadeAnimatedText(
+                                      _fadeText(
                                         'أهلا بك',
-                                        textStyle: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 40,
-                                          fontWeight: FontWeight.bold,
-                                        ),
                                       ),
-                                      FadeAnimatedText(
+                                      _fadeText(
                                         '欢迎',
-                                        textStyle: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 40,
-                                          fontWeight: FontWeight.bold,
-                                        ),
                                       ),
                                     ],
                                     repeatForever: true,
@@ -109,128 +83,51 @@ class _IntroState extends State<Intro> {
                                     stopPauseOnTap: true),
                               ),
                             ),
-                            SizedBox(height: 10),
-                            RichText(
-                              textScaleFactor:
-                                  MediaQuery.of(context).textScaleFactor,
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                      text:
-                                          'We are connecting all music creatives. We are bringing the whole music industry together. Connect and make history with legends.',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.white,
-                                      )),
-                                ],
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            SizedBox(height: 20),
+                            //
+                            const SizedBox(height: 50),
                             ShakeTransition(
                               axis: Axis.vertical,
                               child: WelcomeInfo(
-                                title: 'Meet people',
-                                subTitle:
-                                    "Discover and get discovered. Get to know the best music creatives from artists, dancers, battle rappers, video vixens, cover art designers, brand influencers, producers, video directors, DJs, photographers, bloggers, and record labels.  People in the music industry can connect for business and collaborations.",
-                                icon: Icon(
-                                  Icons.people_outline,
-                                  size: 40,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ),
-                            ShakeTransition(
-                              child: WelcomeInfo(
-                                title: 'Create a brand',
-                                subTitle:
-                                    "Different account types to help you easily create and grow your brand. Set up a unique profile that influences people to connect and work with you.",
-                                icon: Icon(
-                                  Icons.person_outlined,
-                                  size: 40,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ),
-                            ShakeTransition(
-                              child: WelcomeInfo(
-                                title: 'What is on your mind?',
-                                subTitle:
-                                    "Express yourself and let others know what you think. Create forums to discuss news and events. You can also ask questions about projects you are working on if you find it difficult. Just tell us what is on your mind.",
-                                icon: Icon(
-                                  Icons.forum_outlined,
-                                  size: 40,
-                                  color: Colors.grey,
-                                ),
-                              ),
+                                  title: 'Attend, meet and experience',
+                                  subTitle:
+                                      "Explore events happening around you and have fun attending them, while making new friends. Unforgettable experiences to your fingertips. ",
+                                  icon: Icons.event_outlined
+                                  ),
                             ),
                             ShakeTransition(
                               axis: Axis.vertical,
                               child: WelcomeInfo(
-                                title: 'Attend meet and experience',
+                                title: 'Book Creatives',
                                 subTitle:
-                                    "Explore events and have fun attending and making new friends. A  platform for event organizers to promote upcoming events. Attend, meet, and experience.",
-                                icon: Icon(
-                                  Icons.event_outlined,
-                                  size: 40,
-                                  color: Colors.grey,
-                                ),
+                                    "Connect with the finest music creatives in your area, and book them to perform at your events or collaborate on your projects. Discover and be discovered.  ",
+                                icon: Icons.people_outline,
+                                // _iconData(Icons.people_outline),
                               ),
                             ),
                             ShakeTransition(
-                              axis: Axis.vertical,
                               child: WelcomeInfo(
-                                title: 'Punch your mood',
+                                title: 'Stay Connected',
                                 subTitle:
-                                    "Post and share pictures with friends and express the mood of your picture by relating it with lyrics of songs. Other users can get a direct link to the song and artist's lyrics used. bExpress yourself in a creative way and promote your favorite artists.",
-                                icon: Icon(
-                                  Icons.photo_outlined,
-                                  size: 40,
-                                  color: Colors.grey,
-                                ),
+                                    "Stay connected with the friends you've made at events and continue expanding your network for endless opportunities.",
+                                icon: Icons.person_outlined,
                               ),
                             ),
                           ],
                         ),
                       ),
                     ),
-                    FadeAnimation(
-                      1,
-                      Align(
-                        alignment: Alignment.center,
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 60.0, bottom: 40),
-                          child: Container(
-                            width: 250.0,
-                            child: OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: Colors.blue,
-                                  side: BorderSide(
-                                    width: 1.0,
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: Text(
-                                    'Get Started',
-                                    style: TextStyle(
-                                      color: Colors.blue,
-                                    ),
-                                  ),
-                                ),
-                                onPressed: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => WelcomeScreen(),
-                                      ),
-                                    )),
-                          ),
-                        ),
-                      ),
+                    SizedBox(
+                      height: ResponsiveHelper.responsiveHeight(context, 30),
                     ),
-                    const SizedBox(
-                      height: 60,
+                    BlueOutlineButton(buttonText: 'Get Started', onPressed: () {  Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => WelcomeScreen(),
+                                ),
+                              ); },),
+                   
+                    SizedBox(
+                      height: ResponsiveHelper.responsiveHeight(context, 60),
                     )
                   ]),
             ),

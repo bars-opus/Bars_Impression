@@ -5,26 +5,26 @@ class Ask {
   final String content;
   final String authorId;
   final String report;
-  final String mediaType;
-  final String mediaUrl;
+  // final String mediaType;
+  // final String mediaUrl;
   final String reportConfirmed;
   final Timestamp timestamp;
   final String authorName;
-  final String authorProfileHanlde;
+  final String authorProfileHandle;
   final String authorProfileImageUrl;
-  final String authorVerification;
+  final bool authorVerification;
 
   Ask({
     required this.id,
     required this.content,
     required this.authorId,
-    required this.mediaType,
-    required this.mediaUrl,
+    // required this.mediaType,
+    // required this.mediaUrl,
     required this.report,
     required this.reportConfirmed,
     required this.timestamp,
     required this.authorName,
-    required this.authorProfileHanlde,
+    required this.authorProfileHandle,
     required this.authorProfileImageUrl,
     required this.authorVerification,
   });
@@ -35,14 +35,14 @@ class Ask {
       content: doc['content'],
       authorId: doc['authorId'],
       report: doc['report'] ?? '',
-      mediaUrl: doc['mediaUrl'] ?? '',
-      mediaType: doc['mediaType'] ?? '',
+      // mediaUrl: doc['mediaUrl'] ?? '',
+      // mediaType: doc['mediaType'] ?? '',
       reportConfirmed: doc['reportConfirmed'] ?? '',
       timestamp: doc['timestamp'],
       authorName: doc['authorName'] ?? '',
-      authorProfileHanlde: doc['authorProfileHanlde'] ?? '',
+      authorProfileHandle: doc['authorProfileHandle'] ?? '',
       authorProfileImageUrl: doc['authorProfileImageUrl'] ?? '',
-      authorVerification: doc['authorVerification'] ?? '',
+      authorVerification: doc['authorVerification'] ?? false,
     );
   }
 }

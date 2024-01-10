@@ -1,10 +1,8 @@
 import 'package:bars/utilities/exports.dart';
-import 'package:bars/widgets/info/direction_widget_with_icon.dart';
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter/scheduler.dart';
 
 class EditProfileProfessional extends StatefulWidget {
-  final AccountHolder user;
+  final UserProfessionalModel user;
 
   EditProfileProfessional({
     required this.user,
@@ -17,53 +15,293 @@ class EditProfileProfessional extends StatefulWidget {
 
 class _EditProfileProfessionalState extends State<EditProfileProfessional> {
   final _formKey = GlobalKey<FormState>();
-  File? _professionalPicture1;
-  File? _professionalPicture2;
-  File? _professionalPicture3;
+  final _portfolioFormKey = GlobalKey<FormState>();
+  final _priceFormKey = GlobalKey<FormState>();
+
+  final _collaborationFormKey = GlobalKey<FormState>();
+  final _collaboratedPeopleFormKey = GlobalKey<FormState>();
+
+  final _rolekeyFormKey = GlobalKey<FormState>();
+
+  final _contactsFormKey = GlobalKey<FormState>();
+
+  final _companiesFormKey = GlobalKey<FormState>();
+
+  Future<QuerySnapshot>? _users;
+
+  String imageUrl = '';
+  File? _imgeFile;
+
   bool _isLoading = false;
+  bool _isLoadingImage = false;
+
   late PageController _pageController;
+
+  final _nameController = TextEditingController();
+  final _linkController = TextEditingController();
+  final _typeController = TextEditingController();
+
+  final _collaboratedPersonLinkController = TextEditingController();
+  final _collaboratedPersonNameContrller = TextEditingController();
+
+  final _tagNameController = TextEditingController();
+  String _taggedUserExternalLink = '';
+  String _selectedNameToAdd = '';
+  final FocusNode _nameSearchfocusNode = FocusNode();
+  final _roleController = TextEditingController();
+  ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
 
   @override
   void initState() {
     super.initState();
+    _nameController.addListener(_onAskTextChanged);
+    _linkController.addListener(_onAskTextChanged);
+    _typeController.addListener(_onAskTextChanged);
+    _tagNameController.addListener(_onAskTextChanged);
+    _collaboratedPersonNameContrller.addListener(_onAskTextChanged);
+    _collaboratedPersonLinkController.addListener(_onAskTextChanged);
+
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      Provider.of<UserData>(context, listen: false).setInt1(0);
-      Provider.of<UserData>(context, listen: false).setPostImage(null);
-      Provider.of<UserData>(context, listen: false)
-          .setPost1(widget.user.company!);
-      Provider.of<UserData>(context, listen: false)
-          .setPost2(widget.user.skills!);
-      Provider.of<UserData>(context, listen: false)
-          .setPost3(widget.user.performances!);
-      Provider.of<UserData>(context, listen: false)
-          .setPost4(widget.user.collaborations!);
-      Provider.of<UserData>(context, listen: false)
-          .setPost5(widget.user.awards!);
-      Provider.of<UserData>(context, listen: false)
-          .setPost6(widget.user.management!);
-      Provider.of<UserData>(context, listen: false)
-          .setPost7(widget.user.contacts!);
-      Provider.of<UserData>(context, listen: false)
-          .setPost8(widget.user.profileHandle!);
-      Provider.of<UserData>(context, listen: false)
-          .setPost9(widget.user.website!);
-      Provider.of<UserData>(context, listen: false)
-          .setPost10(widget.user.otherSites1!);
-      Provider.of<UserData>(context, listen: false)
-          .setPost11(widget.user.otherSites2!);
-      Provider.of<UserData>(context, listen: false)
-          .setPost12(widget.user.mail!);
+      clear();
+
+      _addLists();
     });
-    _pageController = PageController(
-      initialPage: 0,
-    );
   }
 
-  _validate() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState?.save();
-      animateToPage();
+  _addLists() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    _provider.setNoBooking(widget.user.noBooking);
+    _provider.setOverview(widget.user.overview);
+    _provider.setTermsAndConditions(widget.user.terms);
+
+    // Add user awards
+    List<PortfolioModel> awards = widget.user.awards;
+    awards.forEach((award) => _provider.setAwards(award));
+
+    // Add user companies
+    List<PortfolioCompanyModel> companies = widget.user.company;
+    companies.forEach((company) => _provider.setCompanies(company));
+
+    // Add user contact
+    List<PortfolioContactModel> contacts = widget.user.contacts;
+    contacts.forEach((contact) => _provider.setBookingContacts(contact));
+
+    // Add links to work
+    List<PortfolioModel> links = widget.user.links;
+    links.forEach((link) => _provider.setLinksToWork(link));
+
+    // Add performance
+    List<PortfolioModel> performances = widget.user.performances;
+    performances
+        .forEach((performance) => _provider.setPerformances(performance));
+
+    // Add skills
+    List<PortfolioModel> skills = widget.user.skills;
+    skills.forEach((skill) => _provider.setSkills(skill));
+
+    // Add genre tags
+    List<PortfolioModel> genreTags = widget.user.genreTags;
+    genreTags.forEach((genre) => _provider.setGenereTags(genre));
+
+    // Add collaborations
+    List<PortfolioCollaborationModel> collaborations =
+        widget.user.collaborations;
+    collaborations
+        .forEach((collaboration) => _provider.setCollaborations(collaboration));
+
+    // Add price
+    List<PriceModel> priceTags = widget.user.priceTags;
+    priceTags.forEach((priceTags) => _provider.setPriceRate(priceTags));
+
+    // Add professional image urls
+    List<String> imageUrls = widget.user.professionalImageUrls;
+    _provider.setProfessionalImages(imageUrls);
+  }
+
+  clear() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    _provider.awards.clear();
+    _provider.company.clear();
+    _provider.bookingContacts.clear();
+    _provider.linksToWork.clear();
+    _provider.performances.clear();
+    _provider.skills.clear();
+    _provider.genreTages.clear();
+    _provider.collaborations.clear();
+    _provider.professionalImages.clear();
+    _provider.priceRate.clear();
+    _provider.setProfessionalImageFile1(null);
+    _provider.setProfessionalImageFile2(null);
+    _provider.setProfessionalImageFile3(null);
+    _provider.setTermsAndConditions('');
+    _provider.setOverview('');
+  }
+
+  void _onAskTextChanged() {
+    if (_nameController.text.isNotEmpty) {
+      _isTypingNotifier.value = true;
+    } else {
+      _isTypingNotifier.value = false;
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _nameController.dispose();
+    _linkController.dispose();
+    _typeController.dispose();
+    _nameSearchfocusNode.dispose();
+    _roleController.dispose();
+  }
+
+  //Method to create ticket
+  void _add(String from) {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    if (_portfolioFormKey.currentState!.validate()) {
+      final portfolio = PortfolioModel(
+        id: UniqueKey().toString(),
+        name: _nameController.text,
+        link: _linkController.text,
+      );
+
+      // adds ticket to ticket list
+      from.startsWith('Performance')
+          ? _provider.setPerformances(portfolio)
+          : from.startsWith('Award')
+              ? _provider.setAwards(portfolio)
+              : from.startsWith('Skills')
+                  ? _provider.setSkills(portfolio)
+                  : from.startsWith('Works')
+                      ? _provider.setLinksToWork(portfolio)
+                      : _provider.setPerformances(portfolio);
+      _nameController.clear();
+      _linkController.clear();
+    }
+  }
+
+  //Method to create ticket
+  void _addContact(bool isEmail
+      // String from,
+      ) {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    if (_contactsFormKey.currentState!.validate()) {
+      final portfolio = PortfolioContactModel(
+        id: UniqueKey().toString(),
+        email: isEmail ? _nameController.text : '',
+        number: !isEmail ? int.parse(_linkController.text) : 0,
+      );
+
+      // adds ticket to ticket list
+      _provider.setBookingContacts(portfolio);
+
+      // Reset ticket variables
+
+      _nameController.clear();
+      _linkController.clear();
+    }
+  }
+
+  //Method to create ticket
+  void _addPriceList() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    if (_priceFormKey.currentState!.validate()) {
+      final portfolio = PriceModel(
+        id: UniqueKey().toString(),
+        name: _nameController.text,
+        price: _typeController.text,
+        value: _roleController.text,
+      );
+
+      // adds ticket to ticket list
+      _provider.setPriceRate(portfolio);
+
+      // Reset ticket variables
+
+      _nameController.clear();
+      _typeController.clear();
+      _roleController.clear();
+    }
+  }
+
+  //Method to create ticket
+  void _addCompany() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    if (_companiesFormKey.currentState!.validate()) {
+      final portfolio = PortfolioCompanyModel(
+        id: UniqueKey().toString(),
+        link: _linkController.text,
+        name: _nameController.text,
+        type: _typeController.text,
+        verified: false,
+      );
+      // adds ticket to ticket list
+      _provider.setCompanies(portfolio);
+
+      // Reset ticket variables
+
+      _nameController.clear();
+      _linkController.clear();
+      _typeController.clear();
+    }
+  }
+
+  //Method to create ticket
+  void _addCollaboration() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    if (_collaborationFormKey.currentState!.validate()) {
+      final portfolio = PortfolioCollaborationModel(
+        id: UniqueKey().toString(),
+        link: _linkController.text,
+        name: _nameController.text,
+        people: List.from(_provider.collaboratedPeople),
+      );
+
+      // adds ticket to ticket list
+      _provider.setCollaborations(portfolio);
+
+      // Reset ticket variables
+      Navigator.pop(context);
+      _nameController.clear();
+      _linkController.clear();
+      _provider.collaboratedPeople.clear();
+    }
+  }
+
+  //Method to create ticket
+  void _addCollaboratedPeople() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    if (_collaboratedPeopleFormKey.currentState!.validate()) {
+      final portfolio = CollaboratedPeople(
+        id: UniqueKey().toString(),
+        name: _collaboratedPersonNameContrller.text.trim().isEmpty
+            ? _selectedNameToAdd
+            : _collaboratedPersonNameContrller.text.trim(),
+        externalProfileLink: _collaboratedPersonLinkController.text.trim(),
+        internalProfileLink: _provider.artist,
+        role: _roleController.text,
+      );
+
+      // adds ticket to ticket list
+      _provider.setCollaboratedPeople(portfolio);
+
+      // _provider.setArtist('');
+      _selectedNameToAdd = '';
+      _roleController.clear();
+      // _taggedUserExternalLink = '';
+
+      _users = null;
+      _collaboratedPersonNameContrller.clear();
+      _collaboratedPersonLinkController.clear();
+
+      Navigator.pop(context);
+      Navigator.pop(context);
+    }
+    // Reset ticket variables
   }
 
   animateToPage() {
@@ -82,116 +320,193 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     );
   }
 
+  void _navigateToPage(BuildContext context, Widget page) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => page),
+    );
+  }
+
   _submit() async {
     if (_formKey.currentState!.validate() & !_isLoading) {
       _formKey.currentState!.save();
+      var _provider = Provider.of<UserData>(context, listen: false);
+
       setState(() {
         _isLoading = true;
       });
-      String _professionalPicture1Url = '';
-      // ignore: unnecessary_null_comparison
-      if (_professionalPicture1 == null) {
-        _professionalPicture1Url = widget.user.professionalPicture1!;
-      } else {
-        _professionalPicture1Url =
-            await StorageService.uploadUserprofessionalPicture1(
-          widget.user.professionalPicture1!,
-          _professionalPicture1!,
-        );
+
+      // Retry helper function
+      Future<T> retry<T>(Future<T> Function() function,
+          {int retries = 3}) async {
+        for (int i = 0; i < retries; i++) {
+          try {
+            return await function();
+          } catch (e) {}
+        }
+        throw Exception('Failed after $retries attempts');
       }
 
-      String _professionalPicture2Url = '';
-      // ignore: unnecessary_null_comparison
-      if (_professionalPicture2 == null) {
-        _professionalPicture2Url = widget.user.professionalPicture2!;
-      } else {
-        _professionalPicture2Url =
-            await StorageService.uploadUserprofessionalPicture2(
-          widget.user.professionalPicture2!,
-          _professionalPicture2!,
-        );
+      // try {
+      List<Future<String>> imageUploadFutures = [];
+
+      if (_provider.professionalImageFile1 != null) {
+        imageUploadFutures
+            .add(retry(() => StorageService.uploadUserprofessionalPicture1(
+                  '',
+                  _provider.professionalImageFile1!,
+                )));
       }
-      String _professionalPicture3Url = '';
-      // ignore: unnecessary_null_comparison
-      if (_professionalPicture3 == null) {
-        _professionalPicture3Url = widget.user.professionalPicture3!;
-      } else {
-        _professionalPicture3Url =
-            await StorageService.uploadUserprofessionalPicture3(
-          widget.user.professionalPicture3!,
-          _professionalPicture3!,
-        );
+
+      if (_provider.professionalImageFile2 != null) {
+        imageUploadFutures
+            .add(retry(() => StorageService.uploadUserprofessionalPicture2(
+                  '',
+                  _provider.professionalImageFile2!,
+                )));
       }
+
+      if (_provider.professionalImageFile3 != null) {
+        imageUploadFutures
+            .add(retry(() => StorageService.uploadUserprofessionalPicture3(
+                  '',
+                  _provider.professionalImageFile3!,
+                )));
+      }
+
+      // Wait for all image uploads to complete
+      List<String> professionalImageUrls =
+          await Future.wait(imageUploadFutures);
+
+      // Add existing image urls
+      if (_provider.professionalImageFile1 == null &&
+          _provider.professionalImages.length > 0) {
+        professionalImageUrls.add(_provider.professionalImages[0]);
+      }
+      if (_provider.professionalImageFile2 == null &&
+          _provider.professionalImages.length > 1) {
+        professionalImageUrls.add(_provider.professionalImages[1]);
+      }
+      if (_provider.professionalImageFile3 == null &&
+          _provider.professionalImages.length > 2) {
+        professionalImageUrls.add(_provider.professionalImages[2]);
+      }
+
+      _provider.setProfessionalImages(professionalImageUrls);
 
       try {
-        usersRef
-            .doc(
-          widget.user.id,
-        )
-            .update({
-          'company': Provider.of<UserData>(context, listen: false).post1,
-          'skills': Provider.of<UserData>(context, listen: false).post2,
-          'performances': Provider.of<UserData>(context, listen: false).post3,
-          'collaborations': Provider.of<UserData>(context, listen: false).post4,
-          'awards': Provider.of<UserData>(context, listen: false).post5,
-          'management': Provider.of<UserData>(context, listen: false).post6,
-          'contacts': Provider.of<UserData>(context, listen: false).post7,
-          'website': Provider.of<UserData>(context, listen: false).post9,
-          'otherSites1': Provider.of<UserData>(context, listen: false).post10,
-          'otherSites2': Provider.of<UserData>(context, listen: false).post11,
-          'professionalPicture1': _professionalPicture1Url,
-          'professionalPicture2': _professionalPicture2Url,
-          'professionalPicture3': _professionalPicture3Url,
-          'mail': Provider.of<UserData>(context, listen: false).post12,
-          'score': 1,
-        });
+        await retry(() => userProfessionalRef.doc(widget.user.id).update({
+              'awards':
+                  _provider.awards.map((awards) => awards.toJson()).toList(),
+              'collaborations': _provider.collaborations
+                  .map((collaborations) => collaborations.toJson())
+                  .toList(),
+              'company':
+                  _provider.company.map((company) => company.toJson()).toList(),
+              'contacts': _provider.bookingContacts
+                  .map((bookingContacts) => bookingContacts.toJson())
+                  .toList(),
+              'genreTags': [],
+              'links': _provider.linksToWork
+                  .map((linksToWork) => linksToWork.toJson())
+                  .toList(),
+              'noBooking': false,
+              'overview': _provider.overview,
+              'performances': _provider.performances
+                  .map((performances) => performances.toJson())
+                  .toList(),
+              'priceTags': _provider.priceRate
+                  .map((priceRate) => priceRate.toJson())
+                  .toList(),
+              'professionalImageUrls': _provider.professionalImages,
+              'skills':
+                  _provider.skills.map((skills) => skills.toJson()).toList(),
+              'subAccountType': [],
+              'terms': _provider.termAndConditions,
+            }));
+        DocumentSnapshot doc =
+            await userProfessionalRef.doc(widget.user.id).get();
+
+        // Assuming 'Event' is a class that can be constructed from a Firestore document
+        UserProfessionalModel updatedUser = UserProfessionalModel.fromDoc(doc);
+        Navigator.pop(context);
+        _navigateToPage(
+          context,
+          DiscographyWidget(
+            currentUserId: widget.user.id,
+            userIndex: 0,
+            userPortfolio: updatedUser,
+          ),
+        );
+        mySnackBar(context, 'Saved successfully.');
       } catch (e) {
-        final double width = Responsive.isDesktop(context)
-            ? 600.0
-            : MediaQuery.of(context).size.width;
-        String error = e.toString();
-        String result = error.contains(']')
-            ? error.substring(error.lastIndexOf(']') + 1)
-            : error;
-        Flushbar(
-          margin: EdgeInsets.all(8),
-          boxShadows: [
-            BoxShadow(
-              color: Colors.black,
-              offset: Offset(0.0, 2.0),
-              blurRadius: 3.0,
-            )
-          ],
-          flushbarPosition: FlushbarPosition.TOP,
-          flushbarStyle: FlushbarStyle.FLOATING,
-          titleText: Text(
-            'Error',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: width > 800 ? 22 : 14,
-            ),
-          ),
-          messageText: Text(
-            result.toString(),
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: width > 800 ? 20 : 12,
-            ),
-          ),
-          icon: Icon(
-            Icons.error_outline,
-            size: 28.0,
-            color: Colors.blue,
-          ),
-          duration: Duration(seconds: 3),
-          leftBarIndicatorColor: Colors.blue,
-        )..show(context);
+        _showBottomSheetErrorMessage('', e);
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
       }
-      Navigator.pop(context);
     }
-    setState(() {
-      _isLoading = false;
-    });
+  }
+
+  _validateTextToxicity() async {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    _provider.setIsLoading(true);
+
+    TextModerator moderator = TextModerator();
+
+    // Define the texts to be checked
+    List<String> textsToCheck = [
+      _provider.overview,
+      _provider.termAndConditions
+    ];
+
+    // Set a threshold for toxicity that is appropriate for your app
+    const double toxicityThreshold = 0.7;
+    bool allTextsValid = true;
+
+    for (String text in textsToCheck) {
+      if (text.isEmpty) {
+        // Handle the case where the text is empty
+        _provider.setIsLoading(false);
+        _submit();
+        // mySnackBar(context, 'Text cannot be empty.');
+        allTextsValid = false;
+        break; // Exit loop as there is an empty text
+      }
+
+      Map<String, dynamic>? analysisResult = await moderator.moderateText(text);
+
+      // Check if the API call was successful
+      if (analysisResult != null) {
+        double toxicityScore = analysisResult['attributeScores']['TOXICITY']
+            ['summaryScore']['value'];
+
+        if (toxicityScore >= toxicityThreshold) {
+          // If any text's score is above the threshold, show a Snackbar and set allTextsValid to false
+          mySnackBarModeration(context,
+              'Your overview, or terms and conditions contains inappropriate statements. Please review');
+          _provider.setIsLoading(false);
+
+          allTextsValid = false;
+          break; // Exit loop as we already found inappropriate content
+        }
+      } else {
+        // Handle the case where the API call failed
+        _provider.setIsLoading(false);
+        mySnackBar(context, 'Try again.');
+        allTextsValid = false;
+        break; // Exit loop as there was an API error
+      }
+    }
+
+    // Animate to the next page if all texts are valid
+    if (allTextsValid) {
+      _provider.setIsLoading(false);
+
+      _submit();
+      // animateToPage(1);
+    }
   }
 
   Future<File> _cropImage(File imageFile) async {
@@ -202,1024 +517,1636 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     return croppedImage!;
   }
 
-  _handleImage() async {
+  _handleImage(String from) async {
+    var _provider = Provider.of<UserData>(context, listen: false);
     final file = await PickCropImage.pickedMedia(cropImage: _cropImage);
     if (file == null) return;
-    // ignore: unnecessary_null_comparison
-    if (file != null) {
+    setState(() {
+      _isLoadingImage = true;
+    });
+    bool isHarmful = await HarmfulContentChecker.checkForHarmfulContent(
+        context, file as File);
+
+    if (isHarmful) {
+      mySnackBarModeration(context,
+          'Harmful content detected. Please choose a different image. Please review');
+      setState(() {
+        _isLoadingImage = false;
+      });
+    } else {
       if (mounted) {
         setState(() {
-          _professionalPicture1 = file as File;
+          _isLoadingImage = false;
+          from.startsWith('one')
+              ? _provider.setProfessionalImageFile1(file)
+              : from.startsWith('two')
+                  ? _provider.setProfessionalImageFile2(file)
+                  : _provider.setProfessionalImageFile3(file);
         });
       }
     }
+
+    // if (file != null) {
+    // if (mounted) {
+    //   setState(() {
+    //     from.startsWith('one')
+    //         ? _provider.setProfessionalImageFile1(file as File)
+    //         : from.startsWith('two')
+    //             ? _provider.setProfessionalImageFile2(file as File)
+    //             : _provider.setProfessionalImageFile3(file as File);
+    //   });
+    // }
+    // }
   }
 
-  _handleImage2() async {
-    final file = await PickCropImage.pickedMedia(cropImage: _cropImage);
-    if (file == null) return;
+  _displayPostImage(
+    String from,
+  ) {
+    var _provider = Provider.of<UserData>(
+      context,
+    );
+    final width = MediaQuery.of(context).size.width;
+
+    if (from.startsWith('one')) {
+      if (_provider.professionalImages.isNotEmpty) {
+        imageUrl = _provider.professionalImages[0];
+        _imgeFile = _provider.professionalImageFile1;
+      } else {
+        _imgeFile = _provider.professionalImageFile1;
+      }
+    } else if (from.startsWith('two')) {
+      if (_provider.professionalImages.length > 1) {
+        imageUrl = _provider.professionalImages[1];
+        _imgeFile = _provider.professionalImageFile2;
+      } else {
+        _imgeFile = _provider.professionalImageFile2;
+      }
+    } else {
+      if (_provider.professionalImages.length > 2) {
+        imageUrl = _provider.professionalImages[2];
+        _imgeFile = _provider.professionalImageFile3;
+      } else {
+        _imgeFile = _provider.professionalImageFile3;
+      }
+    }
+
+    if (_imgeFile == null) {
+      if (imageUrl.isEmpty) {
+        return Container(
+          height: ResponsiveHelper.responsiveWidth(
+            context,
+            100,
+          ),
+          width: ResponsiveHelper.responsiveWidth(
+            context,
+            100,
+          ),
+          decoration: BoxDecoration(
+            color: Theme.of(context).secondaryHeaderColor,
+            borderRadius: BorderRadius.circular(5),
+          ),
+          child: Icon(
+            MdiIcons.image,
+            color: Theme.of(context).primaryColor,
+            size: ResponsiveHelper.responsiveWidth(
+              context,
+              50,
+            ),
+          ),
+        );
+      } else {
+        return Container(
+          height: ResponsiveHelper.responsiveWidth(
+            context,
+            100,
+          ),
+          width: ResponsiveHelper.responsiveWidth(
+            context,
+            100,
+          ),
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: CachedNetworkImageProvider(imageUrl),
+              fit: BoxFit.cover,
+            ),
+          ),
+        );
+      }
+    } else {
+      return Container(
+        height: ResponsiveHelper.responsiveHeight(
+          context,
+          100,
+        ),
+        width: ResponsiveHelper.responsiveHeight(
+          context,
+          100,
+        ),
+        child: Image(
+          image: FileImage(_imgeFile!),
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+  }
+
+  _textField(
+    String labelText,
+    String hintText,
+    bool autofocus,
+    final TextEditingController controller,
+    Function(String) onChanged,
+    // bool isNumber,
+    bool isLink,
+  ) {
+    return TextFormField(
+        controller: controller,
+        style: TextStyle(
+            fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
+            color: Theme.of(context).secondaryHeaderColor,
+            fontWeight: FontWeight.normal),
+        keyboardType: TextInputType.text,
+        maxLines: null,
+        autofocus: autofocus,
+        keyboardAppearance: MediaQuery.of(context).platformBrightness,
+        textCapitalization: TextCapitalization.sentences,
+        onChanged: onChanged,
+        validator: isLink
+            ? (value) {
+                String pattern =
+                    r'^(https?:\/\/)?(([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?)$';
+                RegExp regex = new RegExp(pattern);
+                if (!regex.hasMatch(value!))
+                  return 'Enter a valid URL';
+                else
+                  return null;
+              }
+            : (input) =>
+                input!.trim().length < 1 ? 'This field cannot be empty' : null,
+        decoration: InputDecoration(
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.blue, width: 3.0),
+          ),
+          hintText: hintText,
+          hintStyle: TextStyle(
+              fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+              color: Colors.grey),
+          labelText: labelText,
+          labelStyle: TextStyle(
+            fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+            color: Colors.grey,
+          ),
+          enabledBorder: OutlineInputBorder(
+              borderSide: new BorderSide(color: Colors.grey)),
+        ));
+  }
+
+  _textFieldContact(
+    String labelText,
+    String hintText,
+    bool autofocus,
+    final TextEditingController controller,
+    Function(String) onChanged,
+    bool isEmail,
+    // bool isLink,
+  ) {
+    return TextFormField(
+        controller: controller,
+        style: TextStyle(
+            fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
+            color: Theme.of(context).secondaryHeaderColor,
+            fontWeight: FontWeight.normal),
+        keyboardType: isEmail
+            ? TextInputType.text
+            : TextInputType.numberWithOptions(decimal: true),
+        maxLines: null,
+        autofocus: autofocus,
+        keyboardAppearance: MediaQuery.of(context).platformBrightness,
+        textCapitalization: TextCapitalization.sentences,
+        onChanged: onChanged,
+        validator: isEmail
+            ? (email) => email != null && !EmailValidator.validate(email.trim())
+                ? 'Please enter a valid email'
+                : null
+            : (value) {
+                String pattern =
+                    r'^(\+\d{1,3}[- ]?)?\d{1,4}[- ]?(\d{1,3}[- ]?){1,2}\d{1,9}(\ x\d{1,4})?$';
+                RegExp regex = new RegExp(pattern);
+                if (!regex.hasMatch(value!))
+                  return 'Enter a valid phone number';
+                else
+                  return null;
+              },
+        decoration: InputDecoration(
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.blue, width: 3.0),
+          ),
+          hintText: hintText,
+          hintStyle: TextStyle(
+              fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+              color: Colors.grey),
+          labelText: labelText,
+          labelStyle: TextStyle(
+            fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+            color: Colors.grey,
+          ),
+          enabledBorder: OutlineInputBorder(
+              borderSide: new BorderSide(color: Colors.grey)),
+        ));
+  }
+
+  void _showBottomTaggedPeopleRole(
+      String nameLabel, String nameHint, List<PortfolioModel> portfolios) {
+    var _size = MediaQuery.of(context).size;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return AnimatedBuilder(
+              animation: Listenable.merge([_nameController, _linkController]),
+              builder: (BuildContext context, Widget? child) {
+                return Form(
+                  key: _portfolioFormKey,
+                  child: Container(
+                    height: _size.height.toDouble() / 1.2,
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColorLight,
+                        borderRadius: BorderRadius.circular(30)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: ListView(
+                        // crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          portfolios.length < 6 &&
+                                  _nameController.text.length > 0 &&
+                                  _linkController.text.length > 0
+                              ? Align(
+                                  alignment: Alignment.centerRight,
+                                  child: MiniCircularProgressButton(
+                                    onPressed: () {
+                                      portfolios.length > 5
+                                          ? _showBottomSheetErrorMessage(
+                                              nameLabel.toLowerCase(), '')
+                                          : _add(nameLabel);
+                                    },
+                                    text: "Add",
+                                    color: Colors.blue,
+                                  ),
+                                )
+                              : ListTile(
+                                  leading: portfolios.length > 0
+                                      ? SizedBox.shrink()
+                                      : IconButton(
+                                          icon: const Icon(Icons.close),
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          color: Theme.of(context)
+                                              .secondaryHeaderColor,
+                                        ),
+                                  trailing: portfolios.length < 1
+                                      ? SizedBox.shrink()
+                                      : GestureDetector(
+                                          onTap: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text(
+                                            'Done',
+                                            style: TextStyle(
+                                                color: Colors.blue,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                ),
+                          if (portfolios.length > 5 &&
+                              _nameController.text.length > 0 &&
+                              _linkController.text.length > 0)
+                            Text(
+                              'You cannot add more than six $nameLabel',
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          const SizedBox(
+                            height: 40,
+                          ),
+                          _textField(
+                            nameLabel,
+                            nameHint,
+                            true,
+                            _nameController,
+                            (value) {
+                              setState(() {});
+                            },
+                            // false,
+                            false,
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          _textField(
+                            'link to $nameLabel',
+                            'link to $nameLabel',
+                            false,
+                            _linkController,
+                            (value) {
+                              setState(() {});
+                            },
+                            // false,
+                            true,
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Text(
+                            'Link to ${nameLabel.toLowerCase()} fields cannot be empty. These links are necessary to provide people with a deeper understanding of your abilities. Each link should direct to a definition or explanation of the respective ${nameLabel.toLowerCase()}, providing additional context and clarification.',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              });
+        });
+      },
+    );
+  }
+
+  void _showBottomCompany(List<PortfolioCompanyModel> portfolios) {
+    var _size = MediaQuery.of(context).size;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return AnimatedBuilder(
+              animation: Listenable.merge([_nameController, _linkController]),
+              builder: (BuildContext context, Widget? child) {
+                return Form(
+                  key: _companiesFormKey,
+                  child: Container(
+                    height: _size.height.toDouble() / 1.3,
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColorLight,
+                        borderRadius: BorderRadius.circular(30)),
+                    child: Scaffold(
+                      backgroundColor: Colors.transparent,
+                      body: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: ListView(
+                          children: [
+                            portfolios.length < 6 &&
+                                    _nameController.text.length > 0 &&
+                                    _linkController.text.length > 0
+                                ? Align(
+                                    alignment: Alignment.centerRight,
+                                    child: MiniCircularProgressButton(
+                                      onPressed: () {
+                                        _addCompany();
+                                      },
+                                      text: "Add",
+                                      color: Colors.blue,
+                                    ),
+                                  )
+                                : ListTile(
+                                    leading: portfolios.length > 0
+                                        ? SizedBox.shrink()
+                                        : IconButton(
+                                            icon: const Icon(Icons.close),
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            color: Theme.of(context)
+                                                .secondaryHeaderColor,
+                                          ),
+                                    trailing: portfolios.length < 1
+                                        ? SizedBox.shrink()
+                                        : GestureDetector(
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text(
+                                              'Done',
+                                              style: TextStyle(
+                                                  fontSize: ResponsiveHelper
+                                                      .responsiveFontSize(
+                                                          context, 14.0),
+                                                  color: Colors.blue,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                  ),
+                            const SizedBox(
+                              height: 30,
+                            ),
+                            if (portfolios.length > 5 &&
+                                _nameController.text.length > 0 &&
+                                _linkController.text.length > 0)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 30.0),
+                                child: Text(
+                                  'You cannot add more than six contacts',
+                                  style: TextStyle(
+                                      fontSize:
+                                          ResponsiveHelper.responsiveFontSize(
+                                              context, 14.0),
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            _textField(
+                              'compan',
+                              'Company / organization name',
+                              true,
+                              _nameController,
+                              (value) {
+                                setState(() {});
+                              },
+                              // false,
+                              false,
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            _textField(
+                              'Type',
+                              'Eg. record label, NGO, management',
+                              true,
+                              _typeController,
+                              (value) {
+                                setState(() {});
+                              },
+                              // false,
+                              false,
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            _textField(
+                              'link to company',
+                              'website or socal media site of company',
+                              false,
+                              _linkController,
+                              (value) {
+                                setState(() {});
+                              },
+                              // false,
+                              true,
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Text(
+                              'The link fields for the company and type must not be left empty. These links are essential for individuals to gain a comprehensive understanding of the companies you are associated with. Each link should direct to a website or webpage that provides detailed information about the respective company',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              });
+        });
+      },
+    );
+  }
+
+// The _showBottomContact method is responsible for displaying a modal bottom sheet with a form for contact-related input.
+// It accepts a boolean isEmail to determine whether it should display an email input field or a phone number input field,
+// and a list of PortfolioContactModel objects, presumably to display existing
+// Refactor method
+  void _showBottomContact(
+      bool isEmail, List<PortfolioContactModel> portfolios) {
+    TextEditingController controller =
+        isEmail ? _nameController : _linkController;
+    String nameLabel = isEmail ? 'email' : 'phone number';
+    String nameHint = isEmail ? 'example@mail.com' : '123 456 7890';
+    var _size = MediaQuery.of(context).size;
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+            return AnimatedBuilder(
+                animation: controller, // Use the controller as the Listenable
+                builder: (BuildContext context, Widget? child) {
+                  return Form(
+                    key: _contactsFormKey,
+                    child: Container(
+                      height: _size.height.toDouble() / sheetHeightFraction,
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColorLight,
+                          borderRadius: BorderRadius.circular(30)),
+                      child: Scaffold(
+                        backgroundColor: Colors.transparent,
+                        body: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: ListView(
+                            children: [
+                              portfolios.length < 6 &&
+                                      controller.text.length > 0
+                                  ? Align(
+                                      alignment: Alignment.centerRight,
+                                      child: MiniCircularProgressButton(
+                                        onPressed: () {
+                                          _addContact(isEmail);
+                                        },
+                                        text: "Add",
+                                        color: Colors.blue,
+                                      ),
+                                    )
+                                  : _buildActionButtonsContacts(portfolios),
+                              if (portfolios.length > 5 &&
+                                  controller.text.length > 0)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 30.0),
+                                  child: Text(
+                                    'You cannot add more than six contacts',
+                                    style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              _textFieldContact(
+                                nameLabel,
+                                nameHint,
+                                true,
+                                controller,
+                                (value) {
+                                  setState(() {});
+                                },
+                                // !isEmail,
+                                isEmail,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                });
+          });
+        });
+  }
+
+  _buildActionButtonsContacts(List<PortfolioContactModel> portfolios) {
+    return ListTile(
+      leading: portfolios.length > 0
+          ? SizedBox.shrink()
+          : IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              color: Theme.of(context).secondaryHeaderColor,
+            ),
+      trailing: portfolios.length < 1
+          ? SizedBox.shrink()
+          : GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Text(
+                'Done',
+                style: TextStyle(
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 14.0),
+                    color: Colors.blue,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+    );
+  }
+
+  _contactTypeWidget(IconData icon, String type) {
+    return Row(
+      children: [
+        Icon(icon),
+        const SizedBox(
+          width: 20,
+        ),
+        Text(
+          type,
+          style: Theme.of(context).textTheme.bodyMedium,
+        )
+      ],
+    );
+  }
+
+  void _showBottomSheetContactType(
+    List<PortfolioContactModel> contacts,
+  ) {
+    final width = MediaQuery.of(context).size.width;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+            height: 230,
+            decoration: BoxDecoration(
+                color: Theme.of(context).primaryColorLight,
+                borderRadius: BorderRadius.circular(30)),
+            child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30.0, vertical: 2),
+                child: MyBottomModelSheetAction(actions: [
+                  const SizedBox(
+                    height: 40,
+                  ),
+                  BottomModalSheetButton(
+                      onPressed: () async {
+                        await Future.delayed(Duration(milliseconds: 300));
+                        Navigator.pop(context);
+                        _showBottomContact(true, contacts);
+                      },
+                      width: width.toDouble(),
+                      child: _contactTypeWidget(Icons.email_outlined, "Email")),
+                  BottomModalSheetButton(
+                    onPressed: () async {
+                      await Future.delayed(Duration(milliseconds: 300));
+                      Navigator.pop(context);
+                      _showBottomContact(false, contacts);
+                    },
+                    width: width.toDouble(),
+                    child: _contactTypeWidget(Icons.phone, "Number"),
+                  ),
+                ])));
+      },
+    );
+  }
+
+  // The _showBottomPrice method is responsible for displaying
+  // a modal bottom sheet that contains a form for price-related input
+  double sheetHeightFraction = 1.3;
+  double paddingSize = 20;
+
+  _priceTextField(
+    String labelText,
+    String hintText,
+    final TextEditingController controller,
+    Function(String) onChanged,
+  ) {
+    return TextFormField(
+        controller: controller,
+        style: TextStyle(
+            fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
+            color: Theme.of(context).secondaryHeaderColor,
+            fontWeight: FontWeight.normal),
+        keyboardType: TextInputType.numberWithOptions(decimal: true),
+        maxLines: null,
+        autofocus: true,
+        keyboardAppearance: MediaQuery.of(context).platformBrightness,
+        textCapitalization: TextCapitalization.sentences,
+        onChanged: onChanged,
+        validator: (value) {
+          String pattern = r'^\d+(\.\d{1,2})?$';
+          RegExp regex = new RegExp(pattern);
+          if (!regex.hasMatch(value!))
+            return 'Enter a valid price';
+          else
+            return null;
+        },
+        decoration: InputDecoration(
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.blue, width: 3.0),
+          ),
+          hintText: hintText,
+          hintStyle: TextStyle(
+              fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+              color: Colors.grey),
+          labelText: labelText,
+          labelStyle: TextStyle(
+            fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+            color: Colors.grey,
+          ),
+          enabledBorder: OutlineInputBorder(
+              borderSide: new BorderSide(color: Colors.grey)),
+        ));
+  }
+
+// Refactor method
+  void _showBottomPrice(List<PriceModel> price) {
+    var _size = MediaQuery.of(context).size;
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+            return ValueListenableBuilder(
+                valueListenable: _isTypingNotifier,
+                builder: (BuildContext context, bool isTyping, Widget? child) {
+                  return Form(
+                    key: _priceFormKey,
+                    child: Container(
+                      height: _size.height.toDouble() / sheetHeightFraction,
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColorLight,
+                          borderRadius: BorderRadius.circular(30)),
+                      child: Scaffold(
+                        backgroundColor: Colors.transparent,
+                        body: Padding(
+                          padding: EdgeInsets.all(paddingSize),
+                          child: ListView(children: [
+                            price.length < 6 &&
+                                    _nameController.text.length > 0 &&
+                                    _typeController.text.length > 0 &&
+                                    _roleController.text.length > 0
+                                ? Align(
+                                    alignment: Alignment.centerRight,
+                                    child: MiniCircularProgressButton(
+                                      onPressed: () {
+                                        _addPriceList();
+                                      },
+                                      text: "Add",
+                                      color: Colors.blue,
+                                    ),
+                                  )
+                                : ListTile(
+                                    leading: _nameController.text.length > 0 &&
+                                            _typeController.text.length > 0 &&
+                                            _roleController.text.length > 0
+                                        ? SizedBox.shrink()
+                                        : IconButton(
+                                            icon: const Icon(Icons.close),
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            color: Theme.of(context)
+                                                .secondaryHeaderColor,
+                                          ),
+                                    trailing: price.length < 1
+                                        ? SizedBox.shrink()
+                                        : GestureDetector(
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text(
+                                              'Done',
+                                              style: TextStyle(
+                                                  fontSize: ResponsiveHelper
+                                                      .responsiveFontSize(
+                                                          context, 14.0),
+                                                  color: Colors.blue,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                  ),
+                            const SizedBox(height: 40),
+                            if (price.length > 5 &&
+                                _typeController.text.length > 0 &&
+                                _roleController.text.length > 0)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 30.0),
+                                child: Text(
+                                  'You cannot add more than six price packages',
+                                  style: TextStyle(
+                                      fontSize:
+                                          ResponsiveHelper.responsiveFontSize(
+                                              context, 14.0),
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            _priceTextField(
+                              'Price',
+                              '0.00',
+                              _typeController,
+                              (value) {
+                                setState(() {});
+                              },
+                            ),
+                            const SizedBox(height: 20),
+                            _textField(
+                              'Package name',
+                              'eg. Performance, Collaboration, exhibition',
+                              true,
+                              _nameController,
+                              (value) {
+                                setState(() {});
+                              },
+                              false,
+                            ),
+                            const SizedBox(height: 20),
+                            _textField(
+                              'Value',
+                              'eg. An hour performance, 30 minutes appearance',
+                              true,
+                              _roleController,
+                              (value) {
+                                setState(() {});
+                              },
+                              false,
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Text(
+                              'It is important for people to have comprehensive knowledge of your package options, including pricing and the corresponding value you offer. So they know what to bargain for before contacting you.',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          ]),
+                        ),
+                      ),
+                    ),
+                  );
+                });
+          });
+        });
+  }
+
+  _buildUserTile(AccountHolderAuthor user) {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    return SearchUserTile(
+        verified: user.verified!,
+        userName: user.userName!.toUpperCase(),
+        profileHandle: user.profileHandle!,
+        // company: user.company!,
+        profileImageUrl: user.profileImageUrl!,
+        bio: user.bio!,
+        onPressed: () {
+          _provider.setArtist(user.userId!);
+
+          if (mounted) {
+            setState(() {
+              _selectedNameToAdd = user.userName!;
+            });
+          }
+
+          _addCollaboratedPeople();
+        });
+  }
+
+  _cancelSearchUser() {
     if (mounted) {
       setState(() {
-        _professionalPicture2 = file as File;
+        _users = null;
+        _clearSearchUser();
       });
     }
   }
 
-  _handleImage3() async {
-    final file = await PickCropImage.pickedMedia(cropImage: _cropImage);
-    if (file == null) return;
-    if (mounted) {
-      setState(() {
-        _professionalPicture3 = file as File;
-      });
-    }
+  _clearSearchUser() {
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _tagNameController.clear());
+    _selectedNameToAdd = '';
+    _tagNameController.clear();
   }
 
-  _displayPostImage() {
-    final width = Responsive.isDesktop(context)
-        ? 600.0
-        : MediaQuery.of(context).size.width;
-    // ignore: unnecessary_null_comparison
-    if (_professionalPicture1 == null) {
-      if (widget.user.professionalPicture1!.isEmpty) {
-        return Container(
-          height: width / 4,
-          width: width / 4,
-          decoration: BoxDecoration(
-            color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-            borderRadius: BorderRadius.circular(5),
-          ),
-          child: Icon(
-            MdiIcons.image,
-            color:
-                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
-            size: 30,
-          ),
-        );
-      } else {
-        return Container(
-          height: width / 4,
-          width: width / 4,
-          decoration: BoxDecoration(
-              image: DecorationImage(
-            image:
-                CachedNetworkImageProvider(widget.user.professionalPicture1!),
-            fit: BoxFit.cover,
-          )),
-        );
-      }
-    } else {
-      return Container(
-        height: width / 4,
-        width: width / 4,
-        child: Image(
-          image: FileImage(_professionalPicture1!),
-          fit: BoxFit.cover,
-        ),
-      );
-    }
-  }
+// The _showBottomTaggedPeople method is well-structured and clear in its purpose.
+// It opens a modal bottom sheet that provides a form for user input and displays a list of tagged users.
+//  It appears to search and show users based on the input and also allows for adding additional people with an external link.
 
-  _displayPostImage2() {
-    final width = Responsive.isDesktop(context)
-        ? 600.0
-        : MediaQuery.of(context).size.width;
-    // ignore: unnecessary_null_comparison
-    if (_professionalPicture2 == null) {
-      if (widget.user.professionalPicture2!.isEmpty) {
-        return Container(
-          height: width / 4,
-          width: width / 4,
-          decoration: BoxDecoration(
-            color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-            borderRadius: BorderRadius.circular(5),
-          ),
-          child: Icon(
-            MdiIcons.image,
-            color:
-                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
-            size: 30,
-          ),
-        );
-      } else {
-        return Container(
-          height: width / 4,
-          width: width / 4,
-          decoration: BoxDecoration(
-              image: DecorationImage(
-            image:
-                CachedNetworkImageProvider(widget.user.professionalPicture2!),
-            fit: BoxFit.cover,
-          )),
-        );
-      }
-    } else {
-      return Container(
-        height: width / 4,
-        width: width / 4,
-        child: Image(
-          image: FileImage(_professionalPicture2!),
-          fit: BoxFit.cover,
-        ),
-      );
-    }
-  }
-
-  _displayPostImage3() {
-    final width = Responsive.isDesktop(context)
-        ? 600.0
-        : MediaQuery.of(context).size.width;
-    // ignore: unnecessary_null_comparison
-    if (_professionalPicture3 == null) {
-      if (widget.user.professionalPicture3!.isEmpty) {
-        return Container(
-          height: width / 4,
-          width: width / 4,
-          decoration: BoxDecoration(
-            color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-            borderRadius: BorderRadius.circular(5),
-          ),
-          child: Icon(
-            MdiIcons.image,
-            color:
-                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
-            size: 30,
-          ),
-        );
-      } else {
-        return Container(
-          height: width / 4,
-          width: width / 4,
-          decoration: BoxDecoration(
-              image: DecorationImage(
-            image:
-                CachedNetworkImageProvider(widget.user.professionalPicture3!),
-            fit: BoxFit.cover,
-          )),
-        );
-      }
-    } else {
-      return Container(
-        height: width / 4,
-        width: width / 4,
-        child: Image(
-          image: FileImage(_professionalPicture3!),
-          fit: BoxFit.cover,
-        ),
-      );
-    }
-  }
-
-  _displayButton() {
-    if (widget.user.professionalPicture1!.isNotEmpty ||
-        widget.user.professionalPicture2!.isNotEmpty ||
-        widget.user.professionalPicture3!.isNotEmpty) {
-      return Padding(
-        padding: const EdgeInsets.only(top: 40.0),
-        child: Container(
-          width: 250.0,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              elevation: 20.0,
-              foregroundColor: Colors.blue,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-            ),
-            child: Text(
-              'Done',
-              style: TextStyle(
-                color:
-                    ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.blue,
-                fontSize: 16.0,
-              ),
-            ),
-            onPressed: () => _submit(),
-          ),
-        ),
-      );
-    } else {
-      // ignore: unnecessary_null_comparison
-      return _professionalPicture1 == null ||
-              // ignore: unnecessary_null_comparison
-              _professionalPicture2 == null ||
-              // ignore: unnecessary_null_comparison
-              _professionalPicture3 == null
-          ? Padding(
-              padding: const EdgeInsets.only(top: 30.0),
-              child: Container(
-                  width: double.infinity,
-                  color: Colors.blue,
-                  child: ListTile(
-                    title: Text(
-                        'Add three professional images in order to be able to save your booking information',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                        )),
-                    leading: IconButton(
-                      icon: Icon(Icons.error_outline),
-                      iconSize: 20.0,
-                      color: Colors.white,
-                      onPressed: () => () {},
-                    ),
-                  )),
-            )
-          : Padding(
-              padding: const EdgeInsets.only(top: 40.0),
-              child: Container(
-                width: 250.0,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    elevation: 20.0,
-                    foregroundColor: Colors.blue,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
-                  child: Text(
-                    'Done',
-                    style: TextStyle(
-                      color: ConfigBloc().darkModeOn
-                          ? Color(0xFF1a1a1a)
-                          : Colors.blue,
-                      fontSize: 16.0,
+// Refactor method
+  void _showBottomTaggedPeople() {
+    var _size = MediaQuery.of(context).size;
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+            return GestureDetector(
+              onTap: () => FocusScope.of(context).unfocus(),
+              child: Form(
+                key: _collaboratedPeopleFormKey,
+                child: Container(
+                  height: MediaQuery.of(context).size.height.toDouble() / 1.1,
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColorLight,
+                      borderRadius: BorderRadius.circular(30)),
+                  child: Scaffold(
+                    backgroundColor: Colors.transparent,
+                    body: Padding(
+                      padding: const EdgeInsets.only(top: 30),
+                      child: DoubleOptionTabview(
+                        height: _size.height,
+                        onPressed: (int) {},
+                        tabText1: 'From Bars Impression',
+                        tabText2: 'From external link',
+                        initalTab: 0,
+                        widget1: ListView(
+                          children: [
+                            Text(
+                              _tagNameController.text,
+                            ),
+                            SearchContentField(
+                                cancelSearch: _cancelSearchUser,
+                                controller: _tagNameController,
+                                focusNode: _nameSearchfocusNode,
+                                hintText: 'Enter username..',
+                                onClearText: () {
+                                  _clearSearchUser();
+                                },
+                                onTap: () {},
+                                onChanged: (input) {
+                                  setState(() {
+                                    _users = DatabaseService.searchUsers(
+                                        input.toUpperCase());
+                                  });
+                                }),
+                            const SizedBox(
+                              height: 30,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20.0),
+                              child: Text(
+                                'Tag the person so that other users can easily reach out to them if they are interested in their work.',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey,
+                                  fontSize: ResponsiveHelper.responsiveFontSize(
+                                      context, 12.0),
+                                ),
+                              ),
+                            ),
+                            if (_users != null)
+                              FutureBuilder<QuerySnapshot>(
+                                  future: _users,
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                                    if (!snapshot.hasData) {
+                                      return const SizedBox.shrink();
+                                    }
+                                    if (snapshot.data!.docs.length == 0) {
+                                      return Center(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(10.0),
+                                          child: RichText(
+                                              textScaleFactor:
+                                                  MediaQuery.of(context)
+                                                      .textScaleFactor,
+                                              text: TextSpan(
+                                                children: [
+                                                  TextSpan(
+                                                      text: "No users found. ",
+                                                      style: TextStyle(
+                                                          fontSize: ResponsiveHelper
+                                                              .responsiveFontSize(
+                                                                  context,
+                                                                  20.0),
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color:
+                                                              Colors.blueGrey)),
+                                                  TextSpan(
+                                                      text:
+                                                          '\nCheck username and try again.'),
+                                                ],
+                                                style: TextStyle(
+                                                    fontSize: ResponsiveHelper
+                                                        .responsiveFontSize(
+                                                            context, 14.0),
+                                                    color: Colors.grey),
+                                              )),
+                                        ),
+                                      );
+                                    }
+                                    return SingleChildScrollView(
+                                      child: SizedBox(
+                                        height: _size.width,
+                                        child: Column(
+                                          children: [
+                                            const SizedBox(
+                                              height: 20,
+                                            ),
+                                            SingleChildScrollView(
+                                              child: SizedBox(
+                                                height: _size.width - 20,
+                                                child: ListView.builder(
+                                                  itemCount: snapshot
+                                                      .data!.docs.length,
+                                                  itemBuilder:
+                                                      (BuildContext context,
+                                                          int index) {
+                                                    AccountHolderAuthor? user =
+                                                        AccountHolderAuthor
+                                                            .fromDoc(snapshot
+                                                                .data!
+                                                                .docs[index]);
+                                                    return _buildUserTile(user);
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                          ],
+                        ),
+                        widget2: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Column(
+                            children: [
+                              _collaboratedPersonNameContrller.text
+                                          .trim()
+                                          .isEmpty ||
+                                      _collaboratedPersonLinkController.text
+                                          .trim()
+                                          .isEmpty
+                                  ? SizedBox.shrink()
+                                  : Align(
+                                      alignment: Alignment.centerRight,
+                                      child: MiniCircularProgressButton(
+                                        onPressed: () {
+                                          _addCollaboratedPeople();
+                                        },
+                                        text: "Add",
+                                        color: Colors.blue,
+                                      ),
+                                    ),
+                              _textField(
+                                'Name',
+                                'Nam of person',
+                                false,
+                                _collaboratedPersonNameContrller,
+                                (value) {
+                                  setState(() {});
+                                },
+                                false,
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              _textField(
+                                '_taggedUserExternalLink',
+                                'External link to profile on social media or a blog',
+                                false,
+                                _collaboratedPersonLinkController,
+                                (value) {
+                                  setState(() {});
+                                },
+                                true,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0),
+                                child: Text(
+                                  'Tag the person so that other users can easily reach out to them if they are interested in their work.',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey,
+                                    fontSize:
+                                        ResponsiveHelper.responsiveFontSize(
+                                            context, 12.0),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        lightColor: true,
+                        pageTitle: '',
+                      ),
                     ),
                   ),
-                  onPressed: () => _submit(),
                 ),
               ),
             );
-    }
+          });
+        });
   }
 
+// The _showBottomSheetCollaboration method seems well-structured and clear in its purpose.
+// It opens a modal bottom sheet that provides a form for user input.
+// This form changes depending on the isRole boolean parameter.
+
+  // Define constants for magic numbers
+  // double sheetHeightFraction = 1.3;
+  // double paddingSize = 20.0;
+
+// Create a method for the SizedBox
+  SizedBox _sizedBox() {
+    return SizedBox(height: paddingSize);
+  }
+
+// Refactor method
+  void _showBottomSheetCollaboration(bool isRole) {
+    TextEditingController textInputController =
+        isRole ? _roleController : _nameController;
+    String formLabel = isRole ? 'Role' : 'Name of collaboration';
+    String formHint = isRole
+        ? 'Please provide the role of the person in this collaboration.'
+        : 'Please provide the name of the collaboration or project.';
+
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+            return ValueListenableBuilder(
+                valueListenable: _isTypingNotifier,
+                builder: (BuildContext context, bool isTyping, Widget? child) {
+                  return Form(
+                    key: isRole ? _rolekeyFormKey : _collaborationFormKey,
+                    child:
+                        Consumer<UserData>(builder: (context, userData, child) {
+                      return Container(
+                        height: MediaQuery.of(context).size.height.toDouble() /
+                            sheetHeightFraction,
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColorLight,
+                            borderRadius: BorderRadius.circular(30)),
+                        child: Padding(
+                          padding: EdgeInsets.all(paddingSize),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildListTile(
+                                  isRole,
+                                  Provider.of<UserData>(context, listen: false)
+                                      .collaboratedPeople),
+                              _sizedBox(),
+                              textInputController.text.length < 1 ||
+                                      _linkController.text.length < 1
+                                  ? SizedBox.shrink()
+                                  : _addFeaturedPerson(isRole),
+                              _sizedBox(),
+                              _textField(
+                                formLabel,
+                                formHint,
+                                true,
+                                textInputController,
+                                (value) {
+                                  setState(() {});
+                                },
+                                // false,
+                                false,
+                              ),
+                              _sizedBox(),
+                              isRole
+                                  ? SizedBox.shrink()
+                                  : _textField(
+                                      'link to $formLabel',
+                                      'link to $formHint',
+                                      false,
+                                      _linkController,
+                                      (value) {
+                                        setState(() {});
+                                      },
+                                      true,
+                                    ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Text(
+                                isRole
+                                    ? 'Please specify the role of the person in the collaboration, such as producer, organizer, manager, or any other relevant role.'
+                                    : 'Include a link to the collaboration to allow individuals to view the work.',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
+                  );
+                });
+          });
+        });
+  }
+
+  _addFeaturedPerson(bool isRole) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: ShakeTransition(
+        curve: Curves.easeOutBack,
+        child: GestureDetector(
+          onTap: () {
+            !isRole
+                ? _showBottomSheetCollaboration(true)
+                : _showBottomTaggedPeople();
+          },
+          child: Text(
+            isRole ? 'Continue' : 'Add featured person',
+            style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
+    );
+  }
+
+  ListTile _buildListTile(
+      bool isRole, List<CollaboratedPeople> _collaboratedPeople) {
+    return ListTile(
+      leading: IconButton(
+        icon: const Icon(Icons.close),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        color: Theme.of(context).secondaryHeaderColor,
+      ),
+      trailing: _collaboratedPeople.length < 1 || isRole
+          ? SizedBox.shrink()
+          : GestureDetector(
+              onTap: () {
+                _addCollaboration();
+              },
+              child: Text(
+                'Done',
+                style:
+                    TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+              ),
+            ),
+    );
+  }
+
+// _showBottomTaggedPeople
   setNull() {
-    Provider.of<UserData>(context, listen: false).setPostImage(null);
     Provider.of<UserData>(context, listen: false).setInt1(0);
-    Provider.of<UserData>(context, listen: false).setPost1('');
-    Provider.of<UserData>(context, listen: false).setPost2('');
-    Provider.of<UserData>(context, listen: false).setPost3('');
-    Provider.of<UserData>(context, listen: false).setPost4('');
-    Provider.of<UserData>(context, listen: false).setPost5('');
-    Provider.of<UserData>(context, listen: false).setPost6('');
-    Provider.of<UserData>(context, listen: false).setPost7('');
-    Provider.of<UserData>(context, listen: false).setPost8('');
-    Provider.of<UserData>(context, listen: false).setPost9('');
-    Provider.of<UserData>(context, listen: false).setPost10('');
-    Provider.of<UserData>(context, listen: false).setPost11('');
-    Provider.of<UserData>(context, listen: false).setPost12('');
-    Provider.of<UserData>(context, listen: false).setPost13('');
-    Provider.of<UserData>(context, listen: false).setBool1(false);
-    Provider.of<UserData>(context, listen: false).setBool2(false);
-    Provider.of<UserData>(context, listen: false).setBool3(false);
-    Provider.of<UserData>(context, listen: false).setBool4(false);
+    Provider.of<UserData>(context, listen: false).setProfileHandle('');
+    Provider.of<UserData>(context, listen: false).setEmail('');
     Provider.of<UserData>(context, listen: false).setBool5(false);
     Provider.of<UserData>(context, listen: false).setBool6(false);
     Provider.of<UserData>(context, listen: false).addressSearchResults = [];
   }
 
-  _pop() {
-    Navigator.pop(context);
+  void _showBottomSheetMore(
+    String from,
+    List<PortfolioModel> portfolios,
+  ) {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    final double height = MediaQuery.of(context).size.height;
+    Widget _widget;
 
-    setNull();
+    switch (from.split(' ')[0]) {
+      case 'contacts':
+        _widget = PortfolioContactWidget(
+          portfolios: _provider.bookingContacts,
+          edit: true,
+        );
+        break;
+      case 'price':
+        _widget = PriceRateWidget(
+            edit: false, prices: _provider.priceRate, seeMore: true);
+        break;
+      case 'companies':
+        _widget = PortfolioCompanyWidget(
+            seeMore: true, portfolios: _provider.company, edit: false);
+        break;
+      case 'portfolio':
+        _widget =
+            PortfolioWidget(portfolios: portfolios, seeMore: true, edit: false);
+        break;
+      default:
+        _widget = PortfolioWidget(portfolios: [], seeMore: true, edit: false);
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          height: height / 1.3,
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColorLight,
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 30.0),
+              child: _widget,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showBottomSheetErrorMessage(String from, Object e) {
+    String error = e.toString();
+    String result = error.contains(']')
+        ? error.substring(error.lastIndexOf(']') + 1)
+        : error;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return DisplayErrorHandler(
+          buttonText: 'Ok',
+          onPressed: () async {
+            Navigator.pop(context);
+          },
+          title: error.isEmpty
+              ? 'You can add up to six $from'
+              : '\n$result.toString(),',
+          subTitle: '',
+        );
+      },
+    );
+  }
+
+  // Define these once at the class level
+
+  _addPotfolio(
+    String label,
+    String hint,
+    String from,
+    List<PortfolioModel> portfolios,
+    int length,
+  ) {
+    double width = MediaQuery.of(context).size.width;
+    var _provider = Provider.of<UserData>(context);
+    var _onPressed;
+    var _widget;
+    final _greyTextStyle = TextStyle(
+      color: Colors.grey,
+      fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+    );
+
+    final _blueBoldTextStyle = TextStyle(
+      color: Colors.blue,
+      fontWeight: FontWeight.bold,
+      fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+    );
+    switch (from.split(' ')[0]) {
+      case 'price':
+        _onPressed = () => _showBottomPrice(_provider.priceRate);
+        _widget = PriceRateWidget(
+            edit: true, prices: _provider.priceRate, seeMore: true);
+        break;
+      case 'collaborations':
+        _onPressed = () => _showBottomSheetCollaboration(false);
+        _widget = PortfolioCollaborationWidget(
+            collaborations: _provider.collaborations,
+            seeMore: false,
+            edit: true);
+        break;
+      case 'contacts':
+        _onPressed =
+            () => _showBottomSheetContactType(_provider.bookingContacts);
+        _widget = PortfolioContactWidget(
+          portfolios: _provider.bookingContacts,
+          edit: true,
+        );
+        break;
+      case 'works':
+        _onPressed = () =>
+            _showBottomTaggedPeopleRole(label, label, _provider.performances);
+        _widget = PortfolioWidget(
+            portfolios: _provider.performances, seeMore: false, edit: true);
+        break;
+      case 'companies':
+        _onPressed = () => _showBottomCompany(_provider.company);
+        _widget = PortfolioCompanyWidget(
+            portfolios: _provider.company, seeMore: false, edit: true);
+        break;
+      case 'portfolio':
+        _onPressed =
+            () => _showBottomTaggedPeopleRole(label, label, portfolios);
+        _widget =
+            PortfolioWidget(portfolios: portfolios, seeMore: false, edit: true);
+        break;
+      default:
+        _onPressed = () =>
+            _showBottomTaggedPeopleRole(label, label, _provider.performances);
+        _widget = PortfolioWidget(
+            portfolios: _provider.performances, seeMore: false, edit: true);
+    }
+
+    return Column(
+      children: [
+        PickOptionWidget(
+          title: 'Add $label',
+          onPressed: length > 5
+              ? () {
+                  _showBottomSheetErrorMessage(label.toLowerCase(), '');
+                }
+              : _onPressed,
+          dropDown: false,
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        _widget,
+        const SizedBox(
+          height: 5,
+        ),
+        Row(
+          children: [
+            Container(
+              width: length < 4 ? width - 40 : width / 1.5,
+              child: Text(
+                hint,
+                style: _greyTextStyle,
+              ),
+            ),
+            length < 4
+                ? SizedBox.shrink()
+                : GestureDetector(
+                    onTap: () {
+                      _showBottomSheetMore(from, portfolios);
+                    },
+                    child: Text(
+                      "See more.",
+                      style: _blueBoldTextStyle,
+                    ),
+                  ),
+          ],
+        ),
+        const SizedBox(
+          height: 30,
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveScaffold(
-      child: Scaffold(
-          backgroundColor:
-              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
-          appBar: AppBar(
-            iconTheme: IconThemeData(
-              color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-            ),
-            elevation: 0,
-            backgroundColor:
-                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
-            title: Text(
-              'Edit Profile',
-              style: TextStyle(
-                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-            ),
-            leading: IconButton(
-                icon: Icon(
-                    Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
-                onPressed: () {
-                  Provider.of<UserData>(context, listen: false).int1 != 0
-                      ? animateBack()
-                      : _pop();
-                }),
-            centerTitle: true,
-          ),
-          body: SafeArea(
-            child: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
-              child: Form(
-                key: _formKey,
-                child: PageView(
-                    controller: _pageController,
-                    physics: const NeverScrollableScrollPhysics(),
-                    onPageChanged: (int index) {
-                      Provider.of<UserData>(context, listen: false)
-                          .setInt1(index);
-                    },
-                    children: [
-                      SingleChildScrollView(
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                EditProfileInfo(
-                                  editTitle: 'Booking \nportfolio',
-                                  info:
-                                      'Enter your professional information to make it easy for other users to get to know you for business and recommendation purposes.  Read the instruction under each text field carefully before filling out the forms.',
-                                  icon: Icons.work,
-                                ),
-                                TextFormField(
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: null,
-                                  textCapitalization:
-                                      TextCapitalization.sentences,
-                                  initialValue: widget.user.company,
-                                  style: TextStyle(
-                                    fontSize: 12.0,
-                                    color: ConfigBloc().darkModeOn
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                  decoration: InputDecoration(
-                                    labelStyle: TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.blue, width: 3.0),
-                                    ),
-                                    enabledBorder: new OutlineInputBorder(
-                                        borderSide:
-                                            new BorderSide(color: Colors.grey)),
-                                    hintText: " example (Black Records)",
-                                    hintStyle: TextStyle(
-                                        fontSize: 12, color: Colors.grey),
-                                    labelText: 'Record Label / Organization',
-                                  ),
-                                  validator: (input) => input!.trim().length < 1
-                                      ? 'Please enter a valid  company name'
-                                      : null,
-                                  onSaved: (input) => Provider.of<UserData>(
-                                          context,
-                                          listen: false)
-                                      .setPost1(input!),
-                                ),
-                                SizedBox(
-                                  height: 10.0,
-                                ),
-                                Text(
-                                  "Enter the company or organization you are associated with or signed to.",
-                                  style: TextStyle(
-                                      color: Colors.grey, fontSize: 12),
-                                ),
-                                SizedBox(
-                                  height: 20.0,
-                                ),
-                                TextFormField(
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: null,
-                                  textCapitalization:
-                                      TextCapitalization.sentences,
-                                  initialValue: widget.user.skills,
-                                  style: TextStyle(
-                                    fontSize: 12.0,
-                                    color: ConfigBloc().darkModeOn
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                  decoration: InputDecoration(
-                                    labelStyle: TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.blue, width: 3.0),
-                                    ),
-                                    enabledBorder: new OutlineInputBorder(
-                                        borderSide:
-                                            new BorderSide(color: Colors.grey)),
-                                    hintText:
-                                        "example (rapping, singing, dancing)",
-                                    hintStyle: TextStyle(
-                                        fontSize: 12, color: Colors.grey),
-                                    labelText: 'Skills',
-                                  ),
-                                  validator: (input) => input!.trim().length < 1
-                                      ? 'Please enter some skills'
-                                      : null,
-                                  onSaved: (input) => Provider.of<UserData>(
-                                          context,
-                                          listen: false)
-                                      .setPost2(input!),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text(
-                                  "Enter your skills in your field of work as a musician, producer, video director, or any of the above account types. Separate each skill with a comma(,).",
-                                  style: TextStyle(
-                                      color: Colors.grey, fontSize: 12),
-                                ),
-                                widget.user.profileHandle!.startsWith('M') ||
-                                        widget.user.profileHandle!
-                                            .startsWith("B") ||
-                                        widget.user.profileHandle!
-                                            .startsWith("V") ||
-                                        widget.user.profileHandle!
-                                            .startsWith("P")
-                                    ? const SizedBox.shrink()
-                                    : SizedBox(
-                                        height: 20.0,
-                                      ),
-                                widget.user.profileHandle!.startsWith('M') ||
-                                        widget.user.profileHandle!
-                                            .startsWith("B") ||
-                                        widget.user.profileHandle!
-                                            .startsWith("V") ||
-                                        widget.user.profileHandle!
-                                            .startsWith("P")
-                                    ? const SizedBox.shrink()
-                                    : TextFormField(
-                                        keyboardType: TextInputType.multiline,
-                                        maxLines: null,
-                                        textCapitalization:
-                                            TextCapitalization.sentences,
-                                        initialValue: widget.user.performances,
-                                        style: TextStyle(
-                                          fontSize: 12.0,
-                                          color: ConfigBloc().darkModeOn
-                                              ? Colors.white
-                                              : Colors.black,
-                                        ),
-                                        decoration: InputDecoration(
-                                          labelStyle: TextStyle(
-                                            color: Colors.grey,
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.blue, width: 3.0),
-                                          ),
-                                          enabledBorder: new OutlineInputBorder(
-                                              borderSide: new BorderSide(
-                                                  color: Colors.grey)),
-                                          hintText: " At least 3 ",
-                                          hintStyle: TextStyle(
-                                              fontSize: 14.0,
-                                              color: Colors.grey),
-                                          labelText: 'Performances/exhibitions',
-                                        ),
-                                        validator: (input) => input!
-                                                    .trim()
-                                                    .length <
-                                                1
-                                            ? 'Please, enter at least three performances/exhibitions'
-                                            : null,
-                                        onSaved: (input) =>
-                                            Provider.of<UserData>(context,
-                                                    listen: false)
-                                                .setPost3(input!),
-                                      ),
-                                widget.user.profileHandle!.startsWith('M') ||
-                                        widget.user.profileHandle!
-                                            .startsWith("B") ||
-                                        widget.user.profileHandle!
-                                            .startsWith("V") ||
-                                        widget.user.profileHandle!
-                                            .startsWith("P")
-                                    ? const SizedBox.shrink()
-                                    : SizedBox(height: 10),
-                                widget.user.profileHandle!.startsWith('M') ||
-                                        widget.user.profileHandle!
-                                            .startsWith("B") ||
-                                        widget.user.profileHandle!
-                                            .startsWith("V") ||
-                                        widget.user.profileHandle!
-                                            .startsWith("P")
-                                    ? const SizedBox.shrink()
-                                    : Text(
-                                        "Enter any event or ceremony you've performed at based on your account type, for example, BET 2019, World Art exhibition.",
-                                        style: TextStyle(
-                                            color: Colors.grey, fontSize: 12),
-                                      ),
-                                SizedBox(
-                                  height: 20.0,
-                                ),
-                                TextFormField(
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: null,
-                                  textCapitalization:
-                                      TextCapitalization.sentences,
-                                  initialValue: widget.user.collaborations,
-                                  style: TextStyle(
-                                    fontSize: 12.0,
-                                    color: ConfigBloc().darkModeOn
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                  decoration: InputDecoration(
-                                    labelStyle: TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.blue, width: 3.0),
-                                    ),
-                                    enabledBorder: new OutlineInputBorder(
-                                        borderSide:
-                                            new BorderSide(color: Colors.grey)),
-                                    hintText: " At least 5",
-                                    hintStyle: TextStyle(
-                                        fontSize: 12, color: Colors.grey),
-                                    labelText: 'Top Collaborations/Projects',
-                                  ),
-                                  validator: (input) => input!.trim().length < 1
-                                      ? 'Please, enter some collaborations/projects.'
-                                      : null,
-                                  onSaved: (input) => Provider.of<UserData>(
-                                          context,
-                                          listen: false)
-                                      .setPost4(input!),
-                                ),
-                                SizedBox(height: 10),
-                                Text(
-                                  "With artists, producers, designers, or organizers",
-                                  style: TextStyle(
-                                      color: Colors.grey, fontSize: 12),
-                                ),
-                                widget.user.profileHandle!.startsWith('V')
-                                    ? const SizedBox.shrink()
-                                    : SizedBox(
-                                        height: 20.0,
-                                      ),
-                                widget.user.profileHandle!.startsWith('V')
-                                    ? const SizedBox.shrink()
-                                    : TextFormField(
-                                        keyboardType: TextInputType.multiline,
-                                        maxLines: null,
-                                        textCapitalization:
-                                            TextCapitalization.sentences,
-                                        initialValue: widget.user.awards,
-                                        style: TextStyle(
-                                          fontSize: 12.0,
-                                          color: ConfigBloc().darkModeOn
-                                              ? Colors.white
-                                              : Colors.black,
-                                        ),
-                                        decoration: InputDecoration(
-                                          labelStyle: TextStyle(
-                                            color: Colors.grey,
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors.blue, width: 3.0),
-                                          ),
-                                          enabledBorder: new OutlineInputBorder(
-                                              borderSide: new BorderSide(
-                                                  color: Colors.grey)),
-                                          hintText:
-                                              "Separate each award with a comma(,) ",
-                                          hintStyle: TextStyle(
-                                              fontSize: 14.0,
-                                              color: Colors.grey),
-                                          labelText: 'Awards',
-                                        ),
-                                        onSaved: (input) =>
-                                            Provider.of<UserData>(context,
-                                                    listen: false)
-                                                .setPost5(input!),
-                                      ),
-                                widget.user.profileHandle!.startsWith('V')
-                                    ? const SizedBox.shrink()
-                                    : SizedBox(height: 10),
-                                widget.user.profileHandle!.startsWith('V')
-                                    ? const SizedBox.shrink()
-                                    : Text(
-                                        "Please enter any awards, prizes or plaques received. For example (6 BETs, 2 Grammys, and 9 AFRIMAS ).",
-                                        style: TextStyle(
-                                            color: Colors.grey, fontSize: 12),
-                                      ),
-                                const SizedBox(
-                                  height: 50,
-                                ),
-                                Center(
-                                  child: AlwaysWhiteButton(
-                                      onPressed: _validate,
-                                      buttonText: "Continue"),
-                                ),
-                                const SizedBox(
-                                  height: 70,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      SingleChildScrollView(
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Column(
-                              children: [
-                                DirectionWidgetWithIcon(
-                                  text:
-                                      'Enter your booking and management information. You can only add one phone number with an email.',
-                                  fontSize: null,
-                                  icon: Icon(
-                                    Icons.email,
-                                    color: Color.fromRGBO(33, 150, 243, 1),
-                                  ),
-                                  title: 'Booking Contact',
-                                ),
-                                const SizedBox(
-                                  height: 10.0,
-                                ),
-                                TextFormField(
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: null,
-                                  textCapitalization:
-                                      TextCapitalization.sentences,
-                                  initialValue: widget.user.management,
-                                  style: TextStyle(
-                                    fontSize: 12.0,
-                                    color: ConfigBloc().darkModeOn
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                  decoration: InputDecoration(
-                                    labelStyle: TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.blue, width: 3.0),
-                                    ),
-                                    enabledBorder: new OutlineInputBorder(
-                                        borderSide:
-                                            new BorderSide(color: Colors.grey)),
-                                    hintText: "The company managing you",
-                                    hintStyle: TextStyle(
-                                        fontSize: 12, color: Colors.grey),
-                                    labelText: 'Management',
-                                  ),
-                                  validator: (input) => input!.trim().length < 1
-                                      ? 'Please enter management/manager'
-                                      : null,
-                                  onSaved: (input) => Provider.of<UserData>(
-                                          context,
-                                          listen: false)
-                                      .setPost6(input!),
-                                ),
-                                SizedBox(height: 10),
-                                Text(
-                                  " Enter the name of your manager or any company managing you.",
-                                  style: TextStyle(
-                                      color: Colors.grey, fontSize: 12),
-                                ),
-                                SizedBox(
-                                  height: 20.0,
-                                ),
-                                TextFormField(
-                                  maxLines: null,
-                                  initialValue: widget.user.contacts,
-                                  keyboardType: TextInputType.number,
-                                  style: TextStyle(
-                                    fontSize: 12.0,
-                                    color: ConfigBloc().darkModeOn
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                  decoration: InputDecoration(
-                                    labelStyle: TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.blue, width: 3.0),
-                                    ),
-                                    enabledBorder: new OutlineInputBorder(
-                                        borderSide:
-                                            new BorderSide(color: Colors.grey)),
-                                    hintText: " Phone number of your manager",
-                                    hintStyle: TextStyle(
-                                        fontSize: 12, color: Colors.grey),
-                                    labelText: 'Phone number',
-                                  ),
-                                  autofillHints: [
-                                    AutofillHints.telephoneNumberDevice,
-                                  ],
-                                  validator: (input) => input!.trim().length < 1
-                                      ? 'Please enter a phone number'
-                                      : null,
-                                  onSaved: (input) => Provider.of<UserData>(
-                                          context,
-                                          listen: false)
-                                      .setPost7(input!),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text(
-                                  "Enter the phone number of your manager or the company managing you.",
-                                  style: TextStyle(
-                                      color: Colors.grey, fontSize: 12),
-                                ),
-                                SizedBox(
-                                  height: 20.0,
-                                ),
-                                TextFormField(
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: null,
-                                  initialValue: widget.user.mail,
-                                  style: TextStyle(
-                                    fontSize: 12.0,
-                                    color: ConfigBloc().darkModeOn
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                  decoration: InputDecoration(
-                                    labelStyle: TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.blue, width: 3.0),
-                                    ),
-                                    enabledBorder: new OutlineInputBorder(
-                                        borderSide:
-                                            new BorderSide(color: Colors.grey)),
-                                    hintText: "Enter your email address",
-                                    hintStyle: TextStyle(
-                                        fontSize: 12, color: Colors.grey),
-                                    labelText: 'Email',
-                                  ),
-                                  autofillHints: [AutofillHints.email],
-                                  validator: (email) => email != null &&
-                                          !EmailValidator.validate(email)
-                                      ? 'Please enter a valid email'
-                                      : null,
-                                  onSaved: (input) => Provider.of<UserData>(
-                                          context,
-                                          listen: false)
-                                      .setPost12(input!),
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Text(
-                                  "Please, enter an email to help people contact you if they don't hear from your manager.",
-                                  style: TextStyle(
-                                      color: Colors.grey, fontSize: 12),
-                                ),
-                                const SizedBox(
-                                  height: 50,
-                                ),
-                                Center(
-                                  child: AlwaysWhiteButton(
-                                      onPressed: _validate,
-                                      buttonText: "Continue"),
-                                ),
-                                const SizedBox(
-                                  height: 70,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      SingleChildScrollView(
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Column(
-                              children: [
-                                DirectionWidgetWithIcon(
-                                  text:
-                                      'Enter the following hyperlinks to some of your works. You can enter a hyperlink directly to your website,  or any other platform. The URL should be directly copied from a browser and not an app when adding a hyperlink.',
-                                  fontSize: null,
-                                  icon: Icon(
-                                    Icons.work,
-                                    color: Colors.blue,
-                                  ),
-                                  title: 'Your Works',
-                                ),
-                                const SizedBox(
-                                  height: 40.0,
-                                ),
-                                TextFormField(
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: null,
-                                  initialValue: widget.user.website,
-                                  style: TextStyle(
-                                    fontSize: 12.0,
-                                    color: ConfigBloc().darkModeOn
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                  decoration: InputDecoration(
-                                    labelStyle: TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.blue, width: 3.0),
-                                    ),
-                                    enabledBorder: new OutlineInputBorder(
-                                        borderSide:
-                                            new BorderSide(color: Colors.grey)),
-                                    hintText: " Enter hyperlink",
-                                    hintStyle: TextStyle(
-                                        fontSize: 12, color: Colors.grey),
-                                    labelText: 'Website',
-                                  ),
-                                  onSaved: (input) => Provider.of<UserData>(
-                                          context,
-                                          listen: false)
-                                      .setPost9(input!),
-                                ),
-                                SizedBox(height: 10),
-                                Text(
-                                  "Enter a hyperlink to your website.",
-                                  style: TextStyle(
-                                      color: Colors.grey, fontSize: 12),
-                                ),
-                                SizedBox(
-                                  height: 20.0,
-                                ),
-                                TextFormField(
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: null,
-                                  initialValue: widget.user.otherSites1,
-                                  style: TextStyle(
-                                    fontSize: 12.0,
-                                    color: ConfigBloc().darkModeOn
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                  decoration: InputDecoration(
-                                    labelStyle: TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.blue, width: 3.0),
-                                    ),
-                                    enabledBorder: new OutlineInputBorder(
-                                        borderSide:
-                                            new BorderSide(color: Colors.grey)),
-                                    hintText:
-                                        "Enter a hyperlink to your video channel.",
-                                    hintStyle: TextStyle(
-                                        fontSize: 12, color: Colors.grey),
-                                    labelText: 'Video channel Url',
-                                  ),
-                                  onSaved: (input) => Provider.of<UserData>(
-                                          context,
-                                          listen: false)
-                                      .setPost10(input!),
-                                ),
-                                SizedBox(height: 10),
-                                Text(
-                                  "Enter a hyperlink to your video channel where people can see your works. ",
-                                  style: TextStyle(
-                                      color: Colors.grey, fontSize: 12),
-                                ),
-                                SizedBox(
-                                  height: 20.0,
-                                ),
-                                TextFormField(
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: null,
-                                  initialValue: widget.user.otherSites2,
-                                  style: TextStyle(
-                                    fontSize: 12.0,
-                                    color: ConfigBloc().darkModeOn
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                  decoration: InputDecoration(
-                                    labelStyle: TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.blue, width: 3.0),
-                                    ),
-                                    enabledBorder: new OutlineInputBorder(
-                                        borderSide:
-                                            new BorderSide(color: Colors.grey)),
-                                    hintText:
-                                        "Enter another place to find your works",
-                                    hintStyle: TextStyle(
-                                        fontSize: 12, color: Colors.grey),
-                                    labelText: 'Other Places',
-                                  ),
-                                  validator: (input) => input!.trim().length < 1
-                                      ? 'Please enter a link to your works'
-                                      : null,
-                                  onSaved: (input) => Provider.of<UserData>(
-                                          context,
-                                          listen: false)
-                                      .setPost11(input!),
-                                ),
-                                SizedBox(height: 10),
-                                Text(
-                                  "Enter a link to any other site where users can see your works. Please copy an URL link of an app website and paste it here. ",
-                                  style: TextStyle(
-                                      color: Colors.grey, fontSize: 12),
-                                ),
-                                const SizedBox(
-                                  height: 50,
-                                ),
-                                Center(
-                                  child: AlwaysWhiteButton(
-                                      onPressed: _validate,
-                                      buttonText: "Continue"),
-                                ),
-                                const SizedBox(
-                                  height: 70,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      SingleChildScrollView(
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Column(
-                              children: [
-                                DirectionWidgetWithIcon(
-                                  text:
-                                      'Your gallery displays professional images of you.',
-                                  fontSize: null,
-                                  icon: Icon(
-                                    Icons.photo_album_outlined,
-                                    color: Color.fromRGBO(33, 150, 243, 1),
-                                  ),
-                                  title: 'Your Gallery',
-                                ),
-                                SizedBox(
-                                  height: 20.0,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    GestureDetector(
-                                      onTap: _handleImage,
-                                      child: _displayPostImage(),
-                                    ),
-                                    GestureDetector(
-                                      onTap: _handleImage2,
-                                      child: _displayPostImage2(),
-                                    ),
-                                    GestureDetector(
-                                      onTap: _handleImage3,
-                                      child: _displayPostImage3(),
-                                    )
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 50,
-                                ),
-                                _isLoading
-                                    ? SizedBox(
-                                        height: 1.0,
-                                        child: LinearProgressIndicator(
-                                          backgroundColor: Colors.grey[100],
-                                          valueColor: AlwaysStoppedAnimation(
-                                              Colors.blue),
-                                        ),
-                                      )
-                                    : _displayButton(),
-                                const SizedBox(
-                                  height: 70,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ]),
+    var _provider = Provider.of<UserData>(
+      context,
+    );
+
+    bool _imageFileNull = _provider.professionalImageFile1 != null &&
+        _provider.professionalImageFile2 != null &&
+        _provider.professionalImageFile3 != null;
+    bool imageUrlIsEmpty = _provider.professionalImages.isNotEmpty;
+    bool _portfolioIsEmpty =
+        _provider.skills.isEmpty || _provider.linksToWork.isEmpty;
+    return EditProfileScaffold(
+      title: '',
+      widget: Form(
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              EditProfileInfo(
+                editTitle: 'Booking \ndiscography',
+                info:
+                    'Please provide your professional information to facilitate easy connections and recommendations from other users. Make sure to carefully read the instructions under each text field before filling out the forms.',
+                icon: Icons.work,
               ),
-            ),
-          )),
+              const SizedBox(
+                height: 30,
+              ),
+              EditProfileTextField(
+                enableBorder: false,
+                labelText: 'Overview',
+                hintText: "  Highlight key points",
+                initialValue: widget.user.overview,
+                onValidateText: (input) =>
+                    input!.trim().length < 1 ? 'Not less than a word' : null,
+                onSavedText: (input) => _provider.setOverview(input),
+              ),
+              Text(
+                "Provide a broad perspective of your creativity, usually highlighting key points or essential information without going into specific details.",
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+                ),
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              _addPotfolio(
+                  'Companies',
+                  'Please provide the name and any other necessary information about the companies you work with or for. As a creative, this can be a record labels, media houses, event houses, or any other relevant organizations.',
+                  'companies',
+                  [],
+                  _provider.company.length),
+              _addPotfolio(
+                  'Skills',
+                  'Please list your skills in your field of work, whether it\'s as a musician, producer, video director, or any other relevant account type. Skills can include dancing, singing, and any other relevant abilities.',
+                  'portfolio',
+                  _provider.skills,
+                  _provider.skills.length),
+              SizedBox(
+                height: 10,
+              ),
+              _addPotfolio(
+                  'Performances',
+                  'Please provide up to six of your best performances. These can include music performances, dance performances, art exhibitions, or any other noteworthy showcases relevant to your creative field.',
+                  'portfolio',
+                  _provider.performances,
+                  _provider.performances.length),
+              _addPotfolio(
+                  'Awards',
+                  'Please provide up to six of the most prestigious awards you have won in your creative field. These can include any notable accolades or recognitions you have received for your work.',
+                  'portfolio',
+                  _provider.awards,
+                  _provider.awards.length),
+              _addPotfolio(
+                  'Works',
+                  'Showcase your work and allow others to see the visual representation of your artistic creations. This will provide an opportunity for people to gain a better understanding of the quality and style of your work.',
+                  'portfolio',
+                  _provider.linksToWork,
+                  _provider.linksToWork.length),
+              _addPotfolio(
+                  'Collaborations',
+                  'Please provide up to six examples of your best collaborations. These can include notable projects or partnerships where you have worked alongside other talented individuals or organizations.',
+                  'collaborations',
+                  [],
+                  _provider.collaborations.length),
+              _addPotfolio(
+                  'Contacts',
+                  'Please provide up to four contacts for your management team. These contact details will allow individuals to reach out and book you for collaborations and business opportunities.',
+                  'contacts',
+                  [],
+                  _provider.bookingContacts.length),
+              _addPotfolio(
+                  'Prices',
+                  'Please provide your price list and rates for collaborations, exhibitions, and performances. This will allow potential clients and collaborators to have a clear understanding of your pricing structure and make informed decisions when considering working with you.',
+                  'price',
+                  [],
+                  _provider.priceRate.length),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  GestureDetector(
+                    onTap: () => _handleImage('one'),
+                    child: _displayPostImage(
+                      'one',
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => _handleImage('two'),
+                    child: _displayPostImage('two'),
+                  ),
+                  GestureDetector(
+                    onTap: () => _handleImage('three'),
+                    child: _displayPostImage('three'),
+                  )
+                ],
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              _isLoadingImage
+                  ? LinearProgress()
+                  : Text(
+                      "Kindly include three professional images on the booking page. These images will provide other users with a clearer insight into the individual they will be engaging with.",
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize:
+                            ResponsiveHelper.responsiveFontSize(context, 14.0),
+                      ),
+                    ),
+              const SizedBox(
+                height: 30,
+              ),
+              EditProfileTextField(
+                enableBorder: false,
+                labelText: 'Terms and conditions',
+                hintText: " optional (terms and conditions)",
+                initialValue: widget.user.terms,
+                onValidateText: () {},
+                onSavedText: (input) => _provider.setTermsAndConditions(input),
+              ),
+              Text(
+                '(Optional) To ensure transparency and clarify expectations, it is essential for users to include a section for \'Terms and Conditions\' on their booking page. This will outline the agreed-upon terms, conditions, and obligations that both parties must adhere to throughout the booking process.',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+                ),
+              ),
+              const SizedBox(
+                height: 70,
+              ),
+              _isLoading || _provider.isLoading
+                  ? CircularProgress(
+                      isMini: true,
+                      indicatorColor: Colors.blue,
+                    )
+                  : !_portfolioIsEmpty && _imageFileNull
+                      ? Center(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.only(top: 20.0, bottom: 40),
+                            child: AlwaysWhiteButton(
+                              buttonText: 'Save',
+                              onPressed: _validateTextToxicity,
+                              //  _submit,
+                              buttonColor: Colors.blue,
+                            ),
+                          ),
+                        )
+                      : SizedBox.shrink(),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

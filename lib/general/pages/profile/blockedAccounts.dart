@@ -105,7 +105,8 @@ class _BlockedAccountsState extends State<BlockedAccounts>
                   builder: (_) => ProfileScreen(
                         currentUserId:
                             Provider.of<UserData>(context).currentUserId!,
-                        userId: user.id!, user: null,
+                        userId: user.userId!,
+                        user: null,
                       )));
         });
   }
@@ -120,14 +121,14 @@ class _BlockedAccountsState extends State<BlockedAccounts>
               (context, index) {
                 DocId user = _userList[index];
                 return FutureBuilder(
-                  future: DatabaseService.getUserAuthorWithId(user.id),
+                  future: DatabaseService.getUserWithId(user.id),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if (!snapshot.hasData) {
                       return FollowerUserSchimmerSkeleton();
                     }
                     AccountHolderAuthor user = snapshot.data;
                     return Provider.of<UserData>(context).currentUserId ==
-                            user.id
+                            user.userId
                         ? const SizedBox.shrink()
                         : _buildUserTile(user);
                   },
@@ -145,7 +146,8 @@ class _BlockedAccountsState extends State<BlockedAccounts>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return ResponsiveScaffold(
+    return Container(
+      color: Theme.of(context).primaryColorLight,
       child: NestedScrollView(
         controller: _hideButtonController,
         headerSliverBuilder: (context, innerBoxScrolled) => [
@@ -156,16 +158,12 @@ class _BlockedAccountsState extends State<BlockedAccounts>
             snap: true,
             pinned: true,
             iconTheme: new IconThemeData(
-              color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+              color: Theme.of(context).secondaryHeaderColor,
             ),
-            backgroundColor:
-                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+            backgroundColor: Theme.of(context).primaryColorLight,
             title: Text(
               'Blocked Accounts',
-              style: TextStyle(
-                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
             centerTitle: true,
           ),
@@ -174,38 +172,40 @@ class _BlockedAccountsState extends State<BlockedAccounts>
           context: context,
           removeTop: true,
           child: Container(
-            color: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+            color: Theme.of(context).primaryColorLight,
             child: SafeArea(
               child: MediaQuery(
                 data: MediaQuery.of(context).copyWith(
                     textScaleFactor:
                         MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Text(
-                        ' ${_userList.length.toString()} blocked accounts',
-                        style: TextStyle(
-                          color: Colors.grey,
+                child: Material(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                          ' ${_userList.length.toString()} blocked accounts',
+                          style: TextStyle(
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
-                    ),
-                    Divider(),
-                    _userList.length == 0
-                        ? Expanded(
-                            child: Center(
-                              child: NoContents(
-                                icon: (Icons.person_add_disabled_outlined),
-                                title: 'No blocked Accounts,',
-                                subTitle: '',
+                      Divider(),
+                      _userList.length == 0
+                          ? Expanded(
+                              child: Center(
+                                child: NoContents(
+                                  icon: (Icons.person_add_disabled_outlined),
+                                  title: 'No blocked Accounts,',
+                                  subTitle: '',
+                                ),
                               ),
-                            ),
-                          )
-                        : Expanded(child: _buildEventBuilder())
-                  ],
+                            )
+                          : Expanded(child: _buildEventBuilder())
+                    ],
+                  ),
                 ),
               ),
             ),

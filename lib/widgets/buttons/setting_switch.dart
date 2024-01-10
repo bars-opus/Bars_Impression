@@ -6,23 +6,24 @@ class SettingSwitch extends StatelessWidget {
   final String subTitle;
   final bool value;
   final Color color;
+  final bool isAlwaysWhite;
+
   final Function(bool) onChanged;
 
   SettingSwitch(
       {required this.subTitle,
       required this.title,
       this.color = Colors.blue,
+      this.isAlwaysWhite = false,
       required this.value,
       required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
-    final double width = Responsive.isDesktop(context)
-        ? 600.0
-        : MediaQuery.of(context).size.width;
     return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Container(
-        width: width - 150,
+      Expanded(
+        // color: Colors.red,
+        // width: ResponsiveHelper.responsiveHeight(context, 200.0),
         child: RichText(
           textScaleFactor: MediaQuery.of(context).textScaleFactor,
           text: TextSpan(
@@ -30,15 +31,17 @@ class SettingSwitch extends StatelessWidget {
               TextSpan(
                   text: title + '\n',
                   style: TextStyle(
-                    fontSize: 16,
-                    color:
-                        ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 16.0),
+                    color: isAlwaysWhite
+                        ? Colors.white
+                        : Theme.of(context).secondaryHeaderColor,
                   )),
               TextSpan(
                 text: subTitle,
                 style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+                  color: isAlwaysWhite ? Colors.white : Colors.grey,
                 ),
               ),
             ],

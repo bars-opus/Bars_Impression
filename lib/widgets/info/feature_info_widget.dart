@@ -13,26 +13,24 @@ class FeatureInfoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double width = Responsive.isDesktop(context)
-        ? 600.0
-        : MediaQuery.of(context).size.width;
+    final double width = MediaQuery.of(context).size.width;
     return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
-            height: 25,
-            width: 25,
+            height: ResponsiveHelper.responsiveHeight(context, 25,),
+            width: ResponsiveHelper.responsiveHeight(context, 25,),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(50),
-              color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+              color: Theme.of(context).secondaryHeaderColor,
             ),
             child: Center(
               child: Text(
                 number,
                 style: TextStyle(
-                  fontSize: 14,
-                  color: ConfigBloc().darkModeOn ? Colors.black : Colors.white,
+                  fontSize:  ResponsiveHelper.responsiveFontSize(context, 14,),
+                  color: Theme.of(context).secondaryHeaderColor,
                 ),
               ),
             ),
@@ -40,23 +38,20 @@ class FeatureInfoWidget extends StatelessWidget {
           Container(
             width: width - 80,
             child: RichText(
+              textScaleFactor: MediaQuery.of(context).textScaleFactor,
               text: TextSpan(
                 children: [
                   TextSpan(
                       text: title + '\n',
                       style: TextStyle(
-                        fontSize: 16,
-                        color: ConfigBloc().darkModeOn
-                            ? Colors.white
-                            : Colors.black,
+                        fontSize:  ResponsiveHelper.responsiveFontSize(context, 26,),
+                        color: Theme.of(context).secondaryHeaderColor,
                       )),
                   TextSpan(
                     text: subTitle,
                     style: TextStyle(
-                      fontSize: 12,
-                      color: ConfigBloc().darkModeOn
-                          ? Colors.white54
-                          : Colors.black54,
+                      fontSize:  ResponsiveHelper.responsiveFontSize(context, 12,),
+                      color: Theme.of(context).secondaryHeaderColor,
                     ),
                   ),
                 ],

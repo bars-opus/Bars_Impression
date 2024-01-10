@@ -4,81 +4,68 @@ class SearchUserTile extends StatelessWidget {
   final String profileImageUrl;
   final String userName;
   final String profileHandle;
-  final String company;
+  // final String company;
   final String bio;
-  final String? verified;
-  // final int score;
+  final bool verified;
   final VoidCallback onPressed;
 
   SearchUserTile(
       {required this.bio,
-      required this.company,
+      // required this.company,
       required this.userName,
       required this.profileImageUrl,
       required this.profileHandle,
       required this.verified,
-      // required this.score,
       required this.onPressed});
-
-  // final RandomColor _randomColor = RandomColor();
-  // final List<ColorHue> _hueType = <ColorHue>[
-  //   ColorHue.green,
-  //   ColorHue.red,
-  //   ColorHue.pink,
-  //   ColorHue.purple,
-  //   ColorHue.blue,
-  //   ColorHue.yellow,
-  //   ColorHue.orange
-  // ];
-
-  // final ColorSaturation _colorSaturation = ColorSaturation.random;
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
     return ListTile(
       leading: profileImageUrl.isEmpty
           ? Icon(
               Icons.account_circle,
-              size: 60.0,
+              size: ResponsiveHelper.responsiveHeight(context, 60.0),
               color: Colors.grey,
             )
           : CircleAvatar(
-              radius: 25.0,
-              backgroundColor: ConfigBloc().darkModeOn
-                  ? Color(0xFF1a1a1a)
-                  : Color(0xFFf2f2f2),
+              radius: ResponsiveHelper.responsiveHeight(context, 25.0),
+              backgroundColor: Theme.of(context).secondaryHeaderColor,
               backgroundImage: CachedNetworkImageProvider(profileImageUrl),
             ),
-      title: Align(
-        alignment: Alignment.topLeft,
-        child: Stack(
-          alignment: Alignment.bottomRight,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 12.0),
-              child: Text(userName,
-                  style: TextStyle(
-                    fontSize: width > 800 ? 18 : 14.0,
-                    fontWeight: FontWeight.bold,
-                    color:
-                        ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                  )),
-            ),
-            verified!.isEmpty
-                ? const SizedBox.shrink()
-                : Positioned(
-                    top: 3,
-                    right: 0,
-                    child: Icon(
-                      MdiIcons.checkboxMarkedCircle,
-                      size: 11,
-                      color: Colors.blue,
-                    ),
-                  ),
-          ],
-        ),
+      title: NameText(
+        fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+        name: userName.toUpperCase().trim().replaceAll('\n', ' '),
+        verified: verified,
       ),
+
+      // Align(
+      //   alignment: Alignment.topLeft,
+      //   child: Stack(
+      //     alignment: Alignment.bottomRight,
+      //     children: [
+      //       Padding(
+      //         padding: const EdgeInsets.only(right: 12.0),
+      //         child: Text(userName,
+      //             style: TextStyle(
+      //               fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+      //               fontWeight: FontWeight.bold,
+      //               color: Theme.of(context).secondaryHeaderColor,
+      //             )),
+      //       ),
+      //       verified
+      //           ? const SizedBox.shrink()
+      //           : Positioned(
+      //               top: 3,
+      //               right: 0,
+      //               child: Icon(
+      //                 MdiIcons.checkboxMarkedCircle,
+      //                 size: 11,
+      //                 color: Colors.blue,
+      //               ),
+      //             ),
+      //     ],
+      //   ),
+      // ),
       subtitle: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,13 +86,8 @@ class SearchUserTile extends StatelessWidget {
           ),
           Text(profileHandle,
               style: TextStyle(
-                fontSize: width > 800 ? 14 : 12,
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
                 color: Colors.blue,
-              )),
-          Text(company,
-              style: TextStyle(
-                fontSize: width > 800 ? 14 : 12,
-                color: Colors.blueGrey,
               )),
           RichText(
             textScaleFactor: MediaQuery.of(context).textScaleFactor,
@@ -115,16 +97,17 @@ class SearchUserTile extends StatelessWidget {
                 TextSpan(
                   text: "Bio:  ",
                   style: TextStyle(
-                    fontSize: width > 800 ? 12 : 10,
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 10.0),
                     color: Colors.grey,
                   ),
                 ),
                 TextSpan(
                   text: bio,
                   style: TextStyle(
-                    fontSize: width > 800 ? 14 : 12,
-                    color:
-                        ConfigBloc().darkModeOn ? Colors.white70 : Colors.black,
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 12.0),
+                    color: Theme.of(context).secondaryHeaderColor,
                   ),
                 ),
               ],
@@ -135,8 +118,7 @@ class SearchUserTile extends StatelessWidget {
             height: 20.0,
           ),
           Divider(
-            color:
-                ConfigBloc().darkModeOn ? Colors.grey[850] : Colors.grey[350],
+            color: Colors.grey[350],
           )
         ],
       ),

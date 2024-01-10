@@ -22,22 +22,23 @@ class _AboutUsState extends State<AboutUs> {
         children: [
           Column(children: <Widget>[
             RichText(
+                textScaleFactor: MediaQuery.of(context).textScaleFactor,
                 text: TextSpan(
-              children: [
-                TextSpan(
-                    text: "Version Release Date: February 2023\n",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.black,
-                    )),
-                TextSpan(
-                    text: "Language: English.",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.black,
-                    )),
-              ],
-            )),
+                  children: [
+                    TextSpan(
+                        text: "Version Release Date: February 2023\n",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black,
+                        )),
+                    TextSpan(
+                        text: "Language: English.",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black,
+                        )),
+                  ],
+                )),
           ])
         ]);
   }
@@ -47,7 +48,9 @@ class _AboutUsState extends State<AboutUs> {
     return Scaffold(
       backgroundColor: Color(0xFF1a1a1a),
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         automaticallyImplyLeading: true,
+        foregroundColor: Colors.white,
         elevation: 0,
         backgroundColor: Color(0xFF1a1a1a),
       ),
@@ -81,6 +84,7 @@ class _AboutUsState extends State<AboutUs> {
                       context,
                       MaterialPageRoute(
                           builder: (_) => MyWebView(
+                                title: '',
                                 url: 'https://www.barsopus.com/contact',
                               )));
                 },
@@ -107,6 +111,7 @@ class _AboutUsState extends State<AboutUs> {
                       context,
                       MaterialPageRoute(
                           builder: (_) => MyWebView(
+                                title: '',
                                 url: 'https://www.barsopus.com/terms-of-use',
                               )));
                 },
@@ -133,6 +138,7 @@ class _AboutUsState extends State<AboutUs> {
                       context,
                       MaterialPageRoute(
                           builder: (_) => MyWebView(
+                                title: '',
                                 url: 'https://www.barsopus.com/privacy',
                               )));
                 },
@@ -171,7 +177,6 @@ class _AboutUsState extends State<AboutUs> {
               ),
             ),
             const SizedBox(height: 100),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -185,21 +190,11 @@ class _AboutUsState extends State<AboutUs> {
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 12.0,
-                    // fontWeight: FontWeight.w100,
                   ),
                   textAlign: TextAlign.center,
                 ),
               ],
             ),
-            // Text(
-            //   'B A R S\nO P U S',
-            //   style: TextStyle(
-            //     color: Colors.white,
-            //     fontSize: 16.0,
-            //     fontWeight: FontWeight.w100,
-            //   ),
-            //   textAlign: TextAlign.center,
-            // ),
             const SizedBox(height: 10),
           ],
         ),

@@ -11,7 +11,7 @@ class ColumnDivider extends StatelessWidget {
         Container(
           width: MediaQuery.of(context).size.width,
           height: 1.0,
-          color: ConfigBloc().darkModeOn ? Colors.grey[900] : Colors.grey,
+          color:  Colors.grey,
         ),
       const  SizedBox(
           height: 20.0,

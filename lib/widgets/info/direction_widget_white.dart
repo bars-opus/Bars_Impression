@@ -1,10 +1,10 @@
 import 'package:bars/utilities/exports.dart';
 
 // ignore: must_be_immutable
-class DirectionWidgetWhite extends StatefulWidget {
+class DirectionWidgetWhite extends StatelessWidget {
   final String text;
 
-  double? fontSize = 14;
+  double fontSize;
   FontWeight fontWeight;
   double sizedBox;
 
@@ -12,13 +12,9 @@ class DirectionWidgetWhite extends StatefulWidget {
       {required this.text,
       this.fontWeight = FontWeight.normal,
       this.sizedBox = 40,
-      required this.fontSize});
+      this.fontSize = 14});
 
-  @override
-  _DirectionWidgetWhiteState createState() => _DirectionWidgetWhiteState();
-}
-
-class _DirectionWidgetWhiteState extends State<DirectionWidgetWhite> {
+ 
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
@@ -43,15 +39,15 @@ class _DirectionWidgetWhiteState extends State<DirectionWidgetWhite> {
               duration: Duration(milliseconds: 1200),
               curve: Curves.easeOutBack,
               child: Text(
-                widget.text,
+                text,
                 style: TextStyle(
-                  color:  Colors.white,
-                  fontSize: widget.fontSize,
-                  fontWeight: widget.fontWeight,
+                  color: Colors.white,
+                  fontSize:   ResponsiveHelper.responsiveFontSize(context,fontSize!), 
+                  fontWeight: fontWeight,
                 ),
               ),
             ),
-            SizedBox(height: widget.sizedBox),
+            SizedBox(height: sizedBox),
           ]),
     );
   }

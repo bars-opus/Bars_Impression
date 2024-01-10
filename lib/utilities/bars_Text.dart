@@ -14,7 +14,7 @@ class BarsTextHeading extends StatelessWidget {
       style: TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: 20,
-        color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+        color: Theme.of(context).secondaryHeaderColor,
       ),
     );
   }
@@ -33,7 +33,7 @@ class BarsTextTitle extends StatelessWidget {
       text,
       style: TextStyle(
         fontSize: 16,
-        color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+        color: Theme.of(context).secondaryHeaderColor,
       ),
     );
   }
@@ -125,9 +125,10 @@ class BarsTextConfirm extends StatelessWidget {
             text: "\n$subText",
             style: TextStyle(
               fontSize: 16.0,
-              color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+              color: Theme.of(context).secondaryHeaderColor,
             ),
           )
         ]));
   }
 }
+

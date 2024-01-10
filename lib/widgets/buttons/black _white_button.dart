@@ -19,7 +19,8 @@ class BlackWhiteButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: buttonWidth,
+      width: ResponsiveHelper.responsiveHeight(context,  buttonWidth,),
+     
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: buttonColor,

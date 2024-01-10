@@ -10,7 +10,7 @@ class BackButton extends StatelessWidget {
     return IconButton(
       icon: Icon(
         Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back,
-        color: ConfigBloc().darkModeOn ? Colors.black : Colors.white,
+        color: Theme.of(context).secondaryHeaderColor,
       ),
       onPressed: onPressed,
     );

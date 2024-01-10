@@ -6,6 +6,7 @@ class ContentFieldWhite extends StatelessWidget {
   String labelText = '';
   String hintText = '';
   bool autofocus;
+
   final Function(String) onSavedText;
   final Function onValidateText;
 
@@ -15,7 +16,7 @@ class ContentFieldWhite extends StatelessWidget {
     required this.initialValue,
     required this.hintText,
     required this.labelText,
-     this.autofocus = false,
+    this.autofocus = false,
   });
 
   @override
@@ -34,11 +35,14 @@ class ContentFieldWhite extends StatelessWidget {
             ),
             decoration: InputDecoration(
                 hintText: hintText,
-                hintStyle: TextStyle(fontSize: 12.0, color: Colors.grey),
+                hintStyle: TextStyle(
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 14.0),
+                    color: Colors.grey),
                 labelText: labelText,
                 labelStyle: TextStyle(
-                  fontSize: 14.0,
-                  color: Colors.grey,
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+                  color: Colors.white,
                 ),
                 enabledBorder: new UnderlineInputBorder(
                     borderSide: new BorderSide(color: Colors.grey))),

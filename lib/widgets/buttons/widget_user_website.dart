@@ -29,7 +29,6 @@ class UserWebsite extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
     return GestureDetector(
       onTap: onPressed,
       child: Container(
@@ -38,19 +37,23 @@ class UserWebsite extends StatelessWidget {
           padding: EdgeInsets.all(padding),
           child: Icon(
             icon,
-            size: iconSize,
+            size: ResponsiveHelper.responsiveFontSize(context, iconSize),
             color: iconColor,
           ),
         ),
         title: Text(
           title,
-          style: TextStyle(color: textColor, fontSize: width > 600 ? 16 : 14.0),
+          style: TextStyle(
+            color: textColor,
+            fontWeight: FontWeight.normal,
+            fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+          ),
           overflow: TextOverflow.ellipsis,
         ),
         trailing: Icon(
           Icons.arrow_forward_ios_outlined,
           color: arrowColor,
-          size: 20,
+          size: ResponsiveHelper.responsiveFontSize(context, 20),
         ),
       )),
     );

@@ -14,9 +14,7 @@ class GroupGridSchimmerSkeleton extends StatelessWidget {
             ),
             itemCount: 10,
             itemBuilder: (BuildContext context, int index) {
-              return FutureBuilder(
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  return GridTile(
+              return GridTile(
                       child: Stack(
                           alignment: FractionalOffset.bottomCenter,
                           children: <Widget>[
@@ -25,9 +23,7 @@ class GroupGridSchimmerSkeleton extends StatelessWidget {
                             children: <Widget>[
                               Container(
                                 decoration: BoxDecoration(
-                                    color: ConfigBloc().darkModeOn
-                                        ? Color(0xFF1a1a1a)
-                                        : Color(0xFFf2f2f2),
+                                    color:Theme.of(context).primaryColor,
                                     boxShadow: [
                                       BoxShadow(
                                         color: Colors.black12,
@@ -65,8 +61,12 @@ class GroupGridSchimmerSkeleton extends StatelessWidget {
                               )
                             ])
                       ]));
-                },
-              );
+              
+              //  FutureBuilder(
+              //   builder: (BuildContext context, AsyncSnapshot snapshot) {
+              //     return 
+              //   },
+              // );
             }));
   }
 }

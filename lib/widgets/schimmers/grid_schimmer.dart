@@ -13,18 +13,14 @@ class GridSchimmerSkeleton extends StatelessWidget {
         ),
         itemCount: 1,
         itemBuilder: (BuildContext context, int index) {
-          return FutureBuilder(
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              return GridTile(
+          return  GridTile(
                   child: Stack(
                       alignment: FractionalOffset.bottomCenter,
                       children: <Widget>[
                     Stack(alignment: Alignment.bottomCenter, children: <Widget>[
                       Container(
                         decoration: BoxDecoration(
-                            color: ConfigBloc().darkModeOn
-                                ? Color(0xFF1a1a1a)
-                                : Colors.white,
+                            color: Theme.of(context).primaryColor,
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black12,
@@ -62,8 +58,11 @@ class GridSchimmerSkeleton extends StatelessWidget {
                       )
                     ])
                   ]));
-            },
-          );
+          // FutureBuilder(
+          //   builder: (BuildContext context, AsyncSnapshot snapshot) {
+          //     return 
+          //   },
+          // );
         });
   }
 }

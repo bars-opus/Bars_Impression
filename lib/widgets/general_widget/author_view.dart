@@ -6,12 +6,20 @@ class Authorview extends StatelessWidget {
   final String userName;
   final String profileHandle;
   final String profileImageUrl;
-  final String verified;
+  final bool verified;
   final String authorId;
   final String report;
   final String content;
   final String from;
+  final bool isreplyWidget;
+  final bool showReply;
+  final bool isPostAuthor;
+  final bool showSeeAllReplies;
+  final int replyCount;
   final Timestamp timestamp;
+  final VoidCallback onPressedReport;
+  final VoidCallback onPressedReply;
+  final VoidCallback onPressedSeeAllReplies;
 
   Authorview({
     required this.content,
@@ -23,137 +31,204 @@ class Authorview extends StatelessWidget {
     required this.verified,
     required this.authorId,
     required this.from,
+    required this.onPressedReport,
+    this.isreplyWidget = false,
+    this.showReply = true,
+    required this.onPressedReply,
+    required this.onPressedSeeAllReplies,
+    required this.replyCount,
+    this.showSeeAllReplies = false,
+    required this.isPostAuthor,
   });
 
-  // RandomColor _randomColor = RandomColor();
-  // final List<ColorHue> _hueType = <ColorHue>[
-  //   ColorHue.green,
-  //   ColorHue.red,
-  //   ColorHue.pink,
-  //   ColorHue.purple,
-  //   ColorHue.blue,
-  //   ColorHue.yellow,
-  //   ColorHue.orange
-  // ];
-
-  // ColorSaturation _colorSaturation = ColorSaturation.random;
+  _action(BuildContext context, String text) {
+    return Expanded(
+      child: Center(
+        child: Text(
+          text,
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: ResponsiveHelper.responsiveFontSize(context, 14),
+          ),
+          overflow: TextOverflow.ellipsis,
+          textScaleFactor: MediaQuery.of(context).textScaleFactor,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     String currentUserId = Provider.of<UserData>(context).currentUserId!;
+    bool isAuthor = currentUserId == authorId;
 
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(
           textScaleFactor:
               MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
-      child: ListTile(
-        leading: profileImageUrl.isEmpty
-            ? Icon(
-                Icons.account_circle,
-                size: 45.0,
-                color: Colors.grey,
-              )
-            : CircleAvatar(
-                radius: 20.0,
-                backgroundColor: ConfigBloc().darkModeOn
-                    ? Color(0xFF1a1a1a)
-                    : Color(0xFFf2f2f2),
-                backgroundImage: CachedNetworkImageProvider(profileImageUrl),
+      child: FocusedMenuHolder(
+        menuWidth: width.toDouble(),
+        menuItemExtent: 60,
+        menuOffset: 10,
+        blurBackgroundColor: Colors.transparent,
+        openWithTap: false,
+        onPressed: () {},
+        menuItems: [
+          FocusedMenuItem(
+              title: _action(
+                context,
+                isAuthor ? 'Edit' : 'Report',
               ),
-        title: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Stack(
-              alignment: Alignment.bottomRight,
-              children: [
+              onPressed: onPressedReport),
+          FocusedMenuItem(
+            title: _action(
+              context,
+              'Suggest',
+            ),
+            onPressed: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (_) => SuggestionBox()));
+            },
+          ),
+        ],
+        child: Container(
+          color: Theme.of(context).cardColor,
+          child: ListTile(
+            leading: profileImageUrl.isEmpty
+                ? Icon(
+                    Icons.account_circle,
+                    size: isreplyWidget
+                        ? ResponsiveHelper.responsiveHeight(context, 35.0)
+                        : ResponsiveHelper.responsiveHeight(context, 40.0),
+                    color: Colors.grey,
+                  )
+                : CircleAvatar(
+                    radius: isreplyWidget
+                        ? ResponsiveHelper.responsiveHeight(context, 15.0)
+                        : ResponsiveHelper.responsiveHeight(context, 18.0),
+                    backgroundColor: Colors.blue,
+                    backgroundImage:
+                        CachedNetworkImageProvider(profileImageUrl),
+                  ),
+            title: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                NameText(
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+                  name: userName.toUpperCase().trim().replaceAll('\n', ' '),
+                  verified: verified,
+                ),
+                RichText(
+                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    text: TextSpan(children: [
+                      TextSpan(
+                          text: profileHandle,
+                          style: TextStyle(
+                            fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 10),
+                            color: Colors.blue,
+                          )),
+                      TextSpan(
+                          text: isPostAuthor ? '  Author' : '',
+                          style: TextStyle(
+                            fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 10),
+                            color: Colors.red,
+                          ))
+                    ])),
+                SizedBox(
+                  height: 5.0,
+                ),
                 Padding(
-                  padding: const EdgeInsets.only(right: 12.0),
-                  child: Text(
-                    userName,
-                    style: TextStyle(
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.bold,
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                    ),
+                  padding: const EdgeInsets.only(bottom: 2.0),
+                  child: Container(
+                    color: from.startsWith('Comment')
+                        ? Colors.cyan[800]
+                        : Color(0xFFFF2D55),
+                    height: 1.0,
+                    width: 50.0,
                   ),
                 ),
-                verified.isEmpty
-                    ? const SizedBox.shrink()
-                    : Positioned(
-                        top: 0,
-                        right: 0,
-                        child: Icon(
-                          MdiIcons.checkboxMarkedCircle,
-                          size: 11,
-                          color: Colors.blue,
+                Material(
+                  color: Colors.transparent,
+                  child: report.isNotEmpty
+                      ? BarsTextStrikeThrough(
+                          fontSize:
+                              ResponsiveHelper.responsiveFontSize(context, 12),
+                          text: content,
+                        )
+                      : HyperLinkText(
+                          from: from,
+                          text: content,
                         ),
+                ),
+                Text(
+                    timeago.format(
+                      timestamp.toDate(),
+                    ),
+                    style: TextStyle(
+                        fontSize:
+                            ResponsiveHelper.responsiveFontSize(context, 10),
+                        color: Colors.grey)),
+                if (showReply)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: onPressedReply,
+                        child: RichText(
+                            textScaleFactor:
+                                MediaQuery.of(context).textScaleFactor,
+                            text: TextSpan(children: [
+                              TextSpan(
+                                text: 'Reply: ',
+                                style: TextStyle(
+                                  fontSize: ResponsiveHelper.responsiveFontSize(
+                                      context, 12),
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ])),
                       ),
+                      showSeeAllReplies
+                          ? GestureDetector(
+                              onTap: onPressedSeeAllReplies,
+                              child: Text(
+                                replyCount < 3
+                                    ? ''
+                                    : 'See all ${replyCount.toString()} replies',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: ResponsiveHelper.responsiveFontSize(
+                                      context, 12),
+                                ),
+                              ),
+                            )
+                          : SizedBox.shrink(),
+                    ],
+                  )
               ],
             ),
-            Text(profileHandle,
-                style: TextStyle(
-                  fontSize: 10.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blueGrey,
-                )),
-            SizedBox(
-              height: 5.0,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 2.0),
-              child: Container(
-                color: from.startsWith('Comment')
-                    ? Colors.cyan[800]
-                    : Color(0xFFFF2D55),
-                height: 1.0,
-                width: 50.0,
-              ),
-            ),
-            Material(
-              color: Colors.transparent,
-              child: report.isNotEmpty
-                  ? BarsTextStrikeThrough(
-                      fontSize: 12,
-                      text: content,
-                    )
-                  : HyperLinkText(
-                      from: '',
-                      text: content,
-                    ),
-            ),
-            Text(
-                timeago.format(
-                  timestamp.toDate(),
-                ),
-                style: TextStyle(fontSize: 10, color: Colors.grey)),
-            SizedBox(height: 10.0),
-            SizedBox(
-              height: 5.0,
-            ),
-            ConfigBloc().darkModeOn
-                ? Divider(
-                    color: Colors.white,
-                  )
-                : Divider(),
-          ],
+            onTap: () => authorId.isEmpty
+                ? Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => UserNotFound(
+                              userName: 'user',
+                            )))
+                : Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => ProfileScreen(
+                              user: null,
+                              currentUserId: currentUserId,
+                              userId: authorId,
+                            ))),
+          ),
         ),
-        onTap: () => authorId.isEmpty
-            ? Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => UserNotFound(
-                          userName: 'user',
-                        )))
-            : Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => ProfileScreen(
-                         user: null,
-                          currentUserId: currentUserId,
-                          userId: authorId,
-                        ))),
       ),
     );
   }

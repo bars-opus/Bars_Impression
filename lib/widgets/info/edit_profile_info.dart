@@ -4,18 +4,24 @@ class EditProfileInfo extends StatelessWidget {
   final String editTitle;
   final String info;
   final IconData icon;
+  final Color color;
+  final Color iconColor;
+
+final Color blackOWhiteTextColor;
+
 
   EditProfileInfo({
     required this.editTitle,
     required this.info,
     required this.icon,
+    this.color = Colors.blue,
+     this.blackOWhiteTextColor = Colors.white,
+    this.iconColor = Colors.white,
   });
 
   @override
   Widget build(BuildContext context) {
-    final double width = Responsive.isDesktop(context)
-        ? 600.0
-        : MediaQuery.of(context).size.width;
+    final double width = MediaQuery.of(context).size.width;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -24,22 +30,25 @@ class EditProfileInfo extends StatelessWidget {
           children: [
             Container(
               decoration: BoxDecoration(
-                color: Colors.blue,
+                color: color,
                 shape: BoxShape.circle,
               ),
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Icon(
                   icon,
-                  color: Colors.white,
-                  size: 20.0,
+                  color: iconColor,
+                  size: ResponsiveHelper.responsiveHeight(context, 20.0),
                 ),
               ),
             ),
             const SizedBox(width: 10),
             Text(
               editTitle,
-              style: TextStyle(color: Colors.blue, fontSize: 20.0, height: 1),
+              style: TextStyle(
+                  color: color,
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 20.0),
+                  height: 1),
             ),
           ],
         ),
@@ -49,8 +58,10 @@ class EditProfileInfo extends StatelessWidget {
         Text(
           info,
           style: TextStyle(
-            color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-            fontSize: 12.0,
+            color: color == Colors.blue
+                ? Theme.of(context).secondaryHeaderColor
+                : blackOWhiteTextColor,
+            fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
           ),
         ),
         const SizedBox(
@@ -59,13 +70,10 @@ class EditProfileInfo extends StatelessWidget {
         Align(
           alignment: Alignment.bottomLeft,
           child: Container(
-            height: 2,
-            color: Colors.blue,
-            width: width / 3,
+            height: 1,
+            color: color,
+            width: width / 5,
           ),
-        ),
-        const SizedBox(
-          height: 30.0,
         ),
       ],
     );

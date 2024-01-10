@@ -1,7 +1,7 @@
 import 'package:bars/utilities/exports.dart';
 
 class VerificationNutralized extends StatefulWidget {
-  final AccountHolder user;
+  final AccountHolderAuthor user;
   final String from;
 
   VerificationNutralized({
@@ -14,17 +14,15 @@ class VerificationNutralized extends StatefulWidget {
 }
 
 class _VerificationNutralizedState extends State<VerificationNutralized> {
-
-  _nothing(){}
+  _nothing() {}
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    return ResponsiveScaffold(
-      child: Scaffold(
+    return  Scaffold(
         backgroundColor: Colors.blue,
         appBar: AppBar(
           iconTheme: IconThemeData(
-            color: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+            color: Theme.of(context).primaryColor,
           ),
           automaticallyImplyLeading: true,
           elevation: 0,
@@ -42,20 +40,16 @@ class _VerificationNutralizedState extends State<VerificationNutralized> {
                       Center(
                         child: Icon(
                           MdiIcons.checkboxMarkedCircle,
-                          size: 50,
-                          color: ConfigBloc().darkModeOn
-                              ? Color(0xFF1a1a1a)
-                              : Colors.white,
+                          size: ResponsiveHelper.responsiveHeight(context, 50),
+                          color: Theme.of(context).primaryColor,
                         ),
                       ),
                       Center(
                         child: Text(
                           'Verified\nStatus',
                           style: TextStyle(
-                            color: ConfigBloc().darkModeOn
-                                ? Color(0xFF1a1a1a)
-                                : Colors.white,
-                            fontSize: 50.0,
+                            color: Theme.of(context).primaryColor,
+                            fontSize: ResponsiveHelper.responsiveHeight(context, 50),
                             fontWeight: FontWeight.w100,
                           ),
                           textAlign: TextAlign.center,
@@ -71,7 +65,7 @@ class _VerificationNutralizedState extends State<VerificationNutralized> {
                 child: Container(
                   width: 20,
                   height: 1,
-                  color: ConfigBloc().darkModeOn ? Colors.black : Colors.white,
+                  color: Theme.of(context).secondaryHeaderColor,
                 ),
               ),
               new Material(
@@ -79,9 +73,8 @@ class _VerificationNutralizedState extends State<VerificationNutralized> {
                 child: Text(
                   'Changes made to an account by the owner may result in loss of Verified status. User-made changes include, but are not limited to',
                   style: TextStyle(
-                    color: ConfigBloc().darkModeOn
-                        ? Color(0xFF1a1a1a)
-                        : Colors.white,
+                    color: Theme.of(context).primaryColor,
+                    fontSize: ResponsiveHelper.responsiveFontSize(context, 14),
                   ),
                   textAlign: TextAlign.start,
                 ),
@@ -94,21 +87,18 @@ class _VerificationNutralizedState extends State<VerificationNutralized> {
                 child: Text(
                   '1. If you change your username (${widget.user.userName})\n2. If you change your account type (${widget.user.profileHandle})\n3. If your account becomes inactive or incomplete',
                   style: TextStyle(
-                    color: ConfigBloc().darkModeOn
-                        ? Color(0xFF1a1a1a)
-                        : Colors.white,
+                    fontSize: ResponsiveHelper.responsiveFontSize(context, 14),
+                    color: Theme.of(context).primaryColor,
                   ),
                 ),
               ),
               const SizedBox(height: 50),
               Center(
                 child: Container(
-                  width: width - 100,
+                  width:ResponsiveHelper.responsiveHeight(context, 250),
                   child: TextButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: ConfigBloc().darkModeOn
-                          ? Color(0xFF1a1a1a)
-                          : Colors.white,
+                      backgroundColor:    Theme.of(context).primaryColor,
                       foregroundColor: Colors.blue,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(3.0),
@@ -131,7 +121,7 @@ class _VerificationNutralizedState extends State<VerificationNutralized> {
                                       user: widget.user,
                                     ),
                                   ))
-                              :_nothing();
+                              : _nothing();
                     },
                     child: Material(
                       color: Colors.transparent,
@@ -142,9 +132,7 @@ class _VerificationNutralizedState extends State<VerificationNutralized> {
                                 ? 'Select Account Type'
                                 : '',
                         style: TextStyle(
-                          color: ConfigBloc().darkModeOn
-                              ? Colors.white
-                              : Colors.black,
+                          color: Theme.of(context).secondaryHeaderColor,
                         ),
                       ),
                     ),
@@ -155,7 +143,7 @@ class _VerificationNutralizedState extends State<VerificationNutralized> {
             ],
           ),
         ),
-      ),
+      
     );
   }
 }

@@ -38,8 +38,8 @@ class _UpdateInfoMiniState extends State<UpdateInfoMini> {
           leading: Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: Container(
-                width: 20.0,
-                height: 20.0,
+                width:  ResponsiveHelper.responsiveHeight(context, 20,),
+                height:  ResponsiveHelper.responsiveHeight(context, 20,),
                 child: Image.asset(
                   'assets/images/bars.png',
                   color: Colors.black,
@@ -47,7 +47,7 @@ class _UpdateInfoMiniState extends State<UpdateInfoMini> {
           ),
           trailing: IconButton(
             icon: Icon(Icons.close),
-            iconSize: 25.0,
+            iconSize: ResponsiveHelper.responsiveHeight(context, 25,),
             color: Colors.black,
             onPressed: () {
               if (mounted) {
@@ -59,13 +59,13 @@ class _UpdateInfoMiniState extends State<UpdateInfoMini> {
           ),
           title: Text('Update is available',
               style: TextStyle(
-                fontSize: 14.0,
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 14,),
                 color: Colors.black,
               )),
           subtitle: Text(
             widget.updateNote,
             style: TextStyle(
-              fontSize: 11.0,
+              fontSize:  ResponsiveHelper.responsiveFontSize(context, 11,),
               color: Colors.black,
             ),
             maxLines: 2,

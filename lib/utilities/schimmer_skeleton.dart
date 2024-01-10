@@ -9,8 +9,8 @@ class SchimmerSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
         period: Duration(milliseconds: 1000),
-        baseColor: Colors.black54,
-        highlightColor: Colors.grey,
+        baseColor: Colors.black38.withOpacity(.1),
+        highlightColor: Colors.grey.withOpacity(.4),
         child: schimmerWidget);
   }
 }

@@ -1,7 +1,9 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:hive/hive.dart';
 
 class EditProfileName extends StatefulWidget {
-  final AccountHolder user;
+  final AccountHolderAuthor user;
 
   EditProfileName({
     required this.user,
@@ -13,445 +15,280 @@ class EditProfileName extends StatefulWidget {
 
 class _EditProfileNameState extends State<EditProfileName> {
   final _formKey = GlobalKey<FormState>();
-  String _userName = '';
-  bool _isLoading = false;
   String query = "";
   late TextEditingController _controller;
+
+  late FocusNode _focusNode;
 
   @override
   void initState() {
     super.initState();
+
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      Provider.of<UserData>(context, listen: false)
+          .setChangeUserName(widget.user.userName!);
+    });
     _controller = TextEditingController(
       text: widget.user.userName,
     );
+    _focusNode = FocusNode();
+    Future.delayed(Duration(milliseconds: 500), () {
+      _focusNode.requestFocus();
+    });
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
-  _validate(BuildContext context) async {
-    if (_formKey.currentState!.validate() & !_isLoading) {
-      _formKey.currentState!.save();
+  Future<void> changeUsername(String oldUsername, String newUsername) async {
+    final _firestore = FirebaseFirestore.instance;
+    var _provider = Provider.of<UserData>(context, listen: false);
 
-      if (_userName != widget.user.userName) {
-        final QuerySnapshot result = await FirebaseFirestore.instance
-            .collection('users')
-            .where('userName', isEqualTo: _userName)
-            .get();
+    try {
+      await _firestore.runTransaction((transaction) async {
+        DocumentSnapshot oldUsernameDoc = await transaction
+            .get(_firestore.collection('usernames').doc(oldUsername));
 
-        final List<DocumentSnapshot> documents = result.docs;
-        if (documents.length > 0) {
-          final double width = Responsive.isDesktop(context)
-              ? 600.0
-              : MediaQuery.of(context).size.width;
-          return Flushbar(
-            margin: EdgeInsets.all(8),
-            boxShadows: [
-              BoxShadow(
-                color: Colors.black,
-                offset: Offset(0.0, 2.0),
-                blurRadius: 3.0,
-              )
-            ],
-            flushbarPosition: FlushbarPosition.TOP,
-            flushbarStyle: FlushbarStyle.FLOATING,
-            titleText: Text(
-              'Sorry $_userName is already in use by another user. Try using a different name',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: width > 800 ? 22 : 14,
-              ),
-            ),
-            messageText: Text(
-              "",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: width > 800 ? 20 : 12,
-              ),
-            ),
-            icon: Icon(
-              Icons.info_outline,
-              size: 28.0,
-              color: Colors.blue,
-            ),
-            duration: Duration(seconds: 3),
-            leftBarIndicatorColor: Colors.blue,
-          )..show(context);
-        } else {
-          final double width = Responsive.isDesktop(context)
-              ? 600.0
-              : MediaQuery.of(context).size.width;
-          if (_formKey.currentState!.validate() && !_isLoading) {
-            _formKey.currentState!.save();
-            FocusScope.of(context).unfocus();
-            if (mounted) {
-              setState(() {
-                _isLoading = true;
-              });
-            }
-            try {
-              widget.user.verified!.isEmpty ? _update() : _unVerify();
+        if (!oldUsernameDoc.exists) {
+          throw Exception('Old username does not exist');
+        }
 
-              widget.user.verified!.isEmpty
-                  ? Navigator.pop(context)
-                  : _pop(context);
+        DocumentSnapshot newUsernameDoc = await transaction
+            .get(_firestore.collection('usernames').doc(newUsername));
 
-              Flushbar(
-                margin: EdgeInsets.all(8),
-                boxShadows: [
-                  BoxShadow(
-                    color: Colors.black,
-                    offset: Offset(0.0, 2.0),
-                    blurRadius: 3.0,
-                  )
-                ],
-                flushbarPosition: FlushbarPosition.TOP,
-                flushbarStyle: FlushbarStyle.FLOATING,
-                titleText: Text(
-                  'Done',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: width > 800 ? 22 : 14,
-                  ),
-                ),
-                messageText: Text(
-                  'Username changed successfully',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: width > 800 ? 20 : 12,
-                  ),
-                ),
-                icon: Icon(
-                  Icons.error_outline,
-                  size: 28.0,
-                  color: Colors.blue,
-                ),
-                duration: Duration(seconds: 1),
-                leftBarIndicatorColor: Colors.blue,
-              )..show(context);
-            } catch (e) {
-              final double width = Responsive.isDesktop(context)
-                  ? 600.0
-                  : MediaQuery.of(context).size.width;
-              String error = e.toString();
-              String result = error.contains(']')
-                  ? error.substring(error.lastIndexOf(']') + 1)
-                  : error;
-              Flushbar(
-                margin: EdgeInsets.all(8),
-                boxShadows: [
-                  BoxShadow(
-                    color: Colors.black,
-                    offset: Offset(0.0, 2.0),
-                    blurRadius: 3.0,
-                  )
-                ],
-                flushbarPosition: FlushbarPosition.TOP,
-                flushbarStyle: FlushbarStyle.FLOATING,
-                titleText: Text(
-                  'Error',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: width > 800 ? 22 : 14,
-                  ),
-                ),
-                messageText: Text(
-                  result.toString(),
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: width > 800 ? 20 : 12,
-                  ),
-                ),
-                icon: Icon(
-                  Icons.error_outline,
-                  size: 28.0,
-                  color: Colors.blue,
-                ),
-                duration: Duration(seconds: 3),
-                leftBarIndicatorColor: Colors.blue,
-              )..show(context);
-            }
-            if (mounted) {
-              setState(() {
-                _isLoading = false;
-              });
-            }
-          }
+        if (newUsernameDoc.exists) {
+          throw Exception('New username is not unique');
+        }
+        String dynamicLink = await DatabaseService.myDynamicLink(
+          _provider.user!.profileImageUrl!,
+          newUsername.toUpperCase(),
+          _provider.user!.bio!,
+          'https://www.barsopus.com/user_$_provider.currentUserId.uid',
+        );
+        // Create the new username document
+        DocumentReference newUsernameRef =
+            _firestore.collection('usernames').doc(newUsername.toUpperCase());
+        transaction.set(newUsernameRef, oldUsernameDoc.data());
+        transaction.update(
+          usersAuthorRef.doc(widget.user.userId),
+          {
+            'userName': newUsername.toUpperCase(),
+            'dynamicLink': dynamicLink,
+          },
+        );
+
+        transaction.update(
+          userProfessionalRef.doc(widget.user.userId),
+          {
+            'userName': newUsername.toUpperCase(),
+            'dynamicLink': dynamicLink,
+          },
+        );
+
+        // Delete the old username document
+        DocumentReference oldUsernameRef =
+            _firestore.collection('usernames').doc(oldUsername);
+        transaction.delete(oldUsernameRef);
+
+        // Update the global user object
+
+        _updateAuthorHive(newUsername.toUpperCase(), dynamicLink);
+        Provider.of<UserData>(context, listen: false)
+            .setChangeUserName(newUsername.toUpperCase());
+        // widget.user.userName = newUsername;
+      });
+    } catch (e) {
+      // Rethrow the caught exception to handle it in the _validate method
+      throw e;
+    }
+  }
+
+  _validateTextToxicity(String changeUserName) async {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    _provider.setIsLoading(true);
+
+    TextModerator moderator = TextModerator();
+
+    // Define the texts to be checked
+    List<String> textsToCheck = [changeUserName];
+
+    // Set a threshold for toxicity that is appropriate for your app
+    const double toxicityThreshold = 0.7;
+    bool allTextsValid = true;
+
+    for (String text in textsToCheck) {
+      Map<String, dynamic>? analysisResult = await moderator.moderateText(text);
+
+      // Check if the API call was successful
+      if (analysisResult != null) {
+        double toxicityScore = analysisResult['attributeScores']['TOXICITY']
+            ['summaryScore']['value'];
+
+        if (toxicityScore >= toxicityThreshold) {
+          // If any text's score is above the threshold, show a Snackbar and set allTextsValid to false
+          mySnackBarModeration(context,
+              'Your username contains inappropriate content. Please review');
+          _provider.setIsLoading(false);
+
+          allTextsValid = false;
+          break; // Exit loop as we already found inappropriate content
         }
       } else {
-        widget.user.verified!.isEmpty ? Navigator.pop(context) : _pop(context);
+        // Handle the case where the API call failed
+        _provider.setIsLoading(false);
+        mySnackBar(context, 'Try again.');
+        allTextsValid = false;
+        break; // Exit loop as there was an API error
+      }
+    }
+
+    // Animate to the next page if all texts are valid
+    if (allTextsValid) {
+      _provider.setIsLoading(false);
+
+      await changeUsername(
+          changeUserName.toUpperCase(), _controller.text.toUpperCase());
+      mySnackBar(context, 'Username changed successfully');
+      // animateToPage(1);
+    }
+  }
+
+  _validate(BuildContext context) async {
+    var _changeUserName =
+        Provider.of<UserData>(context, listen: false).changeNewUserName;
+    final form = _formKey.currentState;
+    if (form!.validate()) {
+      form.save();
+      // Check if the username has changed
+      if (_changeUserName == _controller.text) {
+      } else {
+        try {
+          _validateTextToxicity(_changeUserName);
+        } catch (e) {
+          mySnackBar(context, e.toString());
+        }
       }
     }
   }
 
-  _update() {
-    usersRef
-        .doc(
-      widget.user.id,
-    )
-        .update({
-      'userName': _userName.toUpperCase(),
-    });
+  _updateAuthorHive(String userName, String dynamicLink) {
+    final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
 
-    usersAuthorRef
-        .doc(
-      widget.user.id,
-    )
-        .update({
-      'userName': _userName.toUpperCase(),
-    });
-  }
+    var _provider = Provider.of<UserData>(context, listen: false);
 
-  _unVerify() {
-    usersRef
-        .doc(
-      widget.user.id,
-    )
-        .update({
-      'userName': _userName.toUpperCase(),
-      'verified': '',
-    });
-    usersAuthorRef
-        .doc(
-      widget.user.id,
-    )
-        .update({
-      'userName': _userName.toUpperCase(),
-      'verified': '',
-    });
-    verificationRef.doc(widget.user.id).get().then((doc) {
-      if (doc.exists) {
-        doc.reference.delete();
-      }
-    });
-    FirebaseStorage.instance
-        .ref('images/validate/${widget.user.id}')
-        .listAll()
-        .then((value) {
-      value.items.forEach((element) {
-        FirebaseStorage.instance.ref(element.fullPath).delete();
-      }); 
-    });
-  }
+    // Create a new instance of AccountHolderAuthor with the updated name
+    var updatedAccountAuthor = AccountHolderAuthor(
+      name: _provider.user!.name,
+      bio: _provider.user!.bio,
+      disabledAccount: _provider.user!.disabledAccount,
+      dynamicLink: dynamicLink,
+      lastActiveDate: _provider.user!.lastActiveDate,
+      profileHandle: _provider.user!.profileHandle,
+      profileImageUrl: _provider.user!.profileImageUrl,
+      reportConfirmed: _provider.user!.reportConfirmed,
+      userId: _provider.user!.userId,
+      userName: userName,
+      verified: _provider.user!.verified,
+    );
 
-  _pop(BuildContext context) {
-    Navigator.pop(context);
-    Navigator.pop(context);
+    // Put the new object back into the box with the same key
+    accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
   }
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveScaffold(
-      child: Scaffold(
-          backgroundColor:
-              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-          appBar: AppBar(
-            iconTheme: IconThemeData(
-              color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-            ),
-            automaticallyImplyLeading: true,
-            elevation: 0,
-            backgroundColor:
-                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-            title: Text(
-              'Edit Profile ',
-              style: TextStyle(
-                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-            ),
-            centerTitle: true,
-          ),
-          body: SafeArea(
-            child: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
-              child: SingleChildScrollView(
-                child: Container(
-                    child: Form(
-                        key: _formKey,
-                        child: Column(
-                          children: [
-                            _isLoading
-                                ? SizedBox(
-                                    height: 2.0,
-                                    child: LinearProgressIndicator(
-                                      backgroundColor: Colors.grey[100],
-                                      valueColor:
-                                          AlwaysStoppedAnimation(Colors.blue),
-                                    ),
-                                  )
-                                : const SizedBox.shrink(),
-                            Padding(
-                              padding: const EdgeInsets.all(30.0),
-                              child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    EditProfileInfo(
-                                        editTitle: 'Select \nUsername',
-                                        info:
-                                            'Select a unique username for your brand. The username can be your stage name if you are a music creator. Please note that all usernames are converted to uppercase.',
-                                        icon: MdiIcons.accountDetails),
-                                    Hero(
-                                      tag: 'name',
-                                      child: new Material(
-                                        color: Colors.transparent,
-                                        child: Text(
-                                          _userName.toUpperCase(),
-                                          style: TextStyle(
-                                            color: ConfigBloc().darkModeOn
-                                                ? Colors.blueGrey[100]
-                                                : Colors.black,
-                                            fontSize: 16.0,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                    ),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: <Widget>[
-                                        SizedBox(height: 10),
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 10.0,
-                                              bottom: 10.0,
-                                              right: 10.0),
-                                          child: Container(
-                                            color: Colors.transparent,
-                                            child: TextFormField(
-                                              autofocus: true,
-                                              // onChanged: (input) {
-                                              //   _validate();
-                                              // },
-                                              controller: _controller,
-                                              textCapitalization:
-                                                  TextCapitalization.characters,
-                                              keyboardType:
-                                                  TextInputType.multiline,
-
-                                              maxLines: null,
-                                              autovalidateMode:
-                                                  AutovalidateMode.always,
-                                              style: TextStyle(
-                                                fontSize: 12.0,
-                                                color: ConfigBloc().darkModeOn
-                                                    ? Colors.blueGrey[100]
-                                                    : Colors.black,
-                                              ),
-                                              decoration: InputDecoration(
-                                                labelStyle: TextStyle(
-                                                  color: Colors.grey,
-                                                ),
-                                                focusedBorder:
-                                                    OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      color: Colors.blue,
-                                                      width: 3.0),
-                                                ),
-                                                enabledBorder:
-                                                    new UnderlineInputBorder(
-                                                        borderSide:
-                                                            new BorderSide(
-                                                                color: Colors
-                                                                    .grey)),
-                                                hintText:
-                                                    'A unique name to be identified with',
-                                                hintStyle: TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.grey),
-                                                labelText: 'Username',
-                                              ),
-                                              autofillHints: [
-                                                AutofillHints.name
-                                              ],
-                                              validator: (input) => input!
-                                                          .trim()
-                                                          .length <
-                                                      1
-                                                  ? 'Choose a username'
-                                                  : input.trim().contains(' ')
-                                                      ? 'Username cannot contain space, use ( _ or - )'
-                                                      : input
-                                                              .trim()
-                                                              .contains('@')
-                                                          ? 'Username cannot contain @'
-                                                          : null,
-                                              onSaved: (input) => _userName =
-                                                  input!.trim().toUpperCase(),
-                                            ),
-                                          ),
-                                        ),
-                                        _isLoading
-                                            ? Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 30.0),
-                                                child: SizedBox(
-                                                  height: 2.0,
-                                                  child:
-                                                      LinearProgressIndicator(
-                                                    backgroundColor:
-                                                        Colors.transparent,
-                                                    valueColor:
-                                                        AlwaysStoppedAnimation(
-                                                            Colors.blue),
-                                                  ),
-                                                ),
-                                              )
-                                            : Container(
-                                                margin: EdgeInsets.all(40.0),
-                                                width: 250.0,
-                                                child: ElevatedButton(
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                    backgroundColor:
-                                                        ConfigBloc().darkModeOn
-                                                            ? Colors.white
-                                                            : Color(0xFF1d2323),
-                                                    elevation: 20.0,
-                                                    foregroundColor:
-                                                        Colors.blue,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              20.0),
-                                                    ),
-                                                  ),
-                                                  onPressed: () {
-                                                    _validate(context);
-                                                  },
-                                                  child: Text(
-                                                    'Save Profile',
-                                                    style: TextStyle(
-                                                      color: ConfigBloc()
-                                                              .darkModeOn
-                                                          ? Colors.black
-                                                          : Colors.white,
-                                                      fontSize: 14,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                        SizedBox(
-                                          height: 50.0,
-                                        ),
-                                      ],
-                                    )
-                                  ]),
-                            )
-                          ],
-                        ))),
+    return EditProfileScaffold(
+      title: '',
+      widget: Form(
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.all(30.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              EditProfileInfo(
+                  editTitle: 'Select \nUsername',
+                  info:
+                      'Select a unique username for your brand. The username can be your stage name if you are a music creator. Please note that all usernames are converted to uppercase.',
+                  icon: MdiIcons.accountDetails),
+              const SizedBox(
+                height: 30,
               ),
-            ),
-          )),
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 10.0, bottom: 10.0, right: 10.0),
+                child: Container(
+                  color: Colors.transparent,
+                  child: TextFormField(
+                    focusNode: _focusNode,
+                    controller: _controller,
+                    textCapitalization: TextCapitalization.characters,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: 1,
+                    autovalidateMode: AutovalidateMode.always,
+                    style: TextStyle(
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 12.0),
+                      color: Theme.of(context).secondaryHeaderColor,
+                    ),
+                    decoration: InputDecoration(
+                      labelStyle: TextStyle(
+                        color: Colors.grey,
+                        fontSize:
+                            ResponsiveHelper.responsiveFontSize(context, 12.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue, width: 3.0),
+                      ),
+                      enabledBorder: new UnderlineInputBorder(
+                          borderSide: new BorderSide(color: Colors.grey)),
+                      hintText: 'A unique name to be identified with',
+                      hintStyle: TextStyle(
+                          fontSize: ResponsiveHelper.responsiveFontSize(
+                              context, 12.0),
+                          color: Colors.grey),
+                      labelText: 'Username',
+                    ),
+                    autofillHints: [AutofillHints.name],
+                    validator: (input) {
+                      if (input!.trim().length < 1) {
+                        return 'Choose a username';
+                      } else if (input.trim().contains(' ')) {
+                        return 'Username cannot contain space, use ( _ or - )';
+                      } else if (input.trim().contains('@')) {
+                        return 'Username cannot contain @';
+                      } else if (input.trim().length > 20) {
+                        // assuming 20 as the maximum length
+                        return 'Username cannot be longer than 20 characters';
+                      } else {
+                        return null;
+                      }
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 50,
+              ),
+              AlwaysWhiteButton(
+                buttonColor: Colors.blue,
+                buttonText: 'Save',
+                onPressed: () {
+                  if (_controller.text.trim().isNotEmpty) _validate(context);
+                },
+              ),
+              const SizedBox(
+                height: 50.0,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

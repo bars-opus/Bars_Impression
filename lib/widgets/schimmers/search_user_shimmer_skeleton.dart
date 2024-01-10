@@ -22,7 +22,7 @@ class SearchUserSchimmerSkeleton extends StatelessWidget {
                       ),
                       child: CircleAvatar(
                         backgroundColor: Color(0xFFf2f2f2),
-                        radius: 25.0,
+                        radius:ResponsiveHelper.responsiveHeight(context, 25,),
                       ),
                     ),
                   ),
@@ -37,8 +37,8 @@ class SearchUserSchimmerSkeleton extends StatelessWidget {
                         color: Colors.transparent,
                         child: SchimmerSkeleton(
                           schimmerWidget: Container(
-                            height: 10,
-                            width: 200,
+                            height: ResponsiveHelper.responsiveHeight(context, 10,),
+                            width: ResponsiveHelper.responsiveHeight(context, 200,),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(50),
                               gradient: LinearGradient(
@@ -59,8 +59,8 @@ class SearchUserSchimmerSkeleton extends StatelessWidget {
                         color: Colors.transparent,
                         child: SchimmerSkeleton(
                           schimmerWidget: Container(
-                            height: 10,
-                            width: 200,
+                            height: ResponsiveHelper.responsiveHeight(context, 10,),
+                            width: ResponsiveHelper.responsiveHeight(context, 200,),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(50),
                               gradient: LinearGradient(
@@ -89,7 +89,7 @@ class SearchUserSchimmerSkeleton extends StatelessWidget {
                       color: Colors.transparent,
                       child: SchimmerSkeleton(
                         schimmerWidget: Container(
-                          height: 10,
+                          height: ResponsiveHelper.responsiveHeight(context, 10,),
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(50),
                               gradient: LinearGradient(
@@ -105,7 +105,7 @@ class SearchUserSchimmerSkeleton extends StatelessWidget {
                       color: Colors.transparent,
                       child: SchimmerSkeleton(
                         schimmerWidget: Container(
-                          height: 10,
+                          height: ResponsiveHelper.responsiveHeight(context, 10,),
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(50),
                               gradient: LinearGradient(
@@ -121,7 +121,7 @@ class SearchUserSchimmerSkeleton extends StatelessWidget {
                       color: Colors.transparent,
                       child: SchimmerSkeleton(
                         schimmerWidget: Container(
-                          height: 10,
+                          height:ResponsiveHelper.responsiveHeight(context, 10,),
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(50),
                               gradient: LinearGradient(
@@ -137,7 +137,7 @@ class SearchUserSchimmerSkeleton extends StatelessWidget {
                       color: Colors.transparent,
                       child: SchimmerSkeleton(
                         schimmerWidget: Container(
-                          height: 10,
+                          height: ResponsiveHelper.responsiveHeight(context, 10,),
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(50),
                               gradient: LinearGradient(

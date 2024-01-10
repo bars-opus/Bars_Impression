@@ -1,4 +1,3 @@
-import 'package:bars/services/bars_google_auth_service.dart';
 import 'package:bars/utilities/exports.dart';
 
 class LoginScreenOptions extends StatefulWidget {
@@ -19,6 +18,13 @@ class _LoginScreenOptionsState extends State<LoginScreenOptions>
       muchDelayedAnimation,
       muchMoreDelayedAnimation;
   late AnimationController animationController;
+
+  void _navigateToPage(Widget page) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => page),
+    );
+  }
 
   @override
   void initState() {
@@ -47,9 +53,7 @@ class _LoginScreenOptionsState extends State<LoginScreenOptions>
 
   @override
   Widget build(BuildContext context) {
-    final double width = Responsive.isDesktop(context)
-        ? 600.0
-        : MediaQuery.of(context).size.width;
+    final double width = MediaQuery.of(context).size.width;
 
     return AnimatedBuilder(
       animation: animationController,
@@ -83,28 +87,21 @@ class _LoginScreenOptionsState extends State<LoginScreenOptions>
                                   ))),
                         ),
                       ),
-                      SizedBox(height: 40.0),
-                      Platform.isAndroid
-                          ? const SizedBox.shrink()
-                          : Center(
-                              child: SignInWithButton(
-                                buttonText: 'Sign in with Apple',
-                                onPressed: () async {
-                                  BarsGoogleAuthService.appleSignUpUser(
-                                      context, widget.from!);
-                                },
-                                icon: Icon(
-                                  FontAwesomeIcons.apple,
-                                  color: Color(0xFF1a1a1a),
-                                ),
-                              ),
-                            ),
+                      const SizedBox(height: 40.0),
+                      if (Platform.isIOS)
+                        Center(
+                          child: SignInWithButton(
+                            buttonText: 'Sign in with Apple',
+                            onPressed: () async {
+                              BarsGoogleAuthService.appleSignUpUser(
+                                  context, widget.from!);
+                            },
+                            icon: FontAwesomeIcons.apple,
+                          ),
+                        ),
                       Center(
                         child: SignInWithButton(
-                            icon: Icon(
-                              FontAwesomeIcons.google,
-                              color: Color(0xFF1a1a1a),
-                            ),
+                            icon: FontAwesomeIcons.google,
                             buttonText: 'Sign in with Google',
                             onPressed: () {
                               BarsGoogleAuthService.googleSignUpUser(
@@ -112,29 +109,17 @@ class _LoginScreenOptionsState extends State<LoginScreenOptions>
                             }),
                       ),
                       Hero(
-                        tag: widget.from!.startsWith('Register')
-                            ? 'Sign Up'
-                            : 'Sign In',
+                        tag: 'Sign In',
                         child: SignInWithButton(
-                          icon: Icon(
-                            Icons.email,
-                            color: Color(0xFF1a1a1a),
-                          ),
-                          buttonText: 'Enter email and password',
-                          onPressed: () => widget.from!.startsWith('Register')
-                              ? Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => SignpsScreen(),
-                                  ))
-                              : Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => LoginScreen(),
-                                  )),
-                        ),
+                            icon: Icons.email,
+                            buttonText: 'Enter email and password',
+                            onPressed: () => _navigateToPage(
+                                  widget.from!.startsWith('Register')
+                                      ? SignpsScreen()
+                                      : LoginScreen(),
+                                )),
                       ),
-                      SizedBox(height: 50),
+                      const SizedBox(height: 50),
                       ShakeTransition(
                         child: OutlinedButton(
                           style: OutlinedButton.styleFrom(
@@ -151,7 +136,8 @@ class _LoginScreenOptionsState extends State<LoginScreenOptions>
                             padding: const EdgeInsets.all(8.0),
                             child: IconButton(
                               icon: Icon(Icons.close),
-                              iconSize: 30.0,
+                              iconSize: ResponsiveHelper.responsiveHeight(
+                                  context, 30),
                               color: Colors.grey,
                               onPressed: () => Navigator.pop(context),
                             ),

@@ -11,8 +11,7 @@ class _SearchUserSchimmerState extends State<SearchUserSchimmer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+      backgroundColor: Theme.of(context).primaryColorLight,
       body: ListView(children: <Widget>[
         Column(
             mainAxisAlignment: MainAxisAlignment.start,

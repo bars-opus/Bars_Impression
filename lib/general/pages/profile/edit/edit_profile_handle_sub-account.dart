@@ -2,7 +2,7 @@ import 'package:bars/utilities/exports.dart';
 import 'package:flutter/cupertino.dart';
 
 class EditProfileHandleSubAccount extends StatefulWidget {
-  final AccountHolder user;
+  final AccountHolderAuthor user;
 
   final String profileHandle;
 
@@ -103,300 +103,37 @@ class _EditProfileHandleSubAccountState
         });
   }
 
-  //    "a",
-  // "producer",
-  // "coverArtDesigner",
-  // mMusi_Vide_Director",
-  // dDJ",
-  // bBattl_Rapper",
-  // pPhotographer",
-  // dDancer",
-  // vVide_Vixen",
-  // mMakeu_Artist",
-  // "becor_Label",
-  // "brand_Influencer",
-  // "ml,
-  // "MC(Host)",
-  // "Fan",
-
-  // final _formKey = GlobalKey<FormState>();
-  // String _profileHandle = '';
-  // String selectedValue = '';
-
-  // @override
-  // void initState() {
-  //   super.initState();
-
-  //   super.initState();
-  //   SchedulerBinding.instance.addPostFrameCallback((_) {
-
-  //   });
-  // }
-
-  // _submit() async {
-  //   if (_profileHandle.isEmpty) {
-  //     _profileHandle = 'Fan';
-  //   }
-  //   try {
-  //     widget.user.verified!.isEmpty ? _update() : _unVerify();
-  //   } catch (e) {
-  //     final double width = Responsive.isDesktop(context)
-  //         ? 600.0
-  //         : MediaQuery.of(context).size.width;
-  //     Flushbar(
-  //       margin: EdgeInsets.all(8),
-  //       boxShadows: [
-  //         BoxShadow(
-  //           color: Colors.black,
-  //           offset: Offset(0.0, 2.0),
-  //           blurRadius: 3.0,
-  //         )
-  //       ],
-  //       flushbarPosition: FlushbarPosition.TOP,
-  //       flushbarStyle: FlushbarStyle.FLOATING,
-  //       titleText: Text(
-  //         'Error',
-  //         style: TextStyle(
-  //           color: Colors.white,
-  //           fontSize: width > 800 ? 22 : 14,
-  //         ),
-  //       ),
-  //       messageText: Text(
-  //         e.toString(),
-  //         style: TextStyle(
-  //           color: Colors.white,
-  //           fontSize: width > 800 ? 20 : 12,
-  //         ),
-  //       ),
-  //       icon: Icon(
-  //         Icons.error_outline,
-  //         size: 28.0,
-  //         color: Colors.blue,
-  //       ),
-  //       duration: Duration(seconds: 3),
-  //       leftBarIndicatorColor: Colors.blue,
-  //     )..show(context);
-  //   }
-  // }
-
-  // _update() {
-  //   usersRef
-  //       .doc(
-  //     widget.user.id,
-  //   )
-  //       .update({
-  //     'profileHandle': _profileHandle,
-  //   });
-
-  //   usersAuthorRef
-  //       .doc(
-  //     widget.user.id,
-  //   )
-  //       .update({
-  //     'profileHandle': _profileHandle,
-  //   });
-  // }
-
-  // _unVerify() {
-  //   usersRef
-  //       .doc(
-  //     widget.user.id,
-  //   )
-  //       .update({
-  //     'profileHandle': _profileHandle,
-  //     'verified': '',
-  //   });
-  //   usersAuthorRef
-  //       .doc(
-  //     widget.user.id,
-  //   )
-  //       .update({
-  //     'profileHandle': _profileHandle,
-  //     'verified': '',
-  //   });
-  //   verificationRef.doc(widget.user.id).get().then((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-  //   FirebaseStorage.instance
-  //       .ref('images/validate/${widget.user.id}')
-  //       .listAll()
-  //       .then((value) {
-  //     value.items.forEach((element) {
-  //       FirebaseStorage.instance.ref(element.fullPath).delete();
-  //     });
-  //   });
-  // }
-
-  // static const values = <String>[
-  //   "Artist",
-  //   "Producer",
-  //   "Cover_Art_Designer",
-  //   "Music_Video_Director",
-  //   "DJ",
-  //   "Battle_Rapper",
-  //   "Photographer",
-  //   "Dancer",
-  //   "Video_Vixen",
-  //   "Makeup_Artist",
-  //   "Record_Label",
-  //   "Brand_Influencer",
-  //   "Blogger",
-  //   "MC(Host)",
-  //   "Fan",
-  // ];
-
-  // Widget buildRadios() => Theme(
-  //       data: Theme.of(context).copyWith(
-  //         unselectedWidgetColor:
-  //             ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-  //       ),
-  //       child: Column(
-  //           children: values.map((value) {
-  //         final selected = this.selectedValue == value;
-  //         final color = selected
-  //             ? Colors.blue
-  //             : ConfigBloc().darkModeOn
-  //                 ? Colors.white
-  //                 : Colors.black;
-
-  //         return RadioListTile<String>(
-  //           value: value,
-  //           groupValue: selectedValue,
-  //           title: Text(
-  //             value,
-  //             style: TextStyle(
-  //               color: color,
-  //               fontSize: 14,
-  //             ),
-  //           ),
-  //           activeColor: Colors.blue,
-  //           onChanged: (value) => setState(
-  //             () {
-  //               _profileHandle = this.selectedValue = value!;
-  //               _submit();
-  //             },
-  //           ),
-  //         );
-  //       }).toList()),
-  //     );
-
-  // _pop() {
-  //   Navigator.pop(context);
-  // }
+  
 
   _submit() async {
     try {
       Navigator.pop(context);
-      usersRef
-          .doc(
-        widget.user.id,
-      )
-          .update({
-        'subAccountType': artist +
-            producer +
-            coverArtDesigner +
-            musicVideoDirector +
-            dJ +
-            battleRapper +
-            photographer +
-            videoVixen +
-            blogger +
-            dancer +
-            makeupArtist +
-            brandInfluencer +
-            mC
-      });
-    } catch (e) {
-      final double width = Responsive.isDesktop(context)
-          ? 600.0
-          : MediaQuery.of(context).size.width;
-      Flushbar(
-        margin: EdgeInsets.all(8),
-        boxShadows: [
-          BoxShadow(
-            color: Colors.black,
-            offset: Offset(0.0, 2.0),
-            blurRadius: 3.0,
-          )
-        ],
-        flushbarPosition: FlushbarPosition.TOP,
-        flushbarStyle: FlushbarStyle.FLOATING,
-        titleText: Text(
-          'Error',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: width > 800 ? 22 : 14,
-          ),
-        ),
-        messageText: Text(
-          e.toString(),
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: width > 800 ? 20 : 12,
-          ),
-        ),
-        icon: Icon(
-          Icons.error_outline,
-          size: 28.0,
-          color: Colors.blue,
-        ),
-        duration: Duration(seconds: 3),
-        leftBarIndicatorColor: Colors.blue,
-      )..show(context);
+     
+    } catch (e) {String error = e.toString();
+      String result = error.contains(']')
+          ? error.substring(error.lastIndexOf(']') + 1)
+          : error;
+            mySnackBar(context,'Request Failed\n$result.toString(),');
+     
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // bool _isArtist =
-    //     widget.user.subAccountType!.contains('Artist') ? true : false;
-
-    // bool _isProducer =
-    //     widget.user.subAccountType!.contains('Producer') ? true : false;
-    // bool _isCoverArtDesigner =
-    //     widget.user.subAccountType!.contains('Cover_Art_Designer')
-    //         ? true
-    //         : false;
-    // bool _isMusicVideoDirector =
-    //     widget.user.subAccountType!.contains('Musi_Vide_Director')
-    //         ? true
-    //         : false;
-    // bool _isDJ = widget.user.subAccountType!.contains('DJ') ? true : false;
-    // bool _isBattleRapper =
-    //     widget.user.subAccountType!.contains('Battle_Rapper') ? true : false;
-    // bool _isPhotographer =
-    //     widget.user.subAccountType!.contains('Photographer') ? true : false;
-    // bool _isDancer =
-    //     widget.user.subAccountType!.contains('Dancer') ? true : false;
-    // bool _isVideoVixen =
-    //     widget.user.subAccountType!.contains('Video_Vixen') ? true : false;
-    // bool _isMakeupArtist =
-    //     widget.user.subAccountType!.contains('Makeup_Artist') ? true : false;
-    // bool _isBrandInfluencer =
-    //     widget.user.subAccountType!.contains('Brand_Influencer') ? true : false;
-    // bool _isBlogger =
-    //     widget.user.subAccountType!.contains('Blogger') ? true : false;
-    // bool _isMC =
-    //     widget.user.subAccountType!.contains('MC(Host)') ? true : false;
-
-    return ResponsiveScaffold(
-      child: Scaffold(
-          backgroundColor:
-              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+    
+    return  Scaffold(
+          backgroundColor: Theme.of(context).primaryColor,
           appBar: AppBar(
             iconTheme: IconThemeData(
-              color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+              color: Theme.of(context).secondaryHeaderColor,
             ),
             automaticallyImplyLeading: true,
             elevation: 0,
-            backgroundColor:
-                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+            backgroundColor: Theme.of(context).primaryColor,
             title: Text(
               'Edit Profile',
               style: TextStyle(
-                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+                  color: Theme.of(context).secondaryHeaderColor,
                   fontSize: 20,
                   fontWeight: FontWeight.bold),
             ),
@@ -455,7 +192,6 @@ class _EditProfileHandleSubAccountState
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 14,
-                                          // fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ),
@@ -478,9 +214,7 @@ class _EditProfileHandleSubAccountState
                                 makeupArtist +
                                 brandInfluencer +
                                 mC,
-                            // Provider.of<UserData>(context, listen: false)
-                            //     .post15
-                            //     .toString(),
+                          
                             style: TextStyle(fontSize: 12, color: Colors.blue),
                           ),
                           const SizedBox(
@@ -723,7 +457,7 @@ class _EditProfileHandleSubAccountState
                 ),
               ),
             ),
-          )),
+          ),
     );
   }
 

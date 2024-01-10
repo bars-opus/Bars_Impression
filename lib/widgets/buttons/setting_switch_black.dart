@@ -17,42 +17,42 @@ class SettingSwitchBlack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double width = Responsive.isDesktop(context)
-        ? 600.0
-        : MediaQuery.of(context).size.width;
     return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Container(
-        width: width - 150,
-        child: RichText(
-          textScaleFactor: MediaQuery.of(context).textScaleFactor,
-          text: TextSpan(
-            children: [
-              TextSpan(
-                  text: title + '\n',
+      Expanded(
+        child: Container(
+          child: RichText(
+            textScaleFactor: MediaQuery.of(context).textScaleFactor,
+            text: TextSpan(
+              children: [
+                TextSpan(
+                    text: title + '\n',
+                    style: TextStyle(
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 16.0),
+                      color: Theme.of(context).secondaryHeaderColor,
+                    )),
+                TextSpan(
+                  text: subTitle,
                   style: TextStyle(
-                    fontSize: 16,
-                    color:
-                         Colors.black,
-                  )),
-              TextSpan(
-                text: subTitle,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 14.0),
+                    color: Colors.grey,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
+            textAlign: TextAlign.start,
           ),
-          textAlign: TextAlign.start,
         ),
       ),
-      Transform.scale(
-          scale: 1,
-          child: Switch.adaptive(
-              activeColor: color,
-              splashRadius: 35,
-              value: value,
-              onChanged: onChanged))
+      Container(
+        width: ResponsiveHelper.responsiveHeight(context, 50.0),
+        child: Switch.adaptive(
+            activeColor: color,
+            splashRadius: ResponsiveHelper.responsiveHeight(context, 35.0),
+            value: value,
+            onChanged: onChanged),
+      )
     ]);
   }
 }

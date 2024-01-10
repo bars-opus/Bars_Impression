@@ -24,7 +24,7 @@ class _FollowerFollowingState extends State<FollowerFollowing>
   int limit = 10;
   bool _hasNext = true;
   bool _isFectchingUser = false;
-  bool _showInfo = true;
+  // bool _showInfo = true;
   late ScrollController _hideButtonController;
 
   @override
@@ -33,7 +33,7 @@ class _FollowerFollowingState extends State<FollowerFollowing>
     widget.follower.startsWith('Follower')
         ? _setUpFollower()
         : _setUpFollowing();
-    __setShowInfo();
+    // __setShowInfo();
     _hideButtonController = ScrollController();
   }
 
@@ -54,17 +54,17 @@ class _FollowerFollowingState extends State<FollowerFollowing>
     super.dispose();
   }
 
-  __setShowInfo() {
-    if (_showInfo) {
-      Timer(Duration(seconds: 7), () {
-        if (mounted) {
-          setState(() {
-            _showInfo = false;
-          });
-        }
-      });
-    }
-  }
+  // __setShowInfo() {
+  //   if (_showInfo) {
+  //     Timer(Duration(seconds: 7), () {
+  //       if (mounted) {
+  //         setState(() {
+  //           _showInfo = false;
+  //         });
+  //       }
+  //     });
+  //   }
+  // }
 
   _setUpFollower() async {
     QuerySnapshot userSnapShot = await followersRef
@@ -159,10 +159,11 @@ class _FollowerFollowingState extends State<FollowerFollowing>
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (_) => ProfileScreen(   user: null,
+                  builder: (_) => ProfileScreen(
+                        user: null,
                         currentUserId:
                             Provider.of<UserData>(context).currentUserId!,
-                        userId: user.id!,
+                        userId: user.userId!,
                       )));
         });
   }
@@ -177,15 +178,19 @@ class _FollowerFollowingState extends State<FollowerFollowing>
               (context, index) {
                 DocId user = _userList[index];
                 return FutureBuilder(
-                  future: DatabaseService.getUserAuthorWithId(user.id),
+                  future: DatabaseService.getUserWithId(user.id),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if (!snapshot.hasData) {
                       return FollowerUserSchimmerSkeleton();
                     }
-                    AccountHolderAuthor user = snapshot.data;
-                    return widget.currentUserId == user.id
-                        ? const SizedBox.shrink()
-                        : _buildUserTile(user);
+                    AccountHolderAuthor _user = snapshot.data;
+                    return
+
+                        //  user.userId == _user.userId
+                        //     ? const SizedBox.shrink()
+                        //     :
+
+                        _buildUserTile(_user);
                   },
                 );
               },
@@ -201,110 +206,80 @@ class _FollowerFollowingState extends State<FollowerFollowing>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return ResponsiveScaffold(
-      child: NestedScrollView(
-        controller: _hideButtonController,
-        headerSliverBuilder: (context, innerBoxScrolled) => [
-          SliverAppBar(
-            elevation: 0.0,
-            automaticallyImplyLeading: true,
-            floating: true,
-            snap: true,
-            pinned: true,
-            iconTheme: new IconThemeData(
-              color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-            ),
-            backgroundColor:
-                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-            title: Text(
-              widget.follower.startsWith('Follower')
-                  ? 'Followers'
-                  : 'Following',
-              style: TextStyle(
-                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-            ),
-            centerTitle: true,
+    return NestedScrollView(
+      controller: _hideButtonController,
+      headerSliverBuilder: (context, innerBoxScrolled) => [
+        SliverAppBar(
+          elevation: 0.0,
+          automaticallyImplyLeading: true,
+          floating: true,
+          snap: true,
+          pinned: true,
+          iconTheme: new IconThemeData(
+            color: Theme.of(context).secondaryHeaderColor,
           ),
-        ],
-        body: MediaQuery.removePadding(
-          context: context,
-          removeTop: true,
-          child: Container(
-            color: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-            child: SafeArea(
-              child: MediaQuery(
-                data: MediaQuery.of(context).copyWith(
-                    textScaleFactor:
-                        MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    AnimatedContainer(
-                        curve: Curves.easeInOut,
-                        duration: Duration(milliseconds: 800),
-                        height: _showInfo ? 50 : 0.0,
-                        width: double.infinity,
-                        color: Colors.blue,
-                        child: ShakeTransition(
-                          child: ListTile(
-                            title: Text(
-                                widget.follower.startsWith('Follower')
-                                    ? 'Other users can\'t see your followers.'
-                                    : 'Other users can\'t see your following.',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                )),
-                            leading: IconButton(
-                              icon: Icon(Icons.info_outline_rounded),
-                              iconSize: 20.0,
-                              color:
-                                  _showInfo ? Colors.white : Colors.transparent,
-                              onPressed: () => () {},
-                            ),
-                          ),
-                        )),
-                    SizedBox(
-                      height: 30.0,
-                    ),
-                    widget.follower.startsWith('Follower')
-                        ? Expanded(
-                            child: widget.followerCount > 0
-                                ? _buildEventBuilder()
-                                : _userList.length > 0
-                                    ? Expanded(
-                                        child: Center(
-                                          child: NoContents(
-                                            icon: (Icons.people_outline),
-                                            title: 'No followers yet,',
-                                            subTitle:
-                                                'You don\'t have any follower yet. Make sure you have update your profile with the neccessary information and upload creative contents in order for people to follower you. ',
-                                          ),
+          backgroundColor: Theme.of(context).primaryColorLight,
+          title: Text(
+            widget.follower.startsWith('Follower') ? 'Followers' : 'Following',
+            style: TextStyle(
+                color: Theme.of(context).secondaryHeaderColor,
+                fontSize: 20,
+                fontWeight: FontWeight.bold),
+          ),
+          centerTitle: true,
+        ),
+      ],
+      body: MediaQuery.removePadding(
+        context: context,
+        removeTop: true,
+        child: Container(
+          color: Theme.of(context).primaryColorLight,
+          child: SafeArea(
+            child: MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                  textScaleFactor:
+                      MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  SizedBox(
+                    height: 30.0,
+                  ),
+                  widget.follower.startsWith('Follower')
+                      ? Expanded(
+                          child: widget.followerCount > 0
+                              ? _buildEventBuilder()
+                              : _userList.length > 0
+                                  ? Expanded(
+                                      child: Center(
+                                        child: NoContents(
+                                          icon: (Icons.people_outline),
+                                          title: 'No followers yet,',
+                                          subTitle:
+                                              'You don\'t have any follower yet. Make sure you have update your profile with the neccessary information and upload creative contents in order for people to follower you. ',
                                         ),
-                                      )
-                                    : Center(child: FollowUserSchimmer()),
-                          )
-                        : Expanded(
-                            child: widget.followingCount > 0
-                                ? _buildEventBuilder()
-                                : _userList.length > 0
-                                    ? Expanded(
-                                        child: Center(
-                                          child: NoContents(
-                                            icon: (Icons.people_outline),
-                                            title: 'No following yet,',
-                                            subTitle:
-                                                'You are not following anybody yet, follow people to see the contents they create and connect with them for collaborations ',
-                                          ),
+                                      ),
+                                    )
+                                  : Center(child: FollowUserSchimmer()),
+                        )
+                      : Expanded(
+                          child: widget.followingCount > 0
+                              ? _buildEventBuilder()
+                              : _userList.length > 0
+                                  ? Expanded(
+                                      child: Center(
+                                        child: NoContents(
+                                          icon: (Icons.people_outline),
+                                          title: 'No following yet,',
+                                          subTitle:
+                                              'You are not following anybody yet, follow people to see the contents they create and connect with them for collaborations ',
                                         ),
-                                      )
-                                    : Center(child: FollowUserSchimmer()),
-                          )
-                  ],
-                ),
+                                      ),
+                                    )
+                                  : Center(child: FollowUserSchimmer()),
+                        )
+                ],
               ),
             ),
           ),

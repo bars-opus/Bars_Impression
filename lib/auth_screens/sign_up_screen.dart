@@ -1,6 +1,4 @@
 import 'package:bars/utilities/exports.dart';
-import 'package:email_validator/email_validator.dart';
-import 'package:flutter/scheduler.dart';
 
 class SignpsScreen extends StatefulWidget {
   static final id = 'Signup_screen';
@@ -19,9 +17,9 @@ class _SignpsScreenState extends State<SignpsScreen>
 
   final _formKey = GlobalKey<FormState>();
 
-  String _name = '';
-  String _email = '';
-  String _password = '';
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _isHidden = true;
   bool _isLoading = false;
 
@@ -49,398 +47,236 @@ class _SignpsScreenState extends State<SignpsScreen>
             curve: Interval(0.9, 1.0, curve: Curves.fastOutSlowIn)));
 
     animationController.forward();
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      Provider.of<UserData>(context, listen: false).setPost1(_email);
-      Provider.of<UserData>(context, listen: false).setPost2(_password);
-      Provider.of<UserData>(context, listen: false).setPost3(_name);
-    });
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   _submit() async {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       FocusScope.of(context).unfocus();
-      setState(() {
-        _isLoading = true;
-      });
+      if (mounted)
+        setState(() {
+          _isLoading = true;
+        });
+      _provider.setName(_nameController.text.trim());
+      try {
+        await AuthService.signUpUser(
+            context,
+            _nameController.text.trim(),
+            _emailController.text.trim().toLowerCase(),
+            _passwordController.text.trim());
+        Provider.of<UserData>(context, listen: false).setName(
+          _nameController.text.trim(),
+        );
+      } catch (e) {
+        String error = e.toString();
+        String result = error.contains(']')
+            ? error.substring(error.lastIndexOf(']') + 1)
+            : error;
+        _showBottomSheetErrorMessage(result);
+        if (mounted)
+          setState(() {
+            _isLoading = false;
+          });
+      }
 
-      await AuthService.signUpUser(
-        context,
-        // _name,
-        Provider.of<UserData>(context, listen: false).post3,
-        // _email,
-        Provider.of<UserData>(context, listen: false).post1,
-        // _password,
-        Provider.of<UserData>(context, listen: false).post2,
-      );
-
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted)
+        setState(() {
+          _isLoading = false;
+        });
     }
   }
 
+  void _showBottomSheetErrorMessage(String error) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return DisplayErrorHandler(
+          buttonText: 'Ok',
+          onPressed: () async {
+            Navigator.pop(context);
+          },
+          title: "Request failed",
+          subTitle: error,
+        );
+      },
+    );
+  }
+
   _toggleVisibility() {
-    setState(() {
-      _isHidden = !_isHidden;
-    });
+    if (mounted)
+      setState(() {
+        _isHidden = !_isHidden;
+      });
   }
 
   @override
   Widget build(BuildContext context) {
-    final double width = Responsive.isDesktop(context)
-        ? 600.0
-        : MediaQuery.of(context).size.width;
+    final double width = MediaQuery.of(context).size.width;
 
     return AnimatedBuilder(
         animation: animationController,
         builder: (BuildContext context, Widget? child) {
           return Scaffold(
             backgroundColor: Color(0xFF1a1a1a),
-            body: Align(
-              alignment: Alignment.center,
-              child: Container(
-                width: width,
-                child: GestureDetector(
-                  onTap: () => FocusScope.of(context).unfocus(),
-                  child: SingleChildScrollView(
-                    child: SafeArea(
-                      child: Container(
-                        height: MediaQuery.of(context).size.height,
+            body: GestureDetector(
+              onTap: () => FocusScope.of(context).unfocus(),
+              child: SingleChildScrollView(
+                child: SafeArea(
+                  child: Container(
+                    height: MediaQuery.of(context).size.height,
+                    width: width,
+                    child: Form(
+                      key: _formKey,
+                      child: AutofillGroup(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            FadeAnimation(
-                              1,
-                              Container(
-                                  width: 90.0,
-                                  height: 90.0,
-                                  child: Image.asset(
-                                    'assets/images/bars.png',
-                                  )),
+                            Container(
+                              width: 60.0,
+                              height: 60.0,
+                              child: Image.asset(
+                                'assets/images/bars.png',
+                              ),
                             ),
-                            Form(
-                              key: _formKey,
-                              child: AutofillGroup(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    Transform(
-                                      transform: Matrix4.translationValues(
-                                          animation.value * width, 0.0, 0.0),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 30.0, vertical: 10.0),
-                                        child: TextFormField(
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: width > 800 ? 20 : 14,
-                                          ),
-                                          textCapitalization:
-                                              TextCapitalization.sentences,
-                                          decoration: InputDecoration(
-                                              labelText: 'Nickname',
-                                              labelStyle: TextStyle(
-                                                fontSize: width > 800 ? 22 : 14,
-                                                color: Colors.grey,
-                                              ),
-                                              hintText:
-                                                  'Stage, brand, or nickname',
-                                              hintStyle: TextStyle(
-                                                fontSize: width > 800 ? 20 : 14,
-                                                color: Colors.blueGrey,
-                                              ),
-                                              icon: Icon(
-                                                Icons.person,
-                                                size: width > 800 ? 35 : 20.0,
-                                                color: Colors.grey,
-                                              ),
-                                              enabledBorder:
-                                                  new UnderlineInputBorder(
-                                                      borderSide:
-                                                          new BorderSide(
-                                                              color: Colors
-                                                                  .grey))),
-                                          autofillHints: [AutofillHints.name],
-                                          onChanged: (input) =>
-                                              Provider.of<UserData>(context,
-                                                      listen: false)
-                                                  .setPost3(input),
-                                          onSaved: (input) =>
-                                              Provider.of<UserData>(context,
-                                                      listen: false)
-                                                  .setPost3(input!),
-                                          validator: (input) => input!
-                                                  .trim()
-                                                  .isEmpty
-                                              ? 'Please enter a name'
-                                              : input.length < 2
-                                                  ? 'username is too short'
-                                                  : input.length > 24
-                                                      ? 'username is too long'
-                                                      : null,
-                                        ),
-                                      ),
-                                    ),
-                                    Transform(
-                                      transform: Matrix4.translationValues(
-                                          delayedAnimation.value * width,
-                                          0.0,
-                                          0.0),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 30.0, vertical: 10.0),
-                                        child: TextFormField(
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: width > 800 ? 20 : 14,
-                                          ),
-                                          decoration: InputDecoration(
-                                              labelText: 'Email',
-                                              labelStyle: TextStyle(
-                                                fontSize: width > 800 ? 22 : 14,
-                                                color: Colors.grey,
-                                              ),
-                                              hintText: 'example@mail.com',
-                                              hintStyle: TextStyle(
-                                                fontSize: width > 800 ? 20 : 14,
-                                                color: Colors.blueGrey,
-                                              ),
-                                              icon: Icon(
-                                                Icons.email,
-                                                size: width > 800 ? 35 : 20.0,
-                                                color: Colors.grey,
-                                              ),
-                                              enabledBorder:
-                                                  new UnderlineInputBorder(
-                                                      borderSide:
-                                                          new BorderSide(
-                                                              color: Colors
-                                                                  .grey))),
-                                          autofillHints: [AutofillHints.email],
-                                          onChanged: (input) =>
-                                              Provider.of<UserData>(context,
-                                                      listen: false)
-                                                  .setPost1(input),
-                                          onSaved: (input) =>
-                                              Provider.of<UserData>(context,
-                                                      listen: false)
-                                                  .setPost1(input!.trim()),
-                                          validator: (email) => email != null &&
-                                                  !EmailValidator.validate(
-                                                      email.trim())
-                                              ? 'Please enter your email'
-                                              : null,
-                                        ),
-                                      ),
-                                    ),
-                                    Transform(
-                                      transform: Matrix4.translationValues(
-                                          muchDelayedAnimation.value * width,
-                                          0.0,
-                                          0.0),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 30.0, vertical: 10.0),
-                                        child: TextFormField(
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: width > 800 ? 20 : 14,
-                                          ),
-                                          decoration: InputDecoration(
-                                              labelText: 'Password',
-                                              labelStyle: TextStyle(
-                                                fontSize: width > 800 ? 22 : 14,
-                                                color: Colors.grey,
-                                              ),
-                                              suffixIcon: IconButton(
-                                                  icon: _isHidden
-                                                      ? Icon(
-                                                          Icons.visibility_off,
-                                                          size: width > 800
-                                                              ? 35
-                                                              : 20.0,
-                                                          color: Colors.grey,
-                                                        )
-                                                      : Icon(
-                                                          Icons.visibility,
-                                                          size: width > 800
-                                                              ? 35
-                                                              : 20.0,
-                                                          color: Colors.white,
-                                                        ),
-                                                  onPressed: _toggleVisibility),
-                                              hintText: 'At least 8 characters',
-                                              hintStyle: TextStyle(
-                                                fontSize: width > 800 ? 20 : 14,
-                                                color: Colors.blueGrey,
-                                              ),
-                                              icon: Icon(
-                                                Icons.lock,
-                                                size: width > 800 ? 35 : 20.0,
-                                                color: Colors.grey,
-                                              ),
-                                              enabledBorder:
-                                                  new UnderlineInputBorder(
-                                                      borderSide:
-                                                          new BorderSide(
-                                                              color: Colors
-                                                                  .grey))),
-                                          autofillHints: [
-                                            AutofillHints.password
-                                          ],
-                                          onChanged: (input) =>
-                                              Provider.of<UserData>(context,
-                                                      listen: false)
-                                                  .setPost2(input),
-                                          onSaved: (input) =>
-                                              Provider.of<UserData>(context,
-                                                      listen: false)
-                                                  .setPost2(input!),
-                                          validator: (input) => input!.length <
-                                                  8
-                                              ? 'Password must be at least 8 characters'
+                            Transform(
+                              transform: Matrix4.translationValues(
+                                  animation.value * width, 0.0, 0.0),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 30.0, vertical: 10.0),
+                                child: LoginField(
+                                  controller: _nameController,
+                                  hintText: 'Stage, brand, or nickname',
+                                  labelText: 'name',
+                                  onValidateText: (input) =>
+                                      input!.trim().isEmpty
+                                          ? 'Please enter a name'
+                                          : input.length < 2
+                                              ? 'username is too short'
                                               : input.length > 24
-                                                  ? 'Password is too long'
+                                                  ? 'username is too long'
                                                   : null,
-                                          obscureText: _isHidden,
-                                        ),
+                                  icon: Icons.person_2_outlined,
+                                ),
+                              ),
+                            ),
+                            Transform(
+                              transform: Matrix4.translationValues(
+                                  delayedAnimation.value * width, 0.0, 0.0),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 30.0, vertical: 10.0),
+                                child: LoginField(
+                                  controller: _emailController,
+                                  hintText: 'example@mail.com',
+                                  labelText: 'Email',
+                                  onValidateText: (email) => email != null &&
+                                          !EmailValidator.validate(email.trim())
+                                      ? 'Please enter your email'
+                                      : null,
+                                  icon: Icons.email_outlined,
+                                ),
+                              ),
+                            ),
+                            Transform(
+                              transform: Matrix4.translationValues(
+                                  muchDelayedAnimation.value * width, 0.0, 0.0),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 30.0, vertical: 10.0),
+                                child: LoginField(
+                                  controller: _passwordController,
+                                  hintText: 'At least 8 characters',
+                                  labelText: 'Password',
+                                  onValidateText: (input) => input!.length < 8
+                                      ? 'Password must be at least 8 characters'
+                                      : input.length > 24
+                                          ? 'Password is too long'
+                                          : null,
+                                  icon: Icons.lock_outline_rounded,
+                                  suffixIcon: IconButton(
+                                      icon: Icon(
+                                        _isHidden
+                                            ? Icons.visibility_off
+                                            : Icons.visibility,
+                                        size: ResponsiveHelper.responsiveHeight(
+                                            context, 20.0),
+                                        color: Colors.grey,
+                                      ),
+                                      onPressed: _toggleVisibility),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 40.0),
+                            AnimatedContainer(
+                              duration: Duration(milliseconds: 300),
+                              height: _isLoading
+                                  ? 0.0
+                                  : ResponsiveHelper.responsiveHeight(
+                                      context, 250),
+                              width: double.infinity,
+                              curve: Curves.easeInOut,
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    Hero(
+                                      tag: 'Sign In',
+                                      child: AlwaysWhiteButton(
+                                        textColor: Colors.black,
+                                        buttonText: 'Create account',
+                                        onPressed: () {
+                                          _submit();
+                                        },
+                                        buttonColor: Colors.white,
                                       ),
                                     ),
-                                    SizedBox(height: 40.0),
-                                    AnimatedContainer(
-                                      duration: Duration(milliseconds: 300),
-                                      height: _isLoading ? 0.0 : 250,
-                                      width: double.infinity,
-                                      curve: Curves.easeInOut,
-                                      child: SingleChildScrollView(
-                                        child: Column(
-                                          children: [
-                                            Hero(
-                                              tag: 'Sign Up',
-                                              child: Container(
-                                                width: 250.0,
-                                                child: ElevatedButton(
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                    backgroundColor: Colors.white,
-                                                    elevation: 20.0,
-                                                    foregroundColor: Colors.blue,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              20.0),
-                                                    ),
-                                                  ),
-                                                  onPressed:
-                                                      //  () => Navigator.of(
-                                                      //         context)
-                                                      //     .pushAndRemoveUntil(
-                                                      //         MaterialPageRoute(
-                                                      //             builder: (context) =>
-                                                      //                 SignpsScreenVerifyEmail()),
-                                                      //         (Route<dynamic>
-                                                      //                 route) =>
-                                                      //             false),
-                                                      _submit,
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            8.0),
-                                                    child: Text(
-                                                      'Register',
-                                                      style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontSize: width > 800
-                                                            ? 24
-                                                            : 16,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                                height:
-                                                    width > 800 ? 40.0 : 20),
-                                            FadeAnimation(
-                                              2,
-                                              Container(
-                                                width: 250.0,
-                                                child: OutlinedButton(
-                                                  style:
-                                                      OutlinedButton.styleFrom(
-                                                    foregroundColor: Colors.blue,
-                                                    side: BorderSide(
-                                                      width: 1.0,
-                                                      color: Colors.white,
-                                                    ),
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              20.0),
-                                                    ),
-                                                  ),
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            8.0),
-                                                    child: Text(
-                                                      'Back',
-                                                      style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: width > 800
-                                                            ? 24
-                                                            : 16,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  onPressed: () =>
-                                                      Navigator.pop(context),
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(height: 80.0),
-                                            FadeAnimation(
-                                              2,
-                                              GestureDetector(
-                                                onTap: () =>
-                                                    Navigator.pushNamed(
-                                                        context, Password.id),
-                                                child: Text('Forgot Password?',
-                                                    style: TextStyle(
-                                                      color: Colors.blueGrey,
-                                                      fontSize:
-                                                          width > 800 ? 18 : 12,
-                                                    ),
-                                                    textAlign: TextAlign.right),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                                    const SizedBox(height: 20),
+                                    LoginBackButton(),
+                                    const SizedBox(height: 80.0),
+                                    GestureDetector(
+                                      onTap: () => Navigator.pushNamed(
+                                          context, Password.id),
+                                      child: Text('Forgot Password?',
+                                          style: TextStyle(
+                                            color: Colors.blueGrey,
+                                            fontSize: ResponsiveHelper
+                                                .responsiveFontSize(
+                                                    context, 12.0),
+                                          ),
+                                          textAlign: TextAlign.right),
                                     ),
-                                    Provider.of<UserData>(context,
-                                                listen: false)
-                                            .isLoading
-                                        ? SizedBox(
-                                            height: 0.5,
-                                            child: LinearProgressIndicator(
-                                              backgroundColor:
-                                                  Colors.transparent,
-                                              valueColor:
-                                                  AlwaysStoppedAnimation(
-                                                      Colors.white),
-                                            ),
-                                          )
-                                        : const SizedBox.shrink()
+                                    const SizedBox(
+                                      height: 40,
+                                    ),
                                   ],
                                 ),
                               ),
-                            )
+                            ),
+                            if (_isLoading)
+                              Align(
+                                alignment: Alignment.bottomCenter,
+                                child: SizedBox(
+                                  height: 0.5,
+                                  child: LinearProgressIndicator(
+                                    backgroundColor: Colors.transparent,
+                                    valueColor:
+                                        AlwaysStoppedAnimation(Colors.white),
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
                       ),

@@ -1,18 +1,37 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hive_flutter/adapters.dart';
+
+part 'chat_model.g.dart';
+
+@HiveType(typeId: 6) // Use unique IDs for different classes
 
 class Chat {
+  @HiveField(0)
   final String id;
+  @HiveField(1)
   final String fromUserId;
-  final String lastMessage;
+  @HiveField(2)
+  String lastMessage;
+  @HiveField(3)
   final String messageInitiator;
+  @HiveField(4)
   final String firstMessage;
+  @HiveField(5)
   final String toUserId;
-  final String seen;
+  @HiveField(6)
+  final bool seen;
+  @HiveField(7)
   final String mediaType;
+  @HiveField(8)
   final bool restrictChat;
-  // final bool disableChat;
-  final Timestamp newMessageTimestamp;
-  final Timestamp timestamp;
+  @HiveField(9)
+  final String messageId;
+  @HiveField(10)
+  Timestamp? newMessageTimestamp;
+  @HiveField(11)
+  final Timestamp? timestamp;
+  @HiveField(12)
+  final bool muteMessage;
 
   Chat({
     required this.id,
@@ -26,23 +45,26 @@ class Chat {
     required this.newMessageTimestamp,
     required this.toUserId,
     required this.timestamp,
-    // required this.disableChat,
+    required this.messageId,
+    required this.muteMessage,
   });
 
   factory Chat.fromDoc(DocumentSnapshot doc) {
     return Chat(
       id: doc.id,
       lastMessage: doc['lastMessage'] ?? '',
-      seen: doc['seen'] ?? '',
+      seen: doc['seen'] ?? false,
       fromUserId: doc['fromUserId'] ?? '',
       mediaType: doc['mediaType'] ?? '',
       messageInitiator: doc['messageInitiator'] ?? '',
       firstMessage: doc['firstMessage'] ?? '',
       restrictChat: doc['restrictChat'] ?? false,
-      // disableChat: doc['disableChat'] ?? false,
-      newMessageTimestamp: doc['newMessageTimestamp'],
+      muteMessage: doc['muteMessage'] ?? false,
+      // 'timestamp':timestamp ?? FieldValue.serverTimestamp(),
+      newMessageTimestamp: doc['newMessageTimestamp'] as Timestamp?,
       toUserId: doc['toUserId'] ?? '',
-      timestamp: doc['timestamp'],
+      timestamp: doc['timestamp'] as Timestamp?,
+      messageId: doc['messageId'] ?? '',
     );
   }
 }

@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 import 'package:bars/utilities/exports.dart';
 
 class AlwaysWhiteButton extends StatelessWidget {
@@ -7,33 +5,40 @@ class AlwaysWhiteButton extends StatelessWidget {
   final String buttonText;
   final double buttonWidth;
   final Color buttonColor;
+  final Color textColor;
 
-  AlwaysWhiteButton(
-      {required this.onPressed,
-      this.buttonWidth = 250.0,
-      this.buttonColor = Colors.white,
-      required this.buttonText});
+  AlwaysWhiteButton({
+    required this.onPressed,
+    this.buttonWidth = 250.0,
+    this.buttonColor = Colors.white,
+    required this.buttonText,
+    this.textColor = Colors.white,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: buttonWidth,
+      width: ResponsiveHelper.responsiveWidth(context, buttonWidth),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: buttonColor,
-          elevation: 20.0,
-          foregroundColor: Colors.blue,
+          elevation: 10.0,
+          foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20.0),
           ),
         ),
         onPressed: onPressed,
-        child: Text(
-          buttonText,
-          style: TextStyle(
-            color: Colors.blue,
-            // fontSize: 16,
-            // fontWeight: FontWeight.bold,
+        child: Padding(
+          padding: EdgeInsets.all(
+            ResponsiveHelper.responsiveFontSize(context, 5.0),
+          ),
+          child: Text(
+            buttonText,
+            style: TextStyle(
+              color: textColor,
+              fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+            ),
           ),
         ),
       ),

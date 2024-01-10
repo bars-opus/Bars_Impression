@@ -1,7 +1,8 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:hive/hive.dart';
 
 class EditProfileHandle extends StatefulWidget {
-  final AccountHolder user;
+  final AccountHolderAuthor user;
 
   EditProfileHandle({
     required this.user,
@@ -23,95 +24,110 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
     selectedValue = _profileHandle.isEmpty ? values.last : _profileHandle;
   }
 
+  void _showBottomSheetErrorMessage() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return DisplayErrorHandler(
+          buttonText: 'Ok',
+          onPressed: () async {
+            Navigator.pop(context);
+          },
+          title: 'Failed to update profile handle.',
+          subTitle: 'Please check your internet connection and try again.',
+        );
+      },
+    );
+  }
+
   _submit() async {
     if (_profileHandle.isEmpty) {
       _profileHandle = 'Fan';
     }
     try {
-      widget.user.verified!.isEmpty ? _update() : _unVerify();
-      // _update();
+      // widget.user.verified! ? _update() : _unVerify();
+      _update();
     } catch (e) {
-      final double width = Responsive.isDesktop(context)
-          ? 600.0
-          : MediaQuery.of(context).size.width;
-      Flushbar(
-        margin: EdgeInsets.all(8),
-        boxShadows: [
-          BoxShadow(
-            color: Colors.black,
-            offset: Offset(0.0, 2.0),
-            blurRadius: 3.0,
-          )
-        ],
-        flushbarPosition: FlushbarPosition.TOP,
-        flushbarStyle: FlushbarStyle.FLOATING,
-        titleText: Text(
-          'Error',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: width > 800 ? 22 : 14,
-          ),
-        ),
-        messageText: Text(
-          e.toString(),
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: width > 800 ? 20 : 12,
-          ),
-        ),
-        icon: Icon(
-          Icons.error_outline,
-          size: 28.0,
-          color: Colors.blue,
-        ),
-        duration: Duration(seconds: 3),
-        leftBarIndicatorColor: Colors.blue,
-      )..show(context);
+      _showBottomSheetErrorMessage();
     }
   }
 
   _update() {
-    usersRef
-        .doc(
-      widget.user.id,
-    )
-        .update({
-      'profileHandle': _profileHandle,
-    });
+    WriteBatch batch = FirebaseFirestore.instance.batch();
 
-    usersAuthorRef
-        .doc(
-      widget.user.id,
-    )
-        .update({
-      'profileHandle': _profileHandle,
-    });
+    batch.update(
+      usersAuthorRef.doc(widget.user.userId),
+      {
+        'profileHandle': _profileHandle,
+      },
+    );
+
+    batch.update(
+      userProfessionalRef.doc(widget.user.userId),
+      {
+        'profileHandle': _profileHandle,
+      },
+    );
+
+    try {
+      batch.commit();
+      _updateAuthorHive(_profileHandle);
+    } catch (error) {
+      // Handle the error appropriately
+    }
+  }
+
+  _updateAuthorHive(String profileHandle) {
+    final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
+
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    // Create a new instance of AccountHolderAuthor with the updated name
+    var updatedAccountAuthor = AccountHolderAuthor(
+      name: _provider.user!.name,
+      bio: _provider.user!.bio,
+      disabledAccount: _provider.user!.disabledAccount,
+      dynamicLink: _provider.user!.dynamicLink,
+      lastActiveDate: _provider.user!.lastActiveDate,
+      profileHandle: profileHandle,
+      profileImageUrl: _provider.user!.profileImageUrl,
+      reportConfirmed: _provider.user!.reportConfirmed,
+      userId: _provider.user!.userId,
+      userName: _provider.user!.userName,
+      verified: _provider.user!.verified,
+    );
+
+    // Put the new object back into the box with the same key
+    accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
   }
 
   _unVerify() {
-    usersRef
-        .doc(
-      widget.user.id,
-    )
-        .update({
-      'profileHandle': _profileHandle,
-      'verified': '',
-    });
-    usersAuthorRef
-        .doc(
-      widget.user.id,
-    )
-        .update({
-      'profileHandle': _profileHandle,
-      'verified': '',
-    });
-    verificationRef.doc(widget.user.id).get().then((doc) {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    batch.update(
+      usersAuthorRef.doc(widget.user.userId),
+      {
+        'profileHandle': _profileHandle,
+        'verified': false,
+      },
+    );
+
+    batch.update(
+      userProfessionalRef.doc(widget.user.userId),
+      {
+        'profileHandle': _profileHandle,
+        'verified': false,
+      },
+    );
+
+    verificationRef.doc(widget.user.userId).get().then((doc) {
       if (doc.exists) {
         doc.reference.delete();
       }
     });
     FirebaseStorage.instance
-        .ref('images/validate/${widget.user.id}')
+        .ref('images/validate/${widget.user.userId}')
         .listAll()
         .then((value) {
       value.items.forEach((element) {
@@ -123,34 +139,35 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
   static const values = <String>[
     "Artist",
     "Producer",
-    "Cover_Art_Designer",
-    "Music_Video_Director",
     "DJ",
-    "Battle_Rapper",
-    "Photographer",
     "Dancer",
-    "Video_Vixen",
-    "Makeup_Artist",
+    "Music_Video_Director",
+    "Content_creator",
+    "Photographer",
     "Record_Label",
     "Brand_Influencer",
+    "Event_organiser",
+    "Band",
+    "Instrumentalist",
+    "Cover_Art_Designer",
+    "Makeup_Artist",
+    "Video_Vixen",
     "Blogger",
     "MC(Host)",
+    "Choire",
+    "Battle_Rapper",
     "Fan",
   ];
 
   Widget buildRadios() => Theme(
         data: Theme.of(context).copyWith(
-          unselectedWidgetColor:
-              ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+          unselectedWidgetColor: Theme.of(context).secondaryHeaderColor,
         ),
         child: Column(
             children: values.map((value) {
           final selected = this.selectedValue == value;
-          final color = selected
-              ? Colors.blue
-              : ConfigBloc().darkModeOn
-                  ? Colors.white
-                  : Colors.black;
+          final color =
+              selected ? Colors.blue : Theme.of(context).secondaryHeaderColor;
 
           return RadioListTile<String>(
             value: value,
@@ -158,9 +175,11 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
             title: Text(
               value,
               style: TextStyle(
-                color: color,
-                fontSize: 14,
-              ),
+                  color: color,
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+                  fontWeight: this.selectedValue == value
+                      ? FontWeight.bold
+                      : FontWeight.normal),
             ),
             activeColor: Colors.blue,
             onChanged: (value) => setState(
@@ -173,132 +192,85 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
         }).toList()),
       );
 
-  _pop() {
-    Navigator.pop(context);
+  void navigateToPage(BuildContext context, Widget page) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => page),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveScaffold(
-      child: Scaffold(
-          backgroundColor:
-              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-          appBar: AppBar(
-            iconTheme: IconThemeData(
-              color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-            ),
-            leading: IconButton(
-              icon: Icon(
-                  Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
-              color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-              onPressed: _pop,
-            ),
-            elevation: 0,
-            backgroundColor:
-                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-            title: Text(
-              'Edit Profile',
-              style: TextStyle(
-                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-            ),
-            centerTitle: true,
-          ),
-          body: SafeArea(
-            child: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
-              child: SingleChildScrollView(
-                child: Form(
-                  key: _formKey,
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 30.0, vertical: 10.0),
+    return EditProfileScaffold(
+      title: '',
+      widget: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                EditProfileInfo(
+                  editTitle: 'Select \nAccount Type',
+                  info:
+                      'Select an account type to help other users easily identify you for business. You can add one main account with multiple  sub-accounts skills if you offer more than one skill. For instance, main account Artist, sub-accounts: producer, video director.',
+                  icon: Icons.account_circle,
+                ),
+                // _profileHandle.startsWith('Fan') ||
+                //         _profileHandle.startsWith('Record_Label')
+                //     ? const SizedBox.shrink()
+                //     : GestureDetector(
+                //         onTap: () => navigateToPage(
+                //             context,
+                //             SubAccounts(
+                //               user: widget.user,
+                //               profileHandle: _profileHandle,
+                //             )),
+                //         child: Row(
+                //           children: [
+                //             Icon(
+                //               Icons.add,
+                //               color: Colors.blue,
+                //               size: 20,
+                //             ),
+                //             Text(
+                //               'Add sub-accounts',
+                //               style: TextStyle(
+                //                 color: Colors.blue,
+                //                 fontSize: ResponsiveHelper.responsiveFontSize(
+                //                     context, 12.0),
+                //               ),
+                //             ),
+                //           ],
+                //         ),
+                //       ),
+                const SizedBox(
+                  height: 30.0,
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          EditProfileInfo(
-                            editTitle: 'Select \nAccount Type',
-                            info:
-                                'Select an account type to help other users easily identify you for business. You can add one main account with multiple  sub-accounts skills if you offer more than one skill. For instance, main account Artist, sub-accounts: producer, video director.',
-                            icon: Icons.account_circle,
-                          ),
-                          // const SizedBox(
-                          //   height: 10.0,
-                          // ),
-                          // widget.user.profileHandle!.startsWith('Fan') ||
-                          //         widget.user.profileHandle!
-                          //             .startsWith('Record_Label') ||
-                          _profileHandle.startsWith('Fan') ||
-                                  _profileHandle.startsWith('Record_Label')
-                              ? const SizedBox.shrink()
-                              : GestureDetector(
-                                  onTap: () => widget
-                                          .user.subAccountType!.isEmpty
-                                      ? Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (_) =>
-                                                  EditProfileHandleSubAccount(
-                                                    user: widget.user,
-                                                    profileHandle:
-                                                        _profileHandle,
-                                                  )))
-                                      : Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (_) => SubAccounts(
-                                                    user: widget.user,
-                                                    profileHandle:
-                                                        _profileHandle,
-                                                  ))),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.add,
-                                        color: Colors.blue,
-                                        size: 20,
-                                      ),
-                                      Text(
-                                        'Add sub-accounts',
-                                        style: TextStyle(
-                                          color: Colors.blue,
-                                          fontSize: 12.0,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                          const SizedBox(
-                            height: 30.0,
-                          ),
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
                           Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Container(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Column(
-                                      children: <Widget>[buildRadios()],
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                            children: <Widget>[buildRadios()],
+                          )
                         ],
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ),
+              ],
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 }

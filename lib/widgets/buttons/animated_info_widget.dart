@@ -16,9 +16,20 @@ class AnimatedInfoWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
+        AnimatedContainer(
+          curve: Curves.easeInOut,
+          duration: Duration(milliseconds: 800),
+          height: requiredBool ? 20.0 : 0.0,
+          width: requiredBool ? 20.0 : 0.0,
+          decoration: BoxDecoration(
+              color: buttonColor, borderRadius: BorderRadius.circular(100)),
+        ),
+        const SizedBox(
+          width: 5,
+        ),
         AnimatedContainer(
           curve: Curves.easeInOut,
           duration: Duration(milliseconds: 800),
@@ -35,17 +46,6 @@ class AnimatedInfoWidget extends StatelessWidget {
             ),
             textAlign: TextAlign.right,
           ),
-        ),
-        const SizedBox(
-          width: 5,
-        ),
-        AnimatedContainer(
-          curve: Curves.easeInOut,
-          duration: Duration(milliseconds: 800),
-          height: requiredBool ? 20.0 : 0.0,
-          width: requiredBool ? 20.0 : 0.0,
-          decoration: BoxDecoration(
-              color: buttonColor, borderRadius: BorderRadius.circular(100)),
         ),
       ],
     );

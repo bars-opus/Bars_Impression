@@ -48,25 +48,27 @@ class ContentWarning extends StatelessWidget {
                     child: Icon(
                       MdiIcons.eyeOff,
                       color: Colors.grey,
-                      size: 50.0,
+                      size: ResponsiveHelper.responsiveHeight(context, 50.0),
                     ),
                   ),
                   SizedBox(
-                    height: 10,
+                    height: ResponsiveHelper.responsiveHeight(context, 10.0),
                   ),
                   Material(
                     color: Colors.transparent,
                     child: Text(
                       "REPORTED CONTENT",
                       style: TextStyle(
-                          color: Colors.grey,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14),
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w500,
+                        fontSize:
+                            ResponsiveHelper.responsiveFontSize(context, 16.0),
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ),
                   SizedBox(
-                    height: 5,
+                    height: ResponsiveHelper.responsiveHeight(context, 5.0),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30.0),
@@ -76,13 +78,17 @@ class ContentWarning extends StatelessWidget {
                         'The following content has been identified by other users as  ' +
                             report +
                             ' which some people my find disturbing or offensive.',
-                        style: TextStyle(color: Colors.grey, fontSize: 12),
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: ResponsiveHelper.responsiveFontSize(
+                              context, 14.0),
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ),
                   ),
                   SizedBox(
-                    height: 20,
+                    height: ResponsiveHelper.responsiveHeight(context, 20.0),
                   ),
                   SizedBox(
                     width: 100,
@@ -91,7 +97,7 @@ class ContentWarning extends StatelessWidget {
                     ),
                   ),
                   SizedBox(
-                    height: 10,
+                    height: ResponsiveHelper.responsiveHeight(context, 10.0),
                   ),
                   Container(
                     width: MediaQuery.of(context).size.width / 2,
@@ -105,6 +111,8 @@ class ContentWarning extends StatelessWidget {
                       child: Text(
                         'Reveal Content',
                         style: TextStyle(
+                          fontSize: ResponsiveHelper.responsiveFontSize(
+                              context, 14.0),
                           color: Colors.blue,
                         ),
                       ),

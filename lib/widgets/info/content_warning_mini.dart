@@ -12,7 +12,7 @@ class ContentWarningMini extends StatelessWidget {
             child: Icon(
               MdiIcons.eyeOff,
               color: Colors.grey,
-              size: 50.0,
+              size:  ResponsiveHelper.responsiveHeight(context, 50.0),
             ),
           ),
           SizedBox(
@@ -25,7 +25,7 @@ class ContentWarningMini extends StatelessWidget {
               style: TextStyle(
                   color: Colors.grey,
                   fontWeight: FontWeight.w500,
-                  fontSize: 14),
+                  fontSize:  ResponsiveHelper.responsiveFontSize(context, 14.0),),
               textAlign: TextAlign.center,
             ),
           ),

@@ -28,7 +28,11 @@ class StorageService {
 
     if (url.isNotEmpty) {
       RegExp exp = RegExp(r'professionalPicture1Url_(.*).jpg');
-      photoId = exp.firstMatch(url)![1];
+      Match? match = exp.firstMatch(url);
+      if (match != null && match.groupCount >= 1) {
+        photoId = match[1];
+      }
+      // photoId = exp.firstMatch(url)![1];
     }
     String currentUserId = FirebaseAuth.instance.currentUser!.uid;
     UploadTask uploadTask = storageRef
@@ -46,7 +50,11 @@ class StorageService {
 
     if (url.isNotEmpty) {
       RegExp exp = RegExp(r'professionalPicture2Url_(.*).jpg');
-      photoId = exp.firstMatch(url)![1];
+      Match? match = exp.firstMatch(url);
+      if (match != null && match.groupCount >= 1) {
+        photoId = match[1];
+      }
+      // photoId = exp.firstMatch(url)![1];
     }
     String currentUserId = FirebaseAuth.instance.currentUser!.uid;
     UploadTask uploadTask = storageRef
@@ -64,7 +72,11 @@ class StorageService {
 
     if (url.isNotEmpty) {
       RegExp exp = RegExp(r'professionalPicture3Url_(.*).jpg');
-      photoId = exp.firstMatch(url)![1];
+      Match? match = exp.firstMatch(url);
+      if (match != null && match.groupCount >= 1) {
+        photoId = match[1];
+      }
+      // photoId = exp.firstMatch(url)![1];
     }
     String currentUserId = FirebaseAuth.instance.currentUser!.uid;
     UploadTask uploadTask = storageRef
@@ -73,17 +85,6 @@ class StorageService {
         .putFile(image!);
     String downloadUrl = await (await uploadTask).ref.getDownloadURL();
     return downloadUrl;
-  }
-
-  static Future<File?> compressImage(String photoId, File image) async {
-    final tempDir = await getTemporaryDirectory();
-    final path = tempDir.path;
-    File? compressImageFile = await FlutterImageCompress.compressAndGetFile(
-      image.absolute.path,
-      '$path/img_$photoId.jpg',
-      quality: 70,
-    );
-    return compressImageFile;
   }
 
   static Future<String> uploadPost(File imageFile) async {
@@ -119,16 +120,28 @@ class StorageService {
     return downloadUrl;
   }
 
-  static Future<String> uploadThoughtImage(File imageFile) async {
-    String thoughtId = Uuid().v4();
-    File? image = await compressImage(thoughtId, imageFile);
-    String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+  static Future<String> uploadEventRooomMessageImage(
+      File imageFile, String eventId) async {
+    String messageId = Uuid().v4();
+    File? image = await compressImage(messageId, imageFile);
+    // String currentUserId = FirebaseAuth.instance.currentUser!.uid;
     UploadTask uploadTask = storageRef
-        .child('images/thoughtImage/$currentUserId/message_$thoughtId.jpg')
+        .child('images/eventRoonMessageImage/$eventId/message_$messageId.jpg')
         .putFile(image!);
     String downloadUrl = await (await uploadTask).ref.getDownloadURL();
     return downloadUrl;
   }
+
+  // static Future<String> uploadThoughtImage(File imageFile) async {
+  //   String thoughtId = Uuid().v4();
+  //   File? image = await compressImage(thoughtId, imageFile);
+  //   String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+  //   UploadTask uploadTask = storageRef
+  //       .child('images/thoughtImage/$currentUserId/message_$thoughtId.jpg')
+  //       .putFile(image!);
+  //   String downloadUrl = await (await uploadTask).ref.getDownloadURL();
+  //   return downloadUrl;
+  // }
 
   static Future<String> gvIdImageUrl(File imageFile) async {
     String gvId = Uuid().v4();
@@ -153,4 +166,32 @@ class StorageService {
     String downloadUrl = await (await uploadTask).ref.getDownloadURL();
     return downloadUrl;
   }
+
+  static Future<File?> compressImage(String photoId, File image) async {
+    final tempDir = await getTemporaryDirectory();
+    final path = tempDir.path;
+    File? compressImageFile = await FlutterImageCompress.compressAndGetFile(
+      image.absolute.path,
+      '$path/img_$photoId.jpg',
+      quality: 50,
+    );
+    return compressImageFile;
+  }
+  // static Future<String> uploadUserprofessionalVideo1(
+  //     String url, PickedFile videoFile) async {
+  //   String? videoId = Uuid().v4();
+  //   // File? image = await compressImage(videoId, imageFile);
+
+  //   // if (url.isNotEmpty) {
+  //   //   RegExp exp = RegExp(r'professionalPicture1Url_(.*).jpg');
+  //   //   videoId = exp.firstMatch(url)![1];
+  //   // }
+  //   String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+  //   UploadTask uploadTask = storageRef
+  //       .child(
+  //           'videos/professionalVideo1/$currentUserId/professionalVideoUrl_$videoId.mp4')
+  //       .putFile(videoFile as File);
+  //   String downloadUrl = await (await uploadTask).ref.getDownloadURL();
+  //   return downloadUrl;
+  // }
 }

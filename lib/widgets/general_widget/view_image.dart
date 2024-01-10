@@ -1,12 +1,11 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:photo_view/photo_view.dart';
 
 class ViewImage extends StatefulWidget {
-  final AccountHolder user;
-  final String from;
+  final String imageUrl;
 
   ViewImage({
-    required this.user,
-    required this.from,
+  required this.imageUrl,
   });
 
   @override
@@ -16,90 +15,34 @@ class ViewImage extends StatefulWidget {
 class _ViewImageState extends State<ViewImage> {
   @override
   Widget build(BuildContext context) {
-    final width = Responsive.isDesktop(context)
-        ? 600.0
-        : MediaQuery.of(context).size.width;
 
-    return ResponsiveScaffold(
-      child: Container(
-        color: widget.from.startsWith('Profile')
-            ? Color(0xFF1a1a1a)
-            : ConfigBloc().darkModeOn
-                ? Color(0xFF1a1a1a)
-                : Colors.white,
-        child: NestedScrollView(
-            headerSliverBuilder: (context, innerBoxScrolled) => [
-                  SliverAppBar(
-                    elevation: 0.0,
-                    automaticallyImplyLeading: true,
-                    floating: true,
-                    snap: true,
-                    iconTheme: new IconThemeData(
-                      color: widget.from.startsWith('Profile')
-                          ? Colors.white
-                          : ConfigBloc().darkModeOn
-                              ? Colors.white
-                              : Colors.black,
-                    ),
-                    backgroundColor: widget.from.startsWith('Profile')
-                        ? Color(0xFF1a1a1a)
-                        : ConfigBloc().darkModeOn
-                            ? Color(0xFF1a1a1a)
-                            : Colors.white,
-                  ),
-                ],
-            body: SafeArea(
-              child: ListView(
-                children: <Widget>[
-                  Hero(
-                    tag: 'container1' + widget.user.id.toString(),
-                    child: Container(
-                      height: width,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: CachedNetworkImageProvider(
-                              widget.user.profileImageUrl!),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ),
-                  widget.from.startsWith('Profile')
-                      ? const SizedBox.shrink()
-                      : Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20.0, vertical: 30),
-                          child: Container(
-                            width: width,
-                            child: Center(
-                              child: GestureDetector(
-                                onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => ProfileScreen(
-                                              currentUserId:
-                                                  Provider.of<UserData>(context,
-                                                          listen: false)
-                                                      .currentUserId!,
-                                              user: widget.user,
-                                              userId: widget.user.id!,
-                                            ))),
-                                child: Text(
-                                  'Got to profile',
-                                  style: TextStyle(
-                                    color: Colors.blue,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                ],
-              ),
-            )),
-      ),
+    return  Scaffold(
+        backgroundColor: Colors.black,
+        appBar: AppBar(
+          iconTheme: IconThemeData(
+            color: Colors.white,
+          ),
+          automaticallyImplyLeading: true,
+          elevation: 0,
+          backgroundColor: Colors.black,
+        
+          centerTitle: true,
+       
+        ),
+        body: Center(
+          child: PhotoView(
+            imageProvider: CachedNetworkImageProvider(widget.imageUrl),
+            minScale: PhotoViewComputedScale.contained *
+                1.0, // You can adjust your zooming scale the way you want
+            maxScale: PhotoViewComputedScale.covered * 2.0,
+            initialScale: PhotoViewComputedScale.contained,
+            heroAttributes:
+                PhotoViewHeroAttributes(tag: widget.imageUrl.toString()),
+          ),
+        ),
+      
+
+      
     );
   }
 }

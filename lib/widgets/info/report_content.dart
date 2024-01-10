@@ -21,19 +21,38 @@ class ReportContentPage extends StatefulWidget {
 }
 
 class _ReportContentPageState extends State<ReportContentPage> {
+  _widget(String title, String subTitle, String reportType) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20),
+      child: IntroInfo(
+        onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => ReportContentSubmission(
+                      parentContentId: widget.parentContentId!,
+                      repotedAuthorId: widget.repotedAuthorId,
+                      reportType: reportType,
+                      contentType: widget.contentType,
+                      contentId: widget.contentId,
+                    ))),
+        title: title,
+        subTitle: subTitle,
+        icon: Icons.arrow_forward_ios_outlined,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+      backgroundColor: Theme.of(context).primaryColorLight,
       appBar: AppBar(
         iconTheme: IconThemeData(
-          color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+          color: Theme.of(context).secondaryHeaderColor,
         ),
         automaticallyImplyLeading: true,
         elevation: 0,
-        backgroundColor:
-            ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+        backgroundColor: Theme.of(context).primaryColorLight,
         title: Hero(
           tag: "report",
           child: Material(
@@ -41,8 +60,8 @@ class _ReportContentPageState extends State<ReportContentPage> {
             child: Text(
               'Report ' + widget.contentType,
               style: TextStyle(
-                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                  fontSize: 20,
+                  color: Theme.of(context).secondaryHeaderColor,
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 20.0),
                   fontWeight: FontWeight.bold),
             ),
           ),
@@ -61,9 +80,9 @@ class _ReportContentPageState extends State<ReportContentPage> {
                 child: Text(
                   'Select a reason ',
                   style: TextStyle(
-                    color:
-                        ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                    fontSize: 16,
+                    color: Theme.of(context).secondaryHeaderColor,
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 16.0),
                   ),
                 ),
               ),
@@ -75,234 +94,58 @@ class _ReportContentPageState extends State<ReportContentPage> {
                       ' goes against Bars Impressions guidelines. This is important in helping us keep Bars Impression safe. We won\'t notify the account that you submitted this report. We will review this report, and actions will be taken if deemed a violation of guidelines',
                   style: TextStyle(
                     color: Colors.grey,
-                    fontSize: 12,
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 12.0),
                   ),
                 ),
               ),
               Divider(color: Colors.grey),
-              GestureDetector(
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => ReportContentSubmission(
-                              parentContentId: widget.parentContentId!,
-                              repotedAuthorId: widget.repotedAuthorId,
-                              reportType: 'Spam',
-                              contentType: widget.contentType,
-                              contentId: widget.contentId,
-                            ))),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: IntroInfo(
-                    title: 'Spam',
-                    subTitle: "Misleading or repetitive content",
-                    icon: Icon(
-                      Icons.arrow_forward_ios_outlined,
-                      color: ConfigBloc().darkModeOn
-                          ? Color(0xFFf2f2f2)
-                          : Color(0xFF1a1a1a),
-                      size: 20,
-                    ),
-                    onPressed: () {},
-                  ),
-                ),
+              _widget(
+                'Spam',
+                "Misleading or repetitive content",
+                'Spam',
               ),
               Divider(color: Colors.grey),
-              GestureDetector(
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => ReportContentSubmission(
-                              parentContentId: widget.parentContentId!,
-                              repotedAuthorId: widget.repotedAuthorId,
-                              reportType: 'Nudity or Pornography',
-                              contentType: widget.contentType,
-                              contentId: widget.contentId,
-                            ))),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: IntroInfo(
-                    onPressed: () {},
-                    title: 'Nudity or Pornography',
-                    subTitle: "Sexually explicit content",
-                    icon: Icon(
-                      Icons.arrow_forward_ios_outlined,
-                      color: ConfigBloc().darkModeOn
-                          ? Color(0xFFf2f2f2)
-                          : Color(0xFF1a1a1a),
-                      size: 20,
-                    ),
-                  ),
-                ),
+              _widget(
+                'Nudity or Pornography',
+                "Sexually explicit content",
+                'Nudity or Pornography',
               ),
               Divider(color: Colors.grey),
-              GestureDetector(
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => ReportContentSubmission(
-                              parentContentId: widget.parentContentId!,
-                              repotedAuthorId: widget.repotedAuthorId,
-                              reportType: 'Misinformation',
-                              contentType: widget.contentType,
-                              contentId: widget.contentId,
-                            ))),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: IntroInfo(
-                    onPressed: () {},
-                    title: 'Misinformation',
-                    subTitle: "Health misinformation or conspiracies",
-                    icon: Icon(
-                      Icons.arrow_forward_ios_outlined,
-                      color: ConfigBloc().darkModeOn
-                          ? Color(0xFFf2f2f2)
-                          : Color(0xFF1a1a1a),
-                      size: 20,
-                    ),
-                  ),
-                ),
+              _widget(
+                'Misinformation',
+                "Health misinformation or conspiracies",
+                'Misinformation',
               ),
               Divider(color: Colors.grey),
-              GestureDetector(
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => ReportContentSubmission(
-                              parentContentId: widget.parentContentId!,
-                              repotedAuthorId: widget.repotedAuthorId,
-                              reportType: 'Hateful Activities',
-                              contentType: widget.contentType,
-                              contentId: widget.contentId,
-                            ))),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: IntroInfo(
-                    onPressed: () {},
-                    title: 'Hateful Activities',
-                    subTitle:
-                        "Prejudice, stereotypes, white supremacy, slurs, racism",
-                    icon: Icon(
-                      Icons.arrow_forward_ios_outlined,
-                      color: ConfigBloc().darkModeOn
-                          ? Color(0xFFf2f2f2)
-                          : Color(0xFF1a1a1a),
-                      size: 20,
-                    ),
-                  ),
-                ),
+              _widget(
+                'Hateful Activities',
+                "Prejudice, stereotypes, white supremacy, slurs, racism",
+                'Hateful Activities',
               ),
               Divider(color: Colors.grey),
-              GestureDetector(
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => ReportContentSubmission(
-                              parentContentId: widget.parentContentId!,
-                              repotedAuthorId: widget.repotedAuthorId,
-                              reportType: 'Dangerous goods',
-                              contentType: widget.contentType,
-                              contentId: widget.contentId,
-                            ))),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: IntroInfo(
-                    onPressed: () {},
-                    title: 'Dangerous goods',
-                    subTitle: "Drugs, regulated products",
-                    icon: Icon(
-                      Icons.arrow_forward_ios_outlined,
-                      color: ConfigBloc().darkModeOn
-                          ? Color(0xFFf2f2f2)
-                          : Color(0xFF1a1a1a),
-                      size: 20,
-                    ),
-                  ),
-                ),
+              _widget(
+                'Dangerous goods',
+                "Drugs, regulated products",
+                'Dangerous goods',
               ),
               Divider(color: Colors.grey),
-              GestureDetector(
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => ReportContentSubmission(
-                              parentContentId: widget.parentContentId!,
-                              repotedAuthorId: widget.repotedAuthorId,
-                              reportType: 'Harassment or privacy violations',
-                              contentType: widget.contentType,
-                              contentId: widget.contentId,
-                            ))),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: IntroInfo(
-                    onPressed: () {},
-                    title: 'Harassment or privacy violations',
-                    subTitle: "Insults, threats, personally identifiable info",
-                    icon: Icon(
-                      Icons.arrow_forward_ios_outlined,
-                      color: ConfigBloc().darkModeOn
-                          ? Color(0xFFf2f2f2)
-                          : Color(0xFF1a1a1a),
-                      size: 20,
-                    ),
-                  ),
-                ),
+              _widget(
+                'Harassment or privacy violations',
+                "Insults, threats, personally identifiable info",
+                'Harassment or privacy violations',
               ),
               Divider(color: Colors.grey),
-              GestureDetector(
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => ReportContentSubmission(
-                              parentContentId: widget.parentContentId!,
-                              repotedAuthorId: widget.repotedAuthorId,
-                              reportType: 'Graphic violence',
-                              contentType: widget.contentType,
-                              contentId: widget.contentId,
-                            ))),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: IntroInfo(
-                    onPressed: () {},
-                    title: 'Graphic violence',
-                    subTitle: "Violent images or promotion of violence",
-                    icon: Icon(
-                      Icons.arrow_forward_ios_outlined,
-                      color: ConfigBloc().darkModeOn
-                          ? Color(0xFFf2f2f2)
-                          : Color(0xFF1a1a1a),
-                      size: 20,
-                    ),
-                  ),
-                ),
+              _widget(
+                'Graphic violence',
+                "Violent images or promotion of violence",
+                'Graphic violence',
               ),
               Divider(color: Colors.grey),
-              GestureDetector(
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => ReportContentSubmission(
-                              parentContentId: widget.parentContentId!,
-                              repotedAuthorId: widget.repotedAuthorId,
-                              reportType: 'My intellectual property',
-                              contentType: widget.contentType,
-                              contentId: widget.contentId,
-                            ))),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: IntroInfo(
-                    onPressed: () {},
-                    title: 'My intellectual property',
-                    subTitle: "Copyright or trademark infringement.",
-                    icon: Icon(
-                      Icons.arrow_forward_ios_outlined,
-                      color: ConfigBloc().darkModeOn
-                          ? Color(0xFFf2f2f2)
-                          : Color(0xFF1a1a1a),
-                      size: 20,
-                    ),
-                  ),
-                ),
+              _widget(
+                'My intellectual property',
+                "Copyright or trademark infringement.",
+                'My intellectual property',
               ),
             ],
           ),

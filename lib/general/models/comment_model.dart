@@ -5,12 +5,10 @@ class Comment {
   final String content;
   final String authorId;
   final String authorName;
-  final String authorProfileHanlde;
+  final String authorProfileHandle;
   final String authorProfileImageUrl;
   final String authorVerification;
   final String report;
-  final String mediaType;
-  final String mediaUrl;
   final String reportConfirmed;
   final Timestamp timestamp;
 
@@ -18,13 +16,11 @@ class Comment {
     required this.id,
     required this.content,
     required this.authorId,
-    required this.mediaType,
-    required this.mediaUrl,
     required this.report,
     required this.reportConfirmed,
     required this.timestamp,
     required this.authorName,
-    required this.authorProfileHanlde,
+    required this.authorProfileHandle,
     required this.authorProfileImageUrl,
     required this.authorVerification,
   });
@@ -35,14 +31,27 @@ class Comment {
       content: doc['content'],
       authorId: doc['authorId'],
       report: doc['report'] ?? '',
-      mediaUrl: doc['mediaUrl'] ?? '',
-      mediaType: doc['mediaType'] ?? '',
       reportConfirmed: doc['reportConfirmed'] ?? '',
       timestamp: doc['timestamp'],
       authorName: doc['authorName'] ?? '',
-      authorProfileHanlde: doc['authorProfileHanlde'] ?? '',
+      authorProfileHandle: doc['authorProfileHandle'] ?? '',
       authorProfileImageUrl: doc['authorProfileImageUrl'] ?? '',
       authorVerification: doc['authorVerification'] ?? '',
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'content': content,
+      'authorId': authorId,
+      'report': report,
+      'reportConfirmed': reportConfirmed,
+      'timestamp': timestamp,
+      'authorName': authorName,
+      'authorProfileHandle': authorProfileHandle,
+      'authorProfileImageUrl': authorProfileImageUrl,
+      'authorVerification': authorVerification,
+    };
   }
 }

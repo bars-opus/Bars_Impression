@@ -1,6 +1,5 @@
 import 'package:bars/services/auth_reset_password.dart';
 import 'package:bars/utilities/exports.dart';
-import 'package:email_validator/email_validator.dart';
 
 class Password extends StatefulWidget {
   static final id = 'Passsword_screeen';
@@ -16,9 +15,8 @@ class _PasswordState extends State<Password>
       muchDelayedAnimation,
       muchMoreDelayedAnimation;
   late AnimationController animationController;
-
   final _formKey = GlobalKey<FormState>();
-  late String _email;
+  final _emailController = TextEditingController();
 
   @override
   void initState() {
@@ -45,181 +43,130 @@ class _PasswordState extends State<Password>
     animationController.forward();
   }
 
+  @override
+  void dispose() {
+    _emailController.dispose();
+
+    super.dispose();
+  }
+
   _submit() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      AuthPassWord.resetPassword(context, _email);
+      try {
+        AuthPassWord.resetPassword(
+          context,
+          _emailController.text.trim(),
+        );
+      } catch (e) {
+        String error = e.toString();
+        String result = error.contains(']')
+            ? error.substring(error.lastIndexOf(']') + 1)
+            : error;
+        _showBottomSheetErrorMessage(result);
+      }
     }
+  }
+
+  void _showBottomSheetErrorMessage(String error) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return DisplayErrorHandler(
+          buttonText: 'Ok',
+          onPressed: () async {
+            Navigator.pop(context);
+          },
+          title: "Request failed",
+          subTitle: error,
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final double width = Responsive.isDesktop(context)
-        ? 600.0
-        : MediaQuery.of(context).size.width;
+    final double width = MediaQuery.of(context).size.width;
 
     return AnimatedBuilder(
         animation: animationController,
         builder: (BuildContext context, Widget? child) {
           return Scaffold(
             backgroundColor: Color(0xFF1a1a1a),
-            body: Align(
-              alignment: Alignment.center,
-              child: Container(
-                width: width,
-                child: GestureDetector(
-                  onTap: () => FocusScope.of(context).unfocus(),
-                  child: SingleChildScrollView(
-                    child: Container(
-                      height: MediaQuery.of(context).size.height,
+            body: Container(
+              width: width,
+              child: GestureDetector(
+                onTap: () => FocusScope.of(context).unfocus(),
+                child: SingleChildScrollView(
+                  child: Container(
+                    height: MediaQuery.of(context).size.height,
+                    child: Form(
+                      key: _formKey,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          FadeAnimation(
-                            1,
-                            Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Container(
-                                    width: 100.0,
-                                    height: 100.0,
-                                    child: Image.asset(
-                                      'assets/images/bars.png',
-                                    ))),
-                          ),
-                          Form(
-                            key: _formKey,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                Transform(
-                                  transform: Matrix4.translationValues(
-                                      delayedAnimation.value * width, 0.0, 0.0),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 30.0, vertical: 10.0),
-                                    child: TextFormField(
-                                      autofillHints: [AutofillHints.email],
-                                      style: TextStyle(color: Colors.white),
-                                      decoration: InputDecoration(
-                                          labelText: 'Email',
-                                          border: UnderlineInputBorder(),
-                                          labelStyle: TextStyle(
-                                            fontSize: width > 800 ? 22 : 14,
-                                            color: Colors.grey,
-                                          ),
-                                          hintText:
-                                              'Email used to register for Bars Impression',
-                                          hintStyle: TextStyle(
-                                            fontSize: width > 800 ? 20 : 14,
-                                            color: Colors.blueGrey,
-                                          ),
-                                          icon: Icon(
-                                            Icons.email,
-                                            size: width > 800 ? 35 : 20.0,
-                                            color: Colors.grey,
-                                          ),
-                                          enabledBorder:
-                                              new UnderlineInputBorder(
-                                                  borderSide: new BorderSide(
-                                                      color: Colors.grey))),
-                                      validator: (email) => email != null &&
-                                              !EmailValidator.validate(
-                                                  email.trim())
-                                          ? 'Please enter your email'
-                                          : null,
-                                      onSaved: (input) => _email = input!,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: 20.0),
-                                Transform(
-                                  transform: Matrix4.translationValues(
-                                      muchDelayedAnimation.value * width,
-                                      0.0,
-                                      0.0),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 30.0, vertical: 10.0),
-                                    child: GestureDetector(
-                                      onTap: () => () {},
-                                      child: Text(
-                                          'Enter your email to reset your password. A reset link would be sent to your email',
-                                          style: TextStyle(
-                                            color: Colors.blueGrey,
-                                            fontSize: width > 800 ? 20 : 12,
-                                          ),
-                                          textAlign: TextAlign.center),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: 40.0),
-                                Hero(
-                                  tag: 'Sign In',
-                                  child: Container(
-                                    width: 250.0,
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.white,
-                                        elevation: 20.0,
-                                        foregroundColor: Colors.blue,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(20.0),
-                                        ),
-                                      ),
-                                      onPressed: _submit,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'Submit Email',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: width > 800 ? 24 : 16,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: width > 800 ? 40.0 : 20),
-                                FadeAnimation(
-                                  1,
-                                  Container(
-                                    width: 250.0,
-                                    child: OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        foregroundColor: Colors.blue,
-                                        side: BorderSide(
-                                          width: 1.0,
-                                          color: Colors.white,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(20.0),
-                                        ),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'Back',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: width > 800 ? 24 : 16,
-                                          ),
-                                        ),
-                                      ),
-                                      onPressed: () => Navigator.pop(context),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: 40.0),
-                              ],
+                          Container(
+                            width: 60.0,
+                            height: 60.0,
+                            child: Image.asset(
+                              'assets/images/bars.png',
                             ),
-                          )
+                          ),
+                          Transform(
+                            transform: Matrix4.translationValues(
+                                delayedAnimation.value * width, 0.0, 0.0),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 30.0, vertical: 10.0),
+                              child: LoginField(
+                                controller: _emailController,
+                                hintText: 'example@mail.com',
+                                labelText: 'Email',
+                                onValidateText: (email) => email != null &&
+                                        !EmailValidator.validate(email.trim())
+                                    ? 'Please enter your email'
+                                    : null,
+                                icon: Icons.email_outlined,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20.0),
+                          Transform(
+                            transform: Matrix4.translationValues(
+                                muchDelayedAnimation.value * width, 0.0, 0.0),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 30.0, vertical: 10.0),
+                              child: Text(
+                                  'Enter your email to reset your password. A reset link would be sent to your email',
+                                  style: TextStyle(
+                                    color: Colors.blueGrey,
+                                    fontSize:
+                                        ResponsiveHelper.responsiveFontSize(
+                                            context, 12.0),
+                                  ),
+                                  textAlign: TextAlign.center),
+                            ),
+                          ),
+                          const SizedBox(height: 40.0),
+                          Hero(
+                            tag: 'Sign In',
+                            child: AlwaysWhiteButton(
+                              textColor: Colors.black,
+                              buttonText: 'Submit Email',
+                              onPressed: () {
+                                _submit();
+                              },
+                              buttonColor: Colors.white,
+                            ),
+                          ),
+                          SizedBox(height: width > 800 ? 40.0 : 20),
+                          LoginBackButton(),
+                          const SizedBox(height: 40.0),
                         ],
                       ),
                     ),

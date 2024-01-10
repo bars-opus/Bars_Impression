@@ -1,11 +1,10 @@
 import 'package:bars/utilities/exports.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/scheduler.dart';
+import 'package:hive/hive.dart';
 
 // ignore: must_be_immutable
 class DeleteAccount extends StatefulWidget {
   static final id = 'DeleteAccount_screen';
-  final AccountHolder user;
+  final AccountHolderAuthor user;
 
   DeleteAccount({
     required this.user,
@@ -20,6 +19,8 @@ class _DeleteAccountState extends State<DeleteAccount> {
   bool _isHidden = true;
   late PageController _pageController;
   int _index = 0;
+  final _passwordController = TextEditingController();
+  String reathenticateType = '';
 
   @override
   void initState() {
@@ -27,110 +28,41 @@ class _DeleteAccountState extends State<DeleteAccount> {
     _pageController = PageController(
       initialPage: 0,
     );
-
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      setNull();
-    });
+    deleteUserAccount();
   }
 
-  _submit() async {
-    if (formKey.currentState!.validate()) {
-      formKey.currentState!.save();
-      _showSelectImageDialog('delete');
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    _pageController.dispose();
+
+    super.dispose();
+  }
+
+  deleteUserAccount() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      List<UserInfo> providerData = user.providerData;
+      bool isGoogleSignIn = false;
+      bool isAppleSignIn = false;
+
+      for (UserInfo userInfo in providerData) {
+        if (userInfo.providerId == GoogleAuthProvider.PROVIDER_ID) {
+          isGoogleSignIn = true;
+        } else if (userInfo.providerId == "apple.com") {
+          isAppleSignIn = true;
+        }
+      }
+
+      if (isGoogleSignIn) {
+        reathenticateType = 'Google';
+      } else if (isAppleSignIn) {
+        reathenticateType = 'Apple';
+      } else {
+        reathenticateType = 'Email';
+      }
     }
-  }
-
-  _showSelectImageDialog(String from) {
-    return Platform.isIOS
-        ? _iosBottomSheet(from)
-        : _androidDialog(context, from);
-  }
-
-  _iosBottomSheet(String from) {
-    showCupertinoModalPopup(
-        context: context,
-        builder: (BuildContext context) {
-          return CupertinoActionSheet(
-            title: Text(
-              from.startsWith('deactivate')
-                  ? 'Are you sure you want to deactivate your account?'
-                  : 'Are you sure you want to delete your account?',
-              style: TextStyle(
-                fontSize: 16,
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-              ),
-            ),
-            actions: <Widget>[
-              CupertinoActionSheetAction(
-                child: Text(
-                  from.startsWith('deactivate') ? 'deactivate' : 'delete',
-                  style: TextStyle(
-                    color: Colors.blue,
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                  from.startsWith('deactivate')
-                      ? _deActivate()
-                      : _reauthenticate();
-                },
-              )
-            ],
-            cancelButton: CupertinoActionSheetAction(
-              child: Text(
-                'Cancle',
-                style: TextStyle(
-                  color: Colors.red,
-                ),
-              ),
-              onPressed: () => Navigator.pop(context),
-            ),
-          );
-        });
-  }
-
-  _androidDialog(BuildContext parentContext, String from) {
-    return showDialog(
-        context: parentContext,
-        builder: (context) {
-          return SimpleDialog(
-            title: Text(
-              from.startsWith('deactivate')
-                  ? 'Are you sure you want to deactivate  your account?'
-                  : 'Are you sure you want to delete  your account?',
-              style: TextStyle(fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            children: <Widget>[
-              Divider(),
-              Center(
-                child: SimpleDialogOption(
-                  child: Text(
-                    'Delete',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.blue),
-                    textAlign: TextAlign.center,
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    from.startsWith('deactivate')
-                        ? _deActivate()
-                        : _reauthenticate();
-                  },
-                ),
-              ),
-              Divider(),
-              Center(
-                child: SimpleDialogOption(
-                  child: Text(
-                    'Cancel',
-                  ),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ),
-            ],
-          );
-        });
   }
 
   _toggleVisibility() {
@@ -139,17 +71,49 @@ class _DeleteAccountState extends State<DeleteAccount> {
     });
   }
 
+  void _showBottomSheetErrorMessage(String errorTitle, String error) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return DisplayErrorHandler(
+          buttonText: 'Ok',
+          onPressed: () async {
+            Navigator.pop(context);
+          },
+          title: errorTitle,
+          subTitle: error,
+        );
+      },
+    );
+  }
+
   static final _auth = FirebaseAuth.instance;
 
   _deActivate() async {
-    try {
-      usersRef
-          .doc(
-        widget.user.id,
-      )
-          .update({
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    batch.update(
+      usersAuthorRef.doc(widget.user.userId),
+      {
         'disabledAccount': true,
-      });
+      },
+    );
+
+
+
+    batch.update(
+      usersGeneralSettingsRef.doc(widget.user.userId),
+      {
+        'disabledAccount': true,
+        'androidNotificationToken': '',
+      },
+    );
+
+    try {
+      batch.commit();
+      _deleteHive();
       await _auth.signOut();
       Navigator.push(
         context,
@@ -157,487 +121,391 @@ class _DeleteAccountState extends State<DeleteAccount> {
           builder: (_) => Intro(),
         ),
       );
-      final double width = Responsive.isDesktop(context)
-          ? 600.0
-          : MediaQuery.of(context).size.width;
-      Flushbar(
-        margin: EdgeInsets.all(8),
-        boxShadows: [
-          BoxShadow(
-            color: Colors.black,
-            offset: Offset(0.0, 2.0),
-            blurRadius: 3.0,
-          )
-        ],
-        flushbarPosition: FlushbarPosition.TOP,
-        flushbarStyle: FlushbarStyle.FLOATING,
-        titleText: Text(
-          widget.user.name!,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: width > 800 ? 22 : 14,
-          ),
-        ),
-        messageText: Text(
-          "Your profile was deactivated successfully!!!",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: width > 800 ? 20 : 12,
-          ),
-        ),
-        icon: Icon(
-          MdiIcons.checkCircleOutline,
-          size: 30.0,
-          color: Colors.blue,
-        ),
-        duration: Duration(seconds: 3),
-        leftBarIndicatorColor: Colors.blue,
-      )..show(context);
+
+      mySnackBar(context, 'Your profile was deactivated successfully!!!');
     } catch (e) {
-      final double width = Responsive.isDesktop(context)
-          ? 600.0
-          : MediaQuery.of(context).size.width;
       String error = e.toString();
       String result = error.contains(']')
           ? error.substring(error.lastIndexOf(']') + 1)
           : error;
-      Flushbar(
-        margin: EdgeInsets.all(8),
-        boxShadows: [
-          BoxShadow(
-            color: Colors.black,
-            offset: Offset(0.0, 2.0),
-            blurRadius: 3.0,
-          )
-        ],
-        flushbarPosition: FlushbarPosition.TOP,
-        flushbarStyle: FlushbarStyle.FLOATING,
-        titleText: Text(
-          'Error',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: width > 800 ? 22 : 14,
-          ),
-        ),
-        messageText: Text(
-          result.toString(),
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: width > 800 ? 20 : 12,
-          ),
-        ),
-        icon: Icon(
-          Icons.error_outline,
-          size: 28.0,
-          color: Colors.blue,
-        ),
-        duration: Duration(seconds: 3),
-        leftBarIndicatorColor: Colors.blue,
-      )..show(context);
+      _showBottomSheetErrorMessage('Failed to deactivate account', result);
+      // Handle the error appropriately
     }
+    // try {
+    //   usersAuthorRef
+    //       .doc(
+    //     widget.user.userId,
+    //   )
+    //       .update({
+    //     'disabledAccount': true,
+    //   });
+
+    // } catch (e) {
+
+    //   String error = e.toString();
+    //   String result = error.contains(']')
+    //       ? error.substring(error.lastIndexOf(']') + 1)
+    //       : error;
+    //   _showBottomSheetErrorMessage('Failed to delete account', result);
+
+    // }
+  }
+
+  _deleteHive() async {
+    if (Hive.isBoxOpen('chatMessages')) {
+      final box = Hive.box<ChatMessage>('chatMessages');
+      await box.clear();
+    } else {
+      final box = await Hive.openBox<ChatMessage>('chatMessages');
+      await box.clear();
+    }
+
+    if (Hive.isBoxOpen('accountHolderAuthor')) {
+      final box = Hive.box<AccountHolderAuthor>('accountHolderAuthor');
+      await box.clear();
+    } else {
+      final box =
+          await Hive.openBox<AccountHolderAuthor>('accountHolderAuthor');
+      await box.clear();
+    }
+
+    if (Hive.isBoxOpen('currentUser')) {
+      final box = Hive.box<AccountHolderAuthor>('currentUser');
+      await box.clear();
+    } else {
+      final box = await Hive.openBox<AccountHolderAuthor>('currentUser');
+      await box.clear();
+    }
+
+    if (Hive.isBoxOpen('accountLocationPreference')) {
+      final box = Hive.box<UserSettingsLoadingPreferenceModel>(
+          'accountLocationPreference');
+      await box.clear();
+    } else {
+      final box = await Hive.openBox<UserSettingsLoadingPreferenceModel>(
+          'accountLocationPreference');
+      await box.clear();
+    }
+    // final boxNames = [
+    //   'chatMessages',
+    //   'chats',
+    //   'eventRooms',
+    //   'ticketIds',
+    //   'accountHolderAuthor',
+    //   'accountLocationPreference',
+    // ];
+
+    // for (final boxName in boxNames) {
+    //   if (Hive.isBoxOpen(boxName)) {
+    //     final box = Hive.box(boxName);
+    //     await box.clear();
+    //   } else {
+    //     final box = await Hive.openBox(boxName);
+    //     await box.clear();
+    //   }
+    // }
+  }
+
+  Future<void> _deleteDocuments(String collectionPath, String userId) async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection(collectionPath)
+        .where('userId', isEqualTo: userId)
+        .get();
+    for (var docSnapshot in querySnapshot.docs) {
+      await docSnapshot.reference.delete();
+    }
+  }
+
+  Future<void> _deleteStorageFolder(String folderPath) async {
+    ListResult listResult =
+        await FirebaseStorage.instance.ref(folderPath).listAll();
+    for (var item in listResult.items) {
+      await item.delete();
+    }
+  }
+
+  Future<void> deleteTicketsOrder(String currentUserId) async {
+    QuerySnapshot snapshot = await newEventTicketOrderRef
+        .where('inviteeId', isEqualTo: currentUserId)
+        .get();
+
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    snapshot.docs.forEach((doc) {
+      batch.delete(doc.reference);
+    });
+
+    await batch.commit();
+  }
+
+  Future<void> deleteAdvice(String currentUserId) async {
+    QuerySnapshot snapshot =
+        await userAdviceRef.where('authorId', isEqualTo: currentUserId).get();
+
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    snapshot.docs.forEach((doc) {
+      batch.delete(doc.reference);
+    });
+
+    await batch.commit();
+  }
+
+  Future<void> deleteEventAsks(String currentUserId) async {
+    QuerySnapshot snapshot =
+        await asksRef.where('authorId', isEqualTo: currentUserId).get();
+
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    snapshot.docs.forEach((doc) {
+      batch.delete(doc.reference);
+    });
+
+    await batch.commit();
+  }
+
+  Future<void> deleteChatrRoomMessages(String currentUserId) async {
+    QuerySnapshot snapshot = await eventsChatRoomsConverstionRef
+        .where('senderId', isEqualTo: currentUserId)
+        .get();
+
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    snapshot.docs.forEach((doc) {
+      batch.delete(doc.reference);
+    });
+
+    await batch.commit();
+  }
+
+  Future<void> deleteNewEventTicketOrder(String currentUserId) async {
+    QuerySnapshot snapshot = await newEventTicketOrderRef
+        .where('userOrderId', isEqualTo: currentUserId)
+        .get();
+
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    snapshot.docs.forEach((doc) {
+      batch.delete(doc.reference);
+    });
+
+    await batch.commit();
+  }
+
+  Future<void> deleteAllEvents(String currentUserId) async {
+    QuerySnapshot snapshot =
+        await allEventsRef.where('authorId', isEqualTo: currentUserId).get();
+
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    snapshot.docs.forEach((doc) {
+      batch.delete(doc.reference);
+    });
+
+    await batch.commit();
+  }
+
+  Future<void> deleteAllMessages(String currentUserId) async {
+    QuerySnapshot snapshot =
+        await messageRef.where('senderId', isEqualTo: currentUserId).get();
+
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    snapshot.docs.forEach((doc) {
+      batch.delete(doc.reference);
+    });
+
+    await batch.commit();
+  }
+
+  Future<void> deleteFollowers(String currentUserId) async {
+    QuerySnapshot snapshot =
+        await followersRef.where('uid', isEqualTo: currentUserId).get();
+
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    snapshot.docs.forEach((doc) {
+      batch.delete(doc.reference);
+    });
+
+    await batch.commit();
   }
 
   void _reauthenticate() async {
     FocusScope.of(context).unfocus();
     try {
-      Flushbar(
-        maxWidth: MediaQuery.of(context).size.width,
-        backgroundColor: Color(0xFF1a1a1a),
-        margin: EdgeInsets.all(8),
-        showProgressIndicator: true,
-        progressIndicatorBackgroundColor: Color(0xFF1a1a1a),
-        progressIndicatorValueColor: AlwaysStoppedAnimation(Colors.blue),
-        flushbarPosition: FlushbarPosition.TOP,
-        boxShadows: [
-          BoxShadow(
-            color: Colors.black,
-            offset: Offset(0.0, 2.0),
-            blurRadius: 3.0,
-          )
-        ],
-        titleText: Text(
-          'Deleting Account',
-          style: TextStyle(color: Colors.white),
-        ),
-        messageText: Text(
-          "Please wait...",
-          style: TextStyle(color: Colors.white),
-        ),
-        duration: Duration(seconds: 3),
-      )..show(context);
+      mySnackBar(context, 'Deleting Account\nPlease wait...');
 
       await _auth.signInWithEmailAndPassword(
-        email: widget.user.email!,
-        password: Provider.of<UserData>(context, listen: false).post2,
+        email: _auth.currentUser!.email!,
+        password: _passwordController.text.trim(),
       );
-      deletedDeactivatedAccountRef.add({
-        'author': widget.user.userName,
-        'reason': Provider.of<UserData>(context, listen: false).post3,
-        'timestamp': Timestamp.fromDate(DateTime.now()),
-      });
+
       animateForward();
-      _deleteAccount();
+      _deleteAccount(context);
     } catch (e) {
-      final double width = MediaQuery.of(context).size.width;
       String error = e.toString();
       String result = error.contains(']')
           ? error.substring(error.lastIndexOf(']') + 1)
           : error;
-      Flushbar(
-        maxWidth: MediaQuery.of(context).size.width,
-        margin: EdgeInsets.all(8),
-        flushbarPosition: FlushbarPosition.TOP,
-        flushbarStyle: FlushbarStyle.FLOATING,
-        boxShadows: [
-          BoxShadow(
-            color: Colors.black,
-            offset: Offset(0.0, 2.0),
-            blurRadius: 3.0,
-          )
-        ],
-        titleText: Padding(
-          padding: const EdgeInsets.only(left: 30.0),
-          child: Text(
-            'Request Failed',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: width > 800 ? 22 : 14,
-            ),
-          ),
-        ),
-        messageText: Container(
-            child: Padding(
-          padding: const EdgeInsets.only(left: 30.0),
-          child: Text(
-            result.toString(),
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: width > 800 ? 20 : 12,
-            ),
-          ),
-        )),
-        icon: Icon(Icons.error_outline,
-            size: width > 800 ? 50 : 28.0, color: Colors.blue),
-        mainButton: OutlinedButton(
-          style: OutlinedButton.styleFrom(
-            foregroundColor: Colors.transparent,
-            side: BorderSide(width: 1.0, color: Colors.transparent),
-          ),
-          onPressed: () => Navigator.pop(context),
-          child: Text("Ok",
-              style: TextStyle(
-                color: Colors.blue,
-                fontSize: width > 800 ? 24 : 16,
-              )),
-        ),
-        leftBarIndicatorColor: Colors.blue,
-      )..show(context);
-      print(e.toString());
+      _showBottomSheetErrorMessage('Authentication failed', result);
     }
   }
 
-  void _deleteAccount() async {
+  void _deleteAccount(BuildContext context) async {
     final String currentUserId =
         Provider.of<UserData>(context, listen: false).currentUserId!;
+    final String userName =
+        Provider.of<UserData>(context, listen: false).user!.userName!;
     FocusScope.of(context).unfocus();
-    try {
-      forumsRef
-          .doc(currentUserId)
-          .collection('userForums')
-          .snapshots()
-          .forEach((querySnapshot) {
-        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
-          docSnapshot.reference.delete();
-        }
-      });
+    // try {
 
-      postsRef
-          .doc(currentUserId)
-          .collection('userPosts')
-          .snapshots()
-          .forEach((querySnapshot) {
-        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
-          docSnapshot.reference.delete();
-        }
-      });
+    // Define all storage paths
+    List<String> storagePaths = [
+      'images/events',
+      'images/messageImage/$currentUserId',
+      'images/users/$currentUserId',
+      'images/professionalPicture1/$currentUserId',
+      'images/professionalPicture2/$currentUserId',
+      'images/professionalPicture3/$currentUserId',
+      'images/posts/$currentUserId',
+      'images/validate/$currentUserId',
+    ];
 
-      eventsRef
-          .doc(currentUserId)
-          .collection('userEvents')
-          .snapshots()
-          .forEach((querySnapshot) {
-        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
-          docSnapshot.reference.delete();
-        }
-      });
+// Define all collection paths
+    List<String> collectionPaths = [
+      'forums',
+      'posts',
+      'new_usersInvite',
 
-      eventsRef
-          .doc(currentUserId)
-          .collection('userEvents')
-          .snapshots()
-          .forEach((querySnapshot) {
-        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
-          docSnapshot.reference.delete();
-        }
-      });
+      'userAdvice',
+      'userAdvice',
+      'following',
+      'new_activities',
+      'new_events',
 
-      possitiveRatingRef
-          .doc(currentUserId)
-          .collection('userPossitiveRating')
-          .snapshots()
-          .forEach((querySnapshot) {
-        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
-          docSnapshot.reference.delete();
-        }
-      });
-      possitveRatedRef
-          .doc(currentUserId)
-          .collection('userPossitiveRated')
-          .snapshots()
-          .forEach((querySnapshot) {
-        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
-          docSnapshot.reference.delete();
-        }
-      });
+      //change eventInvite to corresponding names
+      'new_ticketId',
+      'new_userTicketOrder',
+      //change eventInvite to corresponding names
 
-      negativeRatingRef
-          .doc(currentUserId)
-          .collection('userNegativeRating')
-          .snapshots()
-          .forEach((querySnapshot) {
-        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
-          docSnapshot.reference.delete();
-        }
-      });
+      'new_usersInvite',
+      // 'user_author',
+      'user_general_settings',
+      // 'user_location_settings',
+      'user_professsional',
+      'user_workRequest',
+    ];
 
-      negativeRatingRef
-          .doc(currentUserId)
-          .collection('userNegativeRating')
-          .snapshots()
-          .forEach((querySnapshot) {
-        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
-          docSnapshot.reference.delete();
-        }
-      });
-      followingRef
-          .doc(currentUserId)
-          .collection('userFollowing')
-          .snapshots()
-          .forEach((querySnapshot) {
-        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
-          docSnapshot.reference.delete();
-        }
-      });
+    // Delete all documents in all collections
+    for (var path in collectionPaths) {
+      await _deleteDocuments(path, currentUserId);
+    }
 
-      followingRef
-          .doc(currentUserId)
-          .collection('userFollowing')
-          .snapshots()
-          .forEach((querySnapshot) {
-        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
-          docSnapshot.reference.delete();
-        }
-      });
+    // Delete all files in all storage folders
+    for (var path in storagePaths) {
+      await _deleteStorageFolder(path);
+    }
 
-      followersRef
-          .doc(currentUserId)
-          .collection('userFollowers')
-          .snapshots()
-          .forEach((querySnapshot) {
-        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
-          docSnapshot.reference.delete();
-        }
-      });
+    // Delete eventInvite documents
+    await deleteTicketsOrder(currentUserId);
+    await deleteNewEventTicketOrder(currentUserId);
+    await deleteAllEvents(currentUserId);
+    await deleteAllMessages(currentUserId);
+    await deleteFollowers(currentUserId);
+    await deleteAdvice(currentUserId);
+    await deleteEventAsks(currentUserId);
+    await deleteChatrRoomMessages(currentUserId);
 
-      activitiesFollowerRef
-          .doc(currentUserId)
-          .collection('activitiesFollower')
-          .where('fromUserId', isEqualTo: currentUserId)
-          .snapshots()
-          .forEach((querySnapshot) {
-        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
-          docSnapshot.reference.delete();
-        }
-      });
+    // Delete user document
+    await FirebaseFirestore.instance
+        .collection('usernames')
+        .doc(userName)
+        .delete();
 
-      activitiesForumRef
-          .doc(currentUserId)
-          .collection('userActivitiesForum')
-          .snapshots()
-          .forEach((querySnapshot) {
-        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
-          docSnapshot.reference.delete();
-        }
-      });
+    // Delete user document
+    await FirebaseFirestore.instance
+        .collection('user_author')
+        .doc(_auth.currentUser!.uid)
+        .delete();
 
-      activitiesEventRef
-          .doc(currentUserId)
-          .collection('userActivitiesEvent')
-          .snapshots()
-          .forEach((querySnapshot) {
-        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
-          docSnapshot.reference.delete();
-        }
-      });
+    // Delete user document
+    await FirebaseFirestore.instance
+        .collection('user_location_settings')
+        .doc(_auth.currentUser!.uid)
+        .delete();
 
-      activitiesRef
-          .doc(currentUserId)
-          .collection('userActivities')
-          .snapshots()
-          .forEach((querySnapshot) {
-        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
-          docSnapshot.reference.delete();
-        }
-      });
+    _deleteHive();
+    await _auth.currentUser!.delete();
+    // await _auth.signOut();
+    Future.delayed(Duration(seconds: 2)).then((_) {
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => Intro()),
+          (Route<dynamic> route) => false);
+    });
 
-      activitiesAdviceRef
-          .doc(currentUserId)
-          .collection('userActivitiesAdvice')
-          .snapshots()
-          .forEach((querySnapshot) {
-        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
-          docSnapshot.reference.delete();
-        }
-      });
+    HapticFeedback.lightImpact();
+    mySnackBar(context, 'Account deleted');
+  }
 
-      usersRef
-          .doc(currentUserId)
-          .collection('chats')
-          .snapshots()
-          .forEach((querySnapshot) {
-        for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
-          docSnapshot.reference.delete();
-        }
-      });
+  Future<void> reauthenticateWithApple(BuildContext context) async {
+    User? user = FirebaseAuth.instance.currentUser;
 
-      FirebaseStorage.instance
-          .ref('images/posts/$currentUserId')
-          .listAll()
-          .then((value) {
-        value.items.forEach((element) {
-          FirebaseStorage.instance.ref(element.fullPath).delete();
+    if (user != null) {
+      // Get the ID token from the user
+      String? idToken = await user.getIdToken();
+
+      // Create an OAuthCredential using the ID token and provider ID
+      OAuthCredential credential =
+          OAuthProvider('apple.com').credential(idToken: idToken);
+
+      try {
+        // Reauthenticate the user with the credential
+        animateForward();
+        await user.reauthenticateWithCredential(credential);
+        deletedDeactivatedAccountRef.add({
+          'author': widget.user.userName,
+          'timestamp': Timestamp.fromDate(DateTime.now()),
         });
-      });
+        _deleteAccount(context);
+        // Reauthentication successful
+      } catch (error) {
+        // Handle reauthentication error
+      }
+    }
+  }
 
-      FirebaseStorage.instance
-          .ref('images/events/$currentUserId')
-          .listAll()
-          .then((value) {
-        value.items.forEach((element) {
-          FirebaseStorage.instance.ref(element.fullPath).delete();
-        });
-      });
-      FirebaseStorage.instance
-          .ref('images/messageImage/$currentUserId')
-          .listAll()
-          .then((value) {
-        value.items.forEach((element) {
-          FirebaseStorage.instance.ref(element.fullPath).delete();
-        });
-      });
+  Future<void> reauthenticateWithGoogle() async {
+    User? user = FirebaseAuth.instance.currentUser;
 
-      FirebaseStorage.instance
-          .ref('images/users/$currentUserId')
-          .listAll()
-          .then((value) {
-        value.items.forEach((element) {
-          FirebaseStorage.instance.ref(element.fullPath).delete();
-        });
-      });
+    if (user != null) {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
-      usersRef.doc(currentUserId).delete();
-      FirebaseStorage.instance
-          .ref('images/professionalPicture1/$currentUserId')
-          .listAll()
-          .then((value) {
-        value.items.forEach((element) {
-          FirebaseStorage.instance.ref(element.fullPath).delete();
-        });
-      });
-      FirebaseStorage.instance
-          .ref('images/professionalPicture2/$currentUserId')
-          .listAll()
-          .then((value) {
-        value.items.forEach((element) {
-          FirebaseStorage.instance.ref(element.fullPath).delete();
-        });
-      });
-      FirebaseStorage.instance
-          .ref('images/professionalPicture3/$currentUserId')
-          .listAll()
-          .then((value) {
-        value.items.forEach((element) {
-          FirebaseStorage.instance.ref(element.fullPath).delete();
-        });
-      });
+      if (googleUser != null) {
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
 
-      FirebaseStorage.instance
-          .ref('images/validate/$currentUserId')
-          .listAll()
-          .then((value) {
-        value.items.forEach((element) {
-          FirebaseStorage.instance.ref(element.fullPath).delete();
-        });
-      });
+        final OAuthCredential credential = GoogleAuthProvider.credential(
+          idToken: googleAuth.idToken,
+          accessToken: googleAuth.accessToken,
+        );
 
-      usersRef.doc(_auth.currentUser!.uid).get().then((doc) {
-        if (doc.exists) {
-          doc.reference.delete();
+        try {
+          animateForward();
+          await user.reauthenticateWithCredential(credential);
+
+          deletedDeactivatedAccountRef.add({
+            'author': widget.user.userName,
+            'timestamp': Timestamp.fromDate(DateTime.now()),
+          });
+
+          _deleteAccount(context);
+          // Reauthentication successful
+        } catch (error) {
+          // Handle reauthentication error
         }
-      });
-
-      usersAuthorRef.doc(_auth.currentUser!.uid).get().then((doc) {
-        if (doc.exists) {
-          doc.reference.delete();
-        }
-      });
-
-      await _auth.currentUser!.delete().then((value) async {
-        await _auth.signOut();
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) => WelcomeScreen(),
-            ),
-            (Route<dynamic> route) => false);
-      });
-      setNull();
-    } catch (e) {
-      String error = e.toString();
-      String result = error.contains(']')
-          ? error.substring(error.lastIndexOf(']') + 1)
-          : error;
-      print(result);
-
-      Flushbar(
-        maxWidth: MediaQuery.of(context).size.width,
-        backgroundColor: Color(0xFF1a1a1a),
-        margin: EdgeInsets.all(8),
-        flushbarPosition: FlushbarPosition.TOP,
-        flushbarStyle: FlushbarStyle.FLOATING,
-        titleText: Text(
-          'Request Failed',
-          style: TextStyle(color: Colors.white),
-        ),
-        messageText: Container(
-            child: Text(
-          result.toString(),
-          style: TextStyle(color: Colors.white),
-        )),
-        icon: Icon(Icons.info_outline, size: 28.0, color: Colors.blue),
-        mainButton: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.transparent,
-          ),
-          onPressed: () => Navigator.pop(context),
-          child: Text("Ok",
-              style: TextStyle(
-                color: Colors.blue,
-              )),
-        ),
-        leftBarIndicatorColor: Colors.blue,
-      )..show(context);
-      print(e.toString());
+      }
     }
   }
 
@@ -657,360 +525,367 @@ class _DeleteAccountState extends State<DeleteAccount> {
     );
   }
 
-  setNull() {
-    Provider.of<UserData>(context, listen: false).setPost2('');
-    Provider.of<UserData>(context, listen: false).setPost3('');
+  void _showBottomConfirm(String title, String subTitle, String buttonText,
+      VoidCallback onPressed) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return ConfirmationPrompt(
+          buttonText: buttonText,
+          onPressed: onPressed,
+          title: title,
+          subTitle: subTitle,
+        );
+      },
+    );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final width = Responsive.isDesktop(context)
-        ? 600.0
-        : MediaQuery.of(context).size.width;
-    return ResponsiveScaffold(
-      child: Scaffold(
-        backgroundColor:
-            ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
-        appBar: AppBar(
-          backgroundColor:
-              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
-          iconTheme: IconThemeData(
-              color: ConfigBloc().darkModeOn
-                  ? Color(0xFFf2f2f2)
-                  : Color(0xFF1a1a1a)),
-          leading: _index == 3
-              ? const SizedBox.shrink()
-              : IconButton(
-                  icon: Icon(
-                      Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
-                  onPressed: () {
-                    _index != 0 ? animateBack() : Navigator.pop(context);
-                  }),
-          automaticallyImplyLeading: true,
-          elevation: 0,
-        ),
-        body: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Form(
-            key: formKey,
-            child: PageView(
-              controller: _pageController,
-              physics: NeverScrollableScrollPhysics(),
-              onPageChanged: (int index) {
-                setState(() {
-                  _index = index;
+  _why() {
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Center(
+            child: Material(
+              color: Colors.transparent,
+              child: Text(
+                'Why?',
+                style: TextStyle(
+                  color: Theme.of(context).secondaryHeaderColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: ResponsiveHelper.responsiveHeight(
+                    context,
+                    40,
+                  ),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Text(
+              'We would like to know why you want to delete your account. This information helps improve our platform.',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+          const Divider(color: Colors.grey),
+          Padding(
+            padding: const EdgeInsets.only(left: 20),
+            child: IntroInfo(
+              subTitleColor: Theme.of(context).secondaryHeaderColor,
+              title: 'Non-beneficial',
+              subTitle:
+                  "Bars Impression platform is not helpful to you in any way.",
+              icon: Icons.arrow_forward_ios_outlined,
+              onPressed: () {
+                animateForward();
+              },
+            ),
+          ),
+          const Divider(color: Colors.grey),
+          Padding(
+            padding: const EdgeInsets.only(left: 20),
+            child: IntroInfo(
+              subTitleColor: Theme.of(context).secondaryHeaderColor,
+              onPressed: () {
+                animateForward();
+              },
+              title: 'Issues with content',
+              subTitle:
+                  'You don\'t like the type of content shared on Bars Impression.',
+              icon: Icons.arrow_forward_ios_outlined,
+            ),
+          ),
+          const Divider(color: Colors.grey),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: ContentFieldBlack(
+              labelText: 'Other reasons',
+              hintText: "Specify any other reasons",
+              initialValue: '',
+              onSavedText: (input) => '',
+              onValidateText: () {},
+            ),
+          ),
+          const SizedBox(
+            height: 50.0,
+          ),
+        ],
+      ),
+    );
+  }
+
+  _deactivateInstead() {
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Center(
+            child: Material(
+              color: Colors.transparent,
+              child: Text(
+                'Deactivate your account instead?',
+                style: TextStyle(
+                    color: Theme.of(context).secondaryHeaderColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 10.0,
+          ),
+          Divider(color: Colors.grey),
+          Padding(
+            padding: const EdgeInsets.only(left: 20),
+            child: IntroInfo(
+              subTitleColor: Theme.of(context).secondaryHeaderColor,
+              title: 'Deactivating your account is temporary.',
+              subTitle:
+                  "Your information and contents would be hidden until you reactivate your account again",
+              icon: Icons.arrow_forward_ios_outlined,
+              onPressed: () {
+                _showBottomConfirm(
+                    'Are you sure you want deactivate your account?',
+                    'Your information and contents would be hidden until you reactivate your account again',
+                    'Deactivate', () {
+                  _deActivate();
                 });
               },
-              children: [
-                SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Center(
-                        child: Material(
-                          color: Colors.transparent,
-                          child: Text(
-                            'Why?',
-                            style: TextStyle(
-                                color: ConfigBloc().darkModeOn
-                                    ? Color(0xFFf2f2f2)
-                                    : Color(0xFF1a1a1a),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 40),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: Text(
-                          'We would like to know why you want to delete your account. This information helps improve our platform.',
-                          style: TextStyle(
-                              color: ConfigBloc().darkModeOn
-                                  ? Color(0xFFf2f2f2)
-                                  : Color(0xFF1a1a1a),
-                              fontSize: 14),
-                        ),
-                      ),
-                      Divider(color: Colors.grey),
-                      GestureDetector(
-                        onTap: () {
-                          Provider.of<UserData>(context, listen: false)
-                              .setPost3('Non-beneficial');
-                          animateForward();
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 20),
-                          child: IntroInfo(
-                            title: 'Non-beneficial',
-                            subTitle:
-                                "Bars Impression platform is not helpful to you in any way.",
-                            icon: Icon(
-                              Icons.arrow_forward_ios_outlined,
-                              color: ConfigBloc().darkModeOn
-                                  ? Color(0xFFf2f2f2)
-                                  : Color(0xFF1a1a1a),
-                              size: 20,
-                            ),
-                            onPressed: () {
-                              Provider.of<UserData>(context, listen: false)
-                                  .setPost3('Non-beneficial');
-                              animateForward();
-                            },
-                          ),
-                        ),
-                      ),
-                      Divider(color: Colors.grey),
-                      GestureDetector(
-                        onTap: () {
-                          Provider.of<UserData>(context, listen: false)
-                              .setPost3('Issues with content');
-                          animateForward();
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 20),
-                          child: IntroInfo(
-                            onPressed: () {
-                              Provider.of<UserData>(context, listen: false)
-                                  .setPost3('Issues with content');
-                              animateForward();
-                            },
-                            title: 'Issues with content',
-                            subTitle:
-                                'You don\'t like the type of content shared on Bars Impression.',
-                            icon: Icon(
-                              Icons.arrow_forward_ios_outlined,
-                              color: ConfigBloc().darkModeOn
-                                  ? Color(0xFFf2f2f2)
-                                  : Color(0xFF1a1a1a),
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Divider(color: Colors.grey),
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: ContentField(
-                          labelText: 'Other reasons',
-                          hintText: "Specify any other reasons",
-                          initialValue: '',
-                          onSavedText: (input) =>
-                              Provider.of<UserData>(context, listen: false)
-                                  .setPost3(input),
-                          onValidateText: () {},
-                        ),
-                      ),
-                      SizedBox(
-                        height: 50.0,
-                      ),
-                      AvatarCircularButton(
-                        onPressed: () {
-                          animateForward();
-                        },
-                        buttonText: "Next",
-                      ),
-                    ],
+            ),
+          ),
+          Divider(color: Colors.grey),
+          Padding(
+            padding: const EdgeInsets.only(left: 20),
+            child: GestureDetector(
+              onTap: () {
+                animateForward();
+              },
+              child: IntroInfo(
+                subTitleColor: Theme.of(context).secondaryHeaderColor,
+                onPressed: () {
+                  animateForward();
+                },
+                title: 'Deleting your account is permanent.',
+                subTitle:
+                    'Deleting your account would erase all your user data and every content you have created. Your account cannot be recovered after you have deleted it.',
+                icon: Icons.arrow_forward_ios_outlined,
+              ),
+            ),
+          ),
+          Divider(color: Colors.grey),
+        ],
+      ),
+    );
+  }
+
+  _googleSignIn() {
+    return SignInWithButton(
+        icon: FontAwesomeIcons.google,
+        buttonText: 'Sign in with Google',
+        onPressed: () {
+          reauthenticateWithGoogle();
+        });
+  }
+
+  _appleSignIn() {
+    return SignInWithButton(
+      buttonText: 'Sign in with Apple',
+      onPressed: () {
+        reauthenticateWithApple(context);
+      },
+      icon: FontAwesomeIcons.apple,
+    );
+  }
+
+  _deleteWidget() {
+    final width = MediaQuery.of(context).size.width;
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 30.0),
+        child: Container(
+          height: width * 2,
+          width: double.infinity,
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 30,
+              ),
+              Text(
+                'You have to re-atheticate to make sure nobody is trying to delete you account.',
+                style: TextStyle(
+                  color: Theme.of(context).secondaryHeaderColor,
+                  fontSize: ResponsiveHelper.responsiveFontSize(
+                    context,
+                    16,
                   ),
                 ),
-                SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Center(
-                        child: Material(
-                          color: Colors.transparent,
-                          child: Text(
-                            'Deactivate your account instead?',
-                            style: TextStyle(
-                                color: ConfigBloc().darkModeOn
-                                    ? Color(0xFFf2f2f2)
-                                    : Color(0xFF1a1a1a),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 24),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      Divider(color: Colors.grey),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 20),
-                        child: GestureDetector(
-                          onTap: () {
-                            _showSelectImageDialog('deactivate');
-                          },
-                          child: IntroInfo(
-                            title: 'Deactivating your account is temporary.',
-                            subTitle:
-                                "Your information and contents would be hidden until you reactivate your account again",
-                            icon: Icon(
-                              Icons.arrow_forward_ios_outlined,
-                              color: Colors.transparent,
-                              size: 20,
-                            ),
-                            onPressed: () {
-                              _showSelectImageDialog('deactivate');
-                            },
-                          ),
-                        ),
-                      ),
-                      Divider(color: Colors.grey),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 20),
-                        child: GestureDetector(
-                          onTap: () {
-                            animateForward();
-                          },
-                          child: IntroInfo(
-                            onPressed: () {
-                              animateForward();
-                            },
-                            title: 'Deleting your account is permanent.',
-                            subTitle:
-                                'Deleting your account would erase all your user data and every content you have created. Your account cannot be recovered after you have deleted it.',
-                            icon: Icon(
-                              Icons.arrow_forward_ios_outlined,
-                              color: ConfigBloc().darkModeOn
-                                  ? Color(0xFFf2f2f2)
-                                  : Color(0xFF1a1a1a),
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Divider(color: Colors.grey),
-                    ],
-                  ),
-                ),
-                SingleChildScrollView(
-                  child: Container(
-                    height: width * 2,
-                    width: double.infinity,
-                    child: Column(
-                      children: [
-                        Container(
-                          height: 2,
-                          color: Colors.blue,
-                          width: 10,
-                        ),
-                        ShakeTransition(
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              Container(
+                height: 2,
+                color: Colors.blue,
+                width: 10,
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              reathenticateType.startsWith('Apple')
+                  ? _appleSignIn()
+                  : reathenticateType.startsWith('Google')
+                      ? _googleSignIn()
+                      : ShakeTransition(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 30.0, vertical: 10),
                             child: Text(
                               'Enter your password to delete your account.',
                               style: TextStyle(
-                                  color: ConfigBloc().darkModeOn
-                                      ? Color(0xFFf2f2f2)
-                                      : Color(0xFF1a1a1a),
-                                  fontSize: 14),
+                                color: Theme.of(context).secondaryHeaderColor,
+                                fontSize: ResponsiveHelper.responsiveFontSize(
+                                  context,
+                                  14,
+                                ),
+                              ),
                               textAlign: TextAlign.center,
                             ),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 30.0, vertical: 10.0),
-                          child: TextFormField(
-                            style: TextStyle(
-                              fontSize: 12.0,
-                              color: ConfigBloc().darkModeOn
-                                  ? Colors.white
-                                  : Colors.black,
-                            ),
-                            decoration: InputDecoration(
-                                labelText: 'Password',
-                                labelStyle: TextStyle(
-                                  fontSize: width > 800 ? 22 : 14,
-                                  color: Colors.grey,
-                                ),
-                                hintText: 'Your Bars Impression password',
-                                hintStyle: TextStyle(
-                                  fontSize: width > 800 ? 20 : 14,
-                                  color: Colors.blueGrey,
-                                ),
-                                suffixIcon: IconButton(
-                                    icon: _isHidden
-                                        ? Icon(
-                                            Icons.visibility_off,
-                                            size: width > 800 ? 35 : 20.0,
-                                            color: Colors.grey,
-                                          )
-                                        : Icon(
-                                            Icons.visibility,
-                                            size: width > 800 ? 35 : 20.0,
-                                            color: Colors.white,
-                                          ),
-                                    onPressed: _toggleVisibility),
-                                icon: Icon(
-                                  Icons.lock,
-                                  size: width > 800 ? 35 : 20.0,
-                                  color: Colors.grey,
-                                ),
-                                enabledBorder: new UnderlineInputBorder(
-                                    borderSide:
-                                        new BorderSide(color: Colors.grey))),
-                            autofillHints: [AutofillHints.password],
-                            onChanged: (input) =>
-                                Provider.of<UserData>(context, listen: false)
-                                    .setPost2(input),
-                            onSaved: (input) =>
-                                Provider.of<UserData>(context, listen: false)
-                                    .setPost2(input!),
-                            validator: (input) => input!.length < 8
-                                ? 'Password must be at least 8 characters'
-                                : null,
-                            obscureText: _isHidden,
-                          ),
+              if (reathenticateType.startsWith('Email'))
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 30.0, vertical: 10.0),
+                  child: LoginField(
+                    notLogin: true,
+                    controller: _passwordController,
+                    hintText: 'At least 8 characters',
+                    labelText: 'Password',
+                    onValidateText: (input) => input!.length < 8
+                        ? 'Password must be at least 8 characters'
+                        : input.length > 24
+                            ? 'Password is too long'
+                            : null,
+                    icon: Icons.email,
+                    suffixIcon: IconButton(
+                        icon: Icon(
+                          _isHidden ? Icons.visibility_off : Icons.visibility,
+                          size: width > 800 ? 35 : 20.0,
+                          color: Colors.grey,
                         ),
-                        SizedBox(height: 60),
-                        InkWell(
-                          borderRadius: BorderRadius.circular(10),
-                          onTap: () => _submit(),
-                          child: Ink(
-                            decoration: BoxDecoration(
-                              color: ConfigBloc().darkModeOn
-                                  ? Colors.white
-                                  : Colors.black,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Container(
-                              height: 40,
-                              width: 40,
-                              child: IconButton(
-                                icon: Icon(Icons.delete_forever),
-                                iconSize: 25,
-                                color: ConfigBloc().darkModeOn
-                                    ? Colors.black
-                                    : Colors.white,
-                                onPressed: () => _submit(),
-                              ),
-                            ),
+                        onPressed: _toggleVisibility),
+                  ),
+                ),
+              const SizedBox(height: 60),
+              if (reathenticateType.startsWith('Email'))
+                InkWell(
+                  borderRadius: BorderRadius.circular(10),
+                  onTap: () {
+                    _showBottomConfirm(
+                        'Are you sure you want delete your account?',
+                        ' All your user data and every content you have created.',
+                        'Delete Account', () {
+                      _reauthenticate();
+                    });
+                  },
+                  child: Ink(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).secondaryHeaderColor,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Container(
+                      height: ResponsiveHelper.responsiveHeight(
+                        context,
+                        40,
+                      ),
+                      width: ResponsiveHelper.responsiveHeight(
+                        context,
+                        40,
+                      ),
+                      child: IconButton(
+                          icon: Icon(Icons.delete_forever),
+                          iconSize: ResponsiveHelper.responsiveHeight(
+                            context,
+                            25,
                           ),
-                        ),
-                      ],
+                          color: Theme.of(context).primaryColorLight,
+                          onPressed: () {
+                            _showBottomConfirm(
+                                'Are you sure you want delete your account?',
+                                ' All your user data and every content you have created.',
+                                'Delete Account', () {
+                              Navigator.pop(context);
+                              _reauthenticate();
+                            });
+                          }
+                          // => _submit(),
+                          ),
                     ),
                   ),
                 ),
-                SingleChildScrollView(
-                  child: Container(
-                      color: Colors.grey[600],
-                      height: MediaQuery.of(context).size.height - 200,
-                      child: Center(
-                        child: Loading(
-                          icon: (Icons.delete_forever),
-                          title: 'Deleting account',
-                        ),
-                      )),
-                )
-              ],
-            ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).primaryColor,
+        iconTheme: IconThemeData(color: Theme.of(context).secondaryHeaderColor),
+        leading: _index == 3
+            ? const SizedBox.shrink()
+            : IconButton(
+                icon: Icon(
+                    Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
+                onPressed: () {
+                  _index != 0 ? animateBack() : Navigator.pop(context);
+                }),
+        automaticallyImplyLeading: true,
+        elevation: 0,
+      ),
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Form(
+          key: formKey,
+          child: PageView(
+            controller: _pageController,
+            physics: NeverScrollableScrollPhysics(),
+            onPageChanged: (int index) {
+              setState(() {
+                _index = index;
+              });
+            },
+            children: [
+              _why(),
+              _deactivateInstead(),
+              _deleteWidget(),
+              SingleChildScrollView(
+                child: Container(
+                    color: Theme.of(context).primaryColor,
+                    height: MediaQuery.of(context).size.height - 200,
+                    child: Center(
+                      child: Loading(
+                        color: Theme.of(context).secondaryHeaderColor,
+                        icon: (Icons.delete_outline_rounded),
+                        title: 'Deleting account',
+                      ),
+                    )),
+              )
+            ],
           ),
         ),
       ),

@@ -1,3 +1,4 @@
+import 'package:bars/utilities/dimensions.dart';
 import 'package:flutter/material.dart';
 
 class TabContainer extends StatelessWidget {
@@ -8,7 +9,7 @@ class TabContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 2,
+      height:  ResponsiveHelper.responsiveHeight(context, 2.0),
       decoration: BoxDecoration(
         color: Colors.blue,
         boxShadow: [

@@ -12,7 +12,7 @@ class CommentSchimmerSkeleton extends StatelessWidget {
                 color: Colors.transparent,
                 child: SchimmerSkeleton(
                   schimmerWidget: Container(
-                    height: 10,
+                    height:  ResponsiveHelper.responsiveHeight(context, 10,),
                     decoration: BoxDecoration(
                         gradient: LinearGradient(
                             begin: Alignment.bottomRight,
@@ -29,7 +29,7 @@ class CommentSchimmerSkeleton extends StatelessWidget {
                 color: Colors.transparent,
                 child: SchimmerSkeleton(
                   schimmerWidget: Container(
-                    height: 10,
+                    height:  ResponsiveHelper.responsiveHeight(context, 10,),
                     decoration: BoxDecoration(
                         gradient: LinearGradient(
                             begin: Alignment.bottomRight,
@@ -46,7 +46,7 @@ class CommentSchimmerSkeleton extends StatelessWidget {
                 color: Colors.transparent,
                 child: SchimmerSkeleton(
                   schimmerWidget: Container(
-                    height: 10,
+                    height:  ResponsiveHelper.responsiveHeight(context, 10,),
                     decoration: BoxDecoration(
                         gradient: LinearGradient(
                             begin: Alignment.bottomRight,
@@ -63,7 +63,7 @@ class CommentSchimmerSkeleton extends StatelessWidget {
                 color: Colors.transparent,
                 child: SchimmerSkeleton(
                   schimmerWidget: Container(
-                    height: 10,
+                    height:  ResponsiveHelper.responsiveHeight(context, 10,),
                     decoration: BoxDecoration(
                         gradient: LinearGradient(
                             begin: Alignment.bottomRight,

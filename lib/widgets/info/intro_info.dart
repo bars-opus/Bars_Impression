@@ -3,7 +3,7 @@ import 'package:bars/utilities/exports.dart';
 class IntroInfo extends StatelessWidget {
   final String title;
   final String subTitle;
-  final Icon icon;
+  final IconData icon;
   final Color titleColor;
   final Color subTitleColor;
   final VoidCallback? onPressed;
@@ -19,39 +19,37 @@ class IntroInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double width = Responsive.isDesktop(context)
-        ? 600.0
-        : MediaQuery.of(context).size.width;
-    return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Container(
-        width: width - 150,
-        child: RichText(
-          textScaleFactor: MediaQuery.of(context).textScaleFactor,
-          text: TextSpan(
-            children: [
-              TextSpan(
-                  text: title + '\n',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: titleColor,
-                  )),
-              TextSpan(
-                text: subTitle,
-                style: TextStyle(fontSize: 12, color: subTitleColor),
-              ),
-            ],
-          ),
-          textAlign: TextAlign.start,
+    return ListTile(
+      title: RichText(
+        textScaleFactor: MediaQuery.of(context).textScaleFactor,
+        text: TextSpan(
+          children: [
+            TextSpan(
+                text: title + '\n',
+                style: TextStyle(
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
+                  color: titleColor,
+                )),
+            TextSpan(
+              text: subTitle,
+              style: TextStyle(
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+                  color: subTitleColor),
+            ),
+          ],
+        ),
+        textAlign: TextAlign.start,
+      ),
+      trailing: RawMaterialButton(
+        shape: CircleBorder(),
+        onPressed: onPressed,
+        child: Icon(
+          icon,
+          size: ResponsiveHelper.responsiveFontSize(context, 20.0),
+          color: titleColor,
         ),
       ),
-      Transform.scale(
-        scale: 1,
-        child: RawMaterialButton(
-          shape: CircleBorder(),
-          onPressed: onPressed,
-          child: icon,
-        ),
-      )
-    ]);
+      onTap: onPressed,
+    );
   }
 }

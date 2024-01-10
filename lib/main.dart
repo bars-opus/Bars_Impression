@@ -1,20 +1,53 @@
+import 'package:bars/general/models/timstamp_adapter.dart';
 import 'package:bars/utilities/exports.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:hive_flutter/adapters.dart';
 
-Future<void> _backgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
+Future<void> initializeApp() async {
+  try {
+    await Firebase.initializeApp();
+    await FirebaseAppCheck.instance.activate();
+
+    // Bars.prefs = await SharedPreferences.getInstance();
+  } catch (e) {}
+}
+
+Future<void> _backgroundHandler(message) async {
+  // Only initialize Firebase if necessary
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp();
+  }
+  // Handle your background message here
 }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  await FirebaseAppCheck.instance.activate();
+  await initializeApp();
 
   FirebaseMessaging.onBackgroundMessage(_backgroundHandler);
-  Bars.prefs = await SharedPreferences.getInstance();
+
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  await Hive.initFlutter();
+  Hive.registerAdapter(ChatMessageAdapter());
+  Hive.registerAdapter(SendContentMessageAdapter());
+  Hive.registerAdapter(ReplyToMessageAdapter());
+  Hive.registerAdapter(MessageAttachmentAdapter());
+  Hive.registerAdapter(TimestampAdapter());
+  Hive.registerAdapter(ChatAdapter());
+  Hive.registerAdapter(EventRoomAdapter());
+  Hive.registerAdapter(TicketIdModelAdapter());
+  Hive.registerAdapter(AccountHolderAuthorAdapter());
+    Hive.registerAdapter(UserSettingsLoadingPreferenceModelAdapter());
+
+  await Hive.openBox<ChatMessage>('chatMessages');
+  await Hive.openBox<Chat>('chats');
+  await Hive.openBox<EventRoom>('eventRooms');
+  await Hive.openBox<TicketIdModel>('ticketIds');
+  await Hive.openBox<AccountHolderAuthor>('accountHolderAuthor');
+    await Hive.openBox<AccountHolderAuthor>('currentUser');
+
+  await Hive.openBox<UserSettingsLoadingPreferenceModel>(
+      'accountLocationPreference');
+
   runApp(ConfigPage());
 }

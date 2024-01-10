@@ -1,16 +1,16 @@
 import 'package:bars/utilities/exports.dart';
 
 class NoContents extends StatelessWidget {
-   final String title;
-   final String subTitle;
-   final IconData icon;
-   final Color color;
+  final String title;
+  final String subTitle;
+  final IconData? icon;
+  final Color color;
 
   NoContents({
     required this.title,
     required this.subTitle,
     required this.icon,
-     this.color = Colors.grey,
+    this.color = Colors.grey,
   });
 
   @override
@@ -20,28 +20,16 @@ class NoContents extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: color, width: 2)),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Icon(
-                icon,
-                color: color,
-                size: 50.0,
-              ),
+          if (icon != null)
+            Icon(
+              icon,
+              color: color,
+              size: ResponsiveHelper.responsiveHeight(context, 50.0),
             ),
-          ),
           SizedBox(height: 10),
           Text(
             title,
-            style: TextStyle(
-                color: ConfigBloc().darkModeOn
-                    ? Color(0xFFf2f2f2)
-                    : Color(0xFF1a1a1a),
-                fontSize: 16.0,
-                height: 1),
+            style: Theme.of(context).textTheme.bodyLarge,
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 3),
@@ -49,7 +37,7 @@ class NoContents extends StatelessWidget {
             padding: const EdgeInsets.only(left: 30.0, right: 30),
             child: Text(
               subTitle,
-              style: TextStyle(color: Colors.grey, fontSize: 12.0, height: 1),
+              style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
           ),

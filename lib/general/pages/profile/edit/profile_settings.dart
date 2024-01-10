@@ -1,8 +1,9 @@
 import 'package:bars/utilities/exports.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:timeago/timeago.dart' as timeago;
+import 'package:hive_flutter/hive_flutter.dart';
 
 class ProfileSettings extends StatefulWidget {
-  final AccountHolder user;
+  final AccountHolderAuthor user;
 
   ProfileSettings({
     required this.user,
@@ -13,176 +14,85 @@ class ProfileSettings extends StatefulWidget {
 }
 
 class _ProfileSettingsState extends State<ProfileSettings> {
-  bool _disableChat = false;
-  bool _disableAdvice = false;
-  bool _hideAdvice = false;
-  bool _noBooking = false;
-  bool _isLoading = false;
+  bool _isLoadingGeneralSettins = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _disableChat = widget.user.disableChat!;
-    _disableAdvice = widget.user.disableAdvice!;
-    _hideAdvice = widget.user.hideAdvice!;
-    _noBooking = widget.user.noBooking!;
-  }
-
-  _showSelectImageDialog() {
-    return Platform.isIOS ? _iosBottomSheet() : _androidDialog(context);
-  }
-
-  _iosBottomSheet() {
-    showCupertinoModalPopup(
-        context: context,
-        builder: (BuildContext context) {
-          return CupertinoActionSheet(
-            title: Text(
-              'Are you sure you want to log out of this account?',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.black,
-              ),
-            ),
-            actions: <Widget>[
-              CupertinoActionSheetAction(
-                child: Text(
-                  'Log Out',
-                  style: TextStyle(
-                    color: Colors.blue,
-                  ),
-                ),
-                onPressed: () {
-                  _logOutUser(context);
-                },
-              )
-            ],
-            cancelButton: CupertinoActionSheetAction(
-              child: Text(
-                'Cancle',
-                style: TextStyle(
-                  color: Colors.red,
-                ),
-              ),
-              onPressed: () => Navigator.pop(context),
-            ),
-          );
-        });
-  }
-
-  _androidDialog(BuildContext parentContext) {
-    return showDialog(
-        context: parentContext,
-        builder: (context) {
-          return SimpleDialog(
-            title: Text(
-              'Are you sure you want to log out of this account?',
-              style: TextStyle(fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            children: <Widget>[
-              Divider(),
-              Center(
-                child: SimpleDialogOption(
-                  child: Text(
-                    'Log Out',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.blue),
-                    textAlign: TextAlign.center,
-                  ),
-                  onPressed: () {
-                    _logOutUser(context);
-                  },
-                ),
-              ),
-              Divider(),
-              Center(
-                child: SimpleDialogOption(
-                  child: Text(
-                    'Cancel',
-                  ),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ),
-            ],
-          );
-        });
+  void _showBottomSheetErrorMessage(String error) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return DisplayErrorHandler(
+          buttonText: 'Ok',
+          onPressed: () async {
+            Navigator.pop(context);
+          },
+          title: 'Failed to log out',
+          subTitle: error,
+        );
+      },
+    );
   }
 
   static final _auth = FirebaseAuth.instance;
-  static void _logOutUser(BuildContext context) async {
+  void _logOutUser(BuildContext context) async {
     try {
-      Flushbar(
-        maxWidth: MediaQuery.of(context).size.width,
-        backgroundColor: Color(0xFF1a1a1a),
-        margin: EdgeInsets.all(8),
-        showProgressIndicator: true,
-        progressIndicatorBackgroundColor: Color(0xFF1a1a1a),
-        progressIndicatorValueColor: AlwaysStoppedAnimation(Colors.blue),
-        flushbarPosition: FlushbarPosition.TOP,
-        boxShadows: [
-          BoxShadow(
-            color: Colors.black,
-            offset: Offset(0.0, 2.0),
-            blurRadius: 3.0,
-          )
-        ],
-        titleText: Text(
-          'Loging Out',
-          style: TextStyle(color: Colors.white),
-        ),
-        messageText: Text(
-          "Please wait...",
-          style: TextStyle(color: Colors.white),
-        ),
-        duration: Duration(seconds: 3),
-      )..show(context);
+      if (Hive.isBoxOpen('chatMessages')) {
+        final box = Hive.box<ChatMessage>('chatMessages');
+        await box.clear();
+      } else {
+        final box = await Hive.openBox<ChatMessage>('chatMessages');
+        await box.clear();
+      }
+
+      if (Hive.isBoxOpen('accountHolderAuthor')) {
+        final box = Hive.box<AccountHolderAuthor>('accountHolderAuthor');
+        await box.clear();
+      } else {
+        final box =
+            await Hive.openBox<AccountHolderAuthor>('accountHolderAuthor');
+        await box.clear();
+      }
+
+      if (Hive.isBoxOpen('currentUser')) {
+        final box = Hive.box<AccountHolderAuthor>('currentUser');
+        await box.clear();
+      } else {
+        final box = await Hive.openBox<AccountHolderAuthor>('currentUser');
+        await box.clear();
+      }
+
+      if (Hive.isBoxOpen('accountLocationPreference')) {
+        final box = Hive.box<UserSettingsLoadingPreferenceModel>(
+            'accountLocationPreference');
+        await box.clear();
+      } else {
+        final box = await Hive.openBox<UserSettingsLoadingPreferenceModel>(
+            'accountLocationPreference');
+        await box.clear();
+      }
+
+      usersGeneralSettingsRef.doc(widget.user.userId).update({
+        'androidNotificationToken': '',
+      });
 
       await _auth.signOut();
-      Navigator.pushReplacementNamed(context, WelcomeScreen.id);
+      HapticFeedback.lightImpact();
+      mySnackBar(context, 'Logged Out');
+      // Navigator.pushReplacementNamed(context, WelcomeScreen.id);
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => WelcomeScreen()),
+          (Route<dynamic> route) => false);
     } catch (e) {
       String error = e.toString();
       String result = error.contains(']')
           ? error.substring(error.lastIndexOf(']') + 1)
           : error;
-      Flushbar(
-        maxWidth: MediaQuery.of(context).size.width,
-        backgroundColor: Color(0xFF1a1a1a),
-        margin: EdgeInsets.all(8),
-        flushbarPosition: FlushbarPosition.TOP,
-        flushbarStyle: FlushbarStyle.FLOATING,
-        titleText: Text(
-          'Log Out Failed',
-          style: TextStyle(color: Colors.white),
-        ),
-        messageText: Container(
-            child: Text(
-          result.toString(),
-          style: TextStyle(color: Colors.white),
-        )),
-        icon: Icon(Icons.info_outline, size: 28.0, color: Colors.blue),
-        mainButton: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.transparent,
-          ),
-          onPressed: () => Navigator.pop(context),
-          child: Text("Ok",
-              style: TextStyle(
-                color: Colors.blue,
-              )),
-        ),
-        leftBarIndicatorColor: Colors.blue,
-      )..show(context);
-      print(e.toString());
+      _showBottomSheetErrorMessage(result);
     }
   }
 
   Future<void> _sendMail(String url) async {
-    final double width = Responsive.isDesktop(
-      context,
-    )
-        ? 600.0
-        : MediaQuery.of(context).size.width;
     if (await canLaunchUrl(
       Uri.parse(url),
     )) {
@@ -190,541 +100,546 @@ class _ProfileSettingsState extends State<ProfileSettings> {
         Uri.parse(url),
       ));
     } else {
-      Flushbar(
-        margin: EdgeInsets.all(8),
-        boxShadows: [
-          BoxShadow(
-            color: Colors.black,
-            offset: Offset(0.0, 2.0),
-            blurRadius: 3.0,
-          )
-        ],
-        flushbarPosition: FlushbarPosition.TOP,
-        flushbarStyle: FlushbarStyle.FLOATING,
-        titleText: Text(
-          'Sorry',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: width > 800 ? 22 : 14,
-          ),
-        ),
-        messageText: Text(
-          'Could\'nt launch mail',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: width > 800 ? 20 : 12,
-          ),
-        ),
-        icon: Icon(
-          Icons.info_outline,
-          size: 28.0,
-          color: Colors.blue,
-        ),
-        duration: Duration(seconds: 3),
-        leftBarIndicatorColor: Colors.blue,
-      )..show(context);
+      mySnackBar(context, 'Could not launch mail');
     }
   }
 
-  _dynamicLink() async {
-    var linkUrl = widget.user.profileImageUrl!.isEmpty
-        ? Uri.parse(
-            'https://firebasestorage.googleapis.com/v0/b/bars-5e3e5.appspot.com/o/IMG_8574.PNG?alt=media&token=ccb4e3b1-b5dc-470f-abd0-63edb5ed549f')
-        : Uri.parse(widget.user.profileImageUrl!);
-
-    final dynamicLinkParams = DynamicLinkParameters(
-      socialMetaTagParameters: SocialMetaTagParameters(
-        imageUrl: linkUrl,
-        title: widget.user.userName,
-        description: widget.user.bio,
-      ),
-      link: Uri.parse('https://www.barsopus.com/user_${widget.user.id}'),
-      uriPrefix: 'https://barsopus.com/barsImpression',
-      androidParameters:
-          AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
-      iosParameters: IOSParameters(
-        bundleId: 'com.bars-Opus.barsImpression',
-        appStoreId: '1610868894',
-      ),
+  void _showBottomSheetLogOut(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return ConfirmationPrompt(
+          buttonText: 'Log Out',
+          onPressed: () {
+            _logOutUser(context);
+          },
+          title: 'Are you sure you want to log out of this account?',
+          subTitle: '',
+        );
+      },
     );
-    var link =
-        await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+  }
 
-    Share.share(link.shortUrl.toString());
-    // if (Platform.isIOS) {
-    //   var link =
-    //       await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
-    //   Share.share(link.toString());
-    // } else {
-    //   var link =
-    //       await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
-    //   Share.share(link.shortUrl.toString());
-    // }
+  _aboutBars() {
+    showAboutDialog(
+        context: context,
+        applicationName: 'Bars Impression',
+        applicationVersion: 'Version 1.3.5',
+        applicationIcon: Container(
+          width: 40,
+          height: 40,
+          child: Image.asset(
+            'assets/images/barsw.png',
+            color: Colors.black,
+          ),
+        ),
+        children: [
+          Column(children: <Widget>[
+            RichText(
+                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                        text: "Version Release Date: August 2023\n",
+                        style: TextStyle(
+                          fontSize: ResponsiveHelper.responsiveFontSize(
+                              context, 14.0),
+                          color: Colors.black,
+                        )),
+                    TextSpan(
+                        text: "Language: English.",
+                        style: TextStyle(
+                          fontSize: ResponsiveHelper.responsiveFontSize(
+                              context, 14.0),
+                          color: Colors.black,
+                        )),
+                  ],
+                )),
+          ])
+        ]);
+  }
+
+  void _showBottomSheetAboutUs(BuildContext contextm) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          height: MediaQuery.of(context).size.height.toDouble() / 1.2,
+          decoration: BoxDecoration(
+              color: Color(0xFF1a1a1a),
+              borderRadius: BorderRadius.circular(30)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              const SizedBox(
+                height: 20.0,
+              ),
+              ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.asset('assets/images/barsw.png',
+                      height: 50, width: 50, fit: BoxFit.cover)),
+              SizedBox(height: 50),
+              Divider(
+                color: Colors.grey,
+              ),
+              Material(
+                color: Colors.transparent,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => MyWebView(
+                                  url: 'https://www.barsopus.com/contact',
+                                  title: '',
+                                )));
+                  },
+                  child: Text(
+                    'Contact us',
+                    style: TextStyle(
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 14.0),
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Divider(
+                  color: Colors.grey,
+                ),
+              ),
+              Material(
+                color: Colors.transparent,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => MyWebView(
+                                  url: 'https://www.barsopus.com/terms-of-use',
+                                  title: '',
+                                )));
+                  },
+                  child: Text(
+                    'Terms of use',
+                    style: TextStyle(
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 14.0),
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Divider(
+                  color: Colors.grey,
+                ),
+              ),
+              Material(
+                color: Colors.transparent,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => MyWebView(
+                                  title: '',
+                                  url: 'https://www.barsopus.com/privacy',
+                                )));
+                  },
+                  child: Text(
+                    'Privacy policies',
+                    style: TextStyle(
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 14.0),
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Divider(
+                  color: Colors.grey,
+                ),
+              ),
+              Material(
+                color: Colors.transparent,
+                child: GestureDetector(
+                  onTap: _aboutBars,
+                  child: Text(
+                    'App info',
+                    style: TextStyle(
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 14.0),
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Divider(
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 100),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.copyright,
+                    size: 15,
+                    color: Colors.white,
+                  ),
+                  Text(
+                    ' BARS OPUS LTD',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 12.0),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  _accountRegistryInfo() {
+    var _userLocation =
+        Provider.of<UserData>(context, listen: false).userLocationPreference;
+    return RichText(
+      textScaleFactor: MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5),
+      text: TextSpan(
+        children: [
+          TextSpan(
+            text: 'You registered your account on \n',
+          ),
+          TextSpan(
+            text: MyDateFormat.toDate(_userLocation!.timestamp!.toDate()),
+          ),
+          TextSpan(
+            text: ', at ${MyDateFormat.toTime(
+              _userLocation.timestamp!.toDate(),
+            )}.',
+          ),
+          TextSpan(
+            text: '\n' +
+                timeago.format(
+                  _userLocation.timestamp!.toDate(),
+                ),
+          ),
+        ],
+        style: TextStyle(
+          fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+          color: Colors.grey,
+        ),
+      ),
+      textAlign: TextAlign.center,
+    );
+  }
+
+  _divider() {
+    return Container(
+      color: Colors.grey,
+      height: 0.5,
+    );
+  }
+
+  _settingCategoryColumn(Widget widget) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(
+                right: 10.0, top: 10, bottom: 10, left: 30),
+            child: widget,
+          )),
+    );
+  }
+
+  void _navigateToPage(BuildContext context, Widget page) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => page),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveScaffold(
-      child: Scaffold(
-          backgroundColor:
-              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-          appBar: AppBar(
-            iconTheme: IconThemeData(
-              color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-            ),
-            automaticallyImplyLeading: true,
-            elevation: 0,
-            backgroundColor:
-                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-            title: Text(
-              'Account Settings',
-              style: TextStyle(
-                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-            ),
-            centerTitle: true,
+    return EditProfileScaffold(
+      title: 'Account Settings',
+      widget: Column(
+        children: [
+          const SizedBox(
+            height: 20,
           ),
-          body: SafeArea(
-            child: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
-              child: ListView(
-                children: [
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Container(
-                    color: Colors.grey,
-                    height: 0.5,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              right: 10.0, top: 10, bottom: 10, left: 30),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              SettingSwitch(
-                                title: 'Disable Chat',
-                                subTitle: 'Other users can\'t chat with you.',
-                                value: _disableChat,
-                                onChanged: (value) => setState(
-                                  () {
-                                    _disableChat = this._disableChat = value;
-                                    usersRef
-                                        .doc(
-                                      widget.user.id,
-                                    )
-                                        .update({
-                                      'disableChat': _disableChat,
-                                    });
-                                    usersAuthorRef
-                                        .doc(
-                                      widget.user.id,
-                                    )
-                                        .update({
-                                      'disableChat': _disableChat,
-                                    });
-                                  },
-                                ),
-                              ),
-                              // widget.user.profileHandle!.startsWith('Fan')
-                              //     ? const SizedBox.shrink()
-                              //     : Divider(color: Colors.grey),
-                              // widget.user.profileHandle!.startsWith('Fan')
-                              //     ? const SizedBox.shrink()
-                              //     : SettingSwitch(
-                              //         title: 'Disable Advice',
-                              //         subTitle:
-                              //             'Other users can\'t leave advice but can read previously sent advice.',
-                              //         value: _disableAdvice,
-                              //         onChanged: (value) => setState(
-                              //           () {
-                              //             _disableAdvice =
-                              //                 this._disableAdvice = value;
-                              //             usersRef
-                              //                 .doc(
-                              //               widget.user.id,
-                              //             )
-                              //                 .update({
-                              //               'disableAdvice': _disableAdvice,
-                              //             });
-                              //           },
-                              //         ),
-                              //       ),
-                              // widget.user.profileHandle!.startsWith('Fan')
-                              //     ? const SizedBox.shrink()
-                              //     : Divider(color: Colors.grey),
-                              // widget.user.profileHandle!.startsWith('Fan')
-                              //     ? const SizedBox.shrink()
-                              //     : SettingSwitch(
-                              //         title: 'Hide Advices',
-                              //         subTitle:
-                              //             'Other users can\'t read your advice but can still send new advice.',
-                              //         value: _hideAdvice,
-                              //         onChanged: (value) => setState(
-                              //           () {
-                              //             _hideAdvice =
-                              //                 this._hideAdvice = value;
-                              //             usersRef
-                              //                 .doc(
-                              //               widget.user.id,
-                              //             )
-                              //                 .update({
-                              //               'hideAdvice': _hideAdvice,
-                              //             });
-                              //           },
-                              //         ),
-                              //       ),
-                              widget.user.profileHandle!.startsWith('Fan')
-                                  ? const SizedBox.shrink()
-                                  : Divider(color: Colors.grey),
-                              widget.user.profileHandle!.startsWith('Fan')
-                                  ? const SizedBox.shrink()
-                                  : SettingSwitch(
-                                      title: 'Not Avaliable For Booking',
-                                      subTitle: 'Other users can\'t book you.',
-                                      value: _noBooking,
-                                      onChanged: (value) => setState(
-                                        () {
-                                          _noBooking = this._noBooking = value;
-                                          usersRef
-                                              .doc(
-                                            widget.user.id,
-                                          )
-                                              .update({
-                                            'noBooking': _noBooking,
-                                          });
-                                        },
-                                      ),
-                                    ),
-                            ],
-                          ),
-                        )),
-                  ),
-                  Container(
-                    color: Colors.grey,
-                    height: 0.5,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              right: 10.0, top: 10, bottom: 10, left: 30),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              GestureDetector(
-                                onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => BlockedAccounts(),
-                                    )),
-                                child: IntroInfo(
-                                  titleColor: ConfigBloc().darkModeOn
-                                      ? Color(0xFFf2f2f2)
-                                      : Color(0xFF1a1a1a),
-                                  title: 'Blocked Accounts',
-                                  onPressed: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => BlockedAccounts(),
-                                      )),
-                                  subTitle: "Accounts you have blocked.",
-                                  icon: Icon(
-                                    Icons.block_rounded,
-                                    size: 20,
-                                    color: ConfigBloc().darkModeOn
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                ),
-                              ),
-                              Divider(color: Colors.grey),
-                              GestureDetector(
-                                onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => DeleteAccount(
-                                              user: widget.user,
-                                            ))),
-                                child: IntroInfo(
-                                  titleColor: ConfigBloc().darkModeOn
-                                      ? Colors.white
-                                      : Colors.black,
-                                  title: 'Delete Account',
-                                  onPressed: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (_) => DeleteAccount(
-                                                user: widget.user,
-                                              ))),
-                                  subTitle: "Delete your user account",
-                                  icon: Icon(
-                                    Icons.delete_outline_outlined,
-                                    size: 20,
-                                    color: ConfigBloc().darkModeOn
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )),
-                  ),
-                  Container(
-                    color: Colors.grey,
-                    height: 0.5,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              right: 10.0, top: 10, bottom: 10, left: 30),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              GestureDetector(
-                                onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => ProfileVerification(
-                                        user: widget.user,
-                                      ),
-                                    )),
-                                child: IntroInfo(
-                                  title: widget.user.verified!.isNotEmpty
-                                      ? 'Verified account'
-                                      : 'Request Verification',
-                                  onPressed: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => ProfileVerification(
-                                          user: widget.user,
-                                        ),
-                                      )),
-                                  subTitle: widget.user.verified!.isNotEmpty
-                                      ? 'Your account has been verified'
-                                      : "Verify your account",
-                                  icon: Icon(
-                                    MdiIcons.checkboxMarkedCircle,
-                                    size: 20,
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                              ),
-                              Divider(color: Colors.grey),
-                              GestureDetector(
-                                onTap: () => _dynamicLink(),
-                                child: IntroInfo(
-                                  title: 'Share Account',
-                                  onPressed: () => _dynamicLink(),
-                                  subTitle:
-                                      "Share your account with other people.",
-                                  icon: Icon(
-                                    Icons.share,
-                                    color: Colors.blue,
-                                    size: 20,
-                                  ),
-                                ),
-                              ),
-                              Divider(color: Colors.grey),
-                              GestureDetector(
-                                onTap: () => _dynamicLink(),
-                                child: IntroInfo(
-                                  title: 'Invite people',
-                                  onPressed: () => _dynamicLink(),
-                                  subTitle:
-                                      "Invite your friends and other music creatives to use Bars impression.",
-                                  icon: Icon(
-                                    Icons.people,
-                                    color: Colors.blue,
-                                    size: 20,
-                                  ),
-                                ),
-                              ),
-                              Divider(color: Colors.grey),
-                              GestureDetector(
-                                onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => FeatureSurvey())),
-                                child: IntroInfo(
-                                  onPressed: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (_) => FeatureSurvey())),
-                                  title: 'Take a Survey',
-                                  subTitle:
-                                      "Take a survey and let us know what you think about Bars Impression.",
-                                  icon: Icon(
-                                    Icons.arrow_forward_ios_outlined,
-                                    color: Colors.blue,
-                                    size: 20,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )),
-                  ),
-                  Container(
-                    color: Colors.grey,
-                    height: 0.5,
-                  ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 60.0, bottom: 40),
-                      child: Container(
-                        width: 250.0,
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.blue,
-                            side: BorderSide(width: 1.0, color: Colors.blue),
-                          ),
-                          child: Hero(
-                            tag: 'logout',
-                            child: Material(
-                              color: Colors.transparent,
-                              child: Text(
-                                'Log Out',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                ),
-                              ),
-                            ),
-                          ),
-                          onPressed: _showSelectImageDialog,
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 40),
-                  IconButton(
-                    icon: Icon(Icons.close),
-                    iconSize: 30.0,
-                    color: ConfigBloc().darkModeOn
-                        ? Color(0xFFf2f2f2)
-                        : Color(0xFF1a1a1a),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  const SizedBox(
-                    height: 50.0,
-                  ),
-                  Center(
-                    child: GestureDetector(
-                      onTap: () => Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => AboutUs())),
-                      child: Text(
-                        'About Us.',
-                        style: TextStyle(color: Colors.blue),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Center(
-                    child: GestureDetector(
-                      onTap: () => setState(() {
-                        _sendMail('mailto:support@barsopus.com');
-                      }),
-                      child: Text(
-                        'Contact us',
-                        style: TextStyle(color: Colors.blue),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 70),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => MyWebView(
-                                    url: 'https://www.barsopus.com/',
-                                  )));
-                    },
-                    child: Text(
-                      '          BARS IMPRESSION',
-                      style: TextStyle(
-                        color: Colors.blueGrey,
-                        fontSize: 11,
-                        // letterSpacing: 7,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => MyWebView(
-                                    url: 'https://www.barsopus.com/',
-                                  )));
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.copyright,
-                          size: 15,
-                          color: Colors.blueGrey,
-                        ),
-                        Text(
-                          ' BARS OPUS LTD',
-                          style: TextStyle(
-                            color: Colors.blueGrey,
-                            fontSize: 11.0,
-                            // fontWeight: FontWeight.w100,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
+          _divider(),
+          _settingCategoryColumn(
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                IntroInfo(
+                  titleColor: Theme.of(context).secondaryHeaderColor,
+                  title: 'Notification settings',
+                  onPressed: () async {
+                    if (_isLoadingGeneralSettins) return;
+                    _isLoadingGeneralSettins = true;
+                    try {
+                      UserSettingsGeneralModel? userGeneralSettings =
+                          await DatabaseService.getUserGeneralSettingWithId(
+                        widget.user.userId!,
+                      );
 
-                    // Text(
-                    //   'from Bars Opus',
-                    //   style: TextStyle(
-                    //     color: Colors.blueGrey,
-                    //     fontSize: 10,
-                    //   ),
-                    //   textAlign: TextAlign.center,
-                    // ),
-                  ),
-                  const SizedBox(
-                    height: 50.0,
-                  ),
-                  _isLoading
-                      ? SizedBox(
-                          height: 2.0,
-                          child: LinearProgressIndicator(
-                            backgroundColor: Colors.grey[100],
-                            valueColor: AlwaysStoppedAnimation(Colors.blue),
+                      if (userGeneralSettings != null) {
+                        _navigateToPage(
+                          context,
+                          ProfileSettingsNotification(
+                            userGeneralSettings: userGeneralSettings,
                           ),
-                        )
-                      : const SizedBox.shrink()
-                ],
+                        );
+                      } else {
+                        _showBottomSheetErrorMessage(
+                            'Failed to fetch user general settings.');
+                      }
+                    } catch (e) {
+                      _showBottomSheetErrorMessage(
+                          'Failed to fetch booking data.');
+                    } finally {
+                      _isLoadingGeneralSettins = false;
+                    }
+                  },
+                  subTitle: "Accounts you have blocked.",
+                  icon: Icons.arrow_forward_ios_outlined,
+                ),
+                Divider(
+                  color: Colors.grey,
+                ),
+                IntroInfo(
+                  titleColor: Theme.of(context).secondaryHeaderColor,
+                  title: 'Refunds',
+                  onPressed: () {
+                    _navigateToPage(
+                      context,
+                      UserRefunds(
+                        currentUserId: widget.user.userId!,
+                      ),
+                    );
+                  },
+                  subTitle: "Refund for tickets.",
+                  icon: Icons.arrow_forward_ios_outlined,
+                ),
+                Divider(
+                  color: Colors.grey,
+                ),
+                IntroInfo(
+                  titleColor: Theme.of(context).secondaryHeaderColor,
+                  title: 'Blocked Accounts',
+                  onPressed: () {
+                    _navigateToPage(
+                      context,
+                      BlockedAccounts(),
+                    );
+                  },
+                  subTitle: "Accounts you have blocked.",
+                  icon: Icons.arrow_forward_ios_outlined,
+                ),
+                Divider(
+                  color: Colors.grey,
+                ),
+                IntroInfo(
+                  titleColor: Theme.of(context).secondaryHeaderColor,
+                  title: 'Delete Account',
+                  onPressed: () {
+                    _navigateToPage(
+                        context,
+                        DeleteAccount(
+                          user: widget.user,
+                        ));
+                  },
+                  subTitle: "Delete your user account",
+                  icon: Icons.delete_outline,
+                ),
+              ],
+            ),
+          ),
+          _divider(),
+          _settingCategoryColumn(
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () {},
+                  child: IntroInfo(
+                    title: 'Share Account',
+                    onPressed: () {
+                      Share.share(widget.user.dynamicLink!);
+                    },
+                    subTitle: "Share your account with other people.",
+                    icon: Icons.share,
+                  ),
+                ),
+                Divider(color: Colors.grey),
+                GestureDetector(
+                  onTap: () {},
+                  child: IntroInfo(
+                    title: 'Invite people',
+                    onPressed: () {
+                      Share.share(widget.user.dynamicLink!);
+                    },
+                    subTitle:
+                        "Invite your friends and other music creatives to use Bars impression.",
+                    icon: Icons.people,
+                  ),
+                ),
+                Divider(color: Colors.grey),
+                GestureDetector(
+                  onTap: () => _navigateToPage(context, FeatureSurvey()),
+                  child: IntroInfo(
+                    onPressed: () => _navigateToPage(context, FeatureSurvey()),
+                    title: 'Take a Survey',
+                    subTitle:
+                        "Take a survey and let us know what you think about Bars Impression.",
+                    icon: Icons.arrow_forward_ios_outlined,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          _divider(),
+          const SizedBox(height: 30),
+          _accountRegistryInfo(),
+          Align(
+            alignment: Alignment.center,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 60.0, bottom: 40),
+              child: BlueOutlineButton(
+                buttonText: 'Log Out',
+                onPressed: () {
+                  _showBottomSheetLogOut(
+                    context,
+                  );
+                },
               ),
             ),
-          )),
+          ),
+          const SizedBox(height: 40),
+          IconButton(
+            icon: Icon(Icons.close),
+            iconSize: 30.0,
+            color: Colors.grey,
+            onPressed: () => Navigator.pop(context),
+          ),
+          const SizedBox(
+            height: 50.0,
+          ),
+          Center(
+            child: GestureDetector(
+              onTap: () {
+                HapticFeedback.mediumImpact();
+                _showBottomSheetAboutUs(
+                  context,
+                );
+              },
+              child: Text(
+                'About Us.',
+                style: TextStyle(
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 14.0),
+                    color: Colors.blue),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Center(
+            child: GestureDetector(
+              onTap: () => setState(() {
+                _sendMail('mailto:support@barsopus.com');
+              }),
+              child: Text(
+                'Contact us',
+                style: TextStyle(
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 14.0),
+                    color: Colors.blue),
+              ),
+            ),
+          ),
+          const SizedBox(height: 70),
+          GestureDetector(
+            onTap: () {
+              _navigateToPage(
+                  context,
+                  MyWebView(
+                    url: 'https://www.barsopus.com/',
+                    title: '',
+                  ));
+            },
+            child: Text(
+              '          BARS IMPRESSION',
+              style: TextStyle(
+                color: Colors.blueGrey,
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 11.0),
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              _navigateToPage(
+                  context,
+                  MyWebView(
+                    url: 'https://www.barsopus.com/',
+                    title: '',
+                  ));
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.copyright,
+                  size: 15,
+                  color: Colors.blueGrey,
+                ),
+                Text(
+                  ' BARS OPUS LTD',
+                  style: TextStyle(
+                    color: Colors.blueGrey,
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 11.0),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(
+            height: 50,
+          ),
+        ],
+      ),
     );
   }
 }

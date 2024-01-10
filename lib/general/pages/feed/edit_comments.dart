@@ -116,46 +116,67 @@ class _EditCommentsState extends State<EditComments> {
         comment: comment,
         post: widget.post);
     Navigator.pop(context);
-    final double width = MediaQuery.of(context).size.width;
-    Flushbar(
-      margin: EdgeInsets.all(8),
-      boxShadows: [
-        BoxShadow(
-          color: Colors.black,
-          offset: Offset(0.0, 2.0),
-          blurRadius: 3.0,
-        )
-      ],
-      flushbarPosition: FlushbarPosition.TOP,
-      flushbarStyle: FlushbarStyle.FLOATING,
-      titleText: Text(
-        'Done!!',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: width > 800 ? 22 : 14,
-        ),
-      ),
-      messageText: Text(
-        "Deleted successfully",
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: width > 800 ? 20 : 12,
-        ),
-      ),
-      icon: Icon(
-        Icons.info_outline,
-        size: 28.0,
-        color: Colors.blue,
-      ),
-      duration: Duration(seconds: 1),
-      leftBarIndicatorColor: Colors.blue,
-    )..show(context);
+    mySnackBar(context, 'Deleted successfully');
+
+    // final double width = MediaQuery.of(context).size.width;
+    // Flushbar(
+    //   margin: EdgeInsets.all(8),
+    //   boxShadows: [
+    //     BoxShadow(
+    //       color: Colors.black,
+    //       offset: Offset(0.0, 2.0),
+    //       blurRadius: 3.0,
+    //     )
+    //   ],
+    //   flushbarPosition: FlushbarPosition.TOP,
+    //   flushbarStyle: FlushbarStyle.FLOATING,
+    //   titleText: Text(
+    //     'Done!!',
+    //     style: TextStyle(
+    //       color: Colors.white,
+    //       fontSize: width > 800 ? 22 : 14,
+    //     ),
+    //   ),
+    //   messageText: Text(
+    //     "Deleted successfully",
+    //     style: TextStyle(
+    //       color: Colors.white,
+    //       fontSize: width > 800 ? 20 : 12,
+    //     ),
+    //   ),
+    //   icon: Icon(
+    //     Icons.info_outline,
+    //     size: 28.0,
+    //     color: Colors.blue,
+    //   ),
+    //   duration: Duration(seconds: 1),
+    //   leftBarIndicatorColor: Colors.blue,
+    // )..show(context);
+  }
+
+  void _showBottomSheetErrorMessage() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return DisplayErrorHandler(
+          buttonText: 'Ok',
+          onPressed: () async {
+            Navigator.pop(context);
+          },
+          title: "Failed to edit comment",
+          subTitle: 'Please check your internet connection and try again.',
+        );
+      },
+    );
   }
 
   _submit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState?.save();
-      AccountHolder user = Provider.of<UserData>(context, listen: false).user!;
+      AccountHolderAuthor user =
+          Provider.of<UserData>(context, listen: false).user!;
       Comment comment = Comment(
         id: widget.comment.id,
         content: _content,
@@ -163,10 +184,10 @@ class _EditCommentsState extends State<EditComments> {
         timestamp: widget.comment.timestamp,
         report: '',
         reportConfirmed: '',
-        mediaType: '',
-        mediaUrl: '',
+        // mediaType: '',
+        // mediaUrl: '',
         authorName: user.userName!,
-        authorProfileHanlde: user.profileHandle!,
+        authorProfileHandle: user.profileHandle!,
         authorProfileImageUrl: user.profileImageUrl!,
         authorVerification: '',
       );
@@ -174,46 +195,53 @@ class _EditCommentsState extends State<EditComments> {
       try {
         HapticFeedback.heavyImpact();
         Navigator.pop(context);
-        DatabaseService.editComments(comment, widget.post);
+        // DatabaseService.editComments(comment, widget.post);
       } catch (e) {
-        final double width = MediaQuery.of(context).size.width;
-        String error = e.toString();
-        String result = error.contains(']')
-            ? error.substring(error.lastIndexOf(']') + 1)
-            : error;
-        Flushbar(
-          margin: EdgeInsets.all(8),
-          boxShadows: [
-            BoxShadow(
-              color: Colors.black,
-              offset: Offset(0.0, 2.0),
-              blurRadius: 3.0,
-            )
-          ],
-          flushbarPosition: FlushbarPosition.TOP,
-          flushbarStyle: FlushbarStyle.FLOATING,
-          titleText: Text(
-            'Error',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: width > 800 ? 22 : 14,
-            ),
-          ),
-          messageText: Text(
-            result.toString(),
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: width > 800 ? 20 : 12,
-            ),
-          ),
-          icon: Icon(
-            Icons.info_outline,
-            size: 28.0,
-            color: Colors.blue,
-          ),
-          duration: Duration(seconds: 3),
-          leftBarIndicatorColor: Colors.blue,
-        )..show(context);
+        _showBottomSheetErrorMessage();
+        //            String error = e.toString();
+        // String result = error.contains(']')
+        //     ? error.substring(error.lastIndexOf(']') + 1)
+        //     : error;
+        // // print(result);
+        //       mySnackBar(context,'Request Failed\n$result.toString(),');
+        // final double width = MediaQuery.of(context).size.width;
+        // String error = e.toString();
+        // String result = error.contains(']')
+        //     ? error.substring(error.lastIndexOf(']') + 1)
+        //     : error;
+        // Flushbar(
+        //   margin: EdgeInsets.all(8),
+        //   boxShadows: [
+        //     BoxShadow(
+        //       color: Colors.black,
+        //       offset: Offset(0.0, 2.0),
+        //       blurRadius: 3.0,
+        //     )
+        //   ],
+        //   flushbarPosition: FlushbarPosition.TOP,
+        //   flushbarStyle: FlushbarStyle.FLOATING,
+        //   titleText: Text(
+        //     'Error',
+        //     style: TextStyle(
+        //       color: Colors.white,
+        //       fontSize: width > 800 ? 22 : 14,
+        //     ),
+        //   ),
+        //   messageText: Text(
+        //     result.toString(),
+        //     style: TextStyle(
+        //       color: Colors.white,
+        //       fontSize: width > 800 ? 20 : 12,
+        //     ),
+        //   ),
+        //   icon: Icon(
+        //     Icons.info_outline,
+        //     size: 28.0,
+        //     color: Colors.blue,
+        //   ),
+        //   duration: Duration(seconds: 3),
+        //   leftBarIndicatorColor: Colors.blue,
+        // )..show(context);
       }
     }
   }
@@ -224,7 +252,7 @@ class _EditCommentsState extends State<EditComments> {
       backgroundColor: Colors.cyan[600],
       appBar: AppBar(
         iconTheme: IconThemeData(
-          color: ConfigBloc().darkModeOn ? Colors.black : Colors.white,
+          color: Theme.of(context).secondaryHeaderColor,
         ),
         automaticallyImplyLeading: true,
         elevation: 0,
@@ -234,7 +262,7 @@ class _EditCommentsState extends State<EditComments> {
           child: Text(
             'Edit Vibe',
             style: TextStyle(
-                color: ConfigBloc().darkModeOn ? Colors.black : Colors.white,
+                color: Theme.of(context).secondaryHeaderColor,
                 fontSize: 20,
                 fontWeight: FontWeight.bold),
           ),
@@ -258,9 +286,7 @@ class _EditCommentsState extends State<EditComments> {
                       padding: const EdgeInsets.all(12.0),
                       child: Container(
                         decoration: BoxDecoration(
-                            color: ConfigBloc().darkModeOn
-                                ? Color(0xFF1a1a1a)
-                                : Colors.white,
+                            color: Theme.of(context).primaryColor,
                             borderRadius: BorderRadius.circular(10)),
                         child: Padding(
                           padding: EdgeInsets.symmetric(
@@ -276,9 +302,7 @@ class _EditCommentsState extends State<EditComments> {
                                 autofocus: true,
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: ConfigBloc().darkModeOn
-                                      ? Colors.white
-                                      : Colors.black,
+                                  color: Theme.of(context).secondaryHeaderColor,
                                 ),
                                 decoration: InputDecoration(
                                     hintText:
@@ -313,9 +337,7 @@ class _EditCommentsState extends State<EditComments> {
                       width: 250.0,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: ConfigBloc().darkModeOn
-                              ? Color(0xFF1a1a1a)
-                              : Colors.white,
+                          backgroundColor: Theme.of(context).primaryColor,
                           elevation: 20.0,
                           foregroundColor: Colors.blue,
                           shape: RoundedRectangleBorder(
@@ -334,9 +356,7 @@ class _EditCommentsState extends State<EditComments> {
                               style: TextStyle(
                                 fontSize: 16.0,
                                 fontWeight: FontWeight.bold,
-                                color: ConfigBloc().darkModeOn
-                                    ? Colors.white
-                                    : Colors.black,
+                                color: Theme.of(context).secondaryHeaderColor,
                               ),
                             ),
                           ],
@@ -351,9 +371,7 @@ class _EditCommentsState extends State<EditComments> {
                       onTap: () => _showSelectImageDialog(widget.comment),
                       child: Ink(
                         decoration: BoxDecoration(
-                          color: ConfigBloc().darkModeOn
-                              ? Color(0xFF1a1a1a)
-                              : Colors.white,
+                          color: Theme.of(context).primaryColor,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Container(
@@ -362,9 +380,7 @@ class _EditCommentsState extends State<EditComments> {
                           child: IconButton(
                               icon: Icon(Icons.delete_forever),
                               iconSize: 25,
-                              color: ConfigBloc().darkModeOn
-                                  ? Colors.white
-                                  : Colors.black,
+                              color: Theme.of(context).secondaryHeaderColor,
                               onPressed: () =>
                                   _showSelectImageDialog(widget.comment)),
                         ),

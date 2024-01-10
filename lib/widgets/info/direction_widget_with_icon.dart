@@ -51,8 +51,8 @@ class DirectionWidgetWithIcon extends StatelessWidget {
               child: Text(
                 text,
                 style: TextStyle(
-                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                  fontSize: fontSize,
+                  color: Theme.of(context).secondaryHeaderColor,
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, fontSize!,), 
                   fontWeight: fontWeight,
                 ),
               ),

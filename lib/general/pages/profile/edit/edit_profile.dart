@@ -1,8 +1,8 @@
 import 'package:bars/utilities/exports.dart';
-import 'package:timeago/timeago.dart' as timeago;
+import 'package:hive/hive.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  final AccountHolder user;
+  final AccountHolderAuthor user;
   EditProfileScreen({
     required this.user,
   });
@@ -13,13 +13,14 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
-  int index = 0;
+
   File? _profileImage;
   String _name = '';
   String _userName = '';
   String _bio = '';
   String _profileHandle = '';
   bool _isLoading = false;
+  bool _isLoadingBooking = false;
 
   @override
   void initState() {
@@ -31,16 +32,37 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   _handleImageFromGallery() async {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
     final file = await PickCropImage.pickedMedia(cropImage: _cropImage);
     if (file == null) return;
     // ignore: unnecessary_null_comparison
-    if (file != null) {
+    _provider.setIsLoading(true);
+    bool isHarmful = await HarmfulContentChecker.checkForHarmfulContent(
+        context, file as File);
+
+    // final isHarmful = await _checkForHarmfulContent(context, file as File);
+
+    if (isHarmful) {
+      mySnackBarModeration(context,
+          'Harmful content detected. Please choose a different image. Please review');
+      _provider.setIsLoading(false);
+    } else {
       if (mounted) {
         setState(() {
-          _profileImage = file as File;
+          _provider.setIsLoading(false);
+          _profileImage = file;
         });
       }
     }
+
+    // if (file != null) {
+    // if (mounted) {
+    //   setState(() {
+    //     _profileImage = file as File;
+    //   });
+    // }
+    // }
   }
 
   Future<File> _cropImage(File imageFile) async {
@@ -55,9 +77,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (_profileImage == null) {
       if (widget.user.profileImageUrl!.isEmpty) {
         return AssetImage(
-          ConfigBloc().darkModeOn
-              ? 'assets/images/user_placeholder.png'
-              : 'assets/images/user_placeholder2.png',
+          // ConfigBloc().darkModeOn
+          //     ? 'assets/images/user_placeholder.png'
+          //     :
+          'assets/images/user_placeholder2.png',
         );
       } else {
         return CachedNetworkImageProvider(widget.user.profileImageUrl!);
@@ -67,7 +90,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  _flushBar(String title, String subTitle) {
+    return mySnackBar(context, '$title\n$subTitle');
+  }
+
   _submit() async {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
     if (_formKey.currentState!.validate() && !_isLoading) {
       _formKey.currentState!.save();
 
@@ -86,104 +115,53 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         );
       }
 
-      try {
-        usersRef
-            .doc(
-          widget.user.id,
-        )
-            .update({
-          // 'blurHash': '',
-          'name': _name,
-          'profileImageUrl': _profileImageUrl,
-          'bio': _bio,
-        });
+      String name = _name.trim().replaceAll('\n', ' ');
+      String bio = _bio.trim().replaceAll('\n', ' ');
+      String dynamicLink = await DatabaseService.myDynamicLink(
+        _profileImageUrl,
+        _provider.user!.userName!,
+        _bio,
+        'https://www.barsopus.com/user_$_provider.currentUserId.uid',
+      );
 
-        usersAuthorRef
-            .doc(
-          widget.user.id,
-        )
-            .update({
-          'profileImageUrl': _profileImageUrl,
-          'bio': _bio,
-        });
+      try {
+        WriteBatch batch = FirebaseFirestore.instance.batch();
+        batch.update(
+          usersAuthorRef.doc(widget.user.userId),
+          {
+            'name': name,
+            'profileImageUrl': _profileImageUrl,
+            'bio': bio,
+            'dynamicLink': dynamicLink,
+          },
+        );
+
+        batch.update(
+          userProfessionalRef.doc(widget.user.userId),
+          {
+            'profileImageUrl': _profileImageUrl,
+            'dynamicLink': dynamicLink,
+          },
+        );
+
+        try {
+          batch.commit();
+        } catch (error) {}
+
+        _updateAuthorHive(name, bio, _profileImageUrl, dynamicLink);
+
         Navigator.pop(context);
-        final double width = Responsive.isDesktop(context)
-            ? 600.0
-            : MediaQuery.of(context).size.width;
-        Flushbar(
-          margin: EdgeInsets.all(8),
-          boxShadows: [
-            BoxShadow(
-              color: Colors.black,
-              offset: Offset(0.0, 2.0),
-              blurRadius: 3.0,
-            )
-          ],
-          flushbarPosition: FlushbarPosition.TOP,
-          flushbarStyle: FlushbarStyle.FLOATING,
-          titleText: Text(
-            widget.user.name!,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: width > 800 ? 22 : 14,
-            ),
-          ),
-          messageText: Text(
-            "Your profile was edited successfully!!!",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: width > 800 ? 20 : 12,
-            ),
-          ),
-          icon: Icon(
-            MdiIcons.checkCircleOutline,
-            size: 30.0,
-            color: Colors.blue,
-          ),
-          duration: Duration(seconds: 3),
-          leftBarIndicatorColor: Colors.blue,
-        )..show(context);
+        _flushBar(
+          widget.user.name!,
+          "Your profile was edited successfully!!!",
+        );
       } catch (e) {
-        final double width = Responsive.isDesktop(context)
-            ? 600.0
-            : MediaQuery.of(context).size.width;
-        String error = e.toString();
-        String result = error.contains(']')
-            ? error.substring(error.lastIndexOf(']') + 1)
-            : error;
-        Flushbar(
-          margin: EdgeInsets.all(8),
-          boxShadows: [
-            BoxShadow(
-              color: Colors.black,
-              offset: Offset(0.0, 2.0),
-              blurRadius: 3.0,
-            )
-          ],
-          flushbarPosition: FlushbarPosition.TOP,
-          flushbarStyle: FlushbarStyle.FLOATING,
-          titleText: Text(
-            'Error',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: width > 800 ? 22 : 14,
-            ),
-          ),
-          messageText: Text(
-            result.toString(),
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: width > 800 ? 20 : 12,
-            ),
-          ),
-          icon: Icon(
-            Icons.error_outline,
-            size: 28.0,
-            color: Colors.blue,
-          ),
-          duration: Duration(seconds: 3),
-          leftBarIndicatorColor: Colors.blue,
-        )..show(context);
+        _showBottomSheetErrorMessage('Failed to save profile');
+
+        _flushBar(
+          'Error',
+          "result.toString()",
+        );
       }
       setState(() {
         _isLoading = false;
@@ -191,609 +169,545 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  _dynamicLink() async {
-    var linkUrl = Uri.parse(widget.user.profileImageUrl!);
+  _updateAuthorHive(
+      String name, String bio, String profileImageUrl, String link) {
+    final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
 
-    final dynamicLinkParams = DynamicLinkParameters(
-      socialMetaTagParameters: SocialMetaTagParameters(
-        imageUrl: linkUrl,
-        title: widget.user.userName,
-        description: widget.user.bio,
-      ),
-      link: Uri.parse('https://www.barsopus.com/user_${widget.user.id}'),
-      uriPrefix: 'https://barsopus.com/barsImpression',
-      androidParameters:
-          AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
-      iosParameters: IOSParameters(
-        bundleId: 'com.bars-Opus.barsImpression',
-        appStoreId: '1610868894',
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    // Create a new instance of AccountHolderAuthor with the updated name
+    var updatedAccountAuthor = AccountHolderAuthor(
+      name: name,
+      bio: bio,
+      disabledAccount: _provider.user!.disabledAccount,
+      dynamicLink: link,
+      lastActiveDate: _provider.user!.lastActiveDate,
+      profileHandle: _provider.user!.profileHandle,
+      profileImageUrl: profileImageUrl,
+      reportConfirmed: _provider.user!.reportConfirmed,
+      userId: _provider.user!.userId,
+      userName: _provider.user!.userName,
+      verified: _provider.user!.verified,
+    );
+
+    // Put the new object back into the box with the same key
+    accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
+  }
+
+//   _updateAuthorHive() {
+//     final accountAuthorbox = Hive.box('currentUser');
+
+//     var _provider = Provider.of<UserData>(context, listen: false);
+
+// // Create a new instance of AccountHolderAuthor with the updated name
+//     var updatedAccountAuthor = AccountHolderAuthor(
+//       name: _name,
+//       bio: _bio,
+//       disabledAccount: _provider.user!.disabledAccount,
+//       dynamicLink: _provider.user!.dynamicLink,
+//       lastActiveDate: _provider.user!.lastActiveDate,
+//       profileHandle: _profileHandle,
+//       profileImageUrl: _provider.user!.profileImageUrl,
+//       reportConfirmed: _provider.user!.reportConfirmed,
+//       userId: _provider.user!.userId,
+//       userName: _userName,
+//       verified: _provider.user!.verified,
+//     );
+
+// // Put the new object back into the box with the same key
+//     accountAuthorbox.put('userId', updatedAccountAuthor);
+//   }
+
+  void _showBottomSheetVerficationNeutralized(
+      BuildContext context, String from) {
+    final width = MediaQuery.of(context).size.width;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          height: MediaQuery.of(context).size.height.toDouble() / 1.5,
+          decoration: BoxDecoration(
+              color: Colors.blue, borderRadius: BorderRadius.circular(30)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              const SizedBox(
+                height: 20.0,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: DisclaimerWidgetOnColor(
+                  onColoredBackground: true,
+                  title: 'Verified\nStatus',
+                  subTitle:
+                      'Changes made to an account by the owner may result in loss of Verified status. User-made changes include, but are not limited to \n\n1. If you change your username (${widget.user.userName})\n2. If you change your account type (${widget.user.profileHandle})\n3. If your account becomes inactive or incomplete ',
+                  icon: Icons.verified_outlined,
+                ),
+              ),
+              const SizedBox(
+                height: 40,
+              ),
+              Container(
+                width: width.toDouble() - 40,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColorLight,
+                    elevation: 10.0,
+                    foregroundColor: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    from.startsWith('userName')
+                        ? _navigateToPage(
+                            context,
+                            EditProfileName(
+                              user: widget.user,
+                            ),
+                          )
+                        : from.startsWith('accountType')
+                            ? _navigateToPage(
+                                context,
+                                EditProfileHandle(
+                                  user: widget.user,
+                                ),
+                              )
+                            : () {};
+                  },
+                  child: Text(
+                    from.startsWith('userName')
+                        ? 'Change username'
+                        : from.startsWith('accountType')
+                            ? 'Select account type'
+                            : '',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  _editPageOptions(String title, IconData icon, VoidCallback onPressed) {
+    return Padding(
+      padding: const EdgeInsets.all(3.0),
+      child: UserWebsite(
+          containerColor: Colors.transparent,
+          iconSize: 20,
+          padding: 5,
+          raduis: 10,
+          title: title,
+          icon: icon,
+          textColor: Theme.of(context).secondaryHeaderColor,
+          iconColor: Theme.of(context).secondaryHeaderColor,
+          onPressed: onPressed),
+    );
+  }
+
+  void _navigateToPage(BuildContext context, Widget page) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => page),
+    );
+  }
+
+  void _showBottomSheetErrorMessage(String errorTitle) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return DisplayErrorHandler(
+          buttonText: 'Ok',
+          onPressed: () async {
+            Navigator.pop(context);
+          },
+          title: errorTitle,
+          subTitle: 'Please check your internet connection and try again.',
+        );
+      },
+    );
+  }
+
+  _userNameInfo() {
+    final double width = MediaQuery.of(context).size.width;
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        new Material(
+          color: Colors.transparent,
+          child: Text(
+            _userName.toUpperCase(),
+            style: Theme.of(context).textTheme.titleMedium,
+            textAlign: TextAlign.center,
+          ),
+        ),
+        Hero(
+          tag: 'nickName',
+          child: new Material(
+            color: Colors.transparent,
+            child: Text(
+              _name,
+              style: Theme.of(context).textTheme.bodyMedium,
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+        Hero(
+          tag: 'profileHandle',
+          child: new Material(
+            color: Colors.transparent,
+            child: Text(
+              _profileHandle,
+              style: TextStyle(
+                color: Colors.blueGrey,
+                fontSize: width > 600 ? 16 : 14.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  _changeUserNameField() {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Username',
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: ResponsiveHelper.responsiveFontSize(context, 8.0),
+            ),
+          ),
+          DummyTextField(
+            onPressed: () {
+              _navigateToPage(
+                context,
+                EditProfileName(
+                  user: widget.user,
+                ),
+              );
+            },
+            text: _userName.toUpperCase(),
+          ),
+        ],
       ),
     );
-    var link =
-        await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+  }
 
-    Share.share(link.shortUrl.toString());
-    // if (Platform.isIOS) {
-    //   var link =
-    //       await FirebaseDynamicLinks.instance.buildLink(dynamicLinkParams);
-    //   Share.share(link.toString());
-    // } else {
-    //   var link =
-    //       await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
-    //   Share.share(link.shortUrl.toString());
-    // }
+  _stageNameAndBioFields() {
+    return Column(
+      children: [
+        Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: EditProfileTextField(
+              labelText: 'Stage name',
+              hintText: 'Stage or brand or nickname',
+              initialValue: _name,
+              onValidateText: (input) => input!.trim().length < 1
+                  ? 'Please enter a valid nickname'
+                  : null,
+              onSavedText: (input) => _name = input,
+              enableBorder: false,
+            )),
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: EditProfileTextField(
+            enableBorder: false,
+            labelText: 'bio',
+            hintText: 'A piece of short information about yourself',
+            initialValue: _bio,
+            onSavedText: (input) => _bio = input,
+            onValidateText: (input) => input!.trim().length > 700
+                ? 'Please, enter a bio of fewer than 700 characters.'
+                : null,
+          ),
+        ),
+      ],
+    );
+  }
+
+  _editPageOptionWidget() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    final UserSettingsLoadingPreferenceModel _user =
+        _provider.userLocationPreference!;
+    return Column(
+      children: [
+        _editPageOptions(' Select an Account Type', Icons.person, () {
+          _navigateToPage(
+            context,
+            EditProfileHandle(
+              user: widget.user,
+            ),
+          );
+        }),
+        _editPageOptions(' Choose your location', MdiIcons.mapMarker, () {
+          _navigateToPage(
+            context,
+            EditProfileSelectLocation(
+              user: _user,
+            ),
+          );
+        }),
+        _isLoadingBooking
+            ? ListTile(
+                leading: SizedBox(
+                  height: 15,
+                  width: 15,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 3,
+                  ),
+                ),
+                title: Text(
+                  ' Booking portfolio',
+                  style: TextStyle(
+                    color: Theme.of(context).secondaryHeaderColor,
+                    fontWeight: FontWeight.normal,
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 14.0),
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                trailing: Icon(
+                  Icons.arrow_forward_ios_outlined,
+                  color: Colors.grey,
+                  size: ResponsiveHelper.responsiveFontSize(context, 20),
+                ),
+              )
+            : _editPageOptions(' Booking portfolio', MdiIcons.briefcaseEdit,
+                () async {
+                if (_isLoadingBooking) return;
+                _isLoadingBooking = true;
+
+                try {
+                  UserProfessionalModel? user =
+                      await DatabaseService.getUserProfessionalWithId(
+                    widget.user.userId!,
+                  );
+
+                  if (user != null) {
+                    _navigateToPage(
+                      context,
+                      EditProfileProfessional(
+                        user: user,
+                      ),
+                    );
+                  } else {
+                    _showBottomSheetErrorMessage(
+                        'Failed to fetch booking data.');
+                  }
+                } catch (e) {
+                  _showBottomSheetErrorMessage('Failed to fetch booking data.');
+                } finally {
+                  _isLoadingBooking = false;
+                }
+              }),
+        _editPageOptions('Account settings', Icons.settings, () async {
+          _navigateToPage(
+            context,
+            ProfileSettings(
+              user: widget.user,
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
+  _closeWidget() {
+    return IconButton(
+      icon: Icon(Icons.close),
+      iconSize: 30.0,
+      color: Colors.grey,
+      onPressed: () => Navigator.pop(context),
+    );
+  }
+
+  _suggestionWidget() {
+    return GestureDetector(
+        onTap: () => _navigateToPage(context, SuggestionBox()),
+        child: Material(
+            color: Colors.transparent,
+            child: Text('Suggestion Box',
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+                ))));
+  }
+
+  _profileImageWidget() {
+    var _provider = Provider.of<UserData>(
+      context,
+    );
+    return Column(
+      children: [
+        _provider.isLoading
+            ? SchimmerSkeleton(
+                schimmerWidget: CircleAvatar(
+                    backgroundColor: Theme.of(context).primaryColorLight,
+                    radius: ResponsiveHelper.responsiveHeight(context, 80.0),
+                    backgroundImage: _displayProfileImage()),
+              )
+            : Hero(
+                tag: 'container1' + widget.user.userId.toString(),
+                child: GestureDetector(
+                  onTap: _handleImageFromGallery,
+                  child: CircleAvatar(
+                      backgroundColor: Theme.of(context).primaryColorLight,
+                      radius: ResponsiveHelper.responsiveHeight(context, 80.0),
+                      backgroundImage: _displayProfileImage()),
+                ),
+              ),
+        OutlinedButton(
+          style: OutlinedButton.styleFrom(
+            foregroundColor: Colors.transparent,
+            side: BorderSide(width: 1.0, color: Colors.transparent),
+          ),
+          onPressed: _handleImageFromGallery,
+          child: Text(
+            'Set photo',
+            style: TextStyle(
+              color: Colors.blue,
+              fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  _validateTextToxicity() async {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    _provider.setIsLoading(true);
+
+    TextModerator moderator = TextModerator();
+
+    // Define the texts to be checked
+    List<String> textsToCheck = [_bio, _name];
+
+    // Set a threshold for toxicity that is appropriate for your app
+    const double toxicityThreshold = 0.7;
+    bool allTextsValid = true;
+
+    for (String text in textsToCheck) {
+      if (text.isEmpty) {
+        // Handle the case where the text is empty
+        _provider.setIsLoading(false);
+        _submit();
+        // mySnackBar(context, 'Text cannot be empty.');
+        allTextsValid = false;
+        break; // Exit loop as there is an empty text
+      }
+
+      Map<String, dynamic>? analysisResult = await moderator.moderateText(text);
+
+      // Check if the API call was successful
+      if (analysisResult != null) {
+        double toxicityScore = analysisResult['attributeScores']['TOXICITY']
+            ['summaryScore']['value'];
+
+        if (toxicityScore >= toxicityThreshold) {
+          // If any text's score is above the threshold, show a Snackbar and set allTextsValid to false
+          mySnackBarModeration(context,
+              'Your bio, stagename or username contains inappropriate statements. Please review');
+          _provider.setIsLoading(false);
+
+          allTextsValid = false;
+          break; // Exit loop as we already found inappropriate content
+        }
+      } else {
+        // Handle the case where the API call failed
+        _provider.setIsLoading(false);
+        mySnackBar(context, 'Try again.');
+        allTextsValid = false;
+        break; // Exit loop as there was an API error
+      }
+    }
+
+    // Animate to the next page if all texts are valid
+    if (allTextsValid) {
+      _provider.setIsLoading(false);
+
+      _submit();
+      // animateToPage(1);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final double width = Responsive.isDesktop(context)
-        ? 600.0
-        : MediaQuery.of(context).size.width;
-    return ResponsiveScaffold(
-      child: Scaffold(
-          backgroundColor:
-              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
-          appBar: AppBar(
-            iconTheme: IconThemeData(
-              color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-            ),
-            automaticallyImplyLeading: index != 0 ? false : true,
-            elevation: 0,
-            backgroundColor:
-                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
-            title: Text(
-              'Edit Profile',
-              style: TextStyle(
-                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-            ),
-            centerTitle: true,
-            actions: [
-              IconButton(
-                  icon: Icon(Icons.share),
-                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                  onPressed: () => _dynamicLink()),
-            ],
-          ),
-          body: SafeArea(
-            child: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
-              child: SingleChildScrollView(
-                child: Container(
-                    child: Form(
-                        key: _formKey,
-                        child: Column(
-                          children: [
-                            _isLoading
-                                ? SizedBox(
-                                    height: 2.0,
-                                    child: LinearProgressIndicator(
-                                      backgroundColor: Colors.grey[100],
-                                      valueColor:
-                                          AlwaysStoppedAnimation(Colors.blue),
-                                    ),
-                                  )
-                                : const SizedBox.shrink(),
-                            Padding(
-                                padding: const EdgeInsets.all(30.0),
-                                child: Column(
-                                  children: [
-                                    Hero(
-                                      tag: 'container1' +
-                                          widget.user.id.toString(),
-                                      child: GestureDetector(
-                                        onTap: _handleImageFromGallery,
-                                        child: CircleAvatar(
-                                            backgroundColor:
-                                                ConfigBloc().darkModeOn
-                                                    ? Color(0xFF1a1a1a)
-                                                    : Color(0xFFf2f2f2),
-                                            radius: 80.0,
-                                            backgroundImage:
-                                                _displayProfileImage()),
-                                      ),
-                                    ),
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        foregroundColor: Colors.transparent,
-                                        side: BorderSide(
-                                            width: 1.0,
-                                            color: Colors.transparent),
-                                      ),
-                                      onPressed: _handleImageFromGallery,
-                                      child: Text(
-                                        'Set photo',
-                                        style: TextStyle(
-                                          color: Colors.blue,
-                                          fontSize: 16.0,
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 30.0,
-                                    ),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: <Widget>[
-                                        new Material(
-                                          color: Colors.transparent,
-                                          child: Text(
-                                            _userName.toUpperCase(),
-                                            style: TextStyle(
-                                              color: ConfigBloc().darkModeOn
-                                                  ? Colors.blueGrey[100]
-                                                  : Colors.black,
-                                              fontSize: width > 600 ? 40 : 30.0,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                        Hero(
-                                          tag: 'nickName',
-                                          child: new Material(
-                                            color: Colors.transparent,
-                                            child: Text(
-                                              _name,
-                                              style: TextStyle(
-                                                color: ConfigBloc().darkModeOn
-                                                    ? Colors.blueGrey[100]
-                                                    : Colors.black,
-                                                fontSize:
-                                                    width > 600 ? 16 : 14.0,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
-                                        Hero(
-                                          tag: 'profileHandle',
-                                          child: new Material(
-                                            color: Colors.transparent,
-                                            child: Text(
-                                              _profileHandle,
-                                              style: TextStyle(
-                                                color: ConfigBloc().darkModeOn
-                                                    ? Colors.blueGrey
-                                                    : Colors.black,
-                                                fontSize:
-                                                    width > 600 ? 16 : 14.0,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 30),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 10.0,
-                                          bottom: 10.0,
-                                          right: 10.0),
-                                      child: GestureDetector(
-                                        onTap: () =>
-                                            widget.user.verified!.isEmpty
-                                                ? Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (_) =>
-                                                          EditProfileName(
-                                                        user: widget.user,
-                                                      ),
-                                                    ))
-                                                : Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (_) =>
-                                                          VerificationNutralized(
-                                                        user: widget.user,
-                                                        from: 'userName',
-                                                      ),
-                                                    )),
-                                        child: Container(
-                                          color: Colors.transparent,
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'Username',
-                                                style: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontSize: 8.8,
-                                                ),
-                                              ),
-                                              SizedBox(height: 3),
-                                              Text(
-                                                _userName.toUpperCase(),
-                                                style: TextStyle(
-                                                  color: ConfigBloc().darkModeOn
-                                                      ? Colors.blueGrey[100]
-                                                      : Colors.black,
-                                                  fontSize: 12.0,
-                                                ),
-                                              ),
-                                              SizedBox(height: 12),
-                                              Container(
-                                                height: 0.7,
-                                                width: double.infinity,
-                                                color: Colors.grey,
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(height: 10.0),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 10.0,
-                                          bottom: 10.0,
-                                          right: 10.0),
-                                      child: Container(
-                                        color: Colors.transparent,
-                                        child: TextFormField(
-                                          initialValue: _name,
-                                          textCapitalization:
-                                              TextCapitalization.sentences,
-                                          keyboardType: TextInputType.multiline,
-                                          maxLines: null,
-                                          style: TextStyle(
-                                            fontSize: 12.0,
-                                            color: ConfigBloc().darkModeOn
-                                                ? Colors.blueGrey[100]
-                                                : Colors.black,
-                                          ),
-                                          decoration: InputDecoration(
-                                            labelStyle: TextStyle(
-                                              color: Colors.grey,
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: Colors.blue,
-                                                  width: 3.0),
-                                            ),
-                                            enabledBorder:
-                                                new UnderlineInputBorder(
-                                                    borderSide: new BorderSide(
-                                                        color: Colors.grey)),
-                                            hintText:
-                                                'Stage or brand or nickname',
-                                            hintStyle: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.grey),
-                                            labelText: 'Nickname',
-                                          ),
-                                          autofillHints: [AutofillHints.name],
-                                          validator: (input) => input!
-                                                      .trim()
-                                                      .length <
-                                                  1
-                                              ? 'Please enter a valid nickname'
-                                              : null,
-                                          onSaved: (input) => _name = input!,
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(height: 10.0),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 10.0,
-                                          bottom: 10.0,
-                                          right: 10.0),
-                                      child: Container(
-                                        color: Colors.transparent,
-                                        child: TextFormField(
-                                          keyboardType: TextInputType.multiline,
-                                          maxLines: null,
-                                          textCapitalization:
-                                              TextCapitalization.sentences,
-                                          initialValue: _bio,
-                                          style: TextStyle(
-                                            fontSize: 12.0,
-                                            color: ConfigBloc().darkModeOn
-                                                ? Colors.blueGrey[100]
-                                                : Colors.black,
-                                          ),
-                                          decoration: InputDecoration(
-                                            labelStyle: TextStyle(
-                                              color: Colors.grey,
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: Colors.blue,
-                                                  width: 3.0),
-                                            ),
-                                            enabledBorder:
-                                                new UnderlineInputBorder(
-                                                    borderSide: new BorderSide(
-                                                        color: Colors.grey)),
-                                            hintText:
-                                                'A piece of short information about yourself',
-                                            hintStyle: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.grey),
-                                            labelText: 'Bio',
-                                          ),
-                                          validator: (input) => input!
-                                                      .trim()
-                                                      .length >
-                                                  700
-                                              ? 'Please, enter a bio of fewer than 700 characters.'
-                                              : null,
-                                          onSaved: (input) => _bio = input!,
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 30,
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(3.0),
-                                      child: UserWebsite(
-                                        padding: 5,
-                                        iconSize: 20,
-                                        raduis: 10,
-                                        title: ' Select an Account Type',
-                                        icon: Icons.person,
-                                        textColor: ConfigBloc().darkModeOn
-                                            ? Colors.white
-                                            : Colors.black,
-                                        iconColor: ConfigBloc().darkModeOn
-                                            ? Colors.white
-                                            : Colors.black,
-                                        onPressed: () =>
-                                            widget.user.verified!.isEmpty
-                                                ? Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (_) =>
-                                                          EditProfileHandle(
-                                                        user: widget.user,
-                                                      ),
-                                                    ))
-                                                : Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (_) =>
-                                                          VerificationNutralized(
-                                                        user: widget.user,
-                                                        from: 'accountType',
-                                                      ),
-                                                    )),
-                                        containerColor: Colors.transparent,
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(3.0),
-                                      child: UserWebsite(
-                                        containerColor: Colors.transparent,
-                                        padding: 5,
-                                        iconSize: 20,
-                                        raduis: 10,
-                                        title: ' Choose Your Location',
-                                        icon: MdiIcons.mapMarker,
-                                        textColor: ConfigBloc().darkModeOn
-                                            ? Colors.white
-                                            : Colors.black,
-                                        iconColor: ConfigBloc().darkModeOn
-                                            ? Colors.white
-                                            : Colors.black,
-                                        onPressed: () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (_) =>
-                                                  EditProfileSelectLocation(
-                                                user: widget.user,
-                                              ),
-                                            )),
-                                      ),
-                                    ),
-                                    widget.user.profileHandle!
-                                                .startsWith('F') ||
-                                            widget.user.profileHandle!.isEmpty
-                                        ? const SizedBox.shrink()
-                                        : Padding(
-                                            padding: const EdgeInsets.all(3.0),
-                                            child: UserWebsite(
-                                                containerColor:
-                                                    Colors.transparent,
-                                                padding: 5,
-                                                iconSize: 20,
-                                                raduis: 10,
-                                                title: ' Booking Portfolio',
-                                                icon: MdiIcons.briefcaseEdit,
-                                                textColor:
-                                                    ConfigBloc().darkModeOn
-                                                        ? Colors.white
-                                                        : Colors.black,
-                                                iconColor:
-                                                    ConfigBloc().darkModeOn
-                                                        ? Colors.white
-                                                        : Colors.black,
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (_) =>
-                                                            EditProfileProfessional(
-                                                          user: widget.user,
-                                                        ),
-                                                      ));
-                                                }),
-                                          ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(3.0),
-                                      child: UserWebsite(
-                                        containerColor: Colors.transparent,
-                                        iconSize: 20,
-                                        padding: 5,
-                                        raduis: 10,
-                                        title: '  Music Preference',
-                                        icon: Icons.favorite,
-                                        textColor: ConfigBloc().darkModeOn
-                                            ? Colors.white
-                                            : Colors.black,
-                                        iconColor: ConfigBloc().darkModeOn
-                                            ? Colors.white
-                                            : Colors.black,
-                                        onPressed: () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (_) =>
-                                                  EditProfileMusicPref(
-                                                user: widget.user,
-                                              ),
-                                            )),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(3.0),
-                                      child: UserWebsite(
-                                        containerColor: Colors.transparent,
-                                        iconSize: 20,
-                                        padding: 5,
-                                        raduis: 10,
-                                        title: 'Account Settings',
-                                        icon: Icons.settings,
-                                        textColor: ConfigBloc().darkModeOn
-                                            ? Colors.white
-                                            : Colors.black,
-                                        iconColor: ConfigBloc().darkModeOn
-                                            ? Colors.white
-                                            : Colors.black,
-                                        onPressed: () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (_) => ProfileSettings(
-                                                user: widget.user,
-                                              ),
-                                            )),
-                                      ),
-                                    ),
-                                    _isLoading
-                                        ? Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 30.0),
-                                            child: SizedBox(
-                                              height: 2.0,
-                                              child: LinearProgressIndicator(
-                                                backgroundColor:
-                                                    Colors.transparent,
-                                                valueColor:
-                                                    AlwaysStoppedAnimation(
-                                                        Colors.blue),
-                                              ),
-                                            ),
-                                          )
-                                        : Container(
-                                            margin: EdgeInsets.all(40.0),
-                                            width: 250.0,
-                                            child: ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor:
-                                                    ConfigBloc().darkModeOn
-                                                        ? Colors.white
-                                                        : Color(0xFF1d2323),
-                                                elevation: 20.0,
-                                                foregroundColor: Colors.blue,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20.0),
-                                                ),
-                                              ),
-                                              onPressed: () {
-                                                _submit();
-                                              },
-                                              child: Text(
-                                                'Save Profile',
-                                                style: TextStyle(
-                                                  color: ConfigBloc().darkModeOn
-                                                      ? Colors.black
-                                                      : Colors.white,
-                                                  fontSize: 14,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                    SizedBox(height: 40),
-                                    IconButton(
-                                      icon: Icon(Icons.close),
-                                      iconSize: 30.0,
-                                      color: Colors.grey,
-                                      onPressed: () => Navigator.pop(context),
-                                    ),
-                                    SizedBox(
-                                      height: 50.0,
-                                    ),
-                                  ],
-                                )),
-                            GestureDetector(
-                                onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => SuggestionBox())),
-                                child: Material(
-                                    color: Colors.transparent,
-                                    child: Text('Suggestion Box',
-                                        style: TextStyle(
-                                          color: Colors.blueGrey,
-                                          fontSize: 12,
-                                        )))),
-                            SizedBox(height: 30),
-                            RichText(
-                              textScaleFactor: MediaQuery.of(context)
-                                  .textScaleFactor
-                                  .clamp(0.5, 1.5),
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                      text: 'You registered your account on \n',
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.grey,
-                                      )),
-                                  TextSpan(
-                                      text: MyDateFormat.toDate(
-                                          widget.user.timestamp!.toDate()),
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.grey,
-                                      )),
-                                  TextSpan(
-                                      text: ', at ${MyDateFormat.toTime(
-                                        widget.user.timestamp!.toDate(),
-                                      )}.',
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.grey,
-                                      )),
-                                  TextSpan(
-                                      text: '\n' +
-                                          timeago.format(
-                                            widget.user.timestamp!.toDate(),
-                                          ),
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.grey,
-                                      )),
-                                ],
-                              ),
-                              textAlign: TextAlign.center,
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    return EditProfileScaffold(
+      title: 'Edit Profile',
+      widget: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            _isLoading ? LinearProgress() : const SizedBox.shrink(),
+            Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: Column(
+                  children: [
+                    _profileImageWidget(),
+                    const SizedBox(
+                      height: 30.0,
+                    ),
+                    _userNameInfo(),
+                    const SizedBox(height: 20),
+                    _changeUserNameField(),
+                    _stageNameAndBioFields(),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    _editPageOptionWidget(),
+                    _isLoading || _provider.isLoading
+                        ? Padding(
+                            padding: const EdgeInsets.only(top: 30.0),
+                            child: CircularProgress(
+                              isMini: true,
+                              indicatorColor: Colors.blue,
+                            ))
+                        : Padding(
+                            padding: const EdgeInsets.only(top: 50.0),
+                            child: AlwaysWhiteButton(
+                              buttonText: 'Save',
+                              onPressed: () {
+                                _validateTextToxicity();
+                                // _submit();
+                              },
+                              buttonColor: Colors.blue,
                             ),
-                            SizedBox(height: 40),
-                          ],
-                        ))),
-              ),
-            ),
-          )),
+                          ),
+                    const SizedBox(height: 40),
+                    _closeWidget(),
+                    const SizedBox(
+                      height: 50.0,
+                    ),
+                  ],
+                )),
+            _suggestionWidget(),
+            const SizedBox(height: 40),
+          ],
+        ),
+      ),
     );
   }
 }

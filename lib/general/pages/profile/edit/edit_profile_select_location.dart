@@ -1,9 +1,9 @@
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:geocoding/geocoding.dart';
+import 'package:hive/hive.dart';
 
 class EditProfileSelectLocation extends StatefulWidget {
-  final AccountHolder user;
+  final UserSettingsLoadingPreferenceModel user;
 
   EditProfileSelectLocation({
     required this.user,
@@ -15,200 +15,133 @@ class EditProfileSelectLocation extends StatefulWidget {
 }
 
 class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
-  final _formKey = GlobalKey<FormState>();
-  TextEditingController? _controller;
-  int _index = 0;
-  String? _city = '';
-  String _country = '';
   String _continent = '';
   String selectedValue = '';
   late double userLatitude;
   late double userLongitude;
   bool _isLoading = false;
-  bool _isfetchingCity = false;
-  late PageController _pageController;
+  final _addressSearchController = TextEditingController();
+  final FocusNode _addressSearchfocusNode = FocusNode();
+  final _debouncer = Debouncer(milliseconds: 500);
 
   @override
   void initState() {
     super.initState();
     selectedValue = widget.user.continent!;
-    _pageController = PageController(
-      initialPage: 1,
-    );
+
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      Provider.of<UserData>(context, listen: false).setPost4(widget.user.city!);
+      Provider.of<UserData>(context, listen: false)
+          .setAddress(widget.user.city!);
+
+      _continent = Provider.of<UserData>(context, listen: false)
+          .userLocationPreference!
+          .continent!;
     });
-    _country = widget.user.country!;
-    _continent = widget.user.continent!;
-  }
-
-  _getCurrentLocation() async {}
-
-  animateToPage() {
-    _pageController.animateToPage(
-      _index = 0,
-      duration: Duration(milliseconds: 800),
-      curve: Curves.easeInOut,
-    );
-  }
-
-  animateToPage2() {
-    _pageController.animateToPage(
-      _index = 2,
-      duration: Duration(milliseconds: 800),
-      curve: Curves.easeInOut,
-    );
-  }
-
-  animateToBack() {
-    _pageController.animateToPage(
-      _index = 1,
-      duration: Duration(milliseconds: 800),
-      curve: Curves.easeInOut,
-    );
   }
 
   _submit2() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      _city = Provider.of<UserData>(context, listen: false)
-          .post4
-          // ignore: unnecessary_brace_in_string_interps
-          ?.replaceAll(', ${_country}', '');
-      _getCurrentLocation();
-      try {
-        usersRef
-            .doc(
-          widget.user.id,
-        )
-            .update({
-          'country': _country,
-          'city': _city,
-        });
-      } catch (e) {
-        final double width = Responsive.isDesktop(context)
-            ? 600.0
-            : MediaQuery.of(context).size.width;
-        Flushbar(
-          margin: EdgeInsets.all(8),
-          boxShadows: [
-            BoxShadow(
-              color: Colors.black,
-              offset: Offset(0.0, 2.0),
-              blurRadius: 3.0,
-            )
-          ],
-          flushbarPosition: FlushbarPosition.TOP,
-          flushbarStyle: FlushbarStyle.FLOATING,
-          titleText: Text(
-            'Error',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: width > 800 ? 22 : 14,
-            ),
-          ),
-          messageText: Text(
-            e.toString(),
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: width > 800 ? 20 : 12,
-            ),
-          ),
-          icon: Icon(
-            Icons.error_outline,
-            size: 28.0,
-            color: Colors.blue,
-          ),
-          duration: Duration(seconds: 3),
-          leftBarIndicatorColor: Colors.blue,
-        )..show(context);
-      }
+    var _provider = Provider.of<UserData>(context, listen: false);
+    // try {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    batch.update(
+      usersLocationSettingsRef.doc(widget.user.userId),
+      {
+        'country': _provider.country,
+        'city': _provider.city,
+      },
+    );
+    batch.update(
+      userProfessionalRef.doc(widget.user.userId),
+      {
+        'country': _provider.country,
+        'city': _provider.city,
+      },
+    );
+
+    try {
+      batch.commit();
+      _updateAuthorHive(
+          _provider.city, _provider.country, _provider.continent, false);
+    } catch (error) {
+      _showBottomSheetErrorMessage('Failed to update city and country');
     }
+    setState(() {});
+    // } catch (e) {
+    // }
   }
 
-  _submit1() async {
-    if (_formKey.currentState!.validate() & !_isLoading) {
-      _formKey.currentState!.save();
-      setState(() {
-        _isLoading = true;
-      });
-      _getCurrentLocation();
-      try {
-        usersRef
-            .doc(
-          widget.user.id,
-        )
-            .update({
-          'continent': _continent,
-        });
-      } catch (e) {
-        final double width = Responsive.isDesktop(context)
-            ? 600.0
-            : MediaQuery.of(context).size.width;
-        String error = e.toString();
-        String result = error.contains(']')
-            ? error.substring(error.lastIndexOf(']') + 1)
-            : error;
-        Flushbar(
-          margin: EdgeInsets.all(8),
-          boxShadows: [
-            BoxShadow(
-              color: Colors.black,
-              offset: Offset(0.0, 2.0),
-              blurRadius: 3.0,
-            )
-          ],
-          flushbarPosition: FlushbarPosition.TOP,
-          flushbarStyle: FlushbarStyle.FLOATING,
-          titleText: Text(
-            'Error',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: width > 800 ? 22 : 14,
-            ),
-          ),
-          messageText: Text(
-            result.toString(),
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: width > 800 ? 20 : 12,
-            ),
-          ),
-          icon: Icon(
-            Icons.info_outline,
-            size: 28.0,
-            color: Colors.blue,
-          ),
-          duration: Duration(seconds: 3),
-          leftBarIndicatorColor: Colors.blue,
-        )..show(context);
-      }
+  _updateAuthorHive(
+      String city, String country, String continent, bool isContinent) async {
+    Box<UserSettingsLoadingPreferenceModel> locationPreferenceBox;
+
+    if (Hive.isBoxOpen('accountLocationPreference')) {
+      locationPreferenceBox = Hive.box('accountLocationPreference');
+    } else {
+      locationPreferenceBox = await Hive.openBox('accountLocationPreference');
     }
-    setState(() {
-      _isLoading = false;
-    });
-    animateToBack();
+
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    // Create a new instance of UserSettingsLoadingPreferenceModel with the updated values
+    var updatedLocationPreference = UserSettingsLoadingPreferenceModel(
+      userId: _provider.userLocationPreference!.userId,
+      city: isContinent ? _provider.userLocationPreference!.city : city,
+      continent:
+          isContinent ? continent : _provider.userLocationPreference!.continent,
+      country:
+          isContinent ? _provider.userLocationPreference!.country : country,
+      currency: _provider.userLocationPreference!.currency,
+      timestamp: _provider.userLocationPreference!.timestamp,
+      subaccountId: _provider.userLocationPreference!.subaccountId,
+    );
+
+    // Put the new object back into the box with the same key
+    locationPreferenceBox.put(
+        updatedLocationPreference.userId, updatedLocationPreference);
   }
 
-  _reverseGeocoding() async {
-    setState(() {
-      _isLoading = true;
-    });
-    List<Location> locations = await locationFromAddress(
-        Provider.of<UserData>(context, listen: false).post4!);
-    List<Placemark> placemarks = await placemarkFromCoordinates(
-        locations[0].latitude, locations[0].longitude);
-    placemarks[0].toString();
-    setState(() {
-      _index = 0;
-      _country = (placemarks[0].country == null ? '' : placemarks[0].country)!;
-    });
+  void _showBottomSheetErrorMessage(String errorTitle) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return DisplayErrorHandler(
+          buttonText: 'Ok',
+          onPressed: () async {
+            Navigator.pop(context);
+          },
+          title: errorTitle,
+          subTitle: 'Please check your internet connection and try again.',
+        );
+      },
+    );
+  }
 
-    await _submit2();
-    setState(() {
-      _isLoading = false;
-    });
-    animateToBack();
+  _submit1() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    // try {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    batch.update(
+      usersLocationSettingsRef.doc(widget.user.userId),
+      {'continent': _continent},
+    );
+    batch.update(
+      userProfessionalRef.doc(widget.user.userId),
+      {'continent': _continent},
+    );
+
+    try {
+      batch.commit();
+      _updateAuthorHive(_provider.city, _provider.country, _continent, true);
+    } catch (error) {
+      _showBottomSheetErrorMessage(error.toString());
+    }
+    // } catch (e) {
+
+    // }
   }
 
   static const values = <String>[
@@ -223,17 +156,13 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
 
   Widget buildRadios() => Theme(
         data: Theme.of(context).copyWith(
-          unselectedWidgetColor:
-              ConfigBloc().darkModeOn ? Colors.white : Colors.black,
+          unselectedWidgetColor: Theme.of(context).secondaryHeaderColor,
         ),
         child: Column(
             children: values.map((value) {
           final selected = this.selectedValue == value;
-          final color = selected
-              ? Colors.blue
-              : ConfigBloc().darkModeOn
-                  ? Colors.white
-                  : Colors.black;
+          final color =
+              selected ? Colors.blue : Theme.of(context).secondaryHeaderColor;
 
           return RadioListTile<String>(
             value: value,
@@ -242,6 +171,10 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
               value,
               style: TextStyle(
                 color: color,
+                fontWeight: this.selectedValue == value
+                    ? FontWeight.bold
+                    : FontWeight.normal,
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
               ),
             ),
             activeColor: Colors.blue,
@@ -263,393 +196,227 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
         ],
       );
 
-  Widget buildCityForm() => Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: MediaQuery.of(context).size.width,
-            child: Text(
-              Provider.of<UserData>(context, listen: false).post4!,
-              style: TextStyle(
-                  color: Colors.blue,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-              overflow: TextOverflow.ellipsis,
-            ),
+  @override
+  void dispose() {
+    _addressSearchController.dispose();
+    _addressSearchfocusNode.dispose();
+    _debouncer.cancel();
+
+    super.dispose();
+  }
+
+  _cancelSearch() {
+    FocusScope.of(context).unfocus();
+    _clearSearch();
+    Navigator.pop(context);
+  }
+
+  _clearSearch() {
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _addressSearchController.clear());
+    Provider.of<UserData>(context, listen: false).searchResults = [];
+  }
+
+  _addressValue(String name, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          name,
+          style: TextStyle(
+            fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+            color: Colors.grey,
           ),
-          _isfetchingCity ? SizedBox(height: 10) : SizedBox(height: 40),
-          Padding(
-            padding:
-                const EdgeInsets.only(left: 10.0, bottom: 10.0, right: 10.0),
-            child: TextFormField(
-              keyboardType: TextInputType.multiline,
-              maxLines: null,
-              controller: _controller,
-              textCapitalization: TextCapitalization.sentences,
-              autovalidateMode: AutovalidateMode.always,
-              onChanged: (value) => {
-                Provider.of<UserData>(context, listen: false)
-                    .searchPlaces(value),
-                setState(() {
-                  _isfetchingCity = true;
-                })
-              },
-              style: TextStyle(
-                fontSize: 16,
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-              ),
-              initialValue: widget.user.city,
-              decoration: InputDecoration(
-                  hintText: "Your current city",
-                  hintStyle: TextStyle(
-                    fontSize: 12.0,
-                    color: Colors.grey,
-                  ),
-                  labelText: 'City',
-                  labelStyle: TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey,
-                  ),
-                  enabledBorder: new UnderlineInputBorder(
-                      borderSide: new BorderSide(color: Colors.grey))),
-              validator: (input) =>
-                  input!.trim().length < 1 ? 'Choose city of residence' : null,
-            ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
+            color: Theme.of(context).secondaryHeaderColor,
+            fontWeight: FontWeight.bold,
           ),
-          SizedBox(
-            height: 10,
-          ),
-          _isfetchingCity
-              ? Padding(
-                  padding: const EdgeInsets.only(bottom: 5.0),
-                  child: SizedBox(
-                    height: 2.0,
-                    child: LinearProgressIndicator(
-                      backgroundColor: Colors.transparent,
-                      valueColor: AlwaysStoppedAnimation(Colors.grey),
-                    ),
-                  ),
-                )
-              : const SizedBox.shrink(),
-          // ignore: unnecessary_null_comparison
-          if (Provider.of<UserData>(context, listen: false).searchResults !=
-              null)
-            Container(
-              color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: Text(
-                    'Tap below to select your city',
-                    style: TextStyle(
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.black : Colors.white,
-                    ),
-                  ),
+        ),
+      ],
+    );
+  }
+
+  void _showBottomSheetCountry(BuildContext context, String from) {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: false,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Container(
+            height: MediaQuery.of(context).size.height.toDouble() / 1.1,
+            decoration: BoxDecoration(
+                color: Theme.of(context).primaryColorLight,
+                borderRadius: BorderRadius.circular(30)),
+            child: ListView(
+              children: [
+                const SizedBox(
+                  height: 10,
                 ),
-              ),
-            ),
-          SizedBox(
-            height: 10,
-          ),
-          // ignore: unnecessary_null_comparison
-          if (Provider.of<UserData>(context).searchResults != null)
-            SingleChildScrollView(
-              child: Container(
-                height: 300,
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: SearchContentField(
+                      autoFocus: true,
+                      showCancelButton: true,
+                      cancelSearch: _cancelSearch,
+                      controller: _addressSearchController,
+                      focusNode: _addressSearchfocusNode,
+                      hintText: 'Enter city name...',
+                      onClearText: () {
+                        _clearSearch();
+                      },
+                      onTap: () {},
+                      onChanged: (value) {
+                        if (_addressSearchController.text.trim().isNotEmpty)
+                          _debouncer.run(() {
+                            _provider.searchPlaces(value);
+                          });
+                      }),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: ListView.builder(
-                    itemCount:
-                        Provider.of<UserData>(context).searchResults!.length,
-                    itemBuilder: (context, _index) {
-                      return ListTile(
-                          title: Text(
-                            Provider.of<UserData>(context, listen: false)
-                                .searchResults![_index]
-                                .description,
-                            style: TextStyle(
-                              color: ConfigBloc().darkModeOn
-                                  ? Colors.white
-                                  : Colors.black,
+                Text('        Select your city from the list below'),
+                if (Provider.of<UserData>(
+                      context,
+                    ).searchResults !=
+                    null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Container(
+                            height: MediaQuery.of(context).size.height,
+                            width: double.infinity,
+                            child: ListView.builder(
+                              itemCount: _provider.searchResults!.length,
+                              itemBuilder: (context, index) {
+                                return Column(
+                                  children: [
+                                    ListTile(
+                                        title: Text(
+                                          _provider.searchResults![index]
+                                              .description,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge,
+                                        ),
+                                        onTap: () async {
+                                          Navigator.pop(context);
+                                          _provider.setCity('');
+                                          _provider.setCountry('');
+                                          _provider.searchPlaces(_provider
+                                              .searchResults![index]
+                                              .description);
+                                          await reverseGeocoding(
+                                              _provider,
+                                              _provider.searchResults![index]
+                                                  .description);
+                                          _submit2();
+                                        }),
+                                    Divider(),
+                                  ],
+                                );
+                              },
                             ),
                           ),
-                          onTap: () {
-                            setState(() {
-                              _isfetchingCity = false;
-                            });
-                            Provider.of<UserData>(context, listen: false)
-                                .setPost4(Provider.of<UserData>(context,
-                                        listen: false)
-                                    .searchResults![_index]
-                                    .description);
-                            _reverseGeocoding();
-                          });
-                    },
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ),
+              ],
             ),
-        ],
-      );
-
-  _pop() {
-    Navigator.pop(context);
-    Provider.of<UserData>(context, listen: false).searchResults = [];
-    Provider.of<UserData>(context, listen: false).setPost4('');
+          ),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final double width = Responsive.isDesktop(context)
-        ? 600.0
-        : MediaQuery.of(context).size.width;
-    return ResponsiveScaffold(
-      child: Scaffold(
-          backgroundColor:
-              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-          appBar: AppBar(
-            iconTheme: IconThemeData(
-              color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-            ),
-            automaticallyImplyLeading: true,
-            leading: IconButton(
-                icon: Icon(
-                    Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
-                onPressed: () {
-                  _index == 1 ? _pop() : animateToBack();
-                }),
-            elevation: 0,
-            backgroundColor:
-                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-            title: Text(
-              'Edit Profile',
-              style: TextStyle(
-                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-            ),
-            centerTitle: true,
-          ),
-          body: SafeArea(
-            child: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
-              child: Form(
-                  key: _formKey,
-                  child: PageView(
-                    controller: _pageController,
-                    physics: const NeverScrollableScrollPhysics(),
-                    onPageChanged: (int _index) {
-                      setState(() {
-                        _index = _index;
-                      });
-                    },
-                    children: [
-                      SingleChildScrollView(
-                        child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 30.0, vertical: 10.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _isLoading
-                                    ? SizedBox(
-                                        height: 2.0,
-                                        child: LinearProgressIndicator(
-                                          backgroundColor: Colors.transparent,
-                                          valueColor: AlwaysStoppedAnimation(
-                                              Colors.blue),
-                                        ),
-                                      )
-                                    : const SizedBox.shrink(),
-                                _isfetchingCity
-                                    ? const SizedBox.shrink()
-                                    : SizedBox(height: 20.0),
-                                _isfetchingCity
-                                    ? const SizedBox.shrink()
-                                    : Text(
-                                        'Enter your city in the field below. Tap on your correct city in the list below. ',
-                                        style: TextStyle(
-                                          color: ConfigBloc().darkModeOn
-                                              ? Colors.white
-                                              : Colors.black,
-                                        ),
-                                      ),
-                                _isfetchingCity
-                                    ? const SizedBox.shrink()
-                                    : SizedBox(
-                                        height: 20.0,
-                                      ),
-                                _isfetchingCity
-                                    ? const SizedBox.shrink()
-                                    : Align(
-                                        alignment: Alignment.bottomLeft,
-                                        child: Container(
-                                          height: 2,
-                                          color: Colors.blue,
-                                          width: width / 3,
-                                        ),
-                                      ),
-                                _isfetchingCity
-                                    ? const SizedBox.shrink()
-                                    : SizedBox(height: 50),
-                                buildCityForm()
-                              ],
-                            )),
-                      ),
-                      SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            _isLoading
-                                ? SizedBox(
-                                    height: 2.0,
-                                    child: LinearProgressIndicator(
-                                      backgroundColor: Colors.grey[100],
-                                      valueColor:
-                                          AlwaysStoppedAnimation(Colors.blue),
-                                    ),
-                                  )
-                                : const SizedBox.shrink(),
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 30.0, vertical: 10.0),
-                              child: Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    SizedBox(height: 20.0),
-                                    EditProfileInfo(
-                                      editTitle: 'Choose \nLocation',
-                                      info:
-                                          'Choosing a location helps us suggest users with similar interests living close to you. For instance, when you enter your city, we propose other users in your city for you on the discover page so you can connect with them for business.',
-                                      icon: Icons.location_on,
-                                    ),
-                                    Text(
-                                      Provider.of<UserData>(context,
-                                              listen: false)
-                                          .post4!,
-                                      style: TextStyle(
-                                        fontSize: 24,
-                                        color: ConfigBloc().darkModeOn
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
-                                    ),
-                                    SizedBox(height: 30),
-                                    GestureDetector(
-                                      onTap: () {
-                                        animateToPage();
-                                      },
-                                      child: Text(
-                                        'Choose your City',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.blue,
-                                        ),
-                                      ),
-                                    ),
-                                    Provider.of<UserData>(context,
-                                                listen: false)
-                                            .post4!
-                                            .isEmpty
-                                        ? const SizedBox.shrink()
-                                        : SizedBox(height: 30),
-                                    Divider(color: Colors.grey),
-                                    Provider.of<UserData>(context,
-                                                listen: false)
-                                            .post4!
-                                            .isEmpty
-                                        ? const SizedBox.shrink()
-                                        : SizedBox(height: 30),
-                                    Text(
-                                      _continent,
-                                      style: TextStyle(
-                                        fontSize: 24,
-                                        color: ConfigBloc().darkModeOn
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
-                                    ),
-                                    SizedBox(height: 30),
-                                    GestureDetector(
-                                      onTap: () {
-                                        animateToPage2();
-                                      },
-                                      child: Text(
-                                        'Choose your Continent',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.blue,
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(height: 50),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 70.0,
-                            ),
-                            _isLoading
-                                ? SizedBox(
-                                    height: 2.0,
-                                    child: LinearProgressIndicator(
-                                      backgroundColor: Colors.grey[100],
-                                      valueColor:
-                                          AlwaysStoppedAnimation(Colors.blue),
-                                    ),
-                                  )
-                                : const SizedBox.shrink()
-                          ],
-                        ),
-                      ),
-                      SingleChildScrollView(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 30.0, vertical: 10.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(height: 20.0),
-                              Text(
-                                'Select your continent in the list below.',
-                                style: TextStyle(
-                                  color: ConfigBloc().darkModeOn
-                                      ? Colors.white
-                                      : Colors.black,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 20.0,
-                              ),
-                              Align(
-                                alignment: Alignment.bottomLeft,
-                                child: Container(
-                                  height: 2,
-                                  color: Colors.blue,
-                                  width: width / 3,
-                                ),
-                              ),
-                              SizedBox(height: 50),
-                              buildContinentPicker(),
-                            ],
+    var _provider = Provider.of<UserData>(context, listen: false);
+    return EditProfileScaffold(
+      title: '',
+      widget: Column(
+        children: [
+          _isLoading ? LinearProgressIndicator() : const SizedBox.shrink(),
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20.0),
+                  EditProfileInfo(
+                    editTitle: _provider.userLocationPreference!.continent!,
+
+                    //  'Choose \nLocation',
+                    info:
+                        'By selecting a location, we can offer personalized recommendations based on your interests and proximity. When you enter your city, we can suggest local events taking place in that area, as well as connect you with other users who are also based in the same location. This facilitates meaningful connections and creates opportunities for potential business collaborations and networking.',
+                    icon: Icons.location_on,
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  _addressValue(
+                      'City',
+                      _provider.city.isEmpty
+                          ? widget.user.city!
+                          : _provider.city),
+                  _addressValue(
+                      'Country',
+                      _provider.country.isEmpty
+                          ? widget.user.country!
+                          : _provider.country),
+                  _addressValue('Continent',
+                      _continent.isEmpty ? widget.user.continent! : _continent),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'City',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 8.8,
                           ),
                         ),
-                      ),
-                    ],
-                  )),
+                        const SizedBox(height: 3),
+                        DummyTextField(
+                          onPressed: () {
+                            _showBottomSheetCountry(context, 'userName');
+                          },
+                          text: _provider.city.isEmpty
+                              ? widget.user.city!.isEmpty
+                                  ? 'Enter name of your city here...'
+                                  : widget.user.city!
+                              : _provider.city,
+                        ),
+                      ],
+                    ),
+                  ),
+                  buildContinentPicker(),
+                ],
+              ),
             ),
-          )),
+          ),
+          const SizedBox(
+            height: 70.0,
+          ),
+          _isLoading ? LinearProgress() : const SizedBox.shrink()
+        ],
+      ),
     );
   }
 }

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:bars/utilities/exports.dart';
 
 class CircularButton extends StatelessWidget {
   final Color color;
@@ -11,8 +11,8 @@ class CircularButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Container(
-      width: 40,
-      height: 40,
+      width: ResponsiveHelper.responsiveFontSize(context, 40.0),
+      height: ResponsiveHelper.responsiveFontSize(context, 40.0),
       decoration:
           BoxDecoration(color: color, shape: BoxShape.circle, boxShadow: [
         BoxShadow(

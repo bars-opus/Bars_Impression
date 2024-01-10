@@ -12,7 +12,8 @@ class _FollowUserSchimmerState extends State<FollowUserSchimmer> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: ListView(children: <Widget>[
+      body: ListView(
+        children: <Widget>[
         Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,

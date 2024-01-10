@@ -13,7 +13,7 @@ class ExploreEventsSchimmerSkeleton extends StatelessWidget {
               Colors.black.withOpacity(.5)
             ]),
             borderRadius: BorderRadius.circular(30),
-            color: ConfigBloc().darkModeOn ? Color(0xFF1f2022) : Colors.white,
+            color:Theme.of(context).primaryColorLight,
           ),
           height: MediaQuery.of(context).size.height,
         ),

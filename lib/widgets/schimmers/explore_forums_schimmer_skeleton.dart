@@ -10,9 +10,9 @@ class ExploreForumsSchimmerSkeleton extends StatelessWidget {
             Colors.black.withOpacity(.5),
             Colors.black.withOpacity(.5)
           ]),
-          color: ConfigBloc().darkModeOn ? Color(0xFF1f2022) : Colors.white,
+          color: Theme.of(context).primaryColorLight,
         ),
-        height: 200,
+        height: ResponsiveHelper.responsiveHeight(context, 200,),
       ),
     );
   }

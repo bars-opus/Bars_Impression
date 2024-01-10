@@ -1,7 +1,7 @@
 import 'package:bars/utilities/exports.dart';
 
 class VerificationInfo extends StatefulWidget {
-  final AccountHolder user;
+  final AccountHolderAuthor user;
   final Verification? verification;
 
   VerificationInfo({
@@ -20,7 +20,7 @@ class _VerificationInfoState extends State<VerificationInfo> {
       backgroundColor: Colors.blue,
       appBar: AppBar(
         iconTheme: IconThemeData(
-          color: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+          color: Theme.of(context).primaryColor,
         ),
         automaticallyImplyLeading: true,
         elevation: 0,
@@ -38,22 +38,18 @@ class _VerificationInfoState extends State<VerificationInfo> {
                     Center(
                       child: Icon(
                         MdiIcons.checkboxMarkedCircle,
-                        size: 50,
-                        color: ConfigBloc().darkModeOn
-                            ? Color(0xFF1a1a1a)
-                            : Colors.white,
+                        size:ResponsiveHelper.responsiveHeight(context, 20),
+                        color: Theme.of(context).primaryColor,
                       ),
                     ),
                     Center(
                       child: Text(
-                        widget.user.verified!.isNotEmpty
+                        widget.user.verified!
                             ? "Account\nVerified"
                             : 'Verified\nStatus',
                         style: TextStyle(
-                          color: ConfigBloc().darkModeOn
-                              ? Color(0xFF1a1a1a)
-                              : Colors.white,
-                          fontSize: 50.0,
+                          color: Theme.of(context).primaryColor,
+                          fontSize: ResponsiveHelper.responsiveFontSize(context, 50),
                           fontWeight: FontWeight.w100,
                         ),
                         textAlign: TextAlign.center,
@@ -69,13 +65,12 @@ class _VerificationInfoState extends State<VerificationInfo> {
               child: Container(
                 width: 20,
                 height: 1,
-                color: ConfigBloc().darkModeOn ? Colors.black : Colors.white,
+                color: Theme.of(context).secondaryHeaderColor,
               ),
             ),
             Container(
               decoration: BoxDecoration(
-                color:
-                    ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
+                color: Theme.of(context).primaryColor,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Padding(
@@ -84,7 +79,7 @@ class _VerificationInfoState extends State<VerificationInfo> {
                     color: Colors.transparent,
                     child: HyperLinkText(
                       from: 'Verified',
-                      text: widget.user.verified!.isNotEmpty
+                      text: widget.user.verified!
                           ? 'Your account has been verified with the following credentials:\n\nEmail: ${widget.verification!.email}\nContact: ${widget.verification!.phoneNumber}\nId card: ${widget.verification!.govIdType}\nWebsite: ${widget.verification!.website}\nWikipedia: ${widget.verification!.wikipedia}\nNews coverage: ${widget.verification!.newsCoverage}\nSocial Meida: ${widget.verification!.socialMedia}\nOther link: ${widget.verification!.otherLink}'
                           : 'Your verification request was ${widget.verification!.status}\non ${MyDateFormat.toDate(
                               widget.verification!.timestamp!.toDate(),

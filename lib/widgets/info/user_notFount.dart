@@ -10,7 +10,7 @@ class UserNotFound extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF1a1a1a),
-          elevation: 0,
+        elevation: 0,
         iconTheme: IconThemeData(
           color: Colors.white,
         ),
@@ -30,7 +30,10 @@ class UserNotFound extends StatelessWidget {
                   ShakeTransition(
                     child: Icon(
                       Icons.person_off_outlined,
-                      size: 40.0,
+                      size: ResponsiveHelper.responsiveFontSize(
+                        context,
+                        40,
+                      ),
                       color: Colors.white,
                     ),
                   ),
@@ -39,7 +42,10 @@ class UserNotFound extends StatelessWidget {
                   ),
                   Text(userName,
                       style: TextStyle(
-                        fontSize: 40,
+                        fontSize: ResponsiveHelper.responsiveFontSize(
+                          context,
+                          40,
+                        ),
                         color: Colors.white,
                       )),
                   SizedBox(
@@ -47,9 +53,26 @@ class UserNotFound extends StatelessWidget {
                   ),
                   Text('not found',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: ResponsiveHelper.responsiveFontSize(
+                          context,
+                          14,
+                        ),
                         color: Colors.red,
                       )),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    'The account you\'re trying to access does not exist. It may have been deleted or the user data could be incorrect.',
+                    style: TextStyle(
+                      fontSize: ResponsiveHelper.responsiveFontSize(
+                        context,
+                        14,
+                      ),
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 ],
               ),
             ),

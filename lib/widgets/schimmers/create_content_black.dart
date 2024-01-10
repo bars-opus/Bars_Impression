@@ -7,6 +7,7 @@ class ContentFieldBlack extends StatelessWidget {
   String hintText = '';
   final Function(String) onSavedText;
   final Function onValidateText;
+  final bool onlyBlack;
 
   ContentFieldBlack({
     required this.onSavedText,
@@ -14,6 +15,7 @@ class ContentFieldBlack extends StatelessWidget {
     required this.initialValue,
     required this.hintText,
     required this.labelText,
+    this.onlyBlack = true,
   });
 
   @override
@@ -25,16 +27,21 @@ class ContentFieldBlack extends StatelessWidget {
             keyboardType: TextInputType.multiline,
             maxLines: null,
             textCapitalization: TextCapitalization.sentences,
+            keyboardAppearance: MediaQuery.of(context).platformBrightness,
             initialValue: initialValue,
             style: TextStyle(
-              color: Colors.black,
-            ),
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
+                color: onlyBlack? Colors.black: Theme.of(context).secondaryHeaderColor,
+                fontWeight: FontWeight.normal),
             decoration: InputDecoration(
                 hintText: hintText,
-                hintStyle: TextStyle(fontSize: 12.0, color: Colors.grey),
+                hintStyle: TextStyle(
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 14.0),
+                    color: Colors.grey),
                 labelText: labelText,
                 labelStyle: TextStyle(
-                  fontSize: 14.0,
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
                   color: Colors.grey,
                 ),
                 enabledBorder: new UnderlineInputBorder(

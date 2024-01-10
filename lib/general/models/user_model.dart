@@ -1,12 +1,14 @@
 import 'package:bars/utilities/exports.dart';
 
 class AccountHolder {
+  // personal info
   final String? id;
   final String? name;
   final String? userName;
   final String? profileImageUrl;
-  final String? email;
   final String? bio;
+  final String? email;
+
   final String? favouritePunchline;
   final String? favouriteArtist;
   final String? favouriteSong;

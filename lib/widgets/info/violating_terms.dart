@@ -18,17 +18,13 @@ class ViolatingTerms extends StatefulWidget {
 class _ViolatingTermsState extends State<ViolatingTerms> {
   @override
   Widget build(BuildContext context) {
-    return ResponsiveScaffold(
-      child: Scaffold(
-          backgroundColor:
-              ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+    return Scaffold(
+          backgroundColor: Theme.of(context).primaryColor,
           appBar: AppBar(
-            backgroundColor:
-                ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+            backgroundColor: Theme.of(context).primaryColor,
             iconTheme: IconThemeData(
-                color: ConfigBloc().darkModeOn
-                    ? Color(0xFFf2f2f2)
-                    : Color(0xFF1a1a1a)),
+              color: Theme.of(context).primaryColor,
+            ),
             automaticallyImplyLeading: true,
             elevation: 0,
           ),
@@ -42,16 +38,14 @@ class _ViolatingTermsState extends State<ViolatingTerms> {
                     child: Icon(
                       Icons.warning_amber,
                       color: Colors.blue,
-                      size: 100.0,
+                      size:  ResponsiveHelper.responsiveHeight(context, 100,),
                     ),
                   ),
                   Text(
                     'We want to keep Bars Impression safe for all users, therefore certain words are not encourged on Bars Impression. A word that is  hate speech, threatening, harrasment, bullying, pornographic, incites violence, or contains nudity or graphic or gratuitous violence.These voilates the terms of use of Bars Impression.',
                     style: TextStyle(
-                        color: ConfigBloc().darkModeOn
-                            ? Color(0xFFf2f2f2)
-                            : Color(0xFF1a1a1a),
-                        fontSize: 14),
+                        color:Theme.of(context).secondaryHeaderColor,
+                        fontSize:  ResponsiveHelper.responsiveFontSize(context, 14,),),
                     textAlign: TextAlign.center,
                   ),
                   Center(
@@ -60,7 +54,7 @@ class _ViolatingTermsState extends State<ViolatingTerms> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (_) => MyWebView(
+                                builder: (_) => MyWebView( title: '',
                                       url:
                                           'https://www.barsopus.com/terms-of-use',
                                     )));
@@ -68,6 +62,7 @@ class _ViolatingTermsState extends State<ViolatingTerms> {
                       child: Text(
                         'learn more',
                         style: TextStyle(
+                          fontSize:  ResponsiveHelper.responsiveFontSize(context, 14,),
                           color: Colors.blue,
                         ),
                       ),
@@ -83,7 +78,7 @@ class _ViolatingTermsState extends State<ViolatingTerms> {
                 ],
               ),
             ),
-          )),
+          ),
     );
   }
 }

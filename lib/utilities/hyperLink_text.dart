@@ -15,65 +15,66 @@ class _HyperLinkTextState extends State<HyperLinkText> {
   Text buildTextWithLinks(String textToLink) => Text.rich(
         TextSpan(
             children: linkify(
-          textToLink,
+          textToLink.replaceAll('\n', ' '),
         )),
         style: widget.from!.startsWith('Profile')
             ? TextStyle(
-                fontSize: 12.0,
-                color: ConfigBloc().darkModeOn ? Colors.blueGrey : Colors.white,
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 12),
+                color: Colors.white,
               )
             : widget.from!.startsWith('Caption')
                 ? TextStyle(
-                    fontSize: 12.0,
+                    fontSize: ResponsiveHelper.responsiveFontSize(context, 12),
                     color: Colors.grey,
                   )
-                : widget.from!.startsWith('forum')
+                : widget.from!.startsWith('Comment')
                     ? TextStyle(
-                        fontSize: 12.0,
-                        color: ConfigBloc().darkModeOn
-                            ? Colors.black
-                            : Colors.white,
+                        fontSize:
+                            ResponsiveHelper.responsiveFontSize(context, 14),
+                        color: Theme.of(context).secondaryHeaderColor,
                       )
-                    : widget.from!.startsWith('Advice')
+                    : widget.from!.startsWith('Reply')
                         ? TextStyle(
-                            fontSize: 12.0,
-                            color: Colors.black,
+                            fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 14),
+                            color: Theme.of(context).secondaryHeaderColor,
                           )
-                        : widget.from!.startsWith('Link')
+                        : widget.from!.startsWith('Advice')
                             ? TextStyle(
-                                fontSize: 12.0,
+                                fontSize: ResponsiveHelper.responsiveFontSize(
+                                    context, 14),
                                 color: Colors.black,
                               )
-                            : widget.from!.startsWith('Message')
-                                ? TextStyle(
-                                    fontSize: 14.0,
-                                    color: Colors.black,
-                                  )
-                                : widget.from!.startsWith('Verified')
+                            : widget.from!.startsWith('Link')
+                                ? Theme.of(context).textTheme.bodySmall
+                                : widget.from!.startsWith('Message')
                                     ? TextStyle(
-                                        fontSize: 14.0,
-                                        color: ConfigBloc().darkModeOn
-                                            ? Colors.white
-                                            : Colors.black,
+                                        fontSize:
+                                            ResponsiveHelper.responsiveFontSize(
+                                                context, 14),
+                                        color: Colors.black,
                                       )
-                                    : TextStyle(
-                                        fontSize: 12.0,
-                                        color: ConfigBloc().darkModeOn
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
-        textAlign: widget.from!.startsWith('Profile') ||
-                widget.from!.startsWith('Link')
-            ? TextAlign.center
-            : TextAlign.start,
+                                    : widget.from!.startsWith('Verified')
+                                        ? TextStyle(
+                                            fontSize: ResponsiveHelper
+                                                .responsiveFontSize(
+                                                    context, 14),
+                                            color: Theme.of(context)
+                                                .secondaryHeaderColor,
+                                          )
+                                        : TextStyle(
+                                            fontSize: ResponsiveHelper
+                                                .responsiveFontSize(
+                                                    context, 12),
+                                            color: Theme.of(context)
+                                                .secondaryHeaderColor,
+                                          ),
+        textAlign: TextAlign.start,
+        softWrap: true,
+        maxLines: widget.from!.startsWith('Profile') ? 10 : null,
       );
 
   Future<void> _makePhoneCall(String url) async {
-    final double width = Responsive.isDesktop(
-      context,
-    )
-        ? 600.0
-        : MediaQuery.of(context).size.width;
     if (await canLaunchUrl(
       Uri.parse(url),
     )) {
@@ -81,48 +82,11 @@ class _HyperLinkTextState extends State<HyperLinkText> {
         Uri.parse(url),
       ));
     } else {
-      Flushbar(
-        margin: EdgeInsets.all(8),
-        boxShadows: [
-          BoxShadow(
-            color: Colors.black,
-            offset: Offset(0.0, 2.0),
-            blurRadius: 3.0,
-          )
-        ],
-        flushbarPosition: FlushbarPosition.TOP,
-        flushbarStyle: FlushbarStyle.FLOATING,
-        titleText: Text(
-          'Sorry',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: width > 800 ? 22 : 14,
-          ),
-        ),
-        messageText: Text(
-          'Could not make call',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: width > 800 ? 20 : 12,
-          ),
-        ),
-        icon: Icon(
-          Icons.info_outline,
-          size: 28.0,
-          color: Colors.blue,
-        ),
-        duration: Duration(seconds: 3),
-        leftBarIndicatorColor: Colors.blue,
-      )..show(context);
+      mySnackBar(context, 'Could not make call');
     }
   }
 
   Future<void> _sendMail(String url) async {
-    final double width = Responsive.isDesktop(
-      context,
-    )
-        ? 600.0
-        : MediaQuery.of(context).size.width;
     if (await canLaunchUrl(
       Uri.parse(url),
     )) {
@@ -130,39 +94,7 @@ class _HyperLinkTextState extends State<HyperLinkText> {
         Uri.parse(url),
       ));
     } else {
-      Flushbar(
-        margin: EdgeInsets.all(8),
-        boxShadows: [
-          BoxShadow(
-            color: Colors.black,
-            offset: Offset(0.0, 2.0),
-            blurRadius: 3.0,
-          )
-        ],
-        flushbarPosition: FlushbarPosition.TOP,
-        flushbarStyle: FlushbarStyle.FLOATING,
-        titleText: Text(
-          'Sorry',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: width > 800 ? 22 : 14,
-          ),
-        ),
-        messageText: Text(
-          'Could\'nt launch mail',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: width > 800 ? 20 : 12,
-          ),
-        ),
-        icon: Icon(
-          Icons.info_outline,
-          size: 28.0,
-          color: Colors.blue,
-        ),
-        duration: Duration(seconds: 3),
-        leftBarIndicatorColor: Colors.blue,
-      )..show(context);
+      mySnackBar(context, 'Could not  launch mail');
     }
   }
 
@@ -203,8 +135,10 @@ class _HyperLinkTextState extends State<HyperLinkText> {
               ? Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) =>
-                        WebDisclaimer(link: linkToOpen, contentType: 'Link'),
+                    builder: (_) => WebDisclaimer(
+                        icon: Icons.link,
+                        link: linkToOpen,
+                        contentType: 'Link'),
                   ),
                 )
               : type.startsWith('nameMention')
@@ -222,7 +156,10 @@ class _HyperLinkTextState extends State<HyperLinkText> {
                           context,
                           MaterialPageRoute(
                             builder: (_) => WebDisclaimer(
-                                link: linkToOpen, contentType: 'Link'),
+                              icon: Icons.link,
+                              link: linkToOpen,
+                              contentType: 'Link',
+                            ),
                           ),
                         )
                       : type.startsWith('Profaine')
@@ -237,7 +174,7 @@ class _HyperLinkTextState extends State<HyperLinkText> {
                               ? _sendMail(linkToOpen)
                               : type.startsWith('contact')
                                   ? _makePhoneCall(linkToOpen)
-                                  :_nothing();
+                                  : _nothing();
         },
       ));
 
@@ -285,7 +222,7 @@ class _HyperLinkTextState extends State<HyperLinkText> {
     return list;
   }
 
-_nothing(){}
+  _nothing() {}
 
   @override
   Widget build(BuildContext context) {

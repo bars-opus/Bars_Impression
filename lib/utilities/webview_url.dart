@@ -3,8 +3,9 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 class MyWebView extends StatefulWidget {
   final String url;
+  final String title;
 
-  MyWebView({required this.url});
+  MyWebView({required this.url, required this.title});
   static final id = 'MyWebView';
   @override
   _MyWebViewState createState() => _MyWebViewState();
@@ -14,14 +15,17 @@ class _MyWebViewState extends State<MyWebView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF1a1a1a),
-      appBar: AppBar(
-        automaticallyImplyLeading: true,
-        iconTheme: IconThemeData(
-          color: Colors.blue,
+      backgroundColor: Theme.of(context).primaryColorLight,
+      appBar: AppBar( iconTheme: IconThemeData(
+          color: Theme.of(context).secondaryHeaderColor,
         ),
-        backgroundColor:
-            ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Color(0xFFf2f2f2),
+        automaticallyImplyLeading: true,
+        
+        title: Text(
+          widget.title,
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+        backgroundColor: Theme.of(context).primaryColorLight,
       ),
       body: WebView(
         initialUrl: widget.url,

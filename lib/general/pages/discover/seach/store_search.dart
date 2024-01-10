@@ -1,184 +1,191 @@
 import 'package:bars/utilities/exports.dart';
 
 class StoreSearch extends StatefulWidget {
-  final User? user;
-
-  StoreSearch({required this.user});
-
-  static final id = 'StoreSearch';
-
   @override
-  _StoreSearchState createState() => _StoreSearchState();
+  State<StoreSearch> createState() => _StoreSearchState();
 }
 
-class _StoreSearchState extends State<StoreSearch> {
-  Future<QuerySnapshot>? _users;
-  Future<QuerySnapshot>? _posts;
-  Future<QuerySnapshot>? _events;
-  Future<QuerySnapshot>? _forums;
+class _StoreSearchState extends State<StoreSearch>
+    with TickerProviderStateMixin {
+  TextEditingController _searchController = TextEditingController();
+  final FocusNode _addressSearchfocusNode = FocusNode();
+  final _debouncer = Debouncer(milliseconds: 500);
+  late TabController _tabController;
+  final _physycsNotifier = ValueNotifier<bool>(false);
 
-  String query = "";
-  final _controller = new TextEditingController();
+  ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
+
+  Future<QuerySnapshot>? _users;
+  Future<QuerySnapshot>? _event;
+
+  final FocusNode _focusNode = FocusNode();
+
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) {
+        HapticFeedback.mediumImpact();
+      }
+    });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _searchController.dispose();
+    _addressSearchfocusNode.dispose();
+    _isTypingNotifier.dispose();
+    _tabController.dispose();
+    _debouncer.cancel();
+    _focusNode.dispose();
+
     super.dispose();
   }
 
-  _clearSearch() {
-    WidgetsBinding.instance.addPostFrameCallback((_) => _controller.clear());
-    setState(() {
-      _users = null;
-      _posts = null;
-      _events = null;
-      _forums = null;
-    });
+  _cancelSearch() {
+    _users = null;
+    _event = null;
+    FocusScope.of(context).unfocus();
+    _clearSearch();
+
+    Navigator.pop(context);
   }
 
-  _nothing() {}
+  _clearSearch() {
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _searchController.clear());
+    Provider.of<UserData>(context, listen: false).addressSearchResults = [];
+  }
 
-  _search(String input) {
-    setState(() {
-      _users = DatabaseService.searchUsers(input.toUpperCase());
-      _events = DatabaseService.searchEvent(input.toUpperCase());
-      _forums = DatabaseService.searchForum(input.toUpperCase());
-      _posts = DatabaseService.searchPost(input.toUpperCase());
-    });
+  void _search() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    String input = _searchController.text.trim();
+    _provider.setStoreSearchTerm(input);
+    String searchTermUpper = _provider.storeSearchTerm.toUpperCase();
+
+    if (_tabController.index == 0) {
+      setState(() {
+        _event = DatabaseService.searchEvent(searchTermUpper);
+      });
+    } else if (_tabController.index == 1) {
+      setState(() {
+        _users = DatabaseService.searchUsers(searchTermUpper);
+      });
+    }
+  }
+
+  // void _search() {
+  //   var _provider = Provider.of<UserData>(context, listen: false);
+  //   String input = _searchController.text.trim();
+  //   _provider.setStoreSearchTerm(input);
+  //   String searchTermUpper = _provider.storeSearchTerm.toUpperCase();
+
+  //   setState(() {
+  //     _event = DatabaseService.searchEvent(searchTermUpper);
+  //   });
+  //   setState(() {
+  //     _users = DatabaseService.searchUsers(searchTermUpper);
+  //   });
+  // }
+
+  _searchContainer() {
+    return SearchContentField(
+      showCancelButton: true,
+      autoFocus: true,
+      cancelSearch: _cancelSearch,
+      controller: _searchController,
+      focusNode: _focusNode,
+      hintText: 'Type to search...',
+      onClearText: () {
+        _clearSearch();
+      },
+      onChanged: (value) {
+        if (_searchController.text.trim().isNotEmpty) {
+          _debouncer.run(() {
+            _search();
+          });
+        }
+      },
+      onTap: () {},
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveScaffold(
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    return Container(
+      color: Theme.of(context).primaryColorLight,
       child: MediaQuery(
         data: MediaQuery.of(context).copyWith(
             textScaleFactor:
                 MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.3)),
-        child: SingleChildScrollView(
-          child: Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            child: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
-              child: DefaultTabController(
-                length: 4,
-                child: Scaffold(
-                    backgroundColor: ConfigBloc().darkModeOn
-                        ? Color(0xFF1a1a1a)
-                        : Colors.white,
-                    appBar: AppBar(
-                      elevation: 0.0,
-                      iconTheme: IconThemeData(
-                        color: ConfigBloc().darkModeOn
-                            ? Colors.white
-                            : Colors.black,
+        child: DefaultTabController(
+          length: 2,
+          child: SafeArea(
+            child: Scaffold(
+              resizeToAvoidBottomInset: false,
+              backgroundColor: Theme.of(context).primaryColorLight,
+              appBar: PreferredSize(
+                preferredSize: Size.fromHeight(100),
+                child: AppBar(
+                  automaticallyImplyLeading: false,
+                  elevation: 0.0,
+                  backgroundColor: Theme.of(context).primaryColorLight,
+                  primary: false,
+                  title: _searchContainer(),
+                  bottom: TabBar(
+                    onTap: (index) {
+                      _provider.storeSearchTerm.isNotEmpty ? _search() : null;
+                    },
+                    controller: _tabController,
+                    labelColor: Theme.of(context).secondaryHeaderColor,
+                    indicatorSize: TabBarIndicatorSize.label,
+                    indicatorColor: Colors.blue,
+                    unselectedLabelColor: Colors.grey,
+                    isScrollable: true,
+                    labelPadding:
+                        EdgeInsets.symmetric(horizontal: 20, vertical: 5.0),
+                    indicatorWeight: 2.0,
+                    tabs: <Widget>[
+                      Text(
+                        style: Theme.of(context).textTheme.bodyMedium,
+                        'Events',
                       ),
-                      backgroundColor: ConfigBloc().darkModeOn
-                          ? Color(0xFF1a1a1a)
-                          : Colors.white,
-                      automaticallyImplyLeading: true,
-                      title: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Material(
-                          color: ConfigBloc().darkModeOn
-                              ? Color(0xFFf2f2f2)
-                              : Color(0xFF1a1a1a),
-                          elevation: 1.0,
-                          borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                          child: TextField(
-                            autofocus: true,
-                            style: TextStyle(
-                              color: ConfigBloc().darkModeOn
-                                  ? Colors.black
-                                  : Colors.white,
-                            ),
-                            cursorColor: Colors.blue,
-                            controller: _controller,
-                            onChanged: (input) {
-                              input.isEmpty ? _nothing() : _search(input);
-                            },
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 16.0, vertical: 12.0),
-                              border: InputBorder.none,
-                              hintText: 'Type to search...',
-                              prefixIcon: Icon(
-                                Icons.search,
-                                size: 20.0,
-                                color: ConfigBloc().darkModeOn
-                                    ? Colors.black
-                                    : Colors.white,
-                              ),
-                              hintStyle: TextStyle(
-                                fontSize: 16.0,
-                                color: Colors.grey,
-                              ),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  Icons.clear,
-                                  size: 15.0,
-                                  color: ConfigBloc().darkModeOn
-                                      ? Colors.black
-                                      : Colors.white,
-                                ),
-                                onPressed: _clearSearch,
-                              ),
-                            ),
-                            onSubmitted: (input) {
-                              input.isEmpty ? _nothing() : _search(input);
-                            },
-                          ),
-                        ),
+                      Text(
+                        style: Theme.of(context).textTheme.bodyMedium,
+                        'Creatives',
                       ),
-                      bottom: TabBar(
-                          labelColor: ConfigBloc().darkModeOn
-                              ? Colors.white
-                              : Colors.black,
-                          indicatorSize: TabBarIndicatorSize.label,
-                          indicatorColor: Colors.blue,
-                          onTap: (int index) {
-                            Provider.of<UserData>(context, listen: false)
-                                .setEventTab(index);
-                          },
-                          unselectedLabelColor: Colors.grey,
-                          isScrollable: true,
-                          labelPadding: EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10.0),
-                          indicatorWeight: 2.0,
-                          tabs: <Widget>[
-                            const Text(
-                              'Users',
-                            ),
-                            const Text(
-                              'Events',
-                            ),
-                            const Text(
-                              'Forums',
-                            ),
-                            const Text('Moods punched'),
-                          ]),
-                    ),
-                    body: TabBarView(
+                    ],
+                  ),
+                ),
+              ),
+              body: Listener(
+                onPointerMove: (event) {
+                  // _provider.setStoreSearchIndex(_tabController.index + 1);
+                  if (_provider.storeSearchTerm.isNotEmpty &&
+                      !_physycsNotifier.value) {
+                    _search();
+                    _physycsNotifier.value = true;
+                  }
+                },
+                onPointerUp: (_) => _physycsNotifier.value = false,
+                child: ValueListenableBuilder<bool>(
+                  valueListenable: _physycsNotifier,
+                  builder: (_, value, __) {
+                    return TabBarView(
+                      controller: _tabController,
                       physics: const AlwaysScrollableScrollPhysics(),
                       children: <Widget>[
-                        StoreSearchUsers(
-                          users: _users,
-                        ),
                         StoreSearchEvents(
-                          events: _events,
+                          events: _event,
                         ),
-                        StoreSearchForum(
-                          forums: _forums,
-                        ),
-                        StoreSearchPosts(
-                          posts: _posts,
-                        )
+                        StoreSearchUsers(users: _users),
                       ],
-                    )),
+                    );
+                  },
+                ),
               ),
             ),
           ),
@@ -187,3 +194,126 @@ class _StoreSearchState extends State<StoreSearch> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+// import 'package:bars/utilities/exports.dart';
+
+// class StoreSearch extends StatefulWidget {
+//   static final id = 'StoreSearch';
+
+//   @override
+//   _StoreSearchState createState() => _StoreSearchState();
+// }
+
+// class _StoreSearchState extends State<StoreSearch>
+//     with TickerProviderStateMixin {
+//   late TabController _tabController;
+//   final _physycsNotifier = ValueNotifier<bool>(false);
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _tabController = TabController(length: 2, vsync: this);
+//   }
+
+//   void _search(UserData _provider) {
+//     switch (_provider.storeSearchTabIndex) {
+//       case 0:
+//         _provider.setUserStoreSearchSnapShot(DatabaseService.searchUsers(
+//             _provider.storeSearchTerm.toUpperCase()));
+//         break;
+//       case 1:
+//         _provider.setEventStoreSearchSnapShot(DatabaseService.searchEvent(
+//             _provider.storeSearchTerm.toUpperCase()));
+//         break;
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     var _provider = Provider.of<UserData>(context, listen: false);
+//     return MediaQuery(
+//       data: MediaQuery.of(context).copyWith(
+//           textScaleFactor:
+//               MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.3)),
+//       child: DefaultTabController(
+//         length: 2,
+//         child: Scaffold(
+//           resizeToAvoidBottomInset: false,
+//           backgroundColor: Theme.of(context).primaryColorLight,
+//           appBar: PreferredSize(
+//             preferredSize: Size.fromHeight(70),
+//             child: AppBar(
+//               elevation: 0.0,
+//               backgroundColor: Theme.of(context).primaryColorLight,
+//               primary: false,
+//               bottom: TabBar(
+//                 onTap: (index) {
+//                   _provider.setStoreSearchIndex(index);
+//                   _provider.storeSearchTerm.isNotEmpty
+//                       ? _search(_provider)
+//                       : null;
+//                 },
+//                 controller: _tabController,
+//                 labelColor: Theme.of(context).secondaryHeaderColor,
+//                 indicatorSize: TabBarIndicatorSize.label,
+//                 indicatorColor: Colors.blue,
+//                 unselectedLabelColor: Colors.grey,
+//                 isScrollable: true,
+//                 labelPadding:
+//                     EdgeInsets.symmetric(horizontal: 20, vertical: 5.0),
+//                 indicatorWeight: 2.0,
+//                 tabs: <Widget>[
+//                   Text(
+//                     style: Theme.of(context).textTheme.bodyMedium,
+//                     'Events',
+//                   ),
+//                   Text(
+//                     style: Theme.of(context).textTheme.bodyMedium,
+//                     'Creatives',
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ),
+//           body: Listener(
+//             onPointerMove: (event) {
+//               _provider.setStoreSearchIndex(_tabController.index + 1);
+//               if (_provider.storeSearchTerm.isNotEmpty &&
+//                   !_physycsNotifier.value) {
+//                 _search(_provider);
+//                 _physycsNotifier.value = true;
+//               }
+//             },
+//             onPointerUp: (_) => _physycsNotifier.value = false,
+//             child: ValueListenableBuilder<bool>(
+//               valueListenable: _physycsNotifier,
+//               builder: (_, value, __) {
+//                 return TabBarView(
+//                   controller: _tabController,
+//                   physics: const AlwaysScrollableScrollPhysics(),
+//                   children: <Widget>[
+//                     StoreSearchEvents(
+//                       events: _provider.eventStoreSearchSnapShot,
+//                     ),
+//                     StoreSearchUsers(
+//                       users: _provider.userStoreSearchSnapShot,
+//                     ),
+//                   ],
+//                 );
+//               },
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }

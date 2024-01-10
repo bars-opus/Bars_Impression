@@ -21,45 +21,54 @@ class UserStatistics extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: new Container(
-        width: 150.0,
-        child: SingleChildScrollView(
-          physics: NeverScrollableScrollPhysics(),
-          child: Column(
-            children: <Widget>[
-              Text(
-                count,
+        child: RichText(
+          textScaleFactor:
+              MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5),
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: count,
                 style: TextStyle(
                   color: countColor,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w500,
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
                 ),
               ),
-              SizedBox(
-                height: 5.0,
-              ),
-              Text(
-                title,
+              TextSpan(
+                text: title,
                 style: TextStyle(
                   color: titleColor,
-                  fontSize: 14,
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
                   fontWeight: FontWeight.w500,
                 ),
-                textAlign: TextAlign.center,
               ),
-              SizedBox(
-                height: 5.0,
-              ),
-              Text(
-                subTitle,
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 12,
-                ),
-                textAlign: TextAlign.center,
-              )
             ],
           ),
+          textAlign: TextAlign.center,
         ),
+
+        //  Column(
+        //   children: <Widget>[
+        //     Text(
+        //       count,
+        //       style: TextStyle(
+        //         color: countColor,
+        //         fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+        //       ),
+        //     ),
+        //     const SizedBox(
+        //       width: 5.0,
+        //     ),
+        //     Text(
+        // title,
+        // style: TextStyle(
+        //   color: titleColor,
+        //   fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+        //   fontWeight: FontWeight.w500,
+        // ),
+        //       textAlign: TextAlign.center,
+        //     ),
+        //   ],
+        // ),
       ),
     );
   }

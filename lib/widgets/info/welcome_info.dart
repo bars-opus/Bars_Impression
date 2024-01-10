@@ -3,7 +3,7 @@ import 'package:bars/utilities/exports.dart';
 class WelcomeInfo extends StatelessWidget {
   final String title;
   final String subTitle;
-  final Icon icon;
+  final IconData icon;
 
   WelcomeInfo({
     required this.subTitle,
@@ -13,20 +13,16 @@ class WelcomeInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double width = Responsive.isDesktop(context)
-        ? 600.0
-        : MediaQuery.of(context).size.width;
+    final double width = MediaQuery.of(context).size.width;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Transform.scale(
-          scale: 1,
-          child: RawMaterialButton(
-            shape: CircleBorder(),
-            onPressed: () {},
-            child: icon,
-          ),
+       
+        Icon(
+          icon,
+          color: Colors.grey,
+          size: ResponsiveHelper.responsiveHeight(context, 30),
         ),
         Container(
           width: width,
@@ -37,13 +33,15 @@ class WelcomeInfo extends StatelessWidget {
                 TextSpan(
                     text: title + '\n',
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 20.0),
                       color: Colors.white,
                     )),
                 TextSpan(
                   text: subTitle,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 14.0),
                     color: Colors.grey,
                   ),
                 ),

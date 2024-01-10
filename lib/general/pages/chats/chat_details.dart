@@ -3,133 +3,29 @@ import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
+//display
 class ChatDetails extends StatefulWidget {
-  final AccountHolderAuthor user;
+  var user;
   final Chat chat;
   final String currentUserId;
+  final bool isBlockingUser;
 
-  ChatDetails({
-    required this.user,
-    required this.chat,
-    required this.currentUserId,
-  });
+  ChatDetails(
+      {required this.user,
+      required this.currentUserId,
+      required this.chat,
+      required this.isBlockingUser});
 
   @override
-  _ChatDetailsState createState() => _ChatDetailsState();
+  State<ChatDetails> createState() => _ChatDetailsState();
 }
 
 class _ChatDetailsState extends State<ChatDetails> {
-  bool _restrictChat = false;
   bool _isAFollower = false;
-  bool _isBlockingUser = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _restrictChat = widget.chat.restrictChat;
-    _setupIsBlocking();
-    _setupIsAFollowerUser();
-  }
-
-  _showSelectImageDialog() {
-    return Platform.isIOS ? _iosBottomSheet() : _androidDialog(context);
-  }
-
-  _iosBottomSheet() {
-    showCupertinoModalPopup(
-        context: context,
-        builder: (BuildContext context) {
-          return CupertinoActionSheet(
-            title: Text(
-              'Are you sure you want to block ${widget.user.userName}?',
-              style: TextStyle(
-                fontSize: 16,
-                color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-              ),
-            ),
-            actions: <Widget>[
-              CupertinoActionSheetAction(
-                child: const Text(
-                  'Block',
-                  style: TextStyle(
-                    color: Colors.blue,
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-
-                  _blockOrUnBlock();
-                },
-              )
-            ],
-            cancelButton: CupertinoActionSheetAction(
-              child: const Text(
-                'Cancle',
-                style: TextStyle(
-                  color: Colors.red,
-                ),
-              ),
-              onPressed: () => Navigator.pop(context),
-            ),
-          );
-        });
-  }
-
-  _androidDialog(BuildContext parentContext) {
-    return showDialog(
-        context: parentContext,
-        builder: (context) {
-          return SimpleDialog(
-            title: Text(
-              'Are you sure you want to block ${widget.user.userName}?',
-              style: TextStyle(fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            children: <Widget>[
-              Divider(),
-              Center(
-                child: SimpleDialogOption(
-                  child: Text(
-                    'Block',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.blue),
-                    textAlign: TextAlign.center,
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _blockOrUnBlock();
-                  },
-                ),
-              ),
-              Divider(),
-              Center(
-                child: SimpleDialogOption(
-                  child: Text(
-                    'Cancel',
-                  ),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ),
-            ],
-          );
-        });
-  }
-
-  _setupIsBlocking() async {
-    bool isBlockingUser = await DatabaseService.isBlokingUser(
-      currentUserId: widget.currentUserId,
-      userId: widget.user.id!,
-    );
-    if (mounted) {
-      setState(() {
-        _isBlockingUser = isBlockingUser;
-      });
-    }
-  }
 
   _blockOrUnBlock() {
     HapticFeedback.heavyImpact();
-    if (_isBlockingUser) {
+    if (widget.isBlockingUser) {
       _unBlockser();
     } else {
       _blockser();
@@ -139,13 +35,9 @@ class _ChatDetailsState extends State<ChatDetails> {
   _unBlockser() {
     DatabaseService.unBlockUser(
       currentUserId: widget.currentUserId,
-      userId: widget.user.id!,
+      userId: widget.chat.toUserId,
     );
-    if (mounted) {
-      setState(() {
-        _isBlockingUser = false;
-      });
-    }
+
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(
         'unBlocked ' + widget.user.userName!,
@@ -155,21 +47,21 @@ class _ChatDetailsState extends State<ChatDetails> {
   }
 
   _blockser() async {
-    AccountHolder fromUser =
+    AccountHolderAuthor? fromUser =
         await DatabaseService.getUserWithId(widget.currentUserId);
-    DatabaseService.blockUser(
-      currentUserId: widget.currentUserId,
-      userId: widget.user.id!,
-      user: fromUser,
-    );
-    if (mounted) {
-      setState(() {
-        _isBlockingUser = true;
-      });
+    if (fromUser != null) {
+      DatabaseService.blockUser(
+        currentUserId: widget.currentUserId,
+        userId: widget.chat.toUserId,
+        user: fromUser,
+      );
+    } else {
+      mySnackBar(context, 'Could not block this person');
     }
+
     if (_isAFollower) {
       DatabaseService.unfollowUser(
-        currentUserId: widget.user.id!,
+        currentUserId: widget.chat.toUserId,
         userId: widget.currentUserId,
       );
     }
@@ -185,7 +77,7 @@ class _ChatDetailsState extends State<ChatDetails> {
   _setupIsAFollowerUser() async {
     bool isAFollower = await DatabaseService.isAFollowerUser(
       currentUserId: widget.currentUserId,
-      userId: widget.user.id!,
+      userId: widget.chat.toUserId,
     );
     if (mounted) {
       setState(() {
@@ -194,264 +86,137 @@ class _ChatDetailsState extends State<ChatDetails> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final width = Responsive.isDesktop(context)
-        ? 600.0
-        : MediaQuery.of(context).size.width;
+  void _showBottomSheetClearActivity(BuildContext context) {
+    String text = widget.isBlockingUser
+        ? 'un block ${widget.user.userName}'
+        : 'block ${widget.user.userName}';
 
-    return ResponsiveScaffold(
-      child: Container(
-        color: ConfigBloc().darkModeOn ? Color(0xFF1a1a1a) : Colors.white,
-        child: NestedScrollView(
-            headerSliverBuilder: (context, innerBoxScrolled) => [
-                  SliverAppBar(
-                    elevation: 0.0,
-                    automaticallyImplyLeading: true,
-                    floating: true,
-                    snap: true,
-                    iconTheme: new IconThemeData(
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                    ),
-                    backgroundColor: ConfigBloc().darkModeOn
-                        ? Color(0xFF1a1a1a)
-                        : Colors.white,
-                    title: Text(
-                      'Chat Info',
-                      style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
-                        color: ConfigBloc().darkModeOn
-                            ? Colors.white
-                            : Colors.black,
-                      ),
-                    ),
-                  ),
-                ],
-            body: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: ListView(
-                  children: <Widget>[
-                    GestureDetector(
-                      onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => ProfileScreen(
-                                    currentUserId: widget.currentUserId,
-                                    userId: widget.user.id!,
-                                    user: null,
-                                  ))),
-                      child: Center(
-                        child: Hero(
-                          tag: widget.user.id!,
-                          child: Material(
-                            color: Colors.transparent,
-                            child: Container(
-                              height: 120,
-                              width: 120,
-                              decoration: BoxDecoration(
-                                  color: Color(0xFF1a1a1a),
-                                  borderRadius: BorderRadius.circular(5),
-                                  image: DecorationImage(
-                                    image: widget.user.profileImageUrl!.isEmpty
-                                        ? AssetImage(
-                                            ConfigBloc().darkModeOn
-                                                ? 'assets/images/user_placeholder.png'
-                                                : 'assets/images/user_placeholder2.png',
-                                          ) as ImageProvider
-                                        : CachedNetworkImageProvider(
-                                            widget.user.profileImageUrl!),
-                                    fit: BoxFit.cover,
-                                  )),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Center(
-                      child: Stack(
-                        alignment: Alignment.bottomRight,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 12.0),
-                            child: Text(
-                              widget.user.userName!,
-                              style: TextStyle(
-                                fontSize: 20.0,
-                                fontWeight: FontWeight.bold,
-                                color: ConfigBloc().darkModeOn
-                                    ? Colors.white
-                                    : Colors.black,
-                              ),
-                            ),
-                          ),
-                          widget.user.verified!.isEmpty
-                              ? const SizedBox.shrink()
-                              : Positioned(
-                                  top: 5,
-                                  right: 0,
-                                  child: Icon(
-                                    MdiIcons.checkboxMarkedCircle,
-                                    size: 12,
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                        ],
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => ProfileScreen(
-                                    currentUserId: widget.currentUserId,
-                                    userId: widget.user.id!,
-                                    user: null,
-                                  ))),
-                      child: Center(
-                        child: RichText(
-                          textScaleFactor:
-                              MediaQuery.of(context).textScaleFactor,
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: '${widget.user.profileHandle!}\n',
-                                style: TextStyle(
-                                  fontSize: 12.0,
-                                  color: ConfigBloc().darkModeOn
-                                      ? Colors.white
-                                      : Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.center,
-                      child: Container(
-                        width: width,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.teal,
-                            foregroundColor: Colors.blue,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                            ),
-                          ),
-                          onPressed: () async {
-                            AccountHolder user =
-                                await DatabaseService.getUserWithId(
-                                    widget.user.id!);
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => UserBooking(
-                                          user: user,
-                                          currentUserId: widget.currentUserId,
-                                          userIsCall: 1,
-                                          from: 'Booking',
-                                        )));
-                          },
-                          child: Material(
-                            color: Colors.transparent,
-                            child: Text(
-                              'Booking Contact',
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    Divider(color: Colors.teal),
-                    SettingSwitch(
-                      color: Colors.teal,
-                      title: 'Restrict messages',
-                      subTitle:
-                          'Restrict messaging between you and ${widget.user.userName}.',
-                      value: _restrictChat,
-                      onChanged: (value) => setState(
-                        () {
-                          _restrictChat = this._restrictChat = value;
-                          usersRef
-                              .doc(widget.currentUserId)
-                              .collection('chats')
-                              .doc(widget.user.id)
-                              .update({
-                            'restrictChat': _restrictChat,
-                          });
-                          usersRef
-                              .doc(widget.user.id)
-                              .collection('chats')
-                              .doc(widget.currentUserId)
-                              .update({
-                            'restrictChat': _restrictChat,
-                          });
-                        },
-                      ),
-                    ),
-                    Divider(color: Colors.teal),
-                    GestureDetector(
-                      onTap: () => _showSelectImageDialog(),
-                      child: IntroInfo(
-                        title: _isBlockingUser
-                            ? 'unBlock ${widget.user.userName}'
-                            : 'Block ${widget.user.userName}',
-                        onPressed: () => _showSelectImageDialog(),
-                        subTitle: _isBlockingUser
-                            ? "${widget.user.userName} would see and react to any of your content."
-                            : "Stop ${widget.user.userName} from seeing and reacting to any of your content.",
-                        icon: Icon(
-                          Icons.block,
-                          color: _isBlockingUser ? Colors.red : Colors.grey,
-                        ),
-                      ),
-                    ),
-                    Divider(color: Colors.teal),
-                    const SizedBox(height: 30),
-                    Display(
-                      currentUserId: widget.currentUserId,
-                      chat: widget.chat,
-                      user: widget.user,
-                    ),
-                  ],
-                ),
-              ),
-            )),
-      ),
+    String text2 = widget.isBlockingUser
+        ? "${widget.user.userName} would see and react to any of your content."
+        : "This action would stop ${widget.user.userName} from seeing and reacting to any of your content.";
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return ConfirmationPrompt(
+          buttonText: text,
+          onPressed: () {
+            _blockOrUnBlock();
+          },
+          title: 'Are you sure you $text',
+          subTitle: text2,
+        );
+      },
     );
   }
-}
 
-//display
-class Display extends StatelessWidget {
-  final AccountHolderAuthor user;
-  final Chat chat;
-  final String currentUserId;
-
-  Display(
-      {required this.user, required this.currentUserId, required this.chat});
   @override
   Widget build(BuildContext context) {
+    bool _restrictChat = widget.chat.restrictChat;
+
     return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+          const SizedBox(
+            height: 30,
+          ),
+          ListTile(
+            trailing: Icon(
+              Icons.arrow_forward_ios_outlined,
+              color: Colors.grey,
+              size: 20,
+            ),
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => ProfileScreen(
+                            currentUserId: widget.currentUserId,
+                            userId: widget.chat.toUserId,
+                            user: null,
+                          )));
+            },
+            leading: widget.user.profileImageUrl!.isEmpty
+                ? Icon(
+                    Icons.account_circle,
+                    color: Theme.of(context).secondaryHeaderColor,
+                    size: ResponsiveHelper.responsiveHeight(context, 40),
+                  )
+                : CircleAvatar(
+                    radius: 20.0,
+                    backgroundColor: Theme.of(context).primaryColor,
+                    backgroundImage: CachedNetworkImageProvider(
+                        widget.user.profileImageUrl!)),
+            title: NameText(
+              name: widget.user.userName!.toUpperCase(),
+              verified: true,
+            ),
+            subtitle: Text(
+              widget.user.profileHandle!,
+              style: TextStyle(color: Colors.blue, fontSize: 12),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Divider(color: Colors.blue),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+            child: SettingSwitch(
+              color: Colors.blue,
+              title: 'Restrict messages',
+              subTitle:
+                  'Restrict messaging between you and ${widget.user.userName}.',
+              value: _restrictChat,
+              onChanged: (value) => setState(
+                () {
+                  _restrictChat = value;
+                  usersAuthorRef
+                      .doc(widget.currentUserId)
+                      .collection('chats')
+                      .doc(widget.chat.toUserId)
+                      .update({
+                    'restrictChat': _restrictChat,
+                  });
+                  usersAuthorRef
+                      .doc(widget.chat.toUserId)
+                      .collection('chats')
+                      .doc(widget.currentUserId)
+                      .update({
+                    'restrictChat': _restrictChat,
+                  });
+                },
+              ),
+            ),
+          ),
+          Divider(color: Colors.blue),
+          GestureDetector(
+            onTap: () {
+              _showBottomSheetClearActivity(context);
+            },
+            child: IntroInfo(
+              title: widget.isBlockingUser
+                  ? 'unBlock ${widget.user.userName}'
+                  : 'Block ${widget.user.userName}',
+              onPressed: () {
+                _showBottomSheetClearActivity(context);
+              },
+              subTitle: widget.isBlockingUser
+                  ? "${widget.user.userName} would see and react to any of your content."
+                  : "This action would stop ${widget.user.userName} from seeing and reacting to any of your content.",
+              icon: Icons.block,
+            ),
+          ),
+          Divider(color: Colors.blue),
+          const SizedBox(height: 30),
+          Text(
+            '     Details',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          const SizedBox(height: 10),
           Table(
             border: TableBorder.all(
-              color: Colors.teal,
+              color: Colors.blue,
               width: 0.5,
             ),
             children: [
@@ -463,7 +228,7 @@ class Display extends StatelessWidget {
                     'Chat initiator',
                     style: TextStyle(
                       color: Colors.grey,
-                      fontSize: 12,
+                      fontSize: 14,
                     ),
                   ),
                 ),
@@ -471,12 +236,10 @@ class Display extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(
                       vertical: 10.0, horizontal: 20),
                   child: Text(
-                    chat.messageInitiator,
-                    style: TextStyle(
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                      fontSize: 12,
-                    ),
+                    widget.chat.messageInitiator == widget.currentUserId
+                        ? 'Me'
+                        : widget.user.userName!,
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
               ]),
@@ -488,7 +251,7 @@ class Display extends StatelessWidget {
                     'First message',
                     style: TextStyle(
                       color: Colors.grey,
-                      fontSize: 12,
+                      fontSize: 14,
                     ),
                   ),
                 ),
@@ -496,12 +259,8 @@ class Display extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(
                       vertical: 10.0, horizontal: 20),
                   child: Text(
-                    chat.firstMessage,
-                    style: TextStyle(
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                      fontSize: 12,
-                    ),
+                    widget.chat.firstMessage,
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
               ]),
@@ -513,7 +272,7 @@ class Display extends StatelessWidget {
                     'First message date',
                     style: TextStyle(
                       color: Colors.grey,
-                      fontSize: 12,
+                      fontSize: 14,
                     ),
                   ),
                 ),
@@ -525,17 +284,16 @@ class Display extends StatelessWidget {
                     text: TextSpan(
                       children: [
                         TextSpan(
-                            text: MyDateFormat.toDate(chat.timestamp.toDate()),
+                            text: MyDateFormat.toDate(
+                                widget.chat.timestamp!.toDate()),
                             style: TextStyle(
                               fontSize: 12,
-                              color: ConfigBloc().darkModeOn
-                                  ? Colors.white
-                                  : Colors.black,
+                              color: Theme.of(context).secondaryHeaderColor,
                             )),
                         TextSpan(
                             text: '\n' +
                                 timeago.format(
-                                  chat.timestamp.toDate(),
+                                  widget.chat.timestamp!.toDate(),
                                 ),
                             style: TextStyle(
                               fontSize: 12,
@@ -554,7 +312,7 @@ class Display extends StatelessWidget {
                     'Last message',
                     style: TextStyle(
                       color: Colors.grey,
-                      fontSize: 12,
+                      fontSize: 14,
                     ),
                   ),
                 ),
@@ -562,12 +320,8 @@ class Display extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(
                       vertical: 10.0, horizontal: 20),
                   child: Text(
-                    chat.lastMessage,
-                    style: TextStyle(
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                      fontSize: 12,
-                    ),
+                    widget.chat.lastMessage,
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
               ]),
@@ -579,7 +333,7 @@ class Display extends StatelessWidget {
                     'Last message date',
                     style: TextStyle(
                       color: Colors.grey,
-                      fontSize: 12,
+                      fontSize: 14,
                     ),
                   ),
                 ),
@@ -592,18 +346,16 @@ class Display extends StatelessWidget {
                       children: [
                         TextSpan(
                             text: MyDateFormat.toDate(
-                              chat.newMessageTimestamp.toDate(),
+                              widget.chat.newMessageTimestamp!.toDate(),
                             ),
                             style: TextStyle(
                               fontSize: 12,
-                              color: ConfigBloc().darkModeOn
-                                  ? Colors.white
-                                  : Colors.black,
+                              color: Theme.of(context).secondaryHeaderColor,
                             )),
                         TextSpan(
                             text: '\n' +
                                 timeago.format(
-                                  chat.newMessageTimestamp.toDate(),
+                                  widget.chat.newMessageTimestamp!.toDate(),
                                 ),
                             style: TextStyle(
                               fontSize: 12,
@@ -622,7 +374,7 @@ class Display extends StatelessWidget {
                     'Number of messages',
                     style: TextStyle(
                       color: Colors.grey,
-                      fontSize: 12,
+                      fontSize: 14,
                     ),
                   ),
                 ),
@@ -633,18 +385,12 @@ class Display extends StatelessWidget {
                     NumberFormat.compact().format(
                         Provider.of<UserData>(context, listen: false)
                             .messageCount),
-                    style: TextStyle(
-                      color:
-                          ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                      fontSize: 12,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
               ]),
             ],
           ),
-          const SizedBox(height: 30),
-          Divider(color: Colors.teal),
         ]);
   }
 }

@@ -30,7 +30,7 @@ class UserBanned extends StatelessWidget {
                   ShakeTransition(
                     child: Icon(
                       Icons.person_off_outlined,
-                      size: 40.0,
+                      size:  ResponsiveHelper.responsiveHeight(context, 40,),
                       color: Colors.red,
                     ),
                   ),
@@ -39,7 +39,7 @@ class UserBanned extends StatelessWidget {
                   ),
                   Text(userName,
                       style: TextStyle(
-                        fontSize: 40,
+                        fontSize:  ResponsiveHelper.responsiveFontSize(context, 40,),
                         color: Colors.white,
                       )),
                   SizedBox(
@@ -47,13 +47,13 @@ class UserBanned extends StatelessWidget {
                   ),
                   Text('not found',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize:  ResponsiveHelper.responsiveFontSize(context, 14,),
                         color: Colors.red,
                       )),
                   Text(
                     'This account has been banned for voilating Bars Impressions community guidlines.',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize:  ResponsiveHelper.responsiveFontSize(context, 14,),
                       color: Colors.white,
                     ),
                     textAlign: TextAlign.center,

@@ -55,261 +55,142 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     });
   }
 
+  _documentText(String title, String url) {
+    return GestureDetector(
+      onTap: () {
+        _navigateToPage(MyWebView( title: '',
+          url: url,
+        ));
+      },
+      child: Text(
+        title,
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
   }
 
+  _imageContainer(String url) {
+    return Container(
+      height: MediaQuery.of(context).size.width,
+      margin: EdgeInsets.symmetric(horizontal: 10.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Color(0xFF1a1a1a),
+      ),
+      child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Image.asset(url, fit: BoxFit.cover)),
+    );
+  }
+
+  void _navigateToPage(Widget page) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => page),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final width = Responsive.isDesktop(context)
-        ? 600.0
-        : MediaQuery.of(context).size.width - 100;
     return Scaffold(
       backgroundColor: Color(0xFF1a1a1a),
       body: SafeArea(
-        child: Center(
-          child: ListView(children: <Widget>[
-            SizedBox(
-              height: 25.0,
-            ),
-            Container(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(30.0, 0.0, 30.0, 0.0),
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => MyWebView(
-                                  url: 'https://www.barsopus.com/',
-                                )));
-                  },
-                  child: Row(
-                    children: <Widget>[
-                      RichText(
-                          text: TextSpan(
-                        children: [
-                          TextSpan(
-                              text: "About Bars Impression?",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                              )),
-                        ],
-                        style: TextStyle(color: Colors.blue),
-                      )),
-                      SizedBox(width: 10),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.pink,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 15.0, vertical: 5.0),
-                          child: Text(
-                            'Tap here',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              const SizedBox(
+                height: 25.0,
               ),
-            ),
-            SizedBox(
-              height: 20.0,
-            ),
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                    width: width,
-                    height: width,
-                    child: PageView(
-                        controller: _pageController,
-                        allowImplicitScrolling: true,
-                        physics: AlwaysScrollableScrollPhysics(),
-                        onPageChanged: (int index) {
-                          setState(() {
-                            _index = index;
-                          });
-                        },
-                        children: [
-                          ShakeTransition(
-                            axis: Axis.vertical,
-                            child: Container(
-                              height: MediaQuery.of(context).size.width,
-                              margin: EdgeInsets.symmetric(horizontal: 10.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: Color(0xFF1a1a1a),
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      width: ResponsiveHelper.responsiveWidth(context, 200),
+                      height: ResponsiveHelper.responsiveWidth(context, 200),
+                      child: PageView(
+                          controller: _pageController,
+                          allowImplicitScrolling: true,
+                          physics: AlwaysScrollableScrollPhysics(),
+                          onPageChanged: (int index) {
+                            setState(() {
+                              _index = index;
+                            });
+                          },
+                          children: [
+                            ShakeTransition(
+                              axis: Axis.vertical,
+                              child: _imageContainer(
+                                'assets/images/1.png',
                               ),
-                              child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: Image.asset('assets/images/1.png',
-                                      fit: BoxFit.cover)),
                             ),
-                          ),
-                          Container(
-                            height: MediaQuery.of(context).size.width,
-                            margin: EdgeInsets.symmetric(horizontal: 10.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Color(0xFF1a1a1a),
+                            _imageContainer(
+                              'assets/images/2.png',
                             ),
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: Image.asset('assets/images/2.png',
-                                    fit: BoxFit.cover)),
-                          ),
-                          Container(
-                            height: MediaQuery.of(context).size.width,
-                            margin: EdgeInsets.symmetric(horizontal: 10.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Color(0xFF1a1a1a),
+                            _imageContainer(
+                              'assets/images/3.png',
                             ),
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: Image.asset('assets/images/3.png',
-                                    fit: BoxFit.cover)),
-                          ),
-                        ]),
-                  ),
-                  ShakeTransition(
-                    curve: Curves.fastOutSlowIn,
-                    duration: const Duration(milliseconds: 600),
-                    child: Hero(
-                      tag: 'Sign In',
-                      child: Container(
-                        width: 250.0,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            elevation: 20.0,
-                            foregroundColor: Colors.blue,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0),
-                            ),
-                          ),
-                          onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => LoginScreenOptions(
+                          ]),
+                    ),
+                    SizedBox(height: 20),
+                    SignUpButton(
+                      buttonText: 'Sign in',
+                      onPressed: () {
+                       _navigateToPage(
+                                LoginScreenOptions(
                                   from: 'Sign in',
                                 ),
-                              )),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Sign In',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: width > 800 ? 24 : 16,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                              )
+                            ;
+                      },
                     ),
-                  ),
-                  SizedBox(height: width > 800 ? 40.0 : 20),
-                  ShakeTransition(
-                    axis: Axis.vertical,
-                    duration: const Duration(milliseconds: 600),
-                    curve: Curves.fastOutSlowIn,
-                    child: Hero(
-                      tag: 'Sign Up',
-                      child: Container(
-                        width: 250.0,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            elevation: 20.0,
-                            foregroundColor: Colors.blue,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0),
-                            ),
-                          ),
-                          onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => AcceptTerms(),
-                              )),
-
-                          //  Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //       builder: (_) => SignpsScreen(),
-                          //     )),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Register',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: width > 800 ? 24 : 16,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                    SizedBox(
+                      height: ResponsiveHelper.responsiveHeight(context, 10),
                     ),
-                  ),
-                  SizedBox(
-                    height: 80,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => MyWebView(
-                                    url:
-                                        'https://www.barsopus.com/terms-of-use',
-                                  )));
-                    },
-                    child: Text(
-                      'Terms of Use',
-                      style: TextStyle(
-                        color: Colors.blueGrey,
-                        fontSize: width > 800 ? 18 : 12,
-                      ),
+                    SignUpButton(
+                      buttonText: 'Create account',
+                      onPressed: () {
+                        _navigateToPage(
+                          AcceptTerms(),
+                        );
+                      },
                     ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => MyWebView(
-                                    url: 'https://www.barsopus.com/privacy',
-                                  )));
-                    },
-                    child: Text(
+                    const SizedBox(
+                      height: 80,
+                    ),
+                    _documentText(
                       'Privacy',
-                      style: TextStyle(
-                        color: Colors.blueGrey,
-                        fontSize: width > 800 ? 18 : 12,
-                      ),
+                      'https://www.barsopus.com/privacy',
                     ),
-                  ),
-                ],
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    _documentText(
+                      'Terms of Use',
+                      'https://www.barsopus.com/terms-of-use',
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    _documentText(
+                      'More about us.',
+                      'https://www.barsopus.com/',
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ]),
-        ),
+            ]),
       ),
     );
   }

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:bars/utilities/exports.dart';
 
 class EditContent extends StatelessWidget {
@@ -20,12 +19,13 @@ class EditContent extends StatelessWidget {
           children: <Widget>[
             Text(text,
                 style: TextStyle(
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 12,),
                   color: Colors.blue,
                   fontWeight: FontWeight.bold,
                 )),
             IconButton(
               icon: Icon(Icons.edit),
-              iconSize: 25,
+              iconSize: ResponsiveHelper.responsiveHeight(context, 25,),
               color: Colors.blue,
               onPressed: () => onPressed,
             )

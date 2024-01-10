@@ -18,7 +18,7 @@ class UpdateAppInfo extends StatefulWidget {
 class _UpdateAppInfoState extends State<UpdateAppInfo> {
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+    // final width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Color(0xFF1a1a1a),
       appBar: AppBar(
@@ -42,7 +42,7 @@ class _UpdateAppInfoState extends State<UpdateAppInfo> {
                       'Update',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 50.0,
+                        fontSize:ResponsiveHelper.responsiveFontSize(context, 50),
                         fontWeight: FontWeight.w100,
                       ),
                       textAlign: TextAlign.center,
@@ -50,7 +50,7 @@ class _UpdateAppInfoState extends State<UpdateAppInfo> {
                     Text(
                       'Is Available',
                       style: TextStyle(
-                          fontSize: 20.0,
+                          fontSize: ResponsiveHelper.responsiveFontSize(context, 20),
                           // letterSpacing: 2,
                           fontWeight: FontWeight.bold,
                           color: Colors.white),
@@ -80,7 +80,7 @@ class _UpdateAppInfoState extends State<UpdateAppInfo> {
             SizedBox(height: 50),
             Center(
               child: Container(
-                width: width - 100,
+                width:ResponsiveHelper.responsiveHeight(context, 250),
                 child: TextButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,

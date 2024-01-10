@@ -45,8 +45,8 @@ class _DirectionWidgetState extends State<DirectionWidget> {
               child: Text(
                 widget.text,
                 style: TextStyle(
-                  color: ConfigBloc().darkModeOn ? Colors.white : Colors.black,
-                  fontSize: widget.fontSize,
+                  color: Theme.of(context).secondaryHeaderColor,
+                  fontSize:   ResponsiveHelper.responsiveFontSize(context, widget.fontSize!,), 
                   fontWeight: widget.fontWeight,
                 ),
               ),

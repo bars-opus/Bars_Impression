@@ -46,22 +46,26 @@ class _NoConnectionState extends State<NoConnection> {
     return AnimatedContainer(
         curve: Curves.easeInOut,
         duration: Duration(milliseconds: 800),
-        height: _networkConnection ? 45.0 : 0.0,
+        height: _networkConnection
+            ? ResponsiveHelper.responsiveFontSize(context, 45.0)
+            : 0.0,
         width: width,
         color: Colors.red,
-        child: ListTile(
-          leading: IconButton(
-            icon: Icon(Icons.error_outline),
-            iconSize: 25.0,
-            color: _networkConnection ? Colors.white : Colors.transparent,
-            onPressed: () => () {},
+        child: Center(
+          child: ListTile(
+            leading: IconButton(
+              icon: Icon(Icons.error_outline),
+              iconSize: ResponsiveHelper.responsiveHeight(context, 25.0),
+              color: _networkConnection ? Colors.white : Colors.transparent,
+              onPressed: () => () {},
+            ),
+            title: Text('No internet (offline mode)',
+                style: TextStyle(
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+                  color: Colors.white,
+                )),
+            onTap: () => () {},
           ),
-          title: Text('No internet (offline mode)',
-              style: TextStyle(
-                fontSize: 12.0,
-                color: Colors.white,
-              )),
-          onTap: () => () {},
         ));
   }
 }

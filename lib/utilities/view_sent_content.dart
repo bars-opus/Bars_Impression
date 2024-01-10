@@ -10,149 +10,244 @@ class ViewSentContent extends StatefulWidget {
 }
 
 class _ViewSentContentState extends State<ViewSentContent> {
-  int _thoughtCount = 0;
-  final bool showExplore = true;
-  @override
-  void initState() {
-    super.initState();
-    widget.contentType.startsWith('Forum') ? _setUpThoughts() : _nothing();
-  }
+  Future<PaletteGenerator> _generatePalette(String imageUrl) async {
+    PaletteGenerator _paletteGenerator =
+        await PaletteGenerator.fromImageProvider(
+      CachedNetworkImageProvider(imageUrl),
+      size: Size(1110, 150),
+      maximumColorCount: 20,
+    );
 
-  _nothing() {}
-  _setUpThoughts() async {
-    DatabaseService.numThoughts(widget.contentId).listen((thoughtCount) {
-      if (mounted) {
-        setState(() {
-          _thoughtCount = thoughtCount;
-        });
-      }
-    });
+    return _paletteGenerator;
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
+    final _provider = Provider.of<UserData>(context, listen: false);
 
     return MediaQuery(
         data: MediaQuery.of(context).copyWith(
             textScaleFactor:
                 MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.3)),
-        child: widget.contentType.startsWith('Mood Punched')
+        child: widget.contentType.startsWith('Event') ||
+                widget.contentType.startsWith('Ask')
             ? FutureBuilder(
-                future: DatabaseService.getPostWithId(widget.contentId),
+                future: DatabaseService.getEventWithId(widget.contentId),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (!snapshot.hasData) {
-                    return PostSchimmerSkeleton();
+                    return Container(
+                      width: width,
+                      height: height,
+                      color: Colors.black,
+                      child: Center(
+                          child: CircularProgressIndicator(
+                        color: Colors.blue,
+                      )),
+                    );
                   }
-                  Post _post = snapshot.data;
-                  return FutureBuilder(
-                      future: DatabaseService.getUserWithId(_post.authorId),
-                      builder: (BuildContext context, AsyncSnapshot snapshot) {
-                        if (!snapshot.hasData) {
-                          return PostSchimmerSkeleton();
-                        }
-                        return Container();
-                        // AllPostEnlarged(
-                        //     currentUserId:
-                        //         Provider.of<UserData>(context, listen: false)
-                        //             .currentUserId!,
-                        //     post: _post,
-                        //     feed: 'All',
-                        //  );
-                      });
+                  Event _event = snapshot.data;
+
+                  return EventEnlargedScreen(
+                    currentUserId: _provider.currentUserId!,
+                    event: _event,
+                    type: _event.type,
+                    palette: null,
+                  );
                 })
-            : widget.contentType.startsWith('Forum')
-                ? FutureBuilder(
-                    future: DatabaseService.getForumWithId(widget.contentId),
-                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+            : widget.contentType.startsWith('InviteRecieved')
+                ? FutureBuilder<List<dynamic>>(
+                    future: Future.wait([
+                      DatabaseService.getEventWithId(
+                        widget.contentId,
+                      ),
+                      DatabaseService.getEventIviteWithId(
+                          _provider.currentUserId!, widget.contentId),
+                      DatabaseService.getTicketWithId(
+                          widget.contentId, _provider.currentUserId!),
+                    ]),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<List<dynamic>> snapshot) {
                       if (!snapshot.hasData) {
                         return Container(
                           width: width,
                           height: height,
-                          color: ConfigBloc().darkModeOn
-                              ? Color(0xFF1a1a1a)
-                              : Color(0xFFf2f2f2),
+                          color: Colors.black,
                           child: Center(
-                              child: CircularProgressIndicator(
-                            color: Colors.blue,
-                          )),
+                            child: CircularProgressIndicator(
+                              color: Colors.blue,
+                            ),
+                          ),
                         );
                       }
-                      Forum _forum = snapshot.data;
-                      return ThoughtsScreen(
-                          feed: '',
-                          forum: _forum,
-                          // author: _author,
-                          thoughtCount: _thoughtCount,
-                          currentUserId:
-                              Provider.of<UserData>(context, listen: false)
-                                  .currentUserId!);
-                      // FutureBuilder(
-                      //     future:
-                      //         DatabaseService.getUserWithId(_forum.authorId),
-                      //     builder:
-                      //         (BuildContext context, AsyncSnapshot snapshot) {
-                      //       if (!snapshot.hasData) {
-                      //         return Container(
-                      //           width: width,
-                      //           height: height,
-                      //           color: ConfigBloc().darkModeOn
-                      //               ? Color(0xFF1a1a1a)
-                      //               : Color(0xFFf2f2f2),
-                      //           child: Center(
-                      //               child: CircularProgressIndicator(
-                      //             color: Colors.blue,
-                      //           )),
-                      //         );
-                      //       }
-                      //       AccountHolder _author = snapshot.data;
-                      //       return ThoughtsScreen(
-                      //           feed: '',
-                      //           forum: _forum,
-                      //           // author: _author,
-                      //           thoughtCount: _thoughtCount,
-                      //           currentUserId: Provider.of<UserData>(context,
-                      //                   listen: false)
-                      //               .currentUserId!);
-                      //     });
-                    })
-                : widget.contentType.startsWith('Event')
-                    ? FutureBuilder(
-                        future:
-                            DatabaseService.getEventWithId(widget.contentId),
-                        builder:
-                            (BuildContext context, AsyncSnapshot snapshot) {
+
+                      Event _event = snapshot.data![0];
+                      InviteModel _invite = snapshot.data![1];
+
+                      TicketOrderModel? _ticket = snapshot.data![2];
+
+                      return FutureBuilder<PaletteGenerator>(
+                        future: _generatePalette(_event.imageUrl),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<PaletteGenerator> paletteSnapshot) {
+                          if (!paletteSnapshot.hasData) {
+                            return Container(
+                              width: width,
+                              height: height,
+                              color: Colors.black,
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            );
+                          }
+
+                          PaletteGenerator _palette = paletteSnapshot.data!;
+
+                          return EventInviteScreen(
+                            currentUserId: _provider.currentUserId!,
+                            event: _event,
+                            invite: _invite,
+                            palette: _palette,
+                            ticketOrder: _ticket,
+                          );
+                        },
+                      );
+                    },
+                  )
+                : widget.contentType.startsWith('message')
+                    ? FutureBuilder<List<dynamic>>(
+                        future: Future.wait([
+                          DatabaseService.getUserChatWithId(
+                              _provider.currentUserId!, widget.contentId),
+                          DatabaseService.getUserWithId(widget.contentId),
+                        ]),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<List<dynamic>> snapshot) {
                           if (!snapshot.hasData) {
                             return Container(
                               width: width,
                               height: height,
-                              color: ConfigBloc().darkModeOn
-                                  ? Color(0xFF1a1a1a)
-                                  : Color(0xFFf2f2f2),
+                              color: Colors.black,
                               child: Center(
-                                  child: CircularProgressIndicator(
-                                color: Colors.blue,
-                              )),
+                                child: CircularProgressIndicator(
+                                  color: Colors.blue,
+                                ),
+                              ),
                             );
                           }
-                          Event _event = snapshot.data;
-                          return AllEvenEnlarged(
-                            exploreLocation: 'No',
-                            feed: 1,
-                            askCount: 0,
-                            currentUserId:
-                                Provider.of<UserData>(context, listen: false)
-                                    .currentUserId!,
-                            event: _event,
-                          );
-                        })
-                    : widget.contentType.startsWith('User')
-                        ? ProfileScreen(
-                            currentUserId:
-                                Provider.of<UserData>(context).currentUserId!,
-                            userId: widget.contentId,
+
+                          Chat _chat = snapshot.data![0];
+                          AccountHolderAuthor _user = snapshot.data![1];
+
+                          return BottomModalSheetMessage(
+                            currentUserId: _provider.currentUserId!,
                             user: null,
+                            showAppbar: true,
+                            userAuthor: _user,
+                            chatLoaded: _chat,
+                            userPortfolio: null,
+                            userId: widget.contentId,
+                          );
+
+                          //  FutureBuilder<PaletteGenerator>(
+                          //   future: _generatePalette(_event),
+                          //   builder: (BuildContext context,
+                          //       AsyncSnapshot<PaletteGenerator> paletteSnapshot) {
+                          //     if (!paletteSnapshot.hasData) {
+                          //       return Container(
+                          //         width: width,
+                          //         height: height,
+                          //         color: Colors.black,
+                          //         child: Center(
+                          //           child: CircularProgressIndicator(
+                          //             color: Colors.blue,
+                          //           ),
+                          //         ),
+                          //       );
+                          //     }
+
+                          //     PaletteGenerator _palette = paletteSnapshot.data!;
+
+                          //     return EventInviteScreen(
+                          //       currentUserId: _provider.currentUserId!,
+                          //       event: _event,
+                          //       invite: _invite,
+                          //       palette: _palette,
+                          //       ticketOrder: _ticket,
+                          //     );
+                          //   },
+                          // );
+                        },
+                      )
+                    : widget.contentType.startsWith('eventRoom')
+                        ? FutureBuilder<List<dynamic>>(
+                            future: Future.wait([
+                              DatabaseService.getEventRoomWithId(
+                                widget.contentId,
+                              ),
+                              // DatabaseService.getUserWithId(widget.contentId),
+                              DatabaseService.getTicketIdWithId(
+                                widget.contentId,
+                                _provider.currentUserId!,
+                              )
+                            ]),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<List<dynamic>> snapshot) {
+                              if (!snapshot.hasData) {
+                                return Container(
+                                  width: width,
+                                  height: height,
+                                  color: Colors.black,
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                );
+                              }
+
+                              EventRoom _eventRoom = snapshot.data![0];
+                              return FutureBuilder<PaletteGenerator>(
+                                future: _generatePalette(_eventRoom.imageUrl),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<PaletteGenerator>
+                                        paletteSnapshot) {
+                                  if (!paletteSnapshot.hasData) {
+                                    return Container(
+                                      width: width,
+                                      height: height,
+                                      color: Colors.black,
+                                      child: Center(
+                                        child: CircularProgressIndicator(
+                                          color: Colors.blue,
+                                        ),
+                                      ),
+                                    );
+                                  }
+
+                                  PaletteGenerator _palette =
+                                      paletteSnapshot.data!;
+
+                                  TicketIdModel? ticketId = snapshot.data![2];
+
+                                  return EventRoomScreen(
+                                    currentUserId: _provider.currentUserId!,
+                                    room: _eventRoom,
+                                    palette: _palette,
+                                    ticketId: ticketId!,
+                                  );
+                                },
+                              );
+
+                              //       return EventRoomScreen(
+                              //   currentUserId:  _provider.currentUserId!,
+                              //   room: _eventRoom,
+                              //   palette: _paletteGenerator,
+                              // );
+                            },
                           )
                         : const SizedBox.shrink());
   }

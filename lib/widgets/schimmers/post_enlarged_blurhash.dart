@@ -8,8 +8,7 @@ class PostEnlargedBlurharsh extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double width =
-        Responsive.isDesktop(context) ? 700 : MediaQuery.of(context).size.width;
+    final double width = MediaQuery.of(context).size.width;
 
     return Center(
       child: Stack(alignment: FractionalOffset.bottomCenter, children: <Widget>[
@@ -18,8 +17,9 @@ class PostEnlargedBlurharsh extends StatelessWidget {
             height: MediaQuery.of(context).size.height,
             width: width,
             child: BlurHash(
-              hash: post.blurHash.isEmpty? 'LpQ0aNRkM{M{~qWBayWB4nofj[j[' : post.blurHash
-              ,
+              hash: post.blurHash.isEmpty
+                  ? 'LpQ0aNRkM{M{~qWBayWB4nofj[j['
+                  : post.blurHash,
               imageFit: BoxFit.cover,
             ),
           ),
@@ -53,7 +53,8 @@ class PostEnlargedBlurharsh extends StatelessWidget {
                               borderRadius: BorderRadius.circular(30),
                               color: Colors.white.withOpacity(0.6),
                             ),
-                            height: Responsive.isDesktop(context) ? 400 : 300,
+                            height:
+                                ResponsiveHelper.responsiveHeight(context, 300),
                           ),
                         ),
                       ),
