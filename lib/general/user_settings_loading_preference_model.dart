@@ -23,6 +23,8 @@ class UserSettingsLoadingPreferenceModel {
   final Timestamp? timestamp;
   @HiveField(6)
   final String? subaccountId;
+  @HiveField(8)
+  final String? transferRecepientId;
 
   UserSettingsLoadingPreferenceModel({
     required this.city,
@@ -32,6 +34,7 @@ class UserSettingsLoadingPreferenceModel {
     required this.currency,
     required this.timestamp,
     required this.subaccountId,
+    required this.transferRecepientId,
   });
 
   factory UserSettingsLoadingPreferenceModel.fromDoc(DocumentSnapshot doc) {
@@ -43,6 +46,7 @@ class UserSettingsLoadingPreferenceModel {
       city: doc['city'] ?? '',
       currency: doc['currency'] ?? '',
       subaccountId: doc['subaccountId'] ?? '',
+      transferRecepientId: doc['transferRecepientId'] ?? '',
     );
   }
 
@@ -57,6 +61,7 @@ class UserSettingsLoadingPreferenceModel {
       city: data['city'] ?? '',
       currency: data['currency'] ?? '',
       subaccountId: data['subaccountId'] ?? '',
+      transferRecepientId: data['transferRecepientId'] ?? '',
     );
   }
 }

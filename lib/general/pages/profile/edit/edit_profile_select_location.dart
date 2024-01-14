@@ -94,6 +94,8 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
       currency: _provider.userLocationPreference!.currency,
       timestamp: _provider.userLocationPreference!.timestamp,
       subaccountId: _provider.userLocationPreference!.subaccountId,
+      transferRecepientId:
+          _provider.userLocationPreference!.transferRecepientId,
     );
 
     // Put the new object back into the box with the same key

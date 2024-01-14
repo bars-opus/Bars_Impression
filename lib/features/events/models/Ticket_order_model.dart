@@ -13,6 +13,9 @@ class TicketOrderModel {
   final String eventTitle;
   // final bool validated;
   final String purchaseReferenceId;
+
+  final String transactionId;
+
   final String refundRequestStatus;
 
   final Timestamp? timestamp;
@@ -34,34 +37,38 @@ class TicketOrderModel {
     required this.eventTitle,
     required this.purchaseReferenceId,
     required this.refundRequestStatus,
+    required this.transactionId,
   });
 
   factory TicketOrderModel.fromDoc(DocumentSnapshot doc) {
+    var data = doc.data() as Map<String, dynamic>?;
+    if (data == null) {
+      throw StateError(
+          'Document data is missing and cannot be converted to TicketOrderModel.');
+    }
     return TicketOrderModel(
-      orderId: doc['orderId'] ?? '',
-      refundRequestStatus: doc['refundRequestStatus'] ?? '',
-      eventId: doc['eventId']!,
-      // validated: doc['validated'] ?? false,
-      timestamp: doc['timestamp'] ??
-          Timestamp.fromDate(
-            DateTime.now(),
-          ),
-      eventTimestamp: doc['eventTimestamp'] ??
-          Timestamp.fromDate(
-            DateTime.now(),
-          ),
-      // entranceId: doc['entranceId'] ?? '',
-      eventTitle: doc['eventTitle'] ?? '',
-      eventImageUrl: doc['eventImageUrl'] ?? '',
-      purchaseReferenceId: doc['purchaseReferenceId'] ?? '',
-      isInvited: doc['isInvited'] ?? false,
-      orderNumber: doc['orderNumber']!,
-      tickets: (doc['tickets'] as List<dynamic>?)
-              ?.map((ticket) => TicketPurchasedModel.fromJson(ticket))
+      orderId: data['orderId'] ?? '',
+      refundRequestStatus: data['refundRequestStatus'] ?? '',
+      transactionId: data['transactionId'] ?? '',
+      eventId: data['eventId'] ?? '',
+      timestamp:
+          data['timestamp'] as Timestamp? ?? Timestamp.fromDate(DateTime.now()),
+      eventTimestamp: data['eventTimestamp'] as Timestamp? ??
+          Timestamp.fromDate(DateTime.now()),
+      eventTitle: data['eventTitle'] ?? '',
+      eventImageUrl: data['eventImageUrl'] ?? '',
+      purchaseReferenceId: data['purchaseReferenceId'] ?? '',
+      isInvited: data['isInvited'] ?? false,
+      orderNumber: data['orderNumber'] ?? '',
+      tickets: (data['tickets'] as List<dynamic>?)
+              ?.map((ticket) =>
+                  TicketPurchasedModel.fromJson(ticket as Map<String, dynamic>))
               .toList() ??
           [],
-      total: (doc['total'] as num).toDouble(),
-      userOrderId: doc['userOrderId']!,
+      total: (data['total'] as num?)?.toDouble() ??
+          0.0, // Provide a default value of 0.0 if the field is missing
+      userOrderId: data['userOrderId'] ??
+          '', // provide a default value or handle the error if this field is required
     );
   }
 
@@ -77,6 +84,9 @@ class TicketOrderModel {
           ? Timestamp.fromMillisecondsSinceEpoch(json['eventTimestamp'])
           : null,
       // entranceId: json['entranceId'] ?? '',
+
+      transactionId: json['transactionId'] ?? '',
+
       refundRequestStatus: json['refundRequestStatus'] ?? '',
       eventImageUrl: json['eventImageUrl'] ?? '',
       eventTitle: json['eventTitle'] ?? '',
@@ -97,6 +107,7 @@ class TicketOrderModel {
       'orderId': orderId,
       'eventId': eventId,
       // 'validated': validated,
+      'transactionId': transactionId,
       'timestamp': timestamp,
       'eventTimestamp': eventTimestamp,
       // 'entranceId': entranceId,

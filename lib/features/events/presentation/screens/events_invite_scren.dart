@@ -104,7 +104,11 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
   //  using the DatabaseService.answerEventInvite method. This method is retried up to 3 times in case of failures.
   //  If the invitation is accepted, it also creates a ticket order and navigates to the EventsAttendingTicket page.
   //  If the invitation sending fails, it shows the bottom sheet error message. After all operations are done,
-  _sendInvite(bool isAccepted, String purchaseReferenceId) async {
+  _sendInvite(
+    bool isAccepted,
+    String purchaseReferenceId,
+    String transactionId,
+  ) async {
     var _user = Provider.of<UserData>(context, listen: false).user;
     String commonId = Uuid().v4();
 
@@ -148,8 +152,8 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
       if (isAccepted) {
         try {
           TicketOrderModel order = await retry(
-              () =>
-                  _createTicketOrder(batch, commonId, [], purchaseReferenceId),
+              () => _createTicketOrder(
+                  transactionId, batch, commonId, [], purchaseReferenceId),
               retries: 3);
 
           PaletteGenerator _paletteGenerator =
@@ -190,6 +194,7 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
 // It first calculates the total cost of the order, then creates a TicketOrder object with the necessary details,
 //  and finally uses the DatabaseService.purchaseTicket and DatabaseService.addUserTicketIdRef methods to save the ticket order in the database.
   Future<TicketOrderModel> _createTicketOrder(
+      String transactionId,
       WriteBatch batch,
       String commonId,
       List<TicketPurchasedModel> _finalTicket,
@@ -214,6 +219,7 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
       userOrderId: widget.currentUserId,
       eventTitle: widget.event.title,
       purchaseReferenceId: purchaseReferenceId, refundRequestStatus: '',
+      transactionId: transactionId,
       //  refundRequestStatus: '',
     );
 
@@ -490,7 +496,7 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
           buttonText: isAccepted ? 'Accept' : 'Reject',
           onPressed: () async {
             Navigator.pop(context);
-            _sendInvite(isAccepted, '');
+            _sendInvite(isAccepted, '', '');
           },
           title: isAccepted
               ? 'Are you sure you want to accept this invitation?'

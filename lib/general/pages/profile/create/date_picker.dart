@@ -26,6 +26,18 @@ class _DatePickerState extends State<DatePicker> {
   TimeOfDay _startTime = TimeOfDay(hour: 9, minute: 0);
   TimeOfDay _endTime = TimeOfDay(hour: 17, minute: 0);
 
+  void _initializeDates() {
+    DateTime now = DateTime.now();
+    _startDate = DateTime(now.year, now.month, now.day);
+    _endDate = _startDate.add(Duration(days: 150));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeDates();
+  }
+
   _selector(
     String title,
     String dateTime,
@@ -137,71 +149,7 @@ class _DatePickerState extends State<DatePicker> {
   @override
   Widget build(BuildContext context) {
     return widget.date ? _dateSelector() : _timeSelector();
-
-    // Row(
-    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //   children: [
-    //     Container(
-    //       color: Colors.red,
-    //       width: 200,
-    //       child: _firstSelector(),
-    //     ),
-    //     Container(
-    //       width: 100,
-    //       child: _secondSelector(),
-    //     ),
-    //   ],
-    // );
   }
-
-  // Column(
-  //         children: [
-  //           widget.date
-  //               ? _selector(
-  //                   'Start Date',
-  //                   _provider.startDateString.isNotEmpty
-  //                       ? "    ${MyDateFormat.toDate(DateTime.parse(_provider.startDateString))}"
-  //                       : '',
-  //                   () {
-  //                     _showStartDatePicker('Start');
-  //                   },
-  //                 )
-  //               : const SizedBox.shrink(),
-  //           widget.date
-  //               ? _selector(
-  //                   'End Date',
-  //                   _provider.clossingDayString.isNotEmpty
-  //                       ? "    ${MyDateFormat.toDate(DateTime.parse(_provider.clossingDayString))}"
-  //                       : '',
-  //                   () {
-  //                     _showStartDatePicker('End');
-  //                   },
-  //                 )
-  //               : const SizedBox.shrink(),
-  //           !widget.date
-  //               ? _selector(
-  //                   'Start Time',
-  //                   _provider.startTimeSelected
-  //                       ? "    ${_startTime.format(context)}"
-  //                       : '',
-  //                   () {
-  //                     _showStartTimePicker('Start');
-  //                   },
-  //                 )
-  //               : const SizedBox.shrink(),
-  //           !widget.date
-  // ? _selector(
-  //     'End Time',
-  //     _provider.endTimeSelected
-  //         ? "    ${_endTime.format(context)}"
-  //         : '',
-  //     () {
-  //       _showStartTimePicker('End');
-  //     },
-  //   )
-  //               : const SizedBox.shrink(),
-  //         ],
-  //       ),
 
   _paddingForDatePicket(Widget widget) {
     return Padding(
@@ -247,26 +195,65 @@ class _DatePickerState extends State<DatePicker> {
                 widget1: _paddingForDatePicket(
                   CupertinoDatePicker(
                     mode: CupertinoDatePickerMode.date,
-                    minimumYear: 2023,
-                    maximumYear: 2026,
+                    minimumYear: DateTime.now().year,
+                    maximumYear: DateTime.now().year + 3,
                     // backgroundColor: Theme.of(context).primaryColorLight,
-                    initialDateTime: _startDate,
-                    maximumDate: _endDate.subtract(Duration(days: 1)),
-                    onDateTimeChanged: (DateTime newDate) {
+                    initialDateTime: from == 'Start' ? _startDate : _endDate,
+                    minimumDate: from == 'End'
+                        ? _startDate.add(Duration(days: 1))
+                        : null,
+                    maximumDate: from == 'Start'
+                        ? _endDate.subtract(Duration(days: 1))
+                        : null, //
+                    // initialDateTime: _startDate,
+                    // maximumDate: _endDate.subtract(Duration(days: 1)),
+                    onDateTimeChanged: (DateTime newStartDate) {
                       setState(() {
+                        // Update the provider's state to reflect the new start date selection
                         _provider.setIsStartDateSelected(true);
-                        _startDate = newDate;
+
+                        // Update the local state's start date
+                        _startDate = newStartDate;
+
+                        // If the new start date is after the current end date, update the end date
+                        if (_startDate.isAfter(_endDate)) {
+                          _endDate = _startDate.add(Duration(days: 1));
+                          // Also update the provider and widget's end date if necessary
+                          // _provider.setEndDate(
+                          //     _endDate); // Assuming there's a method like this in your provider
+                          widget.onEndDateChanged(
+                              _endDate); // Assuming this callback exists and is meant to handle end date changes
+                        }
+
+                        // If you need to adjust the start time based on the new start date, do so here
+                        // This logic might need to change based on your requirements
                         if (_startTime.hour < _startDate.hour) {
                           _startTime =
                               TimeOfDay(hour: _startDate.hour, minute: 0);
-
-                          // _startDateSelected = true;
                         }
                       });
+
+                      // Call the callback provided to the widget with the new start date
                       if (widget.onStartDateChanged != null) {
-                        widget.onStartDateChanged(newDate);
+                        widget.onStartDateChanged(newStartDate);
                       }
                     },
+                    // onDateTimeChanged: (DateTime newDate) {
+                    //   setState(() {
+                    //     _provider.setIsStartDateSelected(true);
+                    //     _startDate = newDate;
+
+                    //     if (_startTime.hour < _startDate.hour) {
+                    //       _startTime =
+                    //           TimeOfDay(hour: _startDate.hour, minute: 0);
+
+                    //       // _startDateSelected = true;
+                    //     }
+                    //   });
+                    //   if (widget.onStartDateChanged != null) {
+                    //     widget.onStartDateChanged(newDate);
+                    //   }
+                    // },
                   ),
                 ),
                 widget2: _paddingForDatePicket(

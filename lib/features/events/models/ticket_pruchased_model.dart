@@ -3,13 +3,15 @@ import 'package:bars/utilities/exports.dart';
 class TicketPurchasedModel {
   final String id;
   final String entranceId;
+
   double price;
   bool isSold;
   String refundRequestStatus;
   String type;
   String group;
   String accessLevel;
-   bool validated;
+  bool validated;
+  final String transactionId;
 
   final Timestamp eventTicketDate;
   int row; // New property for the row number
@@ -28,6 +30,7 @@ class TicketPurchasedModel {
     required this.seat,
     required this.eventTicketDate,
     required this.entranceId,
+    required this.transactionId,
   });
 
   factory TicketPurchasedModel.fromJson(Map<String, dynamic> json) {
@@ -36,6 +39,7 @@ class TicketPurchasedModel {
       price: json['price'].toDouble(),
       isSold: json['isSold'] ?? false,
       refundRequestStatus: json['refundRequestStatus'] ?? '',
+      transactionId: json['transactionId'] ?? '',
       validated: json['validated'] ?? false,
       type: json['type'],
       group: json['group'],
@@ -55,6 +59,7 @@ class TicketPurchasedModel {
       'id': id,
       'price': price,
       'isSold': isSold,
+      'transactionId': transactionId,
       'refundRequestStatus': refundRequestStatus,
       'type': type,
       'group': group,
@@ -72,6 +77,7 @@ class TicketPurchasedModel {
     required TicketModel ticketModel,
     required String entranceId,
     required bool validated,
+    required String transactionId,
     required int row,
     required int seat,
     required String refundRequestStatus,
@@ -83,6 +89,7 @@ class TicketPurchasedModel {
       refundRequestStatus: refundRequestStatus,
       validated: validated,
       type: ticketModel.type,
+      transactionId: transactionId,
       group: ticketModel.group,
       accessLevel: ticketModel.accessLevel,
       row: row,

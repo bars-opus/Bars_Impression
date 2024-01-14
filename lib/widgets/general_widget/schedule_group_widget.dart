@@ -143,7 +143,7 @@ class ScheduleGroup extends StatelessWidget {
             height: width * width,
             width: isEditing ? width - 40 : width,
             child: ListView.builder(
-              physics: isEditing
+              physics: isEditing || from == 'EventEnlarged'
                   ? NeverScrollableScrollPhysics()
                   : AlwaysScrollableScrollPhysics(),
               itemCount: groupedSchedules.keys.length,

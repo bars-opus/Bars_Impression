@@ -26,9 +26,13 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _setUpactivityCount();
+
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _setUpactivityCount();
+    });
     _configureNotification();
     initDynamicLinks();
+    // _createFields();
 
     // initializeData();
 
@@ -236,7 +240,7 @@ class HomeScreenState extends State<HomeScreen> {
   _createFields() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference userProfessionalCollection =
-        firestore.collection('user_professsional');
+        firestore.collection('user_location_settings');
 
     // Start a new batch
     WriteBatch batch = firestore.batch();
@@ -251,9 +255,9 @@ class HomeScreenState extends State<HomeScreen> {
       // Only proceed if data is not null
       if (data != null) {
         // Check if "subaccount_id" field exists
-        if (!data.containsKey('currency')) {
+        if (!data.containsKey('transferRecepientId')) {
           // Create the "subaccount_id" field without overwriting existing fields
-          data['currency'] = '';
+          data['transferRecepientId'] = '';
           batch.set(doc.reference, data);
         }
       }

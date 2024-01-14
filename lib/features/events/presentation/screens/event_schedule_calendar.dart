@@ -158,6 +158,7 @@ class EventSheduleCalendar extends StatelessWidget {
                                       width: ResponsiveHelper.responsiveHeight(
                                           context, 300),
                                       child: ListView(
+
                                           // mainAxisSize: MainAxisSize.min,
                                           children: selectedEvents
                                               .map((schedule) => ScheduleWidget(

@@ -1,4 +1,129 @@
 
+// void _submitForm(BuildContext context) async {
+//     FirebaseFunctions functions = FirebaseFunctions.instance;
+//     var createSubaccountCallable = functions.httpsCallable(
+//       'createSubaccount',
+//     );
+
+//     var _user =
+//         Provider.of<UserData>(context, listen: false).userLocationPreference;
+
+//     if (_formKey.currentState!.validate() && !_isLoading) {
+//       _formKey.currentState!.save();
+
+//       if (mounted) {
+//         setState(() {
+//           _isLoading = true;
+//         });
+//       }
+
+//       final bankCode = _selectedBankCode;
+
+//       if (bankCode == null || bankCode.isEmpty) {
+//         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+//           content: Text('Please select a bank'),
+//         ));
+//         return;
+//       }
+
+//       // Ensure you collect the percentage charge properly
+//       final percentageCharge = 10; // Replace with your method/logic
+
+//       final subaccountData = {
+//         'business_name': _bussinessNameController.text.trim(),
+//         'bank_code': bankCode,
+//         'account_number': _accountNumber.text.trim(),
+//         'percentage_charge': percentageCharge,
+//         'currency': _user!.currency
+//       };
+
+//       // try {
+//       final HttpsCallableResult<dynamic> result =
+//           await createSubaccountCallable.call(
+//         subaccountData,
+//       );
+
+//       // print('Full result data: ${result.data}');
+
+//       var subaccountId = result.data['subaccount_id'];
+//       var transferRecepient = result.data['recipient_code'];
+//       print('Result data: $subaccountId');
+//       //  print('Result data: $subaccountId');
+
+//       if (subaccountId != null && _user != null) {
+//         try {
+//           await usersLocationSettingsRef.doc(_user.userId).update({
+//             'subaccountId': subaccountId.toString(),
+//             'transferRecepientId': transferRecepient.toString(),
+//           });
+
+//           Navigator.pop(context);
+//           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+//             content:
+//                 Text('Subaccount created, continue with your event process.'),
+//           ));
+//           _updateAuthorHive(
+//               subaccountId.toString(), transferRecepient.toString());
+//         } catch (e) {
+//           if (mounted) {
+//             setState(() {
+//               _isLoading = false;
+//             });
+//           }
+
+//           // Log the error or use a debugger to inspect the error
+//           // print('Error updating Firestore with subaccount ID: $e');
+//           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+//             content: Text('Failed to update subaccount information'),
+//           ));
+//         }
+//       } else {
+//         if (mounted) {
+//           setState(() {
+//             _isLoading = false;
+//           });
+//         }
+
+//         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+//           content: Text('Received invalid subaccount data'),
+//         ));
+//       }
+//       if (mounted) {
+//         setState(() {
+//           _isLoading = false;
+//         });
+//         // }
+//       }
+
+//       // on FirebaseFunctionsException catch (e) {
+//       //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+//       //     content: Text('Failed to create subaccount: ${e.message}'),
+//       //   ));
+//       //   if (mounted) {
+//       //     setState(() {
+//       //       _isLoading = false;
+//       //     });
+//       //   }
+//       // } catch (e) {
+//       //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+//       //     content: Text('An unexpected error occurred'),
+//       //   ));
+//       //   if (mounted) {
+//       //     setState(() {
+//       //       _isLoading = false;
+//       //     });
+//       //   }
+//       // } finally {
+//       //   // Use finally to ensure _isLoading is set to false in both success and error scenarios
+//       //   if (mounted) {
+//       //     setState(() {
+//       //       _isLoading = false;
+//       //     });
+//       //   }
+//       // }
+//     }
+//   }
+
 
 
 

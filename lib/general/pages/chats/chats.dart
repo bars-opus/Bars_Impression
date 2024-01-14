@@ -397,9 +397,7 @@ class _ChatsState extends State<Chats>
         } else if (!snapshot.hasData) {
           return _schimmer();
         } else if (snapshot.data!.docs.isEmpty) {
-          return Padding(
-            padding: EdgeInsets.only(
-                top: ResponsiveHelper.responsiveHeight(context, 200)),
+          return Center(
             child: NoContents(
               icon: Icons.chat_bubble_outline_outlined,
               title: 'No Chats',
@@ -618,15 +616,11 @@ class _ChatsState extends State<Chats>
 
         if (streamSnapshot.data!.docs.isEmpty) {
           return Center(
-            child: Padding(
-              padding: EdgeInsets.only(
-                  top: ResponsiveHelper.responsiveHeight(context, 200)),
-              child: NoContents(
-                icon: Icons.chat_bubble_outline_outlined,
-                title: 'No event room',
-                subTitle:
-                    'Your event rooms will be displayed here. An event room is a networking group comprised of all the attendees of a particular event. It facilitates networking, fosters friendships, and helps build relationships. ',
-              ),
+            child: NoContents(
+              icon: Icons.chat_bubble_outline_outlined,
+              title: 'No event room',
+              subTitle:
+                  'Your event rooms will be displayed here. An event room is a networking group comprised of all the attendees of a particular event. It facilitates networking, fosters friendships, and helps build relationships. ',
             ),
           );
         }

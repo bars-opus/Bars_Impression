@@ -8,34 +8,79 @@ const storage = new Storage();
 const axios = require('axios');
 
 
+
+
+
 // const PAYSTACK_SECRET_KEY = functions.config().paystack.secret_key; // Assuming you've set this in your environment config
 
+// exports.createSubaccount = functions.https.onCall(async (data, context) => {
+//   // Check if the user is authenticated
+//   if (!context.auth) {
+//     throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+//   }
+
+//   const PAYSTACK_SECRET_KEY = functions.config().paystack.secret_key;
+
+
+//   // Verify the bank account first
+//   try {
+//       // eslint-disable-next-line no-await-in-loop
+//     const verificationResponse = await axios.get(`https://api.paystack.co/bank/resolve?account_number=${data.account_number}&bank_code=${data.bank_code}`, {
+//       headers: {
+//         Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+//       },
+//     });
+
+//     // Check if verification was successful
+//     if (!verificationResponse.data.status) {
+//       throw new functions.https.HttpsError('aborted', 'Bank account verification failed.');
+//     }
+
+//     // Bank account is verified, proceed with creating the subaccount
+//     // eslint-disable-next-line no-await-in-loop
+//     const paystackResponse = await axios.post('https://api.paystack.co/subaccount', {
+//       business_name: data.business_name, 
+//       settlement_bank: data.bank_code,   
+//       account_number: data.account_number, 
+//       percentage_charge: data.percentage_charge 
+//     }, {
+//       headers: {
+//         Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+//         'Content-Type': 'application/json'
+//       }
+//     });
+
+//     if (paystackResponse.data.status) {
+//       // eslint-disable-next-line no-await-in-loop
+      // const recipient_code = await createTransferRecipient(data, PAYSTACK_SECRET_KEY   )
+//       return { subaccount_id: paystackResponse.data.data.subaccount_code, transferRecepientId: recipient_code};
+//     } else {
+//       // Failed to create subaccount
+//       throw new functions.https.HttpsError('unknown', 'Failed to create subaccount with Paystack');
+//     }
+//   } catch (error) {
+//     console.error('Detailed error:', {
+//       message: error.message,
+//       stack: error.stack,
+//       response: error.response ? error.response.data : null,
+//     });
+//     throw new functions.https.HttpsError(
+//       'unknown',
+//       'Error creating subaccount',
+//       error.response ? error.response.data : error.message
+//     );
+//   }
+// });
+
+
 exports.createSubaccount = functions.https.onCall(async (data, context) => {
-  // Check if the user is authenticated
+  const PAYSTACK_SECRET_KEY = functions.config().paystack.secret_key;
   if (!context.auth) {
     throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
   }
 
-  const PAYSTACK_SECRET_KEY = functions.config().paystack.secret_key;
-
-
-  // Verify the bank account first
   try {
-      // eslint-disable-next-line no-await-in-loop
-    const verificationResponse = await axios.get(`https://api.paystack.co/bank/resolve?account_number=${data.account_number}&bank_code=${data.bank_code}`, {
-      headers: {
-        Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-      },
-    });
-
-    // Check if verification was successful
-    if (!verificationResponse.data.status) {
-      throw new functions.https.HttpsError('aborted', 'Bank account verification failed.');
-    }
-
-    // Bank account is verified, proceed with creating the subaccount
-    // eslint-disable-next-line no-await-in-loop
-    const paystackResponse = await axios.post('https://api.paystack.co/subaccount', {
+    const paystackResponse =  await axios.post('https://api.paystack.co/subaccount', {
       business_name: data.business_name, 
       settlement_bank: data.bank_code,   
       account_number: data.account_number, 
@@ -48,25 +93,70 @@ exports.createSubaccount = functions.https.onCall(async (data, context) => {
     });
 
     if (paystackResponse.data.status) {
-      // Subaccount created successfully
-      return { subaccount_id: paystackResponse.data.data.subaccount_code};
+      // eslint-disable-next-line no-await-in-loop
+      const recipient_code = await createTransferRecipient(data, PAYSTACK_SECRET_KEY);
+
+      return { subaccount_id: paystackResponse.data.data.subaccount_code, recipient_code: recipient_code };
     } else {
-      // Failed to create subaccount
       throw new functions.https.HttpsError('unknown', 'Failed to create subaccount with Paystack');
     }
   } catch (error) {
-    console.error('Detailed error:', {
-      message: error.message,
-      stack: error.stack,
-      response: error.response ? error.response.data : null,
+    console.error('Paystack subaccount creation error:', error);
+    throw new functions.https.HttpsError('unknown', 'Paystack subaccount creation failed', error);
+  }
+});
+
+
+
+// // Helper function to create a transfer recipient
+async function createTransferRecipient(data, PAYSTACK_SECRET_KEY) {
+
+  try {
+    const response = await axios.post("https://api.paystack.co/transferrecipient", {
+      type: "ghipss", // Adjust type as per your requirements
+      name: data.business_name,
+      account_number: data.account_number,
+      bank_code: data.bank_code,
+      currency: 'GHS',
+    }, {
+      headers: {
+        Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+        'Content-Type': 'application/json'
+      }
     });
+
+    // Check if the status is true and the data object contains the recipient_code
+    if (response.data.status && response.data.data && response.data.data.recipient_code) {
+      return response.data.data.recipient_code;
+    } else {
+      // Provide more detailed error informationy
+      const message = response.data.message || 'Failed to create transfer recipient with Paystack';
+      console.error(message);
+      throw new functions.https.HttpsError('unknown', message, response.data);
+    }
+  } catch (error) {
+    console.error('Error creating transfer recipient:', error.response ? error.response.data : error);
     throw new functions.https.HttpsError(
       'unknown',
-      'Error creating subaccount',
+      'Error occurred while creating transfer recipient.',
       error.response ? error.response.data : error.message
     );
   }
-});
+}
+
+
+
+async function deleteSubaccount(subaccountCode, PAYSTACK_SECRET_KEY) {
+  try {
+    await axios.delete(`https://api.paystack.co/subaccount/${subaccountCode}`, {
+      headers: {
+        Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+}
 
 
 
@@ -79,7 +169,7 @@ exports.verifyPaystackPayment = functions.https.onCall(async (data, context) => 
 
   const paymentReference = data.reference;
   const expectedAmount = data.amount; // The expected amount in kobo.
-  const PAYSTACK_SECRET_KEY = functions.config().paystack.secret; // Securely stored Paystack secret key
+  const PAYSTACK_SECRET_KEY =functions.config().paystack.secret_key; // Securely stored Paystack secret key
 
   try {
     const verificationURL = `https://api.paystack.co/transaction/verify/${encodeURIComponent(paymentReference)}`;
@@ -190,13 +280,13 @@ function isRetryableError(error) {
 //         source: "balance",
 //         reason: "organizer payment", 
 //         amount: organizerShare,
-//         recipient: eventData.organizerSubaccountId,
+//         recipient: eventData.subaccountId,
 //       });
 
 //       if (response.status) {
 //         // Transfer was successful
 //          // eslint-disable-next-line no-await-in-loop
-//         await alertAdminFundsDistributedSuccess(db, eventDoc.id, eventData.organizerSubaccountId);
+//         await alertAdminFundsDistributedSuccess(db, eventDoc.id, eventData.subaccountId);
 //         return response;
 //       } else {
 //         // Transfer failed without an exception, possibly a business logic error
@@ -208,7 +298,7 @@ function isRetryableError(error) {
 //       // Check if the error is retryable, if not, alert admin and stop retrying
 //       if (!isRetryableError(error)) {
 //          // eslint-disable-next-line no-await-in-loop
-//         await alertAdminDistributeFundsError(db, eventDoc.id, eventData.organizerSubaccountId);
+//         await alertAdminDistributeFundsError(db, eventDoc.id, eventData.subaccountId);
 //         throw error; // Non-retryable error, rethrow error
 //       }
 
@@ -225,8 +315,72 @@ function isRetryableError(error) {
 
   // If all retry attempts fail, alert admin and throw an error
    // eslint-disable-next-line no-await-in-loop
-//   await alertAdminDistributeFundsError(db, eventDoc.id, eventData.organizerSubaccountId);
+//   await alertAdminDistributeFundsError(db, eventDoc.id, eventData.subaccountId);
 //   throw new Error(`All retry attempts failed for event ${eventDoc.id}`);
+// }
+
+
+// async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
+//   let retryCount = 0;
+//   let delay = 1000; // Initial delay in milliseconds (1 second)
+//   const eventData = eventDoc.data();
+//   // const paystackSecretKey = 'YOUR_SECRET_KEY'; // Replace with your actual secret key
+
+//   while (retryCount < maxRetries) {
+//     try {
+//         // eslint-disable-next-line no-await-in-loop
+//       const organizerShare = await calculateOrganizerShare(eventData);
+//         // eslint-disable-next-line no-await-in-loop
+//       const response = await fetch('https://api.paystack.co/transfer', {
+//         method: 'POST',
+//         headers: {
+//           'Authorization': `Bearer ${functions.config().paystack.secret_key}`,
+//           'Content-Type': 'application/json'
+//         },
+//         body: JSON.stringify({
+//           source: "balance",
+//           amount: organizerShare,
+//           recipient: eventData.subaccountId,
+//           reason: "Payment to organizer", // Add an appropriate reason for the transfer
+//         })
+//       });
+
+//       if (!response.ok) {
+//         throw new Error(`HTTP error: ${response.status} - ${response.statusText}`);
+//       }
+//   // eslint-disable-next-line no-await-in-loop
+//       const responseData = await response.json();
+
+//       if (responseData.status) {
+//           // eslint-disable-next-line no-await-in-loop
+//         await alertAdminFundsDistributedSuccess(db, eventDoc.id, eventData.subaccountId);
+//         return responseData.data;
+//       } else {
+//         throw new Error('Transfer failed with a non-success status');
+//       }
+//     }
+//     catch (error) {
+//       console.error(`Attempt ${retryCount + 1} for event ${eventDoc.id} failed:`, error);
+    
+//       // Check if the error should not be retried
+//       if (!isRetryableError(error)) {
+//         // Log the original error message directly to the database
+//          // eslint-disable-next-line no-await-in-loop
+//         await alertAdminDistributeFundsError(db, eventDoc.id, eventData.subaccountId, error.message || "Unknown error");
+//         throw error; // Rethrow the original error
+//       }
+//       // Log retryable error and delay next attempt
+//       console.log(`Retryable error encountered for event ${eventDoc.id}. Will retry after ${delay}ms...`);
+//        // eslint-disable-next-line no-await-in-loop
+//       await new Promise(resolve => setTimeout(resolve, delay));
+//       retryCount++;
+//       delay *= 2;
+//     }
+   
+//   }
+//     // eslint-disable-next-line no-await-in-loop
+//    await alertAdminDistributeFundsError(db, eventDoc.id, eventData.subaccountId, 'could bot procces funds');
+//   throw new Error(`All ${maxRetries} retries failed for event ${eventDoc.id}`);
 // }
 
 
@@ -235,63 +389,66 @@ async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
   let retryCount = 0;
   let delay = 1000; // Initial delay in milliseconds (1 second)
   const eventData = eventDoc.data();
-  // const paystackSecretKey = 'YOUR_SECRET_KEY'; // Replace with your actual secret key
 
   while (retryCount < maxRetries) {
     try {
-        // eslint-disable-next-line no-await-in-loop
+         // eslint-disable-next-line no-await-in-loop
       const organizerShare = await calculateOrganizerShare(eventData);
-        // eslint-disable-next-line no-await-in-loop
-      const response = await fetch('https://api.paystack.co/transfer', {
-        method: 'POST',
+   // eslint-disable-next-line no-await-in-loop
+      const response = await axios.post('https://api.paystack.co/transfer', {
+        source: "balance",
+        amount: organizerShare,
+        recipient: eventData.transferRecepientId,
+        reason: "Payment to organizer", // Add an appropriate reason for the transfer
+      }, {
         headers: {
           'Authorization': `Bearer ${functions.config().paystack.secret_key}`,
           'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          source: "balance",
-          amount: organizerShare,
-          recipient: eventData.organizerSubaccountId,
-          reason: "Payment to organizer", // Add an appropriate reason for the transfer
-        })
+          // 'Authorization': `Bearer ${functions.config().paystack.secret_key}`,
+          // 'Content-Type': 'application/json'
+        }
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error: ${response.status} - ${response.statusText}`);
-      }
-  // eslint-disable-next-line no-await-in-loop
-      const responseData = await response.json();
+      const responseData = response.data;
 
       if (responseData.status) {
-          // eslint-disable-next-line no-await-in-loop
-        await alertAdminFundsDistributedSuccess(db, eventDoc.id, eventData.organizerSubaccountId);
+           // eslint-disable-next-line no-await-in-loop
+        await alertAdminFundsDistributedSuccess(db, eventDoc.id, eventData.subaccountId);
         return responseData.data;
-      } else {
+      }else {
+        // Handle known errors without retrying
+        if (responseData.message.includes("Transfer code is invalid")) {
+          // eslint-disable-next-line no-await-in-loop
+          await alertAdminDistributeFundsError(db, eventDoc.id, eventData.organizerSubaccountId, responseData.message);
+          throw new Error(responseData.message);
+        }
+        // Throw a generic error to trigger a retry for other cases
         throw new Error('Transfer failed with a non-success status');
       }
+    
     } catch (error) {
       console.error(`Attempt ${retryCount + 1} for event ${eventDoc.id} failed:`, error);
 
       if (!isRetryableError(error)) {
-        // eslint-disable-next-line no-await-in-loop
-        await alertAdminDistributeFundsError(db, eventDoc.id, eventData.organizerSubaccountId);
+           // eslint-disable-next-line no-await-in-loop
+        await alertAdminDistributeFundsError(db, eventDoc.id, eventData.subaccountId, error.message || "Unknown error");
         throw error;
       }
 
       console.log(`Retryable error encountered for event ${eventDoc.id}. Will retry after ${delay}ms...`);
-        // eslint-disable-next-line no-await-in-loop
+      // eslint-disable-next-line no-await-in-loop
       await new Promise(resolve => setTimeout(resolve, delay));
       retryCount++;
       delay *= 2;
     }
   }
-    // eslint-disable-next-line no-await-in-loop
-   await alertAdminDistributeFundsError(db, eventDoc.id, eventData.organizerSubaccountId);
+
+  await alertAdminDistributeFundsError(db, eventDoc.id, eventData.subaccountId, 'could not process funds');
+     // eslint-disable-next-line no-await-in-loop
   throw new Error(`All ${maxRetries} retries failed for event ${eventDoc.id}`);
 }
 
-
-exports.distributeEventFunds = functions.pubsub.schedule('every 24 hours').onRun(async (context) => {
+exports.distributeEventFunds = functions.pubsub.schedule('every 45 hours').onRun(async (context) => {
   const db = admin.firestore();
   
   // Assume this is where you fetch events from Firestore
@@ -334,7 +491,7 @@ exports.distributeEventFunds = functions.pubsub.schedule('every 24 hours').onRun
       // If the transaction fails, log the error and alert the admin
       console.error(`Transaction failed for event ${eventId}:`, error);
        // eslint-disable-next-line no-await-in-loop
-      await alertAdminDistributeFundsError(db, eventId, eventData.subaccountId, error);
+      await alertAdminDistributeFundsError(db, eventId, eventData.subaccountId, `Transaction failed for event: ${error}:` );
     }
   }
 });
@@ -343,7 +500,7 @@ async function alertAdminFundsDistributedSuccess(db, eventId, subaccountId, ) {
   const successDoc = {
     eventId: eventId,
     subaccountId: subaccountId,
-    status: 'succesful', 
+    status: 'successful', 
     date: admin.firestore.FieldValue.serverTimestamp()
   };
   await db.collection('distribute_funds_success').add(successDoc);
@@ -354,9 +511,10 @@ async function alertAdminDistributeFundsError(db, eventId, subaccountId, error) 
   const failureDoc = {
     eventId: eventId,
     subaccountId: subaccountId,
-    error: error.message, 
+    error: error,
     date: admin.firestore.FieldValue.serverTimestamp()
-  }; // eslint-disable-next-line no-await-in-loop
+  };
+  
   await db.collection('distribute_funds_failures').add(failureDoc);
 }
 
@@ -368,8 +526,9 @@ async function alertCalculateFundDistError(db, eventId, subaccountId, errorMessa
     errorMessage: errorMessage, 
     subaccountId: subaccountId,
     date: admin.firestore.FieldValue.serverTimestamp()
-  }; // eslint-disable-next-line no-await-in-loop
-  await db.collection('distribute_funds_failures').add(failureDoc);
+  }; 
+ 
+  await db.collection('calculate_funds_failures').add(failureDoc);
 }
 
 async function calculateOrganizerShare(eventData) {
@@ -423,7 +582,9 @@ async function calculateOrganizerShare(eventData) {
     }
 
     // Return the organizer's share
-    return organizerShare;
+    return Math.round(organizerShare * 100);
+
+    // return organizerShare;
 
   } catch (error) {
     // Use eventData.id instead of eventDoc.id to avoid referencing an undefined variable
@@ -569,7 +730,7 @@ exports.scheduledRefundProcessor = functions.pubsub.schedule('every 24 hours').o
       console.error(`Error processing refund for transaction ID: ${refundRequestDoc.id}`, error);
       // Handle the error appropriately, e.g., alert the admin
        // eslint-disable-next-line no-await-in-loop
-      await alertAdminRefundFailure(db, refundRequestDoc.data().eventId, refundRequestDoc.id, error.message);
+      await alertAdminRefundFailure(db, refundRequestDoc.data().eventId, refundRequestDoc.data().transactionId, error.message);
     }
   }
 });
@@ -589,7 +750,7 @@ async function processRefund(refundRequestDoc) {
   };
 
   const headers = {
-    'Authorization': `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+    'Authorization': `Bearer ${functions.config().paystack.secret_key}`,
     'Content-Type': 'application/json'
   };
 
@@ -608,8 +769,8 @@ async function processRefund(refundRequestDoc) {
         await db.runTransaction(async (transaction) => {
           const refundRequestRef = refundRequestDoc.ref;
           const idempotencyDocRef = db.collection('idempotency_keys').doc(idempotencyKey);
-          const eventDocRef = db.collection('new_eventTicketOrder').doc(refundRequestDoc.eventId).collection('eventInvite').doc(refundRequestDoc.userRequestId);
-          const userDocRef = db.collection('new_userTicketOrder').doc(refundRequestDoc.userRequestId).collection('eventInvite').doc(refundRequestDoc.eventId);
+          const eventDocRef = db.collection('new_eventTicketOrder').doc(refundData.eventId).collection('eventInvite').doc(refundData.userRequestId);
+          const userDocRef = db.collection('new_userTicketOrder').doc(refundData.userRequestId).collection('eventInvite').doc(refundData.eventId);
           const idempotencyDocSnapshot = await transaction.get(idempotencyDocRef);
 
           if (!idempotencyDocSnapshot.exists) {
@@ -1012,7 +1173,7 @@ async function sendNotification(androidNotificationToken, userId, event) {
 //       const response = await paystack.subaccount.createTransfer({
 //         source: "balance",
 //         amount: organizerShare,
-//         recipient: eventData.organizerSubaccountId,
+//         recipient: eventData.subaccountId,
 //       });
 
 //       if (response.status) {

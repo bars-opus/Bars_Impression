@@ -255,51 +255,77 @@ class TicketEnlargedWidget extends StatelessWidget {
                 width: width,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 12.0, right: 12),
-                  child: GestureDetector(
-                    onTap: () {
-                      _showBottomSheetCalendar(context, _palleteColor);
-                    },
-                    child: RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                              text: 'Check-in number:   ', style: _textStyle),
-                          if (ticket.entranceId.isNotEmpty)
-                            TextSpan(
-                              text: ticket.entranceId.substring(0, 4),
-                              style: _textStyle2,
-                            ),
-                          TextSpan(
-                              text: '\nInvited:                     ',
-                              style: _textStyle),
-                          TextSpan(
-                            text: ticketOrder.isInvited.toString(),
-                            style: _textStyle2,
-                          ),
-                          TextSpan(
-                              text: '\nTicket event date:   ',
-                              style: _textStyle),
-                          TextSpan(
-                            text: MyDateFormat.toDate(
-                                    ticket.eventTicketDate.toDate())
-                                .toString()
-                                .substring(
-                                    0,
-                                    ticket.eventTicketDate
-                                            .toDate()
-                                            .toString()
-                                            .length -
-                                        2),
-                            style: TextStyle(
-                              fontSize: ResponsiveHelper.responsiveFontSize(
-                                  context, 14.0),
-                              color: Colors.blue,
-                            ),
-                          ),
-                        ],
+                  child: Column(
+                    children: [
+                      if (ticket.entranceId.isNotEmpty)
+                        SalesReceiptWidget(
+                          width: 110,
+                          isRefunded: _isRefunded,
+                          lable: 'Check-in number',
+                          value: ticket.entranceId.substring(0, 4),
+                        ),
+                      SalesReceiptWidget(
+                        width: 110,
+                        isRefunded: _isRefunded,
+                        lable: 'Invited',
+                        value: ticketOrder.isInvited.toString(),
                       ),
-                    ),
+                      GestureDetector(
+                        onTap: () {
+                          _showBottomSheetCalendar(context, _palleteColor);
+                        },
+                        child: SalesReceiptWidget(
+                            width: 110,
+                            color: Colors.blue,
+                            isRefunded: _isRefunded,
+                            lable: 'Ticket event date',
+                            value: MyDateFormat.toDate(
+                                    ticket.eventTicketDate.toDate())
+                                .toString()),
+                      ),
+                      // RichText(
+                      //   textScaleFactor:
+                      //       MediaQuery.of(context).textScaleFactor,
+                      //   text: TextSpan(
+                      //     children: [
+                      //       TextSpan(
+                      //           text: 'Check-in number:   ',
+                      //           style: _textStyle),
+                      //       TextSpan(
+                      //         text: ticket.entranceId.substring(0, 4),
+                      //         style: _textStyle2,
+                      //       ),
+                      //       TextSpan(
+                      //           text: '\nInvited:                     ',
+                      //           style: _textStyle),
+                      //       TextSpan(
+                      //         text: ticketOrder.isInvited.toString(),
+                      //         style: _textStyle2,
+                      //       ),
+                      //       TextSpan(
+                      //           text: '\nTicket event date:   ',
+                      //           style: _textStyle),
+                      //       TextSpan(
+                      //         text: MyDateFormat.toDate(
+                      //                 ticket.eventTicketDate.toDate())
+                      //             .toString()
+                      //             .substring(
+                      //                 0,
+                      //                 ticket.eventTicketDate
+                      //                         .toDate()
+                      //                         .toString()
+                      //                         .length -
+                      //                     2),
+                      //         style: TextStyle(
+                      //           fontSize: ResponsiveHelper.responsiveFontSize(
+                      //               context, 14.0),
+                      //           color: Colors.blue,
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
+                    ],
                   ),
                 ),
               ),
@@ -316,81 +342,64 @@ class TicketEnlargedWidget extends StatelessWidget {
                     left: 12.0,
                     right: 12,
                   ),
-                  child: RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: 'Sales Receipt',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        TextSpan(
-                          text: '\n\nOrder number:      ',
-                          style: _textStyle,
-                        ),
-                        if (ticketOrder.orderId.isNotEmpty)
-                          TextSpan(
-                            text: ticketOrder.orderId.substring(0, 4),
-                            style: _textStyle2,
-                          ),
-                        if (ticket.type.isNotEmpty)
-                          TextSpan(
-                            text: '\nTicket type:           ',
-                            style: _textStyle,
-                          ),
-                        if (ticket.type.isNotEmpty)
-                          TextSpan(
-                            text: ticket.type,
-                            style: _textStyle2,
-                          ),
-                        if (ticket.group.isNotEmpty)
-                          TextSpan(
-                            text: '\nTicket group:         ',
-                            style: _textStyle,
-                          ),
-                        if (ticket.group.isNotEmpty)
-                          TextSpan(
-                            text: ticket.group,
-                            style: _textStyle2,
-                          ),
-                        if (ticket.accessLevel.isNotEmpty)
-                          TextSpan(
-                            text: '\nAccess level:         ',
-                            style: _textStyle,
-                          ),
-                        if (ticket.accessLevel.isNotEmpty)
-                          TextSpan(
-                            text: ticket.accessLevel,
-                            style: _textStyle2,
-                          ),
-                        TextSpan(
-                          text: '\nPurchased time:    ',
-                          style: _textStyle,
-                        ),
-                        TextSpan(
-                          text: MyDateFormat.toTime(
-                              ticketOrder.timestamp!.toDate()),
-                          style: _textStyle2,
-                        ),
-                        TextSpan(
-                          text: '\nPurchased date:    ',
-                          style: _textStyle,
-                        ),
-                        TextSpan(
-                          text: MyDateFormat.toDate(
-                              ticketOrder.timestamp!.toDate()),
-                          style: _textStyle2,
-                        ),
-                        TextSpan(
-                          text: '\nTotal:                     ',
-                          style: _textStyle,
-                        ),
-                        TextSpan(
-                          text: "$currency ${ticket.price.toString()}",
-                          style: _textStyle2,
-                        ),
-                      ],
-                    ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Sales Receipt',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      SalesReceiptWidget(
+                        width: 110,
+                        isRefunded: _isRefunded,
+                        lable: 'Order number',
+                        value: ticketOrder.orderNumber.substring(0, 4),
+                      ),
+                      SalesReceiptWidget(
+                        width: 110,
+                        isRefunded: _isRefunded,
+                        lable: 'Ticket type',
+                        value: ticket.type,
+                      ),
+                      SalesReceiptWidget(
+                        width: 110,
+                        isRefunded: _isRefunded,
+                        lable: 'Ticket group',
+                        value: ticket.group,
+                      ),
+                      SalesReceiptWidget(
+                        width: 110,
+                        isRefunded: _isRefunded,
+                        lable: 'Access level',
+                        value: ticket.accessLevel,
+                      ),
+                      SalesReceiptWidget(
+                        width: 110,
+                        isRefunded: _isRefunded,
+                        lable: 'Purchased time:',
+                        value: MyDateFormat.toTime(
+                            ticketOrder.timestamp!.toDate()),
+                      ),
+                      SalesReceiptWidget(
+                        width: 110,
+                        isRefunded: _isRefunded,
+                        lable: 'Purchased date:',
+                        value: MyDateFormat.toDate(
+                            ticketOrder.timestamp!.toDate()),
+                      ),
+                      SalesReceiptWidget(
+                        width: 110,
+                        isRefunded: _isRefunded,
+                        lable: 'Total',
+                        value: event.isFree
+                            ? 'Free'
+                            : '$currency ${ticket.price.toString()}',
+                      ),
+                    ],
                   ),
                 ),
               ),

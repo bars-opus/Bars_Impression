@@ -239,8 +239,8 @@ class _UserRefundsState extends State<UserRefunds>
               _showBottomSheetErrorMessage('Error clearing notifications ');
             }
           },
-          title: 'Are you sure you want to clear your notifications?',
-          subTitle: 'Please make sure you don\'t miss any appointment',
+          title: 'Are you sure you want to clear your refund  request',
+          subTitle: '',
         );
       },
     );
@@ -248,9 +248,9 @@ class _UserRefundsState extends State<UserRefunds>
 
   Future<void> deleteActivityDocsInBatches() async {
     // get the first batch of documents to be deleted
-    var snapshot = await activitiesRef
+    var snapshot = await userRefundRequestsRef
         .doc(widget.currentUserId)
-        .collection('userActivities')
+        .collection('refundRequests')
         .limit(500)
         .get();
 
@@ -443,21 +443,21 @@ class _UserRefundsState extends State<UserRefunds>
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   actions: [
-                    // GestureDetector(
-                    //   onTap: () {
-                    //     _showBottomSheetClearActivity(context);
-                    //   },
-                    //   child: Padding(
-                    //     padding: const EdgeInsets.only(top: 20.0, right: 20),
-                    //     child: Text(
-                    //       'Clear all',
-                    //       style: TextStyle(
-                    //         color: Colors.red,
-                    //         fontSize: 14,
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
+                    GestureDetector(
+                      onTap: () {
+                        _showBottomSheetClearActivity(context);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 20.0, right: 20),
+                        child: Text(
+                          'Clear all',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ];

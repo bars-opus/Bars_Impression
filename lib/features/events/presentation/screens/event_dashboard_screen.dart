@@ -57,22 +57,34 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
   }
 
   Future<double> getTotalSum() async {
+    // Check if the event ID is empty or just whitespace
     if (widget.event.id.isEmpty || widget.event.id.trim() == '') {
       return 0;
     }
+
+    // Fetch the query snapshot from Firestore
     QuerySnapshot querySnapshot = await newEventTicketOrderRef
         .doc(widget.event.id)
         .collection('eventInvite')
         .get();
 
+    // Map the documents to TicketOrderModel instances
     List<TicketOrderModel> ticketOrders =
         querySnapshot.docs.map((doc) => TicketOrderModel.fromDoc(doc)).toList();
 
+    // Print each ticket order's total if needed for debugging
     ticketOrders.forEach((ticketOrder) {
       print('Ticket order total: ${ticketOrder.total}');
     });
 
-    double totalSum = ticketOrders.fold(0, (sum, item) => sum + item.total);
+    // Calculate the total sum of all non-empty total fields
+    double totalSum = ticketOrders.fold(0, (sum, item) {
+      // Check if the total field is not null or zero before adding
+      if (item.total != null && item.total > 0) {
+        return sum + item.total;
+      }
+      return sum;
+    });
 
     return totalSum;
   }
@@ -522,6 +534,8 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
   }
 
   _currentSaleReport() {
+    final List<String> currencyPartition =
+        widget.event.rate.trim().replaceAll('\n', ' ').split("|");
     return Column(
       children: [
         RichText(
@@ -530,7 +544,8 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
           text: TextSpan(
             children: [
               TextSpan(
-                  text: 'USD\n',
+                  text:
+                      '${currencyPartition.isEmpty ? '' : currencyPartition.length > 0 ? currencyPartition[1] : ''}\n',
                   style: TextStyle(
                     fontSize:
                         ResponsiveHelper.responsiveFontSize(context, 14.0),

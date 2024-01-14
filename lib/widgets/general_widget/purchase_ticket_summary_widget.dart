@@ -44,7 +44,7 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
     }
 
     final List<String> currencyPartition =
-        event.rate.trim().replaceAll('\n', ' ').split("|");
+        event.rate.trim().replaceAll('\n', '').split("|");
 
     Color _palleteColor = palette == null
         ? Colors.grey
@@ -129,13 +129,14 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: finalPurchasintgTicket.type,
+                              text: finalPurchasintgTicket.transactionId
+                                  .toUpperCase(),
                               style: Theme.of(context).textTheme.titleMedium,
                             ),
 
                             TextSpan(
                               text:
-                                  "\n${MyDateFormat.toDate(finalPurchasintgTicket.eventTicketDate.toDate()).toString().substring(0, finalPurchasintgTicket.eventTicketDate.toDate().toString().length - 2)}",
+                                  "\n${MyDateFormat.toDate(finalPurchasintgTicket.eventTicketDate.toDate()).toString()}",
                               style: _textStyle2,
                             ),
 
@@ -179,83 +180,39 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
                     left: 12.0,
                     right: 12,
                   ),
-                  child: RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                    text: TextSpan(
-                      children: [
-                        // TextSpan(
-                        //   text: 'Sales Receipt',
-                        //   style: Theme.of(context).textTheme.bodyLarge,
-                        // ),
-                        TextSpan(
-                          text: 'Order number:     ',
-                          style: _textStyle,
-                        ),
-                        TextSpan(
-                          text: '908098',
-                          style: _textStyle2,
-                        ),
-                        // if (finalPurchasintgTicket.type.isNotEmpty)
-                        //   TextSpan(
-                        //     text: '\nTicket type:             ',
-                        //     style: _textStyle,
-                        //   ),
-                        // if (finalPurchasintgTicket.type.isNotEmpty)
-                        //   TextSpan(
-                        //     text: finalPurchasintgTicket.type,
-                        //     style: _textStyle2,
-                        //   ),
-                        if (finalPurchasintgTicket.group.isNotEmpty)
-                          TextSpan(
-                            text: '\nTicket group:        ',
-                            style: _textStyle,
-                          ),
-                        if (finalPurchasintgTicket.group.isNotEmpty)
-                          TextSpan(
-                            text: finalPurchasintgTicket.group,
-                            style: _textStyle2,
-                          ),
-                        if (finalPurchasintgTicket.accessLevel.isNotEmpty)
-                          TextSpan(
-                            text: '\nAccess level:        ',
-                            style: _textStyle,
-                          ),
-                        if (finalPurchasintgTicket.accessLevel.isNotEmpty)
-                          TextSpan(
-                            text: finalPurchasintgTicket.accessLevel + 'ppp',
-                            style: _textStyle2,
-                          ),
-                        // TextSpan(
-                        //   text: '\nPurchased time:     ',
-                        //   style: _textStyle,
-                        // ),
-                        // TextSpan(
-                        //   text: MyDateFormat.toTime(timestamp.toDate()),
-                        //   style: _textStyle2,
-                        // ),
-                        TextSpan(
-                          text: '\nEvent date:          ',
-                          style: _textStyle,
-                        ),
-                        TextSpan(
-                          text: MyDateFormat.toDate(
-                              finalPurchasintgTicket.eventTicketDate.toDate()),
-                          style: _textStyle2,
-                        ),
-                        TextSpan(
-                          text: '\nTotal:                   ',
-                          style: _textStyle,
-                        ),
-                        TextSpan(
-                          text: event.isFree
-                              ? 'Free'
-                              : currencyPartition.length > 0
-                                  ? "${currencyPartition[1]} ${finalPurchasintgTicket.price.toString()}"
-                                  : finalPurchasintgTicket.price.toString(),
-                          style: _textStyle2,
-                        ),
-                      ],
-                    ),
+                  child: Column(
+                    children: [
+                      SalesReceiptWidget(
+                        isRefunded: _isRefunded,
+                        lable: 'Order number',
+                        value: ticketOrder.orderNumber.substring(0, 4),
+                      ),
+                      SalesReceiptWidget(
+                        isRefunded: _isRefunded,
+                        lable: 'Ticket group',
+                        value: finalPurchasintgTicket.group,
+                      ),
+                      SalesReceiptWidget(
+                        isRefunded: _isRefunded,
+                        lable: 'Access level',
+                        value: finalPurchasintgTicket.accessLevel,
+                      ),
+                      SalesReceiptWidget(
+                        isRefunded: _isRefunded,
+                        lable: 'Event date:',
+                        value: MyDateFormat.toDate(
+                            finalPurchasintgTicket.eventTicketDate.toDate()),
+                      ),
+                      SalesReceiptWidget(
+                        isRefunded: _isRefunded,
+                        lable: 'Total',
+                        value: event.isFree
+                            ? 'Free'
+                            : currencyPartition.length > 0
+                                ? "${currencyPartition[1].trim()} ${finalPurchasintgTicket.price.toString()}"
+                                : finalPurchasintgTicket.price.toString(),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(

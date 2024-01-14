@@ -658,6 +658,7 @@ class _EventsAttendingTicketScreenState
       reason: '',
       city: _provider.userLocationPreference!.city!,
       status: 'pending',
+      transactionId: widget.ticketOrder.transactionId,
     );
 
     await DatabaseService.requestRefund(widget.event, refund, _provider.user!);
@@ -1056,7 +1057,7 @@ class _EventsAttendingTicketScreenState
           currency: widget.event.isFree || widget.event.rate.isEmpty
               ? ''
               : currencyPartition.length > 0
-                  ? currencyPartition[1]
+                  ? currencyPartition[1].trim()
                   : '',
           event: widget.event, ticket: widget.ticket,
           currentUserId: widget.currentUserId,

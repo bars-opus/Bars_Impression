@@ -452,6 +452,8 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       termsAndConditions: _provider.eventTermsAndConditions,
       dynamicLink: link,
       subaccountId: _provider.userLocationPreference!.subaccountId!,
+      transferRecepientId:
+          _provider.userLocationPreference!.transferRecepientId!,
     );
 
     await DatabaseService.createEvent(event);
@@ -505,6 +507,8 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       termsAndConditions: _provider.eventTermsAndConditions,
       dynamicLink: widget.event!.dynamicLink,
       subaccountId: _provider.userLocationPreference!.subaccountId!,
+      transferRecepientId:
+          _provider.userLocationPreference!.transferRecepientId!,
     );
 
     try {
@@ -2606,7 +2610,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                 ScheduleGroup(
                   schedules: _provider.schedule,
                   isEditing: true,
-                  eventOrganiserId: widget.event!.authorId,
+                  eventOrganiserId: _provider.currentUserId!,
                   currentUserId: _provider.currentUserId!,
                 ),
               ],

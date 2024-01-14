@@ -5,11 +5,12 @@ class TicketGoupWidget extends StatefulWidget {
   // final VoidCallback onPressed;
   final bool isEditing;
   final bool onInvite;
+  final String currency;
 
   const TicketGoupWidget({
     super.key,
     required this.groupTickets,
-    // required this.onPressed,
+    required this.currency,
     required this.isEditing,
     this.onInvite = false,
   });
@@ -60,6 +61,8 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final List<String> currencyPartition =
+        widget.currency.trim().replaceAll('\n', ' ').split("|");
     // Group tickets by date, then by group
     Map<DateTime, Map<String, List<TicketModel>>> ticketsByDateAndGroup = {};
     for (TicketModel ticket in widget.groupTickets) {
@@ -182,7 +185,7 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
                       trailing: Wrap(
                         children: [
                           Text(
-                            '\$${ticket.price}',
+                            '${currencyPartition.isEmpty ? '' : currencyPartition.length > 0 ? currencyPartition[1] : ''} ${ticket.price}',
                             style: TextStyle(
                                 fontSize: ResponsiveHelper.responsiveFontSize(
                                     context, 18.0),

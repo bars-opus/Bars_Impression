@@ -21,7 +21,6 @@ class TicketModel {
     required this.group,
     this.accessLevel = 'General',
     required this.maxOder,
-
     required this.maxSeatsPerRow,
     required this.eventTicketDate,
   });
@@ -36,13 +35,12 @@ class TicketModel {
       group: json['group'],
       accessLevel: json['accessLevel'] ?? 'General',
       maxOder: json['maxOder'],
-     
+
       maxSeatsPerRow: json['maxSeatsPerRow'],
-        eventTicketDate: json['eventTicketDate'] ??
+      eventTicketDate: json['eventTicketDate'] ??
           Timestamp.fromDate(
             DateTime.now(),
           ),
-
     );
   }
 
@@ -56,9 +54,9 @@ class TicketModel {
       'group': group,
       'accessLevel': accessLevel,
       'maxOder': maxOder,
-      
+
       'maxSeatsPerRow': maxSeatsPerRow,
-       'eventTicketDate': eventTicketDate,
+      'eventTicketDate': eventTicketDate,
     };
   }
 }

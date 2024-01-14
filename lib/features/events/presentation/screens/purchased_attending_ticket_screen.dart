@@ -415,6 +415,7 @@ class _PurchasedAttendingTicketScreenState
       approvedTimestamp: Timestamp.fromDate(DateTime.now()),
       reason: _messageController.text.trim(),
       city: _provider.userLocationPreference!.city!,
+      transactionId: widget.ticketOrder.transactionId,
     );
 
     await DatabaseService.requestRefund(widget.event, refund, _provider.user!);
@@ -1078,25 +1079,34 @@ class _PurchasedAttendingTicketScreenState
                   ),
                 ),
               )
-            : widget.ticketOrder.tickets.length == 1 &&
-                    widget.ticketOrder.tickets.isNotEmpty
-                ? EventsAttendingTicketScreen(
-                    // finalPurchasingTicketList: widget.ticketOrder.tickets,
-                    currentUserId: widget.currentUserId,
-                    event: widget.event,
-                    justPurchased: widget.justPurchased,
-                    palette: widget.palette,
-                    ticketOrder: widget.ticketOrder,
-                    ticket: widget.ticketOrder.tickets[0],
-                  )
-                : PurchaseTicketSummaryWidget(
-                    finalPurchasingTicketList: widget.ticketOrder.tickets,
-                    currentUserId: widget.currentUserId,
-                    event: widget.event,
-                    justPurchased: widget.justPurchased,
-                    palette: widget.palette,
-                    ticketOrder: widget.ticketOrder,
-                  ),
+            : PurchaseTicketSummaryWidget(
+                finalPurchasingTicketList: widget.ticketOrder.tickets,
+                currentUserId: widget.currentUserId,
+                event: widget.event,
+                justPurchased: widget.justPurchased,
+                palette: widget.palette,
+                ticketOrder: widget.ticketOrder,
+              ),
+
+        // widget.ticketOrder.tickets.length == 1 &&
+        //         widget.ticketOrder.tickets.isNotEmpty
+        //     ? EventsAttendingTicketScreen(
+        //         // finalPurchasingTicketList: widget.ticketOrder.tickets,
+        //         currentUserId: widget.currentUserId,
+        //         event: widget.event,
+        //         justPurchased: widget.justPurchased,
+        //         palette: widget.palette,
+        //         ticketOrder: widget.ticketOrder,
+        //         ticket: widget.ticketOrder.tickets[0],
+        //       )
+        //     : PurchaseTicketSummaryWidget(
+        //         finalPurchasingTicketList: widget.ticketOrder.tickets,
+        //         currentUserId: widget.currentUserId,
+        //         event: widget.event,
+        //         justPurchased: widget.justPurchased,
+        //         palette: widget.palette,
+        //         ticketOrder: widget.ticketOrder,
+        //       ),
 
         SizedBox(
           height: isAuthor ? 10 : 50,

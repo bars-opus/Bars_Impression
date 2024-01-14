@@ -45,6 +45,7 @@ class Event {
 
   final String dynamicLink;
   final String subaccountId;
+  final String transferRecepientId;
 
   Event({
     required this.id,
@@ -89,6 +90,9 @@ class Event {
     required this.dynamicLink,
     required this.fundsDistributed,
     required this.subaccountId,
+     required this.transferRecepientId,
+
+    
   });
 
   factory Event.fromDoc(DocumentSnapshot doc) {
@@ -98,6 +102,8 @@ class Event {
       theme: doc['theme'] ?? '',
       dynamicLink: doc['dynamicLink'] ?? '',
       subaccountId: doc['subaccountId'] ?? '',
+      transferRecepientId: doc['transferRecepientId'] ?? '',
+
       startDate: doc['startDate'] ??
           Timestamp.fromDate(
             DateTime.now(),
@@ -223,6 +229,10 @@ class Event {
       clossingDay: map['clossingDay'] ?? Timestamp.fromDate(DateTime.now()),
       blurHash: map['blurHash'] ?? '',
       authorName: map['authorName'] ?? '',
+
+      transferRecepientId: map['transferRecepientId'] ?? '',
+
+      
     );
   }
 
@@ -272,6 +282,9 @@ class Event {
       'showOnExplorePage': false,
       'fundsDistributed': false,
       'clossingDay': clossingDay,
+      'transferRecepientId': transferRecepientId,
+
+      
     };
   }
 }

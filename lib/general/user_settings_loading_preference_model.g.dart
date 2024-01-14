@@ -25,13 +25,14 @@ class UserSettingsLoadingPreferenceModelAdapter
       currency: fields[3] as String?,
       timestamp: fields[5] as Timestamp?,
       subaccountId: fields[6] as String?,
+      transferRecepientId: fields[8] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserSettingsLoadingPreferenceModel obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.city)
       ..writeByte(1)
@@ -45,7 +46,9 @@ class UserSettingsLoadingPreferenceModelAdapter
       ..writeByte(5)
       ..write(obj.timestamp)
       ..writeByte(6)
-      ..write(obj.subaccountId);
+      ..write(obj.subaccountId)
+      ..writeByte(8)
+      ..write(obj.transferRecepientId);
   }
 
   @override

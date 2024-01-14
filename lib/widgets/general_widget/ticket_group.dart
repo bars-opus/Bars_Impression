@@ -69,8 +69,10 @@ class _TicketGroupState extends State<TicketGroup> {
   }
 
   void _generateTickets(
-      // TicketModel? purchasintgTickets,
-      String purchaseReferenceId) async {
+    // TicketModel? purchasintgTickets,
+    String purchaseReferenceId,
+    String transactionId,
+  ) async {
     var _provider = Provider.of<UserData>(context, listen: false);
 
     var _user = _provider.user;
@@ -125,7 +127,11 @@ class _TicketGroupState extends State<TicketGroup> {
               );
 
           Future<TicketOrderModel> createTicketOrder() => _createTicketOrder(
-              transaction, commonId, _finalTicket, purchaseReferenceId);
+              transactionId,
+              transaction,
+              commonId,
+              _finalTicket,
+              purchaseReferenceId);
 
           if (widget.inviteReply.isNotEmpty) {
             await retry(() => sendInvites(), retries: 3);
@@ -178,6 +184,7 @@ class _TicketGroupState extends State<TicketGroup> {
   }
 
   Future<TicketOrderModel> _createTicketOrder(
+      String transactionId,
       Transaction transaction,
       String commonId,
       List<TicketModel> _finalTicket,
@@ -196,6 +203,7 @@ class _TicketGroupState extends State<TicketGroup> {
         row: _selectedRow,
         seat: _selectedSeat,
         refundRequestStatus: '',
+        transactionId: transactionId,
       );
     }).toList();
 
@@ -214,7 +222,7 @@ class _TicketGroupState extends State<TicketGroup> {
       userOrderId: widget.currentUserId,
       eventTitle: widget.event!.title,
       purchaseReferenceId: purchaseReferenceId,
-      refundRequestStatus: '',
+      refundRequestStatus: '', transactionId: transactionId,
     );
 
     widget.event!.ticketOrder.add(order);
@@ -236,7 +244,6 @@ class _TicketGroupState extends State<TicketGroup> {
     double totalPrice = _provider.ticketList
         .fold(0.0, (double sum, TicketModel ticket) => sum + ticket.price);
 
-    print(widget.event!.subaccountId + '   bbbb');
     MakePayment makePayment = MakePayment(
       context: context,
       price: totalPrice.toInt(),
@@ -259,6 +266,8 @@ class _TicketGroupState extends State<TicketGroup> {
 
         // If server-side verification is successful, generate tickets
         if (verificationResult.data['success']) {
+          var transactionId =
+              verificationResult.data['transactionData']['id'].toString();
           // Reference to the Firestore collection where event invites are stored
           CollectionReference eventInviteCollection = FirebaseFirestore.instance
               .collection('newEventTicketOrder')
@@ -273,7 +282,7 @@ class _TicketGroupState extends State<TicketGroup> {
           // Check if the ticket record exists
           if (ticketRecordSnapshot.docs.isEmpty) {
             // No ticket found for this payment reference, so we can generate tickets
-            _generateTickets(paymentResult.reference);
+            _generateTickets(paymentResult.reference, transactionId.toString());
             // Proceed with any additional steps such as updating the user's tickets
           } else {
             // A ticket has already been generated for this payment reference
@@ -321,7 +330,7 @@ class _TicketGroupState extends State<TicketGroup> {
               ? () {
                   HapticFeedback.lightImpact();
                   Navigator.pop(context);
-                  _generateTickets('');
+                  _generateTickets('', '');
                 }
               :
               //
@@ -1163,6 +1172,9 @@ class _TicketGroupState extends State<TicketGroup> {
                       //         //    widget. groupTickets, widget. groupTickets.indexOf(ticket));
                       //       },
                       isEditing: widget.event == null ? true : false,
+                      currency: widget.event == null
+                          ? _provider.currency
+                          : widget.event!.rate,
                     ),
                   )),
         if (_provider.ticketList.isNotEmpty)
