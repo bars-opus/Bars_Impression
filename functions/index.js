@@ -399,7 +399,7 @@ async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
         source: "balance",
         amount: organizerShare,
         recipient: eventData.transferRecepientId,
-        reason: "Payment to organizer", // Add an appropriate reason for the transfer
+        reason:  `Payment to organizer for :  ${ eventData.title}`, 
       }, {
         headers: {
           'Authorization': `Bearer ${functions.config().paystack.secret_key}`,
@@ -448,7 +448,7 @@ async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
   throw new Error(`All ${maxRetries} retries failed for event ${eventDoc.id}`);
 }
 
-exports.distributeEventFunds = functions.pubsub.schedule('every 45 hours').onRun(async (context) => {
+exports.distributeEventFunds = functions.pubsub.schedule('every 5 minutes').onRun(async (context) => {
   const db = admin.firestore();
   
   // Assume this is where you fetch events from Firestore
@@ -496,40 +496,100 @@ exports.distributeEventFunds = functions.pubsub.schedule('every 45 hours').onRun
   }
 });
 
-async function alertAdminFundsDistributedSuccess(db, eventId, subaccountId, ) {
-  const successDoc = {
+// async function alertAdminFundsDistributedSuccess(db, eventId, subaccountId, ) {
+//   const successDoc = {
+//     eventId: eventId,
+//     subaccountId: subaccountId,
+//     status: 'successful', 
+//     date: admin.firestore.FieldValue.serverTimestamp()
+//   };
+//   await db.collection('distribute_funds_success').add(successDoc);
+// }
+
+
+
+
+// Example function to log success with more details
+function alertAdminFundsDistributedSuccess(eventId, response) {
+  // Sanitize the response to remove sensitive data
+  const sanitizedResponse = sanitizeResponse(response);
+
+  // Add additional logging information here
+  const logEntry = {
+    timestamp: new Date(),
     eventId: eventId,
-    subaccountId: subaccountId,
-    status: 'successful', 
-    date: admin.firestore.FieldValue.serverTimestamp()
+    status: 'Success',
+    response: sanitizedResponse // Log the sanitized response
   };
-  await db.collection('distribute_funds_success').add(successDoc);
+
+  // Save the log entry to Firebase
+  const db = admin.firestore();
+  db.collection('funds_distributed_success_logs').add(logEntry)
+    .then(() => console.log('Logged success with additional details'))
+    .catch(error => console.error('Error logging success:', error));
 }
 
 
-async function alertAdminDistributeFundsError(db, eventId, subaccountId, error) {
-  const failureDoc = {
+
+
+// Example function to log error with more details
+function alertCalculateFundDistError(eventId, error, response) {
+  // Sanitize the response to remove sensitive data
+  const sanitizedResponse = sanitizeResponse(response);
+
+  // Add additional logging information here
+  const logEntry = {
+    timestamp: new Date(),
     eventId: eventId,
-    subaccountId: subaccountId,
-    error: error,
-    date: admin.firestore.FieldValue.serverTimestamp()
+    status: 'Error',
+    error: error.toString(), // Log the error message
+    response: sanitizedResponse // Log the sanitized response
   };
+
+  // Save the log entry to Firebase
+  const db = admin.firestore();
+  db.collection('fund_distribution_error_logs').add(logEntry)
+    .then(() => console.log('Logged error with additional details'))
+    .catch(error => console.error('Error logging error:', error));
+}
+
+// Function to sanitize the response
+function sanitizeResponse(response) {
+  // Create a copy to avoid mutating the original response
+  let sanitized = Object.assign({}, response);
+
+  // Remove or mask sensitive fields
+  if (sanitized.data && sanitized.data.customer && sanitized.data.customer.email) {
+    sanitized.data.customer.email = 'REDACTED'; // Example of data redaction
+  }
+
+  // Add more fields to redact as necessary based on the structure of your response
+
+  return sanitized;
+}
+// async function alertAdminDistributeFundsError(db, eventId, subaccountId, error) {
+//   const failureDoc = {
+//     eventId: eventId,
+//     subaccountId: subaccountId,
+//     error: error,
+//     date: admin.firestore.FieldValue.serverTimestamp()
+//   };
   
-  await db.collection('distribute_funds_failures').add(failureDoc);
-}
+//   await db.collection('distribute_funds_failures').add(failureDoc);
+// }
 
 
 
-async function alertCalculateFundDistError(db, eventId, subaccountId, errorMessage) {
-  const failureDoc = {
-    eventId: eventId,
-    errorMessage: errorMessage, 
-    subaccountId: subaccountId,
-    date: admin.firestore.FieldValue.serverTimestamp()
-  }; 
+// async function alertCalculateFundDistError(db, eventId, subaccountId, errorMessage) {
+//   const failureDoc = {
+//     eventId: eventId,
+//     errorMessage: errorMessage, 
+//     subaccountId: subaccountId,
+//     date: admin.firestore.FieldValue.serverTimestamp()
+//   }; 
  
-  await db.collection('calculate_funds_failures').add(failureDoc);
-}
+//   await db.collection('calculate_funds_failures').add(failureDoc);
+// }
 
 async function calculateOrganizerShare(eventData) {
   try {

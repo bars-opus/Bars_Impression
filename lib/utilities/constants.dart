@@ -90,8 +90,6 @@ final sentEventIviteRef = _firestore.collection('new_sentEventInvite');
 final userIviteRef = _firestore.collection('new_usersInvite');
 final userRefundRequestsRef = _firestore.collection('userRefundRequests');
 
-
-
 // final userInviteRef = _firestore.collection('userInvites');
 
 final userInviteRef = _firestore.collection('new_userTicketOrder');

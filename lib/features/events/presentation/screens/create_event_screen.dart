@@ -1194,7 +1194,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
         return GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
           child: Container(
-            height: MediaQuery.of(context).size.height.toDouble() / 1.1,
+            height: ResponsiveHelper.responsiveHeight(context, 750),
             decoration: BoxDecoration(
                 color: Theme.of(context).primaryColorLight,
                 borderRadius: BorderRadius.circular(30)),
@@ -1605,9 +1605,138 @@ class _CreateEventScreenState extends State<CreateEventScreen>
         ));
   }
 
+  void _showBottomSheetticketSiteError() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return DisplayErrorHandler(
+          buttonText: 'Ok',
+          onPressed: () async {
+            Navigator.pop(context);
+          },
+          title: 'Ticket site not safe. ',
+          subTitle:
+              'We have identified potential threats associated with this link. Please enter another link.',
+        );
+      },
+    );
+  }
+
+  void _showBottomTicketSite() {
+    UserData _provider = Provider.of<UserData>(context, listen: false);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Container(
+              height: ResponsiveHelper.responsiveHeight(context, 700),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColorLight,
+                  borderRadius: BorderRadius.circular(30)),
+              child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 30, horizontal: 10),
+                  child: Column(
+                    children: [
+                      if (Provider.of<UserData>(
+                        context,
+                      ).ticketSite.trim().isNotEmpty)
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: MiniCircularProgressButton(
+                              onPressed: () async {
+                                var _provider = Provider.of<UserData>(context,
+                                    listen: false);
+                                setState(() {
+                                  _isLoading = true;
+                                });
+
+                                if (_ticketSiteFormkey.currentState!
+                                    .validate()) {
+                                  String urlToCheck = _provider.ticketSite;
+                                  SafeBrowsingChecker checker =
+                                      SafeBrowsingChecker();
+
+                                  bool isSafe =
+                                      await checker.isUrlSafe(urlToCheck);
+                                  if (isSafe) {
+                                    Navigator.pop(context);
+                                    animateToPage(1);
+                                  } else {
+                                    _showBottomSheetticketSiteError();
+                                    // mySnackBar(
+                                    //     context, 'ticket site is not safe');
+                                  }
+                                }
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                              },
+                              text: "Next"),
+                        ),
+                      Form(
+                        key: _ticketSiteFormkey,
+                        child: ContentFieldBlack(
+                            onlyBlack: false,
+                            labelText: "Ticket website",
+                            hintText:
+                                'Link to website where ticket pruchase would be handled',
+                            initialValue: _provider.ticketSite,
+                            onSavedText: (input) =>
+                                _provider.setTicketSite(input),
+                            onValidateText: (input) {}
+
+                            // => !ticketSiteLink.hasMatch(input!)
+                            //     ? "Enter a valid ticket site link"
+                            //     : null,
+                            ),
+                      ),
+                      if (_isLoading)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 30.0),
+                          child: SizedBox(
+                            height:
+                                ResponsiveHelper.responsiveHeight(context, 2.0),
+                            child: LinearProgressIndicator(
+                              backgroundColor: Colors.transparent,
+                              valueColor: AlwaysStoppedAnimation(Colors.blue),
+                            ),
+                          ),
+                        )
+                    ],
+                  )),
+            ),
+          );
+        });
+      },
+    );
+  }
+
 // rate and ticket section
   Widget _eventRateSection() {
     UserData _provider = Provider.of<UserData>(context, listen: false);
+    var _userLocation = _provider.userLocationPreference;
+
+    final List<String> currencyPartition = _provider.currency.isEmpty
+        ? ' Ghana Cedi | GHS'.trim().replaceAll('\n', ' ').split("|")
+        : _provider.currency.trim().replaceAll('\n', ' ').split("|");
+
+    // Check for the country being Ghana or the currency code being GHS
+    bool isGhanaOrCurrencyGHS = _userLocation!.country == 'Ghana' &&
+        currencyPartition[1].trim() == 'GHS';
+
+    // Check if the subaccount and transfer recipient IDs are empty
+    bool shouldNavigate = _userLocation.subaccountId!.isEmpty ||
+        _userLocation.transferRecepientId!.isEmpty;
+
     final width = MediaQuery.of(context).size.width;
 
     return _pageWidget(
@@ -1624,21 +1753,45 @@ class _CreateEventScreenState extends State<CreateEventScreen>
             child: ListView(
               physics: NeverScrollableScrollPhysics(),
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _eventProcessNumber(
-                      '5. ',
-                      'Tickets.',
-                    ),
-                    _provider.ticket.isEmpty
-                        ? SizedBox.shrink()
-                        : MiniCircularProgressButton(
-                            onPressed: _validate,
-                            text: "Next",
-                          )
-                  ],
-                ),
+                if (_provider.currency.isNotEmpty)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _eventProcessNumber(
+                        '5. ',
+                        'Tickets.',
+                      ),
+                      _provider.ticket.isEmpty || _provider.currency.isEmpty
+                          ? SizedBox.shrink()
+                          : isGhanaOrCurrencyGHS
+                              ? MiniCircularProgressButton(
+                                  onPressed: isGhanaOrCurrencyGHS &&
+                                          shouldNavigate
+                                      ? () {
+                                          _navigateToPage(
+                                              context, CreateSubaccountForm());
+                                        }
+                                      : widget.isEditting
+                                          ? () {
+                                              _validate();
+                                            }
+                                          : () {
+                                              _validate();
+                                            }, // Pass null or remove the onPressed to disable the button if the condition is not met
+                                  text: "Next",
+                                )
+                              : MiniCircularProgressButton(
+                                  onPressed: widget.isEditting
+                                      ? () {
+                                          _validate();
+                                        }
+                                      : () {
+                                          _showBottomTicketSite();
+                                        }, // Pass null or remove the onPressed to disable the button if the condition is not met
+                                  text: "Next",
+                                )
+                    ],
+                  ),
                 // Container(
                 //   decoration: BoxDecoration(
                 //     color: Colors.red,
@@ -1884,7 +2037,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
           return GestureDetector(
             onTap: () => FocusScope.of(context).unfocus(),
             child: Container(
-              height: MediaQuery.of(context).size.height.toDouble() / 1.1,
+              height: ResponsiveHelper.responsiveHeight(context, 750),
               decoration: BoxDecoration(
                   color: Theme.of(context).primaryColorLight,
                   borderRadius: BorderRadius.circular(30)),
@@ -2352,7 +2505,6 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     var _provider = Provider.of<UserData>(
       context,
     );
-    var _userLocation = _provider.userLocationPreference;
 
     // List<DateTime> dateList = getDatesInRange(
     //     _provider.startDate.toDate(), _provider.clossingDay.toDate());
@@ -2383,14 +2535,9 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                               FocusScope.of(context).unfocus();
                               _provider.isFree
                                   ? animateToPage(2)
-                                  : _provider.isCashPayment
-                                      ? _showCurrencyPicker()
-                                      : _userLocation!.country == 'Ghana' &&
-                                              _userLocation
-                                                  .subaccountId!.isEmpty
-                                          ? _navigateToPage(
-                                              context, CreateSubaccountForm())
-                                          : _showCurrencyPicker();
+                                  : widget.isEditting
+                                      ? animateToPage(1)
+                                      : _showCurrencyPicker();
                               // animateToPage(1);
                             },
                             text: "Next")
@@ -3025,21 +3172,21 @@ class _CreateEventScreenState extends State<CreateEventScreen>
   //   return regex.hasMatch(url);
   // }
 
-  _validateTicketLink() async {
-    var _provider = Provider.of<UserData>(context, listen: false);
+  // _validateTicketLink() async {
+  //   var _provider = Provider.of<UserData>(context, listen: false);
 
-    if (_ticketSiteFormkey.currentState!.validate()) {
-      String urlToCheck = _provider.ticketSite;
-      SafeBrowsingChecker checker = SafeBrowsingChecker();
+  //   if (_ticketSiteFormkey.currentState!.validate()) {
+  //     String urlToCheck = _provider.ticketSite;
+  //     SafeBrowsingChecker checker = SafeBrowsingChecker();
 
-      bool isSafe = await checker.isUrlSafe(urlToCheck);
-      if (isSafe) {
-        animateToPage(1);
-      } else {
-        mySnackBar(context, 'ticket site is not safe');
-      }
-    }
-  }
+  //     bool isSafe = await checker.isUrlSafe(urlToCheck);
+  //     if (isSafe) {
+  //       animateToPage(1);
+  //     } else {
+  //       mySnackBar(context, 'ticket site is not safe');
+  //     }
+  //   }
+  // }
 
   _validatePreviosEventLink() async {
     var _provider = Provider.of<UserData>(context, listen: false);
@@ -3059,7 +3206,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
 
   _eventPreviousEvent() {
     var _provider = Provider.of<UserData>(context, listen: false);
-    bool notGhana = _provider.userLocationPreference!.country != 'Ghana';
+    // bool notGhana = _provider.userLocationPreference!.country != 'Ghana';
 
     return _pageWidget(
       newWidget: Column(
@@ -3073,15 +3220,18 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                 '10. ',
                 'Previous\nEvent.(optional)',
               ),
-              notGhana && _provider.ticketSite.isEmpty
-                  ? SizedBox.shrink()
-                  : MiniCircularProgressButton(
-                      onPressed: _provider.ticketSite.isNotEmpty
-                          ? _validateTicketLink
-                          : _provider.previousEvent.isNotEmpty
-                              ? _validatePreviosEventLink
-                              : _validate,
-                      text: "Next"),
+              // notGhana && _provider.ticketSite.isEmpty
+              //     ? SizedBox.shrink()
+              //     :
+              MiniCircularProgressButton(
+                  onPressed:
+                      // _provider.ticketSite.isNotEmpty
+                      //     ? _validateTicketLink
+                      //     :
+                      _provider.previousEvent.isNotEmpty
+                          ? _validatePreviosEventLink
+                          : _validate,
+                  text: "Next"),
             ],
           ),
           DirectionWidgetWhite(
@@ -3092,22 +3242,6 @@ class _CreateEventScreenState extends State<CreateEventScreen>
             color: Colors.white,
             child: Column(
               children: [
-                if (notGhana)
-                  Form(
-                    key: _ticketSiteFormkey,
-                    child: ContentFieldBlack(
-                        labelText: "Ticket website",
-                        hintText:
-                            'Link to website where ticket pruchase would be handled',
-                        initialValue: _provider.ticketSite,
-                        onSavedText: (input) => _provider.setTicketSite(input),
-                        onValidateText: (input) {}
-
-                        // => !ticketSiteLink.hasMatch(input!)
-                        //     ? "Enter a valid ticket site link"
-                        //     : null,
-                        ),
-                  ),
                 Form(
                   key: _addPreviousVideoFormkey,
                   child: ContentFieldBlack(

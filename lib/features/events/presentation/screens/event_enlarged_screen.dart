@@ -1064,15 +1064,6 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                                 context, 12.0),
                           ),
                         ),
-                        TextSpan(
-                          text: '\n\nReminders',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        TextSpan(
-                          text:
-                              '\nSeven days prior to the event, we will send daily reminders to attendees to ensure that they don\'t forget about the events.',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
                       ],
                     ),
                   ),
@@ -1081,6 +1072,15 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                   textScaleFactor: MediaQuery.of(context).textScaleFactor,
                   text: TextSpan(
                     children: [
+                      TextSpan(
+                        text: '\n\nReminders',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      TextSpan(
+                        text:
+                            '\nSeven days prior to the event, we will send daily reminders to attendees to ensure that they don\'t forget about the events.\n',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
                       TextSpan(
                         text: '\n\nEvent Barcode',
                         style: Theme.of(context).textTheme.bodyLarge,
