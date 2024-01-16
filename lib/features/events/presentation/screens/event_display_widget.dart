@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/scheduler.dart';
 
 class EventDisplayWidget extends StatefulWidget {
   final String currentUserId;
@@ -41,6 +42,9 @@ class _EventDisplayWidgetState extends State<EventDisplayWidget> {
   void initState() {
     super.initState();
     _countDown();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      Provider.of<UserData>(context, listen: false).ticketList.clear();
+    });
   }
 
   void _countDown() async {

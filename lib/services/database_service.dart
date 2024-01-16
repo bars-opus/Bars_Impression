@@ -319,13 +319,13 @@ class DatabaseService {
 
     final sender = {
       'lastMessage': message.content,
-      'seen': true,
+      'isSeen': true,
       'timestamp': FieldValue.serverTimestamp(),
     };
 
     final receivers = {
       'lastMessage': message.content,
-      'seen': false,
+      'isSeen': false,
       'timestamp': FieldValue.serverTimestamp(),
     };
 
@@ -1617,6 +1617,10 @@ class DatabaseService {
       await batch.commit();
     }
   }
+
+
+
+  
 
   static Future<void> validateTicket(Event event, String ticketOrderId) async {
     final entranceId = Uuid().v4();
@@ -4627,33 +4631,33 @@ class DatabaseService {
     });
   }
 
-  static deleteTicket({
-    required TicketOrderModel ticketOrder,
-  }) {
-    // String commonId = Uuid().v4();
+  // static deleteTicket({
+  //   required TicketOrderModel ticketOrder,
+  // }) {
+  //   // String commonId = Uuid().v4();
 
-    newEventTicketOrderRef
-        .doc(ticketOrder.eventId)
-        .collection('eventInvite')
-        .doc(ticketOrder.userOrderId)
-        .get()
-        .then((doc) {
-      if (doc.exists) {
-        doc.reference.delete();
-      }
-    });
+  //   newEventTicketOrderRef
+  //       .doc(ticketOrder.eventId)
+  //       .collection('eventInvite')
+  //       .doc(ticketOrder.userOrderId)
+  //       .get()
+  //       .then((doc) {
+  //     if (doc.exists) {
+  //       doc.reference.delete();
+  //     }
+  //   });
 
-    userInviteRef
-        .doc(ticketOrder.userOrderId)
-        .collection('eventInvite')
-        .doc(ticketOrder.eventId)
-        .get()
-        .then((doc) {
-      if (doc.exists) {
-        doc.reference.delete();
-      }
-    });
-  }
+  //   userInviteRef
+  //       .doc(ticketOrder.userOrderId)
+  //       .collection('eventInvite')
+  //       .doc(ticketOrder.eventId)
+  //       .get()
+  //       .then((doc) {
+  //     if (doc.exists) {
+  //       doc.reference.delete();
+  //     }
+  //   });
+  // }
 
   static Future<bool> isHavingTicket(
       {required String eventId, required String userId}) async {
@@ -5007,6 +5011,43 @@ class DatabaseService {
   //   //     // ignore: unnecessary_statements
   //   //     : () {};
   // }
+
+  static Future<void> deleteTicket({
+    required TicketOrderModel ticketOrder,
+  }) async {
+    newEventTicketOrderRef
+        .doc(ticketOrder.eventId)
+        .collection('eventInvite')
+        .doc(ticketOrder.userOrderId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+
+    userInviteRef
+        .doc(ticketOrder.userOrderId)
+        .collection('eventInvite')
+        .doc(ticketOrder.eventId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+
+    userTicketIdRef
+        .doc(ticketOrder.userOrderId)
+        .collection('eventInvite')
+        .doc(ticketOrder.eventId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+  }
 
   static void attendEvent({
     required Event event,

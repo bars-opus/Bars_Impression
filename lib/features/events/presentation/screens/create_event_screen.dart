@@ -339,6 +339,36 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     );
   }
 
+  // _deleteEvent() {
+
+  //   try {
+  //     await DatabaseService.editEvent(event);
+  //    messageRef
+  //       .doc(widget.chatId)
+  //       .collection('conversation')
+  //       .doc(widget.message.id)
+  //       .get()
+  //       .then((doc) {
+  //     if (doc.exists) {
+  //       doc.reference.delete();
+  //     }
+  //   });
+  //   FirebaseStorage.instance
+  //       .refFromURL(attatchments[0].mediaUrl)
+  //       .delete()
+  //       .catchError((e) {});
+
+  //        _setNull(_provider);
+  //     return event;
+  //   } catch (e) {
+  //     // _handleError(e, false);
+  //     animateToBack(1);
+  //     _isLoading = false;
+  //     _showBottomSheetErrorMessage(e);
+  //   }
+
+  // }
+
   // Method to create event
   _submitCreate() async {
     var _provider = Provider.of<UserData>(context, listen: false);
@@ -437,7 +467,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       city: _provider.city,
       country: _provider.country,
       virtualVenue: _provider.isVirtual ? _provider.venue : '',
-      ticketSite: '',
+      ticketSite: _provider.ticketSite,
       isVirtual: _provider.isVirtual,
       isPrivate: _provider.isPrivate,
       id: commonId,
@@ -1044,26 +1074,39 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     UserData _provider = Provider.of<UserData>(context, listen: false);
     final bool isOtherCategory = _provider.category.startsWith('Others');
 
-    return _pageWidget(
-      newWidget: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildEventProcessRow(_provider, isOtherCategory),
-          DirectionWidgetWhite(
-            text:
-                'Select an event category that matches the event you are creating. ',
+    return Stack(
+      children: [
+        _pageWidget(
+          newWidget: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildEventProcessRow(_provider, isOtherCategory),
+              DirectionWidgetWhite(
+                text:
+                    'Select an event category that matches the event you are creating. ',
+              ),
+              Text(
+                _provider.category,
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
+                ),
+              ),
+              isOtherCategory
+                  ? _buildContentFieldWhite(_provider)
+                  : buildRadios(),
+            ],
           ),
-          Text(
-            _provider.category,
-            style: TextStyle(
-              color: Colors.blue,
-              fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
-            ),
-          ),
-          isOtherCategory ? _buildContentFieldWhite(_provider) : buildRadios(),
-        ],
-      ),
+        ),
+        // Positioned(
+        //     top: 30,
+        //     right: 0,
+        //     child: CreateDeleteWidget(
+        //       onpressed: _deleteEvent,
+        //       text: '',
+        //     )),
+      ],
     );
   }
 
@@ -2325,7 +2368,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
           '3. ',
           'Date.',
         ),
-        if (_provider.startDateSelected)
+        if (_provider.startDateSelected || widget.isEditting)
           MiniCircularProgressButton(
               onPressed: () {
                 FocusScope.of(context).unfocus();
@@ -3444,12 +3487,14 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                         ? _pop()
                         : _pageController.page == 1
                             ? _pop()
-                            : animateToBack(1);
+                            : widget.event!.isFree && _pageController.page == 5
+                                ? animateToBack(2)
+                                : animateToBack(1);
                   }
                 : () {
                     _provider.int1 == 0
                         ? _pop()
-                        : _provider.isFree && _provider.int1 == 2
+                        : _provider.isFree && _provider.int1 == 5
                             ? animateToBack(2)
                             : animateToBack(1);
                   });
@@ -3482,7 +3527,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
             : SafeArea(
                 child: PageView(
                     controller: _pageController,
-                    physics: const AlwaysScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     onPageChanged: (int index) {
                       _provider.setInt1(index);
                     },

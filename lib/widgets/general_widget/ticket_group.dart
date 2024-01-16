@@ -139,7 +139,7 @@ class _TicketGroupState extends State<TicketGroup> {
 
           TicketOrderModel order =
               await retry(() => createTicketOrder(), retries: 3);
-          if (!widget.event!.isFree) {
+          if (!widget.event!.isFree || !widget.event!.isCashPayment) {
             Navigator.pop(context);
             // await Future.delayed(Duration(milliseconds: 700));
             Navigator.pop(context);
@@ -150,9 +150,8 @@ class _TicketGroupState extends State<TicketGroup> {
             // await Future.delayed(Duration(milliseconds: 700));
           }
 
-          Navigator.pop(context);
-          // await Future.delayed(Duration(milliseconds: 700));
-          Navigator.pop(context);
+          // Navigator.pop(context);
+          // Navigator.pop(context);
           PaletteGenerator _paletteGenerator =
               await PaletteGenerator.fromImageProvider(
             CachedNetworkImageProvider(widget.event!.imageUrl),
@@ -255,6 +254,7 @@ class _TicketGroupState extends State<TicketGroup> {
 
 // If the initial Paystack payment is successful, verify it server-side
     if (paymentResult.success) {
+      _provider.setIsLoading(true);
       final HttpsCallable callable =
           FirebaseFunctions.instance.httpsCallable('verifyPaystackPayment');
       try {
@@ -285,6 +285,7 @@ class _TicketGroupState extends State<TicketGroup> {
             _generateTickets(paymentResult.reference, transactionId.toString());
             // Proceed with any additional steps such as updating the user's tickets
           } else {
+            _provider.setIsLoading(false);
             // A ticket has already been generated for this payment reference
             _showBottomSheetErrorMessage(context,
                 'Tickets have already been generated for this payment.');
@@ -292,6 +293,7 @@ class _TicketGroupState extends State<TicketGroup> {
 
           // _generateTickets(finalPurchasintgTicket, paymentResult.reference);
         } else {
+          _provider.setIsLoading(false);
           _showBottomSheetErrorMessage(
               context, 'Couldn\'t verify your ticket payment');
           // Handle verification failure
@@ -307,26 +309,31 @@ class _TicketGroupState extends State<TicketGroup> {
         // Handle errors from calling the Cloud Function
         // Again, show an error message or log the error
       }
+      _provider.setIsLoading(false);
     } else {
+      _provider.setIsLoading(false);
       _showBottomSheetErrorMessage(
           context, 'Couldn\'t pay for ticket please try again');
       // Handle Paystack payment failure
       // Inform the user that the payment process was not successful
     }
+    _provider.setIsLoading(false);
   }
 
   void _showBottomConfirmTicketAddOrder(
     BuildContext context,
   ) {
+    var _provider = Provider.of<UserData>(context, listen: false);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return ConfirmationPrompt(
-          buttonText:
-              widget.event!.isFree ? 'Generate Ticket' : 'Purchase Ticket',
-          onPressed: widget.event!.isFree
+          buttonText: widget.event!.isFree || widget.event!.isCashPayment
+              ? 'Generate Ticket'
+              : 'Purchase Ticket',
+          onPressed: widget.event!.isFree || widget.event!.isCashPayment
               ? () {
                   HapticFeedback.lightImpact();
                   Navigator.pop(context);
@@ -336,20 +343,73 @@ class _TicketGroupState extends State<TicketGroup> {
               //
               () async {
                   _payForTicket();
+
 //
                 },
-          title: widget.event!.isFree
+          title: widget.event!.isFree || widget.event!.isCashPayment
               ? 'Are you sure you want to proceed and generate a ticket?'
               : 'Are you sure you want to proceed and purchase this tickets?',
           subTitle: widget.event!.termsAndConditions.isNotEmpty
               ? 'By purchasing or generating a ticket to this event, you have accepted the terms and conditions that govern this event as provided by the event organizer.'
-              : '',
+              : widget.event!.isCashPayment
+                  ? 'The payment method for this ticket is cash. Therefore, you will be required to pay for the ticket at the event venue. For further clarification or more information, please contact the event organizer'
+                  : '',
+        );
+      },
+    );
+  }
+
+  void _showBottomTicketSite(
+    BuildContext context,
+    String link,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          height: ResponsiveHelper.responsiveHeight(context, 600),
+          decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(30)),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: DisclaimerWidget(
+                  title: 'Ticket Site',
+                  subTitle:
+                      'You will be redirected to a website provided by the event organizer, where you can continue with the ticket purchasing process. Please note that Bars Impression assumes no liability or responsibility for the information, views, or opinions presented on that platform.',
+                  icon: Icons.link,
+                ),
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              BottomModalSheetButtonBlue(
+                buttonText: 'Access ticket site',
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => MyWebView(
+                                url: link,
+                                title: '',
+                              )));
+                },
+              ),
+            ],
+          ),
         );
       },
     );
   }
 
   _eventOnTicketAndPurchaseButton() {
+    var _provider = Provider.of<UserData>(
+      context,
+    );
     return Column(
       children: [
         Container(
@@ -372,20 +432,35 @@ class _TicketGroupState extends State<TicketGroup> {
         const SizedBox(
           height: 40,
         ),
-        Center(
-          child: AlwaysWhiteButton(
-            buttonText: widget.event!.isFree
-                ? 'Generate free ticket'
-                : 'Purchase ticket',
-            onPressed: () {
-              // Navigator.pop(context);
-              _showBottomConfirmTicketAddOrder(
-                context,
-              );
-            },
-            buttonColor: Colors.blue,
-          ),
-        ),
+        _provider.isLoading
+            ? LinearProgress()
+            : Center(
+                child: widget.event!.ticketSite.isNotEmpty
+                    ? AlwaysWhiteButton(
+                        buttonText: 'Go to ticket site',
+                        onPressed: () {
+                          _showBottomTicketSite(
+                              context, widget.event!.ticketSite);
+
+                          // Navigator.pop(context);
+                        },
+                        buttonColor: Colors.blue,
+                      )
+                    : AlwaysWhiteButton(
+                        buttonText: widget.event!.isFree
+                            ? 'Generate free ticket'
+                            : widget.event!.isCashPayment
+                                ? 'Generate ticket'
+                                : 'Purchase ticket',
+                        onPressed: () {
+                          // Navigator.pop(context);
+                          _showBottomConfirmTicketAddOrder(
+                            context,
+                          );
+                        },
+                        buttonColor: Colors.blue,
+                      ),
+              ),
       ],
     );
   }

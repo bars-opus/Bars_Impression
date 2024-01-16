@@ -27,7 +27,7 @@ class PortfolioWidget extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-          height: MediaQuery.of(context).size.height.toDouble() / 2,
+          height:ResponsiveHelper.responsiveHeight(context, 600),
           decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(30)),

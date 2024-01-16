@@ -831,12 +831,14 @@ async function processRefund(refundRequestDoc) {
           const idempotencyDocRef = db.collection('idempotency_keys').doc(idempotencyKey);
           const eventDocRef = db.collection('new_eventTicketOrder').doc(refundData.eventId).collection('eventInvite').doc(refundData.userRequestId);
           const userDocRef = db.collection('new_userTicketOrder').doc(refundData.userRequestId).collection('eventInvite').doc(refundData.eventId);
+          const userTicketIdRef = db.collection('new_ticketId').doc(refundData.userRequestId).collection('eventInvite').doc(refundData.eventId);
           const idempotencyDocSnapshot = await transaction.get(idempotencyDocRef);
 
           if (!idempotencyDocSnapshot.exists) {
             transaction.update(refundRequestRef, { status: 'processed' });
             transaction.update(eventDocRef, { refundRequestStatus: 'processed' });
             transaction.update(userDocRef, { refundRequestStatus: 'processed' });
+            transaction.delete(userTicketIdRef);
             transaction.set(idempotencyDocRef, {
               refundResponse: response.data,
               created: admin.firestore.FieldValue.serverTimestamp()

@@ -1158,26 +1158,25 @@ class _EventsAttendingTicketScreenState
                       color: Colors.white,
                     ),
                   ),
-                  if (scheduleOptions.length > 1)
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _seeAllSchedules = !_seeAllSchedules;
-                        });
-                      },
-                      child: Text(
-                        !_seeAllSchedules
-                            ? 'See all'
-                            : 'See for only this ticket',
-                        style: TextStyle(
-                          fontSize: ResponsiveHelper.responsiveFontSize(
-                              context, 14.0),
-                          //  24.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue,
-                        ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _seeAllSchedules = !_seeAllSchedules;
+                      });
+                    },
+                    child: Text(
+                      !_seeAllSchedules
+                          ? 'See all'
+                          : 'See for only this ticket',
+                      style: TextStyle(
+                        fontSize:
+                            ResponsiveHelper.responsiveFontSize(context, 14.0),
+                        //  24.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
                       ),
                     ),
+                  ),
                 ],
               ),
             ),

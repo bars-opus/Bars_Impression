@@ -89,21 +89,22 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
             width: width,
             child: Column(
               children: [
-                ListTile(
-                  trailing: Icon(
-                    Icons.arrow_forward_ios,
-                    color: Colors.blue,
-                    size: ResponsiveHelper.responsiveHeight(context, 18.0),
-                  ),
-                  title: Text(
-                    "     Tap to view ticket details",
-                    style: TextStyle(
-                      fontSize:
-                          ResponsiveHelper.responsiveFontSize(context, 12.0),
+                if (!_isRefunded)
+                  ListTile(
+                    trailing: Icon(
+                      Icons.arrow_forward_ios,
                       color: Colors.blue,
+                      size: ResponsiveHelper.responsiveHeight(context, 18.0),
+                    ),
+                    title: Text(
+                      "     Tap to view ticket details",
+                      style: TextStyle(
+                        fontSize:
+                            ResponsiveHelper.responsiveFontSize(context, 12.0),
+                        color: Colors.blue,
+                      ),
                     ),
                   ),
-                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,11 +129,15 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
                         textScaleFactor: MediaQuery.of(context).textScaleFactor,
                         text: TextSpan(
                           children: [
-                            TextSpan(
-                              text: finalPurchasintgTicket.transactionId
-                                  .toUpperCase(),
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
+                            if (finalPurchasintgTicket
+                                    .transactionId.isNotEmpty &&
+                                finalPurchasintgTicket.transactionId.length > 4)
+                              TextSpan(
+                                text: finalPurchasintgTicket.transactionId
+                                    .substring(0, 4)
+                                    .toUpperCase(),
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
 
                             TextSpan(
                               text:

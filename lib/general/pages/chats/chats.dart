@@ -1,6 +1,7 @@
 import 'package:bars/utilities/exports.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -37,7 +38,7 @@ class _ChatsState extends State<Chats>
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<ConnectivityResult>? _connectivitySubscription;
   Timer? _timer;
-  Set<String> _activeListeners = {};
+  Set<String> _activeEventListeners = {};
   List<StreamSubscription<DocumentSnapshot>> _subscriptions = [];
 
   Set<String> _activeChatListeners = Set<String>();
@@ -72,7 +73,7 @@ class _ChatsState extends State<Chats>
     for (var subscription in _chatSubscriptions) {
       subscription.cancel();
     }
-    _activeListeners.clear();
+    _activeEventListeners.clear();
     _activeChatListeners.clear();
     super.dispose();
   }
@@ -410,9 +411,9 @@ class _ChatsState extends State<Chats>
             Chat chat = Chat.fromDoc(doc);
 
             // Update the local cache and listen for updates
-            if (!_activeListeners.contains(chat.id)) {
+            if (!_activeChatListeners.contains(chat.id)) {
               _listenToChatUpdates(chat.id);
-              _activeListeners.add(chat.id);
+              _activeChatListeners.add(chat.id);
             }
 
             chatsBox.put(chat.id, chat);
@@ -428,16 +429,25 @@ class _ChatsState extends State<Chats>
             noContentIcon: Icons.send_outlined,
             itemBuilder: (context, index, chat) {
               limitChats();
-              return GetAuthor(
-                connectivityStatus: _connectivityStatus,
-                chats: chat,
-                lastMessage: chat.lastMessage,
-                seen: chat.seen,
-                chatUserId: chat.toUserId == widget.currentUserId
-                    ? chat.fromUserId
-                    : chat.toUserId,
-                isEventRoom: false,
-                room: null,
+
+              return ValueListenableBuilder(
+                valueListenable: chatsBox.listenable(),
+                builder: (context, Box<Chat> box, _) {
+                  // Retrieve the updated TicketIdModel from the box using the correct key.
+
+                  Chat updatedChat = box.get(chat.id) ?? chat;
+                  return GetAuthor(
+                    connectivityStatus: _connectivityStatus,
+                    chats: updatedChat,
+                    lastMessage: updatedChat.lastMessage,
+                    seen: chat.seen,
+                    chatUserId: chat.toUserId == widget.currentUserId
+                        ? chat.fromUserId
+                        : chat.toUserId,
+                    isEventRoom: false,
+                    room: null,
+                  );
+                },
               );
             },
             text: 'Your chats and messages will be displayed here.',
@@ -585,12 +595,15 @@ class _ChatsState extends State<Chats>
         .doc(ticketIdKey)
         .snapshots()
         .listen((snapshot) {
-      if (snapshot.exists) {
-        // Deserialize the updated TicketIdModel from the document snapshot
-        TicketIdModel updatedTicketId = TicketIdModel.fromDoc(snapshot);
-
-        // Update the Hive box with the new data
-        ticketIdsBox.put(ticketIdKey, updatedTicketId);
+      try {
+        if (snapshot.exists) {
+          TicketIdModel updatedTicketId = TicketIdModel.fromDoc(snapshot);
+          ticketIdsBox.put(ticketIdKey, updatedTicketId);
+          print(
+              "Updated Hive box for $ticketIdKey with data: ${updatedTicketId.toJson()}");
+        }
+      } catch (e) {
+        print("Error updating Hive box for $ticketIdKey: $e");
       }
     }, onError: (error) => print("Listen failed: $error"));
 
@@ -598,9 +611,30 @@ class _ChatsState extends State<Chats>
     _subscriptions.add(subscription);
   }
 
+  Box<TicketIdModel>? ticketIdsBox;
+
+  void accessHiveBox(String boxName) {
+    if (!Hive.isBoxOpen(boxName)) {
+      // The box is not open yet, so we need to open it.
+      Hive.openBox<TicketIdModel>(boxName).then((box) {
+        ticketIdsBox = box;
+        printBoxContent(ticketIdsBox!);
+      });
+    } else {
+      // The box is already open, we can access it directly.
+      ticketIdsBox = Hive.box<TicketIdModel>(boxName);
+      printBoxContent(ticketIdsBox!);
+    }
+  }
+
+  void printBoxContent(Box<TicketIdModel> box) {
+    box.toMap().forEach((key, value) {
+      print('Key: $key, Value: ${value.toJson()}');
+    });
+  }
+
   _eventRoom() {
     final ticketIdsBox = Hive.box<TicketIdModel>('ticketIds');
-    // final eventRoomsBox = Hive.box<EventRoom>('eventRooms');
 
     return StreamBuilder<QuerySnapshot>(
       stream: userTicketIdRef
@@ -627,12 +661,11 @@ class _ChatsState extends State<Chats>
 
         // Now you can access the documents through streamSnapshot.data.docs
         return ListView.builder(
-          // controller: _hideButtonController,
-          // physics: const AlwaysScrollableScrollPhysics(),
           itemCount: streamSnapshot.data!.docs.length,
           itemBuilder: (context, index) {
             DocumentSnapshot docSnapshot = streamSnapshot.data!.docs[index];
             String ticketIdKey = docSnapshot.id;
+
             // Check if the ticketId is already in the cache
             TicketIdModel ticketId;
             if (ticketIdsBox.containsKey(ticketIdKey)) {
@@ -642,12 +675,12 @@ class _ChatsState extends State<Chats>
               ticketId = TicketIdModel.fromDoc(
                   docSnapshot); // pass the DocumentSnapshot directly
               ticketIdsBox.put(ticketIdKey, ticketId);
+            }
 
-              // Set up a listener for this TicketIdModel if not already listening
-              if (!_activeListeners.contains(ticketIdKey)) {
-                _listenToTicketIdUpdates(ticketIdKey);
-                _activeListeners.add(ticketIdKey);
-              }
+            // Set up a listener for this TicketIdModel if not already listening
+            if (!_activeEventListeners.contains(ticketIdKey)) {
+              _listenToTicketIdUpdates(ticketIdKey);
+              _activeEventListeners.add(ticketIdKey);
             }
             // Use FutureBuilder inside itemBuilder to handle asynchronous fetching of EventRoom
             return FutureBuilder<EventRoom?>(
@@ -663,15 +696,22 @@ class _ChatsState extends State<Chats>
                 final room = roomSnapshot.data;
                 // limitRooms(); // Ensure these functions are defined and manage your data as expected
                 // limitTicketIds(); // Ensure these functions are defined and manage your data as expected
-                return GetAuthor(
-                  ticketId: ticketId,
-                  connectivityStatus: _connectivityStatus,
-                  chats: null,
-                  lastMessage: ticketId.lastMessage,
-                  seen: false,
-                  chatUserId: '',
-                  isEventRoom: true,
-                  room: room,
+                return ValueListenableBuilder(
+                  valueListenable: ticketIdsBox.listenable(),
+                  builder: (context, Box<TicketIdModel> box, _) {
+                    // Retrieve the updated TicketIdModel from the box using the correct key.
+                    var updatedTicketId = box.get(ticketIdKey) ?? ticketId;
+                    return GetAuthor(
+                      ticketId: updatedTicketId,
+                      connectivityStatus: _connectivityStatus,
+                      chats: null,
+                      lastMessage: updatedTicketId.lastMessage,
+                      seen: false,
+                      chatUserId: '',
+                      isEventRoom: true,
+                      room: room,
+                    );
+                  },
                 );
               },
             );
@@ -680,149 +720,6 @@ class _ChatsState extends State<Chats>
       },
     );
   }
-
-//   _eventRoom() {
-//     final ticketIdsBox = Hive.box<TicketIdModel>('ticketIds');
-//     final eventRoomsBox = Hive.box<EventRoom>('eventRooms');
-
-//     return StreamBuilder<QuerySnapshot>(
-//   stream: userTicketIdRef
-//       .doc(widget.currentUserId)
-//       .collection('eventInvite')
-//       .orderBy('timestamp', descending: true)
-//       .snapshots(),
-//   builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-
-//     if (!streamSnapshot.hasData) {
-//       return Center(child: CircularProgressIndicator());
-//     }
-
-//       DocumentSnapshot docSnapshot = streamSnapshot.data!.docs[index];
-//         String ticketIdKey = docSnapshot.id;
-//         // Check if the ticketId is already in the cache
-//         TicketIdModel ticketId;
-//         if (ticketIdsBox.containsKey(docSnapshot.id)) {
-//           ticketId = ticketIdsBox.get(docSnapshot.id)!;
-//         } else {
-//           // If not, fetch it from Firestore and store it in the cache
-//           ticketId = TicketIdModel.fromDoc( docSnapshot);
-//           ticketIdsBox.put(docSnapshot.id, ticketId);
-
-//           if (!_activeListeners.contains(ticketIdKey)) {
-//             _listenToTicketIdUpdates(ticketIdKey);
-//             _activeListeners.add(ticketIdKey);
-//           }
-//         }
-
-//     // Now you can access the documents through streamSnapshot.data.docs
-//     return FutureBuilder<EventRoom?>(
-//           // future: () async {
-//           //   // Check if the event room is already in the cache
-//           //   if (eventRoomsBox.containsKey(ticketId.eventId)) {
-//           //     return eventRoomsBox.get(ticketId.eventId);
-//           //   } else {
-//           //     // If not, fetch it from Firestore and store it in the cache
-//           //     final room =
-//           //         await DatabaseService.getEventRoomWithId(ticketId.eventId);
-//           //     if (room != null) await eventRoomsBox.put(ticketId.eventId, room);
-//           //     return room;
-//           //   }
-//           // }(),
-//           future: _getEventRoom(ticketId.eventId),
-
-//           builder: (BuildContext context, AsyncSnapshot<EventRoom?> snapshot) {
-//             if (snapshot.hasError) {
-//               return const Text('Error loading chat room');
-//             }
-//             if (!snapshot.hasData) {
-//               return _loadingSkeleton(); // return a loading spinner or some other widget
-//             }
-//             final room = snapshot.data;
-//             limitRooms();
-//             limitTicketIds();
-//             return GetAuthor(
-//               ticketId: ticketId,
-//               connectivityStatus: _connectivityStatus,
-//               chats: null,
-//               lastMessage: ticketId.lastMessage,
-//               seen: false,
-//               chatUserId: widget.currentUserId,
-//               isEventRoom: true,
-//               room: room,
-//             );
-//           },
-//         );
-//   },
-// );
-
-//     // _buildChatView(
-
-//     //   stream: userTicketIdRef
-//     //       .doc(widget.currentUserId)
-//     //       .collection('eventInvite')
-//     //       .orderBy('timestamp', descending: true)
-//     //       .snapshots(),
-//     //   noContentMessage: 'No Event Rooms.',
-//     //   noContentIcon: Icons.chat_bubble_outline_sharp,
-//     //   itemBuilder: (context, index, doc) {
-//     //     DocumentSnapshot docSnapshot = doc[index];
-//     //     String ticketIdKey = docSnapshot.id;
-//     //     // Check if the ticketId is already in the cache
-//     //     TicketIdModel ticketId;
-//     //     if (ticketIdsBox.containsKey(doc.id)) {
-//     //       ticketId = ticketIdsBox.get(doc.id)!;
-//     //     } else {
-//     //       // If not, fetch it from Firestore and store it in the cache
-//     //       ticketId = TicketIdModel.fromDoc(doc);
-//     //       ticketIdsBox.put(doc.id, ticketId);
-
-//     //       if (!_activeListeners.contains(ticketIdKey)) {
-//     //         _listenToTicketIdUpdates(ticketIdKey);
-//     //         _activeListeners.add(ticketIdKey);
-//     //       }
-//     //     }
-
-//     //     // Return a FutureBuilder that completes with the event room
-//     //     return FutureBuilder<EventRoom?>(
-//     //       // future: () async {
-//     //       //   // Check if the event room is already in the cache
-//     //       //   if (eventRoomsBox.containsKey(ticketId.eventId)) {
-//     //       //     return eventRoomsBox.get(ticketId.eventId);
-//     //       //   } else {
-//     //       //     // If not, fetch it from Firestore and store it in the cache
-//     //       //     final room =
-//     //       //         await DatabaseService.getEventRoomWithId(ticketId.eventId);
-//     //       //     if (room != null) await eventRoomsBox.put(ticketId.eventId, room);
-//     //       //     return room;
-//     //       //   }
-//     //       // }(),
-//     //       future: _getEventRoom(ticketId.eventId),
-
-//     //       builder: (BuildContext context, AsyncSnapshot<EventRoom?> snapshot) {
-//     //         if (snapshot.hasError) {
-//     //           return const Text('Error loading chat room');
-//     //         }
-//     //         if (!snapshot.hasData) {
-//     //           return _loadingSkeleton(); // return a loading spinner or some other widget
-//     //         }
-//     //         final room = snapshot.data;
-//     //         limitRooms();
-//     //         limitTicketIds();
-//     //         return GetAuthor(
-//     //           ticketId: ticketId,
-//     //           connectivityStatus: _connectivityStatus,
-//     //           chats: null,
-//     //           lastMessage: ticketId.lastMessage,
-//     //           seen: false,
-//     //           chatUserId: widget.currentUserId,
-//     //           isEventRoom: true,
-//     //           room: room,
-//     //         );
-//     //       },
-//     //     );
-//     //   },
-//     // );
-//   }
 
 // he build method constructs the UI of the widget. It uses a NestedScrollView
 // with a SliverAppBar for the header, which contains the user's posts and a

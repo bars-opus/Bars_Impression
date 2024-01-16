@@ -66,60 +66,196 @@ class _TicketAndCalendarFeedScreenState
     }
   }
 
+  Set<String> addedTicketIds = Set<String>();
+
   _setUpInvites() async {
-    // try {
-    QuerySnapshot ticketOrderSnapShot = await userInviteRef
-        .doc(widget.currentUserId)
-        .collection('eventInvite')
-        .orderBy('eventTimestamp', descending: true)
-        .limit(10)
-        .get();
-    List<TicketOrderModel> ticketOrder = ticketOrderSnapShot.docs
-        .map((doc) => TicketOrderModel.fromDoc(doc))
-        .toList();
-    if (ticketOrderSnapShot.docs.isNotEmpty) {
-      _lastTicketOrderDocument = ticketOrderSnapShot.docs.last;
-    }
-    if (mounted) {
-      setState(() {
-        _ticketOrder = ticketOrder;
-        _isLoading = false;
-      });
-    }
-    if (ticketOrderSnapShot.docs.length < limit) {
-      _hasNext = false;
-    }
+    try {
+      QuerySnapshot ticketOrderSnapShot = await userInviteRef
+          .doc(widget.currentUserId)
+          .collection('eventInvite')
+          .orderBy('eventTimestamp', descending: false)
+          .limit(10)
+          .get();
 
-    return ticketOrder;
-    // } catch (e) {
-    //   return [];
-    // }
+      List<TicketOrderModel> ticketOrders = ticketOrderSnapShot.docs
+          .map((doc) => TicketOrderModel.fromDoc(doc))
+          .toList();
+
+      List<TicketOrderModel> uniqueEvents = [];
+
+      for (var ticketOrder in ticketOrders) {
+        if (addedTicketIds.add(ticketOrder.eventId)) {
+          uniqueEvents.add(ticketOrder);
+        }
+      }
+      if (ticketOrderSnapShot.docs.isNotEmpty) {
+        _lastTicketOrderDocument = ticketOrderSnapShot.docs.last;
+      }
+
+      if (mounted) {
+        setState(() {
+          _ticketOrder = uniqueEvents;
+          _isLoading = false;
+        });
+      }
+
+      if (ticketOrderSnapShot.docs.length < 10) {
+        _hasNext = false; // No more documents to load
+      }
+
+      return uniqueEvents;
+    } catch (e) {
+      print('Error fetching initial invites: $e');
+      return [];
+    }
   }
 
+// Method to load more activities
+// Method to load more activities
   _loadMoreActivities() async {
-    _hasNext = true;
-    QuerySnapshot postFeedSnapShot = await userInviteRef
-        .doc(widget.currentUserId)
-        .collection('eventInvite')
-        .orderBy('eventTimestamp', descending: true)
-        .startAfterDocument(_lastTicketOrderDocument!)
-        .limit(limit)
-        .get();
-    List<TicketOrderModel> morePosts = postFeedSnapShot.docs
-        .map((doc) => TicketOrderModel.fromDoc(doc))
-        .toList();
-    List<TicketOrderModel> allPost = _ticketOrder..addAll(morePosts);
-    if (postFeedSnapShot.docs.isNotEmpty) {
-      _lastTicketOrderDocument = postFeedSnapShot.docs.last;
+    if (_lastTicketOrderDocument == null) {
+      // No more documents to load or initial load has not been done
+      print("No more documents to load or last document is null.");
+      return;
     }
-    if (mounted) {
-      setState(() {
-        _ticketOrder = allPost;
-      });
+    try {
+      QuerySnapshot postFeedSnapShot = await userInviteRef
+          .doc(widget.currentUserId)
+          .collection('eventInvite')
+          .orderBy('eventTimestamp', descending: false) // Keep consistent order
+          .startAfterDocument(_lastTicketOrderDocument!)
+          .limit(limit)
+          .get();
+
+      List<TicketOrderModel> morePosts = postFeedSnapShot.docs
+          .map((doc) => TicketOrderModel.fromDoc(doc))
+          .toList();
+
+      List<TicketOrderModel> uniqueEvents = [];
+
+      for (var ticketOrder in morePosts) {
+        if (addedTicketIds.add(ticketOrder.eventId)) {
+          uniqueEvents.add(ticketOrder);
+        }
+      }
+
+      // if (mounted) {
+      //   setState(() {
+      //     _ticketOrder = uniqueEvents;
+      //     _isLoading = false;
+      //   });
+      // }
+
+      // if (ticketOrderSnapShot.docs.length < limit) {
+      //   _hasNext = false; // No more documents to load
+      // }
+
+      // return uniqueEvents;
+
+      if (postFeedSnapShot.docs.isNotEmpty) {
+        _lastTicketOrderDocument = postFeedSnapShot.docs.last;
+      }
+
+      if (mounted) {
+        setState(() {
+          _ticketOrder.addAll(uniqueEvents);
+          // Check if there might be more documents to load
+          _hasNext = postFeedSnapShot.docs.length == limit;
+        });
+      }
+      return uniqueEvents;
+    } catch (e) {
+      print('Error loading more activities: $e');
+      _hasNext = false;
+      return _hasNext;
     }
-    _hasNext = false;
-    return _hasNext;
   }
+
+  // _loadMoreActivities() async {
+  //   if (!_hasNext || _lastTicketOrderDocument == null) {
+  //     // No more documents to load or initial load has not been done
+  //     return;
+  //   }
+  //   try {
+  //     QuerySnapshot postFeedSnapShot = await userInviteRef
+  //         .doc(widget.currentUserId)
+  //         .collection('eventInvite')
+  //         .orderBy('eventTimestamp', descending: false) // Keep consistent order
+  //         .startAfterDocument(_lastTicketOrderDocument!)
+  //         .limit(limit)
+  //         .get();
+  //     List<TicketOrderModel> morePosts = postFeedSnapShot.docs
+  //         .map((doc) => TicketOrderModel.fromDoc(doc))
+  //         .toList();
+  //     if (morePosts.isNotEmpty) {
+  //       _lastTicketOrderDocument = postFeedSnapShot.docs.last;
+  //     }
+  //     if (mounted) {
+  //       setState(() {
+  //         _ticketOrder.addAll(morePosts);
+  //         _hasNext =
+  //             morePosts.length == limit; // Update hasNext state appropriately
+  //       });
+  //     }
+  //   } catch (e) {
+  //     // Handle the error appropriately
+  //   }
+  // }
+
+  // _setUpInvites() async {
+  //   // try {
+  //   QuerySnapshot ticketOrderSnapShot = await userInviteRef
+  //       .doc(widget.currentUserId)
+  //       .collection('eventInvite')
+  //       .orderBy('eventTimestamp', descending: false)
+  //       .limit(10)
+  //       .get();
+  //   List<TicketOrderModel> ticketOrder = ticketOrderSnapShot.docs
+  //       .map((doc) => TicketOrderModel.fromDoc(doc))
+  //       .toList();
+  //   if (ticketOrderSnapShot.docs.isNotEmpty) {
+  //     _lastTicketOrderDocument = ticketOrderSnapShot.docs.last;
+  //   }
+  //   if (mounted) {
+  //     setState(() {
+  //       _ticketOrder = ticketOrder;
+  //       _isLoading = false;
+  //     });
+  //   }
+  //   if (ticketOrderSnapShot.docs.length < limit) {
+  //     _hasNext = false;
+  //   }
+
+  //   return ticketOrder;
+  //   // } catch (e) {
+  //   //   return [];
+  //   // }
+  // }
+
+  // _loadMoreActivities() async {
+  //   _hasNext = true;
+  //   QuerySnapshot postFeedSnapShot = await userInviteRef
+  //       .doc(widget.currentUserId)
+  //       .collection('eventInvite')
+  //       .orderBy('eventTimestamp', descending: true)
+  //       .startAfterDocument(_lastTicketOrderDocument!)
+  //       .limit(limit)
+  //       .get();
+  //   List<TicketOrderModel> morePosts = postFeedSnapShot.docs
+  //       .map((doc) => TicketOrderModel.fromDoc(doc))
+  //       .toList();
+  //   List<TicketOrderModel> allPost = _ticketOrder..addAll(morePosts);
+  //   if (postFeedSnapShot.docs.isNotEmpty) {
+  //     _lastTicketOrderDocument = postFeedSnapShot.docs.last;
+  //   }
+  //   if (mounted) {
+  //     setState(() {
+  //       _ticketOrder = allPost;
+  //     });
+  //   }
+  //   _hasNext = false;
+  //   return _hasNext;
+  // }
 
   void _showBottomSheetErrorMessage(String errorTitle) {
     showModalBottomSheet(
@@ -429,6 +565,7 @@ class _TicketAndCalendarFeedScreenState
   }
 
   Future<void> refreshData() async {
+    addedTicketIds.clear();
     setState(
       () {
         _isLoading = true;

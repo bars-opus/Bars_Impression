@@ -16,7 +16,7 @@ class ConfirmationPrompt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: ResponsiveHelper.responsiveHeight(context, 300),
+        height: ResponsiveHelper.responsiveHeight(context, 350),
         decoration: BoxDecoration(
             color: Theme.of(context).primaryColorLight,
             borderRadius: BorderRadius.circular(30)),

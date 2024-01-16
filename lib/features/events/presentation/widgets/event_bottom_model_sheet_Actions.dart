@@ -23,7 +23,8 @@ class EventBottomModalSheetActions extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return EventSheduleCalendar(
-          event: event, currentUserId: currentUserId,
+          event: event,
+          currentUserId: currentUserId,
         );
       },
     );
@@ -47,6 +48,8 @@ class EventBottomModalSheetActions extends StatelessWidget {
 
 // Ticket options purchase entry
   void _showBottomSheetAttendOptions(BuildContext context) {
+    Provider.of<UserData>(context, listen: false).ticketList.clear();
+
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,

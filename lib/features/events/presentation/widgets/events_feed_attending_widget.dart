@@ -58,11 +58,14 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
           buttonText: 'Delete tickets',
           onPressed: () async {
             Navigator.pop(context);
+
             try {
               String orderId = widget.ticketOrder.orderId;
 
               widget.ticketList
                   .removeWhere((ticket) => ticket.orderId == orderId);
+              await DatabaseService.deleteTicket(
+                  ticketOrder: widget.ticketOrder);
               setState(() {});
             } catch (e) {
               _showBottomSheetErrorMessage('Failed to delete ticket');
@@ -280,7 +283,7 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                     event: event,
                     currentUserId: widget.currentUserId,
                     justPurchased: '',
-                    palette: _paletteGenerator,
+                    palette: _paletteGenerator, 
                   ),
                 );
               } else {

@@ -136,6 +136,7 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
 
   _attendMethod() async {
     var _provider = Provider.of<UserData>(context, listen: false);
+    Provider.of<UserData>(context, listen: false).ticketList.clear();
 
     HapticFeedback.lightImpact();
     if (mounted) {
@@ -166,7 +167,7 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
         ),
       );
       if (mounted) {
-        setState(() { 
+        setState(() {
           _checkingTicketAvailability = false;
         });
       }
@@ -351,7 +352,8 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
                         Text(
                           widget.event.isFree
                               ? 'Free'
-                              : currencyPartition.length > 0
+                              : currencyPartition.length > 0 ||
+                                      widget.event.rate.isNotEmpty
                                   ? "${currencyPartition[1]}${_fristTickePrice.toString()}"
                                   : _fristTickePrice.toString(),
                           style: TextStyle(

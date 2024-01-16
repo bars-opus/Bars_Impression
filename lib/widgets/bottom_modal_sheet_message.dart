@@ -76,25 +76,22 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
     // Assuming usersRef is a global variable of type CollectionReference
     WriteBatch batch = FirebaseFirestore.instance.batch();
 
-
-
     batch.update(
       usersAuthorRef
-       
           .doc(widget.currentUserId)
           .collection('new_chats')
           .doc(widget.userId),
       {'seen': true},
     );
 
-    batch.update(
-      usersAuthorRef
-      
-          .doc(widget.userId)
-          .collection('new_chats')
-          .doc(widget.currentUserId),
-      {'seen': true},
-    );
+    // batch.update(
+    //   usersAuthorRef
+
+    //       .doc(widget.userId)
+    //       .collection('new_chats')
+    //       .doc(widget.currentUserId),
+    //   {'seen': true},
+    // );
 
     batch.commit();
   }
@@ -330,7 +327,8 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
                 context,
                 MaterialPageRoute(
                     builder: (_) => MyWebView(
-                          url: 'https://www.barsopus.com/terms-of-use', title: '',
+                          url: 'https://www.barsopus.com/terms-of-use',
+                          title: '',
                         )));
           },
           child: RichText(

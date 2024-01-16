@@ -38,4 +38,17 @@ class TicketIdModel {
       timestamp: doc['timestamp'] as Timestamp?,
     );
   }
+   Map<String, dynamic> toJson() {
+    return {
+      'eventId': eventId,
+      'isNew': isNew,
+      'timestamp': timestamp,
+      'lastMessage': lastMessage,
+      'muteNotification': muteNotification,
+      'isSeen': isSeen,
+    };
+}
+
+ 
+  
 }

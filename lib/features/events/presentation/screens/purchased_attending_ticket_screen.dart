@@ -423,6 +423,22 @@ class _PurchasedAttendingTicketScreenState
     return refund;
   }
 
+  _deleteTicket() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      await DatabaseService.deleteTicket(ticketOrder: widget.ticketOrder);
+      Navigator.pop(context);
+      mySnackBar(context, 'Ticket canceled successfully.');
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      _showBottomSheetErrorMessage();
+    }
+  }
+
   void _showBottomSheetConfirmRefund(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -430,18 +446,29 @@ class _PurchasedAttendingTicketScreenState
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return ConfirmationPrompt(
-          buttonText: widget.event.isFree || widget.ticketOrder.tickets.isEmpty
+          buttonText: widget.event.isFree ||
+                  widget.ticketOrder.tickets.isEmpty ||
+                  widget.event.isCashPayment
               ? 'Cancel attendance'
               : 'Refund request confirmation',
           onPressed: () async {
             Navigator.pop(context);
-            _submitRequeste();
+            widget.event.isFree ||
+                    widget.ticketOrder.tickets.isEmpty ||
+                    widget.event.isCashPayment
+                ? _deleteTicket()
+                : _submitRequeste();
           },
-          title: widget.event.isFree || widget.ticketOrder.tickets.isEmpty
+          title: widget.event.isFree ||
+                  widget.ticketOrder.tickets.isEmpty ||
+                  widget.event.isCashPayment
               ? 'Are you sure you cancel attendance?'
               : 'Are you sure you want to request a refund?',
-          subTitle:
-              'Please be informed that you would lose access to this event room and your ticket for this event would be revoked.',
+          subTitle: widget.event.isFree ||
+                  widget.ticketOrder.tickets.isEmpty ||
+                  widget.event.isCashPayment
+              ? 'Please be informed that you would lose access to this event room and your ticket for this event would be revoked. If you generated a free ticket, Please note that no refund will be provided as there was no transaction. '
+              : 'Please be informed that you would lose access to this event room and your ticket for this event would be revoked.',
         );
       },
     );
@@ -708,10 +735,15 @@ class _PurchasedAttendingTicketScreenState
   _refundButton() {
     return EventBottomButton(
       buttonColor: Colors.red,
-      buttonText: widget.event.isFree ? 'Cancel attendance' : 'Request refund',
+      buttonText: widget.event.isFree || widget.event.isCashPayment
+          ? 'Cancel attendance'
+          : 'Request refund',
       onPressed: () {
-        widget.event.isFree || widget.ticketOrder.tickets.isEmpty
-            ? _showBottomRefundForm()
+        widget.event.isFree ||
+                widget.ticketOrder.tickets.isEmpty ||
+                widget.event.isCashPayment
+            ? _showBottomSheetConfirmRefund(context)
+            // _showBottomRefundForm()
             : _showBottomSheetRefund();
       },
     );
