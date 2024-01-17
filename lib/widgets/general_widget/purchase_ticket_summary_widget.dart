@@ -139,6 +139,12 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
 
+                            if (event.isFree)
+                              TextSpan(
+                                text: 'Free',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+
                             TextSpan(
                               text:
                                   "\n${MyDateFormat.toDate(finalPurchasintgTicket.eventTicketDate.toDate()).toString()}",

@@ -109,41 +109,7 @@ class DatabaseService {
       'userName': user.userName,
       'profileImageUrl': user.profileImageUrl!,
       'bio': user.bio,
-      // 'favouritePunchline': user.favouritePunchline,
-      // 'favouriteArtist': user.favouriteArtist,
-      // 'favouriteSong': user.favouriteSong,
-      // 'favouriteAlbum': user.favouriteAlbum,
-      // 'company': user.company,
-      // 'country': user.country,
-      // 'city': user.city,
-      // 'continent': user.continent,
-      // 'skills': user.skills,
-      // 'performances': user.performances,
-      // 'collaborations': user.collaborations,
-      // 'awards': user.awards,
-      // 'management': user.management,
-      // 'contacts': user.contacts,
       'profileHandle': user.profileHandle!,
-      // 'report': user.report,
-      // 'reportConfirmed': user.reportConfirmed,
-      // 'website': user.website,
-      // 'otherSites1': user.otherSites1,
-      // 'otherSites2': user.otherSites2,
-      // 'mail': user.mail,
-      // 'score': user.score,
-      // 'privateAccount': user.privateAccount,
-      // 'androidNotificationToken': user.androidNotificationToken,
-      // 'hideUploads': user.hideUploads,
-      // 'verified': user.verified,
-      // 'disableAdvice': user.disableAdvice,
-      // 'disableChat': user.disableChat,
-      // 'enableBookingOnChat': user.enableBookingOnChat,
-      // 'hideAdvice': user.hideAdvice,
-      // 'noBooking': user.noBooking,
-      // 'disabledAccount': user.disabledAccount,
-      // 'professionalPicture1': user.professionalPicture1,
-      // 'professionalPicture2': user.professionalPicture2,
-      // 'professionalPicture3': user.professionalPicture3,
     });
   }
 
@@ -169,41 +135,6 @@ class DatabaseService {
       transaction.set(usernameRef, {'userId': userRef.id});
     });
   }
-
-// static Future<void> changeUsername(String oldUsername, String newUsername) async {
-//   final _firestore = FirebaseFirestore.instance;
-
-//   await _firestore.runTransaction((transaction) async {
-//     DocumentSnapshot oldUsernameDoc =
-//       await transaction.get(_firestore.collection('usernames').doc(oldUsername));
-
-//     if (!oldUsernameDoc.exists) {
-//       throw Exception('Old username does not exist');
-//     }
-
-//     DocumentSnapshot newUsernameDoc =
-//       await transaction.get(_firestore.collection('usernames').doc(newUsername));
-
-//     if (newUsernameDoc.exists) {
-//       throw Exception('New username is not unique');
-//     }
-
-//     // Create the new username document
-//     DocumentReference newUsernameRef = _firestore.collection('usernames').doc(newUsername);
-//     transaction.set(newUsernameRef, oldUsernameDoc.data());
-
-//     // Delete the old username document
-//     DocumentReference oldUsernameRef = _firestore.collection('usernames').doc(oldUsername);
-//     transaction.delete(oldUsernameRef);
-//   });
-// }
-
-//  static Future<bool> isUsernameUnique(String username) async {
-//     final _firestore = FirebaseFirestore.instance;
-//     DocumentSnapshot usernameDoc =
-//         await _firestore.collection('usernames').doc(username).get();
-//     return !usernameDoc.exists;
-//   }
 
   static Future<QuerySnapshot> searchUsers(String name) {
     String trimedName = name.toUpperCase().trim();
@@ -250,36 +181,6 @@ class DatabaseService {
         .get();
     return events;
   }
-
-  // static Future<QuerySnapshot> searchPost(String punchline) {
-  //   String trimedTitle = punchline.toUpperCase().trim();
-
-  //   Future<QuerySnapshot> posts = allPostsRef
-  //       .orderBy('punch')
-  //       .startAt([trimedTitle])
-  //       // .where('punch', isGreaterThanOrEqualTo: punchline)
-  //       .limit(15)
-  //       .get();
-  //   return posts;
-  // }
-
-  // static Future<QuerySnapshot> searchForum(String title) {
-  //   Future<QuerySnapshot> forums = allForumsRef
-  //       .where('title', isGreaterThanOrEqualTo: title)
-  //       .limit(10)
-  //       .get();
-  //   return forums;
-  // }
-
-  // static Future<QuerySnapshot> searchAttendeeNumber(
-  //     String eventId, String barcode) {
-  //   Future<QuerySnapshot> invite = newEventTicketOrderRef
-  //       .doc(eventId)
-  //       .collection('eventInvite')
-  //       .where('attendNumber', isEqualTo: barcode)
-  //       .get();
-  //   return invite;
-  // }
 
   static Future<QuerySnapshot> searchArtist(String name) {
     Future<QuerySnapshot> users =
@@ -354,231 +255,12 @@ class DatabaseService {
     return batch.commit();
   }
 
-  // static void roomChatMessage({
-  //   required EventRoomMessageModel message,
-  //   required String eventId,
-  //   required String currentUserId,
-  // }) async {
-  //   eventsChatRoomsConverstionRef.doc(eventId).collection('roomChats').add({
-  //     'senderId': message.senderId,
-  //     'content': message.content,
-  //     'eventId': message.eventId,
-  //     'authorName': message.authorName,
-  //     'authorProfileHanlde': message.authorProfileHanlde,
-  //     'authorProfileImageUrl': message.authorProfileImageUrl,
-  //     'authorVerification': message.authorVerification,
-  //     'timestamp': FieldValue.serverTimestamp(),
-  //     'isRead': message.isRead,
-  //     'isSent': message.isSent,
-  //     'isLiked': message.isLiked,
-  //     'sendContent':
-  //         message.sendContent == null ? null : message.sendContent!.toMap(),
-  //     'replyToMessage': message.replyToMessage == null
-  //         ? null
-  //         : message.replyToMessage!.toMap(),
-  //     'attachments': message.attachments
-  //         .map((attachments) => attachments.toJson())
-  //         .toList(),
-  //   });
-
-  //   WriteBatch batch = FirebaseFirestore.instance.batch();
-
-  //   final usersDocs = await newEventTicketOrderRef
-  //       .doc(eventId)
-  //       .collection('eventInvite')
-  //       .get();
-
-  //   final sender = {
-  //     'lastMessage': message.content,
-  //     'MediaType': '',
-  //     'seen': true,
-  //     // 'seen': currentUserId == message.senderId ? true : false,
-  //     'newMessageTimestamp': FieldValue.serverTimestamp(),
-  //   };
-
-  //   final receivers = {
-  //     'lastMessage': message.content,
-  //     'MediaType': '',
-  //     'seen': false,
-  //     // 'seen': currentUserId == message.senderId ? true : false,
-  //     'newMessageTimestamp': FieldValue.serverTimestamp(),
-  //   };
-
-  //   for (var doc in usersDocs.docs) {
-  //     String userId = doc.id;
-  //     final conversationRef =
-  //         userTicketIdRef.doc(userId).collection('eventInvite');
-
-  //     userId == currentUserId
-  //         ? batch.update(conversationRef, sender)
-  //         : batch.update(conversationRef, receivers);
-
-  //     // Commit the batch
-  //     return batch.commit();
-  //   }
-  // }
-  // static Stream<int> numFavoriteArtist(String name) {
-  //   return usersAuthorRef
-  //       .where('favouriteArtist', isEqualTo: name)
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
-
-  // static Stream<int> numSongs(String song) {
-  //   return usersAuthorRef
-  //       .where('favouriteSong', isEqualTo: song)
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
-
-  // static Stream<int> numAlbums(String albums) {
-  //   return usersAuthorRef
-  //       .where('favouriteAlbum', isEqualTo: albums)
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
-
-  // static Stream<int> numChatRoomMessage(String chatId) {
-  //   return eventsChatRoomsConverstionRef
-  //       .doc(chatId)
-  //       .collection('roomChats')
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
-
-//   static void roomChatMessage({
-//     required EventRoomMessageModel message,
-//     // required bool isFirstMessage,
-//     required String eventId,
-//   }) async {
-//     eventsChatRoomsConverstionRef.doc(eventId).collection('roomChats').add({
-//       'senderId': message.senderId,
-//       'content': message.content,
-//       'eventId': message.eventId,
-//       'authorName': message.authorName,
-//       'authorProfileHanlde': message.authorProfileHanlde,
-//       'authorProfileImageUrl': message.authorProfileImageUrl,
-//       'authorVerification': message.authorVerification,
-//       'timestamp': FieldValue.serverTimestamp(),
-//       'isRead': message.isRead,
-//       'isSent': message.isSent,
-//       'isLiked': message.isLiked,
-//       'sendContent':
-//           message.sendContent == null ? null : message.sendContent!.toMap(),
-//       'replyToMessage': message.replyToMessage == null
-//           ? null
-//           : message.replyToMessage!.toMap(),
-//       'attachments': message.attachments
-//           .map((attachments) => attachments.toJson())
-//           .toList(),
-//     });
-
-//     String messageId = Uuid().v4();
-
-//     WriteBatch batch = FirebaseFirestore.instance.batch();
-
-//     for (var user in users) {
-//       // Create a unique chatId for each user
-
-//       final conversationRef =
-//           userTicketIdRef.doc(user.userId).collection('eventInvite');
-
-//       // Add the message to the conversation collection
-//       batch.update(conversationRef.doc(), {
-//         'lastMessage': message.content,
-//         'MediaType': '',
-//         'seen': true,
-//         'newMessageTimestamp': FieldValue.serverTimestamp(),
-//       });
-//     }
-
-//     // Commit the batch
-//     return batch.commit();
-//     // addActivityEventItem(
-//     //   user: user,
-//     //   event: event,
-//     //   ask: ask,
-//     //   commonId: commonId,
-//     // );
-
-// // Add the message ID to the sender's chats subcollection
-//     // isFirstMessage
-//     //     ? await usersAuthorRef
-//     //         .doc(message.senderId)
-//     //         .collection('new_chats')
-//     //         .doc(message.receiverId)
-//     //         .set({
-//     //         'messageId': messageId,
-//     //         'lastMessage': message.content,
-//     //         'messageInitiator': '',
-//     //         'restrictChat': false,
-//     //         'firstMessage': message.content,
-//     //         'mediaType': '',
-//     //         'timestamp': FieldValue.serverTimestamp(),
-//     //         'seen': true,
-//     //         'fromUserId': message.senderId,
-//     //         'toUserId': message.receiverId,
-//     //         'newMessageTimestamp': FieldValue.serverTimestamp(),
-//     //       })
-//     //     : await usersAuthorRef
-//     //         .doc(message.senderId)
-//     //         .collection('new_chats')
-//     //         .doc(message.receiverId)
-//     //         .update({
-//     //         'lastMessage': message.content,
-//     //         'MediaType': '',
-//     //         'seen': true,
-//     //         'newMessageTimestamp': FieldValue.serverTimestamp(),
-//     //       });
-
-//     // // Add the message ID to the receiver's chats subcollection
-//     // isFirstMessage
-//     //     ? await usersAuthorRef
-//     //         .doc(message.receiverId)
-//     //         .collection('new_chats')
-//     //         .doc(message.senderId)
-//     //         .set({
-//     //         'messageId': messageId,
-//     //         'lastMessage': message.content,
-//     //         'messageInitiator': message.senderId,
-//     //         'restrictChat': false,
-//     //         'firstMessage': message.content,
-//     //         'mediaType': '',
-//     //         'timestamp': FieldValue.serverTimestamp(),
-//     //         'seen': false,
-//     //         'fromUserId': message.senderId,
-//     //         'toUserId': message.receiverId,
-//     //         'newMessageTimestamp': FieldValue.serverTimestamp(),
-//     //       })
-//     //     : await usersAuthorRef
-//     //         .doc(message.receiverId)
-//     //         .collection('new_chats')
-//     //         .doc(message.senderId)
-//     //         .update({
-//     //         'lastMessage': message.content,
-//     //         'MediaType': '',
-//     //         'seen': false,
-//     //         'newMessageTimestamp': FieldValue.serverTimestamp(),
-//     //       });
-//   }
-
   static void addChatActivityItem({
     required String currentUserId,
     required String toUserId,
     required AccountHolderAuthor author,
     required String content,
-  }) {
-    // if (currentUserId != toUserId) {
-    //   chatActivitiesRef.doc(toUserId).collection('chatActivities').add({
-    //     'fromUserId': currentUserId,
-    //     'authorName': author.userName,
-    //     'toUserId': currentUserId,
-    //     'seen': '',
-    //     'comment': content,
-    //     'timestamp': Timestamp.fromDate(DateTime.now()),
-    //   });
-    // }
-  }
+  }) {}
 
   static void deleteMessage({
     required String currentUserId,
@@ -620,78 +302,6 @@ class DatabaseService {
       });
     });
   }
-
-  // static void likeMessage({
-  //   required String currentUserId,
-  //   required String userId,
-  //   required bool liked,
-  //   required ChatMessage message,
-  // }) {
-  //   usersAuthorRef
-  //       .doc(currentUserId)
-  //       .collection('chats')
-  //       .doc(userId)
-  //       .collection('chatMessage')
-  //       .doc(message.id)
-  //       .update({
-  //     'liked': liked,
-  //     'timestamp': message.timestamp,
-  //   }).then((value) {
-  //     usersAuthorRef.doc(currentUserId).collection('chats').doc(userId).update({
-  //       'lastMessage': liked ? 'like' : 'unLike',
-  //       'seen': 'seen',
-  //       'newMessageTimestamp': Timestamp.fromDate(DateTime.now()),
-  //     });
-  //   });
-
-  //   usersAuthorRef
-  //       .doc(userId)
-  //       .collection('chats')
-  //       .doc(currentUserId)
-  //       .collection('chatMessage')
-  //       .doc(message.id)
-  //       .update({
-  //     'liked': liked,
-  //     'timestamp': message.timestamp,
-  //   }).then((value) {
-  //     usersAuthorRef.doc(userId).collection('chats').doc(currentUserId).update({
-  //       'lastMessage': liked ? 'like' : 'unLike',
-  //       'seen': ' ',
-  //       'newMessageTimestamp': Timestamp.fromDate(DateTime.now()),
-  //     });
-  //   });
-  // }
-
-  // static void addActivityItem({
-  //   required AccountHolderAuthor user,
-  //   required ChatMessage message,
-  //   required NotificationActivityType type,
-  // }) {
-  //   // if (user.id != post.authorId) {
-  //   // post != null
-  //   //     ?
-
-  //   // usersAuthorRef
-  //   //       .doc(user.userId) // Use user's id from the loop
-  //   //       .collection('new_chats')
-  //   //       .doc(message.senderId);
-
-  //   chatActivitiesRef.doc(user.userId).collection('messageActivities').add({
-  //     'authorId': user.userId,
-  //     'postId': message.id,
-  //     'seen': false,
-  //     'type': type.toString().split('.').last,
-  //     'postImageUrl': '',
-  //     'comment': message.content,
-  //     'timestamp': Timestamp.fromDate(DateTime.now()),
-  //     'authorProfileImageUrl': user.profileImageUrl,
-  //     'authorName': user.userName,
-  //     'authorProfileHandle': user.profileHandle,
-  //     'authorVerification': user.verified,
-  //   });
-
-  //   // }
-  // }
 
   static Stream<int> numChats(
     String currentUserId,
@@ -914,186 +524,6 @@ class DatabaseService {
     return batch.commit();
   }
 
-//   static firstChatMessage({
-//     required ChatMessage message,
-//     required String chatId,
-//   }) async {
-//     String messageId = Uuid().v4();
-
-//     await messageRef
-//         .doc(chatId.isEmpty ? messageId : chatId)
-//         .collection('conversation')
-//         .add({
-//       'senderId': message.senderId,
-//       'receiverId': message.receiverId,
-//       'content': message.content,
-//       'timestamp': FieldValue.serverTimestamp(),
-//       'isRead': message.isRead,
-//       'isSent': message.isSent,
-//       'isLiked': message.isLiked,
-//       'sendContent':
-//           message.sendContent == null ? null : message.sendContent!.toMap(),
-//       'replyToMessage': message.replyToMessage == null
-//           ? null
-//           : message.replyToMessage!.toMap(),
-//       'attachments':
-//           message.attachments
-//               .map((attachments) => attachments.toJson())
-//               .toList(),
-//     });
-// // Add the message ID to the sender's chats subcollection
-//     chatId.isEmpty
-//         ? await usersAuthorRef
-//             .doc(message.senderId)
-//             .collection('new_chats')
-//             .doc(message.receiverId)
-//             .set({
-//             'messageId': messageId,
-//             'lastMessage': message.content,
-//             'messageInitiator': message.senderId,
-//             'restrictChat': false,
-//             'firstMessage': message.content,
-//             'mediaType': '',
-//             'timestamp': FieldValue.serverTimestamp(),
-//             'seen': true,
-//             'fromUserId': message.senderId,
-//             'toUserId': message.receiverId,
-//             'newMessageTimestamp': FieldValue.serverTimestamp(),
-//           })
-//         : await usersAuthorRef
-//             .doc(message.senderId)
-//             .collection('new_chats')
-//             .doc(message.receiverId)
-  //   .update({
-  //   'lastMessage': message.content,
-  //   'MediaType': '',
-  //   'seen': true,
-  //   'newMessageTimestamp': FieldValue.serverTimestamp(),
-  // });
-
-//     // Add the message ID to the receiver's chats subcollection
-//     chatId.isEmpty
-//         ? await usersAuthorRef
-//             .doc(message.receiverId)
-//             .collection('new_chats')
-//             .doc(message.senderId)
-//             .set({
-//             'messageId': messageId,
-//             'lastMessage': message.content,
-//             'messageInitiator': message.senderId,
-//             'restrictChat': false,
-//             'firstMessage': message.content,
-//             'mediaType': '',
-//             'timestamp': FieldValue.serverTimestamp(),
-//             'seen': false,
-//             'fromUserId': message.senderId,
-//             'toUserId': message.receiverId,
-//             'newMessageTimestamp': FieldValue.serverTimestamp(),
-//           })
-//         : await usersAuthorRef
-//             .doc(message.receiverId)
-//             .collection('new_chats')
-//             .doc(message.senderId)
-//             .update({
-//             'lastMessage': message.content,
-//             'MediaType': '',
-//             'seen': false,
-//             'newMessageTimestamp': FieldValue.serverTimestamp(),
-//           });
-
-// dfdfdf
-// // addChatActivityItem(
-// //         currentUserId: currentUserId,
-// //         content: message,
-// //         toUserId: userId,
-// //         author: author);
-
-// //     usersAuthorRef
-// //         .doc(currentUserId)
-// //         .collection('new_chats')
-// //         .doc(userId)
-// //         .collection('new_chatMessage')
-// //         .doc(messageId)
-// //         .set({
-// //       'toUserId': userId,
-// //       'fromUserId': currentUserId,
-// //       'content': message,
-// //       'replyingMessage': replyingMessage,
-// //       'replyingAuthor': replyingAuthor,
-// //       'mediaUrl': mediaUrl,
-// //       'mediaType': '',
-// //       'sendContentId': sendContentId,
-// //       'sendPostType': sendPostType,
-// //       'sendContentTitle': sendContentTitle,
-// //       'report': '',
-// //       'liked': false,
-// //       'reportConfirmed': reportConfirmed,
-// //       'authorId': currentUserId,
-// //       'timestamp': Timestamp.fromDate(DateTime.now()),
-// //     }).then((value) {
-// //       usersAuthorRef.doc(currentUserId).collection('new_chats').doc(userId).set({
-// //         'lastMessage': message,
-// //         'messageInitiator': messageInitiator,
-// //         'restrictChat': restrictChat,
-// //         'firstMessage': message,
-// //         'mediaType': mediaType,
-// //         'timestamp': Timestamp.fromDate(DateTime.now()),
-// //         'seen': 'seen',
-// //         'fromUserId': currentUserId,
-// //         'toUserId': userId,
-// //         'newMessageTimestamp': Timestamp.fromDate(DateTime.now()),
-// //       });
-// //     });
-
-// //     addChatActivityItem(
-// //         currentUserId: currentUserId,
-// //         content: message,
-// //         toUserId: userId,
-// //         author: author);
-
-// //     usersAuthorRef
-// //         .doc(userId)
-// //         .collection('chats')
-// //         .doc(currentUserId)
-// //         .collection('chatMessage')
-// //         .doc(messageId)
-// //         .set({
-// //       'toUserId': userId,
-// //       'fromUserId': currentUserId,
-// //       'content': message,
-// //       'replyingMessage': replyingMessage,
-// //       'replyingAuthor': replyingAuthor,
-// //       'mediaUrl': mediaUrl,
-// //       'mediaType': '',
-// //       'sendContentId': sendContentId,
-// //       'sendPostType': sendPostType,
-// //       'sendContentTitle': sendContentTitle,
-// //       'report': '',
-// //       'liked': false,
-// //       'reportConfirmed': reportConfirmed,
-// //       'authorId': currentUserId,
-// //       'timestamp': Timestamp.fromDate(DateTime.now()),
-// //     }).then((value) {
-// //       usersAuthorRef.doc(userId).collection('chats').doc(currentUserId).set({
-// //     'lastMessage': message,
-// //     'messageInitiator': messageInitiator,
-// //     'restrictChat': restrictChat,
-// //     'firstMessage': message,
-// //     'mediaType': mediaType,
-// //     'timestamp': Timestamp.fromDate(DateTime.now()),
-// //     'seen': ' ',
-// //     'fromUserId': currentUserId,
-// //     'toUserId': userId,
-// //     'newMessageTimestamp': Timestamp.fromDate(DateTime.now()),
-// //       });
-// //     });
-// //     addChatActivityItem(
-// //         currentUserId: currentUserId,
-// //         content: message,
-// //         toUserId: userId,
-// //         author: author);
-  // }
-
   static void likeMessage({
     required String currentUserId,
     required String userId,
@@ -1237,137 +667,6 @@ class DatabaseService {
           advicedUserId: '');
     });
   }
-
-  // static void likeThought({
-  //   required AccountHolder user,
-  //   required Thought thought,
-  //   required Forum forum,
-  // }) {
-  //   thoughtsRef
-  //       .doc(forum.id)
-  //       .collection('forumThoughts')
-  //       .doc(thought.id)
-  //       .update({'likeCount': FieldValue.increment(1)});
-  //   //     .update({
-  //   //   'likeCount': thought.count! + 1,
-  //   // });
-
-  //   thoughtsLikeRef
-  //       .doc(thought.id)
-  //       .collection('thoughtLikes')
-  //       .doc(user.id)
-  //       .set({
-  //     'uid': user.id,
-  //   });
-  //   // addActivityThoughtLikeItem(
-  //   //   user: user,
-  //   //   forum: forum,
-  //   //   thought: thought,
-  //   //   isThoughtLiked: true,
-  //   // );
-  // }
-
-  // static void unlikeThought(
-  //     {required AccountHolder user,
-  //     required Forum forum,
-  //     required Thought thought}) {
-  //   thoughtsRef
-  //       .doc(forum.id)
-  //       .collection('forumThoughts')
-  //       .doc(thought.id)
-  //       .update({'likeCount': FieldValue.increment(-1)});
-  //   //     .update({
-  //   //   'likeCount': thought.count! - 1,
-  //   // });
-  //   thoughtsLikeRef
-  //       .doc(thought.id)
-  //       .collection('thoughtLikes')
-  //       .doc(user.id)
-  //       .get()
-  //       .then((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-  // }
-
-  // static void createPost(Post post) {
-  //   String docId =
-  //       eventsRef.doc(post.authorId).collection('userPosts').doc().id;
-  //   postsRef.doc(post.authorId).collection('userPosts').doc(docId).set({
-  //     'postId': docId,
-  //     'blurHash': post.blurHash,
-  //     'imageUrl': post.imageUrl,
-  //     'caption': post.caption,
-  //     'artist': post.artist,
-  //     'punch': post.punch,
-  //     'hashTag': post.hashTag,
-  //     'musicLink': post.musicLink,
-  //     'likeCount': post.likeCount,
-  //     'mediaType': post.mediaType,
-  //     'report': post.report,
-  //     'reportConfirmed': post.reportConfirmed,
-  //     'disLikeCount': post.disLikeCount,
-  //     'authorId': post.authorId,
-  //     'peopleTagged': post.peopleTagged,
-  //     'disbleSharing': post.disbleSharing,
-  //     'disableReaction': post.disableReaction,
-  //     'disableVibe': post.disableVibe,
-  //     'timestamp': post.timestamp,
-  //     'authorHandleType': post.authorHandleType,
-  //     'authorIdProfileImageUrl': post.authorIdProfileImageUrl,
-  //     'authorName': post.authorName,
-  //     'authorVerification': post.authorVerification,
-  //   });
-  //   allPostsRef.doc(docId).set({
-  //     'postId': docId,
-  //     'blurHash': post.blurHash,
-  //     'imageUrl': post.imageUrl,
-  //     'caption': post.caption,
-  //     'artist': post.artist,
-  //     'punch': post.punch,
-  //     'hashTag': post.hashTag,
-  //     'musicLink': post.musicLink,
-  //     'likeCount': post.likeCount,
-  //     'mediaType': post.mediaType,
-  //     'report': post.report,
-  //     'reportConfirmed': post.reportConfirmed,
-  //     'disLikeCount': post.disLikeCount,
-  //     'authorId': post.authorId,
-  //     'peopleTagged': post.peopleTagged,
-  //     'disbleSharing': post.disbleSharing,
-  //     'disableReaction': post.disableReaction,
-  //     'disableVibe': post.disableVibe,
-  //     'timestamp': post.timestamp,
-  //     'authorHandleType': post.authorHandleType,
-  //     'authorIdProfileImageUrl': post.authorIdProfileImageUrl,
-  //     'authorName': post.authorName,
-  //     'authorVerification': post.authorVerification,
-  //   });
-  //   // kpiStatisticsRef
-  //   //     .doc('0SuQxtu52SyYjhOKiLsj')
-  //   //     .update({'createdMoodPunched': FieldValue.increment(1)});
-  // }
-
-  // static void editPunch(Post post) {
-  //   postsRef.doc(post.authorId).collection('userPosts').doc(post.id).update({
-  //     'imageUrl': post.imageUrl,
-  //     'caption': post.caption,
-  //     'blurHash': post.blurHash,
-  //     'artist': post.artist,
-  //     'punch': post.punch,
-  //     'hashTag': post.hashTag,
-  //     'musicLink': post.musicLink,
-  //     'likeCount': post.likeCount,
-  //     'disLikeCount': post.disLikeCount,
-  //     'authorId': post.authorId,
-  //     'peopleTagged': post.peopleTagged,
-  //     'disbleSharing': post.disbleSharing,
-  //     'disableReaction': post.disableReaction,
-  //     'disableVibe': post.disableVibe,
-  //     'timestamp': post.timestamp,
-  //   });
-  // }
 
   static Future<void> createEvent(Event event) async {
     // Create a toJson method inside Event class to serialize the object into a map
@@ -1618,10 +917,6 @@ class DatabaseService {
     }
   }
 
-
-
-  
-
   static Future<void> validateTicket(Event event, String ticketOrderId) async {
     final entranceId = Uuid().v4();
     final eventInviteRef =
@@ -1732,250 +1027,6 @@ class DatabaseService {
     await batch.commit();
   }
 
-  // static Future<bool> createEvent(Event event, String ticketOrderId) async {
-  //   WriteBatch batch = FirebaseFirestore.instance.batch();
-  //   String entranceId = Uuid().v4();
-  //   TicketOrderModel ticket = newEventTicketOrderRef
-  //       .doc(event.id)
-  //       .collection('eventInvite')
-  //       .where('orderId', isEqualTo: ticketOrderId);
-
-  //   if (!ticket.validated) {
-  //     final eventInviteDocRef = newEventTicketOrderRef
-  //         .doc(event.id)
-  //         .collection('eventInvite')
-  //         .doc(ticket.userOrderId);
-
-  //     final userInviteDocRef = userInviteRef
-  //         .doc(ticket.userOrderId)
-  //         .collection('eventInvite')
-  //         .doc(event.id);
-
-  //     final updatedChat = {
-  //       'entranceId': entranceId,
-  //       'validated': true,
-  //     };
-
-  //     // Add addUserTicketIdRef to the transaction
-
-  //     batch.update(eventInviteDocRef, updatedChat);
-  //     batch.update(userInviteDocRef, updatedChat);
-  //   }
-
-  //   // Commit the batch
-  //   await batch.commit();
-  // }
-
-  // static createEvent(Event event) async {
-  //   // String docId =
-  //   //     eventsRef.doc(event.authorId).collection('userEvents').doc().id;
-  //   eventsRef.doc(event.authorId).collection('userEvents').doc(event.id).set({
-  //     'id': event.id,
-  //     'address': event.address,
-  //     'isTicketed': event.isTicketed,
-  //     'maxAttendees': event.maxAttendees,
-  //     'schedule': event.schedule.map((schedule) => schedule.toJson()).toList(),
-  //     'ticket': event.ticket.map((ticket) => ticket.toJson()).toList(),
-  //     'taggedPeople': event.taggedPeople
-  //         .map((taggedPeople) => taggedPeople.toJson())
-  //         .toList(),
-  //     'ticketOrder': [],
-  //     'offers': [],
-  //     'termsAndConditions': event.termsAndConditions,
-  //     'startDate': event.startDate,
-  //     'authorName': event.authorName,
-  //     'imageUrl': event.imageUrl,
-  //     'title': event.title.toUpperCase(),
-  //     'type': event.type,
-  //     'category': event.category,
-  //     'rate': event.rate,
-  //     'venue': event.venue,
-  //     'theme': event.theme,
-  //     'dressCode': event.dressCode,
-  //     'time': event.time,
-  //     'report': event.report,
-  //     'reportConfirmed': event.reportConfirmed,
-  //     'authorId': event.authorId,
-  //     'timestamp': event.timestamp,
-  //     'previousEvent': event.previousEvent,
-  //     'triller': event.triller,
-  //     'city': event.city,
-  //     'country': event.country,
-  //     'virtualVenue': event.virtualVenue,
-  //     'ticketSite': event.ticketSite,
-  //     'isVirtual': event.isVirtual,
-  //     'isPrivate': event.isPrivate,
-  //     'blurHash': event.blurHash,
-  //     'isFree': event.isFree,
-  //     'isCashPayment': event.isCashPayment,
-  //     'showToFollowers': event.showToFollowers,
-  //     'showOnExplorePage': false,
-  //     'clossingDay': event.clossingDay,
-  //     'dynamicLink': event.dynamicLink,
-  //   });
-
-  //   allEventsRef.doc(event.id).set({
-  //     'id': event.id,
-  //     'address': event.address,
-  //     'isTicketed': event.isTicketed,
-  //     'maxAttendees': event.maxAttendees,
-  //     'schedule': event.schedule.map((schedule) => schedule.toJson()).toList(),
-  //     'ticket': event.ticket.map((ticket) => ticket.toJson()).toList(),
-  //     'taggedPeople': event.taggedPeople
-  //         .map((taggedPeople) => taggedPeople.toJson())
-  //         .toList(),
-  //     'ticketOrder': [],
-  //     'termsAndConditions': event.termsAndConditions,
-  //     'offers': [],
-  //     'authorName': event.authorName,
-  //     'imageUrl': event.imageUrl,
-  //     'title': event.title.toLowerCase(),
-  //     'type': event.type,
-  //     'rate': event.rate,
-  //     'venue': event.venue,
-  //     'theme': event.theme,
-  //     'startDate': event.startDate,
-  //     'dressCode': event.dressCode,
-  //     'time': event.time,
-  //     'report': event.report,
-  //     'reportConfirmed': event.reportConfirmed,
-  //     'authorId': event.authorId,
-  //     'timestamp': event.timestamp,
-  //     'previousEvent': event.previousEvent,
-  //     'category': event.category,
-  //     'triller': event.triller,
-  //     'city': event.city,
-  //     'country': event.country,
-  //     'virtualVenue': event.virtualVenue,
-  //     'ticketSite': event.ticketSite,
-  //     'isVirtual': event.isVirtual,
-  //     'isPrivate': event.isPrivate,
-  //     'blurHash': event.blurHash,
-  //     'isFree': event.isFree,
-  //     'isCashPayment': event.isCashPayment,
-  //     'showToFollowers': event.showToFollowers,
-  //     'showOnExplorePage': false,
-  //     'clossingDay': event.clossingDay,
-  //     'dynamicLink': event.dynamicLink,
-  //   });
-  //   eventsChatRoomsRef.doc(event.id).set({
-  //     'title': event.title,
-  //     'linkedEventId': event.id,
-  //     'imageUrl': event.imageUrl,
-  //     'report': event.report,
-  //     'reportConfirmed': event.reportConfirmed,
-  //     'isClossed': false,
-  //     'timestamp': event.timestamp,
-  //   });
-
-  // Fetch users in the same city
-  //   QuerySnapshot querySnapshot = await usersAuthorRef
-  //       .where('city', isEqualTo: event.city)
-  //       .where('country', isEqualTo: event.country)
-  //       .get();
-
-  //   // Loop over the users and create an activity document for each one
-  //   for (var doc in querySnapshot.docs) {
-  //     // Get the user's ID
-  //     String userId = doc.id;
-  //     // Create the activity document
-  //     activitiesRef.doc(userId).collection('userActivities').add({
-  //       'authorId': event.authorId,
-  //       'postId': event.id,
-  //       'seen': false,
-  //       'type': 'newEventInNearYou',
-  //       'postImageUrl': event.imageUrl,
-  //       'comment':
-  //           MyDateFormat.toDate(event.startDate.toDate()) + '\n${event.title}',
-  //       'timestamp': Timestamp.fromDate(DateTime.now()),
-  //       'authorProfileImageUrl': '',
-  //       'authorName': 'New event in ${event.city}',
-  //       'authorProfileHandle': '',
-  //       'authorVerification': ''
-  //     });
-  //     // }
-  //   }
-  // }
-
-  // static void editEvent(Event event) {
-  //   eventsRef
-  //       .doc(event.authorId)
-  //       .collection('userEvents')
-  //       .doc(event.id)
-  //       .update({
-  //     'title': event.title,
-  //     'rate': event.rate,
-  //     'venue': event.venue,
-  //     'theme': event.theme,
-  //     'dressCode': event.dressCode,
-  //     // 'dj': event.dj,
-  //     // 'guess': event.guess,
-  //     // 'host': event.host,
-  //     // 'artist': event.artist,
-  //     'previousEvent': event.previousEvent,
-  //     'clossingDay': event.clossingDay,
-  //     'triller': event.triller,
-  //     'city': event.city,
-  //     'country': event.country,
-  //     'ticketSite': event.ticketSite,
-  //     'blurHash': event.blurHash,
-  //   });
-  // }
-
-  // static void createForum(Forum forum) {
-  //   String docId =
-  //       eventsRef.doc(forum.authorId).collection('userForums').doc().id;
-  // forumsRef.doc(forum.authorId).collection('userForums').doc(docId).set({
-  //   'title': forum.title,
-  //   'authorName': forum.authorName,
-  //   'id': docId,
-  //   'isPrivate': forum.isPrivate,
-  //   'showOnExplorePage': false,
-  //   'subTitle': forum.subTitle,
-  //   'authorId': forum.authorId,
-  //   'mediaType': forum.mediaType,
-  //   'mediaUrl': forum.mediaUrl,
-  //   'report': forum.report,
-  //   'forumType': forum.forumType,
-  //   'reportConfirmed': forum.reportConfirmed,
-  //   'timestamp': forum.timestamp,
-  //   'linkedContentId': forum.linkedContentId
-  // });
-  //   allForumsRef.doc(docId).set({
-  //     'title': forum.title,
-  //     'authorName': forum.authorName,
-  //     'showOnExplorePage': false,
-  //     'id': docId,
-  //     'isPrivate': forum.isPrivate,
-  //     'subTitle': forum.subTitle,
-  //     'authorId': forum.authorId,
-  //     'mediaType': forum.mediaType,
-  //     'mediaUrl': forum.mediaUrl,
-  //     'report': forum.report,
-  //     'forumType': forum.forumType,
-  //     'reportConfirmed': forum.reportConfirmed,
-  //     'timestamp': forum.timestamp,
-  //     'linkedContentId': forum.linkedContentId
-  //   });
-  //   kpiStatisticsRef
-  //       .doc('0SuQxtu52SyYjhOKiLsj')
-  //       .update({'createForum': FieldValue.increment(1)});
-  // }
-
-  // static void editForum(Forum forum) {
-  //   forumsRef
-  //       .doc(forum.authorId)
-  //       .collection('userForums')
-  //       .doc(forum.id)
-  //       .update({
-  //     'title': forum.title,
-  //     'isPrivate': forum.isPrivate,
-  //     'subTitle': forum.subTitle,
-  //     'mediaType': forum.mediaType,
-  //     'mediaUrl': forum.mediaUrl,
-  //   });
-  // }
-
   static void requestVerification(Verification verification) {
     verificationRef.doc(verification.userId).set({
       'userId': verification.userId,
@@ -2030,100 +1081,6 @@ class DatabaseService {
       'comment': reportContents.comment,
     });
   }
-
-  // static void deletePunch({
-  //   required String currentUserId,
-  //   required Post post,
-  // }) async {
-  //   print(post.id);
-  //   postsRef
-  //       .doc(currentUserId)
-  //       .collection('userPosts')
-  //       .doc(post.id)
-  //       .get()
-  //       .then((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-
-  //   QuerySnapshot activitySnapShot = await activitiesRef
-  //       .doc(currentUserId)
-  //       .collection('userActivities')
-  //       .where('postId', isEqualTo: post.id)
-  //       .get();
-
-  //   activitySnapShot.docs.forEach((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-
-  //   QuerySnapshot commentsSnapShot =
-  //       await commentsRef.doc(post.id).collection('postComments').get();
-  //   commentsSnapShot.docs.forEach((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-
-  //   // delet punch likes
-  //   QuerySnapshot likeSnapshot =
-  //       await likesRef.doc(post.id).collection('postLikes').get();
-  //   likeSnapshot.docs.forEach((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-
-  //   QuerySnapshot disLikeSnapshot =
-  //       await disLikesRef.doc(post.id).collection('postDisLikes').get();
-  //   disLikeSnapshot.docs.forEach((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-  // }
-
-  // static void deleteForum({
-  //   required String currentUserId,
-  //   required Forum forum,
-  //   required String photoId,
-  // }) async {
-  //   // Remove user from current user's following collection
-  //   forumsRef
-  //       .doc(currentUserId)
-  //       .collection('userForums')
-  //       .doc(forum.id)
-  //       .get()
-  //       .then((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-
-  //   // delete activity image
-  //   QuerySnapshot activitySnapShot = await activitiesForumRef
-  //       .doc(currentUserId)
-  //       .collection('userActivitiesForum')
-  //       .where('forumId', isEqualTo: forum.id)
-  //       .get();
-
-  //   activitySnapShot.docs.forEach((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-
-  //   // delet forum thoughts
-  //   QuerySnapshot thoughtsSnapShot =
-  //       await thoughtsRef.doc(forum.id).collection('forumThoughts').get();
-  //   thoughtsSnapShot.docs.forEach((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-  // }
 
   static Future<void> deleteEvent({
     required String currentUserId,
@@ -2180,62 +1137,6 @@ class DatabaseService {
     }
   }
 
-  // static void deleteEvent({
-  //   required String currentUserId,
-  //   required Event event,
-  //   required String photoId,
-  // }) async {
-
-  //   final eventTicketQuerySnapshot = await newEventTicketOrderRef
-  //       .doc(event.id)
-  //       .collection('eventInvite')
-  //       .get();
-
-  //   for (final doc in eventTicketQuerySnapshot.docs) {
-  //     await doc.reference.delete();
-  //   }
-
-  //   final sentQuerySnapshot =
-  //       await sentEventIviteRef.doc(event.id).collection('eventInvite').get();
-
-  //   for (final doc in sentQuerySnapshot.docs) {
-  //     await doc.reference.delete();
-  //   }
-
-  //   final askQuerySnapshot =
-  //       await asksRef.doc(event.id).collection('eventAsks').get();
-  //   for (final doc in askQuerySnapshot.docs) {
-  //     await doc.reference.delete();
-  //   }
-
-  //   await eventsChatRoomsRef.doc(event.id).get().then((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-
-  //   final queryeventRoomSnapshot = await eventsChatRoomsConverstionRef
-  //       .doc(event.id)
-  //       .collection('roomChats')
-  //       .get();
-
-  //   for (final doc in queryeventRoomSnapshot.docs) {
-  //     await doc.reference.delete();
-  //   }
-
-  //   eventsRef
-  //       .doc(currentUserId)
-  //       .collection('userEvents')
-  //       .doc(event.id)
-  //       .get()
-  //       .then((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-
-  // }
-
   static void followUser(
       {required String currentUserId,
       required AccountHolderAuthor user,
@@ -2266,12 +1167,12 @@ class DatabaseService {
 
     addActivityItem(
       user: currentUser,
-      event: null, comment: "${user.userName} Started following you",
+      event: null,
+      comment: "${user.userName} Started following you",
       followerUser: user,
       post: null,
-      type: NotificationActivityType.follow, advicedUserId: '',
-      // ask: ask,
-      // commonId: commonId,
+      type: NotificationActivityType.follow,
+      advicedUserId: '',
     );
   }
 
@@ -2300,25 +1201,7 @@ class DatabaseService {
         doc.reference.delete();
       }
     });
-    // deletedFollowerActivity(
-    //   currentUserId: currentUserId,
-    //   userId: userId,
-    // );
   }
-
-  // static void deletedFollowerActivity(
-  //     {required String currentUserId, required String userId}) async {
-  //   QuerySnapshot activitySnapShot = await activitiesFollowerRef
-  //       .doc(userId)
-  //       .collection('activitiesFollower')
-  //       .where('fromUserId', isEqualTo: currentUserId)
-  //       .get();
-  //   activitySnapShot.docs.forEach((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-  // }
 
   static Future<bool> isFollowingUser(
       {required String currentUserId, required String userId}) async {
@@ -2406,145 +1289,18 @@ class DatabaseService {
         doc.reference.delete();
       }
     });
+
+    userBlockingRef
+        .doc(userId)
+        .collection('userBlocking')
+        .doc(currentUserId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
   }
-
-  // static void possitivelyRateUser(
-  //     {required String currentUserId, required String userId}) {
-  //   possitiveRatingRef
-  //       .doc(currentUserId)
-  //       .collection('userPossitiveRating')
-  //       .doc(userId)
-  //       .set({
-  //     'uid': userId,
-  //   });
-
-  //   possitveRatedRef
-  //       .doc(userId)
-  //       .collection('userPossitiveRated')
-  //       .doc(currentUserId)
-  //       .set({
-  //     'uid': currentUserId,
-  //   });
-  // }
-
-  // static void unPossitivelyRateUser(
-  //     {required String currentUserId, required String userId}) {
-  //   possitiveRatingRef
-  //       .doc(currentUserId)
-  //       .collection('userPossitiveRating')
-  //       .doc(userId)
-  //       .get()
-  //       .then((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-
-  //   possitveRatedRef
-  //       .doc(userId)
-  //       .collection('userPossitiveRated')
-  //       .doc(currentUserId)
-  //       .get()
-  //       .then((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-  // }
-
-  // static void negativelyRateUser(
-  //     {required String currentUserId, required String userId}) {
-  //   negativeRatingRef
-  //       .doc(currentUserId)
-  //       .collection('userNegativeRating')
-  //       .doc(userId)
-  //       .set({
-  //     'uid': userId,
-  //   });
-  //   negativeRatedRef
-  //       .doc(userId)
-  //       .collection('userNegativeRated')
-  //       .doc(currentUserId)
-  //       .set({
-  //     'uid': currentUserId,
-  //   });
-  // }
-
-  // static void unNegativelyRateUser(
-  //     {required String currentUserId, required String userId}) {
-  //   negativeRatingRef
-  //       .doc(currentUserId)
-  //       .collection('userNegativeRating')
-  //       .doc(userId)
-  //       .get()
-  //       .then((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-  //   negativeRatedRef
-  //       .doc(userId)
-  //       .collection('userNegativeRated')
-  //       .doc(currentUserId)
-  //       .get()
-  //       .then((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-  // }
-
-  // static Future<bool> isPossitivelyRatingUser(
-  //     {required String currentUserId, required String userId}) async {
-  //   DocumentSnapshot followingDoc = await possitveRatedRef
-  //       .doc(userId)
-  //       .collection('userPossitiveRated')
-  //       .doc(currentUserId)
-  //       .get();
-  //   return followingDoc.exists;
-  // }
-
-  // static Future<int> numPossitiveRating(String userId) async {
-  //   QuerySnapshot ratingSnapshot = await possitiveRatingRef
-  //       .doc(userId)
-  //       .collection('userPossitiveRating')
-  //       .get();
-  //   return ratingSnapshot.docs.length;
-  // }
-
-  // static Future<int> numPosstiveRated(String userId) async {
-  //   QuerySnapshot ratedSnapshot = await possitveRatedRef
-  //       .doc(userId)
-  //       .collection('userPossitiveRated')
-  //       .get();
-  //   return ratedSnapshot.docs.length;
-  // }
-
-  // static Future<bool> isNegativelyRatingUser(
-  //     {required String currentUserId, required String userId}) async {
-  //   DocumentSnapshot ratingDoc = await negativeRatedRef
-  //       .doc(userId)
-  //       .collection('userNegativeRated')
-  //       .doc(currentUserId)
-  //       .get();
-  //   return ratingDoc.exists;
-  // }
-
-  // static Future<int> numNegativeRating(String userId) async {
-  //   QuerySnapshot ratingSnapshot = await negativeRatingRef
-  //       .doc(userId)
-  //       .collection('userNegativeRating')
-  //       .get();
-  //   return ratingSnapshot.docs.length;
-  // }
-
-  // static Future<int> numNegativeRated(String userId) async {
-  //   QuerySnapshot ratedSnapshot = await negativeRatedRef
-  //       .doc(userId)
-  //       .collection('userNegativeRated')
-  //       .get();
-  //   return ratedSnapshot.docs.length;
-  // }
 
   static Future<AccountHolderAuthor> getUseractivityFollowers(
       String userId, replyingMessage) async {
@@ -2576,16 +1332,8 @@ class DatabaseService {
     return feedSnapShot.docs.length;
   }
 
-  // static Future<int> numPostAll111() async {
-  //   QuerySnapshot feedSnapShot = await allPostsRef
-  //       // .where('profileHandle', isEqualTo: profileHandle)
-  //       // .where('showOnExplorePage', isEqualTo: true)
-  //       .get();
-  //   return feedSnapShot.docs.length;
-  // }
-
   static Future<int> numUsersAll(String profileHandle) async {
-    QuerySnapshot feedSnapShot = await usersAuthorRef
+    QuerySnapshot feedSnapShot = await userProfessionalRef
         .where('profileHandle', isEqualTo: profileHandle)
         // .where('showOnExplorePage', isEqualTo: true)
         .get();
@@ -2594,7 +1342,7 @@ class DatabaseService {
 
   static Future<int> numusersLiveLocation(
       String profileHandle, String liveCity, String liveCountry) async {
-    QuerySnapshot feedSnapShot = await usersAuthorRef
+    QuerySnapshot feedSnapShot = await userProfessionalRef
         .where('profileHandle', isEqualTo: profileHandle)
         .where('city', isEqualTo: liveCity)
         .where('country', isEqualTo: liveCountry)
@@ -2719,39 +1467,6 @@ class DatabaseService {
     return feedEventSnapShot.docs.length - 1;
   }
 
-  // static Future<int> numFeedBlogs(String userId) async {
-  //   QuerySnapshot feedBlogSnapShot =
-  //       await blogFeedsRef.doc(userId).collection('userBlogFeed').get();
-  //   return feedBlogSnapShot.docs.length - 1;
-  // }
-
-  // static Future<int> numFeedForums(String userId) async {
-  //   QuerySnapshot feedForumSnapShot =
-  //       await forumFeedsRef.doc(userId).collection('userForumFeed').get();
-  //   return feedForumSnapShot.docs.length - 1;
-  // }
-
-  // static Stream<int> numArtistPunch(String userId, String artist) {
-  //   return allPostsRef
-  //       .where('artist', isEqualTo: artist)
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
-
-  // static Stream<int> numPunchlinePunch(String userId, String punchline) {
-  //   return allPostsRef
-  //       .where('punch', isEqualTo: punchline)
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
-
-  // static Stream<int> numHashTagPunch(String userId, String hashTag) {
-  //   return allPostsRef
-  //       .where('hashTag', isEqualTo: hashTag)
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
-
   static Future<List<Post>> getUserPosts(String userId) async {
     QuerySnapshot userPostsSnapshot = await postsRef
         .doc(userId)
@@ -2763,17 +1478,6 @@ class DatabaseService {
         userPostsSnapshot.docs.map((doc) => Post.fromDoc(doc)).toList();
     return posts;
   }
-
-  // static Future<List<Forum>> getUserForums(String userId) async {
-  //   QuerySnapshot userForumsSnapshot = await forumsRef
-  //       .doc(userId)
-  //       .collection('userForums')
-  //       .orderBy('timestamp', descending: true)
-  //       .get();
-  //   List<Forum> forums =
-  //       userForumsSnapshot.docs.map((doc) => Forum.fromDoc(doc)).toList();
-  //   return forums;
-  // }
 
   static Future<List<Event>> getUserEvents(String userId) async {
     QuerySnapshot userEventsSnapshot = await eventsRef
@@ -2804,31 +1508,6 @@ class DatabaseService {
         version: '');
   }
 
-  // static Future<KPI> getKPI() async {
-  //   DocumentSnapshot userDocSnapshot =
-  //       await kpiStatisticsRef.doc('0SuQxtu52SyYjhOKiLsj').get();
-  //   if (userDocSnapshot.exists) {
-  //     return KPI.fromDoc(userDocSnapshot);
-  //   }
-  //   return KPI(
-  //     id: '',
-  //     actualllyBooked: 0,
-  //     asksSent: 0,
-  //     booking: 0,
-  //     event: 0,
-  //     eventAttend: 0,
-  //     advicesSent: 0,
-  //     moodPunched: 0,
-  //     moodPunchedVideoAccessed: 0,
-  //     comentSent: 0,
-  //     thoughtSent: 0,
-  //     forum: 0,
-  //     createdMoodPunched: 0,
-  //     createEvennt: 0,
-  //     createForum: 0,
-  //   );
-  // }
-
   static Future<AccountHolderAuthor?> getUserWithId(String userId) async {
     try {
       DocumentSnapshot userDocSnapshot = await usersAuthorRef.doc(userId).get();
@@ -2842,71 +1521,6 @@ class DatabaseService {
       return null;
     }
   }
-
-  // static Future<AccountHolderAuthor> getUserWithId(String userId) async {
-  //   DocumentSnapshot userDocSnapshot = await usersAuthorRef.doc(userId).get();
-  //   if (userDocSnapshot.exists) {
-  //     return AccountHolderAuthor.fromDoc(userDocSnapshot);
-  //   }
-  //   return AccountHolderAuthor(
-  //     // disabledAccount: null,
-  //     // androidNotificationToken: '',
-  //     // continent: '',
-  //     // hideUploads: null,
-  //     // favouriteSong: '',
-  //     name: '',
-  //     // mail: '',
-  //     // noBooking: null,
-  //     // hideAdvice: null,
-  //     // enableBookingOnChat: null,
-  //     // email: '',
-  //     // disableChat: null,
-  //     // disableAdvice: null,
-  //     // favouritePunchline: '',
-  //     // otherSites1: '',
-  //     // management: '',
-  //     // otherSites2: '',
-  //     // performances: '',
-  //     // collaborations: '',
-  //     // favouriteAlbum: '',
-  //     // country: '',
-  //     // favouriteArtist: '',
-  //     // company: '',
-  //     bio: '',
-  //     // awards: '',
-  //     // city: '',
-  //     // id: '',
-  //     // contacts: '',
-  //     // professionalPicture1: '',
-  //     // professionalPicture2: '',
-  //     // professionalPicture3: '',
-  //     profileImageUrl: '',
-  //     userName: '',
-  //     // score: null,
-  //     // privateAccount: null,
-  //     // skills: '',
-  //     // verified: '',
-  //     // report: '',
-  //     // reportConfirmed: '',
-  //     // website: '',
-  //     profileHandle: '', dynamicLink: '', userId: '', verified: false,
-  //     disabledAccount: false, reportConfirmed: false,
-  //     lastActiveDate: Timestamp.fromDate(DateTime.now()),
-  //     // timestamp: Timestamp.fromDate(DateTime.now()),
-  //     // disableContentSharing: null,
-  //     // disableMoodPunchReaction: null,
-  //     // disableMoodPunchVibe: null,
-  //     // dontShowContentOnExplorePage: null,
-  //     // specialtyTags: '',
-  //     // professionalVideo1: '',
-  //     // professionalVideo2: '',
-  //     // professionalVideo3: '',
-  //     // blurHash: '',
-  //     // genreTags: '',
-  //     // isEmailVerified: null,
-  //     // subAccountType: '',
-  //   );
-  // }
 
   static Future<UserSettingsLoadingPreferenceModel?>
       getUserLocationSettingWithId(String userId) async {
@@ -2925,24 +1539,6 @@ class DatabaseService {
     }
   }
 
-  // static Future<UserSettingsLoadingPreferenceModel>
-  //     getUserLocationSettingWithId(String userId) async {
-  //   DocumentSnapshot userDocSnapshot =
-  //       await usersLocationSettingsRef.doc(userId).get();
-  //   if (userDocSnapshot.exists) {
-  //     return UserSettingsLoadingPreferenceModel.fromDoc(userDocSnapshot);
-  //   }
-
-  //   return UserSettingsLoadingPreferenceModel(
-  //     timestamp: Timestamp.fromDate(DateTime.now()),
-  //     city: '',
-  //     continent: '',
-  //     country: '',
-  //     currency: null,
-  //     userId: '',
-  //   );
-  // }
-
   static Future<UserSettingsGeneralModel?> getUserGeneralSettingWithId(
       String userId) async {
     try {
@@ -2960,53 +1556,6 @@ class DatabaseService {
     }
   }
 
-  // static Future<UserSettingsGeneralModel> getUserGeneralSettingWithId(
-  //     String userId) async {
-  //   DocumentSnapshot userDocSnapshot =
-  //       await usersGeneralSettingsRef.doc(userId).get();
-  //   if (userDocSnapshot.exists) {
-  //     return UserSettingsGeneralModel.fromDoc(userDocSnapshot);
-  //   }
-  //   return UserSettingsGeneralModel(
-  //       androidNotificationToken: '',
-  //       disableAdvice: null,
-  //       disableBooking: null,
-  //       disableChat: null,
-  //       disabledAccount: null,
-  //       disableWorkVacancyNotifications: false,
-  //       disableEventSuggestionNotification: null,
-  //       disableNewCreativeNotifications: false,
-  //       hideAdvice: null,
-  //       isEmailVerified: null,
-  //       muteEventSuggestionNotification: null,
-  //       muteWorkVacancyNotifications: false,
-  //       preferredCreatives: [],
-  //       preferredEventTypes: [],
-  //       privateAccount: null,
-  //       report: '',
-  //       reportConfirmed: false,
-  //       // timestamp: null,
-  //       userId: '');
-  // }
-
-  // static Future<Chat?> getChatMesssage(
-  //     String currentUserId, String userId) async {
-  //   try {
-  //     DocumentSnapshot userDocSnapshot = await usersAuthorRef
-  //         .doc(currentUserId)
-  //         .collection('new_chats')
-  //         .doc(userId)
-  //         .get();
-  //     if (userDocSnapshot.exists) {
-  //       return Chat.fromDoc(userDocSnapshot);
-  //     } else {
-  //       return null;
-  //     }
-  //   } catch (e) {
-  //     print(e);
-  //     return null;
-  //   }
-  // }
   static Future<Chat> getChatMesssage(
       String currentUserId, String userId) async {
     DocumentSnapshot userDocSnapshot = await usersAuthorRef
@@ -3033,33 +1582,6 @@ class DatabaseService {
         toUserId: '');
   }
 
-  // 'messageId': messageId,
-  //     'lastMessage': message,
-  //     'messageInitiator': messageInitiator,
-  //     'restrictChat': restrictChat,
-  //     'firstMessage': message,
-  //     'mediaType': mediaType,
-  //     'timestamp': Timestamp.fromDate(DateTime.now()),
-  //     'seen': 'seen',
-  //     'fromUserId': currentUserId,
-  //     'toUserId': userId,
-  //     'newMessageTimestamp': Timestamp.fromDate(DateTime.now()),
-
-  // static Future<AccountHolderAuthor> getUserAuthorWithId(String userId) async {
-  //   DocumentSnapshot userDocSnapshot = await usersAuthorRef.doc(userId).get();
-  //   if (userDocSnapshot.exists) {
-  //     return AccountHolderAuthor.fromDoc(userDocSnapshot);
-  //   }
-  //   return AccountHolderAuthor(
-  //     bio: '',
-  //     userId: '',
-  //     profileImageUrl: '',
-  //     userName: '',
-  //     profileHandle: '',
-  //     verified: false, dynamicLink: '', name: '',
-  //     // disableChat: null,
-  //   );
-  // }
   static Future<UserProfessionalModel?> getUserProfessionalWithId(
       String userId) async {
     try {
@@ -3111,120 +1633,6 @@ class DatabaseService {
     }
   }
 
-  // static Future<UserProfessionalModel> getUserProfessionalWithId(
-  //     String userId) async {
-  //   DocumentSnapshot userDocSnapshot =
-  //       await userProfessionalRef.doc(userId).get();
-  //   if (userDocSnapshot.exists) {
-  //     return UserProfessionalModel.fromDoc(userDocSnapshot);
-  //   }
-  //   return UserProfessionalModel(
-  //       id: '',
-  //       profileImageUrl: '',
-  //       userName: '',
-  //       profileHandle: '',
-  //       verified: false,
-  //       awards: [],
-  //       collaborations: [],
-  //       company: [],
-  //       contacts: [],
-  //       genreTags: [],
-  //       links: [],
-  //       noBooking: false,
-  //       overview: '',
-  //       performances: [],
-  //       priceTags: [],
-  //       skills: [],
-  //       subAccountType: [],
-  //       professionalImageUrls: [],
-  //       terms: '',
-  //       city: '',
-  //       continent: '',
-  //       country: '',
-  //       dynamicLink: '');
-  // }
-
-  // static Future<WorkRequestOrOfferModel> getUserWorkRequestlWithId(
-  //     String userId) async {
-  //   DocumentSnapshot userDocSnapshot =
-  //       await userWorkRequestRef.doc(userId).get();
-  //   if (userDocSnapshot.exists) {
-  //     return WorkRequestOrOfferModel.fromDoc(userDocSnapshot);
-  //   }
-  //   return WorkRequestOrOfferModel(
-  //     availableLocations: [],
-  //     currency: '',
-  //     genre: [],
-  //     isEvent: false,
-  //     overView: '',
-  //     price: 0,
-  //     timestamp: null,
-  //     userId: '',
-  //     type: [],
-  //     id: '',
-  //   );
-  // }
-
-  // static Future<ActivityEvent> getEventInviteAcivityWithId(
-  //     String commonId, String userId) async {
-  //   // await activitiesEventRef
-  //   //     .doc(userId)
-  //   //     .collection('userActivitiesEvent')
-  //   //     .where('commonId', isEqualTo: commonId)
-  //   //     .get();
-
-  //   return ActivityEvent(
-  //       ask: '',
-  //       eventId: '',
-  //       eventImageUrl: '',
-  //       eventInviteType: '',
-  //       eventTitle: '',
-  //       fromUserId: '',
-  //       id: '',
-  //       seen: '',
-  //       timestamp: null,
-  //       commonId: '',
-  //       toUserId: '',
-  //       invited: null,
-  //       authorName: '',
-  //       authorProfileHanlde: '',
-  //       authorProfileImageUrl: '',
-  //       authorVerification: '');
-  // }
-
-  // static Future<EventInvite> getEventInviteWithId(
-  //     String eventId, String userId) async {
-  //   DocumentSnapshot userDocSnapshot = await newEventTicketOrderRef
-  //       .doc(eventId)
-  //       .collection('eventInvite')
-  //       .doc(userId)
-  //       .get();
-  //   if (userDocSnapshot.exists) {
-  //     return EventInvite.fromDoc(userDocSnapshot);
-  //   }
-  //   return EventInvite(
-  //       anttendeeId: '',
-  //       anttendeeName: '',
-  //       anttendeeprofileHandle: '',
-  //       anttendeeprofileImageUrl: '',
-  //       attendeeStatus: '',
-  //       attendNumber: '',
-  //       authorId: '',
-  //       eventId: '',
-  //       eventImageUrl: '',
-  //       eventTimestamp: null,
-  //       id: '',
-  //       invited: false,
-  //       inviteeName: '',
-  //       inviteStatus: '',
-  //       message: '',
-  //       requestNumber: '',
-  //       timestamp: null,
-  //       commonId: '',
-  //       validated: false,
-  //       personnelStatus: '');
-  // }
-
   static Future<TicketOrderModel?> getTicketOrderEventWithId(
       TicketOrderModel order) async {
     try {
@@ -3244,89 +1652,6 @@ class DatabaseService {
     }
   }
 
-  // static Future<TicketOrder> getTicketOrderEventWithId(
-  //     TicketOrder order) async {
-  //   DocumentSnapshot userDocSnapshot = await newEventTicketOrderRef
-  //       .doc(order.eventId)
-  //       .collection('eventInvite')
-  //       .doc(order.userOrderId)
-  //       .get();
-  //   if (userDocSnapshot.exists) {
-  //     return TicketOrder.fromDoc(userDocSnapshot);
-  //   }
-  //   return TicketOrder(
-  //       // commonId: '',
-  //       entranceId: '',
-  //       eventId: '',
-  //       eventImageUrl: '',
-  //       eventTimestamp: null,
-  //       // invitatonMessage: '',
-  //       // invitedById: '',
-  //       isInvited: false,
-  //       orderId: '',
-  //       orderNumber: '',
-  //       tickets: [],
-  //       timestamp: null,
-  //       userOrderId: '',
-  //       total: 0,
-  //       validated: false,
-  //       // answer: '',
-  //       eventTitle: '');
-  // }
-
-  // static Future<Event> getInviteEventWithId(EventInvite invite) async {
-  //   DocumentSnapshot userDocSnapshot = await eventsRef
-  //       .doc(invite.authorId)
-  //       .collection('userEvents')
-  //       .doc(invite.eventId)
-  //       .get();
-  //   if (userDocSnapshot.exists) {
-  //     return Event.fromDoc(userDocSnapshot);
-  //   }
-  //   return Event(
-  //     isFree: false,
-  //     country: '',
-  //     city: '', schedule: [],
-  //     ticket: [],
-  //     taggedPeople: [],
-  //     id: '',
-  //     report: '',
-  //     reportConfirmed: '',
-  //     timestamp: null,
-  //     // artist: '',
-  //     authorId: '',
-  //     blurHash: '',
-  //     startDate: Timestamp.fromDate(DateTime.now()),
-  //     // dj: '',
-  //     dressCode: '',
-  //     // guess: '',
-  //     // host: '',
-  //     imageUrl: '',
-  //     isPrivate: false,
-  //     isVirtual: false,
-  //     previousEvent: '',
-  //     rate: '',
-  //     theme: '',
-  //     ticketSite: '',
-  //     time: '',
-  //     title: '',
-  //     triller: '',
-  //     type: '',
-  //     venue: '',
-  //     virtualVenue: '',
-  //     isCashPayment: false,
-  //     showOnExplorePage: false,
-  //     showToFollowers: false,
-  //     // clossingDay: '',
-  //     // mediaUrl: '',
-  //     // mediaType: '',
-  //     authorName: '',
-  //     category: '',
-  //     clossingDay: Timestamp.fromDate(DateTime.now()),
-  //     address: '', termsAndConditions: '',
-  //   );
-  // }
-
   static Future<Event?> getEventWithId(String eventId) async {
     try {
       DocumentSnapshot userDocSnapshot = await allEventsRef.doc(eventId).get();
@@ -3342,59 +1667,6 @@ class DatabaseService {
     }
   }
 
-  // static Future<Event> getEventWithId(String eventId) async {
-  //   DocumentSnapshot userDocSnapshot = await allEventsRef.doc(eventId).get();
-  //   if (userDocSnapshot.exists) {
-  //     return Event.fromDoc(userDocSnapshot);
-  //   }
-  //   return Event(
-  //       isFree: false,
-  //       country: '',
-  //       city: '',
-  //       id: '',
-  //       report: '',
-  //       reportConfirmed: '',
-  //       timestamp: null,
-  //       // artist: '',
-  //       authorId: '',
-  //       schedule: [],
-  //       ticket: [],
-  //       taggedPeople: [],
-  //       blurHash: '',
-  //       // date:  DateTime.now(),
-  //       // dj: '',
-  //       dressCode: '',
-  //       // guess: '',
-  //       // host: '',
-  //       imageUrl: '',
-  //       isPrivate: false,
-  //       isVirtual: false,
-  //       previousEvent: '',
-  //       rate: '',
-  //       theme: '',
-  //       ticketSite: '',
-  //       time: '',
-  //       title: '',
-  //       triller: '',
-  //       type: '',
-  //       venue: '',
-  //       virtualVenue: '',
-  //       isCashPayment: false,
-  //       showOnExplorePage: false,
-  //       showToFollowers: false,
-  //       clossingDay: Timestamp.fromDate(DateTime.now()),
-  //       // mediaType: '',
-  //       // mediaUrl: '',
-  //       authorName: '',
-  //       category: '',
-  //       // endDate: DateTime.now(),
-  //       // location: '',
-  //       startDate: Timestamp.fromDate(DateTime.now()),
-  //       address: '',
-  //       termsAndConditions: '',
-  //       dynamicLink: '');
-  // }
-
   static Future<TicketOrderModel?> getTicketWithId(
       String eventId, String currentUserId) async {
     DocumentSnapshot userDocSnapshot = await userInviteRef
@@ -3407,35 +1679,6 @@ class DatabaseService {
     }
     return null; // return null if the ticket doesn't exist
   }
-
-  // static Future<TicketOrder> getTicketWithId(String eventId, String currentUserId) async {
-  //   DocumentSnapshot userDocSnapshot = await userInviteRef
-  //       .doc()
-  //       .collection('eventInvite')
-  //          .doc(eventId)
-  //       .get();
-  //   if (userDocSnapshot.exists) {
-  //     return TicketOrder.fromDoc(userDocSnapshot);
-  //   }
-  //   return TicketOrder(
-  //       answer: '',
-  //       commonId: '',
-  //       entranceId: '',
-  //       eventId: '',
-  //       eventTimestamp: null,
-  //       eventImageUrl: '',
-  //       invitatonMessage: '',
-  //       eventTitle: '',
-  //       orderNumber: '',
-  //       invitedById: '',
-  //       tickets: [],
-  //       isInvited: false,
-  //       userOrderId: '',
-  //       orderId: '',
-  //       timestamp: null,
-  //       total: 0,
-  //       validated: false);
-  // }
 
   static Future<EventRoom?> getEventRoomWithId(String eventId) async {
     try {
@@ -3490,43 +1733,6 @@ class DatabaseService {
     }
   }
 
-  // static Future<EventRoom> getEventRoomWithId(String eventId) async {
-  //   DocumentSnapshot userDocSnapshot = await eventsChatRoomsRef
-  //       .doc(eventId)
-  //       // .collection('roomChats')
-  //       // .doc()
-  //       .get();
-  //   if (userDocSnapshot.exists) {
-  //     return EventRoom.fromDoc(userDocSnapshot);
-  //   }
-  //   return EventRoom(
-  //       id: '', imageUrl: '', linkedEventId: '', timestamp: null, title: '');
-  // }
-
-  // static Future<InviteModel> getEventIviteWithId(
-  //     String currentUserId, String eventId) async {
-  //   DocumentSnapshot userDocSnapshot = await userIviteRef
-  //       .doc(currentUserId)
-  //       .collection('eventInvite')
-  //       .doc(eventId)
-  //       // .collection('roomChats')
-  //       // .doc()
-  //       .get();
-  //   if (userDocSnapshot.exists) {
-  //     return InviteModel.fromDoc(userDocSnapshot);
-  //   }
-  //   return InviteModel(
-  //       answer: '',
-  //       eventId: '',
-  //       eventTimestamp: null,
-  //       generatedMessage: '',
-  //       inviteeId: '',
-  //       inviterId: '',
-  //       inviterMessage: '',
-  //       isTicketPass: false,
-  //       timestamp: null);
-  // }
-
   static Future<Verification> getVerificationUser(String? userId) async {
     DocumentSnapshot userDocSnapshot = await verificationRef.doc(userId).get();
     if (userDocSnapshot.exists) {
@@ -3551,215 +1757,6 @@ class DatabaseService {
       timestamp: null,
     );
   }
-
-  // static Future<Forum> getForumWithId(String forumId) async {
-  //   DocumentSnapshot userDocSnapshot = await allForumsRef.doc(forumId).get();
-  //   if (userDocSnapshot.exists) {
-  //     return Forum.fromDoc(userDocSnapshot);
-  //   }
-  //   return Forum(
-  //       authorId: '',
-  //       showOnExplorePage: false,
-  //       id: '',
-  //       isPrivate: false,
-  //       report: '',
-  //       reportConfirmed: '',
-  //       subTitle: '',
-  //       timestamp: null,
-  //       title: '',
-  //       linkedContentId: '',
-  //       mediaType: '',
-  //       mediaUrl: '',
-  //       forumType: '',
-  //       authorName: '');
-  // }
-
-  // static Future<Thought> getThoughtWithId(
-  //     String forumId, String thoughtId) async {
-  //   DocumentSnapshot userDocSnapshot = await thoughtsRef
-  //       .doc(forumId)
-  //       .collection('forumThoughts')
-  //       .doc(thoughtId)
-  //       .get();
-  //   if (userDocSnapshot.exists) {
-  //     return Thought.fromDoc(userDocSnapshot);
-  //   }
-  //   return Thought(
-  //       authorId: '',
-  //       id: '',
-  //       report: '',
-  //       reportConfirmed: '',
-  //       mediaType: '',
-  //       mediaUrl: '',
-  //       authorName: '',
-  //       authorProfileHanlde: '',
-  //       authorProfileImageUrl: '',
-  //       authorVerification: '',
-  //       count: null,
-  //       content: '',
-  //       likeCount: null,
-  //       timestamp: null,
-  //       imported: false);
-  // }
-
-  // static Future<Post> getPostWithId(String postId) async {
-  //   DocumentSnapshot userDocSnapshot = await allPostsRef.doc(postId).get();
-  //   if (userDocSnapshot.exists) {
-  //     return Post.fromDoc(userDocSnapshot);
-  //   }
-  //   return Post(
-  //     authorId: '',
-  //     id: '',
-  //     report: '',
-  //     reportConfirmed: '',
-  //     timestamp: null,
-  //     artist: '',
-  //     blurHash: '',
-  //     caption: '',
-  //     disableReaction: false,
-  //     disableVibe: false,
-  //     disbleSharing: false,
-  //     disLikeCount: 0,
-  //     hashTag: '',
-  //     imageUrl: '',
-  //     likeCount: 0,
-  //     musicLink: '',
-  //     peopleTagged: '',
-  //     punch: '',
-  //     mediaType: '',
-  //     authorHandleType: '',
-  //     authorIdProfileImageUrl: '',
-  //     authorName: '',
-  //     authorVerification: '',
-  //   );
-  // }
-
-  // static Future<int> numLikes(String? postId) async {
-  //   QuerySnapshot likeSnapshot =
-  //       await likesRef.doc(postId).collection('postLikes').get();
-  //   return likeSnapshot.docs.length;
-  // }
-
-  // static void unlikePost({required String currentUserId, required Post post}) {
-  //   DocumentReference postRef =
-  //       postsRef.doc(post.authorId).collection('userPosts').doc(post.id);
-  //   postRef.get().then((doc) {
-  //     int likeCount = doc['likeCount'];
-  //     postRef.update({'likeCount': likeCount - 1});
-  //     likesRef
-  //         .doc(post.id)
-  //         .collection('postLikes')
-  //         .doc(currentUserId)
-  //         .get()
-  //         .then((doc) {
-  //       if (doc.exists) {
-  //         doc.reference.delete();
-  //       }
-  //     });
-  //   });
-  // }
-
-  // static Future<int> numDisLikes(String? postId) async {
-  //   QuerySnapshot disLikeSnapshot =
-  //       await disLikesRef.doc(postId).collection('postDisLikes').get();
-  //   return disLikeSnapshot.docs.length;
-  // }
-
-  // static Future<bool> didLikePost(
-  //     {required String currentUserId, required Post post}) async {
-  //   DocumentSnapshot userDoc = await likesRef
-  //       .doc(post.id)
-  //       .collection('postLikes')
-  //       .doc(currentUserId)
-  //       .get();
-  //   return userDoc.exists;
-  // }
-
-  // static Future<bool> didLikeThought(
-  //     {required String currentUserId, required Thought thought}) async {
-  //   DocumentSnapshot userDoc = await thoughtsLikeRef
-  //       .doc(thought.id)
-  //       .collection('thoughtLikes')
-  //       .doc(currentUserId)
-  //       .get();
-  //   return userDoc.exists;
-  // }
-
-  // static void disLikePost({required String currentUserId, required Post post}) {
-  //   DocumentReference postRef =
-  //       postsRef.doc(post.authorId).collection('userPosts').doc(post.id);
-  //   postRef.get().then((doc) {
-  //     int disLikeCount = doc['disLikeCount'];
-  //     postRef.update({'disLikeCount': disLikeCount + 1});
-  //     disLikesRef
-  //         .doc(post.id)
-  //         .collection('postDisLikes')
-  //         .doc(currentUserId)
-  //         .set({
-  //       'uid': currentUserId,
-  //     });
-  //   });
-  // }
-
-  // static void unDisLikePost(
-  //     {required String currentUserId, required Post post}) {
-  //   DocumentReference postRef =
-  //       postsRef.doc(post.authorId).collection('userPosts').doc(post.id);
-  //   postRef.get().then((doc) {
-  //     int disLikeCount = doc['disLikeCount'];
-  //     postRef.update({'disLikeCount': disLikeCount - 1});
-  //     disLikesRef
-  //         .doc(post.id)
-  //         .collection('postDisLikes')
-  //         .doc(currentUserId)
-  //         .get()
-  //         .then((doc) {
-  //       if (doc.exists) {
-  //         doc.reference.delete();
-  //       }
-  //     });
-  //   });
-  // }
-
-  // static Future<bool> didDisLikePost(
-  //     {required String currentUserId, required Post post}) async {
-  //   DocumentSnapshot userDoc = await disLikesRef
-  //       .doc(post.id)
-  //       .collection('postDisLikes')
-  //       .doc(currentUserId)
-  //       .get();
-  //   return userDoc.exists;
-  // }
-
-  // static void commentOnPost(
-  //     {required String currentUserId,
-  //     required Post post,
-  //     required AccountHolder user,
-  //     required String comment,
-  //     required NotificationActivityType type,
-  //     required String reportConfirmed}) {
-  //   commentsRef.doc(post.id).collection('postComments').add({
-  //     'content': comment,
-  //     'authorId': currentUserId,
-  //     // 'mediaType': '',
-  //     'authorProfileImageUrl': user.profileImageUrl,
-  //     'authorName': user.userName,
-  //     'authorProfileHanlde': user.profileHandle,
-  //     'authorVerification': user.verified,
-  //     'timestamp': Timestamp.fromDate(DateTime.now()),
-  //     // 'mediaUrl': '',
-  //     'report': '',
-  //     // 'replies': [],
-  //     'reportConfirmed': reportConfirmed,
-  //   });
-  //   addActivityItem(
-  //       user: user,
-  //       post: post,
-  //       comment: comment,
-  //       type: type,
-  //       event: null,
-  //       followerUser: null);
-  // }
 
   static void commentOnPost({
     required String currentUserId,
@@ -3801,41 +1798,6 @@ class DatabaseService {
       // print('Error commenting on post: $e');
     }
   }
-
-  // static void addAskReply({
-  //   required String askId,
-  //   required Event event,
-  //   required String ask,
-  //   // Reply reply,
-  //   required AccountHolderAuthor user,
-  // }) {
-  //   asksRef
-  //       .doc(event.id)
-  //       .collection('eventAsks')
-  //       .doc(askId)
-  //       .collection('replies')
-  //       .add({
-  //     // 'id': reply.id,
-  //     'content': ask,
-  //     'authorId': user.userId,
-  //     'authorName': user.userName,
-  //     'authorProfileHandle': user.profileHandle,
-  //     'authorProfileImageUrl': user.profileImageUrl,
-  //     'authorVerification': user.verified,
-  //     'timestamp': Timestamp.fromDate(DateTime.now()),
-  //     'parentId': askId,
-  //     'report': '',
-  //     'reportConfirmed': '',
-  //   });
-  //   addActivityItem(
-  //     user: user,
-  //     post: null,
-  //     comment: ask,
-  //     type: NotificationActivityType.ask,
-  //     event: event,
-  //     followerUser: null,
-  //   );
-  // }
 
   static void addCommentReply({
     required String commentId,
@@ -4028,14 +1990,6 @@ class DatabaseService {
     // addActivityAdviceItem(currentUser: currentUser, user: user, advice: advice);
   }
 
-  // static Stream<int> numAdvices(String userId) {
-  //   return userAdviceRef
-  //       .doc(userId)
-  //       .collection('userAdvice')
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
-
   static void deleteAdvice(
       {required String currentUserId,
       required String userId,
@@ -4071,21 +2025,6 @@ class DatabaseService {
     });
   }
 
-  // static void editAdvice(
-  //   UserAdvice advice,
-  //   AccountHolderAuthor user,
-  // ) {
-  //   userAdviceRef
-  //       .doc(user.userId)
-  //       .collection('userAdvice')
-  //       .doc(advice.id)
-  //       .update({
-  //     'content': advice.content,
-  //     'authorId': advice.authorId,
-  //     'timestamp': advice.timestamp
-  //   });
-  // }
-
   static void editAdviceReply(
     String adviceId,
     String replyId,
@@ -4100,8 +2039,6 @@ class DatabaseService {
         .doc(replyId)
         .update({
       'content': askContent,
-      // 'authorId': comment.authorId,
-      // 'timestamp': comment.timestamp
     });
   }
 
@@ -4117,199 +2054,6 @@ class DatabaseService {
       // 'timestamp': comment.timestamp
     });
   }
-
-  // static void replyThought(
-  //     {required String currentUserId,
-  //     required Forum forum,
-  //     required Thought thought,
-  //     required int count,
-  //     required AccountHolder user,
-  //     required String replyThought,
-  //     required String reportConfirmed}) {
-  //   replyThoughtsRef.doc(thought.id).collection('replyThoughts').add({
-  //     'content': replyThought,
-  //     'reportConfirmed': reportConfirmed,
-  //     'mediaType': '',
-  //     'mediaUrl': '',
-  //     'report': '',
-  //     'authorId': currentUserId,
-  //     'timestamp': Timestamp.fromDate(DateTime.now()),
-  //     'authorName': user.userName,
-  //     'authorProfileHanlde': user.profileHandle,
-  //     'authorProfileImageUrl': user.profileImageUrl,
-  //     'authorVerification': user.verified
-  //   }).then((value) => thoughtsRef
-  //           .doc(forum.id)
-  //           .collection('forumThoughts')
-  //           .doc(thought.id)
-  //           .update({
-  //         'count': count,
-  //       }));
-
-  //   // addActivityForumItem(
-  //   //     user: user,
-  //   //     forum: forum,
-  //   //     thought: replyThought,
-  //   //     isThoughtLiked: false,
-  //   //     thoughtId: thoughtId);
-
-  //   // addActivityThoughtReplyItem(
-  //   //   user: user,
-  //   //   forum: forum,
-  //   //   thought: thought,
-  //   //   isThoughtLiked: false,
-  //   //   replyThought: replyThought,
-  //   //   isThoughtReplied: true,
-  //   // );
-  // }
-
-  // static Future<Thought> getUserThought(
-  //     String thoughtId, String forumId) async {
-  //   DocumentSnapshot forumDocSnapshot = await thoughtsRef
-  //       .doc(forumId)
-  //       .collection('forumThoughts')
-  //       .doc(thoughtId)
-  //       .get();
-  //   return Thought.fromDoc(forumDocSnapshot);
-  // }
-
-  // static void thoughtOnForum(
-  //     {required String currentUserId,
-  //     required Forum forum,
-  //     required String thought,
-  //     required String mediaType,
-  //     required bool imported,
-  //     required String mediaUrl,
-  //     required bool isThoughtLiked,
-  //     required AccountHolder user,
-  //     required String reportConfirmed}) {
-  //   thoughtsRef.doc(forum.id).collection('forumThoughts').add({
-  //     'content': thought,
-  //     'mediaType': mediaType,
-  //     'mediaUrl': mediaUrl,
-  //     'imported': imported,
-  //     'count': 0,
-  //     'likeCount': 0,
-  //     'reportConfirmed': reportConfirmed,
-  //     'report': '',
-  //     'authorId': currentUserId,
-  //     'timestamp': Timestamp.fromDate(DateTime.now()),
-  //     'authorName': user.userName,
-  //     'authorProfileHanlde': user.profileHandle,
-  //     'authorProfileImageUrl': user.profileImageUrl,
-  //     'authorVerification': user.verified,
-  //   });
-  //   // addActivityForumItem(
-  //   //     user: user,
-  //   //     forum: forum,
-  //   //     thought: thought,
-  //   //     isThoughtLiked: false,
-  //   //     thoughtId: '');
-  // }
-
-  // static void replyThought(
-  //     {required String currentUserId,
-  //     required String thoughtId,
-  //     required Forum forum,
-  //     required int count,
-  //     required AccountHolder user,
-  //     required String replyThought,
-  //     required String reportConfirmed}) {
-  //   replyThoughtsRef.doc(thoughtId).collection('replyThoughts').add({
-  //     'content': replyThought,
-  //     'reportConfirmed': reportConfirmed,
-  //     'mediaType': '',
-  //     'mediaUrl': '',
-  //     'report': '',
-  //     'authorId': currentUserId,
-  //     'timestamp': Timestamp.fromDate(DateTime.now()),
-  //     'authorName': user.userName,
-  //     'authorProfileHanlde': user.profileHandle,
-  //     'authorProfileImageUrl': user.profileImageUrl,
-  //     'authorVerification': user.verified
-  //   }).then((value) => thoughtsRef
-  //           .doc(forum.id)
-  //           .collection('forumThoughts')
-  //           .doc(thoughtId)
-  //           .update({
-  //         'count': count,
-  //       }));
-
-  //   addActivityForumItem(user: user, forum: forum, thought: replyThought);
-  // }
-
-  // static void deleteThought(
-  //     {required String currentUserId,
-  //     required Forum forum,
-  //     required Thought thought}) async {
-  //   thoughtsRef
-  //       .doc(forum.id)
-  //       .collection('forumThoughts')
-  //       .doc(thought.id)
-  //       .get()
-  //       .then((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-
-  //   QuerySnapshot replyThoughtsSnapShot = await replyThoughtsRef
-  //       .doc(thought.id)
-  //       .collection('replyThoughts')
-  //       .get();
-  //   replyThoughtsSnapShot.docs.forEach((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-
-  //   QuerySnapshot likeThoughtsSnapShot =
-  //       await thoughtsLikeRef.doc(thought.id).collection('thoughtLikes').get();
-  //   likeThoughtsSnapShot.docs.forEach((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-  // }
-
-  // static void deleteReplyThought(
-  //     {required Forum forum,
-  //     required int count,
-  //     required ReplyThought replyThought,
-  //     required Thought thought}) async {
-  //   replyThoughtsRef
-  //       .doc(thought.id)
-  //       .collection('replyThoughts')
-  //       .doc(replyThought.id)
-  //       .get()
-  //       .then((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-  //   thoughtsRef
-  //       .doc(forum.id)
-  //       .collection('forumThoughts')
-  //       .doc(thought.id)
-  //       .update({
-  //     'count': count,
-  //   });
-  // }
-
-  // static void editThought(
-  //   Thought thought,
-  //   Forum forum,
-  // ) {
-  //   thoughtsRef
-  //       .doc(forum.id)
-  //       .collection('forumThoughts')
-  //       .doc(thought.id)
-  //       .update({
-  //     'content': thought.content,
-  //     'authorId': thought.authorId,
-  //     'timestamp': thought.timestamp,
-  //   });
-  // }
 
   static Stream<int> numThoughts(String forumId) {
     return thoughtsRef
@@ -4339,17 +2083,6 @@ class DatabaseService {
       }
     }).asStream();
   }
-
-  // static Stream<int> numEventAttendeeRequest(
-  //   String eventId,
-  // ) {
-  //   return newEventTicketOrderRef
-  //       .doc(eventId)
-  //       .collection('eventInvite')
-  //       .where('invited', isEqualTo: false)
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
 
   static Stream<int> numAllEventInvites(String eventId, String answer) {
     // Check if eventId is null or empty
@@ -4386,12 +2119,6 @@ class DatabaseService {
         return 0;
       }
     }).asStream();
-    // return newEventTicketOrderRef
-    //     .doc(eventId)
-    //     .collection('eventInvite')
-    //     .where('validated', isEqualTo: validated)
-    //     .snapshots()
-    //     .map((documentSnapshot) => documentSnapshot.docs.length);
   }
 
   static Stream<int> numTotalExpectedAttendees(
@@ -4409,166 +2136,7 @@ class DatabaseService {
         return 0;
       }
     }).asStream();
-    // return newEventTicketOrderRef
-    //     .doc(eventId)
-    //     .collection('eventInvite')
-    //     .snapshots()
-    //     .map((documentSnapshot) => documentSnapshot.docs.length);
   }
-
-  // static Stream<int> numEventAttendeeRequestOption(
-  //   String eventId,
-  //   String from,
-  // ) {
-  //   return newEventTicketOrderRef
-  //       .doc(eventId)
-  //       .collection('eventInvite')
-  //       .where('attendeeStatus', isEqualTo: from)
-  //       .where('invited', isEqualTo: false)
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
-
-  // static Stream<int> numEventpublicAttendee(
-  //   String eventId,
-  // ) {
-  //   return newEventTicketOrderRef
-  //       .doc(eventId)
-  //       .collection('eventInvite')
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
-
-  // static Stream<int> numEventAttendeeAll(
-  //   String eventId,
-  //   String from,
-  // ) {
-  //   return newEventTicketOrderRef
-  //       .doc(eventId)
-  //       .collection('eventInvite')
-  //       .where('attendeeStatus', isEqualTo: from)
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
-
-  // static Stream<int> numEventAttendeeAllPublic(
-  //   String eventId,
-  // ) {
-  //   return newEventTicketOrderRef
-  //       .doc(eventId)
-  //       .collection('eventInvite')
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
-
-  // static Stream<int> numEventAttendeePublicAll(
-  //   String eventId,
-  //   String from,
-  // ) {
-  //   return newEventTicketOrderRef
-  //       .doc(eventId)
-  //       .collection('eventInvite')
-  //       .where('attendeeStatus', isEqualTo: from)
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
-
-  // static Stream<int> numEventAttendeeRequested(
-  //   String eventId,
-  // ) {
-  //   return newEventTicketOrderRef
-  //       .doc(eventId)
-  //       .collection('eventInvite')
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
-
-  // static Stream<int> numEventAttendeeValidatePrivate(
-  //     String eventId, String from) {
-  //   return newEventTicketOrderRef
-  //       .doc(eventId)
-  //       .collection('eventInvite')
-  //       .where('attendeeStatus', isEqualTo: from)
-  //       .where('validated', isEqualTo: true)
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
-
-  // static Stream<int> numEventAttendeeValidatePublic(
-  //   String eventId,
-  // ) {
-  //   return newEventTicketOrderRef
-  //       .doc(eventId)
-  //       .collection('eventInvite')
-  //       // .where('attendeeStatus', isEqualTo: from)
-  //       .where('validated', isEqualTo: true)
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
-
-  // static Stream<int> numEventInvites(String eventId, String from) {
-  //   return newEventTicketOrderRef
-  //       .doc(eventId)
-  //       .collection('eventInvite')
-  //       .where('attendeeStatus', isEqualTo: from)
-  //       .where('invited', isEqualTo: true)
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
-
-  // static Future<Thought> getUserThought(
-  //     String thoughtId, String forumId) async {
-  //   DocumentSnapshot forumDocSnapshot = await thoughtsRef
-  //       .doc(forumId)
-  //       .collection('forumThoughts')
-  //       .doc(thoughtId)
-  //       .get();
-  //   return Thought.fromDoc(forumDocSnapshot);
-  // }
-
-  // static Future<EventInvite> getThisEventAttendee(
-  //     Event event, String? userId) async {
-  //   DocumentSnapshot forumDocSnapshot = await newEventTicketOrderRef
-  //       .doc(event.id)
-  //       .collection('eventInvite')
-  //       .doc(userId)
-  //       .get();
-  //   return EventInvite.fromDoc(forumDocSnapshot);
-  // }
-
-  // static Future<EventInvite> getEventAttendeee(
-  //     Event event, String? userId) async {
-  //   DocumentSnapshot userDocSnapshot = await newEventTicketOrderRef
-  //       .doc(event.id)
-  //       .collection('eventInvite')
-  //       .doc(userId)
-  //       .get();
-  //   if (userDocSnapshot.exists) {
-  //     return EventInvite.fromDoc(userDocSnapshot);
-  //   }
-  //   return EventInvite(
-  //     inviteeName: '',
-  //     message: '',
-  //     invited: false,
-  //     timestamp: null,
-  //     attendeeStatus: '',
-  //     anttendeeId: '',
-  //     anttendeeName: '',
-  //     anttendeeprofileHandle: '',
-  //     anttendeeprofileImageUrl: '',
-  //     attendNumber: '',
-  //     authorId: '',
-  //     eventId: '',
-  //     eventImageUrl: '',
-  //     id: '',
-  //     requestNumber: '',
-  //     inviteStatus: '',
-  //     eventTimestamp: null,
-  //     commonId: '',
-  //     validated: false,
-  //     personnelStatus: '',
-  //   );
-  // }
 
   static Future<int> numUsersTickets(String userId) async {
     QuerySnapshot feedSnapShot = await userInviteRef
@@ -4592,18 +2160,6 @@ class DatabaseService {
 
     return ticketOrderDoc.exists;
   }
-
-  // static Future<bool> isTicketOrdetAvailable({
-  //   required String userOrderId,
-  //   required String eventId,
-  // }) async {
-  //   DocumentSnapshot ticketOrderDoc = await userInviteRef
-  //       .doc(userOrderId)
-  //       .collection('eventInvite')
-  //       .doc(eventId)
-  //       .get();
-  //   return ticketOrderDoc.exists;
-  // }
 
   static void purchaseMoreTicket({
     required String userOrderId,
@@ -4631,34 +2187,6 @@ class DatabaseService {
     });
   }
 
-  // static deleteTicket({
-  //   required TicketOrderModel ticketOrder,
-  // }) {
-  //   // String commonId = Uuid().v4();
-
-  //   newEventTicketOrderRef
-  //       .doc(ticketOrder.eventId)
-  //       .collection('eventInvite')
-  //       .doc(ticketOrder.userOrderId)
-  //       .get()
-  //       .then((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-
-  //   userInviteRef
-  //       .doc(ticketOrder.userOrderId)
-  //       .collection('eventInvite')
-  //       .doc(ticketOrder.eventId)
-  //       .get()
-  //       .then((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-  // }
-
   static Future<bool> isHavingTicket(
       {required String eventId, required String userId}) async {
     DocumentSnapshot ticketDoc = await newEventTicketOrderRef
@@ -4668,20 +2196,6 @@ class DatabaseService {
         .get();
     return ticketDoc.exists;
   }
-
-  // static void addUserTicketIdRef({
-  //   required TicketOrder ticketOrder,
-  // }) async {
-  //   await userTicketIdRef
-  //       .doc(ticketOrder.userOrderId)
-  //       .collection('eventInvite')
-  //       .doc(ticketOrder.eventId)
-  //       .set({
-  //     'eventId': ticketOrder.eventId,
-  //     'isNew': false,
-  //     'timestamp': FieldValue.serverTimestamp(),
-  //   });
-  // }
 
   static answerEventInviteBatch({
     required WriteBatch batch,
@@ -4776,68 +2290,7 @@ class DatabaseService {
       'authorProfileHandle': user.profileHandle,
       'authorVerification': user.verified,
     });
-
-    // The batch.commit() is commented out and should be called outside this function
-    // after all batch operations have been added.
-    // return batch.commit();
   }
-
-  // static void purchaseTicketBatch({
-  //   required WriteBatch batch,
-  //   required TicketOrderModel ticketOrder,
-  //   required AccountHolderAuthor user,
-  //   required String eventAuthorId,
-  //   required String purchaseReferenceId,
-  // }) {
-  //   // WriteBatch batch = FirebaseFirestore.instance.batch();
-
-  //   final eventInviteDocRef = newEventTicketOrderRef
-  //       .doc(ticketOrder.eventId)
-  //       .collection('eventInvite')
-  //       .doc(ticketOrder.userOrderId);
-
-  //   final userInviteDocRef = userInviteRef
-  //       .doc(ticketOrder.userOrderId)
-  //       .collection('eventInvite')
-  //       .doc(ticketOrder.eventId);
-
-  //   Map<String, dynamic> ticketOrderData = ticketOrder.toJson();
-
-  //   batch.set(eventInviteDocRef, ticketOrderData);
-  //   batch.set(userInviteDocRef, ticketOrderData);
-
-  //   // Add addUserTicketIdRef to the batch
-  //   final userTicketIdDocRef = userTicketIdRef
-  //       .doc(ticketOrder.userOrderId)
-  //       .collection('eventInvite')
-  //       .doc(ticketOrder.eventId);
-
-  //   batch.set(userTicketIdDocRef, {
-
-  //     'eventId': ticketOrder.eventId,
-  //     'isNew': false,
-  //     'isSeen': false,
-  //     'muteNotification': false,
-  //     'lastMessage': '',
-  //     'timestamp': FieldValue.serverTimestamp(),
-  //   });
-
-  //   activitiesRef.doc(eventAuthorId).collection('userActivities').add({
-  //     'authorId': ticketOrder.userOrderId,
-  //     'postId': ticketOrder.eventId,
-  //     'seen': false,
-  //     'type': 'ticketPurchased',
-  //     'postImageUrl': ticketOrder.eventImageUrl,
-  //     'comment': 'Purchased a ticket for: \n${ticketOrder.eventTitle}',
-  //     'timestamp': Timestamp.fromDate(DateTime.now()),
-  //     'authorProfileImageUrl': '',
-  //     'authorName': user.userName,
-  //     'authorProfileHandle': user.profileHandle,
-  //     'authorVerification': user.verified,
-  //   });
-
-  //   // return batch.commit();
-  // }
 
   static Future<void> purchaseTicketTransaction({
     required Transaction transaction,
@@ -4896,121 +2349,6 @@ class DatabaseService {
       'authorVerification': user.verified,
     });
   }
-
-  // static Future<void> purchaseTicketTransaction({
-  //   required Transaction transaction,
-  //   required TicketOrderModel ticketOrder,
-  //   required AccountHolderAuthor user,
-  //   required String purchaseReferenceId,
-  //   required String eventAuthorId,
-  // }) async {
-  //   final eventInviteDocRef = newEventTicketOrderRef
-  //       .doc(ticketOrder.eventId)
-  //       .collection('eventInvite')
-  //       .doc(ticketOrder.userOrderId);
-
-  //   final userInviteDocRef = userInviteRef
-  //       .doc(ticketOrder.userOrderId)
-  //       .collection('eventInvite')
-  //       .doc(ticketOrder.eventId);
-  //   Map<String, dynamic> ticketOrderData = ticketOrder.toJson();
-
-  //   transaction.set(eventInviteDocRef, ticketOrderData);
-  //   transaction.set(userInviteDocRef, ticketOrderData);
-
-  //   // Add addUserTicketIdRef to the transaction
-  //   final userTicketIdDocRef = userTicketIdRef
-  //       .doc(ticketOrder.userOrderId)
-  //       .collection('eventInvite')
-  //       .doc(ticketOrder.eventId);
-
-  //   transaction.set(userTicketIdDocRef, {
-  //     'eventId': ticketOrder.eventId,
-  //     'isNew': false,
-  //     'isSeen': false,
-  //     'muteNotification': false,
-  //     'lastMessage': '',
-  //     'timestamp': FieldValue.serverTimestamp(),
-  //   });
-
-  //   activitiesRef.doc(eventAuthorId).collection('userActivities').add({
-  //     'authorId': ticketOrder.userOrderId,
-  //     'postId': ticketOrder.eventId,
-  //     'seen': false,
-  //     'type': 'ticketPurchased',
-  //     'postImageUrl': ticketOrder.eventImageUrl,
-  //     'comment': 'Purchased a ticket for: \n${ticketOrder.eventTitle}',
-  //     'timestamp': Timestamp.fromDate(DateTime.now()),
-  //     'authorProfileImageUrl': '',
-  //     'authorName': user.userName,
-  //     'authorProfileHandle': user.profileHandle,
-  //     'authorVerification': user.verified,
-  //   });
-  // }
-
-  // static Future<void> purchaseTicket({
-  //   required TicketOrder ticketOrder,
-  // }) async {
-  //   await newEventTicketOrderRef
-  //       .doc(ticketOrder.eventId)
-  //       .collection('eventInvite')
-  //       .doc(ticketOrder.userOrderId)
-  //       .set({
-  //     'orderId': ticketOrder.orderId,
-  //     'eventId': ticketOrder.eventId,
-  //     'validated': ticketOrder.validated,
-  //     'timestamp': ticketOrder.timestamp,
-  //     'eventTimestamp': ticketOrder.eventTimestamp,
-  //     'entranceId': ticketOrder.entranceId,
-  //     'eventImageUrl': ticketOrder.eventImageUrl,
-  //     'isInvited': ticketOrder.isInvited,
-  //     'orderNumber': ticketOrder.orderNumber,
-  //     'tickets': ticketOrder.tickets.map((ticket) => ticket.toJson()).toList(),
-  //     'total': ticketOrder.total,
-  //     'userOrderId': ticketOrder.userOrderId,
-  //     'eventTitle': ticketOrder.eventTitle,
-  //   });
-
-  //   await userInviteRef
-  //       .doc(ticketOrder.userOrderId)
-  //       .collection('eventInvite')
-  //       .doc(ticketOrder.eventId)
-  //       .set({
-  //     'orderId': ticketOrder.orderId,
-  //     'eventId': ticketOrder.eventId,
-  //     'validated': ticketOrder.validated,
-  //     'timestamp': ticketOrder.timestamp,
-  //     'eventTimestamp': ticketOrder.eventTimestamp,
-  //     'entranceId': ticketOrder.entranceId,
-  //     'eventImageUrl': ticketOrder.eventImageUrl,
-  //     'isInvited': ticketOrder.isInvited,
-  //     'orderNumber': ticketOrder.orderNumber,
-  //     'tickets': ticketOrder.tickets.map((ticket) => ticket.toJson()).toList(),
-  //     'total': ticketOrder.total,
-  //     'userOrderId': ticketOrder.userOrderId,
-  //     'eventTitle': ticketOrder.eventTitle,
-  //   });
-  //   // !event.isPrivate
-  //   //     ? activitiesEventRef
-  //   //         .doc(event.id)
-  //   //         .collection('userActivitiesEvent')
-  //   //         .doc(commonId)
-  //   //         .set({
-  //   //         'toUserId': currentUserId,
-  //   //         'fromUserId': currentUserId,
-  //   //         'eventId': event.id,
-  //   //         'eventInviteType': 'AttendRequest',
-  //   //         'invited': false,
-  //   //         'seen': '',
-  //   //         'eventImageUrl': event.imageUrl,
-  //   //         'eventTitle': event.title,
-  //   //         'commonId': commonId,
-  //   //         'ask': '',
-  //   //         'timestamp': Timestamp.fromDate(DateTime.now()),
-  //   //       })
-  //   //     // ignore: unnecessary_statements
-  //   //     : () {};
-  // }
 
   static Future<void> deleteTicket({
     required TicketOrderModel ticketOrder,
@@ -5079,25 +2417,6 @@ class DatabaseService {
       'tickets': [],
       'total': 09,
       'userOderId': commonId,
-      // 'eventId': event.id,
-      // 'inviteeName': '',
-      // 'commonId': commonId,
-      // 'requestNumber': requestNumber,
-      // 'attendNumber': '',
-      // 'anttendeeId': user.id,
-      // 'message': message,
-      // 'inviteStatus': '',
-      // 'personnelStatus': '',
-      // 'invited': false,
-      // 'validated': false,
-      // 'attendeeStatus': '',
-      // 'anttendeeName': user.userName,
-      // 'anttendeeprofileHandle': user.profileHandle,
-      // 'anttendeeprofileImageUrl': user.profileImageUrl,
-      // 'eventImageUrl': event.imageUrl,
-      // 'authorId': event.authorId,
-      // 'timestamp': Timestamp.fromDate(DateTime.now()),
-      // 'eventTimestamp': eventDate,
     });
 
     await userInviteRef
@@ -5120,46 +2439,7 @@ class DatabaseService {
       'tickets': [],
       'total': 09,
       'userOderId': commonId,
-      // 'eventId': event.id,
-      // 'requestNumber': requestNumber,
-      // 'commonId': commonId,
-      // 'attendNumber': '',
-      // 'inviteeName': '',
-      // 'anttendeeId': user.id,
-      // 'message': message,
-      // 'inviteStatus': '',
-      // 'personnelStatus': '',
-      // 'invited': false,
-      // 'validated': false,
-      // 'attendeeStatus': '',
-      // 'anttendeeName': user.userName,
-      // 'anttendeeprofileHandle': user.profileHandle,
-      // 'anttendeeprofileImageUrl': user.profileImageUrl,
-      // 'eventImageUrl': event.imageUrl,
-      // 'authorId': event.authorId,
-      // 'timestamp': Timestamp.fromDate(DateTime.now()),
-      // 'eventTimestamp': eventDate,
     });
-    // !event.isPrivate
-    //     ? activitiesEventRef
-    //         .doc(event.id)
-    //         .collection('userActivitiesEvent')
-    //         .doc(commonId)
-    //         .set({
-    //         'toUserId': currentUserId,
-    //         'fromUserId': currentUserId,
-    //         'eventId': event.id,
-    //         'eventInviteType': 'AttendRequest',
-    //         'invited': false,
-    //         'seen': '',
-    //         'eventImageUrl': event.imageUrl,
-    //         'eventTitle': event.title,
-    //         'commonId': commonId,
-    //         'ask': '',
-    //         'timestamp': Timestamp.fromDate(DateTime.now()),
-    //       })
-    //     // ignore: unnecessary_statements
-    //     : () {};
   }
 
   static Future<void> answerEventInviteTransaction({
@@ -5249,238 +2529,6 @@ class DatabaseService {
     }
   }
 
-  // static void sendEventInvite({
-  //   required Event event,
-  //   required AccountHolder user,
-  //   required String requestNumber,
-  //   required String message,
-  //   required DateTime eventDate,
-  //   required AccountHolder currentUser,
-  // }) {
-  //   String commonId = Uuid().v4();
-
-  //   newEventTicketOrderRef.doc(event.id).collection('eventInvite').doc(user.id).set({
-  //     'eventId': event.id,
-  //     'requestNumber': requestNumber,
-  //     'attendNumber': '',
-  //     'commonId': commonId,
-  //     'anttendeeId': user.id,
-  //     'message': message,
-  //     'inviteStatus': '',
-  //     'personnelStatus': '',
-  //     'inviteeName': user.userName,
-  //     'invited': true,
-  //     'validated': false,
-  //     'attendeeStatus': '',
-  //     'anttendeeName': user.userName,
-  //     'anttendeeprofileHandle': user.profileHandle,
-  //     'anttendeeprofileImageUrl': user.profileImageUrl,
-  //     'eventImageUrl': event.imageUrl,
-  //     'authorId': event.authorId,
-  //     'timestamp': Timestamp.fromDate(DateTime.now()),
-  //     'eventTimestamp': eventDate,
-  //   });
-
-  //   // activitiesEventRef
-  //   //     .doc(user.id)
-  //   //     .collection('userActivitiesEvent')
-  //   //     .doc(commonId)
-  //   //     .set({
-  //   //   'toUserId': user.id,
-  //   //   'fromUserId': currentUser.id,
-  //   //   'eventId': event.id,
-  //   //   'eventInviteType': event.title,
-  //   //   'invited': true,
-  //   //   'seen': '',
-  //   //   'eventImageUrl': event.imageUrl,
-  //   //   'eventTitle': event.title,
-  //   //   'commonId': commonId,
-  //   //   'ask': null,
-  //   //   'timestamp': Timestamp.fromDate(DateTime.now()),
-  //   //   'authorProfileImageUrl': user.profileImageUrl,
-  //   //   'authorName': user.userName,
-  //   //   'authorProfileHanlde': user.profileHandle,
-  //   //   'authorVerification': user.verified,
-  //   // });
-
-  //   // addActivityEventItem(currentUserId: currentUserId, event: event, ask: ask);
-  // }
-
-  // static void addEventInviteToAttending({
-  //   required Event event,
-  //   required AccountHolder user,
-  //   required String requestNumber,
-  //   required String message,
-  //   required DateTime eventDate,
-  //   required String currentUserId,
-  //   required String answer,
-  //   required EventInvite eventInvite,
-  //   required String attendeeNumber,
-  // }) {
-  //   String commonId = Uuid().v4();
-
-  //   userInviteRef.doc(user.id).collection('eventInvite').doc(event.id).set({
-  //     'eventId': event.id,
-  //     'requestNumber': requestNumber,
-  //     'commonId': commonId,
-  //     'attendNumber': attendeeNumber,
-  //     'anttendeeId': user.id,
-  //     'message': message,
-  //     'inviteStatus': 'Accepted',
-  //     'personnelStatus': '',
-  //     'inviteeName': '',
-  //     'invited': true,
-  //     'validated': false,
-  //     'attendeeStatus': 'Accepted',
-  //     'anttendeeName': user.userName,
-  //     'anttendeeprofileHandle': user.profileHandle,
-  //     'anttendeeprofileImageUrl': user.profileImageUrl,
-  //     'eventImageUrl': event.imageUrl,
-  //     'authorId': event.authorId,
-  //     'timestamp': Timestamp.fromDate(DateTime.now()),
-  //     'eventTimestamp': eventDate,
-  //   });
-
-  //   newEventTicketOrderRef.doc(event.id).collection('eventInvite').doc(user.id).update({
-  //     'attendeeStatus': 'Accepted',
-  //     'inviteStatus': 'Accepted',
-  //     'attendNumber': attendeeNumber,
-  //   });
-
-  //   // activitiesEventRef
-  //   //     .doc(user.id)
-  //   //     .collection('userActivitiesEvent')
-  //   //     .doc(eventInvite.commonId)
-  //   //     .update({
-  //   //   'seen': 'seen',
-  //   //   'timestamp': Timestamp.fromDate(DateTime.now()),
-  //   // });
-  // }
-
-  // static void deleteUnAvailableTicketOrder({
-  //   required TicketOrder ticketOrder,
-  // }) {
-  //   userInviteRef
-  //       .doc(ticketOrder.userOrderId)
-  //       .collection('eventInvite')
-  //       .doc(ticketOrder.eventId)
-  //       .get()
-  //       .then((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-  // }
-
-  // static void deleteUnAvailableEvent({
-  //   required EventInvite eventInvite,
-  // }) {
-  //   userInviteRef
-  //       .doc(eventInvite.anttendeeId)
-  //       .collection('eventInvite')
-  //       .doc(eventInvite.eventId)
-  //       .get()
-  //       .then((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-  // }
-
-  // static void cancelInvite({
-  //   required EventInvite eventInvite,
-  // }) {
-  //   newEventTicketOrderRef
-  //       .doc(eventInvite.eventId)
-  //       .collection('eventInvite')
-  //       .doc(eventInvite.anttendeeId)
-  //       .get()
-  //       .then((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-
-  //   userInviteRef
-  //       .doc(eventInvite.anttendeeId)
-  //       .collection('eventInvite')
-  //       .doc(eventInvite.eventId)
-  //       .get()
-  //       .then((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-
-  //   // activitiesEventRef
-  //   //     .doc(eventInvite.anttendeeId)
-  //   //     .collection('userActivitiesEvent')
-  //   //     .doc(eventInvite.commonId)
-  //   //     .get()
-  //   //     .then((doc) {
-  //   //   if (doc.exists) {
-  //   //     doc.reference.delete();
-  //   //   }
-  //   // });
-
-  //   // addActivityEventItem(currentUserId: currentUserId, event: event, ask: ask);
-  // }
-
-  // static void answerEventAttendeeReques({
-  //   required EventInvite eventInvite,
-  //   required String answer,
-  // }) {
-  //   String commonId = Uuid().v4();
-  //   newEventTicketOrderRef
-  //       .doc(eventInvite.eventId)
-  //       .collection('eventInvite')
-  //       .doc(eventInvite.anttendeeId)
-  //       .update({
-  //     'attendeeStatus': answer,
-  //     'attendNumber':
-  //         answer.startsWith('Rejected') ? '' : commonId.substring(0, 3),
-  //   });
-
-  //   userInviteRef
-  //       .doc(eventInvite.anttendeeId)
-  //       .collection('eventInvite')
-  //       .doc(eventInvite.eventId)
-  //       .update({
-  //     'attendeeStatus': answer,
-  //     'attendNumber':
-  //         answer.startsWith('Rejected') ? '' : commonId.substring(0, 3),
-  //     'timestamp': Timestamp.fromDate(DateTime.now()),
-  //   });
-
-  //   // addActivityEventItem(currentUserId: currentUserId, event: event, ask: ask);
-  // }
-
-  // static void validateEventAttendee({
-  //   required EventInvite eventInvite,
-  //   required bool validate,
-  // }) {
-  //   newEventTicketOrderRef
-  //       .doc(eventInvite.eventId)
-  //       .collection('eventInvite')
-  //       .doc(eventInvite.anttendeeId)
-  //       .update({
-  //     'validated': validate,
-  //   });
-
-  //   userInviteRef
-  //       .doc(eventInvite.anttendeeId)
-  //       .collection('eventInvite')
-  //       .doc(eventInvite.eventId)
-  //       .update({
-  //     'validated': validate,
-  //   });
-
-  //   // addActivityEventItem(currentUserId: currentUserId, event: event, ask: ask);
-  // }
-
-  // addActivityEventItem(currentUserId: currentUserId, event: event, ask: ask);
-  // }
-
   static void askAboutEvent(
       {required String currentUserId,
       required Event event,
@@ -5509,22 +2557,7 @@ class DatabaseService {
       // ask: ask,
       // commonId: commonId,
     );
-
-    // addActivityEventItem(
-    //   user: user,
-    //   event: event,
-    //   ask: ask,
-    //   commonId: commonId,
-    // );
   }
-
-  // static Stream<int> numAsks(String eventId) {
-  //   return asksRef
-  //       .doc(eventId)
-  //       .collection('eventAsks')
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
 
   static void deleteAsk(
       {required String currentUserId,
@@ -5547,46 +2580,6 @@ class DatabaseService {
       'timestamp': ask.timestamp,
     });
   }
-
-  // static void addActivityFollowerItem(
-  //     {required String currentUserId,
-  //     required AccountHolder user,
-  //     required AccountHolder currentUser}) {
-  //   if (currentUserId != user.id) {
-  //     activitiesFollowerRef.doc(user.id).collection('activitiesFollower').add({
-  //       'fromUserId': currentUserId,
-  //       'userId': user.id,
-  //       'seen': '',
-  //       'timestamp': Timestamp.fromDate(DateTime.now()),
-  //       'authorProfileImageUrl': currentUser.profileImageUrl,
-  //       'authorName': currentUser.userName,
-  //       'authorProfileHanlde': currentUser.profileHandle,
-  //       'authorVerification': currentUser.verified,
-  //     });
-  //   }
-  // }
-
-  // static void editActivityFollower(ActivityFollower activity, String useId) {
-  //   activitiesFollowerRef
-  //       .doc(useId)
-  //       .collection('activitiesFollower')
-  //       .doc(activity.id)
-  //       .update({
-  //     'fromUserId': activity.fromUserId,
-  //     'userId': activity.userId,
-  //     'seen': activity.seen,
-  //     'timestamp': activity.timestamp,
-  //   });
-  // }
-
-  // static Stream<int> numActivitiesFollower(String userId) {
-  //   return activitiesFollowerRef
-  //       .doc(userId)
-  //       .collection('activitiesFollower')
-  //       .where('seen', isEqualTo: '')
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
 
   static void addActivityItem(
       {required AccountHolderAuthor user,
@@ -5702,260 +2695,11 @@ class DatabaseService {
         .map((documentSnapshot) => documentSnapshot.docs.length);
   }
 
-  // static void addActivityAdviceItem(
-  //     {required AccountHolder currentUser,
-  //     required AccountHolder user,
-  //     required String advice}) {
-  //   if (currentUser.id != user.id) {
-  //     activitiesAdviceRef.doc(user.id).collection('userActivitiesAdvice').add({
-  //       'fromUserId': currentUser.id,
-  //       'userId': user.id,
-  //       'seen': '',
-  //       'advice': advice,
-  //       'timestamp': Timestamp.fromDate(DateTime.now()),
-  //       'authorProfileImageUrl': currentUser.profileImageUrl,
-  //       'authorName': currentUser.userName,
-  //       'authorProfileHanlde': currentUser.profileHandle,
-  //       'authorVerification': currentUser.verified,
-  //     });
-  //   }
-  // }
-
-  // static void editActivityAdvice(ActivityAdvice activityAdvice, String useId) {
-  //   activitiesAdviceRef
-  //       .doc(useId)
-  //       .collection('userActivitiesAdvice')
-  //       .doc(activityAdvice.id)
-  //       .update({
-  //     'fromUserId': activityAdvice.fromUserId,
-  //     'userId': activityAdvice.userId,
-  //     'seen': activityAdvice.seen,
-  //     'advice': activityAdvice.advice,
-  //     'timestamp': activityAdvice.timestamp,
-  //   });
-  // }
-
-  // static Stream<int> numActivitiesAdvice(String userId) {
-  //   return activitiesAdviceRef
-  //       .doc(userId)
-  //       .collection('userActivitiesAdvice')
-  //       .where('seen', isEqualTo: '')
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
-
   static Future<Post> getUserPost(String userId, String postId) async {
     DocumentSnapshot postDocSnapshot =
         await postsRef.doc(userId).collection('userPosts').doc(postId).get();
     return Post.fromDoc(postDocSnapshot);
   }
-
-  // static void addActivityForumItem(
-  //     {required Forum forum,
-  //     required AccountHolder user,
-  //     required bool isThoughtLiked,
-  //     required String thoughtId,
-  //     required String thought}) {
-  //   if (user.id != forum.authorId) {
-  //     activitiesForumRef
-  //         .doc(forum.authorId)
-  //         .collection('userActivitiesForum')
-  //         .add({
-  //       'fromUserId': user.id,
-  //       'forumId': forum.id,
-  //       'forumAuthorId': forum.authorId,
-  //       'isThoughtReplied': false,
-  //       'seen': '',
-  //       'isThoughtLike': isThoughtLiked,
-  //       'forumTitle': forum.title,
-  //       'thought': thought,
-  //       'thoughtId': thoughtId,
-  //       'timestamp': Timestamp.fromDate(DateTime.now()),
-  //       'authorProfileImageUrl': user.profileImageUrl,
-  //       'authorName': user.userName,
-  //       'authorProfileHanlde': user.profileHandle,
-  //       'authorVerification': user.verified,
-  //     });
-  //   }
-  // }
-
-  // static void addActivityThoughtReplyItem(
-  //     {required Forum forum,
-  //     required AccountHolder user,
-  //     required String replyThought,
-  //     required bool isThoughtLiked,
-  //     required bool isThoughtReplied,
-  //     required Thought thought}) {
-  //   if (user.id != thought.authorId) {
-  //     activitiesForumRef
-  //         .doc(thought.authorId)
-  //         .collection('userActivitiesForum')
-  //         .add({
-  //       'fromUserId': user.id,
-  //       'forumId': forum.id,
-  //       'forumAuthorId': forum.authorId,
-  //       'seen': '',
-  //       'isThoughtLike': isThoughtLiked,
-  //       'isThoughtReplied': isThoughtReplied,
-  //       'forumTitle': forum.title,
-  //       'thought': replyThought,
-  //       'thoughtId': thought.id,
-  //       'timestamp': Timestamp.fromDate(DateTime.now()),
-  //       'authorProfileImageUrl': user.profileImageUrl,
-  //       'authorName': user.userName,
-  //       'authorProfileHanlde': user.profileHandle,
-  //       'authorVerification': user.verified,
-  //     });
-  //   }
-  // }
-
-  // static void addActivityThoughtLikeItem(
-  //     {required Forum forum,
-  //     required AccountHolder user,
-  //     required bool isThoughtLiked,
-  //     required Thought thought}) {
-  //   if (user.id != thought.authorId) {
-  //     activitiesForumRef
-  //         .doc(thought.authorId)
-  //         .collection('userActivitiesForum')
-  //         .add({
-  //       'fromUserId': user.id,
-  //       'forumId': forum.id,
-  //       'forumAuthorId': forum.authorId,
-  //       'seen': '',
-  //       'isThoughtLike': isThoughtLiked,
-  //       'isThoughtReplied': false,
-  //       'forumTitle': forum.title,
-  //       'thought': thought.content,
-  //       'thoughtId': thought.id,
-  //       'timestamp': Timestamp.fromDate(DateTime.now()),
-  //       'authorProfileImageUrl': user.profileImageUrl,
-  //       'authorName': user.userName,
-  //       'authorProfileHanlde': user.profileHandle,
-  //       'authorVerification': user.verified,
-  //     });
-  //   }
-  // }
-
-  // static void editActivityForum(ActivityForum activityForum, String userId) {
-  //   activitiesForumRef
-  //       .doc(userId)
-  //       .collection('userActivitiesForum')
-  //       .doc(activityForum.id)
-  //       .update({
-  //     'fromUserId': activityForum.fromUserId,
-  //     'forumId': activityForum.forumId,
-  //     'seen': activityForum.seen,
-  //     'forumTitle': activityForum.forumTitle,
-  //     'thought': activityForum.thought,
-  //     'timestamp': activityForum.timestamp,
-  //   });
-  // }
-
-  // static Stream<int> numForumActivities(String userId) {
-  //   return activitiesForumRef
-  //       .doc(userId)
-  //       .collection('userActivitiesForum')
-  //       .where('seen', isEqualTo: '')
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
-
-  // static Future<Forum> getUserForum(String userId, String forumId) async {
-  //   DocumentSnapshot forumDocSnapshot =
-  //       await forumsRef.doc(userId).collection('userForums').doc(forumId).get();
-  //   return Forum.fromDoc(forumDocSnapshot);
-  // }
-
-  // static void addActivityEventItem({
-  //   required Event event,
-  //   required AccountHolder user,
-  //   required String ask,
-  //   required String commonId,
-  // }) {
-  //   if (user.id != event.authorId) {
-  //     activitiesEventRef
-  //         .doc(event.authorId)
-  //         .collection('userActivitiesEvent')
-  //         .doc(commonId)
-  //         .set({
-  //       'fromUserId': user.id,
-  //       'toUserId': event.authorId,
-  //       'eventId': event.id,
-  //       'eventInviteType': '',
-  //       'invited': false,
-  //       'seen': '',
-  //       'eventImageUrl': event.imageUrl,
-  //       'eventTitle': event.title,
-  //       'commonId': commonId,
-  //       'ask': ask,
-  //       'timestamp': Timestamp.fromDate(DateTime.now()),
-  //       'authorProfileImageUrl': user.profileImageUrl,
-  //       'authorName': user.userName,
-  //       'authorProfileHanlde': user.profileHandle,
-  //       'authorVerification': user.verified,
-  //     });
-  //   }
-  // }
-
-  // static void editActivityEvent(ActivityEvent activityEvent, String useId) {
-  //   activitiesEventRef
-  //       .doc(useId)
-  //       .collection('userActivitiesEvent')
-  //       .doc(activityEvent.id)
-  //       .update({
-  //     'fromUserId': activityEvent.fromUserId,
-  //     'eventId': activityEvent.eventId,
-  //     'seen': activityEvent.seen,
-  //     'eventImageUrl': activityEvent.eventImageUrl,
-  //     'eventTitle': activityEvent.eventTitle,
-  //     'commonId': activityEvent.commonId,
-  //     'ask': activityEvent.ask,
-  //     'timestamp': activityEvent.timestamp,
-  //   });
-  // }
-
-  // static void deleteActivityEvent(ActivityEvent activityEvent, String useId) {
-  //   activitiesEventRef
-  //       .doc(useId)
-  //       .collection('userActivitiesEvent')
-  //       .doc(activityEvent.id)
-  //       .get()
-  //       .then((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-  // }
-
-  // static Stream<int> numEventActivities(String userId) {
-  //   return activitiesEventRef
-  //       .doc(userId)
-  //       .collection('userActivitiesEvent')
-  //       .where('seen', isEqualTo: '')
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
-
-  // static Stream<int> numSpecificEventActivities(String userId, String eventId) {
-  //   return activitiesEventRef
-  //       .doc(userId)
-  //       .collection('userActivitiesEvent')
-  //       .where('seen', isEqualTo: '')
-  //       .where('eventId', isEqualTo: eventId)
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
-
-  // static Stream<int> numEventInviteActivities(String userId) {
-  //   return activitiesEventRef
-  //       .doc(userId)
-  //       .collection('userActivitiesEvent')
-  //       .where('seen', isEqualTo: '')
-  //       .where('invited', isEqualTo: true)
-  //       .snapshots()
-  //       .map((documentSnapshot) => documentSnapshot.docs.length);
-  // }
 
   static Future<Event> getUserEvent(String userId, String eventId) async {
     DocumentSnapshot eventDocSnapshot =
@@ -6021,8 +2765,6 @@ class DatabaseService {
   ) {
     asksRef.doc(event.id).collection('eventAsks').doc(askId).update({
       'content': askContent,
-      // 'authorId': comment.authorId,
-      // 'timestamp': comment.timestamp
     });
   }
 
@@ -6040,8 +2782,6 @@ class DatabaseService {
         .doc(replyId)
         .update({
       'content': askContent,
-      // 'authorId': comment.authorId,
-      // 'timestamp': comment.timestamp
     });
   }
 
@@ -6080,23 +2820,6 @@ class DatabaseService {
       advicedUserId: '',
     );
   }
-
-  // static Future<List<Event>> setupEventCity(AccountHolder user, int limit,
-  //     List<DocumentSnapshot> eventCitySnapshot) async {
-  //   QuerySnapshot eventFeedSnapShot = await allEventsRef
-  //       .where('city', isEqualTo: user.city)
-  //       .where('country', isEqualTo: user.country)
-  //       .where('showOnExplorePage', isEqualTo: true)
-  //       .limit(limit)
-  //       .get();
-  //   List<Event> events = eventFeedSnapShot.docs
-  //       .map((doc) => Event.fromDoc(doc))
-  //       .toList()
-  //     ..shuffle();
-  //   eventCitySnapshot.addAll((eventFeedSnapShot.docs));
-
-  //   return events;
-  // }
 
   static Future<String> myDynamicLink(
       String imageUrl, String title, String subtitle, String urilink) async {

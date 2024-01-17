@@ -9,7 +9,7 @@ import 'package:bars/utilities/exports.dart';
 class CreativesScreen extends StatefulWidget {
   static final id = 'CreativesScreen';
   final String currentUserId;
-  final String exploreLocation;
+  // final String exploreLocation;
   final String profileHandle;
   final int pageIndex;
   final UserSettingsLoadingPreferenceModel userLocationSettings;
@@ -20,7 +20,7 @@ class CreativesScreen extends StatefulWidget {
 
   CreativesScreen({
     required this.currentUserId,
-    required this.exploreLocation,
+    // required this.exploreLocation,
     required this.profileHandle,
     required this.pageIndex,
     required this.userLocationSettings,
@@ -47,6 +47,7 @@ class _CreativesScreenState extends State<CreativesScreen>
   final _postSnapshot = <DocumentSnapshot>[];
 
   int limit = 10;
+
   bool _hasNext = true;
   // bool _isFectchingUser = false;
   late ScrollController _hideButtonController;
@@ -84,6 +85,7 @@ class _CreativesScreenState extends State<CreativesScreen>
   }
 
   _setUpFeedCount() async {
+    print(widget.liveCountry);
     int feedCount = widget.liveCity.isNotEmpty
         ? await DatabaseService.numusersLiveLocation(
             widget.profileHandle, widget.liveCity, widget.liveCountry)
@@ -333,42 +335,42 @@ class _CreativesScreenState extends State<CreativesScreen>
     String? city,
     String? continent,
   }) async {
-    var query = userProfessionalRef.where('profileHandle',
-        isEqualTo: widget.profileHandle);
-
-    if (country != null) {
-      query = query.where('country', isEqualTo: country);
-    }
-
-    if (city != null) {
-      query = query.where('city', isEqualTo: city);
-    }
-    if (continent != null) {
-      query = query.where('continent', isEqualTo: continent);
-    }
-
-    final randomValue = Random().nextDouble();
-
-    // Now order by randomId
-    query = query.orderBy('randomId');
-
     try {
-      QuerySnapshot userFeedSnapShot = await query
-          .where('randomId', isGreaterThanOrEqualTo: randomValue)
-          .orderBy('randomId')
-          .startAfterDocument(_usersAllSnapshot.last)
-          .limit(5)
-          .get();
+      var query = userProfessionalRef.where('profileHandle',
+          isEqualTo: widget.profileHandle);
 
+      if (country != null) {
+        query = query.where('country', isEqualTo: country);
+      }
+      if (city != null) {
+        query = query.where('city', isEqualTo: city);
+      }
+      if (continent != null) {
+        query = query.where('continent', isEqualTo: continent);
+      }
+
+      final randomValue = Random().nextDouble();
+      query = query.orderBy('randomId');
+
+      // Apply the inequality filter after the orderBy
+      query = query.where('randomId', isGreaterThanOrEqualTo: randomValue);
+
+      QuerySnapshot userFeedSnapShot =
+          await query.startAfterDocument(_usersAllSnapshot.last).limit(2).get();
+
+      // If you didn't get enough documents, query in the other direction
       if (userFeedSnapShot.docs.length < 5) {
         int remainingLimit = 5 - userFeedSnapShot.docs.length;
-        QuerySnapshot additionalSnapshot = await query
-            .startAfterDocument(_usersAllSnapshot.last)
+
+        // Make an additional query to get more documents
+        QuerySnapshot additionalSnapshot = await userProfessionalRef
+            .where('profileHandle', isEqualTo: widget.profileHandle)
+            .orderBy('randomId') // Order by must be the same as the first query
             .where('randomId', isLessThan: randomValue)
-            .orderBy('randomId')
             .limit(remainingLimit)
             .get();
-        // Combine the two lists of users
+
+        // Combine the two lists of documents
         userFeedSnapShot.docs.addAll(additionalSnapshot.docs);
       }
 
@@ -412,72 +414,7 @@ class _CreativesScreenState extends State<CreativesScreen>
     }
   }
 
-//   Future<List<UserProfessionalModel>> _loadMoreUsers({
-//     // DocumentSnapshot? startAfterDocument,
-//     String? country,
-//     String? city,
-//     String? continent,
-//   }) async {
-//     var query = userProfessionalRef.where('profileHandle',
-//         isEqualTo: widget.profileHandle);
-
-//     if (country != null) {
-//       query = query.where('country', isEqualTo: country);
-//     }
-//     if (city != null) {
-//       query = query.where('city', isEqualTo: city);
-//     }
-//     if (continent != null) {
-//       query = query.where('continent', isEqualTo: continent);
-//     }
-
-//     try {
-//       QuerySnapshot userFeedSnapShot =
-//           await query.startAfterDocument(_usersAllSnapshot.last).limit(5).get();
-
-//       List<UserProfessionalModel> users = userFeedSnapShot.docs
-//           .map((doc) => UserProfessionalModel.fromDoc(doc))
-//           .where((user) => addedUserIds.add(user.id))
-//           .toList();
-
-//       // List<UserProfessionalModel> users = eventFeedSnapShot.docs
-//       //     .map((doc) => UserProfessionalModel.fromDoc(doc))
-//       //     .toList();
-
-//       List<UserProfessionalModel> moreUsers = _usersAll + users;
-
-// // Add new user to existing list
-//       // _usersAll.addAll(users);
-
-// // Add new snapshots to existing list
-//       _usersAllSnapshot.addAll((userFeedSnapShot.docs));
-//       for (var event in moreUsers) {
-//         if (!addedUserIds.contains(event.id)) {
-//           if (mounted) {
-//             setState(() {
-//               if (widget.seeMoreFrom.isNotEmpty || widget.liveCity.isNotEmpty) {
-//                 _usersAll = moreUsers;
-//               } else if (country != null && city != null) {
-//                 _usersCity = moreUsers;
-//               } else if (country != null) {
-//                 _usersCountry = moreUsers;
-//               } else if (continent != null) {
-//                 _usersContinent = moreUsers;
-//               } else {
-//                 _usersAll = moreUsers;
-//               }
-//             });
-//           }
-//         }
-//       }
-
-//       return users;
-//     } catch (e) {
-//       // print('Error loading more events: $e');
-//       // Consider what you want to do in case of error. Here, we return an empty list
-//       return [];
-//     }
-//   }
+//
 
   void _navigateToPage(BuildContext context, Widget page) {
     Navigator.push(
@@ -523,6 +460,85 @@ class _CreativesScreenState extends State<CreativesScreen>
     // _setupUsers();
 
     // _setupPosts();
+  }
+
+  _userFan(UserProfessionalModel user) {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0),
+      child: Container(
+        // color: Theme.of(context).cardColor,
+        child: ListTile(
+          leading: user.profileImageUrl.isEmpty
+              ? Icon(
+                  Icons.account_circle,
+                  size: ResponsiveHelper.responsiveHeight(context, 50.0),
+                  color: Colors.grey,
+                )
+              : CircleAvatar(
+                  radius: ResponsiveHelper.responsiveHeight(context, 25.0),
+                  backgroundColor: Colors.blue,
+                  backgroundImage:
+                      CachedNetworkImageProvider(user.profileImageUrl),
+                ),
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              NameText(
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+                name: user.userName.toUpperCase().trim().replaceAll('\n', ' '),
+                verified: user.verified,
+              ),
+              RichText(
+                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  text: TextSpan(children: [
+                    TextSpan(
+                        text: user.profileHandle,
+                        style: TextStyle(
+                          fontSize:
+                              ResponsiveHelper.responsiveFontSize(context, 10),
+                          color: Colors.blue,
+                        )),
+                  ])),
+              SizedBox(
+                height: 5.0,
+              ),
+              // RichText(
+              //     textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              //     text: TextSpan(children: [
+              //       TextSpan(
+              //         text: 'bio: ',
+              //         style: TextStyle(
+              //           fontSize:
+              //               ResponsiveHelper.responsiveFontSize(context, 12),
+              //           color: Colors.grey,
+              //           fontWeight: FontWeight.bold,
+              //         ),
+              //       ),
+              //       TextSpan(
+              //         text: user,
+              //         style: TextStyle(
+              //           fontSize:
+              //               ResponsiveHelper.responsiveFontSize(context, 12),
+              //           color: Colors.grey,
+              //           fontWeight: FontWeight.bold,
+              //         ),
+              //       ),
+              //     ])),
+            ],
+          ),
+          onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => ProfileScreen(
+                        user: null,
+                        currentUserId: _provider.currentUserId!,
+                        userId: user.id,
+                      ))),
+        ),
+      ),
+    );
   }
 
   Widget _buildBody2() {
@@ -648,7 +664,7 @@ class _CreativesScreenState extends State<CreativesScreen>
                                         pageIndex: widget.pageIndex,
                                         types: widget.profileHandle,
                                         // seeMoreFrom: 'City',
-                                        isEvent: false, isFrom: 'City',
+                                        isEvent: false, isFrom: 'City',sortNumberOfDays: 0,
                                       ));
                                 }),
                         if (hasCountry && _usersCountry.isNotEmpty)
@@ -667,7 +683,7 @@ class _CreativesScreenState extends State<CreativesScreen>
                                         pageIndex: widget.pageIndex,
                                         types: widget.profileHandle,
                                         isEvent: false,
-                                        isFrom: 'Country',
+                                        isFrom: 'Country', sortNumberOfDays: 0,
                                       ));
                                 }),
                         if (hasContinent && _usersContinent.isNotEmpty)
@@ -686,7 +702,7 @@ class _CreativesScreenState extends State<CreativesScreen>
                                         pageIndex: widget.pageIndex,
                                         types: widget.profileHandle,
                                         isEvent: false,
-                                        isFrom: 'Continent',
+                                        isFrom: 'Continent',sortNumberOfDays: 0,
                                       ));
                                 }),
                         AroundTheWorldWidget(),
@@ -697,16 +713,18 @@ class _CreativesScreenState extends State<CreativesScreen>
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
                         UserProfessionalModel user = _usersAll[index];
-                        return UserView(
-                          userSnapshot: _usersAllSnapshot,
-                          userList: _usersAll,
-                          currentUserId: widget.currentUserId,
-                          userProfessional: user,
-                          pageIndex: widget.pageIndex,
-                          liveCity: '',
-                          liveCountry: '',
-                          isFrom: '',
-                        );
+                        return widget.profileHandle == 'Fan'
+                            ? _userFan(user)
+                            : UserView(
+                                userSnapshot: _usersAllSnapshot,
+                                userList: _usersAll,
+                                currentUserId: widget.currentUserId,
+                                userProfessional: user,
+                                pageIndex: widget.pageIndex,
+                                liveCity: '',
+                                liveCountry: '',
+                                isFrom: '',
+                              );
                       },
                       childCount: _usersAll.length,
                     ),

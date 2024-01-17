@@ -253,7 +253,7 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
               liveCountry: '',
               isFrom: '',
               // seeMoreFrom: seeMoreFrom,
-              sortNumberOfDays: widget.sortNumberOfDays,
+              sortNumberOfDays: 7,
 
               eventIndex: eventIndex,
             ));

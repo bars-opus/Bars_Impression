@@ -186,17 +186,16 @@ class _ViewSentContentState extends State<ViewSentContent> {
                         ? FutureBuilder<List<dynamic>>(
                             future: Future.wait([
                               DatabaseService.getEventRoomWithId(
-                                widget.contentId,
-                              ),
-                              // DatabaseService.getUserWithId(widget.contentId),
+                                  widget.contentId),
                               DatabaseService.getTicketIdWithId(
-                                widget.contentId,
-                                _provider.currentUserId!,
-                              )
+                                  widget.contentId, _provider.currentUserId!),
                             ]),
                             builder: (BuildContext context,
                                 AsyncSnapshot<List<dynamic>> snapshot) {
-                              if (!snapshot.hasData) {
+                              print('id        ' + widget.contentId);
+                              if (!snapshot.hasData ||
+                                  snapshot.data![0] == null ||
+                                  snapshot.data![1] == null) {
                                 return Container(
                                   width: width,
                                   height: height,
@@ -210,6 +209,7 @@ class _ViewSentContentState extends State<ViewSentContent> {
                               }
 
                               EventRoom _eventRoom = snapshot.data![0];
+                              TicketIdModel? ticketId = snapshot.data![1];
                               return FutureBuilder<PaletteGenerator>(
                                 future: _generatePalette(_eventRoom.imageUrl),
                                 builder: (BuildContext context,
@@ -231,7 +231,7 @@ class _ViewSentContentState extends State<ViewSentContent> {
                                   PaletteGenerator _palette =
                                       paletteSnapshot.data!;
 
-                                  TicketIdModel? ticketId = snapshot.data![2];
+                                  // TicketIdModel? ticketId = snapshot.data![1];
 
                                   return EventRoomScreen(
                                     currentUserId: _provider.currentUserId!,
@@ -241,12 +241,6 @@ class _ViewSentContentState extends State<ViewSentContent> {
                                   );
                                 },
                               );
-
-                              //       return EventRoomScreen(
-                              //   currentUserId:  _provider.currentUserId!,
-                              //   room: _eventRoom,
-                              //   palette: _paletteGenerator,
-                              // );
                             },
                           )
                         : const SizedBox.shrink());

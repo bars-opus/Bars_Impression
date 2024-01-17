@@ -36,6 +36,7 @@ class _EventRoomScreenState extends State<EventRoomScreen>
   @override
   void initState() {
     super.initState();
+
     // _setMessageCount();
     _slideController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 200));
@@ -68,6 +69,30 @@ class _EventRoomScreenState extends State<EventRoomScreen>
         }
       }
     });
+  }
+
+  void _updateChatSeen() {
+    // Assuming usersRef is a global variable of type CollectionReference
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    batch.update(
+      userTicketIdRef
+          .doc(widget.currentUserId)
+          .collection('eventInvite')
+          .doc(widget.ticketId.eventId),
+      {'isSeen': true},
+    );
+
+    // batch.update(
+    //   usersAuthorRef
+
+    //       .doc(widget.userId)
+    //       .collection('new_chats')
+    //       .doc(widget.currentUserId),
+    //   {'seen': true},
+    // );
+
+    batch.commit();
   }
 
   // _setMessageCount() async {
@@ -110,15 +135,14 @@ class _EventRoomScreenState extends State<EventRoomScreen>
     _provider.setIsLoading(true);
     // final isHarmful = await _checkForHarmfulContent(context, file as File);
 
-     bool isHarmful = await HarmfulContentChecker.checkForHarmfulContent(context, file as File);
+    bool isHarmful = await HarmfulContentChecker.checkForHarmfulContent(
+        context, file as File);
 
     if (isHarmful) {
       _provider.setIsLoading(false);
-       mySnackBarModeration(context,
-              'Harmful content detected. Please choose a different image. Please review');
-          _provider.setIsLoading(false);
-
-      
+      mySnackBarModeration(context,
+          'Harmful content detected. Please choose a different image. Please review');
+      _provider.setIsLoading(false);
     } else {
       _provider.setIsLoading(false);
       // isEvent ?
@@ -143,28 +167,7 @@ class _EventRoomScreenState extends State<EventRoomScreen>
     return croppedImage!;
   }
 
-  // Future<bool> _checkForHarmfulContent(BuildContext context, File image) async {
-  //   VisionApiHelper visionHelper = VisionApiHelper();
 
-  //   Map<String, dynamic>? analysisResult =
-  //       await visionHelper.safeSearchDetect(image.path);
-  //   if (analysisResult != null) {
-  //     final safeSearch = analysisResult['responses'][0]['safeSearchAnnotation'];
-  //     if (safeSearch['adult'] == 'LIKELY' ||
-  //         safeSearch['adult'] == 'VERY_LIKELY' ||
-  //         safeSearch['spoof'] == 'LIKELY' ||
-  //         safeSearch['spoof'] == 'VERY_LIKELY' ||
-  //         safeSearch['medical'] == 'LIKELY' ||
-  //         safeSearch['medical'] == 'VERY_LIKELY' ||
-  //         safeSearch['violence'] == 'LIKELY' ||
-  //         safeSearch['violence'] == 'VERY_LIKELY' ||
-  //         safeSearch['racy'] == 'LIKELY' ||
-  //         safeSearch['racy'] == 'VERY_LIKELY') {
-  //       return true;
-  //     }
-  //   }
-  //   return false;
-  // }
 
   void _showBottomPickImage() {
     showModalBottomSheet(
@@ -325,51 +328,62 @@ class _EventRoomScreenState extends State<EventRoomScreen>
       borderRadius: BorderRadius.circular(30),
       color: Theme.of(context).primaryColorLight,
       child: Container(
+        height: 50,
         margin: EdgeInsets.symmetric(
           horizontal: 8.0,
         ),
-        child: ListTile(
-          leading: controller.text.trim().length > 0
-              ? null
-              : GestureDetector(
-                  onTap: () {
-                    HapticFeedback.lightImpact();
-                    _showBottomPickImage();
-                  },
-                  child: Icon(
-                    Icons.image,
-                    color: Colors.grey,
-                    size: 30,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            controller.text.trim().length > 0
+                ? SizedBox.shrink()
+                : GestureDetector(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      _showBottomPickImage();
+                    },
+                    child: Icon(
+                      Icons.image,
+                      color: Colors.grey,
+                      size: 30,
+                    ),
                   ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8.0, bottom: 10),
+                child: TextField(
+                  focusNode: _focusNode,
+                  controller: controller,
+                  keyboardAppearance: MediaQuery.of(context).platformBrightness,
+                  textCapitalization: TextCapitalization.sentences,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: controller.text.trim().length > 300 ? 10 : null,
+                  decoration: InputDecoration.collapsed(
+                    hintText: hintText,
+                    hintStyle: TextStyle(
+                        fontSize:
+                            ResponsiveHelper.responsiveFontSize(context, 14.0),
+                        color: Colors.grey,
+                        fontWeight: FontWeight.normal),
+                  ),
+                  onSubmitted: (string) {
+                    onSend();
+                  },
                 ),
-          title: TextField(
-            focusNode: _focusNode,
-            controller: controller,
-            keyboardAppearance: MediaQuery.of(context).platformBrightness,
-            textCapitalization: TextCapitalization.sentences,
-            keyboardType: TextInputType.multiline,
-            maxLines: controller.text.trim().length > 300 ? 10 : null,
-            decoration: InputDecoration.collapsed(
-              hintText: hintText,
-              hintStyle: TextStyle(
-                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-                  color: Colors.grey,
-                  fontWeight: FontWeight.normal),
+              ),
             ),
-            onSubmitted: (string) {
-              onSend();
-            },
-          ),
-          trailing: Container(
-            margin: EdgeInsets.symmetric(horizontal: 4.0),
-            child: _provider.isSendigChat
-                ? null
-                : CircularButton(
-                    color: readyToSend ? palleteColor : Colors.transparent,
-                    icon: Icon(Icons.send,
-                        color: readyToSend ? titleColor : Colors.grey),
-                    onPressed: onSend),
-          ),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 4.0),
+              child: _provider.isSendigChat
+                  ? SizedBox.shrink()
+                  : CircularButton(
+                      color: readyToSend ? palleteColor : Colors.transparent,
+                      icon: Icon(Icons.send,
+                          color: readyToSend ? titleColor : Colors.grey),
+                      onPressed: onSend),
+            ),
+           
+          ],
         ),
       ),
     );
@@ -677,6 +691,7 @@ class _EventRoomScreenState extends State<EventRoomScreen>
                                           itemCount: snapshot.data.docs.length,
                                           itemBuilder: (BuildContext context,
                                               int index) {
+                                            _updateChatSeen();
                                             EventRoomMessageModel message =
                                                 EventRoomMessageModel.fromDoc(
                                                     snapshot.data.docs[index]);

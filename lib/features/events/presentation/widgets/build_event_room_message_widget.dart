@@ -84,23 +84,23 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
     );
   }
 
-  _likeWidget(
-    EventRoomMessageModel message,
-  ) {
-    return IconButton(
-      icon: Icon(message.isLiked ? Icons.favorite : Icons.favorite_border),
-      color: message.isLiked ? Colors.red : Colors.grey,
-      onPressed: () {
-        message.isLiked
-            ? _unLikeMessage(
-                message,
-              )
-            : _likeMessage(
-                message,
-              );
-      },
-    );
-  }
+  // _likeWidget(
+  //   EventRoomMessageModel message,
+  // ) {
+  //   return IconButton(
+  //     icon: Icon(message.isLiked ? Icons.favorite : Icons.favorite_border),
+  //     color: message.isLiked ? Colors.red : Colors.grey,
+  //     onPressed: () {
+  //       message.isLiked
+  //           ? _unLikeMessage(
+  //               message,
+  //             )
+  //           : _likeMessage(
+  //               message,
+  //             );
+  //     },
+  //   );
+  // }
 
   _profileWidgetWidget(
     EventRoomMessageModel message,
@@ -213,13 +213,8 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Padding(
-        padding: EdgeInsets.only(
-            left: isSent
-                ? message.isLiked && isSent
-                    ? 0
-                    : 40
-                : 0.0,
-            right: isSent ? 0 : 0.0),
+        padding:
+            EdgeInsets.only(left: isSent ? 40 : 0.0, right: isSent ? 0 : 40.0),
         child: Column(
           children: [
             messageAttatchment.isEmpty
@@ -232,9 +227,9 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: mainAxisAlignment,
                 children: [
-                  message.isLiked && isSent
-                      ? _likeWidget(message)
-                      : const SizedBox.shrink(),
+                  // message.isLiked && isSent
+                  //     ? _likeWidget(message)
+                  //     : const SizedBox.shrink(),
                   isSent
                       ? const SizedBox.shrink()
                       : const SizedBox(
@@ -355,7 +350,8 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
                       ),
                     ),
                   ),
-                  !isSent ? _likeWidget(message) : const SizedBox.shrink()
+
+                  // !isSent ? _likeWidget(message) : const SizedBox.shrink()
                 ],
               ),
             ),

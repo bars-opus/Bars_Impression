@@ -11,7 +11,10 @@ class EventAndUserScimmer extends StatelessWidget {
 
   _buildSchimmer(BuildContext context) {
     return Container(
-      height: ResponsiveHelper.responsiveHeight(context, 450,),
+      height: ResponsiveHelper.responsiveHeight(
+        context,
+        450,
+      ),
       child: ListView(
         physics: const NeverScrollableScrollPhysics(),
         children: List.generate(
@@ -46,7 +49,10 @@ class EventAndUserScimmer extends StatelessWidget {
                 3,
                 (index) => Container(
                       color: Theme.of(context).primaryColorLight,
-                      height: ResponsiveHelper.responsiveHeight(context, 600,),
+                      height: ResponsiveHelper.responsiveHeight(
+                        context,
+                        600,
+                      ),
                       child: ListView(
                         physics: const NeverScrollableScrollPhysics(),
                         children: [
@@ -77,7 +83,7 @@ class EventAndUserScimmer extends StatelessWidget {
                                     text: TextSpan(
                                       children: [
                                         TextSpan(
-                                          text: "Fetching...\n",
+                                          text: "Just a moment...\n",
                                           style: TextStyle(
                                               fontSize:
                                                   ResponsiveHelper
@@ -89,8 +95,8 @@ class EventAndUserScimmer extends StatelessWidget {
                                         ),
                                         TextSpan(
                                           text: from.startsWith('Event')
-                                              ? 'Just a moment, fetching upcoming events in your city, country and continent'
-                                              : 'Just a moment, fetching creatives in your city, country and continent',
+                                              ? 'Fetching upcoming events in your city, and country'
+                                              : 'Fetching creatives in your city, country and continent',
                                           style: TextStyle(
                                             fontSize: ResponsiveHelper
                                                 .responsiveFontSize(

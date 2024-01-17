@@ -2413,10 +2413,11 @@ class _ProfileScreenState extends State<ProfileScreen>
               GestureDetector(
                 onTap: _isAuthor
                     ? () {
-                        navigateToPage(context, CreateSubaccountForm());
-                        // EditProfileScreen(
-                        //   user: user,
-                        // ));
+                        navigateToPage(
+                            context,
+                            EditProfileScreen(
+                              user: user,
+                            ));
                       }
                     : user.profileImageUrl!.isEmpty
                         ? () {}

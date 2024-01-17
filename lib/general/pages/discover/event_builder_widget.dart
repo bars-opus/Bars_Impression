@@ -22,7 +22,7 @@ class EventBuilderWidget extends StatelessWidget {
   final String liveLocation;
   final int liveLocationIntialPage;
   final String seeMoreFrom;
-   final List<WorkRequestOrOfferModel> workReQuests;
+  final List<WorkRequestOrOfferModel> workReQuests;
   final int sortNumberOfDays;
 
   EventBuilderWidget({
@@ -179,6 +179,7 @@ class EventBuilderWidget extends StatelessWidget {
     List<Event> currentEventList = isFree ? eventFree : eventsThisWeek;
     List<DocumentSnapshot> currentEventSnapShot =
         isFree ? eventFreeSnapshot : eventThisWeekSnapshot;
+    var _provider = Provider.of<UserData>(context, listen: false);
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (context, index) {
@@ -186,52 +187,73 @@ class EventBuilderWidget extends StatelessWidget {
             // Return additional container here
             return currentEventList.length < 10
                 ? SizedBox.shrink()
-                : Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: Container(
-                      height: ResponsiveHelper.responsiveHeight(
-                        context,
-                        600,
-                      ),
-                      width: ResponsiveHelper.responsiveHeight(
-                        context,
-                        300,
-                      ),
-                      color: Colors.blue,
-                      // decoration: BoxDecoration(
-                      //     color: Theme.of(context).cardColor, shape: BoxShape.circle),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                                // color: Colors.blue,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  width: 1,
-                                  color: Colors.white,
-                                )),
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Icon(
-                                Icons.arrow_forward_ios_outlined,
-                                color: Colors.white,
-                              ),
+                : isFree
+                    ? SizedBox.shrink()
+                    : GestureDetector(
+                        onTap: () {
+                          _navigateToPage(
+                              context,
+                              SeeMore(
+                                userLocationSettings:
+                                    _provider.userLocationPreference!,
+                                currentUserId: currentUserId,
+                                liveCity: '',
+                                liveCountry: '',
+                                pageIndex: pageIndex,
+                                types: typeSpecific,
+                                isEvent: true,
+                                isFrom: '',
+                                sortNumberOfDays: 7,
+                              ));
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(2.0),
+                          child: Container(
+                            height: ResponsiveHelper.responsiveHeight(
+                              context,
+                              600,
+                            ),
+                            width: ResponsiveHelper.responsiveHeight(
+                              context,
+                              300,
+                            ),
+                            color: Colors.blue,
+                            // decoration: BoxDecoration(
+                            //     color: Theme.of(context).cardColor, shape: BoxShape.circle),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      // color: Colors.blue,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        width: 1,
+                                        color: Colors.white,
+                                      )),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Icon(
+                                      Icons.arrow_forward_ios_outlined,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  'See more',
+                                  style: TextStyle(
+                                    fontSize:
+                                        ResponsiveHelper.responsiveFontSize(
+                                            context, 14.0),
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          Text(
-                            'See more',
-                            style: TextStyle(
-                              fontSize: ResponsiveHelper.responsiveFontSize(
-                                  context, 14.0),
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
+                        ),
+                      );
           }
 
           Event event = currentEventList[index];

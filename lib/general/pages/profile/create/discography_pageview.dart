@@ -171,7 +171,8 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
   _setUpCityCountry(
     String type,
   ) {
-    var _userLocationSettings = Provider.of<UserData>(context, listen: false).userLocationPreference;
+    var _userLocationSettings =
+        Provider.of<UserData>(context, listen: false).userLocationPreference;
 
     return widget.isFrom.startsWith('City')
         ? _setupUsers(
@@ -230,20 +231,15 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
     //   query = query.where('startDate', isLessThanOrEqualTo: endDate);
     // }
 
-
-     final randomValue = Random().nextDouble();
+    final randomValue = Random().nextDouble();
 
     try {
       QuerySnapshot eventFeedSnapShot = await query
-        .where('randomId', isGreaterThanOrEqualTo: randomValue)
+          .where('randomId', isGreaterThanOrEqualTo: randomValue)
           .orderBy('randomId')
-        
           .limit(2)
           .get();
 
-
-
-         
       List<UserProfessionalModel> users = eventFeedSnapShot.docs
           .map((doc) => UserProfessionalModel.fromDoc(doc))
           .toList();
@@ -267,83 +263,6 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
       return [];
     }
   }
-
-  // Future<List<UserProfessionalModel>> _setupUsers(String? type
-  //     // String? country,
-  //     // String? city/;,
-  //     ) async {
-  //   setState(() {
-  //     _loading = true;
-  //   });
-  //   var query = usersRef.where('profileHandle', isEqualTo: type);
-
-  //   // if (country != null) {
-  //   //   query = query.where('country', isEqualTo: country);
-  //   // }
-  //   // if (city != null) {
-  //   //   query = query.where('city', isEqualTo: city);
-  //   //   // .where('country', isEqualTo: country);
-  //   // }
-
-  //   QuerySnapshot userFeedSnapShot = await query.limit(limit).get();
-  //   List<UserProfessionalModel> moreUsers = userFeedSnapShot.docs
-  //       .map((doc) => UserProfessionalModel.fromDoc(doc))
-  //       .toList();
-  //   // ..shuffle();
-
-  //   if (mounted) {
-  //     setState(() {
-  //       _filteredUsers = moreUsers;
-  //       _filteredUserSnapshot.addAll((userFeedSnapShot.docs));
-  //       _loading = false;
-  //       // if (country != null && city != null) {
-  //       //   _eventsCity = events;
-  //       // } else if (country != null) {
-  //       //   _eventsCountry = events;
-  //       // } else {
-  //       //   _eventsAll = events;
-  //       // }
-  //     });
-  //   }
-  //   return moreUsers;
-  // }
-
-  // _fetchEventsByType(String type) async {
-  //   setState(() {
-  //     _loading = true;
-  //   });
-  //   _hasNext = true;
-
-  //   try {
-  //     QuerySnapshot userFeedSnapShot = await usersRef
-  //         .where('profileHandle', isEqualTo: type)
-  //         .where('dontShowContentOnExplorePage', isEqualTo: true)
-  //         .limit(limit)
-  //         .startAfterDocument(widget.userSnapshot.last)
-  //         .get();
-  //     List<AccountHolder> moreUsers = userFeedSnapShot.docs
-  //         .map((doc) => AccountHolder.fromDoc(doc))
-  //         .toList()
-  //       ..shuffle();
-  //     if (widget.userSnapshot.length < limit) _hasNext = false;
-  //     List<AccountHolder> allevents = widget.userList..addAll(moreUsers);
-  //     widget.userSnapshot.addAll((userFeedSnapShot.docs));
-  //     if (mounted) {
-  //       setState(() {
-  //         _filteredUsers = allevents;
-  //       });
-  //     }
-  //   } catch (e) {
-  //     // Handle error...
-  //   }
-  //   if (mounted) {
-  //     setState(() {
-  //       _loading = false;
-  //     });
-  //   }
-
-  //   _hasNext = false;
-  // }
 
   _noUsers(String type) {
     return Container(
@@ -475,13 +394,16 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
                   break;
               }
               return _loading
-                  ? CircularProgress(isMini: false,)
+                  ? CircularProgress(
+                      isMini: false,
+                    )
                   : _feedCount.isNegative
                       ? _noUsers(eventType)
                       : eventType.startsWith('Fan')
-                          ? FansScreen(
+                          ? ProfileScreen(
                               currentUserId: widget.currentUserId,
-                              exploreLocation: '',
+                              user: null,
+                              userId: widget.user.id,
                             )
                           : DiscographyPages(
                               types: eventType,

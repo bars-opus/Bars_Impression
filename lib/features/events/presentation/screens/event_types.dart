@@ -288,15 +288,14 @@ class _EventTypesState extends State<EventTypes>
     }
 
     try {
-      // Fetch and order events from Firestore
+      //   // Fetch and order events from Firestore
       // QuerySnapshot eventFeedSnapShot = await query.limit(10).get();
 
       QuerySnapshot eventFeedSnapShot = await query
-
-          // .where('startDate', isGreaterThanOrEqualTo: currentDate)
-          // .orderBy('startDate', descending: false)
+          .where('startDate', isGreaterThanOrEqualTo: currentDate)
+          .orderBy('startDate', descending: false)
           // // .orderBy(FieldPath.documentId)
-          // .where('closingDay', isGreaterThanOrEqualTo: currentDate)
+
           // .where('fundsDistributed', isEqualTo: false)
           .limit(newLimit)
           .get();
@@ -362,183 +361,44 @@ class _EventTypesState extends State<EventTypes>
 
   Set<String> addedEventFollowingIds = Set<String>();
 
-  Future<List<Event>> _setupEventsFollowers(
-      // {
-      // String? country,
-      // String? city,
-      // required bool isAll,
-      // required String from,
-      // int sortNumberOfDays = 0,
-      // }
-      ) async {
-    // sortNumberOfDays = widget.sortNumberOfDays;
-
-    // Calculate current and end date based on sortNumberOfDays
+  Future<List<Event>> _setupEventsFollowers() async {
     final currentDate = DateTime(now.year, now.month, now.day);
-    // final endDate = currentDate.add(Duration(days: sortNumberOfDays));
-
-    // Determine newLimit based on isAll and widget.seeMoreFrom
-    // int newLimit = isAll
-    //     ? 10
-    //     : widget.seeMoreFrom.isNotEmpty
-    //         ? 15
-    //         : limit;
 
     // Construct Firestore query based on widget.types, country, city, and sortNumberOfDays
-    var query = widget.types.isEmpty
-        ? eventFeedsRef.doc(widget.currentUserId).collection('userEventFeed')
-        : eventFeedsRef
-            .doc(widget.currentUserId)
-            .collection('userEventFeed')
-            .where('type', isEqualTo: widget.types);
-    // if (country != null) query = query.where('country', isEqualTo: country);
-    // if (city != null) query = query.where('city', isEqualTo: city);
+    try {
+      var query = widget.types.isEmpty
+          ? eventFeedsRef.doc(widget.currentUserId).collection('userEventFeed')
+          : eventFeedsRef
+              .doc(widget.currentUserId)
+              .collection('userEventFeed')
+              .where('type', isEqualTo: widget.types);
 
-    // if (sortNumberOfDays != 0) {
-    //   query = query.where('startDate', isLessThanOrEqualTo: endDate);
-    // }
+      QuerySnapshot eventFeedSnapShot = await query
+          .where('startDate', isGreaterThanOrEqualTo: currentDate)
+          .orderBy('startDate', descending: false)
+          .orderBy(FieldPath.documentId)
+          .limit(30)
+          .get();
 
-    // try {
-    // Fetch and order events from Firestore
-    // QuerySnapshot eventFeedSnapShot = await query.limit(10).get();
+      // Transform documents to Event objects
+      List<Event> events =
+          eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
 
-    QuerySnapshot eventFeedSnapShot = await query
-        // .where('startDate', isGreaterThanOrEqualTo: currentDate)
-        // .orderBy('startDate', descending: false)
-        // .orderBy(FieldPath.documentId)
-        .limit(30)
-        .get();
+      _eventFollowingSnapshot.addAll((eventFeedSnapShot.docs));
 
-    // Transform documents to Event objects
-    List<Event> events =
-        eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
+      // Update widget state with fetched events
+      if (mounted) {
+        setState(() {
+          _eventFollowing = events;
+        });
+      }
 
-// Then, in _setupEvents:
-
-// // Filter out duplicates and add events to addedEventIds
-//       List<Event> uniqueEvents = [];
-//       // if (from.startsWith('City')) {
-//       //   for (var event in events) {
-//       //     if (addedCityCountryEventIds.add(event.id)) {
-//       //       uniqueEvents.add(event);
-//       //     }
-//       //   }
-//       // } else if (from.startsWith('Country')) {
-//       //   for (var event in events) {
-//       //     if (addedCityCountryEventIds.add(event.id)) {
-//       //       uniqueEvents.add(event);
-//       //     }
-//       //   }
-//       // } else {
-
-//       for (var event in events) {
-//         if (addedEventFollowingIds.add(event.id)) {
-//           uniqueEvents.add(event);
-//         }
-//         // }
-//       }
-
-    _eventFollowingSnapshot.addAll((eventFeedSnapShot.docs));
-
-    // // Add documents to appropriate snapshot based on from parameter and isAll
-    // if (from.startsWith('Country'))
-    //   _eventCountrySnapshot.addAll((eventFeedSnapShot.docs));
-    // if (from.startsWith('City'))
-    //   _eventCitySnapshot.addAll((eventFeedSnapShot.docs));
-    // if (isAll) _eventAllSnapshot.addAll((eventFeedSnapShot.docs));
-
-    // Update widget state with fetched events
-    if (mounted) {
-      setState(() {
-        _eventFollowing = events;
-        // if (widget.seeMoreFrom.isNotEmpty || widget.liveCity.isNotEmpty) {
-        //   _eventsAll = uniqueEvents;
-        // } else {
-        //   if (country != null && city != null) {
-        //     _eventsCity = uniqueEvents;
-        //   } else if (country != null) {
-        //     _eventsCountry = uniqueEvents;
-        //   } else {
-        //     _eventsAll = uniqueEvents;
-        //   }
-        // }
-      });
+      return events;
+    } catch (e) {
+      _showBottomSheetErrorMessage();
+      return [];
     }
-
-    return events;
-    // } catch (e) {
-    //   _showBottomSheetErrorMessage();
-    //   return [];
-    // }
   }
-
-  // Future<List<Event>> _setupEvents({
-  //   String? country,
-  //   String? city,
-  //   required bool isAll,
-  //   required String from,
-  //   int sortNumberOfDays = 0,
-  // }) async {
-  //   sortNumberOfDays = widget.sortNumberOfDays;
-
-  //   // Calculate current and end date based on sortNumberOfDays
-  //   final currentDate = DateTime(now.year, now.month, now.day);
-  //   final endDate = currentDate.add(Duration(days: sortNumberOfDays));
-
-  //   // Determine newLimit based on isAll and widget.seeMoreFrom
-  //   int newLimit = isAll
-  //       ? 10
-  //       : widget.seeMoreFrom.isNotEmpty
-  //           ? 15
-  //           : limit;
-
-  //   // Construct Firestore query based on widget.types, country, city, and sortNumberOfDays
-  //   var query = widget.types.isEmpty
-  //       ? allEventsRef
-  //       : allEventsRef.where('type', isEqualTo: widget.types);
-  //   if (country != null) query = query.where('country', isEqualTo: country);
-  //   if (city != null) query = query.where('city', isEqualTo: city);
-
-  //   try {
-  //     // Fetch and order events from Firestore
-  //     QuerySnapshot eventFeedSnapShot = await query.limit(2).get();
-
-  //     // Transform documents to Event objects and filter out duplicates
-  //     List<Event> events = eventFeedSnapShot.docs
-  //         .map((doc) => Event.fromDoc(doc))
-  //         .where((event) => addedEventIds.add(event.id))
-  //         .toList();
-
-  //     // Add documents to appropriate snapshot based on from parameter and isAll
-  //     if (from.startsWith('Country'))
-  //       _eventCountrySnapshot.addAll((eventFeedSnapShot.docs));
-  //     if (from.startsWith('City'))
-  //       _eventCitySnapshot.addAll((eventFeedSnapShot.docs));
-  //     if (isAll) _eventAllSnapshot.addAll((eventFeedSnapShot.docs));
-
-  //     // Update widget state with fetched events
-  //     if (mounted) {
-  //       setState(() {
-  //         if (widget.seeMoreFrom.isNotEmpty || widget.liveCity.isNotEmpty) {
-  //           _eventsAll = events;
-  //         } else {
-  //           if (country != null && city != null) {
-  //             _eventsCity = events;
-  //           } else if (country != null) {
-  //             _eventsCountry = events;
-  //           } else {
-  //             _eventsAll = events;
-  //           }
-  //         }
-  //       });
-  //     }
-
-  //     return events;
-  //   } catch (e) {
-  //     _showBottomSheetErrorMessage();
-  //     return [];
-  //   }
-  // }
 
 // This function fetches free events and events of this week using the _fetchEvents() function.
 // It fetches events from the user's city, the user's country, and anywhere else
@@ -616,13 +476,18 @@ class _EventTypesState extends State<EventTypes>
     String? city,
     required bool isFree,
   }) async {
-    // int sortNumberOfDays =  7;
+    int sortNumberOfDays = 7;
     final currentDate = DateTime(now.year, now.month, now.day);
-    // final endDate = currentDate.add(Duration(days: sortNumberOfDays));
+    final endDate = currentDate.add(Duration(days: sortNumberOfDays));
 
     Query<Map<String, dynamic>> query = widget.types.isEmpty
         ? allEventsRef
         : allEventsRef.where('type', isEqualTo: widget.types);
+
+    query =
+        query.where('startDate', isGreaterThanOrEqualTo: currentDate).orderBy(
+              'startDate',
+            );
     // Refine the query based on the provided country and city
     if (country != null) {
       query = query.where('country', isEqualTo: country);
@@ -636,55 +501,55 @@ class _EventTypesState extends State<EventTypes>
     }
 
     // if (sortNumberOfDays != 0) {
-    //   query = query.where('startDate', isLessThanOrEqualTo: endDate);
+    if (!isFree) {
+      query = query.where('startDate', isLessThanOrEqualTo: endDate);
+    }
     // }
 
-    // query = query.where('startDate', isLessThanOrEqualTo: firstDayOfNextMonth);
+    // try {
+    // Fetch events from Firestore up to the limit
 
-    try {
-      // Fetch events from Firestore up to the limit
+    QuerySnapshot eventFeedSnapShot = await query
+        // .where('startDate', isGreaterThanOrEqualTo: currentDate)
+        // .orderBy('startDate', descending: false)
+        .orderBy(FieldPath.documentId)
+        .limit(limit)
+        .get();
 
-      QuerySnapshot eventFeedSnapShot = await query
-          // .where('startDate', isGreaterThanOrEqualTo: currentDate)
-          // .orderBy('startDate', descending: false)
-          // .orderBy(FieldPath.documentId)
-          .limit(limit)
-          .get();
+    // Transform the documents into Event objects
 
-      // Transform the documents into Event objects
+    List<Event> uniqueEvents = [];
 
-      List<Event> uniqueEvents = [];
-
-      List<Event> events =
-          eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
-      if (isFree) {
-        if (_eventFreeSnapshot.isEmpty) {
-          _eventFreeSnapshot.addAll(eventFeedSnapShot.docs);
-        }
-        for (var event in events) {
-          if (addedFreeEventIds.add(event.id)) {
-            uniqueEvents.add(event);
-          }
+    List<Event> events =
+        eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
+    if (isFree) {
+      if (_eventFreeSnapshot.isEmpty) {
+        _eventFreeSnapshot.addAll(eventFeedSnapShot.docs);
+      }
+      for (var event in events) {
+        if (addedFreeEventIds.add(event.id)) {
+          uniqueEvents.add(event);
         }
       }
-
-      // Add the documents to the appropriate snapshot
-      if (!isFree) {
-        if (_eventThisWeekSnapshot.isEmpty) {
-          _eventThisWeekSnapshot.addAll(eventFeedSnapShot.docs);
-        }
-        for (var event in events) {
-          if (addedThisWeekEventIds.add(event.id)) {
-            uniqueEvents.add(event);
-          }
-        }
-      }
-      // Return the fetched events
-      return uniqueEvents;
-    } catch (e) {
-      print('Failed to fetch events: $e');
-      return [];
     }
+
+    // Add the documents to the appropriate snapshot
+    if (!isFree) {
+      if (_eventThisWeekSnapshot.isEmpty) {
+        _eventThisWeekSnapshot.addAll(eventFeedSnapShot.docs);
+      }
+      for (var event in events) {
+        if (addedThisWeekEventIds.add(event.id)) {
+          uniqueEvents.add(event);
+        }
+      }
+    }
+    // Return the fetched events
+    return uniqueEvents;
+    // } catch (e) {
+    //   print('Failed to fetch events: $e');
+    //   return [];
+    // }
   }
 
   void _showBottomSheetErrorMessage() {
@@ -771,9 +636,17 @@ class _EventTypesState extends State<EventTypes>
       query = query.where('city', isEqualTo: city);
     }
 
+    if (sortNumberOfDays != 0) {
+      query = query.where('startDate', isLessThanOrEqualTo: endDate);
+    }
+
     try {
-      QuerySnapshot eventFeedSnapShot =
-          await query.startAfterDocument(documentSnapshot.last).limit(2).get();
+      QuerySnapshot eventFeedSnapShot = await query
+          .where('startDate', isGreaterThanOrEqualTo: currentDate)
+          .orderBy('startDate', descending: false)
+          .startAfterDocument(documentSnapshot.last)
+          .limit(2)
+          .get();
 
       List<Event> events =
           eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
@@ -834,9 +707,9 @@ class _EventTypesState extends State<EventTypes>
   //   if (city != null) {
   //     query = query.where('city', isEqualTo: city);
   //   }
-  //   // if (sortNumberOfDays != 0) {
-  //   //   query = query.where('startDate', isLessThanOrEqualTo: endDate);
-  //   // }
+  // if (sortNumberOfDays != 0) {
+  //   query = query.where('startDate', isLessThanOrEqualTo: endDate);
+  // }
 
   //   try {
   //     QuerySnapshot eventFeedSnapShot = await query
@@ -1043,6 +916,7 @@ class _EventTypesState extends State<EventTypes>
                         types: widget.types,
                         isEvent: true,
                         isFrom: 'City',
+                        sortNumberOfDays: 0,
                       ));
                 },
                 loadMoreSeeAllCountry: () {
@@ -1057,6 +931,7 @@ class _EventTypesState extends State<EventTypes>
                         types: widget.types,
                         isEvent: true,
                         isFrom: 'Country',
+                        sortNumberOfDays: 0,
                       ));
                 },
                 typeSpecific: widget.types,

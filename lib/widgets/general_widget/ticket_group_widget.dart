@@ -5,6 +5,7 @@ class TicketGoupWidget extends StatefulWidget {
   // final VoidCallback onPressed;
   final bool isEditing;
   final bool onInvite;
+  final bool isFree;
   final String currency;
 
   const TicketGoupWidget({
@@ -13,6 +14,7 @@ class TicketGoupWidget extends StatefulWidget {
     required this.currency,
     required this.isEditing,
     this.onInvite = false,
+    required this.isFree,
   });
 
   @override
@@ -185,7 +187,9 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
                       trailing: Wrap(
                         children: [
                           Text(
-                            '${currencyPartition.isEmpty ? '' : currencyPartition.length > 0 ? currencyPartition[1] : ''} ${ticket.price}',
+                            widget.isFree
+                                ? 'Free'
+                                : '${currencyPartition.isEmpty ? '' : currencyPartition.length > 0 ? currencyPartition[1] : ''} ${ticket.price}',
                             style: TextStyle(
                                 fontSize: ResponsiveHelper.responsiveFontSize(
                                     context, 18.0),

@@ -99,6 +99,7 @@ final messageRef = _firestore.collection('messages');
 
 final usersBlockedRef = _firestore.collection('usersBlocked');
 final userBlockingRef = _firestore.collection('usersBlocking');
+
 final verificationRef = _firestore.collection('_VerificationRequest');
 final accountTypesRef = _firestore.collection('userAccountTypes');
 final eventTypesRef = _firestore.collection('eventTypes');

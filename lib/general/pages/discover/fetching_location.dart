@@ -123,7 +123,6 @@ class _FetchingLocationState extends State<FetchingLocation> {
         );
       },
     );
-   
   }
 
   void _showBottomSheetErrorMessage() {
@@ -137,9 +136,9 @@ class _FetchingLocationState extends State<FetchingLocation> {
           onPressed: () async {
             Navigator.pop(context);
           },
-          title:
-              'Coulnd\'nt get your live location. ',
-          subTitle: 'Make sure you have an active internet connection and try again.',
+          title: 'Coulnd\'nt get your live location. ',
+          subTitle:
+              'Make sure you have an active internet connection and try again.',
         );
       },
     );

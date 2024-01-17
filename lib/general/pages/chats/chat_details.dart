@@ -9,19 +9,24 @@ class ChatDetails extends StatefulWidget {
   final Chat chat;
   final String currentUserId;
   final bool isBlockingUser;
+  final bool restrict;
+  final Function(bool) restrictFunction;
 
-  ChatDetails(
-      {required this.user,
-      required this.currentUserId,
-      required this.chat,
-      required this.isBlockingUser});
+  ChatDetails({
+    required this.user,
+    required this.currentUserId,
+    required this.chat,
+    required this.isBlockingUser,
+    required this.restrictFunction,
+    required this.restrict,
+  });
 
   @override
   State<ChatDetails> createState() => _ChatDetailsState();
 }
 
 class _ChatDetailsState extends State<ChatDetails> {
-  bool _isAFollower = false;
+  // bool _isAFollower = false;
 
   _blockOrUnBlock() {
     HapticFeedback.heavyImpact();
@@ -35,9 +40,10 @@ class _ChatDetailsState extends State<ChatDetails> {
   _unBlockser() {
     DatabaseService.unBlockUser(
       currentUserId: widget.currentUserId,
-      userId: widget.chat.toUserId,
+      userId: widget.user.userId,
     );
 
+    Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(
         'unBlocked ' + widget.user.userName!,
@@ -46,25 +52,32 @@ class _ChatDetailsState extends State<ChatDetails> {
     ));
   }
 
-  _blockser() async {
+   _blockser() async {
     AccountHolderAuthor? fromUser =
         await DatabaseService.getUserWithId(widget.currentUserId);
+
+    bool isAFollower = await DatabaseService.isAFollowerUser(
+      currentUserId: widget.currentUserId,
+      userId: widget.user.userId,
+    );
     if (fromUser != null) {
       DatabaseService.blockUser(
         currentUserId: widget.currentUserId,
-        userId: widget.chat.toUserId,
+        userId: widget.user.userId,
         user: fromUser,
       );
     } else {
       mySnackBar(context, 'Could not block this person');
     }
 
-    if (_isAFollower) {
+    if (isAFollower) {
       DatabaseService.unfollowUser(
-        currentUserId: widget.chat.toUserId,
+        currentUserId: widget.user.userId,
         userId: widget.currentUserId,
       );
     }
+    Navigator.pop(context);
+
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       backgroundColor: Color(0xFFD38B41),
       content: Text(
@@ -74,17 +87,6 @@ class _ChatDetailsState extends State<ChatDetails> {
     ));
   }
 
-  _setupIsAFollowerUser() async {
-    bool isAFollower = await DatabaseService.isAFollowerUser(
-      currentUserId: widget.currentUserId,
-      userId: widget.chat.toUserId,
-    );
-    if (mounted) {
-      setState(() {
-        _isAFollower = isAFollower;
-      });
-    }
-  }
 
   void _showBottomSheetClearActivity(BuildContext context) {
     String text = widget.isBlockingUser
@@ -103,6 +105,7 @@ class _ChatDetailsState extends State<ChatDetails> {
           buttonText: text,
           onPressed: () {
             _blockOrUnBlock();
+            Navigator.pop(context);
           },
           title: 'Are you sure you $text',
           subTitle: text2,
@@ -113,8 +116,6 @@ class _ChatDetailsState extends State<ChatDetails> {
 
   @override
   Widget build(BuildContext context) {
-    bool _restrictChat = widget.chat.restrictChat;
-
     return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,7 +135,7 @@ class _ChatDetailsState extends State<ChatDetails> {
                   MaterialPageRoute(
                       builder: (_) => ProfileScreen(
                             currentUserId: widget.currentUserId,
-                            userId: widget.chat.toUserId,
+                            userId: widget.user.userId,
                             user: null,
                           )));
             },
@@ -167,26 +168,10 @@ class _ChatDetailsState extends State<ChatDetails> {
               title: 'Restrict messages',
               subTitle:
                   'Restrict messaging between you and ${widget.user.userName}.',
-              value: _restrictChat,
-              onChanged: (value) => setState(
-                () {
-                  _restrictChat = value;
-                  usersAuthorRef
-                      .doc(widget.currentUserId)
-                      .collection('chats')
-                      .doc(widget.chat.toUserId)
-                      .update({
-                    'restrictChat': _restrictChat,
-                  });
-                  usersAuthorRef
-                      .doc(widget.chat.toUserId)
-                      .collection('chats')
-                      .doc(widget.currentUserId)
-                      .update({
-                    'restrictChat': _restrictChat,
-                  });
-                },
-              ),
+              value: widget.restrict,
+              onChanged: (value) {
+                widget.restrictFunction(value);
+              },
             ),
           ),
           Divider(color: Colors.blue),
@@ -363,29 +348,6 @@ class _ChatDetailsState extends State<ChatDetails> {
                             )),
                       ],
                     ),
-                  ),
-                ),
-              ]),
-              TableRow(children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 10.0, horizontal: 20),
-                  child: Text(
-                    'Number of messages',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 10.0, horizontal: 20),
-                  child: Text(
-                    NumberFormat.compact().format(
-                        Provider.of<UserData>(context, listen: false)
-                            .messageCount),
-                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
               ]),

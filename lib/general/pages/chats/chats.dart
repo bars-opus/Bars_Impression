@@ -457,89 +457,6 @@ class _ChatsState extends State<Chats>
     );
   }
 
-//   _chat() {
-//     // Stream from Firestore
-//     Stream<QuerySnapshot> stream = usersAuthorRef
-//         .doc(widget.currentUserId)
-//         .collection('new_chats')
-//         .orderBy('newMessageTimestamp', descending: true)
-//         .snapshots();
-//     return StreamBuilder<QuerySnapshot>(
-//       stream: stream,
-//       builder: (context, snapshot) {
-//         if (snapshot.hasError) {
-//           return Text('Error: ${snapshot.error}');
-//         } else if (!snapshot.hasData) {
-//           return _schimmer();
-//         } else {
-//           // Map Firestore documents to Chat objects
-//           // List<Chat> newChats = snapshot.data!.docs.map((doc) {
-//           //   return Chat.fromDoc(doc);
-//           // }).toList();
-//           // final chatsBox = Hive.box<Chat>('chats');
-
-//           // for (Chat newChat in newChats) {
-//           //   // Update lastMessage and newMessageTimestamp
-//           //   newChat.lastMessage =
-//           //       'New message'; // Replace with actual new message
-//           //   newChat.newMessageTimestamp = Timestamp.now();
-
-//           //   // Store the updated Chat object in Hive
-//           //   chatsBox.put(newChat.id, newChat);
-//           // }
-
-//           // // Fetch chats from Hive directly
-//           // List<Chat> retrievedChats = [];
-//           // for (Chat newChat in newChats) {
-//           //   Chat? chatFromBox = chatsBox.get(newChat.id);
-//           //   if (chatFromBox != null) {
-//           //     retrievedChats.add(chatFromBox);
-//           //   }
-//           // }
-//           List<Chat> newChats = snapshot.data!.docs.map((doc) {
-//             return Chat.fromDoc(doc);
-//           }).toList();
-//           final chatsBox = Hive.box<Chat>('chats');
-
-//           for (Chat newChat in newChats) {
-//             chatsBox.put(newChat.id, newChat);
-//           }
-
-// // Fetch chats from Hive directly
-//           List<Chat> retrievedChats = [];
-//           for (Chat newChat in newChats) {
-//             Chat? chatFromBox = chatsBox.get(newChat.id);
-//             if (chatFromBox != null) {
-//               retrievedChats.add(chatFromBox);
-//             }
-//           }
-
-//           // Use retrievedChats directly in your ListView
-  // return _buildChatViewFromList(
-  //   chats: retrievedChats,
-  //   noContentMessage: 'No Chats.',
-  //   noContentIcon: Icons.send_outlined,
-  //   itemBuilder: (context, index, chat) {
-  //     limitChats();
-  //     return GetAuthor(
-  //       connectivityStatus: _connectivityStatus,
-  //       chats: chat,
-  //       lastMessage: chat.lastMessage,
-  //       seen: chat.seen,
-  //       chatUserId: chat.toUserId == widget.currentUserId
-  //           ? chat.fromUserId
-  //           : chat.toUserId,
-  //       isEventRoom: false,
-  //       room: null,
-  //     );
-  //   },
-  //   text: 'Your chats and messages will be displayed here.',
-  // );
-//         }
-//       },
-//     );
-//   }
-
   _loadingSkeleton() {
     return ListTile(
         leading: CircleAvatar(
@@ -1185,13 +1102,7 @@ class _DisplayState extends State<Display> {
                             } finally {
                               _isLoading = false;
                             }
-                            //           _navigateToPage(
-
-                            // ProfileScreen(
-                            //   currentUserId: _provider.currentUserId!,
-                            //   userId:  widget.room!.,
-                            //   user: null,
-                            // ));
+                           
                           },
                           text: 'View event organizer',
                         ),
@@ -1242,13 +1153,19 @@ class _DisplayState extends State<Display> {
                     .collection('new_chats')
                     .doc(widget.author!.userId)
                     .update({'muteMessage': !muteMessage});
-                mySnackBar(context, 'You have successfully left the room.');
+
+                mySnackBar(
+                    context,
+                    !muteMessage
+                        ? 'Messages from ${widget.author!.userName!} is now muted'
+                        : 'Messages from ${widget.author!.userName!} has been muted');
 
                 muteMessage = !muteMessage;
               } catch (e) {}
             },
-            title:
-                'Are you sure you want to mute messages from ${widget.author!.userName!}?',
+            title: !muteMessage
+                ? 'Are you sure you want to mute messages from ${widget.author!.userName!}?'
+                : 'Are you sure you want to unmute messages from ${widget.author!.userName!}?',
             subTitle: '',
           ),
         );
@@ -1286,7 +1203,7 @@ class _DisplayState extends State<Display> {
                           context,
                         );
                       },
-                      text: muteEvent ? 'Unmute message' : 'Mute message',
+                      text: muteMessage ? 'Unmute message' : 'Mute message',
                     ),
                   ])),
             ));

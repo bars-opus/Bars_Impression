@@ -283,7 +283,7 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                     event: event,
                     currentUserId: widget.currentUserId,
                     justPurchased: '',
-                    palette: _paletteGenerator, 
+                    palette: _paletteGenerator,
                   ),
                 );
               } else {

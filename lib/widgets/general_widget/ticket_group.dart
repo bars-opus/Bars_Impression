@@ -79,7 +79,8 @@ class _TicketGroupState extends State<TicketGroup> {
 
     _showBottomSheetLoading();
     List<TicketModel> _finalTicket =
-        widget.event!.isFree ? [] : _provider.ticketList;
+        // widget.event!.isFree ? [] :
+        _provider.ticketList;
     // if (purchasintgTickets != null &&
     //     purchasintgTickets is TicketPurchasedModel) {
     //   _finalTicket.add(purchasintgTickets);
@@ -151,7 +152,7 @@ class _TicketGroupState extends State<TicketGroup> {
           }
 
           // Navigator.pop(context);
-          // Navigator.pop(context);
+          Navigator.pop(context);
           PaletteGenerator _paletteGenerator =
               await PaletteGenerator.fromImageProvider(
             CachedNetworkImageProvider(widget.event!.imageUrl),
@@ -208,7 +209,9 @@ class _TicketGroupState extends State<TicketGroup> {
 
     TicketOrderModel order = TicketOrderModel(
       orderId: commonId,
-      tickets: widget.event!.isFree ? [] : _purchasedTickets,
+      tickets:
+          // widget.event!.isFree ? [] :
+          _purchasedTickets,
       total: total,
       // entranceId: '',
       eventId: widget.event!.id,
@@ -1228,30 +1231,34 @@ class _TicketGroupState extends State<TicketGroup> {
             height: width * width,
             // color: Colors.red,
             width: width,
-            child: widget.event != null && widget.event!.isFree
-                ? _eventOnTicketAndPurchaseButton()
-                : AnimatedPadding(
-                    curve: Curves.easeOutBack,
-                    duration: const Duration(milliseconds: 500),
-                    padding: EdgeInsets.only(
-                        top: _provider.ticketList.isEmpty ? 0.0 : 50.0),
-                    child: TicketGoupWidget(
-                      onInvite: widget.onInvite,
-                      groupTickets: widget.groupTickets,
-                      // onPressed: widget.event == null
-                      //     ? () {}
-                      //     : () {
-                      //         // HapticFeedback.lightImpact();
-                      //         // // Navigator.pop;
-                      //         // _showBottomSheetAttend(
-                      //         //    widget. groupTickets, widget. groupTickets.indexOf(ticket));
-                      //       },
-                      isEditing: widget.event == null ? true : false,
-                      currency: widget.event == null
-                          ? _provider.currency
-                          : widget.event!.rate,
-                    ),
-                  )),
+            child:
+                // widget.event != null && widget.event!.isFree
+                //     ? _eventOnTicketAndPurchaseButton()
+                //     :
+
+                AnimatedPadding(
+              curve: Curves.easeOutBack,
+              duration: const Duration(milliseconds: 500),
+              padding: EdgeInsets.only(
+                  top: _provider.ticketList.isEmpty ? 0.0 : 50.0),
+              child: TicketGoupWidget(
+                onInvite: widget.onInvite,
+                groupTickets: widget.groupTickets,
+                // onPressed: widget.event == null
+                //     ? () {}
+                //     : () {
+                //         // HapticFeedback.lightImpact();
+                //         // // Navigator.pop;
+                //         // _showBottomSheetAttend(
+                //         //    widget. groupTickets, widget. groupTickets.indexOf(ticket));
+                //       },
+                isEditing: widget.event == null ? true : false,
+                currency: widget.event == null
+                    ? _provider.currency
+                    : widget.event!.rate,
+                isFree: widget.event == null ? false : widget.event!.isFree,
+              ),
+            )),
         if (_provider.ticketList.isNotEmpty)
           Positioned(
               right: 30,

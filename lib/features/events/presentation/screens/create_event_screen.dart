@@ -179,7 +179,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     final ticket = TicketModel(
       id: UniqueKey().toString(),
       type: type,
-      price: price,
+      price: _provider.isFree ? 0 : price,
       maxOder: maxOrder,
       group: group,
       accessLevel: accessLevel,
@@ -1370,6 +1370,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
 
 // event rate or ticket price
   _addTicketContainer() {
+    var _provider = Provider.of<UserData>(context, listen: false);
     final width = MediaQuery.of(context).size.width;
 
     return SingleChildScrollView(
@@ -1381,27 +1382,37 @@ class _CreateEventScreenState extends State<CreateEventScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-                child: Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: _ticketFiled(
-                      true,
-                      true,
-                      'Ticket Price',
-                      'eg. 10.0',
-                      _priceController,
-                      TextInputType.numberWithOptions(decimal: true),
-                      (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter a price for the ticket';
-                        }
-                        final price = double.tryParse(value);
-                        if (price == null || price <= 0.0) {
-                          return 'Please enter a valid price for the ticket';
-                        }
-                        return null;
-                      },
-                    ))),
+            if (_provider.isFree)
+              Text(
+                'Since this ticket is free, you do not need to add a price, the price would be automatically set to 0. But you can add the neccey information below, or continue to add ticket.',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+                ),
+              ),
+            if (!_provider.isFree)
+              Container(
+                  child: Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: _ticketFiled(
+                        true,
+                        true,
+                        'Ticket Price',
+                        'eg. 10.0',
+                        _priceController,
+                        TextInputType.numberWithOptions(decimal: true),
+                        (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter a price for the ticket';
+                          }
+                          final price = double.tryParse(value);
+                          if (price == null || price <= 0.0) {
+                            return 'Please enter a valid price for the ticket';
+                          }
+                          return null;
+                        },
+                      ))),
             const SizedBox(height: 30),
             Text(
               'Optional',
@@ -1924,13 +1935,14 @@ class _CreateEventScreenState extends State<CreateEventScreen>
   }
 
   Widget _buildTicketDialog() {
+    var _provider = Provider.of<UserData>(context, listen: false);
     return ValueListenableBuilder(
       valueListenable: _isTypingNotifier,
       builder: (BuildContext context, bool isTyping, Widget? child) {
         return AlertDialog(
           backgroundColor: Theme.of(context).primaryColorLight,
           title: ListTile(
-            trailing: _priceController.text.isEmpty
+            trailing: _priceController.text.isEmpty && !_provider.isFree
                 ? SizedBox.shrink()
                 : GestureDetector(
                     onTap: () {
@@ -2576,11 +2588,13 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                         : MiniCircularProgressButton(
                             onPressed: () {
                               FocusScope.of(context).unfocus();
-                              _provider.isFree
-                                  ? animateToPage(2)
-                                  : widget.isEditting
-                                      ? animateToPage(1)
-                                      : _showCurrencyPicker();
+                              // _provider.isFree
+                              //     ? animateToPage(2)
+                              //     :
+
+                              widget.isEditting
+                                  ? animateToPage(1)
+                                  : _showCurrencyPicker();
                               // animateToPage(1);
                             },
                             text: "Next")
@@ -3487,16 +3501,21 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                         ? _pop()
                         : _pageController.page == 1
                             ? _pop()
-                            : widget.event!.isFree && _pageController.page == 5
-                                ? animateToBack(2)
-                                : animateToBack(1);
+                            :
+                            // widget.event!.isFree && _pageController.page == 5
+                            //     ? animateToBack(2)
+                            //     :
+                            animateToBack(1);
                   }
                 : () {
                     _provider.int1 == 0
                         ? _pop()
-                        : _provider.isFree && _provider.int1 == 5
-                            ? animateToBack(2)
-                            : animateToBack(1);
+                        :
+                        //  _provider.isFree && _provider.int1 == 5
+                        //     ? animateToBack(2)
+                        //     :
+
+                        animateToBack(1);
                   });
   }
 

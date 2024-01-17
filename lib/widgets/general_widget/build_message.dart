@@ -143,27 +143,54 @@ class _SlidableMessageState extends State<SlidableMessage>
   void _showBottomSheetChatDetails(
     BuildContext context,
   ) {
+    bool _restrictChat = widget.chat!.restrictChat;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
-        return Container(
-            height: ResponsiveHelper.responsiveHeight(context, 670),
-            decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(30)),
-            child: widget.chat == null
-                ? NoContents(
-                    title: 'No chat details',
-                    subTitle: '',
-                    icon: Icons.send_outlined)
-                : ChatDetails(
-                    chat: widget.chat!,
-                    currentUserId: widget.currentUserId,
-                    user: widget.user,
-                    isBlockingUser: widget.isBlockingUser,
-                  ));
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Container(
+              height: ResponsiveHelper.responsiveHeight(context, 670),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(30)),
+              child: widget.chat == null
+                  ? NoContents(
+                      title: 'No chat details',
+                      subTitle: '',
+                      icon: Icons.send_outlined)
+                  : ChatDetails(
+                      chat: widget.chat!,
+                      currentUserId: widget.currentUserId,
+                      user: widget.user,
+                      isBlockingUser: widget.isBlockingUser,
+                      restrictFunction: (value) {
+                        setState(() {
+                          _restrictChat = value;
+                        });
+
+                        usersAuthorRef
+                            .doc(widget.currentUserId)
+                            .collection('new_chats')
+                            .doc(widget.user.userId)
+                            .update({
+                          'restrictChat': value,
+                        });
+
+                        usersAuthorRef
+                            .doc(widget.user.userId)
+                            .collection('new_chats')
+                            .doc(widget.currentUserId)
+                            .update({
+                          'restrictChat': value,
+                        });
+                      },
+                      restrict: _restrictChat,
+                    ));
+        });
       },
     );
   }

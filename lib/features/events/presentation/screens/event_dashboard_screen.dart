@@ -538,39 +538,40 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
         widget.event.rate.trim().replaceAll('\n', ' ').split("|");
     return Column(
       children: [
-        RichText(
-          textScaleFactor:
-              MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5),
-          text: TextSpan(
-            children: [
-              TextSpan(
-                  text:
-                      '${currencyPartition.isEmpty ? '' : currencyPartition.length > 0 ? currencyPartition[1] : ''}\n',
-                  style: TextStyle(
-                    fontSize:
-                        ResponsiveHelper.responsiveFontSize(context, 14.0),
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  )),
-              TextSpan(
-                  text: totalSales.toString(),
-                  style: TextStyle(
-                    fontSize:
-                        ResponsiveHelper.responsiveFontSize(context, 50.0),
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  )),
-              TextSpan(
-                  text: '\nTotal sales',
-                  style: TextStyle(
-                    fontSize:
-                        ResponsiveHelper.responsiveFontSize(context, 14.0),
-                    color: Colors.black,
-                  )),
-            ],
+        if (!widget.event.isFree)
+          RichText(
+            textScaleFactor:
+                MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5),
+            text: TextSpan(
+              children: [
+                TextSpan(
+                    text:
+                        '${currencyPartition.isEmpty ? '' : currencyPartition.length > 0 ? currencyPartition[1] : ''}\n',
+                    style: TextStyle(
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 14.0),
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    )),
+                TextSpan(
+                    text: totalSales.toString(),
+                    style: TextStyle(
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 50.0),
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    )),
+                TextSpan(
+                    text: '\nTotal sales',
+                    style: TextStyle(
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 14.0),
+                      color: Colors.black,
+                    )),
+              ],
+            ),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
-        ),
       ],
     );
   }
@@ -832,7 +833,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                       height: 10,
                     ),
                     _invitationTable(),
-                    _refundTable(),
+                    if (!widget.event.isFree) _refundTable(),
                     Padding(
                       padding: const EdgeInsets.only(top: 50.0, bottom: 50),
                       child: Divider(

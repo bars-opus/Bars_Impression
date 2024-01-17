@@ -2424,7 +2424,7 @@ exports.onNewEventRoomMessage = functions.firestore
           data: {
               recipient: String(userId),
               contentType: 'eventRoom',
-              contentId: String(newMessage.senderId),
+              contentId: String(eventId),
           },
           token: androidNotificationToken
       };

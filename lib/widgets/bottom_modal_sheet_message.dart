@@ -66,6 +66,7 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
       _provider.setReplyChatMessage(null);
       _provider.setMessageImage(null);
       _provider.setChatMessageId('');
+      _provider.setMessageCount(0);
     });
     widget.chatLoaded == null ? () {} : _updateChatSeen();
     _timer = Timer.periodic(
@@ -508,6 +509,7 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
   // This function shows a bottom sheet with chat details.
   _showBottomSheetChatDetails(BuildContext context) {
     if (widget.chatLoaded == null) return;
+    bool _restrictChat = widget.chatLoaded!.restrictChat;
 
     try {
       showModalBottomSheet(
@@ -515,17 +517,42 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
         builder: (BuildContext context) {
-          return Container(
-              height: ResponsiveHelper.responsiveHeight(context, 670),
-              decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(30)),
-              child: ChatDetails(
-                chat: widget.chatLoaded!,
-                currentUserId: widget.currentUserId,
-                user: _user,
-                isBlockingUser: _isBlockingUser,
-              ));
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+            return Container(
+                height: ResponsiveHelper.responsiveHeight(context, 670),
+                decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(30)),
+                child: ChatDetails(
+                  chat: widget.chatLoaded!,
+                  currentUserId: widget.currentUserId,
+                  user: _user,
+                  isBlockingUser: _isBlockingUser,
+                  restrictFunction: (value) {
+                    setState(() {
+                      _restrictChat = value;
+                    });
+
+                    usersAuthorRef
+                        .doc(widget.currentUserId)
+                        .collection('new_chats')
+                        .doc(_user!.userId)
+                        .update({
+                      'restrictChat': value,
+                    });
+
+                    usersAuthorRef
+                        .doc(_user!.userId)
+                        .collection('new_chats')
+                        .doc(widget.currentUserId)
+                        .update({
+                      'restrictChat': value,
+                    });
+                  },
+                  restrict: _restrictChat,
+                ));
+          });
         },
       );
     } catch (e) {
@@ -804,6 +831,7 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
               } else if (!snapshot.hasData) {
                 return _loading();
               } else {
+                _updateChatSeen();
                 List<ChatMessage> newMessages = snapshot.data!.docs.map((doc) {
                   return ChatMessage.fromDoc(doc);
                 }).toList();
@@ -845,74 +873,6 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
     );
   }
 
-//   Widget _getMessages(Chat chat) {
-//     final box = Hive.box<ChatMessage>('chatMessages');
-
-//     _markAllMessagesAsRead(chat);
-//     final _provider = Provider.of<UserData>(context, listen: false);
-//     print(chat.messageId);
-
-//     return StreamBuilder<QuerySnapshot>(
-//       stream: messageRef
-//           .doc(chat.messageId)
-//           .collection('conversation')
-//           .orderBy('timestamp', descending: true)
-//           .snapshots(),
-//       builder: (context, snapshot) {
-//         SchedulerBinding.instance.addPostFrameCallback((_) {
-//           _provider.setChatMessageId((chat.messageId.isEmpty
-//               ? widget.chatLoaded!.messageId
-//               : chat.messageId));
-//         });
-//         if (snapshot.hasError) {
-//           return Text('Error: ${snapshot.error}');
-//         } else if (!snapshot.hasData) {
-//           return Expanded(
-//               child: Center(
-//             child: SizedBox(
-//                 height: 50,
-//                 width: 50,
-//                 child: CircularProgressIndicator(
-//                   color: Colors.blue,
-//                 )),
-//           ));
-//         } else {
-//           List<ChatMessage> newMessages = snapshot.data!.docs.map((doc) {
-//             return ChatMessage.fromDoc(doc);
-//           }).toList();
-
-//           // Save new messages to Hive
-//           for (ChatMessage newMessage in newMessages) {
-//             box.put(newMessage.id, newMessage);
-//           }
-
-// // Fetch messages from Hive directly
-//           List<ChatMessage> retrievedMessages = [];
-//           for (ChatMessage newMessage in newMessages) {
-//             ChatMessage? messageFromBox = box.get(newMessage.id);
-//             if (messageFromBox != null) {
-//               retrievedMessages.add(messageFromBox);
-//             }
-//           }
-
-// // Use retrievedMessages directly in your FutureBuilder
-//           return FutureBuilder<List<ChatMessage>>(
-//             future: Future.value(retrievedMessages),
-//             builder: (BuildContext context,
-//                 AsyncSnapshot<List<ChatMessage>> boxSnapshot) {
-//               if (!boxSnapshot.hasData || boxSnapshot.data!.isEmpty) {
-//                 // The Hive box is empty, show an error or placeholder
-//                 return SizedBox.shrink();
-//               } else {
-//                 // The Hive box has messages, use them
-//                 return _buildMessageList(chat, boxSnapshot.data!);
-//               }
-//             },
-//           );
-//         }
-//       },
-//     );
-//   }
 
   Widget _buildMessageList(
       String chatId, Chat? chat, List<ChatMessage> messages) {
@@ -1069,7 +1029,8 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
               widget.chatLoaded == null
                   ? _future()
                   : _getMessages(widget.chatLoaded!),
-              if (!_isBlockingUser && !_isBlockedUser) _commentField()
+              if (!_isBlockingUser && !_isBlockedUser)
+                if (!widget.chatLoaded!.restrictChat) _commentField()
             ],
           ),
         ),
