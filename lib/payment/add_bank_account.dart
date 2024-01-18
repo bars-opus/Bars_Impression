@@ -407,6 +407,19 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
     );
   }
 
+  Future<void> _sendMail(String email, BuildContext context) async {
+    String url = 'mailto:$email';
+    if (await canLaunchUrl(
+      Uri.parse(url),
+    )) {
+      await (launchUrl(
+        Uri.parse(url),
+      ));
+    } else {
+      mySnackBar(context, 'Could not launch mail');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -432,83 +445,89 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
               padding: const EdgeInsets.all(20.0),
               child: ListView(
                 children: <Widget>[
-                  RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: 'Payout \nAccount Information',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        TextSpan(
-                          text:
-                              "\n\nTo ensure you receive your earnings from ticket sales promptly, we require your bank account details. Your payouts will be processed securely through Paystack, a trusted payment platform that adheres to the highest levels of security compliance.",
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        TextSpan(
-                          text: "\n\nDirect Deposits.",
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        TextSpan(
-                          text:
-                              "\n\nYour earnings from ticket sales will be securely deposited into the bank account you provide.",
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        TextSpan(
-                          text: "\n\nPrivacy.",
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        TextSpan(
-                          text:
-                              "\n\nWe take your privacy seriously. Your bank details are encrypted and safely transmitted to our payment processors.",
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        TextSpan(
-                          text: "\n\nSecurity.",
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        TextSpan(
-                          text:
-                              "\n\nBars Impression uses advanced security protocols to protect your sensitive information and partners with leading financial institutions for secure processing.",
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        TextSpan(
-                          text:
-                              "\n\n\n\nWe will issue your payout approximately 24 hours after the closing date of your event. Once the payout has been processed, you should receive the funds within 24 hours. ",
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        TextSpan(
-                          text:
-                              "\n\n\n\nBy entering your bank account details, you agree to Bars Impression's ",
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        TextSpan(
-                          text: "[Terms of Service](#) ",
-                          style: TextStyle(
-                            color: Colors.blue,
-                            fontSize: ResponsiveHelper.responsiveFontSize(
-                                context, 14.0),
+                  GestureDetector(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      _sendMail('support@barsopus.com', context);
+                    },
+                    child: RichText(
+                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Payout \nAccount Information',
+                            style: Theme.of(context).textTheme.titleLarge,
                           ),
-                        ),
-                        TextSpan(
-                          text:
-                              "and acknowledge that this information is necessary for receiving your hosting payouts.",
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        TextSpan(
-                          text:
-                              "\n\nShould you have any questions or require further clarification, please feel free to reach out to our support team at .",
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        TextSpan(
-                          text: "[support@example.com].",
-                          style: TextStyle(
-                            color: Colors.blue,
-                            fontSize: ResponsiveHelper.responsiveFontSize(
-                                context, 14.0),
+                          TextSpan(
+                            text:
+                                "\n\nTo ensure you receive your earnings from ticket sales promptly, we require your bank account details. Your payouts will be processed securely through Paystack, a trusted payment platform that adheres to the highest levels of security compliance.",
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
-                        ),
-                      ],
+                          TextSpan(
+                            text: "\n\nDirect Deposits.",
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                          TextSpan(
+                            text:
+                                "\n\nYour earnings from ticket sales will be securely deposited into the bank account you provide.",
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          TextSpan(
+                            text: "\n\nPrivacy.",
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                          TextSpan(
+                            text:
+                                "\n\nWe take your privacy seriously. Your bank details are encrypted and safely transmitted to our payment processors.",
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          TextSpan(
+                            text: "\n\nSecurity.",
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                          TextSpan(
+                            text:
+                                "\n\nBars Impression partners with leading financial institutions for secure processing.",
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          TextSpan(
+                            text:
+                                "\n\n\n\nWe will issue your payout approximately 48 hours after the closing date of your event. Once the payout has been processed, you should receive the funds within 24 hours. ",
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          TextSpan(
+                            text:
+                                "\n\n\n\nBy entering your bank account details, you agree to Bars Impression's ",
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          TextSpan(
+                            text: "[Terms of Service](#) ",
+                            style: TextStyle(
+                              color: Colors.blue,
+                              fontSize: ResponsiveHelper.responsiveFontSize(
+                                  context, 14.0),
+                            ),
+                          ),
+                          TextSpan(
+                            text:
+                                "and acknowledge that this information is necessary for receiving your hosting payouts.",
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          TextSpan(
+                            text:
+                                "\n\nShould you have any questions or require further clarification, please feel free to reach out to our support team at .",
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          TextSpan(
+                            text: "support@barsopus.com.",
+                            style: TextStyle(
+                              color: Colors.blue,
+                              fontSize: ResponsiveHelper.responsiveFontSize(
+                                  context, 14.0),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 30),

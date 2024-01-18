@@ -225,7 +225,9 @@ class TicketEnlargedWidget extends StatelessWidget {
                         foregroundColor:
                             ticket.validated ? _palleteColor : Colors.grey,
                         backgroundColor: Colors.transparent,
-                        data: ticket.entranceId,
+                        data:
+                            '${ticketOrder.userOrderId} | ${ticket.entranceId}',
+                        // ticket.entranceId,
                         size: ResponsiveHelper.responsiveFontSize(
                             context, _isRefunded ? 40 : 200),
                       ),

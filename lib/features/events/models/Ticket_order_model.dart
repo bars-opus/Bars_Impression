@@ -4,20 +4,15 @@ class TicketOrderModel {
   final String orderId;
   final String userOrderId;
   final String eventId;
-  // final String entranceId;
   final String orderNumber;
   final List<TicketPurchasedModel> tickets;
   final double total;
   final bool isInvited;
   final String eventImageUrl;
   final String eventTitle;
-  // final bool validated;
   final String purchaseReferenceId;
-
   final String transactionId;
-
   final String refundRequestStatus;
-
   final Timestamp? timestamp;
   final Timestamp? eventTimestamp;
 

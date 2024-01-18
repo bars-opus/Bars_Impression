@@ -3,7 +3,6 @@ import 'package:bars/utilities/exports.dart';
 class TicketPurchasedModel {
   final String id;
   final String entranceId;
-
   double price;
   bool isSold;
   String refundRequestStatus;
@@ -12,10 +11,9 @@ class TicketPurchasedModel {
   String accessLevel;
   bool validated;
   final String transactionId;
-
   final Timestamp eventTicketDate;
-  int row; // New property for the row number
-  int seat; // New property for the seat number
+  int row;
+  int seat; 
 
   TicketPurchasedModel({
     required this.id,

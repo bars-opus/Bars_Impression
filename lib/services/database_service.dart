@@ -917,45 +917,69 @@ class DatabaseService {
     }
   }
 
-  static Future<void> validateTicket(Event event, String ticketOrderId) async {
-    final entranceId = Uuid().v4();
-    final eventInviteRef =
-        newEventTicketOrderRef.doc(event.id).collection('eventInvite');
+  // Future<bool> validateTicket(String userOrderId, String entranceId) async {
+  //   print('userOrderId  ' + userOrderId);
+  //   print('entranceId ' + entranceId);
+  //   try {
+  //     // Start a Firestore transaction
+  //     return await FirebaseFirestore.instance
+  //         .runTransaction<bool>((transaction) async {
+  //       // Get the order document reference
+  //       DocumentReference orderDocRef = newEventTicketOrderRef
+  //           .doc(widget.event.id)
+  //           .collection('eventInvite')
+  //           .doc(userOrderId);
 
-    final ticketQuerySnapshot =
-        await eventInviteRef.where('orderId', isEqualTo: ticketOrderId).get();
+  //       // Read the order document
+  //       DocumentSnapshot orderSnapshot = await transaction.get(orderDocRef);
 
-    final ticketDocs = ticketQuerySnapshot.docs;
+  //       if (!orderSnapshot.exists) {
+  //         // Order does not exist
+  //         return false;
+  //       }
 
-    if (ticketDocs.isNotEmpty) {
-      final ticketDoc = ticketDocs.first;
-      final ticketData = ticketDoc.data();
-      final validated = ticketData['validated'] ?? false;
+  //       // Deserialize the order document into TicketOrderModel using the fromDoc method
+  //       TicketOrderModel order = TicketOrderModel.fromDoc(orderSnapshot);
 
-      if (!validated) {
-        final batch = FirebaseFirestore.instance.batch();
-        final userOrderId = ticketData['userOrderId'];
+  //       // Find the specific ticket to validate
+  //       for (var i = 0; i < order.tickets.length; i++) {
+  //         if (order.tickets[i].entranceId == entranceId) {
+  //           // Check the event date and validation status
+  //           DateTime eventDate = order.tickets[i].eventTicketDate.toDate();
+  //           DateTime today = DateTime.now();
+  //           bool isEventToday = eventDate.year == today.year &&
+  //               eventDate.month == today.month &&
+  //               eventDate.day == today.day;
 
-        final eventInviteDocRef = eventInviteRef.doc(userOrderId);
+  //           if (!isEventToday || order.tickets[i].validated) {
+  //             // If the event date does not match or the ticket is already validated
+  //             return false;
+  //           }
 
-        final userInviteDocRef = FirebaseFirestore.instance
-            .collection('userInvite')
-            .doc(userOrderId)
-            .collection('eventInvite')
-            .doc(event.id);
+  //           // // Update the validated status of the ticket
+  //           // order.tickets[i] = order.tickets[i].copyWith(validated: true);
 
-        final updatedData = {
-          'entranceId': entranceId,
-          'validated': true,
-        };
+  //           // Update the order document with the updated tickets list
+  //           transaction.update(orderDocRef, {
+  //             'tickets': order.tickets.map((ticket) => ticket.toJson()).toList()
+  //           });
 
-        batch.update(eventInviteDocRef, updatedData);
-        batch.update(userInviteDocRef, updatedData);
+  //           // Ticket successfully validated
+  //           return true;
+  //         }
+  //       }
 
-        await batch.commit();
-      }
-    }
-  }
+  //       // Ticket not found
+  //       return false;
+  //     });
+  //   } catch (error) {
+  //     // Handle errors here
+  //     print(error); // Replace with proper error handling
+  //     return false;
+  //   }
+  // }
+
+
 
   static Future<void> requestRefund(
       Event event, RefundModel refund, AccountHolderAuthor currentUser) async {
