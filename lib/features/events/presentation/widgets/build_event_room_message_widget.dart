@@ -368,6 +368,32 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
     );
   }
 
+  Future<void> deleteMessageAndAttachment(
+      List<MessageAttachment> attatchments) async {
+    try {
+      // Delete the message from Firestore.
+      DocumentSnapshot doc = await eventsChatRoomsConverstionRef
+          .doc(widget.room.linkedEventId)
+          .collection('roomChats')
+          .doc(widget.message.id)
+          .get();
+
+      if (doc.exists) {
+        await doc.reference.delete();
+      }
+
+      // Delete the attachment from Firebase Storage, if the URL is valid.
+      if (Uri.parse(attatchments[0].mediaUrl).isAbsolute) {
+        await FirebaseStorage.instance
+            .refFromURL(attatchments[0].mediaUrl)
+            .delete();
+      }
+    } catch (e) {
+      // Handle the error appropriately.
+      print(e); // Consider a better error handling approach than just printing.
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     List<MessageAttachment> messageAttatchment = [];
@@ -433,18 +459,23 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
                   ),
                   onPressed: isAuthor
                       ? () {
-                          try {
-                            eventsChatRoomsConverstionRef
-                                .doc(widget.room.linkedEventId)
-                                .collection('roomChats')
-                                .doc(widget.message.id)
-                                .get()
-                                .then((doc) {
-                              if (doc.exists) {
-                                doc.reference.delete();
-                              }
-                            });
-                          } catch (e) {}
+                          deleteMessageAndAttachment(attatchments);
+                          // try {
+                          //   eventsChatRoomsConverstionRef
+                          //       .doc(widget.room.linkedEventId)
+                          //       .collection('roomChats')
+                          //       .doc(widget.message.id)
+                          //       .get()
+                          //       .then((doc) {
+                          //     if (doc.exists) {
+                          //       doc.reference.delete();
+                          //     }
+                          //   });
+                          // } catch (e) {}
+                          // FirebaseStorage.instance
+                          //     .refFromURL(attatchments[0].mediaUrl)
+                          //     .delete()
+                          //     .catchError((e) {});
                         }
                       : () {
                           _navigateToPage(

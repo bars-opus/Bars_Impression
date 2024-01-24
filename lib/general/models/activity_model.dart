@@ -12,6 +12,7 @@ enum NotificationActivityType {
   eventUpdate,
   eventReminder,
   refundRequested,
+  eventDeleted
 }
 
 class Activity {
@@ -83,6 +84,10 @@ class Activity {
         return NotificationActivityType.eventReminder;
       case 'refundRequested':
         return NotificationActivityType.refundRequested;
+         case 'eventDeleted':
+        return NotificationActivityType.eventDeleted;
+
+        
       default:
         return NotificationActivityType.eventUpdate;
     }

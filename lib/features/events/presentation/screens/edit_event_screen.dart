@@ -38,6 +38,7 @@ class _EditEventScreenState extends State<EditEventScreen> {
       _provider.setTicketSite(widget.event.ticketSite);
       _provider.setPreviousEvent(widget.event.previousEvent);
       _provider.setCurrency(widget.event.rate);
+      _provider.setIsFree(widget.event.isFree);
       _provider.setEventTermsAndConditions(widget.event.termsAndConditions);
       _provider.setStartDateString(widget.event.startDate.toDate().toString());
       _provider
@@ -94,7 +95,7 @@ class _EditEventScreenState extends State<EditEventScreen> {
     provider.setCity('');
     provider.setDressCode('');
     provider.setTicketSite('');
-     provider.setPreviousEvent('');
+    provider.setPreviousEvent('');
     provider.setCurrency('');
     provider.setEventTermsAndConditions('');
     provider.ticket.clear();

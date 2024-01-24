@@ -516,6 +516,47 @@ class _SlidableMessageState extends State<SlidableMessage>
     );
   }
 
+  Future<void> deleteMessageAndAttachment(
+      List<MessageAttachment> attatchments) async {
+    if (widget.chat == null || widget.message == null) {
+      // If there's no chat or message, there's nothing to delete.
+      return;
+    }
+
+    try {
+      // Update the deleted chat message in the database.
+      await DatabaseService.updateDeletedChatMessage(message: widget.message);
+
+      // Attempt to delete the message from Firestore.
+      DocumentSnapshot doc = await messageRef
+          .doc(widget.chatId)
+          .collection('conversation')
+          .doc(widget.message.id)
+          .get();
+
+      if (doc.exists) {
+        await doc.reference.delete();
+      }
+    } catch (e) {
+      // Handle errors for Firestore operations.
+      // Log the error, show a user-facing error message, or handle it as needed.
+      print('Error deleting message from Firestore: $e');
+    }
+
+    if (attatchments.isNotEmpty && attatchments[0].mediaUrl.isNotEmpty) {
+      try {
+        // Attempt to delete the attachment from Firebase Storage.
+        await FirebaseStorage.instance
+            .refFromURL(attatchments[0].mediaUrl)
+            .delete();
+      } catch (e) {
+        // Handle errors for Firebase Storage operations.
+        // Log the error, show a user-facing error message, or handle it as needed.
+        print('Error deleting attachment from Firebase Storage: $e');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     List<MessageAttachment> messageAttatchment = [];
@@ -579,26 +620,27 @@ class _SlidableMessageState extends State<SlidableMessage>
                   ),
                   onPressed: isAuthor
                       ? () async {
-                          try {
-                            if (widget.chat != null) {
-                              DatabaseService.updateDeletedChatMessage(
-                                  message: widget.message);
-                            }
-                            messageRef
-                                .doc(widget.chatId)
-                                .collection('conversation')
-                                .doc(widget.message.id)
-                                .get()
-                                .then((doc) {
-                              if (doc.exists) {
-                                doc.reference.delete();
-                              }
-                            });
-                            FirebaseStorage.instance
-                                .refFromURL(attatchments[0].mediaUrl)
-                                .delete()
-                                .catchError((e) {});
-                          } catch (e) {}
+                          deleteMessageAndAttachment(attatchments);
+                          // try {
+                          //   if (widget.chat != null) {
+                          //     DatabaseService.updateDeletedChatMessage(
+                          //         message: widget.message);
+                          //   }
+                          //   messageRef
+                          //       .doc(widget.chatId)
+                          //       .collection('conversation')
+                          //       .doc(widget.message.id)
+                          //       .get()
+                          //       .then((doc) {
+                          //     if (doc.exists) {
+                          //       doc.reference.delete();
+                          //     }
+                          //   });
+                          //   FirebaseStorage.instance
+                          //       .refFromURL(attatchments[0].mediaUrl)
+                          //       .delete()
+                          //       .catchError((e) {});
+                          // } catch (e) {}
                         }
                       : () {
                           _showBottomSheetChatDetails(context);

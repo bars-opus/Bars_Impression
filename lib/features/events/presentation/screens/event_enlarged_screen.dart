@@ -186,7 +186,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
   }
 
   _launchMap() {
-    return MapsLauncher.launchQuery(widget.event.venue);
+    return MapsLauncher.launchQuery(widget.event.address);
   }
 
   _setContentWarning() {
@@ -638,7 +638,6 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
       },
     );
   }
-  
 
 // icon widgets for location, people tagged and more
   _accessIcons(IconData icon, VoidCallback onPressed) {

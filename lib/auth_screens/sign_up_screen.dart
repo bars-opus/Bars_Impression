@@ -52,6 +52,7 @@ class _SignpsScreenState extends State<SignpsScreen>
   @override
   void dispose() {
     _nameController.dispose();
+    animationController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -198,6 +199,7 @@ class _SignpsScreenState extends State<SignpsScreen>
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 30.0, vertical: 10.0),
                                 child: LoginField(
+                                  obscureText: _isHidden,
                                   controller: _passwordController,
                                   hintText: 'At least 8 characters',
                                   labelText: 'Password',

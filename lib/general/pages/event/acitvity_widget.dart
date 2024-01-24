@@ -49,6 +49,25 @@ class _ActivityWidgetState extends State<ActivityWidget> {
     );
   }
 
+  void _showBottomSheetErrorDeletedEvent(String errorTitle) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return DisplayErrorHandler(
+          buttonText: 'Ok',
+          onPressed: () async {
+            Navigator.pop(context);
+          },
+          title: errorTitle,
+          subTitle:
+              'The event you are trying to access might have either been deleted or is not available.',
+        );
+      },
+    );
+  }
+
   void _navigateToPage(BuildContext context, Widget page) {
     Navigator.push(
       context,
@@ -91,6 +110,36 @@ class _ActivityWidgetState extends State<ActivityWidget> {
     );
   }
 
+  void _showBottomDeletedEvent(
+      BuildContext context, TicketOrderModel ticketOrder) {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext context) {
+          return EventDeletedMessageWidget(
+            currentUserId: widget.currentUserId,
+            ticketOrder: ticketOrder,
+          );
+        });
+  }
+
+  Future<void> _getActivityTicketOrder(Activity activity) async {
+    var postId = activity.postId;
+    if (postId == null) {
+      return;
+    }
+
+    TicketOrderModel? ticketOrder =
+        await DatabaseService.getUserTicketOrderWithId(
+            postId, widget.currentUserId);
+    if (ticketOrder != null) {
+      _showBottomDeletedEvent(context, ticketOrder);
+    } else {
+      _showBottomSheetErrorMessage('Failed to fetch ticket order.');
+    }
+  }
+
   Future<void> _getActivityParentContent(Activity activity) async {
     switch (activity.type) {
       case NotificationActivityType.comment:
@@ -120,6 +169,11 @@ class _ActivityWidgetState extends State<ActivityWidget> {
       case NotificationActivityType.advice:
         await _getActivityAdvice(activity);
         break;
+
+      case NotificationActivityType.eventDeleted:
+        await _getActivityTicketOrder(activity);
+        break;
+
       case NotificationActivityType.follow:
         await _getActivityFollower(activity);
         break;
@@ -192,7 +246,7 @@ class _ActivityWidgetState extends State<ActivityWidget> {
         ),
       );
     } else {
-      _showBottomSheetErrorMessage('Failed to fetch event.');
+      _showBottomSheetErrorDeletedEvent('Event not found');
     }
   }
 
@@ -399,7 +453,8 @@ class _ActivityWidgetState extends State<ActivityWidget> {
               strokeWidth: 3,
             ),
           )
-        : activity.type == NotificationActivityType.follow
+        : activity.type == NotificationActivityType.follow ||
+                activity.postImageUrl!.isEmpty
             ? SizedBox.shrink()
             : Container(
                 width: ResponsiveHelper.responsiveHeight(context, 90),

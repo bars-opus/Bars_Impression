@@ -1,14 +1,14 @@
 import 'package:bars/utilities/exports.dart';
 
 class LoginField extends StatelessWidget {
- 
   final String hintText;
   final IconData icon;
   final IconButton? suffixIcon;
   final bool notLogin;
- final String labelText;
+  final String labelText;
   final TextEditingController controller;
   final Function onValidateText;
+  final bool obscureText;
 
   LoginField({
     required this.onValidateText,
@@ -18,11 +18,13 @@ class LoginField extends StatelessWidget {
     required this.controller,
     this.suffixIcon,
     this.notLogin = false,
+    this.obscureText = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      obscureText: obscureText,
       style: TextStyle(
         color: notLogin ? Theme.of(context).secondaryHeaderColor : Colors.white,
         fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
@@ -32,7 +34,7 @@ class LoginField extends StatelessWidget {
       keyboardAppearance: MediaQuery.of(context).platformBrightness,
       textCapitalization: TextCapitalization.sentences,
       keyboardType: TextInputType.multiline,
-      maxLines: 2,
+      // maxLines: 2,
       decoration: InputDecoration(
           icon: notLogin
               ? null

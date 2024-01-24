@@ -45,7 +45,7 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
   }
 
   _launchMap(Event event) {
-    return MapsLauncher.launchQuery(event.venue);
+    return MapsLauncher.launchQuery(event.address);
   }
 
   void _showBottomSheetClearActivity() {
@@ -216,6 +216,19 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
     );
   }
 
+  void _showBottomDeletedEvent(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext context) {
+          return EventDeletedMessageWidget(
+            currentUserId: widget.currentUserId,
+            ticketOrder: widget.ticketOrder,
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     final List<String> datePartition = widget.ticketOrder.eventTimestamp == null
@@ -243,13 +256,13 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      // widget.ticketOrder.
-                      //     ?
-                      // Icon(
-                      //   Icons.check_circle,
-                      //   color: Colors.blue,
-                      //   size: 10.0,
-                      // )
+                      if (widget.ticketOrder.isDeleted)
+                        //     ?
+                        Icon(
+                          Icons.remove_outlined,
+                          color: Colors.grey,
+                          size: 20.0,
+                        ),
                       // : SizedBox.shrink(),
                       IconButton(
                           onPressed: () {
@@ -262,39 +275,43 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                     ],
                   ),
                 ),
-          onTap: () async {
-            if (_isLoading) return;
-            _isLoading = true;
-            try {
-              Event? event = await DatabaseService.getEventWithId(
-                  widget.ticketOrder.eventId);
+          onTap: widget.ticketOrder.isDeleted
+              ? () {
+                  _showBottomDeletedEvent(context);
+                }
+              : () async {
+                  if (_isLoading) return;
+                  _isLoading = true;
+                  try {
+                    Event? event = await DatabaseService.getEventWithId(
+                        widget.ticketOrder.eventId);
 
-              if (event != null) {
-                PaletteGenerator _paletteGenerator =
-                    await PaletteGenerator.fromImageProvider(
-                  CachedNetworkImageProvider(event.imageUrl),
-                  size: Size(1110, 150),
-                  maximumColorCount: 20,
-                );
+                    if (event != null) {
+                      PaletteGenerator _paletteGenerator =
+                          await PaletteGenerator.fromImageProvider(
+                        CachedNetworkImageProvider(event.imageUrl),
+                        size: Size(1110, 150),
+                        maximumColorCount: 20,
+                      );
 
-                _navigateToPage(
-                  PurchasedAttendingTicketScreen(
-                    ticketOrder: widget.ticketOrder,
-                    event: event,
-                    currentUserId: widget.currentUserId,
-                    justPurchased: '',
-                    palette: _paletteGenerator,
-                  ),
-                );
-              } else {
-                _showBottomSheetErrorMessage('Failed to fetch event.');
-              }
-            } catch (e) {
-              _showBottomSheetErrorMessage('Failed to fetch event');
-            } finally {
-              _isLoading = false;
-            }
-          },
+                      _navigateToPage(
+                        PurchasedAttendingTicketScreen(
+                          ticketOrder: widget.ticketOrder,
+                          event: event,
+                          currentUserId: widget.currentUserId,
+                          justPurchased: '',
+                          palette: _paletteGenerator,
+                        ),
+                      );
+                    } else {
+                      _showBottomSheetErrorMessage('Failed to fetch event.');
+                    }
+                  } catch (e) {
+                    _showBottomSheetErrorMessage('Failed to fetch event');
+                  } finally {
+                    _isLoading = false;
+                  }
+                },
           leading: CountdownTimer(
             fontSize: ResponsiveHelper.responsiveFontSize(context, 11.0),
             split: 'Multiple',

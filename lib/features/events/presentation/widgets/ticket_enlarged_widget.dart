@@ -1,6 +1,7 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/scheduler.dart';
 
-class TicketEnlargedWidget extends StatelessWidget {
+class TicketEnlargedWidget extends StatefulWidget {
   final TicketOrderModel ticketOrder;
   final TicketPurchasedModel ticket;
 
@@ -24,6 +25,102 @@ class TicketEnlargedWidget extends StatelessWidget {
     required this.ticket,
     required this.currentUserId,
   });
+
+  @override
+  State<TicketEnlargedWidget> createState() => _TicketEnlargedWidgetState();
+}
+
+class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
+  bool _isValidated = false;
+  bool _isScanning = false;
+  bool init = true;
+  Timer? _delayTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _isValidated = widget.ticket.validated;
+    stopInit();
+  }
+
+  void listenForTicketValidation() async {
+    DocumentReference orderDocRef = newUserTicketOrderRef
+        .doc(widget.ticketOrder.userOrderId)
+        .collection('eventInvite')
+        .doc(widget.event.id);
+
+    orderDocRef.snapshots().listen((snapshot) {
+      if (snapshot.exists) {
+        TicketOrderModel order = TicketOrderModel.fromDoc(snapshot);
+
+        // Find the specific ticket that has been updated
+        var updatedTicket = order.tickets.firstWhere(
+          (ticket) => ticket.entranceId == widget.ticket.entranceId,
+          // orElse: () =>
+        );
+
+        if (updatedTicket != null) {
+          // Check if the specific field 'validated' has changed to true
+          if (updatedTicket.validated) {
+            // The ticket has been validated, call the function to handle this event
+            if (!init) onTicketValidated();
+          }
+        }
+      } else {
+        // // Handle the case where the order document does not exist
+        // onOrderNotFound();
+      }
+    }, onError: (error) {
+      // Handle any errors that occur with the listener
+      print("Error listening to ticket validation: $error");
+    });
+  }
+
+  void stopInit() {
+    DateTime now = DateTime.now();
+    DateTime eventDate = widget.ticket.eventTicketDate.toDate();
+    DateTime oneDayBeforeEvent = eventDate.subtract(Duration(days: 1));
+    DateTime oneDayAfterEvent = eventDate.add(Duration(days: 2));
+
+    if (now.isAfter(oneDayBeforeEvent) && now.isBefore(oneDayAfterEvent)) {
+      listenForTicketValidation();
+    }
+    init = false;
+  }
+
+  void onTicketValidated() {
+    if (mounted) {
+      setState(() {
+        _isScanning = true;
+      });
+    }
+    _setShowDelayInfo();
+  }
+
+  void _setShowDelayInfo() {
+    if (_isScanning) {
+      // Cancel the existing timer if it's still running
+      _delayTimer?.cancel();
+
+      // Create a new timer
+      _delayTimer = Timer(const Duration(seconds: 2), () {
+        if (mounted) {
+          setState(() {
+            _isScanning = false;
+            _isValidated = true;
+          });
+        }
+        HapticFeedback.lightImpact();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    // Cancel the timer when the widget is disposed
+    _delayTimer?.cancel();
+    super.dispose();
+  }
 
   // display event dates and schedules on calendar
   void _showBottomSheetCalendar(BuildContext context, Color palletColor) {
@@ -90,16 +187,17 @@ class TicketEnlargedWidget extends StatelessWidget {
                     leftChevronVisible: false,
                     rightChevronVisible: false,
                   ),
-                  firstDay: ticket.eventTicketDate.toDate(),
-                  focusedDay: ticket.eventTicketDate.toDate(),
-                  lastDay: ticket.eventTicketDate.toDate(),
+                  firstDay: widget.ticket.eventTicketDate.toDate(),
+                  focusedDay: widget.ticket.eventTicketDate.toDate(),
+                  lastDay: widget.ticket.eventTicketDate.toDate(),
                   selectedDayPredicate: (DateTime day) {
                     // Use a comparison here to determine if the day is the selected day
-                    return isSameDay(day, ticket.eventTicketDate.toDate());
+                    return isSameDay(
+                        day, widget.ticket.eventTicketDate.toDate());
                   },
                 ),
                 Text(
-                  'The event for this ticket would take place on ${MyDateFormat.toDate(ticket.eventTicketDate.toDate()).toString()}.  If you have purchased multiple tickets for this event, each ticket date might vary, so please take notice',
+                  'The event for this ticket would take place on ${MyDateFormat.toDate(widget.ticket.eventTicketDate.toDate()).toString()}.  If you have purchased multiple tickets for this event, each ticket date might vary, so please take notice',
                   style: TextStyle(
                     color: Theme.of(context).secondaryHeaderColor,
                     fontSize:
@@ -117,15 +215,15 @@ class TicketEnlargedWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color _palleteColor = palette == null
-        ? Colors.grey
-        : palette.vibrantColor == null
-            ? Colors.grey
-            : palette.vibrantColor!.color;
+    Color _palleteColor = widget.palette == null
+        ? Colors.blue
+        : widget.palette.vibrantColor == null
+            ? Colors.blue
+            : widget.palette.vibrantColor!.color;
 
     final width = MediaQuery.of(context).size.width;
 
-    bool _isRefunded = ticketOrder.refundRequestStatus == 'processed';
+    bool _isRefunded = widget.ticketOrder.refundRequestStatus == 'processed';
     var _textStyle2 = TextStyle(
       fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
       color: Theme.of(context).secondaryHeaderColor,
@@ -164,7 +262,12 @@ class TicketEnlargedWidget extends StatelessWidget {
               ]),
           child: Column(
             children: [
-              if (hasEnded)
+              if (_isScanning)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: LinearProgress(),
+                ),
+              if (widget.hasEnded)
                 Text(
                   '\n\nCompleted',
                   style: TextStyle(
@@ -176,11 +279,11 @@ class TicketEnlargedWidget extends StatelessWidget {
                       fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
-              if (!ticket.validated)
+              if (!_isValidated)
                 const SizedBox(
                   height: 70,
                 ),
-              if (ticket.validated)
+              if (_isValidated)
                 Padding(
                   padding:
                       const EdgeInsets.only(right: 30.0, top: 40, bottom: 30),
@@ -193,23 +296,23 @@ class TicketEnlargedWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-              if (ticketOrder.isInvited)
+              if (widget.ticketOrder.isInvited)
                 Icon(
                   FontAwesomeIcons.idBadge,
                   color: Theme.of(context).secondaryHeaderColor,
-                  size: onInvite ? 0 : 30.0,
+                  size: widget.onInvite ? 0 : 30.0,
                 ),
-              if (ticketOrder.isInvited || onInvite)
+              if (widget.ticketOrder.isInvited || widget.onInvite)
                 const SizedBox(
                   height: 10,
                 ),
-              if (ticketOrder.isInvited)
+              if (widget.ticketOrder.isInvited)
                 Text(
-                  onInvite ? 'YOUR TICKET' : 'CORDIALLY\nINVITED',
+                  widget.onInvite ? 'YOUR TICKET' : 'CORDIALLY\nINVITED',
                   style: Theme.of(context).textTheme.bodySmall,
                   textAlign: TextAlign.center,
                 ),
-              if (ticketOrder.isInvited)
+              if (widget.ticketOrder.isInvited)
                 const SizedBox(
                   height: 30,
                 ),
@@ -222,24 +325,31 @@ class TicketEnlargedWidget extends StatelessWidget {
                       padding: const EdgeInsets.all(15.0),
                       child: QrImageView(
                         version: QrVersions.auto,
-                        foregroundColor:
-                            ticket.validated ? _palleteColor : Colors.grey,
+                        eyeStyle: QrEyeStyle(
+                          eyeShape: QrEyeShape.square,
+                          color: _isValidated ? _palleteColor : Colors.grey,
+                        ),
+                        dataModuleStyle: QrDataModuleStyle(
+                          dataModuleShape: QrDataModuleShape.square,
+                          color: _isValidated ? _palleteColor : Colors.grey,
+                        ),
+
                         backgroundColor: Colors.transparent,
                         data:
-                            '${ticketOrder.userOrderId} | ${ticket.entranceId}',
+                            '${widget.ticketOrder.userOrderId} | ${widget.ticket.entranceId}',
                         // ticket.entranceId,
                         size: ResponsiveHelper.responsiveFontSize(
                             context, _isRefunded ? 40 : 200),
                       ),
                     ),
                   )),
-              if (ticket.entranceId.isNotEmpty)
+              if (widget.ticket.entranceId.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(
                     top: 30.0,
                   ),
                   child: Text(
-                    ticket.entranceId.substring(0, 4),
+                    widget.ticket.entranceId.substring(0, 4),
                     style: TextStyle(
                         fontSize:
                             ResponsiveHelper.responsiveFontSize(context, 30.0),
@@ -259,18 +369,18 @@ class TicketEnlargedWidget extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 12.0, right: 12),
                   child: Column(
                     children: [
-                      if (ticket.entranceId.isNotEmpty)
+                      if (widget.ticket.entranceId.isNotEmpty)
                         SalesReceiptWidget(
                           width: 110,
                           isRefunded: _isRefunded,
                           lable: 'Check-in number',
-                          value: ticket.entranceId.substring(0, 4),
+                          value: widget.ticket.entranceId.substring(0, 4),
                         ),
                       SalesReceiptWidget(
                         width: 110,
                         isRefunded: _isRefunded,
                         lable: 'Invited',
-                        value: ticketOrder.isInvited.toString(),
+                        value: widget.ticketOrder.isInvited.toString(),
                       ),
                       GestureDetector(
                         onTap: () {
@@ -282,51 +392,9 @@ class TicketEnlargedWidget extends StatelessWidget {
                             isRefunded: _isRefunded,
                             lable: 'Ticket event date',
                             value: MyDateFormat.toDate(
-                                    ticket.eventTicketDate.toDate())
+                                    widget.ticket.eventTicketDate.toDate())
                                 .toString()),
                       ),
-                      // RichText(
-                      //   textScaleFactor:
-                      //       MediaQuery.of(context).textScaleFactor,
-                      //   text: TextSpan(
-                      //     children: [
-                      //       TextSpan(
-                      //           text: 'Check-in number:   ',
-                      //           style: _textStyle),
-                      //       TextSpan(
-                      //         text: ticket.entranceId.substring(0, 4),
-                      //         style: _textStyle2,
-                      //       ),
-                      //       TextSpan(
-                      //           text: '\nInvited:                     ',
-                      //           style: _textStyle),
-                      //       TextSpan(
-                      //         text: ticketOrder.isInvited.toString(),
-                      //         style: _textStyle2,
-                      //       ),
-                      //       TextSpan(
-                      //           text: '\nTicket event date:   ',
-                      //           style: _textStyle),
-                      //       TextSpan(
-                      //         text: MyDateFormat.toDate(
-                      //                 ticket.eventTicketDate.toDate())
-                      //             .toString()
-                      //             .substring(
-                      //                 0,
-                      //                 ticket.eventTicketDate
-                      //                         .toDate()
-                      //                         .toString()
-                      //                         .length -
-                      //                     2),
-                      //         style: TextStyle(
-                      //           fontSize: ResponsiveHelper.responsiveFontSize(
-                      //               context, 14.0),
-                      //           color: Colors.blue,
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
                     ],
                   ),
                 ),
@@ -359,47 +427,47 @@ class TicketEnlargedWidget extends StatelessWidget {
                         width: 110,
                         isRefunded: _isRefunded,
                         lable: 'Order number',
-                        value: ticketOrder.orderNumber.substring(0, 4),
+                        value: widget.ticketOrder.orderNumber.substring(0, 4),
                       ),
                       SalesReceiptWidget(
                         width: 110,
                         isRefunded: _isRefunded,
                         lable: 'Ticket type',
-                        value: ticket.type,
+                        value: widget.ticket.type,
                       ),
                       SalesReceiptWidget(
                         width: 110,
                         isRefunded: _isRefunded,
                         lable: 'Ticket group',
-                        value: ticket.group,
+                        value: widget.ticket.group,
                       ),
                       SalesReceiptWidget(
                         width: 110,
                         isRefunded: _isRefunded,
                         lable: 'Access level',
-                        value: ticket.accessLevel,
+                        value: widget.ticket.accessLevel,
                       ),
                       SalesReceiptWidget(
                         width: 110,
                         isRefunded: _isRefunded,
                         lable: 'Purchased time:',
                         value: MyDateFormat.toTime(
-                            ticketOrder.timestamp!.toDate()),
+                            widget.ticketOrder.timestamp!.toDate()),
                       ),
                       SalesReceiptWidget(
                         width: 110,
                         isRefunded: _isRefunded,
                         lable: 'Purchased date:',
                         value: MyDateFormat.toDate(
-                            ticketOrder.timestamp!.toDate()),
+                            widget.ticketOrder.timestamp!.toDate()),
                       ),
                       SalesReceiptWidget(
                         width: 110,
                         isRefunded: _isRefunded,
                         lable: 'Total',
-                        value: event.isFree
+                        value: widget.event.isFree
                             ? 'Free'
-                            : '$currency ${ticket.price.toString()}',
+                            : '${widget.currency} ${widget.ticket.price.toString()}',
                       ),
                     ],
                   ),
@@ -413,16 +481,16 @@ class TicketEnlargedWidget extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 12.0, right: 12),
-                child: ticketOrder.userOrderId == event.authorId
+                child: widget.ticketOrder.userOrderId == widget.event.authorId
                     ? GestureDetector(
                         onTap: () {
                           _navigateToPage(
                               context,
                               EventDashboardScreen(
                                 // askCount: 0,
-                                currentUserId: event.authorId,
-                                event: event,
-                                palette: palette,
+                                currentUserId: widget.event.authorId,
+                                event: widget.event,
+                                palette: widget.palette,
                               ));
                         },
                         child: RichText(
@@ -430,10 +498,10 @@ class TicketEnlargedWidget extends StatelessWidget {
                               MediaQuery.of(context).textScaleFactor,
                           text: TextSpan(
                             children: [
-                              if (ticket.entranceId.isNotEmpty)
+                              if (widget.ticket.entranceId.isNotEmpty)
                                 TextSpan(
                                   text:
-                                      'Your check-in number, also known as your attendee number, is ${ticket.entranceId.substring(0, 4)}. This number is generated for you automatically. As the event organizer, your ticket is free and already validated.\n\nTo validate attendees, use the ticket scanner on your ',
+                                      'Your check-in number, also known as your attendee number, is ${widget.ticket.entranceId.substring(0, 4)}. This number is generated for you automatically. As the event organizer, your ticket is free and already validated.\n\nTo validate attendees, use the ticket scanner on your ',
                                   style: TextStyle(
                                     color:
                                         Theme.of(context).secondaryHeaderColor,
@@ -464,9 +532,9 @@ class TicketEnlargedWidget extends StatelessWidget {
                         ),
                       )
                     : Text(
-                        ticket.entranceId.isNotEmpty
+                        widget.ticket.entranceId.isNotEmpty
                             ? ''
-                            : 'Your check-in number, also known as your attendee number, is ${ticket.entranceId.substring(0, 4)}. This number will be validated at the entrance of this event before you can enter. Once this ticket has been validated, the color of the barcode on the ticket will change, and a blue verified badge is placed at the top right corner of the ticket.  Enjoy attending this event and have a great time!',
+                            : 'Your check-in number, also known as your attendee number, is ${widget.ticket.entranceId.substring(0, 4)}. This number will be validated at the entrance of this event before you can enter. Once this ticket has been validated, the color of the barcode on the ticket will change, and a blue verified badge is placed at the top right corner of the ticket.  Enjoy attending this event and have a great time!',
                         style: TextStyle(
                           color: Theme.of(context).secondaryHeaderColor,
                           fontSize: ResponsiveHelper.responsiveFontSize(

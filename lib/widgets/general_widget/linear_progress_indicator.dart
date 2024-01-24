@@ -7,7 +7,7 @@ class LinearProgress extends StatelessWidget {
     return SizedBox(
       height: ResponsiveHelper.responsiveHeight(context, 2.0),
       child: LinearProgressIndicator(
-        backgroundColor: Colors.grey[100],
+        backgroundColor: Colors.transparent,
         valueColor: AlwaysStoppedAnimation(Colors.blue),
       ),
     );

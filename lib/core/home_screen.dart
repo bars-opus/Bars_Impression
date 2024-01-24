@@ -1870,8 +1870,9 @@ class HomeScreenState extends State<HomeScreen> {
 
   void _handleNotification(RemoteMessage? message,
       {bool fromBackground = false}) async {
-    final String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId!;
+      final String currentUserId =
+          Provider.of<UserData>(context, listen: false).currentUserId!;
+
     if (message?.data != null) {
       const AndroidNotificationDetails androidNotificationDetails =
           AndroidNotificationDetails(
@@ -1966,26 +1967,35 @@ class HomeScreenState extends State<HomeScreen> {
                                 contentType: 'eventRoom',
                               ),
                             )
-                          : _navigateToPage(
-                              context,
-                              ViewSentContent(
-                                contentId: contentId,
-                                contentType: contentType
-                                        .endsWith('newEventInNearYou')
-                                    ? 'Event'
-                                    : contentType.endsWith('eventUpdate')
+                          : contentType.endsWith('eventDeleted')
+                              ? _navigateToPage(
+                                  context,
+                                  ViewSentContent(
+                                    contentId: contentId,
+                                    contentType: 'eventDeleted',
+                                  ),
+                                )
+                              : _navigateToPage(
+                                  context,
+                                  ViewSentContent(
+                                    contentId: contentId,
+                                    contentType: contentType
+                                            .endsWith('newEventInNearYou')
                                         ? 'Event'
-                                        : contentType.endsWith('eventReminder')
+                                        : contentType.endsWith('eventUpdate')
                                             ? 'Event'
                                             : contentType
-                                                    .endsWith('refundRequested')
+                                                    .endsWith('eventReminder')
                                                 ? 'Event'
-                                                : contentType.startsWith(
-                                                        'inviteRecieved')
-                                                    ? 'InviteRecieved'
-                                                    : '',
-                              ),
-                            );
+                                                : contentType.endsWith(
+                                                        'refundRequested')
+                                                    ? 'Event'
+                                                    : contentType.startsWith(
+                                                            'inviteRecieved')
+                                                        ? 'InviteRecieved'
+                                                        : '',
+                                  ),
+                                );
         }
         // }
       }
@@ -2127,7 +2137,7 @@ class _HomeMobileState extends State<HomeMobile>
 
       // If lastDocument is null, this is the first fetch
       if (lastDocument == null) {
-        eventFeedSnapShot = await userIviteRef
+        eventFeedSnapShot = await userInvitesRef
             .doc(currentUserId)
             .collection('eventInvite')
             // .where('startDate', isGreaterThanOrEqualTo: currentDate)
@@ -2136,7 +2146,7 @@ class _HomeMobileState extends State<HomeMobile>
             .get();
       } else {
         // If lastDocument is not null, fetch the next batch starting after the last document
-        eventFeedSnapShot = await userIviteRef
+        eventFeedSnapShot = await userInvitesRef
             .doc(currentUserId)
             .collection('eventInvite')
             // .where('startDate', isGreaterThanOrEqualTo: currentDate)
@@ -2276,11 +2286,26 @@ class _HomeMobileState extends State<HomeMobile>
 
   @override
   Widget build(BuildContext context) {
+    //  var _provider = Provider.of<UserData>(context);
+
+    // final String currentUserId = _provider.currentUserId!;
+    // final AccountHolderAuthor user = _provider.user!;
+
+    // final UserSettingsLoadingPreferenceModel userLocationSettings =
+    //     _provider.userLocationPreference!;
     var _provider = Provider.of<UserData>(context);
-    final String currentUserId = _provider.currentUserId!;
-    final AccountHolderAuthor user = _provider.user!;
-    final UserSettingsLoadingPreferenceModel userLocationSettings =
-        _provider.userLocationPreference!;
+
+    // Use conditional access and provide default/fallback values or handle the case where the value might be null
+    final String? currentUserId = _provider.currentUserId;
+    final AccountHolderAuthor? user = _provider.user;
+    final UserSettingsLoadingPreferenceModel? userLocationSettings =
+        _provider.userLocationPreference;
+
+    // If any of these values are null, we handle it by showing an error message or taking some other action
+    if (currentUserId == null || user == null || userLocationSettings == null) {
+      // Handle the null case here, e.g., by showing an error or a loading indicator
+      return PostSchimmerSkeleton(); // or some error message
+    }
 
     final double width = MediaQuery.of(context).size.width;
     final double height = MediaQuery.of(context).size.height;
@@ -2406,41 +2431,44 @@ class _HomeMobileState extends State<HomeMobile>
                             decoration: BoxDecoration(
                                 color: Colors.red,
                                 borderRadius: BorderRadius.circular(5)),
-                            child: SingleChildScrollView(
-                              child: GestureDetector(
-                                onTap: () {
-                                  _navigateToPage(NotificationPage(
-                                      currentUserId: currentUserId));
-                                },
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      // color: Colors.green,
-                                      width: 30,
-                                      child: Icon(
-                                        Icons.notifications_active_outlined,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    Text(
-                                      NumberFormat.compact()
-                                          .format(_provider.activityCount),
-                                      style: TextStyle(
+                            child: Center(
+                              child: SingleChildScrollView(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    _navigateToPage(NotificationPage(
+                                        currentUserId: currentUserId));
+                                  },
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        // color: Colors.green,
+                                        width: 30,
+                                        child: Icon(
+                                          Icons.notifications_active_outlined,
                                           color: Colors.white,
-                                          fontSize: dontShowActivityCount
-                                              ? 0
-                                              : ResponsiveHelper
-                                                  .responsiveFontSize(
-                                                      context, 16.0),
-                                          fontWeight: FontWeight.bold),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        NumberFormat.compact()
+                                            .format(_provider.activityCount),
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: dontShowActivityCount
+                                                ? 0
+                                                : ResponsiveHelper
+                                                    .responsiveFontSize(
+                                                        context, 16.0),
+                                            fontWeight: FontWeight.bold),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),

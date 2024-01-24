@@ -35,13 +35,31 @@ class _ProfileSettingsState extends State<ProfileSettings> {
   }
 
   static final _auth = FirebaseAuth.instance;
-  void _logOutUser(BuildContext context) async {
+  void _logOutUser(
+    BuildContext context,
+  ) async {
     try {
       if (Hive.isBoxOpen('chatMessages')) {
         final box = Hive.box<ChatMessage>('chatMessages');
         await box.clear();
       } else {
         final box = await Hive.openBox<ChatMessage>('chatMessages');
+        await box.clear();
+      }
+
+      if (Hive.isBoxOpen('chats')) {
+        final box = Hive.box<Chat>('chats');
+        await box.clear();
+      } else {
+        final box = await Hive.openBox<Chat>('chats');
+        await box.clear();
+      }
+
+      if (Hive.isBoxOpen('ticketIds')) {
+        final box = Hive.box<TicketIdModel>('ticketIds');
+        await box.clear();
+      } else {
+        final box = await Hive.openBox<TicketIdModel>('ticketIds');
         await box.clear();
       }
 
@@ -75,8 +93,13 @@ class _ProfileSettingsState extends State<ProfileSettings> {
       usersGeneralSettingsRef.doc(widget.user.userId).update({
         'androidNotificationToken': '',
       });
+      var _provider = Provider.of<UserData>(context, listen: false);
+      _provider.currentUserId = '';
 
       await _auth.signOut();
+      _provider.setUser(null);
+      _provider.setUserGeneralSettings(null);
+      _provider.setUserLocationPreference(null);
       HapticFeedback.lightImpact();
       mySnackBar(context, 'Logged Out');
       // Navigator.pushReplacementNamed(context, WelcomeScreen.id);

@@ -394,14 +394,14 @@ class _ProfileScreenState extends State<ProfileScreen>
   _setUpInvites() async {
     try {
       QuerySnapshot ticketOrderSnapShot = widget.currentUserId == widget.userId
-          ? await userIviteRef
+          ? await userInvitesRef
               .doc(widget.userId)
               .collection('eventInvite')
               // .where('eventTimestamp', isGreaterThanOrEqualTo: currentDate)
               .orderBy('eventTimestamp', descending: true)
               .limit(10)
               .get()
-          : await userIviteRef
+          : await userInvitesRef
               .doc(widget.userId)
               .collection('eventInvite')
               .where('answer', isEqualTo: 'Accepted')
@@ -438,13 +438,13 @@ class _ProfileScreenState extends State<ProfileScreen>
   _loadMoreInvites() async {
     try {
       Query activitiesQuery = widget.currentUserId == widget.userId
-          ? userIviteRef
+          ? userInvitesRef
               .doc(widget.userId)
               .collection('eventInvite')
               .orderBy('eventTimestamp', descending: true)
               .startAfterDocument(_lastInviteDocument!)
               .limit(limit)
-          : userIviteRef
+          : userInvitesRef
               .doc(widget.userId)
               .collection('eventInvite')
               .where('answer', isEqualTo: 'Accepted')
@@ -689,14 +689,14 @@ class _ProfileScreenState extends State<ProfileScreen>
   //                                 borderRadius: BorderRadius.circular(20.0),
   //                               ),
   //                             ),
-  //                             onPressed: () => Navigator.push(
-  //                               context,
-  //                               MaterialPageRoute(
-  //                                 builder: (_) => CreateContents(
-  //                                   user: user,
-  //                                   from: 'Profile',
-  //                                 ),
-  //                               ),
+                              // onPressed: () => Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (_) => CreateContents(
+                              //       user: user,
+                              //       from: 'Profile',
+                              //     ),
+                              //   ),
   //                             ),
   //                             child: Material(
   //                               color: Colors.transparent,

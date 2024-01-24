@@ -52,6 +52,12 @@ class _LoginScreenOptionsState extends State<LoginScreenOptions>
   }
 
   @override
+  void dispose() {
+     animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
 

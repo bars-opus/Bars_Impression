@@ -21,6 +21,15 @@ class _ViewSentContentState extends State<ViewSentContent> {
     return _paletteGenerator;
   }
 
+  _ticketOrderDeleted(String currentUserId, TicketOrderModel ticketOrder) {
+    return Scaffold(
+      body: EventDeletedMessageWidget(
+        currentUserId: currentUserId,
+        ticketOrder: ticketOrder,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -243,6 +252,31 @@ class _ViewSentContentState extends State<ViewSentContent> {
                               );
                             },
                           )
-                        : const SizedBox.shrink());
+                        : widget.contentType.startsWith('eventDeleted')
+                            ? FutureBuilder(
+                                future:
+                                    DatabaseService.getUserTicketOrderWithId(
+                                  widget.contentId,
+                                  _provider.currentUserId!,
+                                ),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot snapshot) {
+                                  if (!snapshot.hasData) {
+                                    return Container(
+                                      width: width,
+                                      height: height,
+                                      color: Colors.black,
+                                      child: Center(
+                                          child: CircularProgressIndicator(
+                                        color: Colors.blue,
+                                      )),
+                                    );
+                                  }
+                                  TicketOrderModel _ticketOrder = snapshot.data;
+
+                                  return _ticketOrderDeleted(
+                                      _provider.currentUserId!, _ticketOrder);
+                                })
+                            : const SizedBox.shrink());
   }
 }

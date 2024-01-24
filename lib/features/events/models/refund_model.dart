@@ -5,9 +5,9 @@ class RefundModel {
   String eventId;
   String status;
   String userRequestId;
+  String orderId;
   String city;
   final String transactionId;
-
   String reason;
   Timestamp approvedTimestamp;
   final Timestamp timestamp;
@@ -22,6 +22,7 @@ class RefundModel {
     required this.approvedTimestamp,
     required this.timestamp,
     required this.transactionId,
+      required this.orderId,
   });
 
   factory RefundModel.fromDoc(DocumentSnapshot doc) {
@@ -31,6 +32,7 @@ class RefundModel {
       reason: doc['reason'] ?? '',
       status: doc['status'] ?? '',
       transactionId: doc['transactionId'] ?? '',
+      orderId: doc['orderId'] ?? '',
       userRequestId: doc['userRequestId'] ?? '',
       id: doc['id'] ?? '',
       timestamp: doc['timestamp'] ??
@@ -50,6 +52,9 @@ class RefundModel {
       eventId: json['eventId'],
       status: json['status'],
       transactionId: json['transactionId'],
+         orderId: json['orderId'],
+
+      
       city: json['city'],
       userRequestId: json['userRequestId'],
       reason: json['reason'],
@@ -64,6 +69,9 @@ class RefundModel {
       'eventId': eventId,
       'status': status,
       'transactionId': transactionId,
+      'orderId': orderId,
+
+      
       'userRequestId': userRequestId,
       'city': city,
       'reason': reason,

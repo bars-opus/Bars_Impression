@@ -103,7 +103,7 @@ class _EventsAttendingTicketScreenState
 // It uses the MapsLauncher.launchQuery function to do this.
 
   _launchMap() {
-    return MapsLauncher.launchQuery(widget.event.venue);
+    return MapsLauncher.launchQuery(widget.event.address);
   }
 
 // This function generates the ticket display widget.
@@ -655,7 +655,8 @@ class _EventsAttendingTicketScreenState
       timestamp: Timestamp.fromDate(DateTime.now()),
       userRequestId: _provider.user!.userId!,
       approvedTimestamp: Timestamp.fromDate(DateTime.now()),
-      reason: '',
+      reason:'',
+      orderId:widget.ticketOrder.orderId,
       city: _provider.userLocationPreference!.city!,
       status: 'pending',
       transactionId: widget.ticketOrder.transactionId,

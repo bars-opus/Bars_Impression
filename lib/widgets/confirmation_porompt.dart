@@ -6,17 +6,20 @@ class ConfirmationPrompt extends StatelessWidget {
   final String subTitle;
   final String buttonText;
   final VoidCallback? onPressed;
+  final int height;
 
-  ConfirmationPrompt(
-      {required this.title,
-      required this.subTitle,
-      required this.onPressed,
-      required this.buttonText});
+  ConfirmationPrompt({
+    required this.title,
+    required this.subTitle,
+    required this.onPressed,
+    required this.buttonText,
+    this.height = 250,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: ResponsiveHelper.responsiveHeight(context, 350),
+        height: ResponsiveHelper.responsiveHeight(context, height.toDouble()),
         decoration: BoxDecoration(
             color: Theme.of(context).primaryColorLight,
             borderRadius: BorderRadius.circular(30)),

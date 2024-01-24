@@ -70,7 +70,7 @@ class _TicketAndCalendarFeedScreenState
 
   _setUpInvites() async {
     try {
-      QuerySnapshot ticketOrderSnapShot = await userInviteRef
+      QuerySnapshot ticketOrderSnapShot = await newUserTicketOrderRef
           .doc(widget.currentUserId)
           .collection('eventInvite')
           .orderBy('eventTimestamp', descending: false)
@@ -119,7 +119,7 @@ class _TicketAndCalendarFeedScreenState
       return;
     }
     try {
-      QuerySnapshot postFeedSnapShot = await userInviteRef
+      QuerySnapshot postFeedSnapShot = await newUserTicketOrderRef
           .doc(widget.currentUserId)
           .collection('eventInvite')
           .orderBy('eventTimestamp', descending: false) // Keep consistent order
@@ -572,6 +572,7 @@ class _TicketAndCalendarFeedScreenState
       },
     );
     await _setUpInvites();
+    await _setUpUserCount();
   }
 
   _ticketPageBody() {

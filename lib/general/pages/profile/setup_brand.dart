@@ -86,98 +86,98 @@ class _SetUpBrandState extends State<SetUpBrand> {
   Future<void> createUser(String username, String userId) async {
     final _firestore = FirebaseFirestore.instance;
 
-    try {
-      await _firestore.runTransaction((transaction) async {
-        DocumentSnapshot usernameDoc = await transaction
-            .get(_firestore.collection('usernames').doc(username));
+    // try {
+    await _firestore.runTransaction((transaction) async {
+      DocumentSnapshot usernameDoc = await transaction
+          .get(_firestore.collection('usernames').doc(username));
 
-        if (usernameDoc.exists) {
-          throw Exception('Username is not unique');
-        }
+      if (usernameDoc.exists) {
+        throw Exception('Username is not unique');
+      }
 
-        // Create the username document
-        DocumentReference usernameRef =
-            _firestore.collection('usernames').doc(username.toUpperCase());
-        transaction.set(usernameRef, {'userId': userId});
-        transaction.update(
-          usersAuthorRef.doc(userId),
-          {
-            'userName': username.toUpperCase(),
-          },
-        );
+      // Create the username document
+      DocumentReference usernameRef =
+          _firestore.collection('usernames').doc(username.toUpperCase());
+      transaction.set(usernameRef, {'userId': userId});
+      transaction.update(
+        usersAuthorRef.doc(userId),
+        {
+          'userName': username.toUpperCase(),
+        },
+      );
 
-        transaction.update(
-          userProfessionalRef.doc(userId),
-          {
-            'userName': username.toUpperCase(),
-          },
-        );
-        _userNameCreated = true;
-        _updateAuthorHive(username.toUpperCase());
-        Provider.of<UserData>(context, listen: false)
-            .setChangeUserName(username.toUpperCase());
-        animateToPage();
-      });
-    } catch (e) {
-      // Rethrow the caught exception to handle it in the _validate method
-      throw e;
-    }
+      transaction.update(
+        userProfessionalRef.doc(userId),
+        {
+          'userName': username.toUpperCase(),
+        },
+      );
+      _userNameCreated = true;
+      _updateAuthorHive(username.toUpperCase());
+      Provider.of<UserData>(context, listen: false)
+          .setChangeUserName(username.toUpperCase());
+      animateToPage();
+    });
+    // } catch (e) {
+    //   // Rethrow the caught exception to handle it in the _validate method
+    //   throw e;
+    // }
   }
 
   Future<void> changeUsername(
       String oldUsername, String newUsername, String userId) async {
     final _firestore = FirebaseFirestore.instance;
 
-    try {
-      await _firestore.runTransaction((transaction) async {
-        DocumentSnapshot oldUsernameDoc = await transaction
-            .get(_firestore.collection('usernames').doc(oldUsername));
+    // try {
+    await _firestore.runTransaction((transaction) async {
+      DocumentSnapshot oldUsernameDoc = await transaction
+          .get(_firestore.collection('usernames').doc(oldUsername));
 
-        if (!oldUsernameDoc.exists) {
-          throw Exception('Old $oldUsername does not exist $newUsername');
-        }
+      if (!oldUsernameDoc.exists) {
+        throw Exception('Old $oldUsername does not exist $newUsername');
+      }
 
-        DocumentSnapshot newUsernameDoc = await transaction
-            .get(_firestore.collection('usernames').doc(newUsername));
+      DocumentSnapshot newUsernameDoc = await transaction
+          .get(_firestore.collection('usernames').doc(newUsername));
 
-        if (newUsernameDoc.exists) {
-          throw Exception('New username is not unique');
-        }
+      if (newUsernameDoc.exists) {
+        throw Exception('New username is not unique');
+      }
 
-        // Create the new username document
-        DocumentReference newUsernameRef =
-            _firestore.collection('usernames').doc(newUsername.toUpperCase());
-        transaction.set(newUsernameRef, oldUsernameDoc.data());
-        transaction.update(
-          usersAuthorRef.doc(userId),
-          {
-            'userName': newUsername.toUpperCase(),
-          },
-        );
+      // Create the new username document
+      DocumentReference newUsernameRef =
+          _firestore.collection('usernames').doc(newUsername.toUpperCase());
+      transaction.set(newUsernameRef, oldUsernameDoc.data());
+      transaction.update(
+        usersAuthorRef.doc(userId),
+        {
+          'userName': newUsername.toUpperCase(),
+        },
+      );
 
-        transaction.update(
-          userProfessionalRef.doc(userId),
-          {
-            'userName': newUsername.toUpperCase(),
-          },
-        );
+      transaction.update(
+        userProfessionalRef.doc(userId),
+        {
+          'userName': newUsername.toUpperCase(),
+        },
+      );
 
-        // Delete the old username document
-        DocumentReference oldUsernameRef =
-            _firestore.collection('usernames').doc(oldUsername);
-        transaction.delete(oldUsernameRef);
+      // Delete the old username document
+      DocumentReference oldUsernameRef =
+          _firestore.collection('usernames').doc(oldUsername);
+      transaction.delete(oldUsernameRef);
 
-        _updateAuthorHive(newUsername.toUpperCase());
-        // Update the global user object
-        Provider.of<UserData>(context, listen: false)
-            .setChangeUserName(newUsername.toUpperCase());
-        animateToPage();
-        // widget.user.userName = newUsername;
-      });
-    } catch (e) {
-      // Rethrow the caught exception to handle it in the _validate method
-      throw e;
-    }
+      _updateAuthorHive(newUsername.toUpperCase());
+      // Update the global user object
+      Provider.of<UserData>(context, listen: false)
+          .setChangeUserName(newUsername.toUpperCase());
+      animateToPage();
+      // widget.user.userName = newUsername;
+    });
+    // } catch (e) {
+    //   // Rethrow the caught exception to handle it in the _validate method
+    //   throw e;
+    // }
   }
 
   _updateAuthorHive(String userName) {
@@ -188,23 +188,23 @@ class _SetUpBrandState extends State<SetUpBrand> {
     // Create a new instance of AccountHolderAuthor with the updated name
     var updatedAccountAuthor = AccountHolderAuthor(
       name: _provider.name,
-      bio: _provider.user!.bio,
-      disabledAccount: _provider.user!.disabledAccount,
-      dynamicLink: _provider.user!.dynamicLink,
-      lastActiveDate: _provider.user!.lastActiveDate,
-      profileHandle: _provider.user!.profileHandle,
-      profileImageUrl: _provider.user!.profileImageUrl,
-      reportConfirmed: _provider.user!.reportConfirmed,
-      userId: _provider.user!.userId,
+      bio: '',
+      disabledAccount: false,
+      dynamicLink: '',
+      lastActiveDate: Timestamp.fromDate(DateTime.now()),
+      profileHandle: '',
+      profileImageUrl: '',
+      reportConfirmed: false,
+      userId: _provider.currentUserId,
       userName: userName,
-      verified: _provider.user!.verified,
+      verified: false,
     );
 
     // Put the new object back into the box with the same key
     accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
   }
 
-  _updateAuthorProfiHandleHive(String profileHandle) {
+  _updateAuthorProfiHandleHive(String profileHandle, String link) {
     final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
 
     var _provider = Provider.of<UserData>(context, listen: false);
@@ -212,23 +212,24 @@ class _SetUpBrandState extends State<SetUpBrand> {
     // Create a new instance of AccountHolderAuthor with the updated name
     var updatedAccountAuthor = AccountHolderAuthor(
       name: _provider.name,
-      bio: _provider.user!.bio,
-      disabledAccount: _provider.user!.disabledAccount,
-      dynamicLink: _provider.user!.dynamicLink,
-      lastActiveDate: _provider.user!.lastActiveDate,
+      bio: '',
+      disabledAccount: false,
+      dynamicLink: link,
+      lastActiveDate: Timestamp.fromDate(DateTime.now()),
       profileHandle: profileHandle,
-      profileImageUrl: _provider.user!.profileImageUrl,
-      reportConfirmed: _provider.user!.reportConfirmed,
-      userId: _provider.user!.userId,
+      profileImageUrl: '',
+      reportConfirmed: false,
+      userId: _provider.currentUserId,
       userName: _provider.changeNewUserName,
-      verified: _provider.user!.verified,
+      verified: false,
     );
 
     // Put the new object back into the box with the same key
     accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
   }
 
-  _updateAuthorBioAndImgeUrlHive(String bio, String profileImageUrl) {
+  _updateAuthorBioAndImgeUrlHive(
+      String bio, String profileImageUrl, String link) {
     final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
 
     var _provider = Provider.of<UserData>(context, listen: false);
@@ -237,68 +238,127 @@ class _SetUpBrandState extends State<SetUpBrand> {
     var updatedAccountAuthor = AccountHolderAuthor(
       name: _provider.name,
       bio: bio,
-      disabledAccount: _provider.user!.disabledAccount,
-      dynamicLink: _provider.user!.dynamicLink,
-      lastActiveDate: _provider.user!.lastActiveDate,
-      profileHandle: _provider.user!.profileHandle,
+      disabledAccount: false,
+      dynamicLink: link,
+      lastActiveDate: Timestamp.fromDate(DateTime.now()),
+      profileHandle: _provider.profrilehandle,
       profileImageUrl: profileImageUrl,
-      reportConfirmed: _provider.user!.reportConfirmed,
-      userId: _provider.user!.userId,
-      userName: _provider.user!.userName,
-      verified: _provider.user!.verified,
+      reportConfirmed: false,
+      userId: _provider.currentUserId,
+      userName: _provider.changeNewUserName.isEmpty
+          ? _controller.text.toUpperCase()
+          : _provider.changeNewUserName.toUpperCase(),
+      verified: false,
     );
 
     // Put the new object back into the box with the same key
     accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
   }
 
-  _validateTextToxicity(String changeUserName) async {
-    var _provider = Provider.of<UserData>(context, listen: false);
-    _provider.setIsLoading(true);
+  // _validateTextToxicity(String changeUserName) async {
+  //   var _provider = Provider.of<UserData>(context, listen: false);
+  //   _provider.setIsLoading(true);
 
-    TextModerator moderator = TextModerator();
+  //   TextModerator moderator = TextModerator();
 
-    // Define the texts to be checked
-    List<String> textsToCheck = [changeUserName];
+  //   // Define the texts to be checked
+  //   List<String> textsToCheck = [changeUserName];
 
-    // Set a threshold for toxicity that is appropriate for your app
-    const double toxicityThreshold = 0.7;
-    bool allTextsValid = true;
+  //   // Set a threshold for toxicity that is appropriate for your app
+  //   const double toxicityThreshold = 0.7;
+  //   bool allTextsValid = true;
 
-    for (String text in textsToCheck) {
-      Map<String, dynamic>? analysisResult = await moderator.moderateText(text);
+  //   for (String text in textsToCheck) {
+  //     Map<String, dynamic>? analysisResult = await moderator.moderateText(text);
 
-      // Check if the API call was successful
-      if (analysisResult != null) {
-        double toxicityScore = analysisResult['attributeScores']['TOXICITY']
-            ['summaryScore']['value'];
+  //     // Check if the API call was successful
+  //     if (analysisResult != null) {
+  //       double toxicityScore = analysisResult['attributeScores']['TOXICITY']
+  //           ['summaryScore']['value'];
 
-        if (toxicityScore >= toxicityThreshold) {
-          // If any text's score is above the threshold, show a Snackbar and set allTextsValid to false
-          mySnackBarModeration(context,
-              'Your username contains inappropriate content. Please review');
-          _provider.setIsLoading(false);
+  //       if (toxicityScore >= toxicityThreshold) {
+  //         // If any text's score is above the threshold, show a Snackbar and set allTextsValid to false
+  //         mySnackBarModeration(context,
+  //             'Your username contains inappropriate content. Please review');
+  //         _provider.setIsLoading(false);
 
-          allTextsValid = false;
-          break; // Exit loop as we already found inappropriate content
+  //         allTextsValid = false;
+  //         break; // Exit loop as we already found inappropriate content
+  //       }
+  //     } else {
+  //       // Handle the case where the API call failed
+  //       _provider.setIsLoading(false);
+  //       mySnackBar(context, 'Try again.');
+  //       allTextsValid = false;
+  //       break; // Exit loop as there was an API error
+  //     }
+  //   }
+
+  //   // Animate to the next page if all texts are valid
+  //   if (allTextsValid) {
+  //     _provider.setIsLoading(false);
+
+  //     await changeUsername(changeUserName.toUpperCase(),
+  //         _controller.text.toUpperCase(), _provider.currentUserId!);
+  //     mySnackBar(context, 'Username changed successfully');
+  //     // animateToPage(1);
+  //   }
+  // // }
+
+  _validateTextToxicity() async {
+    final form = _formKey.currentState;
+
+    if (form!.validate()) {
+      form.save();
+      var _provider = Provider.of<UserData>(context, listen: false);
+      _provider.setIsLoading(true);
+      var changeUserName = _controller.text.toUpperCase();
+      // print('  name  ' + changeUserName);
+
+      TextModerator moderator = TextModerator();
+      List<String> textsToCheck = [changeUserName];
+      const double toxicityThreshold = 0.7;
+      bool allTextsValid = true;
+      print(changeUserName + 'ggg'); // Replace with your logging mechanism
+
+      try {
+        for (String text in textsToCheck) {
+          Map<String, dynamic>? analysisResult =
+              await moderator.moderateText(text);
+
+          if (analysisResult != null) {
+            double toxicityScore = analysisResult['attributeScores']['TOXICITY']
+                ['summaryScore']['value'];
+
+            if (toxicityScore >= toxicityThreshold) {
+              mySnackBarModeration(context,
+                  'Your username contains inappropriate content. Please review');
+              allTextsValid = false;
+              break; // Exit loop as we already found inappropriate content
+            }
+          } else {
+            mySnackBar(context, 'Try again.');
+            allTextsValid = false;
+            break; // Exit loop as there was an API error
+          }
         }
-      } else {
-        // Handle the case where the API call failed
-        _provider.setIsLoading(false);
-        mySnackBar(context, 'Try again.');
+      } catch (e) {
+        // Log the error or handle it as needed
+        print(e); // Replace with your logging mechanism
+        mySnackBar(context, 'An unexpected error occurred.');
         allTextsValid = false;
-        break; // Exit loop as there was an API error
+      } finally {
+        _provider.setIsLoading(
+            false); // This ensures isLoading is always set to false at the end
       }
-    }
 
-    // Animate to the next page if all texts are valid
-    if (allTextsValid) {
-      _provider.setIsLoading(false);
-
-      await changeUsername(changeUserName.toUpperCase(),
-          _controller.text.toUpperCase(), _provider.currentUserId!);
-      mySnackBar(context, 'Username changed successfully');
-      // animateToPage(1);
+      if (allTextsValid) {
+        _validate();
+        // await changeUsername(changeUserName.toUpperCase(),
+        //     _controller.text.toUpperCase(), _provider.currentUserId!);
+        // mySnackBar(context, 'Username changed successfully');
+        // animateToPage(1);
+      }
     }
   }
 
@@ -307,28 +367,28 @@ class _SetUpBrandState extends State<SetUpBrand> {
     _provider.setIsLoading(true);
     var _changeUserName = _provider.changeNewUserName;
 
-    final form = _formKey.currentState;
-    if (form!.validate()) {
-      form.save();
-      // Check if the username has changed
-      if (_changeUserName == _controller.text.toUpperCase()) {
-        animateToPage();
-        // mySnackBar(context, '');
-      } else {
-        try {
-          if (_userNameCreated) {
-            _validateTextToxicity(_changeUserName);
-            // await changeUsername(_changeUserName.toUpperCase(),
-            //     _controller.text.toUpperCase(), _provider.currentUserId!);
-            // mySnackBar(context, 'Username changed successfully');
-          } else {
-            await createUser(_controller.text, _provider.currentUserId!);
-            mySnackBar(context, 'Username set successfully');
-          }
-        } catch (e) {
-          mySnackBar(context, e.toString());
+    // final form = _formKey.currentState;
+    // if (form!.validate()) {
+    //   form.save();
+    // Check if the username has changed
+    if (_changeUserName == _controller.text.toUpperCase()) {
+      animateToPage();
+      // mySnackBar(context, '');
+    } else {
+      try {
+        if (_userNameCreated) {
+          await changeUsername(_changeUserName.toUpperCase(),
+              _controller.text.toUpperCase(), _provider.currentUserId!);
+          mySnackBar(context, 'Username changed successfully');
+        } else {
+          print('  bgbgb' + _provider.currentUserId!);
+          await createUser(_controller.text, _provider.currentUserId!);
+          mySnackBar(context, 'Username set successfully');
         }
+      } catch (e) {
+        mySnackBar(context, e.toString());
       }
+      // }
     }
     _provider.setIsLoading(false);
   }
@@ -392,14 +452,14 @@ class _SetUpBrandState extends State<SetUpBrand> {
     var _provider = Provider.of<UserData>(context, listen: false);
     String currentUserId = _provider.currentUserId!;
 
-    final UserSettingsLoadingPreferenceModel userLocationSettings =
-        _provider.userLocationPreference!;
+    // final UserSettingsLoadingPreferenceModel userLocationSettings =
+    //     _provider.userLocationPreference!;
 
     if (_formKey.currentState!.validate() && !_provider.isLoading) {
       _provider.setIsLoading(true);
       _formKey.currentState?.save();
       FocusScope.of(context).unfocus();
-      animateToPage();
+
       String _profileImageUrl = '';
       if (_profileImage == null) {
         _profileImageUrl = '';
@@ -413,14 +473,16 @@ class _SetUpBrandState extends State<SetUpBrand> {
       String profileImageUrl = _profileImageUrl;
       String bio = _provider.bio.trim().replaceAll('\n', ' ');
 
-      String link = await DatabaseService.myDynamicLink(
-        profileImageUrl,
-        _provider.user!.userName!,
-        _provider.user!.bio!,
-        'https://www.barsopus.com/user_$currentUserId.uid',
-      );
-
       try {
+        animateToPage();
+        String link = await DatabaseService.myDynamicLink(
+          profileImageUrl,
+          _provider.changeNewUserName.isEmpty
+              ? _controller.text.toUpperCase()
+              : _provider.changeNewUserName.toUpperCase(),
+          bio,
+          'https://www.barsopus.com/user_$currentUserId.uid',
+        );
         WriteBatch batch = FirebaseFirestore.instance.batch();
         batch.update(
           usersAuthorRef.doc(currentUserId),
@@ -454,7 +516,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
         );
         // try {
         batch.commit();
-        _updateAuthorBioAndImgeUrlHive(bio, profileImageUrl);
+        _updateAuthorBioAndImgeUrlHive(bio, profileImageUrl, link);
 
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
@@ -503,8 +565,8 @@ class _SetUpBrandState extends State<SetUpBrand> {
     WriteBatch batch = FirebaseFirestore.instance.batch();
     String link = await DatabaseService.myDynamicLink(
       '',
-      _provider.user!.userName!,
-      _provider.user!.bio!,
+      _provider.changeNewUserName,
+      '',
       'https://www.barsopus.com/user_$currentUserId.uid',
     );
 
@@ -525,9 +587,9 @@ class _SetUpBrandState extends State<SetUpBrand> {
     );
     try {
       batch.commit();
-
+      _provider.setProfileHandle(_profileHandle);
       animateToPage();
-      _updateAuthorProfiHandleHive(_profileHandle);
+      _updateAuthorProfiHandleHive(_profileHandle, link);
     } catch (e) {
       _showBottomSheetErrorMessage();
     }
@@ -778,7 +840,8 @@ class _SetUpBrandState extends State<SetUpBrand> {
                   Provider.of<UserData>(context, listen: false).isLoading
                       ? const SizedBox.shrink()
                       : _outlineButton('Save Username', () {
-                          _validate();
+                          _validateTextToxicity();
+                          // _validate();
                         }),
                   const SizedBox(height: 60),
                 ]),
@@ -794,7 +857,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // _loadingToNext(),
+            _loadingToNext(),
             // Align(
             //   alignment: Alignment.centerRight,
             //   child: MiniCircularProgressButton(
@@ -851,11 +914,10 @@ class _SetUpBrandState extends State<SetUpBrand> {
                 child: _provider.isLoading
                     ? SchimmerSkeleton(
                         schimmerWidget: CircleAvatar(
-                            backgroundColor:
-                                Theme.of(context).primaryColorLight,
-                            radius: ResponsiveHelper.responsiveHeight(
-                                context, 80.0),
-                            backgroundImage: _displayProfileImage()),
+                          backgroundColor: Theme.of(context).primaryColorLight,
+                          radius:
+                              ResponsiveHelper.responsiveHeight(context, 80.0),
+                        ),
                       )
                     : GestureDetector(
                         onTap: () => _handleImageFromGallery,

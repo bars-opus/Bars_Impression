@@ -12,6 +12,36 @@ class CreateContent extends StatelessWidget {
     );
   }
 
+  void _showBottomEditLocation(
+    BuildContext context,
+  ) {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    var _userLocation = _provider.userLocationPreference;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return ConfirmationPrompt(
+          height: 300,
+          buttonText: 'set up city',
+          onPressed: () async {
+            Navigator.pop(context);
+            _navigateToPage(
+                context,
+                EditProfileSelectLocation(
+                  user: _userLocation!,
+                  notFromEditProfile: true,
+                ));
+          },
+          title: 'Set up your city',
+          subTitle:
+              'In order to create an event, it is necessary to set up your city information. This enables us to provide targeted public event suggestions to individuals residing in close proximity to you, as well as recommend local public events that may be of interest to you. Please note that providing your precise location or community details is not required; specifying your city is sufficient.',
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var _user = Provider.of<UserData>(context, listen: false).user;
@@ -35,18 +65,14 @@ class CreateContent extends StatelessWidget {
                 onPressed: _userLocation != null
                     ? () {
                         HapticFeedback.mediumImpact();
-                        _userLocation.country!.isEmpty
-                            ? _navigateToPage(
+                        _userLocation.city!.isEmpty
+                            ? _showBottomEditLocation(context)
+                            : _navigateToPage(
                                 context,
-                                EditProfileSelectLocation(
-                                  user: _userLocation,
-                                ))
-                            :  _navigateToPage(
-                                    context,
-                                    CreateEventScreen(
-                                      isEditting: false,
-                                      event: null,
-                                    ));
+                                CreateEventScreen(
+                                  isEditting: false,
+                                  event: null,
+                                ));
                       }
                     : () {},
                 text: 'Create event',

@@ -63,6 +63,8 @@ class _CreateEventScreenState extends State<CreateEventScreen>
   final _maxOrderController = TextEditingController();
   final _rowController = TextEditingController();
   final _maxSeatPerRowController = TextEditingController();
+  final _cancellationRasonController = TextEditingController();
+
   final _debouncer = Debouncer(milliseconds: 500);
 
 // Focus nodes
@@ -76,13 +78,11 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     super.initState();
     selectedValue = _type.isEmpty ? values.last : _type;
     _pageController = PageController(
-      initialPage: widget.isEditting && widget.event!.isFree
-          ? 2
-          : widget.isEditting
-              ? 1
-              : 0,
+      initialPage: widget.isEditting ? 1 : 0,
     );
     _priceController.addListener(_onAskTextChanged);
+    _cancellationRasonController.addListener(_onAskTextChanged);
+
     SchedulerBinding.instance.addPostFrameCallback((_) {
       var _provider = Provider.of<UserData>(context, listen: false);
       _provider.setIsStartDateSelected(false);
@@ -146,6 +146,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     _maxOrderController.dispose();
     _rowController.dispose();
     _maxSeatPerRowController.dispose();
+    _cancellationRasonController.dispose();
     _pageController.dispose();
     _addressSearchfocusNode.dispose();
     _nameSearchfocusNode.dispose();
@@ -158,7 +159,8 @@ class _CreateEventScreenState extends State<CreateEventScreen>
   }
 
   void _onAskTextChanged() {
-    if (_priceController.text.isNotEmpty) {
+    if (_priceController.text.isNotEmpty ||
+        _cancellationRasonController.text.isNotEmpty) {
       _isTypingNotifier.value = true;
     } else {
       _isTypingNotifier.value = false;
@@ -338,36 +340,6 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       MaterialPageRoute(builder: (_) => page),
     );
   }
-
-  // _deleteEvent() {
-
-  //   try {
-  //     await DatabaseService.editEvent(event);
-  //    messageRef
-  //       .doc(widget.chatId)
-  //       .collection('conversation')
-  //       .doc(widget.message.id)
-  //       .get()
-  //       .then((doc) {
-  //     if (doc.exists) {
-  //       doc.reference.delete();
-  //     }
-  //   });
-  //   FirebaseStorage.instance
-  //       .refFromURL(attatchments[0].mediaUrl)
-  //       .delete()
-  //       .catchError((e) {});
-
-  //        _setNull(_provider);
-  //     return event;
-  //   } catch (e) {
-  //     // _handleError(e, false);
-  //     animateToBack(1);
-  //     _isLoading = false;
-  //     _showBottomSheetErrorMessage(e);
-  //   }
-
-  // }
 
   // Method to create event
   _submitCreate() async {
@@ -554,6 +526,139 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     }
   }
 
+  void _showBottomSheetLoading() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return BottomModalLoading(
+          title: 'Deleting event',
+        );
+      },
+    );
+  }
+
+  void _showBottomSheetConfirmDeleteEvent() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return ConfirmationPrompt(
+          height: 300,
+          buttonText: 'Delete event',
+          onPressed: widget.event == null
+              ? () {
+                  mySnackBar(context, 'event not found');
+                }
+              : () async {
+                  Navigator.pop(context);
+                  try {
+                    Navigator.pop(context);
+                    // _showBottomSheetLoading();
+                    Navigator.pop(context);
+                    await DatabaseService.deleteEvent(widget.event!,
+                        _cancellationRasonController.text.trim());
+                    await _setNull(_provider);
+
+                    Navigator.pop(context);
+
+                    mySnackBar(context, 'Event deleted succesfully');
+                  } catch (e) {
+                    Navigator.pop(context);
+                    _showBottomSheetErrorMessage(
+                        'Error clearing notifications ');
+                  }
+                },
+          title: 'Are you sure you want to Delete this event?',
+          subTitle: widget.event!.isFree
+              ? "All data associated with this event, including the event room, will be deleted."
+              : "If the event is deleted, all data related to the event, including the event room, will be deleted. Additionally, purchased tickets will be fully refunded",
+        );
+      },
+    );
+  }
+
+  Widget _showBottomDeleteForm() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    return ValueListenableBuilder(
+      valueListenable: _isTypingNotifier,
+      builder: (BuildContext context, bool isTyping, Widget? child) {
+        return AlertDialog(
+          backgroundColor: Theme.of(context).primaryColorLight,
+          title: Text(
+            'Add reason',
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          content: Container(
+            width: ResponsiveHelper.responsiveHeight(context, 600),
+            // height: ResponsiveHelper.responsiveHeight(context, 600),
+            decoration: BoxDecoration(
+                color: Theme.of(context).primaryColorLight,
+                borderRadius: BorderRadius.circular(30)),
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              body: Padding(
+                padding: EdgeInsets.all(10),
+                child: ListView(children: [
+                  _cancellationRasonController.text.isNotEmpty
+                      ? Align(
+                          alignment: Alignment.centerRight,
+                          child: MiniCircularProgressButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              _showBottomSheetConfirmDeleteEvent();
+                            },
+                            text: "Continue",
+                            color: Colors.blue,
+                          ),
+                        )
+                      : const SizedBox(height: 50),
+                  _ticketFiled(
+                    false,
+                    true,
+                    'Reason',
+                    'Please provide the reason for your event cancellation',
+                    _cancellationRasonController,
+                    TextInputType.multiline,
+                    (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please reason for your event cancellation';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                ]),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // void _showBottomRefundForm() {
+  //   var _size = MediaQuery.of(context).size;
+  //   showModalBottomSheet(
+  //       context: context,
+  //       isScrollControlled: true,
+  //       backgroundColor: Colors.transparent,
+  //       builder: (BuildContext context) {
+  //         return StatefulBuilder(
+  //             builder: (BuildContext context, StateSetter setState) {
+  //           return ValueListenableBuilder(
+  //               valueListenable: _isTypingNotifier,
+  //               builder: (BuildContext context, bool isTyping, Widget? child) {
+  //                 return
+  //               });
+  //         });
+  //       });åß
+  // }
+
 // To reset all event variables in ordert to be able to create a new event
   _setNull(UserData provider) {
     // var provider = Provider.of<UserData>(context, listen: false);
@@ -669,52 +774,6 @@ class _CreateEventScreenState extends State<CreateEventScreen>
         }).toList()),
       );
 
-// //Geocoder to get the city and country from a location
-//   _reverseGeocoding(String address) async {
-//     var _provider = Provider.of<UserData>(context, listen: false);
-//     _provider.setIsLoading(true);
-
-//     try {
-//       List<Location> results = await locationFromAddress(address);
-
-//       if (results != null && results.length > 0) {
-//         Location firstResult = results.first;
-//         List<Placemark> placemarks = await placemarkFromCoordinates(
-//             firstResult.latitude, firstResult.longitude);
-
-//         if (placemarks != null &&
-//             placemarks.length > 0 &&
-//             (placemarks.first.locality != null &&
-//                 placemarks.first.country != null)) {
-//           Placemark firstPlacemark = placemarks.first;
-//           print(
-//               'City: ${firstPlacemark.locality}, Country: ${firstPlacemark.country}');
-//           _provider.setCity(firstPlacemark.locality!);
-//           _provider.setCountry(firstPlacemark.country!);
-//         } else {}
-//       } else {}
-//     } catch (e) {}
-//     if (_provider.city.isEmpty) {
-//       // Fallback to string parsing
-//       List<String> parts = address.split(',');
-//       if (parts.length > 2) {
-//         // String city = parts[parts.length - 2].trim();
-//         String country = parts[parts.length - 1].trim();
-//         String stateOrProvince = parts[parts.length - 2].trim();
-//         String city = parts.length > 3 && stateOrProvince.length <= 2
-//             ? parts[parts.length - 3].trim()
-//             : parts[parts.length - 2].trim();
-//         _provider.setCity(city);
-//         _provider.setCountry(country);
-//         _provider.setCouldntDecodeCity(true);
-//       }
-//     }
-
-//     _provider.addressSearchResults = [];
-//     _provider.setIsLoading(false);
-//     _clearSearch();
-//   }
-
   animateToPage(int index) {
     _pageController.animateToPage(
       _pageController.page!.toInt() + index,
@@ -769,123 +828,6 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     );
   }
 
-//settings for event
-  // _eventSettingSection() {
-  //   var _provider = Provider.of<UserData>(context, listen: false);
-  //   return _pageWidget(
-  //     newWidget: Column(
-  //       mainAxisAlignment: MainAxisAlignment.center,
-  //       crossAxisAlignment: CrossAxisAlignment.center,
-  //       children: [
-  //         Row(
-  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //           children: [
-  //             _eventProcessNumber(
-  //               '1. ',
-  //               'Event\nsettings.',
-  //             ),
-  //             MiniCircularProgressButton(
-  //                 onPressed: () {
-  //                   _provider.isFree
-  //                       ? animateToPage(2)
-  //                       : showCurrencyPicker(
-  //                           context: context,
-  //                           showFlag: true,
-  //                           showSearchField: true,
-  //                           showCurrencyName: true,
-  //                           showCurrencyCode: true,
-  //                           onSelect: (Currency currency) {
-  //                             Provider.of<UserData>(context, listen: false)
-  //                                 .setCurrency(
-  //                                     '${currency.name}, ${currency.code} |');
-  //                             animateToPage(1);
-  //                           },
-  //                           favorite: ['USD'],
-  //                         );
-  //                 },
-  //                 text: "Next")
-  //           ],
-  //         ),
-  //         const SizedBox(
-  //           height: 20,
-  //         ),
-  //         Container(
-  //           color: Colors.white,
-  //           child: Padding(
-  //             padding: const EdgeInsets.only(left: 20.0, right: 10),
-  //             child: Column(
-  //               mainAxisAlignment: MainAxisAlignment.center,
-  //               crossAxisAlignment: CrossAxisAlignment.center,
-  //               children: [
-  //                 const SizedBox(height: 30),
-  //                 SettingSwitchBlack(
-  //                     title: 'Private event',
-  //                     subTitle:
-  //                         'You can create a private event and invite only specific people, or you can create a general event where anybody can attend.',
-  //                     value: _provider.isPrivate,
-  //                     onChanged: (value) => _provider.setIsPrivate(value)),
-  //                 Padding(
-  //                   padding: const EdgeInsets.only(top: 10.0, bottom: 10),
-  //                   child: Divider(
-  //                     color: Colors.grey,
-  //                   ),
-  //                 ),
-  //                 SettingSwitchBlack(
-  //                     title: 'Virtual event',
-  //                     subTitle:
-  //                         'You can create an event that people can attend, or you can also create a virtual event that can be hosted on virtual platforms, where people can interact with you. ',
-  //                     value: _provider.isVirtual,
-  //                     onChanged: (value) => _provider.setIsVirtual(value)),
-  //                 Padding(
-  //                   padding: const EdgeInsets.only(top: 10.0, bottom: 10),
-  //                   child: Divider(
-  //                     color: Colors.grey,
-  //                   ),
-  //                 ),
-  //                 _provider.isCashPayment
-  //                     ? const SizedBox.shrink()
-  //                     : SettingSwitchBlack(
-  //                         title: 'Free event',
-  //                         subTitle:
-  //                             'A free event without a ticket or gate fee (rate free).',
-  //                         value: _provider.isFree,
-  //                         onChanged: (value) => _provider.setIsFree(value)),
-  //                 _provider.isCashPayment
-  //                     ? const SizedBox.shrink()
-  //                     : Padding(
-  //                         padding: const EdgeInsets.only(top: 10.0, bottom: 10),
-  //                         child: Divider(
-  //                           color: Colors.grey,
-  //                         ),
-  //                       ),
-  //                 _provider.isFree
-  //                     ? const SizedBox.shrink()
-  //                     : Container(
-  //                         child: SettingSwitchBlack(
-  //                             title: 'Cash payment',
-  //                             subTitle:
-  //                                 'Cash in hand mode of payment for ticket or gate fee?',
-  //                             value: _provider.isCashPayment,
-  //                             onChanged: (value) =>
-  //                                 _provider.setIsCashPayment(value)),
-  //                       ),
-  //                 _provider.isFree
-  //                     ? const SizedBox.shrink()
-  //                     : Padding(
-  //                         padding: const EdgeInsets.only(top: 10.0, bottom: 10),
-  //                         child: Divider(
-  //                           color: Colors.grey,
-  //                         ),
-  //                       ),
-  //               ],
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   Widget _eventSettingSection() {
     UserData _provider = Provider.of<UserData>(context, listen: false);
 
@@ -901,15 +843,6 @@ class _CreateEventScreenState extends State<CreateEventScreen>
               MiniCircularProgressButton(
                   onPressed: () {
                     animateToPage(1);
-                    // _provider.isFree
-                    //     ? animateToPage(2)
-                    //     : _provider.isCashPayment
-                    //         ? _showCurrencyPicker()
-                    //         : _userLocation!.country == 'Ghana' &&
-                    //                 _userLocation.subaccountId!.isEmpty
-                    //             ? _navigateToPage(
-                    //                 context, CreateSubaccountForm())
-                    //             : _showCurrencyPicker();
                   },
                   text: "Next")
             ],
@@ -1099,13 +1032,53 @@ class _CreateEventScreenState extends State<CreateEventScreen>
             ],
           ),
         ),
-        // Positioned(
-        //     top: 30,
-        //     right: 0,
-        //     child: CreateDeleteWidget(
-        //       onpressed: _deleteEvent,
-        //       text: '',
-        //     )),
+        if (widget.isEditting && widget.event != null)
+          Positioned(
+            right: 30,
+            child: Container(
+              width: ResponsiveHelper.responsiveHeight(context, 50.0),
+              height: ResponsiveHelper.responsiveHeight(context, 50.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.white.withOpacity(.4),
+              ),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(10),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return _showBottomDeleteForm();
+                    },
+                  );
+                },
+                child: Ink(
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Container(
+                    height: ResponsiveHelper.responsiveHeight(context, 40.0),
+                    width: ResponsiveHelper.responsiveHeight(context, 40.0),
+                    child: IconButton(
+                      icon: Icon(Icons.delete_forever),
+                      iconSize:
+                          ResponsiveHelper.responsiveHeight(context, 25.0),
+                      color: Colors.white,
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return _showBottomDeleteForm();
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          )
       ],
     );
   }
@@ -1141,62 +1114,6 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       onValidateText: (_) {},
     );
   }
-  // _eventCategorySection() {
-  //   var _provider = Provider.of<UserData>(context, listen: false);
-  //   return _pageWidget(
-  //     newWidget: Column(
-  //       mainAxisAlignment: MainAxisAlignment.start,
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         Row(
-  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //           children: [
-  //             _eventProcessNumber(
-  //               '2. ',
-  //               'Category.',
-  //             ),
-  //             _provider.category.startsWith('Others')
-  //                 ? _provider.subCategory.isEmpty
-  //                     ? SizedBox.shrink()
-  //                     : MiniCircularProgressButton(
-  //                         onPressed: () {
-  //                           FocusScope.of(context).unfocus();
-  //                           animateToPage(1);
-  //                         },
-  //                         text: "Next")
-  //                 : MiniCircularProgressButton(
-  //                     onPressed: () {
-  //                       animateToPage(1);
-  //                     },
-  //                     text: "Next"),
-  //           ],
-  //         ),
-  //         DirectionWidgetWhite(
-  //           text:
-  //               'Select an event category that matches the event you are creating. ',
-  //         ),
-  //         Text(
-  //           _provider.category,
-  //           style: TextStyle(
-  //             color: Colors.blue,
-  //             fontSize: 16,
-  //           ),
-  //         ),
-  //         _provider.category.startsWith('Others')
-  //             ? ContentFieldWhite(
-  //                 autofocus: true,
-  //                 labelText: "Custom Category",
-  //                 hintText:
-  //                     "Example:  House party, birthday party,  wedding, etc.",
-  //                 initialValue: _provider.subCategory,
-  //                 onSavedText: (input) => _provider.setSubCategory(input),
-  //                 onValidateText: (_) {},
-  //               )
-  //             : buildRadios(),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   _adDateTimeButton(String buttonText, VoidCallback onPressed) {
     return GestureDetector(
@@ -1343,7 +1260,8 @@ class _CreateEventScreenState extends State<CreateEventScreen>
         ? Theme.of(context).textTheme.titleSmall
         : TextStyle(
             fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
-            color: Colors.black);
+            color: Theme.of(context).secondaryHeaderColor,
+          );
     var labelStyle = TextStyle(
         fontSize:
             ResponsiveHelper.responsiveFontSize(context, isTicket ? 18.0 : 14),
@@ -1355,6 +1273,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     return TextFormField(
       autofocus: autofocus,
       controller: controler,
+      maxLines: null,
       keyboardAppearance: MediaQuery.of(context).platformBrightness,
       style: style,
       keyboardType: textInputType,
@@ -1481,125 +1400,6 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       ),
     );
   }
-
-  // _eventRateSection() {
-  //   var _provider = Provider.of<UserData>(context, listen: false);
-  //   final width = Responsive.isDesktop(context)
-  //       ? 600.0
-  //       : MediaQuery.of(context).size.width;
-  //   List<Ticket> tickets = _provider.ticket;
-  //   Map<String, List<Ticket>> ticketsByGroup = {};
-  //   for (Ticket ticket in tickets) {
-  //     if (!ticketsByGroup.containsKey(ticket.group)) {
-  //       ticketsByGroup[ticket.group] = [];
-  //     }
-  //     ticketsByGroup[ticket.group]!.add(ticket);
-  //   }
-  //   return _pageWidget(
-  //     newWidget: Column(
-  //       children: [
-  //         Container(
-  //           height: MediaQuery.of(context).size.height.toDouble(),
-  //           width: width,
-  //           decoration: BoxDecoration(
-  //               color: Colors.transparent,
-  //               borderRadius: BorderRadius.circular(30)),
-  //           child: ListView(
-  //             children: [
-  //               Row(
-  //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                 children: [
-  //                   _eventProcessNumber(
-  //                     '2. ',
-  //                     'Rate.',
-  //                   ),
-  //                   _provider.ticket.isEmpty
-  //                       ? SizedBox.shrink()
-  //                       : MiniCircularProgressButton(
-  //                           onPressed: _validate,
-  //                           text: "Next",
-  //                         )
-  //                 ],
-  //               ),
-  //               DirectionWidgetWhite(
-  //                 text: 'Enter the rate of your event. Example 10.00.',
-  //               ),
-  //               Text(
-  //                 _provider.currency,
-  //                 style: TextStyle(
-  //                   color: Colors.white,
-  //                   fontSize: 16,
-  //                 ),
-  //               ),
-  //               const SizedBox(height: 10.0),
-  //               PickOptionWidget(
-  //                 title: tickets.length < 1
-  //                     ? 'Create Ticket'
-  //                     : 'Create another Ticket',
-  //                 onPressed: () {
-  //                   showDialog(
-  //                     context: context,
-  //                     builder: (BuildContext context) {
-  //                       Widget content;
-
-  //                       content = _addTicketContainer();
-
-  //                       return ValueListenableBuilder(
-  //                           valueListenable: _isTypingNotifier,
-  //                           builder: (BuildContext context, bool isTyping,
-  //                               Widget? child) {
-  //                             return AlertDialog(
-  //                               title: ListTile(
-  //                                 trailing: _priceController.text.isEmpty
-  //                                     ? SizedBox.shrink()
-  //                                     : GestureDetector(
-  //                                         onTap: () {
-  //                                           _addTicket();
-  //                                           Navigator.pop(context);
-  //                                         },
-  //                                         child: Container(
-  //                                           decoration: BoxDecoration(
-  //                                               color: Colors.blue,
-  //                                               borderRadius:
-  //                                                   BorderRadius.circular(100)),
-  //                                           child: Padding(
-  //                                             padding:
-  //                                                 const EdgeInsets.all(8.0),
-  //                                             child: Text('  Add  ',
-  //                                                 style: TextStyle(
-  //                                                     color: Colors.white,
-  //                                                     fontSize: 14)),
-  //                                           ),
-  //                                         ),
-  //                                       ),
-  //                                 title: Text(
-  //                                   'Ticket',
-  //                                   style:
-  //                                       Theme.of(context).textTheme.titleSmall,
-  //                                 ),
-  //                               ),
-  //                               content: content,
-  //                             );
-  //                           });
-  //                     },
-  //                   );
-  //                 },
-  //                 dropDown: false,
-  //               ),
-  //               const SizedBox(height: 10.0),
-  //               TicketGroup(
-  //                 groupTickets: _provider.ticket,
-  //                 currentUserId: _provider.user!.id!,
-  //                 event: null,
-  //               ),
-  //               const SizedBox(height: 40.0),
-  //             ],
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   _dateRange() {
     UserData _provider = Provider.of<UserData>(context, listen: false);
@@ -1817,51 +1617,43 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                       ),
                       _provider.ticket.isEmpty || _provider.currency.isEmpty
                           ? SizedBox.shrink()
-                          : isGhanaOrCurrencyGHS
+                          : _provider.isFree
                               ? MiniCircularProgressButton(
-                                  onPressed: isGhanaOrCurrencyGHS &&
-                                          shouldNavigate
-                                      ? () {
-                                          _navigateToPage(
-                                              context, CreateSubaccountForm());
-                                        }
-                                      : widget.isEditting
+                                  onPressed: () {
+                                    _validate();
+                                  },
+                                  text: "Next",
+                                )
+                              : isGhanaOrCurrencyGHS
+                                  ? MiniCircularProgressButton(
+                                      onPressed: isGhanaOrCurrencyGHS &&
+                                              shouldNavigate
+                                          ? () {
+                                              _navigateToPage(context,
+                                                  CreateSubaccountForm());
+                                            }
+                                          : widget.isEditting
+                                              ? () {
+                                                  _validate();
+                                                }
+                                              : () {
+                                                  _validate();
+                                                }, // Pass null or remove the onPressed to disable the button if the condition is not met
+                                      text: "Next",
+                                    )
+                                  : MiniCircularProgressButton(
+                                      onPressed: widget.isEditting
                                           ? () {
                                               _validate();
                                             }
                                           : () {
-                                              _validate();
+                                              _showBottomTicketSite();
                                             }, // Pass null or remove the onPressed to disable the button if the condition is not met
-                                  text: "Next",
-                                )
-                              : MiniCircularProgressButton(
-                                  onPressed: widget.isEditting
-                                      ? () {
-                                          _validate();
-                                        }
-                                      : () {
-                                          _showBottomTicketSite();
-                                        }, // Pass null or remove the onPressed to disable the button if the condition is not met
-                                  text: "Next",
-                                )
+                                      text: "Next",
+                                    )
                     ],
                   ),
-                // Container(
-                //   decoration: BoxDecoration(
-                //     color: Colors.red,
-                //   ),
-                //   child: Padding(
-                //     padding: const EdgeInsets.all(8.0),
-                //     child: Text(
-                //       '',
-                //       style: TextStyle(
-                //         color: Colors.white,
-                //         fontSize:
-                //             ResponsiveHelper.responsiveFontSize(context, 16.0),
-                //       ),
-                //     ),
-                //   ),
-                // ),
+
                 DirectionWidgetWhite(
                   text:
                       'Create tickets for your event! Customize them based on your needs and preferences. For instance, you have the option to create VIP tickets with special access levels and exclusive options. Additionally, you can also create Regular tickets with different benefits and access levels.',
@@ -2425,124 +2217,6 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     );
   }
 
-  // _eventPickDateSection() {
-  //   var _provider = Provider.of<UserData>(context, listen: false);
-  //   Duration _durationDuringEvents =
-  //       _provider.clossingDay.toDate().difference(_provider.startDate.toDate());
-  //   int differenceBetweenEventDays = _durationDuringEvents.inDays.abs();
-
-  //   Duration _countDownToEvents =
-  //       DateTime.now().difference(_provider.startDate.toDate());
-  //   int countDownDifferenceToEvent = _countDownToEvents.inDays.abs();
-
-  //   return _pageWidget(
-  //     newWidget: Column(
-  //       mainAxisAlignment: MainAxisAlignment.start,
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         Row(
-  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //           children: [
-  //             _eventProcessNumber(
-  //               '3. ',
-  //               'Date.',
-  //             ),
-  //             MiniCircularProgressButton(
-  //                 onPressed: () {
-  //                   FocusScope.of(context).unfocus();
-  //                   animateToPage(1);
-  //                 },
-  //                 text: "Next")
-  //           ],
-  //         ),
-  //         DirectionWidgetWhite(
-  //           text:
-  //               'Select a start and end date for your event. Even if your event would end within a day select the same date as start and end date. This would be helpful in displaying your program lineup. ',
-  //         ),
-  //         DatePicker(
-  //           onStartDateChanged: (DateTime newDate) {
-  //             _provider.setStartDate(Timestamp.fromDate(newDate));
-  //             _provider.setStartDateString(newDate.toString());
-  //           },
-  //           onEndDateChanged: (DateTime newDate) {
-  //             _provider.setClossingDay(Timestamp.fromDate(newDate));
-  //             _provider.setClossingDayString(newDate.toString());
-  //           },
-  //           onEndTimeChanged: (DateTime newDate) {
-  //             _scheduleStartTime = newDate;
-  //           },
-  //           onStartTimeChanged: (DateTime newDate) {
-  //             _scheduleEndTime = newDate;
-  //           },
-  //           date: true,
-  //         ),
-  //         Padding(
-  //           padding: const EdgeInsets.symmetric(vertical: 5.0),
-  //           child: Divider(
-  //             color: Colors.white,
-  //           ),
-  //         ),
-  //         RichText(
-  //           textScaleFactor: MediaQuery.of(context).textScaleFactor,
-  //           text: TextSpan(
-  //             children: [
-  //               TextSpan(
-  //                 text: 'Duration:        ',
-  //                 style: TextStyle(
-  //                   fontSize: 14,
-  //                   color: Colors.white,
-  //                 ),
-  //               ),
-  //               TextSpan(
-  //                 text: '${differenceBetweenEventDays.toString()} days',
-  //                 style: TextStyle(
-  //                     color: Colors.white,
-  //                     fontSize: 14,
-  //                     fontWeight: FontWeight.bold),
-  //               )
-  //             ],
-  //           ),
-  //           overflow: TextOverflow.ellipsis,
-  //         ),
-  //         Padding(
-  //           padding: const EdgeInsets.symmetric(vertical: 5.0),
-  //           child: Divider(
-  //             color: Colors.white,
-  //           ),
-  //         ),
-  //         RichText(
-  //           textScaleFactor: MediaQuery.of(context).textScaleFactor,
-  //           text: TextSpan(
-  //             children: [
-  //               TextSpan(
-  //                 text: 'Countdown:   ',
-  //                 style: TextStyle(
-  //                   fontSize: 14,
-  //                   color: Colors.white,
-  //                 ),
-  //               ),
-  //               TextSpan(
-  //                 text: '${countDownDifferenceToEvent.toString()} days more',
-  //                 style: TextStyle(
-  //                     color: Colors.white,
-  //                     fontSize: 14,
-  //                     fontWeight: FontWeight.bold),
-  //               )
-  //             ],
-  //           ),
-  //           overflow: TextOverflow.ellipsis,
-  //         ),
-  //         Padding(
-  //           padding: const EdgeInsets.symmetric(vertical: 5.0),
-  //           child: Divider(
-  //             color: Colors.white,
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   //Time schedule
 
   List<DateTime> getDatesInRange(DateTime startDate, DateTime endDate) {
@@ -2561,20 +2235,17 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       context,
     );
 
-    // List<DateTime> dateList = getDatesInRange(
-    //     _provider.startDate.toDate(), _provider.clossingDay.toDate());
-    // _selectedDate = _provider.startDate.toDate();
-
     return _pageWidget(
       newWidget: Column(
         children: [
           Container(
-            height: MediaQuery.of(context).size.height.toDouble(),
+            height: ResponsiveHelper.responsiveHeight(context, 500 * 500),
             width: width,
             decoration: BoxDecoration(
                 color: Colors.transparent,
                 borderRadius: BorderRadius.circular(30)),
             child: ListView(
+              physics: const NeverScrollableScrollPhysics(),
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -2622,65 +2293,6 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                 const SizedBox(
                   height: 30,
                 ),
-
-                // Container(
-                //   color: Colors.white,
-                //   child: Padding(
-                //     padding: const EdgeInsets.only(left: 8.0),
-                //     child: TextFormField(
-                //       controller: _scheduleTitleController,
-                //       keyboardType: TextInputType.multiline,
-                //       keyboardAppearance:
-                //           MediaQuery.of(context).platformBrightness,
-                //       maxLines: null,
-                //       style: TextStyle(
-                //           color: Colors.black,
-                //           fontSize: ResponsiveHelper.responsiveFontSize(
-                //               context, 16.0),
-                //           fontWeight: FontWeight.normal),
-                //       decoration: InputDecoration(
-                //         enabledBorder: new UnderlineInputBorder(
-                //             borderSide: new BorderSide(color: Colors.grey)),
-                //         labelText: 'Schedule(Program) title',
-                //         labelStyle: TextStyle(
-                //             fontSize: ResponsiveHelper.responsiveFontSize(
-                //                 context, 14.0),
-                //             color: Colors.black),
-                //         hintText: 'eg. Fist performace, meet and greet',
-                //         hintStyle: TextStyle(
-                //             fontSize: ResponsiveHelper.responsiveFontSize(
-                //                 context, 14.0),
-                //             color: Colors.grey),
-                //       ),
-                //       validator: (value) {
-                //         if (value == null || value.isEmpty) {
-                //           return 'Please enter a schedule activity';
-                //         }
-                //         return null;
-                //       },
-                //     ),
-                //   ),
-                // ),
-
-                // Container(
-                //   color: Colors.white,
-                //   padding: const EdgeInsets.symmetric(horizontal: 10),
-                //   child: _ticketFiled(
-                //     false,
-                //     false,
-                //     'Performer or speaker',
-                //     'Name of speaker or performer',
-                //     _schedulePerfomerController,
-                //     TextInputType.text,
-                //     (value) {
-                //       if (value == null || value.isEmpty) {
-                //         return 'Program performer/speaker cannot be empty';
-                //       }
-                //       return null;
-                //     },
-                //   ),
-                // ),
-
                 Container(
                   decoration: BoxDecoration(
                       color: !_provider.endDateSelected
@@ -2690,55 +2302,6 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                   padding: EdgeInsets.all(3),
                   child: Column(
                     children: [
-                      // Container(
-                      //     // color: Colors.red,
-                      //     height: ResponsiveHelper.responsiveHeight(
-                      //         context, dateList.length == 1 ? 60 : 120),
-                      //     width:
-                      //         ResponsiveHelper.responsiveWidth(context, width),
-                      //     child: GridView.builder(
-                      //       scrollDirection: Axis.horizontal,
-                      //       gridDelegate:
-                      //           SliverGridDelegateWithFixedCrossAxisCount(
-                      //         crossAxisCount: dateList.length == 1
-                      //             ? 1
-                      //             : 2, // Items down the screen
-                      //         mainAxisSpacing: .7,
-                      //         crossAxisSpacing: .7,
-                      //         childAspectRatio:
-                      //             dateList.length == 1 ? 0.2 : 0.3,
-                      //         // crossAxisCount: 5, // Two columns
-                      //         // childAspectRatio:
-                      //         //     3, // Adjust the ratio based on your layout needs
-                      //       ),
-                      //       itemCount: dateList.length,
-                      //       itemBuilder: (context, index) {
-                      //         DateTime date = dateList[index];
-                      //         return Card(
-                      //           // Using Card for better visual separation
-                      //           child: ListTile(
-                      //             title: Text(
-                      //               MyDateFormat.toDate(date),
-                      //               style: TextStyle(fontSize: 12),
-
-                      //               // DateFormat('yyyy-MM-dd').format(date)
-                      //             ),
-                      //             leading: Radio<DateTime>(
-                      //               value: date,
-                      //               groupValue:
-                      //                   _provider.sheduleDateTemp.toDate(),
-                      //               onChanged: (DateTime? value) {
-                      //                 _provider.setSheduleDateTemp(
-                      //                     Timestamp.fromDate(value!));
-                      //                 // setState(() {
-                      //                 //   _selectedDate = value;
-                      //                 // });
-                      //               },
-                      //             ),
-                      //           ),
-                      //         );
-                      //       },
-                      //     )),
                       if (_provider.endDateSelected) _dateRange(),
                       if (_provider.endDateSelected)
                         const SizedBox(
@@ -2793,7 +2356,6 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                     onPressed: () {
                       _showBottomTaggedPeople(true);
                     }),
-
                 SchedulePeopleGroup(
                   canBeEdited: true,
                   groupTaggedEventPeopleGroup: _provider.schedulePerson,
@@ -3061,7 +2623,6 @@ class _CreateEventScreenState extends State<CreateEventScreen>
   }
 
 // enter main event information: title, theme, etc.
-
   _validateTextToxicity() async {
     var _provider = Provider.of<UserData>(context, listen: false);
     _provider.setIsLoading(true);
@@ -3075,46 +2636,124 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     const double toxicityThreshold = 0.7;
     bool allTextsValid = true;
 
-    for (String text in textsToCheck) {
-      if (text.isEmpty) {
-        // Handle the case where the text is empty
-        _provider.setIsLoading(false);
-        mySnackBar(context, ' Title and theme cannot be empty.');
-        allTextsValid = false;
-        break; // Exit loop as there is an empty text
-      }
-
-      Map<String, dynamic>? analysisResult = await moderator.moderateText(text);
-
-      // Check if the API call was successful
-      if (analysisResult != null) {
-        double toxicityScore = analysisResult['attributeScores']['TOXICITY']
-            ['summaryScore']['value'];
-
-        if (toxicityScore >= toxicityThreshold) {
-          // If any text's score is above the threshold, show a Snackbar and set allTextsValid to false
-          mySnackBarModeration(context,
-              'Your title or theme contains inappropriate content. Please review');
-          _provider.setIsLoading(false);
-
+    try {
+      for (String text in textsToCheck) {
+        if (text.isEmpty) {
+          // Handle the case where the text is empty
+          mySnackBar(context, 'Title and theme cannot be empty.');
           allTextsValid = false;
-          break; // Exit loop as we already found inappropriate content
+          break; // Exit loop as there is an empty text
         }
-      } else {
-        // Handle the case where the API call failed
-        _provider.setIsLoading(false);
-        mySnackBar(context, 'Try again.');
-        allTextsValid = false;
-        break; // Exit loop as there was an API error
+
+        Map<String, dynamic>? analysisResult =
+            await moderator.moderateText(text);
+
+        // Check if the API call was successful
+        if (analysisResult != null) {
+          double toxicityScore = analysisResult['attributeScores']['TOXICITY']
+              ['summaryScore']['value'];
+
+          if (toxicityScore >= toxicityThreshold) {
+            // If any text's score is above the threshold, show a Snackbar and set allTextsValid to false
+            mySnackBarModeration(context,
+                'Your title or theme contains inappropriate content. Please review');
+            allTextsValid = false;
+            break; // Exit loop as we already found inappropriate content
+          }
+        } else {
+          // Handle the case where the API call failed
+          mySnackBar(context, 'Error analyzing text. Try again.');
+          allTextsValid = false;
+          break; // Exit loop as there was an API error
+        }
       }
+    } catch (e) {
+      // Handle any exceptions here
+      mySnackBar(context, 'An unexpected error occurred. Please try again.');
+      allTextsValid = false;
+    } finally {
+      // This block runs whether an exception occurred or not
+      _provider.setIsLoading(false);
     }
 
-    // Animate to the next page if all texts are valid
+    // You can use allTextsValid for further logic if needed
     if (allTextsValid) {
       _provider.setIsLoading(false);
       animateToPage(1);
     }
   }
+
+  void mySnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void mySnackBarModeration(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 4),
+      ),
+    );
+  }
+
+  // _validateTextToxicity() async {
+  //   var _provider = Provider.of<UserData>(context, listen: false);
+  //   _provider.setIsLoading(true);
+
+  //   TextModerator moderator = TextModerator();
+
+  //   // Define the texts to be checked
+  //   List<String> textsToCheck = [_provider.title, _provider.theme];
+
+  //   // Set a threshold for toxicity that is appropriate for your app
+  //   const double toxicityThreshold = 0.7;
+  //   bool allTextsValid = true;
+
+  //   for (String text in textsToCheck) {
+  //     if (text.isEmpty) {
+  //       // Handle the case where the text is empty
+  //       _provider.setIsLoading(false);
+  //       mySnackBar(context, ' Title and theme cannot be empty.');
+  //       allTextsValid = false;
+  //       break; // Exit loop as there is an empty text
+  //     }
+
+  //     Map<String, dynamic>? analysisResult = await moderator.moderateText(text);
+
+  //     // Check if the API call was successful
+  //     if (analysisResult != null) {
+  //       double toxicityScore = analysisResult['attributeScores']['TOXICITY']
+  //           ['summaryScore']['value'];
+
+  //       if (toxicityScore >= toxicityThreshold) {
+  //         // If any text's score is above the threshold, show a Snackbar and set allTextsValid to false
+  //         mySnackBarModeration(context,
+  //             'Your title or theme contains inappropriate content. Please review');
+  //         _provider.setIsLoading(false);
+
+  //         allTextsValid = false;
+  //         break; // Exit loop as we already found inappropriate content
+  //       }
+  //     } else {
+  //       // Handle the case where the API call failed
+  //       _provider.setIsLoading(false);
+  //       mySnackBar(context, 'Try again.');
+  //       allTextsValid = false;
+  //       break; // Exit loop as there was an API error
+  //     }
+  //   }
+
+  //   // Animate to the next page if all texts are valid
+  //   if (allTextsValid) {
+  //     _provider.setIsLoading(false);
+  //     animateToPage(1);
+  //   }
+  // }
 
   _eventMainInformation() {
     var _provider = Provider.of<UserData>(context, listen: false);
@@ -3383,51 +3022,6 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     );
   }
 
-  // /// display image
-  // _display() {
-  //   var _provider = Provider.of<UserData>(context, listen: false);
-  //   if (_provider.imageUrl.isNotEmpty) {
-  //     return Container(
-  //         height: double.infinity,
-  //         decoration: BoxDecoration(
-  //             image: DecorationImage(
-  //           image: CachedNetworkImageProvider(_provider.imageUrl),
-  //           fit: BoxFit.cover,
-  //         )),
-  //         child: Container(
-  //           decoration: BoxDecoration(
-  //               gradient: LinearGradient(begin: Alignment.bottomRight, colors: [
-  //             Colors.black.withOpacity(.5),
-  //             Colors.black.withOpacity(.5),
-  //           ])),
-  //         ));
-  //   } else {
-  //     return Container(
-  //       child: _provider.eventImage == null
-  //           ? Container(
-  //               height: double.infinity,
-  //               width: double.infinity,
-  //               color: Colors.black,
-  //             )
-  //           : Container(
-  //               decoration: BoxDecoration(
-  //                   image: DecorationImage(
-  //                 image: FileImage(
-  //                     File(Provider.of<UserData>(context).eventImage!.path)),
-  //                 fit: BoxFit.cover,
-  //               )),
-  //               child: Container(
-  //                 decoration: BoxDecoration(
-  //                     gradient:
-  //                         LinearGradient(begin: Alignment.bottomRight, colors: [
-  //                   Colors.black.withOpacity(.5),
-  //                   Colors.black.withOpacity(.5),
-  //                 ])),
-  //               )),
-  //     );
-  //   }
-  // }
-
   _animatedText(String text) {
     return FadeAnimatedText(
       duration: const Duration(seconds: 8),
@@ -3501,21 +3095,10 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                         ? _pop()
                         : _pageController.page == 1
                             ? _pop()
-                            :
-                            // widget.event!.isFree && _pageController.page == 5
-                            //     ? animateToBack(2)
-                            //     :
-                            animateToBack(1);
+                            : animateToBack(1);
                   }
                 : () {
-                    _provider.int1 == 0
-                        ? _pop()
-                        :
-                        //  _provider.isFree && _provider.int1 == 5
-                        //     ? animateToBack(2)
-                        //     :
-
-                        animateToBack(1);
+                    _provider.int1 == 0 ? _pop() : animateToBack(1);
                   });
   }
 

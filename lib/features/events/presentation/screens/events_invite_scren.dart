@@ -96,7 +96,7 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
 // This method launches a map with the event's venue.
 // It uses the MapsLauncher.launchQuery function to do this.
   _launchMap() {
-    return MapsLauncher.launchQuery(widget.event.venue);
+    return MapsLauncher.launchQuery(widget.event.address);
   }
 
   // This asynchronous method sends an invitation. It first checks if the _isLoadingSubmit state variable is true.
@@ -208,6 +208,9 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
       orderId: commonId,
       tickets: _finalTicket,
       total: total,
+      isDeleted: false,
+      canlcellationReason: '',
+      eventAuthorId: widget.event.authorId,
       // entranceId: '',
       eventId: widget.event.id,
       eventImageUrl: widget.event.imageUrl,

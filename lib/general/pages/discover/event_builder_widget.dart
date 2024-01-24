@@ -129,49 +129,7 @@ class EventBuilderWidget extends StatelessWidget {
     );
   }
 
-  // // Ticket options purchase entry
-  // void _showBottomSheetAttendOptions(BuildContext context, Event currentEvent) {
-  //   showModalBottomSheet(
-  //       context: context,
-  //       isScrollControlled: true,
-  //       backgroundColor: Colors.transparent,
-  //       builder: (BuildContext context) {
-  //         final width = MediaQuery.of(context).size.width;
-  //         List<TicketModel> tickets = currentEvent.ticket;
-  //         Map<String, List<TicketModel>> ticketsByGroup = {};
-  //         for (TicketModel ticket in tickets) {
-  //           if (!ticketsByGroup.containsKey(ticket.group)) {
-  //             ticketsByGroup[ticket.group] = [];
-  //           }
-  //           ticketsByGroup[ticket.group]!.add(ticket);
-  //         }
-  //         return Container(
-  //           height: MediaQuery.of(context).size.height.toDouble() / 1.2,
-  //           width: width,
-  //           decoration: BoxDecoration(
-  //               color: Theme.of(context).cardColor,
-  //               borderRadius: BorderRadius.circular(30)),
-  //           child: ListView(
-  //             children: [
-  //               Padding(
-  //                 padding: const EdgeInsets.all(20.0),
-  //                 child: TicketPurchasingIcon(
-  //                   // icon: Icons.close,
-  //                   title: 'Ticket packages.',
-  //                 ),
-  //               ),
-  //               TicketGroup(
-  //                 currentUserId: currentUserId,
-  //                 groupTickets: currentEvent.ticket,
-  //                 event: currentEvent,
-  //                 inviteReply: '',
-  //               ),
-  //             ],
-  //           ),
-  //         );
-  //       });
-  // }
-
+  
   _sliverListEvent(
     BuildContext context,
     bool isFree,
@@ -569,7 +527,8 @@ class EventBuilderWidget extends StatelessWidget {
               liveLocationIntialPage: liveLocationIntialPage,
               isEvent: true,
             ),
-          if (sortNumberOfDays == 0 && seeMoreFrom.isEmpty) _weeks(context),
+          if (liveLocation.isEmpty)
+            if (sortNumberOfDays == 0 && seeMoreFrom.isEmpty) _weeks(context),
           if (_userLocationSettings!.city!.isEmpty && liveLocation.isEmpty)
             CategoryContainerEmpty(
               containerSubTitle:
@@ -584,23 +543,24 @@ class EventBuilderWidget extends StatelessWidget {
           if (sortNumberOfDays == 0 && seeMoreFrom.isEmpty)
             _thisWeekEvents(
                 context, false, _userLocationSettings, _typeSpecific),
-          if (sortNumberOfDays == 0 && seeMoreFrom.isEmpty)
-            eventsFollowing.length == 0
-                ? NoEventInfoWidget(
-                    from: 'by people you follow',
-                    specificType: typeSpecific,
-                    liveLocation: liveLocation,
-                    liveLocationIntialPage: liveLocationIntialPage,
-                    isEvent: true,
-                  )
-                : _discoverBuilder(
-                    eventsFollowing,
-                    eventsFollowingSnapshot,
-                    _userLocationSettings.city!,
-                    loadMoreSeeAllCity,
-                    _typeSpecific,
-                    'Following',
-                  ),
+          if (liveLocation.isEmpty)
+            if (sortNumberOfDays == 0 && seeMoreFrom.isEmpty)
+              eventsFollowing.length == 0
+                  ? NoEventInfoWidget(
+                      from: 'by people you follow',
+                      specificType: typeSpecific,
+                      liveLocation: liveLocation,
+                      liveLocationIntialPage: liveLocationIntialPage,
+                      isEvent: true,
+                    )
+                  : _discoverBuilder(
+                      eventsFollowing,
+                      eventsFollowingSnapshot,
+                      _userLocationSettings.city!,
+                      loadMoreSeeAllCity,
+                      _typeSpecific,
+                      'Following',
+                    ),
           if (sortNumberOfDays == 0 && seeMoreFrom.isEmpty)
             const SizedBox(
               height: 40,

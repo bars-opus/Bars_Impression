@@ -14,13 +14,13 @@ class _AuthCreateUserCredentialsState extends State<AuthCreateUserCredentials> {
   void initState() {
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      signUpUser(context);
+      signUpUser();
     });
   }
 
   signUpUser(
-    BuildContext context,
-  ) async {
+      // BuildContext context,
+      ) async {
     mySnackBar(context, 'Registering account\nPlease wait...');
 
     final signedInHandler = FirebaseAuth.instance.currentUser!;

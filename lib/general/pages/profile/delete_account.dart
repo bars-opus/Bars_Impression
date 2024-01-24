@@ -101,8 +101,6 @@ class _DeleteAccountState extends State<DeleteAccount> {
       },
     );
 
-
-
     batch.update(
       usersGeneralSettingsRef.doc(widget.user.userId),
       {
@@ -151,70 +149,15 @@ class _DeleteAccountState extends State<DeleteAccount> {
     // }
   }
 
-  _deleteHive() async {
-    if (Hive.isBoxOpen('chatMessages')) {
-      final box = Hive.box<ChatMessage>('chatMessages');
-      await box.clear();
-    } else {
-      final box = await Hive.openBox<ChatMessage>('chatMessages');
-      await box.clear();
-    }
-
-    if (Hive.isBoxOpen('accountHolderAuthor')) {
-      final box = Hive.box<AccountHolderAuthor>('accountHolderAuthor');
-      await box.clear();
-    } else {
-      final box =
-          await Hive.openBox<AccountHolderAuthor>('accountHolderAuthor');
-      await box.clear();
-    }
-
-    if (Hive.isBoxOpen('currentUser')) {
-      final box = Hive.box<AccountHolderAuthor>('currentUser');
-      await box.clear();
-    } else {
-      final box = await Hive.openBox<AccountHolderAuthor>('currentUser');
-      await box.clear();
-    }
-
-    if (Hive.isBoxOpen('accountLocationPreference')) {
-      final box = Hive.box<UserSettingsLoadingPreferenceModel>(
-          'accountLocationPreference');
-      await box.clear();
-    } else {
-      final box = await Hive.openBox<UserSettingsLoadingPreferenceModel>(
-          'accountLocationPreference');
-      await box.clear();
-    }
-    // final boxNames = [
-    //   'chatMessages',
-    //   'chats',
-    //   'eventRooms',
-    //   'ticketIds',
-    //   'accountHolderAuthor',
-    //   'accountLocationPreference',
-    // ];
-
-    // for (final boxName in boxNames) {
-    //   if (Hive.isBoxOpen(boxName)) {
-    //     final box = Hive.box(boxName);
-    //     await box.clear();
-    //   } else {
-    //     final box = await Hive.openBox(boxName);
-    //     await box.clear();
-    //   }
-    // }
-  }
-
-  Future<void> _deleteDocuments(String collectionPath, String userId) async {
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection(collectionPath)
-        .where('userId', isEqualTo: userId)
-        .get();
-    for (var docSnapshot in querySnapshot.docs) {
-      await docSnapshot.reference.delete();
-    }
-  }
+  // Future<void> _deleteDocuments(String collectionPath, String userId) async {
+  //   final querySnapshot = await FirebaseFirestore.instance
+  //       .collection(collectionPath)
+  //       .where('userId', isEqualTo: userId)
+  //       .get();
+  //   for (var docSnapshot in querySnapshot.docs) {
+  //     await docSnapshot.reference.delete();
+  //   }
+  // }
 
   Future<void> _deleteStorageFolder(String folderPath) async {
     ListResult listResult =
@@ -224,48 +167,62 @@ class _DeleteAccountState extends State<DeleteAccount> {
     }
   }
 
-  Future<void> deleteTicketsOrder(String currentUserId) async {
-    QuerySnapshot snapshot = await newEventTicketOrderRef
-        .where('inviteeId', isEqualTo: currentUserId)
-        .get();
+  // Future<void> deleteSentInvite(String currentUserId) async {
+  //   QuerySnapshot snapshot = await sentEventIviteRef
+  //       .where('inviteeId', isEqualTo: currentUserId)
+  //       .get();
 
-    WriteBatch batch = FirebaseFirestore.instance.batch();
+  //   WriteBatch batch = FirebaseFirestore.instance.batch();
 
-    snapshot.docs.forEach((doc) {
-      batch.delete(doc.reference);
-    });
+  //   snapshot.docs.forEach((doc) {
+  //     batch.delete(doc.reference);
+  //   });
 
-    await batch.commit();
-  }
+  //   await batch.commit();
+  // }
 
-  Future<void> deleteAdvice(String currentUserId) async {
-    QuerySnapshot snapshot =
-        await userAdviceRef.where('authorId', isEqualTo: currentUserId).get();
+  // Future<void> deleteAdvice(String currentUserId) async {
+  //   QuerySnapshot snapshot =
+  //       await userAdviceRef.where('authorId', isEqualTo: currentUserId).get();
 
-    WriteBatch batch = FirebaseFirestore.instance.batch();
+  //   WriteBatch batch = FirebaseFirestore.instance.batch();
 
-    snapshot.docs.forEach((doc) {
-      batch.delete(doc.reference);
-    });
+  //   snapshot.docs.forEach((doc) {
+  //     batch.delete(doc.reference);
+  //   });
 
-    await batch.commit();
-  }
+  //   await batch.commit();
+  // }
 
-  Future<void> deleteEventAsks(String currentUserId) async {
-    QuerySnapshot snapshot =
-        await asksRef.where('authorId', isEqualTo: currentUserId).get();
+  // Future<void> deleteEventAsks(String currentUserId) async {
+  //   QuerySnapshot snapshot =
+  //       await asksRef.where('authorId', isEqualTo: currentUserId).get();
 
-    WriteBatch batch = FirebaseFirestore.instance.batch();
+  //   WriteBatch batch = FirebaseFirestore.instance.batch();
 
-    snapshot.docs.forEach((doc) {
-      batch.delete(doc.reference);
-    });
+  //   snapshot.docs.forEach((doc) {
+  //     batch.delete(doc.reference);
+  //   });
 
-    await batch.commit();
-  }
+  //   await batch.commit();
+  // }
 
-  Future<void> deleteChatrRoomMessages(String currentUserId) async {
-    QuerySnapshot snapshot = await eventsChatRoomsConverstionRef
+  // Future<void> deleteChatrRoomMessages(String currentUserId) async {
+  //   QuerySnapshot snapshot = await eventsChatRoomsConverstionRef
+  //       .where('senderId', isEqualTo: currentUserId)
+  //       .get();
+
+  //   WriteBatch batch = FirebaseFirestore.instance.batch();
+
+  //   snapshot.docs.forEach((doc) {
+  //     batch.delete(doc.reference);
+  //   });
+
+  //   await batch.commit();
+  // }
+
+  Future<void> deleteChatRoom(String currentUserId) async {
+    QuerySnapshot snapshot = await eventsChatRoomsRef
         .where('senderId', isEqualTo: currentUserId)
         .get();
 
@@ -278,34 +235,34 @@ class _DeleteAccountState extends State<DeleteAccount> {
     await batch.commit();
   }
 
-  Future<void> deleteNewEventTicketOrder(String currentUserId) async {
-    QuerySnapshot snapshot = await newEventTicketOrderRef
-        .where('userOrderId', isEqualTo: currentUserId)
-        .get();
+  // Future<void> deleteNewEventTicketOrder(String currentUserId) async {
+  //   QuerySnapshot snapshot = await newEventTicketOrderRef
+  //       .where('userOrderId', isEqualTo: currentUserId)
+  //       .get();
 
-    WriteBatch batch = FirebaseFirestore.instance.batch();
+  //   WriteBatch batch = FirebaseFirestore.instance.batch();
 
-    snapshot.docs.forEach((doc) {
-      batch.delete(doc.reference);
-    });
+  //   snapshot.docs.forEach((doc) {
+  //     batch.delete(doc.reference);
+  //   });
 
-    await batch.commit();
-  }
+  //   await batch.commit();
+  // }
 
-  Future<void> deleteAllEvents(String currentUserId) async {
-    QuerySnapshot snapshot =
-        await allEventsRef.where('authorId', isEqualTo: currentUserId).get();
+  // Future<void> deleteAllEvents(String currentUserId) async {
+  //   QuerySnapshot snapshot =
+  //       await allEventsRef.where('authorId', isEqualTo: currentUserId).get();
 
-    WriteBatch batch = FirebaseFirestore.instance.batch();
+  //   WriteBatch batch = FirebaseFirestore.instance.batch();
 
-    snapshot.docs.forEach((doc) {
-      batch.delete(doc.reference);
-    });
+  //   snapshot.docs.forEach((doc) {
+  //     batch.delete(doc.reference);
+  //   });
 
-    await batch.commit();
-  }
+  //   await batch.commit();
+  // }
 
-  Future<void> deleteAllMessages(String currentUserId) async {
+  Future<void> deleteAllSenderMessages(String currentUserId) async {
     QuerySnapshot snapshot =
         await messageRef.where('senderId', isEqualTo: currentUserId).get();
 
@@ -318,9 +275,9 @@ class _DeleteAccountState extends State<DeleteAccount> {
     await batch.commit();
   }
 
-  Future<void> deleteFollowers(String currentUserId) async {
+  Future<void> deleteAllReceiverMessages(String currentUserId) async {
     QuerySnapshot snapshot =
-        await followersRef.where('uid', isEqualTo: currentUserId).get();
+        await messageRef.where('receiverId', isEqualTo: currentUserId).get();
 
     WriteBatch batch = FirebaseFirestore.instance.batch();
 
@@ -330,6 +287,19 @@ class _DeleteAccountState extends State<DeleteAccount> {
 
     await batch.commit();
   }
+
+  // Future<void> deleteFollowers(String currentUserId) async {
+  //   QuerySnapshot snapshot =
+  //       await followersRef.where('userId', isEqualTo: currentUserId).get();
+
+  //   WriteBatch batch = FirebaseFirestore.instance.batch();
+
+  //   snapshot.docs.forEach((doc) {
+  //     batch.delete(doc.reference);
+  //   });
+
+  //   await batch.commit();
+  // }
 
   void _reauthenticate() async {
     FocusScope.of(context).unfocus();
@@ -352,9 +322,26 @@ class _DeleteAccountState extends State<DeleteAccount> {
     }
   }
 
+  // nT4CrmVLB6VPaQglyq0vgqAbF452
+  // f9iDwxBuw0XniGUP7ROtIhKKd6n2
+  // Ys0gvO4DO8cJeYEZGUZZX56oPCv2
+
+  // v2K3Pi4HuHcQ3LyIOwKkdT2uSo63
+
+  // zlhI0sU1InSWF4FThGLTzwuvJGG3
+
+  // dAh8m9fBLbSG2nA4KX3Y1R1mG8r1
+
+  // hjtiDuoaDOdtpG07sS7aPNJZY2J3
+
+  // fiTBRa9hOJaownGdbv8jaoq5yO13
+
   void _deleteAccount(BuildContext context) async {
     final String currentUserId =
         Provider.of<UserData>(context, listen: false).currentUserId!;
+
+    print(currentUserId);
+
     final String userName =
         Provider.of<UserData>(context, listen: false).user!.userName!;
     FocusScope.of(context).unfocus();
@@ -362,7 +349,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
 
     // Define all storage paths
     List<String> storagePaths = [
-      'images/events',
+      'images/events/$currentUserId',
       'images/messageImage/$currentUserId',
       'images/users/$currentUserId',
       'images/professionalPicture1/$currentUserId',
@@ -372,71 +359,136 @@ class _DeleteAccountState extends State<DeleteAccount> {
       'images/validate/$currentUserId',
     ];
 
-// Define all collection paths
-    List<String> collectionPaths = [
-      'forums',
-      'posts',
-      'new_usersInvite',
-
-      'userAdvice',
-      'userAdvice',
-      'following',
-      'new_activities',
-      'new_events',
-
-      //change eventInvite to corresponding names
-      'new_ticketId',
-      'new_userTicketOrder',
-      //change eventInvite to corresponding names
-
-      'new_usersInvite',
-      // 'user_author',
-      'user_general_settings',
-      // 'user_location_settings',
-      'user_professsional',
-      'user_workRequest',
-    ];
-
-    // Delete all documents in all collections
-    for (var path in collectionPaths) {
-      await _deleteDocuments(path, currentUserId);
-    }
-
-    // Delete all files in all storage folders
     for (var path in storagePaths) {
       await _deleteStorageFolder(path);
     }
 
-    // Delete eventInvite documents
-    await deleteTicketsOrder(currentUserId);
-    await deleteNewEventTicketOrder(currentUserId);
-    await deleteAllEvents(currentUserId);
-    await deleteAllMessages(currentUserId);
-    await deleteFollowers(currentUserId);
-    await deleteAdvice(currentUserId);
-    await deleteEventAsks(currentUserId);
-    await deleteChatrRoomMessages(currentUserId);
+    await deleteAllSenderMessages(currentUserId);
+    await deleteAllReceiverMessages(currentUserId);
 
-    // Delete user document
+    // Delete user user_workRequest
+    final CollectionReference userWorkRequest = FirebaseFirestore.instance
+        .collection('user_workRequest')
+        .doc(currentUserId)
+        .collection('workRequests');
+    final QuerySnapshot userWorkRequestSnapshot = await userWorkRequest.get();
+    for (var doc in userWorkRequestSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete user user_advice
+    final CollectionReference userAdvice = FirebaseFirestore.instance
+        .collection('new_userAdvice')
+        .doc(currentUserId)
+        .collection('userAdvice');
+    final QuerySnapshot userAdviceSnapshot = await userAdvice.get();
+    for (var doc in userAdviceSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete user user_workRequest
+    final CollectionReference userFollower = FirebaseFirestore.instance
+        .collection('new_followers')
+        .doc(currentUserId)
+        .collection('userFollowers');
+    final QuerySnapshot userFollowerSnapshot = await userFollower.get();
+    for (var doc in userFollowerSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete user newUsersInvite
+    final CollectionReference newUsersInvite = FirebaseFirestore.instance
+        .collection('new_usersInvite')
+        .doc(currentUserId)
+        .collection('userEventFeed');
+    final QuerySnapshot newUsersInviteSnapshot = await newUsersInvite.get();
+    for (var doc in newUsersInviteSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete user newActivities
+    final CollectionReference newActivities = FirebaseFirestore.instance
+        .collection('new_activities')
+        .doc(currentUserId)
+        .collection('userActivities');
+    final QuerySnapshot newActivitiesSnapshot = await newActivities.get();
+    for (var doc in newActivitiesSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete user new_eventFeeds
+    final CollectionReference eventFeeds = FirebaseFirestore.instance
+        .collection('new_eventFeeds')
+        .doc(currentUserId)
+        .collection('userEventFeed');
+    final QuerySnapshot eventFsnapshot = await eventFeeds.get();
+    for (var doc in eventFsnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete user new_userTicketOrder
+    final CollectionReference newUserTicketOrder = FirebaseFirestore.instance
+        .collection('new_userTicketOrder')
+        .doc(currentUserId)
+        .collection('eventInvite');
+    final QuerySnapshot newUserTicketOrderSnapshot =
+        await newUserTicketOrder.get();
+    for (var doc in newUserTicketOrderSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete user new_userTicketOrder
+    final CollectionReference newTicketId = FirebaseFirestore.instance
+        .collection('new_ticketId')
+        .doc(currentUserId)
+        .collection('eventInvite');
+    final QuerySnapshot newTicketIdSnapshot = await newTicketId.get();
+    for (var doc in newTicketIdSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete user newEvents
+    final CollectionReference newEvents = FirebaseFirestore.instance
+        .collection('new_events')
+        .doc(currentUserId)
+        .collection('userEvents');
+    final QuerySnapshot newEventsSnapshot = await newEvents.get();
+    for (var doc in newEventsSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete user userName
     await FirebaseFirestore.instance
         .collection('usernames')
         .doc(userName)
         .delete();
 
-    // Delete user document
+    // Delete user user_author
     await FirebaseFirestore.instance
         .collection('user_author')
-        .doc(_auth.currentUser!.uid)
+        .doc(currentUserId)
         .delete();
 
-    // Delete user document
+    // Delete user user_location_settings
     await FirebaseFirestore.instance
         .collection('user_location_settings')
-        .doc(_auth.currentUser!.uid)
+        .doc(currentUserId)
         .delete();
 
-    _deleteHive();
+    // Delete user user_professsional
+    await FirebaseFirestore.instance
+        .collection('user_professsional')
+        .doc(currentUserId)
+        .delete();
+
+    // Delete user user_general_settings
+    await FirebaseFirestore.instance
+        .collection('user_general_settings')
+        .doc(currentUserId)
+        .delete();
     await _auth.currentUser!.delete();
+    await _deleteHive();
+
     // await _auth.signOut();
     Future.delayed(Duration(seconds: 2)).then((_) {
       Navigator.of(context).pushAndRemoveUntil(
@@ -447,6 +499,80 @@ class _DeleteAccountState extends State<DeleteAccount> {
     HapticFeedback.lightImpact();
     mySnackBar(context, 'Account deleted');
   }
+
+  _deleteHive() async {
+    // Helper function to clear a box
+    Future<void> _clearBox<T>(String boxName) async {
+      Box<T> box;
+      if (Hive.isBoxOpen(boxName)) {
+        box = Hive.box<T>(boxName);
+      } else {
+        box = await Hive.openBox<T>(boxName);
+      }
+      await box.clear();
+    }
+
+    // Clear all the required Hive boxes
+    await _clearBox<ChatMessage>('chatMessages');
+    await _clearBox<AccountHolderAuthor>('accountHolderAuthor');
+    await _clearBox<Chat>('chats');
+    await _clearBox<TicketIdModel>('ticketIds');
+    await _clearBox<AccountHolderAuthor>('currentUser');
+    await _clearBox<UserSettingsLoadingPreferenceModel>(
+        'accountLocationPreference');
+  }
+
+  // _deleteHive() async {
+  //   if (Hive.isBoxOpen('chatMessages')) {
+  //     final box = Hive.box<ChatMessage>('chatMessages');
+  //     await box.clear();
+  //   } else {
+  //     final box = await Hive.openBox<ChatMessage>('chatMessages');
+  //     await box.clear();
+  //   }
+
+  //   if (Hive.isBoxOpen('accountHolderAuthor')) {
+  //     final box = Hive.box<AccountHolderAuthor>('accountHolderAuthor');
+  //     await box.clear();
+  //   } else {
+  //     final box =
+  //         await Hive.openBox<AccountHolderAuthor>('accountHolderAuthor');
+  //     await box.clear();
+  //   }
+  //   if (Hive.isBoxOpen('chats')) {
+  //     final box = Hive.box<Chat>('chats');
+  //     await box.clear();
+  //   } else {
+  //     final box = await Hive.openBox<Chat>('chats');
+  //     await box.clear();
+  //   }
+
+  //   if (Hive.isBoxOpen('ticketIds')) {
+  //     final box = Hive.box<TicketIdModel>('ticketIds');
+  //     await box.clear();
+  //   } else {
+  //     final box = await Hive.openBox<TicketIdModel>('ticketIds');
+  //     await box.clear();
+  //   }
+
+  //   if (Hive.isBoxOpen('currentUser')) {
+  //     final box = Hive.box<AccountHolderAuthor>('currentUser');
+  //     await box.clear();
+  //   } else {
+  //     final box = await Hive.openBox<AccountHolderAuthor>('currentUser');
+  //     await box.clear();
+  //   }
+
+  //   if (Hive.isBoxOpen('accountLocationPreference')) {
+  //     final box = Hive.box<UserSettingsLoadingPreferenceModel>(
+  //         'accountLocationPreference');
+  //     await box.clear();
+  //   } else {
+  //     final box = await Hive.openBox<UserSettingsLoadingPreferenceModel>(
+  //         'accountLocationPreference');
+  //     await box.clear();
+  //   }
+  // }
 
   Future<void> reauthenticateWithApple(BuildContext context) async {
     User? user = FirebaseAuth.instance.currentUser;
@@ -495,7 +621,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
           animateForward();
           await user.reauthenticateWithCredential(credential);
 
-          deletedDeactivatedAccountRef.add({
+          await deletedDeactivatedAccountRef.add({
             'author': widget.user.userName,
             'timestamp': Timestamp.fromDate(DateTime.now()),
           });

@@ -13,15 +13,18 @@ class TicketOrderModel {
   final String purchaseReferenceId;
   final String transactionId;
   final String refundRequestStatus;
+  final bool isDeleted;
+  final String canlcellationReason;
+  final String eventAuthorId;
   final Timestamp? timestamp;
   final Timestamp? eventTimestamp;
 
   TicketOrderModel({
     required this.orderNumber,
     required this.eventId,
-    // required this.entranceId,
+    required this.canlcellationReason,
     required this.eventImageUrl,
-    // required this.validated,
+    required this.isDeleted,
     required this.timestamp,
     required this.eventTimestamp,
     required this.orderId,
@@ -29,6 +32,7 @@ class TicketOrderModel {
     required this.tickets,
     required this.total,
     required this.isInvited,
+    required this.eventAuthorId,
     required this.eventTitle,
     required this.purchaseReferenceId,
     required this.refundRequestStatus,
@@ -46,6 +50,9 @@ class TicketOrderModel {
       refundRequestStatus: data['refundRequestStatus'] ?? '',
       transactionId: data['transactionId'] ?? '',
       eventId: data['eventId'] ?? '',
+      canlcellationReason: data['canlcellationReason'] ?? '',
+      eventAuthorId: data['eventAuthorId'] ?? '',
+
       timestamp:
           data['timestamp'] as Timestamp? ?? Timestamp.fromDate(DateTime.now()),
       eventTimestamp: data['eventTimestamp'] as Timestamp? ??
@@ -54,6 +61,8 @@ class TicketOrderModel {
       eventImageUrl: data['eventImageUrl'] ?? '',
       purchaseReferenceId: data['purchaseReferenceId'] ?? '',
       isInvited: data['isInvited'] ?? false,
+      isDeleted: data['isDeleted'] ?? false,
+
       orderNumber: data['orderNumber'] ?? '',
       tickets: (data['tickets'] as List<dynamic>?)
               ?.map((ticket) =>
@@ -71,6 +80,9 @@ class TicketOrderModel {
     return TicketOrderModel(
       orderId: json['orderId']!,
       eventId: json['eventId']!,
+      canlcellationReason: json['canlcellationReason']!,
+      eventAuthorId: json['eventAuthorId']!,
+
       // validated: json['validated'] ?? false,
       timestamp: json['timestamp'] != null
           ? Timestamp.fromMillisecondsSinceEpoch(json['timestamp'])
@@ -86,6 +98,9 @@ class TicketOrderModel {
       eventImageUrl: json['eventImageUrl'] ?? '',
       eventTitle: json['eventTitle'] ?? '',
       isInvited: json['isInvited'] ?? false,
+
+      isDeleted: json['isDeleted'] ?? false,
+
       orderNumber: json['orderNumber']!,
       tickets: (json['tickets'] as List<dynamic>?)
               ?.map((ticket) => TicketPurchasedModel.fromJson(ticket))
@@ -101,7 +116,10 @@ class TicketOrderModel {
     return {
       'orderId': orderId,
       'eventId': eventId,
-      // 'validated': validated,
+      'canlcellationReason': canlcellationReason,
+      'eventAuthorId': eventAuthorId,
+
+      'isDeleted': isDeleted,
       'transactionId': transactionId,
       'timestamp': timestamp,
       'eventTimestamp': eventTimestamp,

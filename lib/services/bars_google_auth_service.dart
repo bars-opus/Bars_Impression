@@ -20,10 +20,10 @@ class BarsGoogleAuthService {
           signedInHandler.uid;
 
       if (profileUser != null && profileUser.userName!.isNotEmpty) {
+        mySnackBar(context, 'Sign In Successful\nWelcome Back...');
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => ConfigPage()),
             (Route<dynamic> route) => false);
-        mySnackBar(context, 'Welcome Back...');
       } else {
         await DatabaseService.createUserProfileInFirestore(signedInHandler, '');
         Provider.of<UserData>(context, listen: false).setShowUsersTab(true);
@@ -67,11 +67,10 @@ class BarsGoogleAuthService {
           signedInHandler.uid;
 
       if (profileUser != null && profileUser.userName!.isNotEmpty) {
+        mySnackBar(context, 'Sign In Successful\nWelcome Back...');
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => ConfigPage()),
             (Route<dynamic> route) => false);
-
-        mySnackBar(context, 'Sign In Successful\nWelcome Back...');
       } else {
         await DatabaseService.createUserProfileInFirestore(signedInHandler, '');
 

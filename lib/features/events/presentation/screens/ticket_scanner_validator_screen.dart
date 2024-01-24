@@ -1,5 +1,6 @@
 import 'package:bars/utilities/exports.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:vibration/vibration.dart';
 
 class TicketScannerValidatorScreen extends StatefulWidget {
   static final id = 'TicketScannerValidatorScreen';
@@ -82,7 +83,7 @@ class _TicketScannerValidatorScreenState
             .collection('eventInvite')
             .doc(ticketOrderUserId);
 
-        DocumentReference userOrderDocRef = userInviteRef
+        DocumentReference userOrderDocRef = newUserTicketOrderRef
             .doc(ticketOrderUserId)
             .collection('eventInvite')
             .doc(event.id);
@@ -135,7 +136,11 @@ class _TicketScannerValidatorScreenState
       });
     } catch (e) {
       // Handle errors by showing a Snackbar
-      HapticFeedback.heavyImpact();
+      bool canVibrate = await Vibration.hasVibrator() ?? false;
+      if (canVibrate) {
+        // Vibrate the device
+        Vibration.vibrate();
+      }
       _mySnackBar(context, Colors.red, e.toString());
       isTicketValidated = false;
     }
@@ -153,6 +158,11 @@ class _TicketScannerValidatorScreenState
       final String? scannedData = scanData.code;
 
       if (scannedData == null || !scannedData.contains('|')) {
+        bool canVibrate = await Vibration.hasVibrator() ?? false;
+        if (canVibrate) {
+          // Vibrate the device
+          Vibration.vibrate();
+        }
         _mySnackBar(context, Colors.red, 'Invalid QR code format.');
         controller.resumeCamera();
         return;
@@ -162,6 +172,11 @@ class _TicketScannerValidatorScreenState
           scannedData.trim().replaceAll('\n', ' ').split("|");
 
       if (scannedDataPartition.length != 2) {
+        bool canVibrate = await Vibration.hasVibrator() ?? false;
+        if (canVibrate) {
+          // Vibrate the device
+          Vibration.vibrate();
+        }
         _mySnackBar(context, Colors.red, 'Invalid QR code data.');
         controller.resumeCamera();
         return;
@@ -175,8 +190,10 @@ class _TicketScannerValidatorScreenState
       );
 
       // Show a SnackBar after the validation
-      if (validated == true)
+      if (validated == true) {
+        HapticFeedback.lightImpact();
         _mySnackBar(context, Colors.blue, 'Ticket has been validate');
+      }
 
       // If you want to resume scanning after a certain condition, you can call:
       await Future.delayed(Duration(seconds: 3));

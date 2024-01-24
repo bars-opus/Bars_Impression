@@ -49,6 +49,7 @@ class _SignpsScreenVerifyEmailState extends State<SignpsScreenVerifyEmail>
     animationController.forward();
   }
 
+
   _isVerifiedUSer() async {
     final _auth = FirebaseAuth.instance;
     final user = _auth.currentUser;
@@ -131,6 +132,7 @@ class _SignpsScreenVerifyEmailState extends State<SignpsScreenVerifyEmail>
 
   @override
   void dispose() {
+     animationController.dispose();
     if (timer != null) {
       timer!.cancel();
     }

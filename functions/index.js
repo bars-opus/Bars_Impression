@@ -915,6 +915,120 @@ async function alertAdminRefundSuccess(db, eventId, transactionId) {
 
 
 
+exports.scheduledRefundEventDeletedProcessor = functions.pubsub.schedule('every 24 hours').onRun(async (context) => {
+  // eslint-disable-next-line no-await-in-loop
+  const db = admin.firestore();
+
+ const refundRequestsSnapshot = await db.collection('allRefundRequestsEventDeleted').where('status', '==', 'pending').get();
+
+ for (const refundRequestDoc of refundRequestsSnapshot.docs) {
+   try { // eslint-disable-next-line no-await-in-loop
+     await processRefundEventDeleted(refundRequestDoc);
+   } catch (error) {
+     console.error(`Error processing refund for transaction ID: ${refundRequestDoc.id}`, error);
+     // Handle the error appropriately, e.g., alert the admin
+      // eslint-disable-next-line no-await-in-loop
+     await alertAdminRefundFailure(db, refundRequestDoc.data().eventId, refundRequestDoc.data().transactionId, error.message);
+   }
+ }
+});
+
+async function processRefundEventDeleted(refundRequestDoc) {
+ const db = admin.firestore();
+
+ const refundData = refundRequestDoc.data();
+ const transactionId = refundData.transactionId;
+ const eventId = refundData.eventId;
+ const refundAmount = Math.floor(refundData.amount * 100); 
+ const idempotencyKey = `refund_${transactionId}`;
+
+ const payload = {
+   transaction: transactionId,
+   amount: refundAmount
+ };
+
+ const headers = {
+   'Authorization': `Bearer ${functions.config().paystack.secret_key}`,
+   'Content-Type': 'application/json'
+ };
+
+ let retryCount = 0;
+ let delay = 1000; // 1 second initial delay
+ const maxRetries = 3;
+ const MAX_DELAY = 30000; // Maximum delay for exponential backoff, e.g., 30 seconds
+
+ while (retryCount < maxRetries) {
+   try {
+      // eslint-disable-next-line no-await-in-loop
+     const response = await axios.post('https://api.paystack.co/refund', payload, { headers });
+
+     if (response.data.status) {
+        // eslint-disable-next-line no-await-in-loop
+       await db.runTransaction(async (transaction) => {
+         const refundRequestRef = refundRequestDoc.ref;
+         const idempotencyDocRef = db.collection('idempotency_keys').doc(idempotencyKey);
+        //  const eventDocRef = db.collection('new_eventTicketOrder').doc(refundData.eventId).collection('eventInvite').doc(refundData.userRequestId);
+         const userDocRef = db.collection('new_userTicketOrder').doc(refundData.userRequestId).collection('eventInvite').doc(refundData.eventId);
+         const userTicketIdRef = db.collection('new_ticketId').doc(refundData.userRequestId).collection('eventInvite').doc(refundData.eventId);
+         const idempotencyDocSnapshot = await transaction.get(idempotencyDocRef);
+
+         if (!idempotencyDocSnapshot.exists) {
+           transaction.update(refundRequestRef, { status: 'processed' });
+          //  transaction.update(eventDocRef, { refundRequestStatus: 'processed' });
+           transaction.update(userDocRef, { refundRequestStatus: 'processed' });
+           transaction.delete(userTicketIdRef);
+           transaction.set(idempotencyDocRef, {
+             refundResponse: response.data,
+             created: admin.firestore.FieldValue.serverTimestamp()
+           });
+         } else {
+           console.log(`Refund already processed for transaction ID: ${transactionId}`);
+           return;
+         }
+       });
+        // eslint-disable-next-line no-await-in-loop
+       await alertAdminRefundSuccess(db, eventId, transactionId);
+       console.log(`Refund processed for transaction ID: ${transactionId}`);
+       return;
+     } else {
+       throw new Error('Refund failed with a non-success status');
+     }
+   } catch (error) {
+     console.error(`Attempt ${retryCount + 1} for refund ${transactionId} failed:`, error);
+
+     if (!isRetryableError(error)) {
+        // eslint-disable-next-line no-await-in-loop
+       await refundRequestDoc.ref.update({ status: 'error' });
+        // eslint-disable-next-line no-await-in-loop
+       await alertAdminRefundFailure(db, eventId, transactionId, error.message);
+       throw error; // Non-retryable error, rethrow error
+     }
+
+     if (retryCount === maxRetries - 1) {
+        // eslint-disable-next-line no-await-in-loop
+       await alertAdminRefundFailure(db, eventId, transactionId, `Max retry attempts reached. Last error: ${error.message}`);
+     }
+
+     // Exponential backoff with a maximum delay cap
+     delay = Math.min(delay * 2, MAX_DELAY);
+     console.log(`Retryable error encountered for refund ${transactionId}. Retrying after ${delay}ms...`);
+      // eslint-disable-next-line no-await-in-loop
+     await new Promise(resolve => setTimeout(resolve, delay));
+     retryCount++;
+   }
+ }
+
+ if (retryCount >= maxRetries) {
+    // eslint-disable-next-line no-await-in-loop
+   await refundRequestDoc.ref.update({ status: 'failed' });
+    // eslint-disable-next-line no-await-in-loop
+   await alertAdminRefundFailure(db, eventId, transactionId, 'All retry attempts failed');
+   throw new Error(`All retry attempts failed for refund ${transactionId}`);
+ }
+}
+
+
+
 
 
 // //event attending schedule reminder
@@ -1806,40 +1920,223 @@ exports.onUploadEvent = functions.firestore
     return batch.commit();
   });
 
-exports.onDeleteFeedEvent = functions.firestore
-  .document('/new_events/{userId}/userEvents/{eventId}')
-  .onDelete(async (snapshot, context) => {
-    const userId = context.params.userId;
-    const eventId = context.params.eventId;
-    console.log(snapshot.data());
-    const userFollowersRef = admin
-      .firestore()
-      .collection('new_followers')
-      .doc(userId)
-      .collection('userFollowers');
-    const userFollowersSnapshot = await userFollowersRef.get();
+// exports.onDeleteFeedEvent = functions.firestore
+//   .document('/new_events/{userId}/userEvents/{eventId}')
+//   .onDelete(async (snapshot, context) => {
+//     const userId = context.params.userId;
+//     const eventId = context.params.eventId;
+//     console.log(snapshot.data());
+//     const userFollowersRef = admin
+//       .firestore()
+//       .collection('new_followers')
+//       .doc(userId)
+//       .collection('userFollowers');
+//     const userFollowersSnapshot = await userFollowersRef.get();
 
-    const batch = admin.firestore().batch();
+//     const batch = admin.firestore().batch();
 
-    userFollowersSnapshot.forEach((doc) => {
-      const followerId = doc.id;
-      const eventFeedRef = admin
-        .firestore()
-        .collection('new_eventFeeds')
-        .doc(followerId)
-        .collection('userEventFeed')
-        .doc(eventId);
-      batch.delete(eventFeedRef);
-    });
+//     userFollowersSnapshot.forEach((doc) => {
+//       const followerId = doc.id;
+//       const eventFeedRef = admin
+//         .firestore()
+//         .collection('new_eventFeeds')
+//         .doc(followerId)
+//         .collection('userEventFeed')
+//         .doc(eventId);
+//       batch.delete(eventFeedRef);
+//     });
 
 
     
-    // Commit the batch operation to delete all follower documents
-    await batch.commit();
+//     // Commit the batch operation to delete all follower documents
+//     await batch.commit();
 
-    // Delete the event from the 'allEvents' collection
-    return admin.firestore().collection('allEvents').doc(eventId).delete();
+//     // Delete the event from the 'allEvents' collection
+//    admin.firestore().collection('new_events').doc(eventId).delete();
+//    admin.firestore().collection('new_eventChatRooms').doc(eventId).delete();
+//    admin.firestore().collection('new_eventTicketOrder').doc(eventId).collection('eventInvite').doc(userId).delete();
+//    admin.firestore().collection('new_eventChatRoomsConversation').doc(eventId).collection('roomChats').doc(userId).delete();
+//   });
+
+
+// exports.onDeleteFeedEvent = functions.firestore
+//   .document('/new_events/{userId}/userEvents/{eventId}')
+//   .onDelete(async (snapshot, context) => {
+//     const { userId, eventId } = context.params;
+
+//     // References to user followers
+//     const userFollowersRef = admin.firestore().collection('new_followers').doc(userId).collection('userFollowers');
+    
+//     // Delete related documents from userEventFeed of each follower
+//     const userFollowersSnapshot = await userFollowersRef.get();
+//     let batch = admin.firestore().batch();
+
+//     for (const doc of userFollowersSnapshot.docs) {
+//       if (batch._opCount >= 499) {
+//         // eslint-disable-next-line no-await-in-loop
+//         await batch.commit();
+//         batch = admin.firestore().batch();
+//       }
+//       const followerId = doc.id;
+//       const eventFeedRef = admin.firestore().collection('new_eventFeeds').doc(followerId).collection('userEventFeed').doc(eventId);
+//        // eslint-disable-next-line no-await-in-loop
+      
+//       batch.delete(eventFeedRef);
+      
+//     }
+
+//     const allEventRef = admin.firestore().collection('new_allEvents').doc(eventId);
+//     batch.delete(allEventRef);
+//     await batch.commit();
+
+  
+//     // Delete the eventChatRooms document
+//  // eslint-disable-next-line no-await-in-loop
+//     await admin.firestore().collection('new_eventChatRooms').doc(eventId).delete();
+
+//     // Delete all documents in ticketOrder subcollection
+//     const ticketOrdeRef = admin.firestore().collection('new_eventTicketOrder').doc(eventId).collection('eventInvite');
+//     // eslint-disable-next-line no-await-in-loop
+//     await deleteCollection(ticketOrdeRef);
+
+//     // Delete all documents in ticketOrde subcollection
+//     const eventInviteRef = admin.firestore().collection('new_sentEventInvite').doc(eventId).collection('eventInvite');
+//     await deleteCollection(eventInviteRef);
+
+
+//       // Delete all documents in ticketOrde subcollection
+//       const askRef = admin.firestore().collection('new_asks').doc(eventId).collection('eventAsks');
+//       // eslint-disable-next-line no-await-in-loop
+//       await deleteCollection(askRef);
+
+
+//     // Delete all documents in roomChats subcollection
+//     const roomChatsRef = admin.firestore().collection('new_eventChatRoomsConversation').doc(eventId).collection('roomChats');
+//     // eslint-disable-next-line no-await-in-loop
+//     await deleteCollection(roomChatsRef);
+//   });
+
+
+
+// // Helper function to delete all documents in a collection or subcollection
+// async function deleteCollection(collectionRef) {
+//   const snapshot = await collectionRef.get();
+
+//   if (snapshot.size === 0) {
+//     return;
+//   }
+
+//   // Delete documents in batches
+//   let batch = admin.firestore().batch();
+//   let count = 0;
+//   for (const doc of snapshot.docs) {
+//     batch.delete(doc.ref);
+//     count++;
+//     if (count % 499 === 0) {
+//       // eslint-disable-next-line no-await-in-loop
+//       await batch.commit();
+//       batch = admin.firestore().batch();
+//     }
+//   }
+
+//   await batch.commit();
+// }
+
+
+
+exports.onDeleteFeedEvent = functions.firestore
+  .document('/new_events/{userId}/userEvents/{eventId}')
+  .onDelete(async (snapshot, context) => {
+    const { userId, eventId } = context.params;
+
+    // References to user followers
+    const userFollowersRef = admin.firestore().collection('new_followers').doc(userId).collection('userFollowers');
+
+    // Delete related documents from userEventFeed of each follower
+     // eslint-disable-next-line no-await-in-loop
+    const userFollowersSnapshot = await userFollowersRef.get();
+    let batch = admin.firestore().batch();
+    let operationCount = 0;
+
+    for (const doc of userFollowersSnapshot.docs) {
+      const followerId = doc.id;
+      const eventFeedRef = admin.firestore().collection('new_eventFeeds').doc(followerId).collection('userEventFeed').doc(eventId);
+      batch.delete(eventFeedRef);
+      operationCount++;
+
+      if (operationCount >= 499) {
+         // eslint-disable-next-line no-await-in-loop
+        await batch.commit();
+        batch = admin.firestore().batch();
+        operationCount = 0;
+      }
+    }
+
+    // Delete the allEventRef document
+    const allEventRef = admin.firestore().collection('new_allEvents').doc(eventId);
+    batch.delete(allEventRef);
+    operationCount++;
+
+    if (operationCount > 0) {
+      await batch.commit();
+    }
+
+    // Delete the eventChatRooms document
+     // eslint-disable-next-line no-await-in-loop
+    await admin.firestore().collection('new_eventChatRooms').doc(eventId).delete();
+
+    // Delete all documents in the ticketOrder subcollection
+    const ticketOrderRef = admin.firestore().collection('new_eventTicketOrder').doc(eventId).collection('eventInvite');
+     // eslint-disable-next-line no-await-in-loop
+    await deleteCollection(ticketOrderRef);
+
+    // Delete all documents in the sentEventInvite subcollection
+    const eventInviteRef = admin.firestore().collection('new_sentEventInvite').doc(eventId).collection('eventInvite');
+     // eslint-disable-next-line no-await-in-loop
+    await deleteCollection(eventInviteRef);
+
+    // Delete all documents in the asks subcollection
+    const askRef = admin.firestore().collection('new_asks').doc(eventId).collection('eventAsks');
+     // eslint-disable-next-line no-await-in-loop
+    await deleteCollection(askRef);
+
+    // Delete all documents in the roomChats subcollection
+    const roomChatsRef = admin.firestore().collection('new_eventChatRoomsConversation').doc(eventId).collection('roomChats');
+     // eslint-disable-next-line no-await-in-loop
+    await deleteCollection(roomChatsRef);
   });
+
+
+
+
+// Helper function to delete all documents in a collection or subcollection
+async function deleteCollection(collectionRef) {
+   // eslint-disable-next-line no-await-in-loop
+  const snapshot = await collectionRef.get();
+
+  if (snapshot.size === 0) {
+    return;
+  }
+
+  let batch = admin.firestore().batch();
+  let operationCount = 0;
+
+  for (const doc of snapshot.docs) {
+    batch.delete(doc.ref);
+    operationCount++;
+
+    if (operationCount >= 499) {
+       // eslint-disable-next-line no-await-in-loop
+      await batch.commit();
+      batch = admin.firestore().batch();
+      operationCount = 0;
+    }
+  }
+
+  if (operationCount > 0) {
+    await batch.commit();
+  }
+}
 
 
   exports.onUpdateEvent = functions.firestore
@@ -2132,6 +2429,9 @@ exports.onCreateNewActivity = functions.firestore
       case 'refundRequested':
         title = createdActivityItem.authorName;
         break;
+        case 'eventDeleted':
+          title = createdActivityItem.authorName;
+          break;
       case 'follow':
         title = createdActivityItem.authorName;
         break;

@@ -12,7 +12,7 @@ class EventBottomModalSheetActions extends StatelessWidget {
 
   //launch map to show event location
   _launchMap() {
-    return MapsLauncher.launchQuery(event.venue);
+    return MapsLauncher.launchQuery(event.address);
   }
 
 //display calendar

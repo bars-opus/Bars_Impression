@@ -58,7 +58,7 @@ class _InvitationPagesState extends State<InvitationPages>
 
   _setUpInvites() async {
     try {
-      QuerySnapshot ticketOrderSnapShot = await userIviteRef
+      QuerySnapshot ticketOrderSnapShot = await userInvitesRef
           .doc(widget.currentUserId)
           .collection('eventInvite')
           // .where('eventTimestamp', isGreaterThanOrEqualTo: currentDate)
@@ -91,7 +91,7 @@ class _InvitationPagesState extends State<InvitationPages>
 
   _loadMoreInvites() async {
     try {
-      Query activitiesQuery = userIviteRef
+      Query activitiesQuery = userInvitesRef
           .doc(widget.currentUserId)
           .collection('eventInvite')
           .orderBy('eventTimestamp', descending: true)
@@ -124,7 +124,7 @@ class _InvitationPagesState extends State<InvitationPages>
   // final currentDate = DateTime(now.year, now.month, now.day);
 
   //   try {
-  //     Query activitiesQuery = userIviteRef
+  //     Query activitiesQuery = userInvitesRef
   //         .doc(widget.currentUserId)
   //         .collection('eventInvite')
   //         .where('startDate', isGreaterThanOrEqualTo: currentDate)
@@ -163,7 +163,7 @@ class _InvitationPagesState extends State<InvitationPages>
   //       final currentDate = DateTime(now.year, now.month, now.day);
 
   //   try {
-  //     Query activitiesQuery = userIviteRef
+  //     Query activitiesQuery = userInvitesRef
   //         .doc(widget.currentUserId)
   //         .collection('eventInvite')
   //         .where('startDate', isGreaterThanOrEqualTo: currentDate)

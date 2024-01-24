@@ -855,18 +855,18 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setUser(AccountHolderAuthor user) {
+  void setUser(AccountHolderAuthor? user) {
     _user = user;
     notifyListeners();
   }
 
-  void setUserGeneralSettings(UserSettingsGeneralModel userGeneraSentence) {
+  void setUserGeneralSettings(UserSettingsGeneralModel? userGeneraSentence) {
     _userGeneraSentence = userGeneraSentence;
     notifyListeners();
   }
 
   void setUserLocationPreference(
-      UserSettingsLoadingPreferenceModel userLocationPreference) {
+      UserSettingsLoadingPreferenceModel? userLocationPreference) {
     _userLocationPreference = userLocationPreference;
     notifyListeners();
   }

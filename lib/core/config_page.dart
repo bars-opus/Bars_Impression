@@ -231,65 +231,124 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                       : HomeScreen();
             } else {
               return FutureBuilder(
-                  future: Future.wait<dynamic>([
-                    DatabaseService.getUserWithId(snapshot.data!.uid),
-                    DatabaseService.getUserLocationSettingWithId(
-                        snapshot.data!.uid),
-                  ]),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<List<dynamic>> snapshot) {
-                    // Check if there's an error and display it
-                    if (snapshot.hasError) {
-                      Future.delayed(Duration.zero, () {
-                        _showBottomSheetErrorMessage(snapshot.error!);
-                      });
-                    }
-
-                    // If the futures have not completed yet, display a loading indicator
-                    if (!snapshot.hasData) {
-                      return PostSchimmerSkeleton();
-                    }
-
-                    // Check if the futures returned null, and if so, return AuthCreateUserCredentials()
-                    if (snapshot.data![0] == null ||
-                        snapshot.data![1] == null) {
-                      return AuthCreateUserCredentials();
-                    }
-
-                    // If the futures returned valid data, continue as normal
-                    AccountHolderAuthor _user =
-                        snapshot.data![0] as AccountHolderAuthor;
-                    UserSettingsLoadingPreferenceModel _setting =
-                        snapshot.data![1] as UserSettingsLoadingPreferenceModel;
-
-                    SchedulerBinding.instance.addPostFrameCallback((_) {
-                      if (_provider.user == null || _provider.user != _user) {
-                        _provider.setUser(_user);
-                        accountAuthorbox.put(_user.userId, _user);
-                      }
-                      if (_provider.userLocationPreference == null ||
-                          _provider.userLocationPreference != _setting) {
-                        _provider.setUserLocationPreference(_setting);
-
-                        accountLocationPreferenceBox.put(
-                            _setting.userId, _setting);
-                      }
-                      if (!_provider.isLoading) {
-                        _provider.setIsLoading(false);
-                      }
+                future: Future.wait<dynamic>([
+                  DatabaseService.getUserWithId(snapshot.data!.uid),
+                  DatabaseService.getUserLocationSettingWithId(
+                      snapshot.data!.uid),
+                ]),
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<dynamic>> snapshot) {
+                  if (snapshot.hasError) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      _showBottomSheetErrorMessage(snapshot.error.toString());
                     });
+                    // Consider showing an error widget immediately rather than returning an empty Container.
+                    return _showBottomSheetErrorMessage(snapshot.error
+                        .toString()); // Replace with your actual error widget.
+                  }
 
-                    if (_user.userName == null ||
-                        _user.userName!.isEmpty ||
-                        _user.profileHandle == null ||
-                        _user.profileHandle!.isEmpty) {
-                      return AuthCreateUserCredentials();
-                    } else {
-                      return _user.disabledAccount!
-                          ? ReActivateAccount(user: _user)
-                          : HomeScreen();
+                  if (snapshot.connectionState != ConnectionState.done) {
+                    // If the futures are still working, display a loading indicator.
+                    return PostSchimmerSkeleton();
+                  }
+
+                  if (!snapshot.hasData ||
+                      snapshot.data!.any((element) => element == null)) {
+                    // If any of the future results is null, return AuthCreateUserCredentials.
+                    return AuthCreateUserCredentials();
+                  }
+
+                  // It's safe to assume data is not null and is of the expected types at this point.
+                  AccountHolderAuthor _user =
+                      snapshot.data![0] as AccountHolderAuthor;
+                  UserSettingsLoadingPreferenceModel _setting =
+                      snapshot.data![1] as UserSettingsLoadingPreferenceModel;
+
+                  SchedulerBinding.instance.addPostFrameCallback((_) {
+                    if (_provider.user == null || _provider.user != _user) {
+                      _provider.setUser(_user);
+                      accountAuthorbox.put(_user.userId, _user);
+                    }
+                    if (_provider.userLocationPreference == null ||
+                        _provider.userLocationPreference != _setting) {
+                      _provider.setUserLocationPreference(_setting);
+                      accountLocationPreferenceBox.put(
+                          _setting.userId, _setting);
                     }
                   });
+
+                  if (_user.userName == null ||
+                      _user.userName!.isEmpty ||
+                      _user.profileHandle == null ||
+                      _user.profileHandle!.isEmpty) {
+                    return AuthCreateUserCredentials();
+                  }
+
+                  return _user.disabledAccount == true
+                      ? ReActivateAccount(user: _user)
+                      : HomeScreen();
+                },
+              );
+              //  FutureBuilder(
+              //     future: Future.wait<dynamic>([
+              //       DatabaseService.getUserWithId(snapshot.data!.uid),
+              //       DatabaseService.getUserLocationSettingWithId(
+              //           snapshot.data!.uid),
+              //     ]),
+              //     builder: (BuildContext context,
+              //         AsyncSnapshot<List<dynamic>> snapshot) {
+              //       // Check if there's an error and display it
+              //       if (snapshot.hasError) {
+              //         Future.delayed(Duration.zero, () {
+              //           _showBottomSheetErrorMessage(snapshot.error!);
+              //         });
+              //       }
+
+              //       // If the futures have not completed yet, display a loading indicator
+              //       if (!snapshot.hasData) {
+              //         return PostSchimmerSkeleton();
+              //       }
+
+              //       // Check if the futures returned null, and if so, return AuthCreateUserCredentials()
+              //       if (snapshot.data![0] == null ||
+              //           snapshot.data![1] == null) {
+              //         return AuthCreateUserCredentials();
+              //       }
+
+              //       // If the futures returned valid data, continue as normal
+              //       AccountHolderAuthor _user =
+              //           snapshot.data![0] as AccountHolderAuthor;
+              //       UserSettingsLoadingPreferenceModel _setting =
+              //           snapshot.data![1] as UserSettingsLoadingPreferenceModel;
+
+              //       SchedulerBinding.instance.addPostFrameCallback((_) {
+              //         if (_provider.user == null || _provider.user != _user) {
+              //           _provider.setUser(_user);
+              //           accountAuthorbox.put(_user.userId, _user);
+              //         }
+              //         if (_provider.userLocationPreference == null ||
+              //             _provider.userLocationPreference != _setting) {
+              //           _provider.setUserLocationPreference(_setting);
+
+              //           accountLocationPreferenceBox.put(
+              //               _setting.userId, _setting);
+              //         }
+              //         if (!_provider.isLoading) {
+              //           _provider.setIsLoading(false);
+              //         }
+              //       });
+
+              //       if (_user.userName == null ||
+              //           _user.userName!.isEmpty ||
+              //           _user.profileHandle == null ||
+              //           _user.profileHandle!.isEmpty) {
+              //         return AuthCreateUserCredentials();
+              //       } else {
+              //         return _user.disabledAccount!
+              //             ? ReActivateAccount(user: _user)
+              //             : HomeScreen();
+              //       }
+              //     });
             }
           } else {
             return Intro();

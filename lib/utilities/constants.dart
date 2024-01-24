@@ -9,6 +9,7 @@ final storageRef = FirebaseStorage.instance.ref();
 
 final usersLocationSettingsRef =
     _firestore.collection('user_location_settings');
+    
 final usersGeneralSettingsRef = _firestore.collection('user_general_settings');
 
 final userProfessionalRef = _firestore.collection('user_professsional');
@@ -28,6 +29,8 @@ final testingRef = _firestore.collection('testing');
 
 //
 final eventsRef = _firestore.collection('new_events');
+final deletdEventsRef = _firestore.collection('all_deleted_events');
+
 final allRefundRequestsRef = _firestore.collection('allRefundRequests');
 // final eventRefundRequestsRef = _firestore.collection('eventRefundRequests');
 
@@ -87,12 +90,12 @@ final tokenRef = _firestore.collection('token');
 
 final newEventTicketOrderRef = _firestore.collection('new_eventTicketOrder');
 final sentEventIviteRef = _firestore.collection('new_sentEventInvite');
-final userIviteRef = _firestore.collection('new_usersInvite');
+// final userIviteRef = _firestore.collection('new_usersInvite');
 final userRefundRequestsRef = _firestore.collection('userRefundRequests');
 
-// final userInviteRef = _firestore.collection('userInvites');
+final userInvitesRef = _firestore.collection('userInvites');
 
-final userInviteRef = _firestore.collection('new_userTicketOrder');
+final newUserTicketOrderRef = _firestore.collection('new_userTicketOrder');
 final userTicketIdRef = _firestore.collection('new_ticketId');
 
 final messageRef = _firestore.collection('messages');

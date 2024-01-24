@@ -102,10 +102,9 @@ class _EventTypesState extends State<EventTypes>
         : widget.liveCity.isNotEmpty
             ? _setUpFeedLive()
             : _setUpFeed();
-
     _setupEventsFreeAndThisWeek(false);
     _setupEventsFreeAndThisWeek(true);
-    _setupEventsFollowers();
+    if (widget.liveCity.isEmpty) _setupEventsFollowers();
     SchedulerBinding.instance.addPostFrameCallback((_) {
       var _provider = Provider.of<UserData>(context, listen: false);
 
@@ -210,6 +209,7 @@ class _EventTypesState extends State<EventTypes>
     //   liveCity: widget.liveCity, liveCountry: widget.liveCountry
     // String? city = widget.user.city;
     // String? country = widget.user.country;
+
     _setupEvents(
         city: widget.liveCity,
         country: widget.liveCountry,
@@ -412,8 +412,13 @@ class _EventTypesState extends State<EventTypes>
         Provider.of<UserData>(context, listen: false).userLocationPreference;
 
 // Retrieves the user's country and city information
-    String country = _userLocationSettings!.country!;
-    String city = _userLocationSettings.city!;
+    String country = widget.liveCountry.isNotEmpty
+        ? widget.liveCountry
+        : _userLocationSettings!.country!;
+
+    String city = widget.liveCity.isNotEmpty
+        ? widget.liveCity
+        : _userLocationSettings!.city!;
 
 // Initializes the remaining limit of events to fetch
     int remainingLimit = 10;
@@ -430,21 +435,24 @@ class _EventTypesState extends State<EventTypes>
         .length; // Decrement the remaining limit by the number of fetched events
 
 // If there's remaining limit, fetch more events from the user's country
+
     if (remainingLimit > 0) {
-      events += await _fetchEvents(
-        limit: remainingLimit,
-        country: country,
-        isFree: isFree,
-      );
+      if (widget.liveCity.isEmpty)
+        events += await _fetchEvents(
+          limit: remainingLimit,
+          country: country,
+          isFree: isFree,
+        );
       remainingLimit = 10 - events.length; // Recalculate the remaining limit
     }
 
 // If there's still remaining limit, fetch more events from anywhere
     if (remainingLimit > 0) {
-      events += await _fetchEvents(
-        limit: remainingLimit,
-        isFree: isFree,
-      );
+      if (widget.liveCity.isEmpty)
+        events += await _fetchEvents(
+          limit: remainingLimit,
+          isFree: isFree,
+        );
     }
 
 // Update the state with fetched events

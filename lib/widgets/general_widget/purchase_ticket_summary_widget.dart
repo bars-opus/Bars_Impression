@@ -47,9 +47,9 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
         event.rate.trim().replaceAll('\n', '').split("|");
 
     Color _palleteColor = palette == null
-        ? Colors.grey
+        ? Colors.blue
         : palette.vibrantColor == null
-            ? Colors.grey
+            ? Colors.blue
             : palette.vibrantColor!.color;
 
     // Create a list of TicketInfo widgets from the ticket list
@@ -112,11 +112,19 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
                     ShakeTransition(
                       duration: const Duration(seconds: 2),
                       child: QrImageView(
+                        eyeStyle: QrEyeStyle(
+                          eyeShape: QrEyeShape.square,
+                          color: finalPurchasintgTicket.validated
+                              ? _palleteColor
+                              : Colors.grey,
+                        ),
+                        dataModuleStyle: QrDataModuleStyle(
+                          dataModuleShape: QrDataModuleShape.square,
+                          color: finalPurchasintgTicket.validated
+                              ? _palleteColor
+                              : Colors.grey,
+                        ),
                         version: QrVersions.auto,
-                        foregroundColor: finalPurchasintgTicket.validated
-                            ? _palleteColor
-                            : Colors.grey,
-                        backgroundColor: Colors.transparent,
                         data: finalPurchasintgTicket.entranceId,
                         size: 80,
                       ),

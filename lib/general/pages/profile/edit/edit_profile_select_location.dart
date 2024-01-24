@@ -4,9 +4,11 @@ import 'package:hive/hive.dart';
 
 class EditProfileSelectLocation extends StatefulWidget {
   final UserSettingsLoadingPreferenceModel user;
+  final bool notFromEditProfile;
 
   EditProfileSelectLocation({
     required this.user,
+    this.notFromEditProfile = false,
   });
 
   @override
@@ -19,7 +21,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
   String selectedValue = '';
   late double userLatitude;
   late double userLongitude;
-  bool _isLoading = false;
+  // bool _isLoading = false;
   final _addressSearchController = TextEditingController();
   final FocusNode _addressSearchfocusNode = FocusNode();
   final _debouncer = Debouncer(milliseconds: 500);
@@ -61,9 +63,11 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
 
     try {
       batch.commit();
+      _provider.setIsLoading(false);
       _updateAuthorHive(
           _provider.city, _provider.country, _provider.continent, false);
     } catch (error) {
+      _provider.setIsLoading(false);
       _showBottomSheetErrorMessage('Failed to update city and country');
     }
     setState(() {});
@@ -315,6 +319,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                                           _provider.searchPlaces(_provider
                                               .searchResults![index]
                                               .description);
+                                          _provider.setIsLoading(true);
                                           await reverseGeocoding(
                                               _provider,
                                               _provider.searchResults![index]
@@ -346,7 +351,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
       title: '',
       widget: Column(
         children: [
-          _isLoading ? LinearProgressIndicator() : const SizedBox.shrink(),
+          if (_provider.isLoading) LinearProgress(),
           Padding(
             padding:
                 const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
@@ -355,6 +360,23 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (widget.notFromEditProfile)
+                    if (_provider.country.isNotEmpty &&
+                        _provider.city.isNotEmpty &&
+                        _continent.isNotEmpty)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: MiniCircularProgressButton(
+                      color: Colors.blue,
+                      onPressed: () {
+                        Navigator.pop(context);
+                        mySnackBar(
+                            context, 'You can now continue with your process');
+                        //  _submitCreate();
+                      },
+                      text: 'Done',
+                    ),
+                  ),
                   const SizedBox(height: 20.0),
                   EditProfileInfo(
                     editTitle: _provider.userLocationPreference!.continent!,
@@ -416,7 +438,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
           const SizedBox(
             height: 70.0,
           ),
-          _isLoading ? LinearProgress() : const SizedBox.shrink()
+          if (_provider.isLoading) LinearProgress(),
         ],
       ),
     );

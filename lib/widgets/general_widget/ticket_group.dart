@@ -213,6 +213,9 @@ class _TicketGroupState extends State<TicketGroup> {
           // widget.event!.isFree ? [] :
           _purchasedTickets,
       total: total,
+      canlcellationReason: '',
+      eventAuthorId: widget.event!.authorId,
+
       // entranceId: '',
       eventId: widget.event!.id,
       eventImageUrl: widget.event!.imageUrl,
@@ -224,7 +227,7 @@ class _TicketGroupState extends State<TicketGroup> {
       userOrderId: widget.currentUserId,
       eventTitle: widget.event!.title,
       purchaseReferenceId: purchaseReferenceId,
-      refundRequestStatus: '', transactionId: transactionId,
+      refundRequestStatus: '', transactionId: transactionId, isDeleted: false,
     );
 
     widget.event!.ticketOrder.add(order);

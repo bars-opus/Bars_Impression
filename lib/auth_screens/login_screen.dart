@@ -50,6 +50,7 @@ class _LoginScreenState extends State<LoginScreen>
 
   @override
   void dispose() {
+     animationController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -96,15 +97,19 @@ class _LoginScreenState extends State<LoginScreen>
         password: password,
       );
       Provider.of<UserData>(context, listen: false).setShowUsersTab(true);
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => HomeScreen(),
-        ),
-      );
       setState(() {
         _isLoading = false;
       });
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => ConfigPage()),
+          (Route<dynamic> route) => false);
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (_) => ConfigPage(),
+      //   ),
+      // );
+
       mySnackBar(context, 'Sign In  Successful\nWelcome Back...');
     } catch (e) {
       String error = e.toString();
@@ -119,8 +124,6 @@ class _LoginScreenState extends State<LoginScreen>
       });
     }
   }
-
-  
 
   _toggleVisibility() {
     setState(() {
@@ -182,6 +185,7 @@ class _LoginScreenState extends State<LoginScreen>
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 30.0, vertical: 10.0),
                             child: LoginField(
+                              obscureText: _isHidden,
                               controller: _passwordController,
                               hintText: 'At least 8 characters',
                               labelText: 'Password',

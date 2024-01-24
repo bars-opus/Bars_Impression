@@ -10,6 +10,7 @@ class ExpandEventBarcodeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    var _provider = Provider.of<UserData>(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       extendBody: true,
@@ -85,8 +86,9 @@ class ExpandEventBarcodeScreen extends StatelessWidget {
                       ),
                     ),
                     TextSpan(
-                      text:
-                          "\nYou can take a picture of this barcode, print it out, and stick it somewhere. This way, people can scan it to access the event.",
+                      text: _provider.currentUserId == event.authorId
+                          ? "\nYou can take a picture of this barcode, print it out, and stick it somewhere. This way, people can scan it to access the event."
+                          : "\nScan the QR code with your phone camera or a QR code scanner app to access this event.",
                       style: TextStyle(
                         fontSize:
                             ResponsiveHelper.responsiveFontSize(context, 14.0),

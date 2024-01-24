@@ -82,6 +82,7 @@ class CategoryContainerEmpty extends StatelessWidget {
                               MaterialPageRoute(
                                 builder: (_) => EditProfileSelectLocation(
                                   user: _user,
+                                  notFromEditProfile: true,
                                 ),
                               ))
                           : () {};

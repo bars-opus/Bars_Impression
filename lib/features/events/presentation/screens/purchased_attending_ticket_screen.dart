@@ -120,7 +120,7 @@ class _PurchasedAttendingTicketScreenState
 // It uses the MapsLauncher.launchQuery function to do this.
 
   _launchMap() {
-    return MapsLauncher.launchQuery(widget.event.venue);
+    return MapsLauncher.launchQuery(widget.event.address);
   }
 
   // This function generates a widget that displays information about the event.
@@ -410,6 +410,7 @@ class _PurchasedAttendingTicketScreenState
       id: commonId,
       eventId: widget.event.id,
       status: 'pending',
+      orderId: widget.ticketOrder.orderId,
       timestamp: Timestamp.fromDate(DateTime.now()),
       userRequestId: _provider.user!.userId!,
       approvedTimestamp: Timestamp.fromDate(DateTime.now()),
@@ -446,6 +447,7 @@ class _PurchasedAttendingTicketScreenState
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return ConfirmationPrompt(
+          height: 350,
           buttonText: widget.event.isFree ||
                   widget.ticketOrder.tickets.isEmpty ||
                   widget.event.isCashPayment
@@ -504,6 +506,19 @@ class _PurchasedAttendingTicketScreenState
     );
   }
 
+  Future<void> _sendMail(String email, BuildContext context) async {
+    String url = 'mailto:$email';
+    if (await canLaunchUrl(
+      Uri.parse(url),
+    )) {
+      await (launchUrl(
+        Uri.parse(url),
+      ));
+    } else {
+      mySnackBar(context, 'Could not launch mail');
+    }
+  }
+
   void _showBottomRefundForm() {
     var _size = MediaQuery.of(context).size;
     showModalBottomSheet(
@@ -517,7 +532,7 @@ class _PurchasedAttendingTicketScreenState
                 valueListenable: _isTypingNotifier,
                 builder: (BuildContext context, bool isTyping, Widget? child) {
                   return Container(
-                    height: _size.height.toDouble() / 1.3,
+                    height: ResponsiveHelper.responsiveHeight(context, 600),
                     decoration: BoxDecoration(
                         color: Theme.of(context).primaryColorLight,
                         borderRadius: BorderRadius.circular(30)),
@@ -566,7 +581,7 @@ class _PurchasedAttendingTicketScreenState
         });
   }
 
-  void _showBottomSheetRefund() {
+  void _showBottomSheetRefund(bool isRefunding) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -575,158 +590,11 @@ class _PurchasedAttendingTicketScreenState
         return StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
           return Container(
-            height: MediaQuery.of(context).size.height.toDouble() / 1.2,
-            decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(30)),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: ListView(
-                children: [
-                  // const SizedBox(
-                  //   height: 30,
-                  // ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TicketPurchasingIcon(
-                        title: '',
-                      ),
-                      MiniCircularProgressButton(
-                          color: Colors.blue,
-                          text: 'Continue',
-                          onPressed: () async {
-                            Navigator.pop(context);
-                            _showBottomRefundForm();
-                            // if (mounted) {
-                            //   setState(() {
-                            //     _checkingTicketAvailability = true;
-                            //   });
-                            // }
-                            // await _attendMethod();
-                            // if (mounted) {
-                            //   setState(() {
-                            //     _checkingTicketAvailability = false;
-                            //   });
-                            // }
-                          })
-                    ],
-                  ),
-                  const SizedBox(height: 40),
-                  // RichText(
-                  //   textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                  //   text: TextSpan(
-                  //     children: [
-                  //       TextSpan(
-                  //         text: 'Refund',
-                  //         style: Theme.of(context).textTheme.titleMedium,
-                  //       ),
-                  //       TextSpan(
-                  //         text: "\n\n${widget.event.termsAndConditions}",
-                  //         style: Theme.of(context).textTheme.bodyMedium,
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
-                  GestureDetector(
-                    onTap: () {
-                      // change to refund page
-                       _navigateToPage(
-                  context,
-                  MyWebView(
-                    url: 'https://www.barsopus.com/',
-                    title: '',
-                  ));
-                    },
-                    child: RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'Refund',
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                          TextSpan(
-                            text:
-                                "\n\nThank you for using Bars Impression to purchase tickets for events. We aim to provide a seamless ticketing experience for our users. In the event that you need to request a refund for a purchased ticket, please review our refund policy outlined below.",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          TextSpan(
-                            text: "\n\nRefund Amount.",
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                          TextSpan(
-                            text:
-                                "\nPlease note that we offer a partial refund policy.",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          TextSpan(
-                            text:
-                                "\n - We will refund 70 percent of the ticket purchase price.",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          TextSpan(
-                            text:
-                                "\n - The remaining 30 percent will be retained as a non-refundable fee to cover administrative and processing costs associated with ticket sales and refunds.",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          TextSpan(
-                            text: "\n\nRefund Timeframe.",
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                          TextSpan(
-                            text:
-                                "\n - The time it takes to process a refund may vary depending on your original payment method and financial institution.",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          TextSpan(
-                            text:
-                                "\n - It may take up to 10 business days for customers to receive their funds",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          TextSpan(
-                            text: "\n\nNon-Refundable Circumstances.",
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                          TextSpan(
-                            text:
-                                "\nRefunds will not be provided under the following circumstances:",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          TextSpan(
-                            text: "\n - The event has already taken place.",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          TextSpan(
-                            text:
-                                "\n - The refund request is made after the specified deadline {no later than 2 days before the scheduled event date.}.",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          TextSpan(
-                            text: "\n\nNon-refundable Fees.",
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                          TextSpan(
-                            text:
-                                "\nPlease be aware that tickets bought via third-party websites or through cash transactions are not eligible for refunds. Currently, we only process refunds for tickets sold within Ghana, where payments are directly handled by our system",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          TextSpan(
-                            text: "\n\nRed full refund policy.",
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 60),
-                ],
-              ),
-            ),
-          );
+              height: ResponsiveHelper.responsiveHeight(context, 700),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(30)),
+              child: RefundDoc());
         });
       },
     );
@@ -762,7 +630,7 @@ class _PurchasedAttendingTicketScreenState
                 widget.event.isCashPayment
             ? _showBottomSheetConfirmRefund(context)
             // _showBottomRefundForm()
-            : _showBottomSheetRefund();
+            : _showBottomSheetRefund(true);
       },
     );
   }
@@ -926,6 +794,117 @@ class _PurchasedAttendingTicketScreenState
             fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
           ),
         ));
+  }
+
+  void _showBottomSheetTicketDoc() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Container(
+            height: ResponsiveHelper.responsiveHeight(context, 700),
+            decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(30)),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: ListView(
+                children: [
+                  TicketPurchasingIcon(
+                    title: '',
+                  ),
+                  const SizedBox(height: 40),
+                  RichText(
+                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Ticket.',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        TextSpan(
+                          text:
+                              "\n\nThank you for choosing Bars Impression to purchase event tickets. Tickets are available for both paid and free events. For paid events, the ticket will clearly display the total amount paid (e.g., \"Total: \GHC XX\"). Conversely, for free events, the ticket will indicate \"0\" or \"Free\" as the amount.",
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        TextSpan(
+                          text:
+                              "\n\nUpon arrival at the event, it is necessary to have your ticket validated by the event organizer or their team. Once validated, the barcode on the ticket will change color, and a blue verified checkmark will appear in the top right corner. During the scanning process, your ticket will display a loading indicator and provide a haptic feedback to indicate it is being scanne",
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        TextSpan(
+                          text:
+                              "\n\nPlease refrain from presenting screenshots of your tickets for scanning, as they may be flagged as forged tickets. Additionally, make sure to verify that the event date on your ticket matches the date of the event you are attending. Mismatched dates may result in a \"Ticket not valid for today\" error during scanning. Each ticket is associated with a specific event date, which can be viewed by tapping on the ticket to display the date on the calendar for clarification.",
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        TextSpan(
+                          text:
+                              "\n\nYour ticket also includes a sales receipt and provides access to the event, which is indicated beneath the ticket section.",
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                      _showBottomSheetRefund(false);
+                    },
+                    child: RichText(
+                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text:
+                                '\n\nIf you wish to request a refund, please note that it must be done no later than 2 days before the event. For detailed information regarding our refund policy, please refer to the refund policy document available ',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          TextSpan(
+                            text: 'here.',
+                            style: TextStyle(color: Colors.blue, fontSize: 14),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      _sendMail('support@barsopus.com', context);
+                    },
+                    child: RichText(
+                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text:
+                                "\n\nIn the event of cancellation or deletion of the event by the organizer, a full refund of 100% will be issued to ticket holders.",
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          TextSpan(
+                            text:
+                                "\n\n\nWe appreciate your cooperation and hope you enjoy the event. If you have any further inquiries or require assistance, please don't hesitate to contact our ",
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          TextSpan(
+                            text: 'support team.',
+                            style: TextStyle(color: Colors.blue, fontSize: 14),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 60),
+                ],
+              ),
+            ),
+          );
+        });
+      },
+    );
   }
 
   _ticket() {
@@ -1184,6 +1163,53 @@ class _PurchasedAttendingTicketScreenState
           iconSize: 30.0,
           color: Colors.white,
           onPressed: () => Navigator.pop(context),
+        ),
+        const SizedBox(
+          height: 100,
+        ),
+
+        GestureDetector(
+          onTap: () {},
+          child: Center(
+            child: Text(
+              'Docs.',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+              ),
+              textAlign: TextAlign.start,
+            ),
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            _showBottomSheetTicketDoc();
+          },
+          child: Center(
+            child: Text(
+              '\nTicket.',
+              style: TextStyle(
+                color: Colors.blue,
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+              ),
+              textAlign: TextAlign.start,
+            ),
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            _showBottomSheetRefund(false);
+          },
+          child: Center(
+            child: Text(
+              '\nRefund.',
+              style: TextStyle(
+                color: Colors.blue,
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+              ),
+              textAlign: TextAlign.start,
+            ),
+          ),
         ),
         const SizedBox(
           height: 100,

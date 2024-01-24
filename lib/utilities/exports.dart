@@ -322,3 +322,5 @@ export 'package:bars/features/events/presentation/screens/purchased_attending_ti
 export 'package:bars/widgets/general_widget/purchase_ticket_summary_widget.dart';
 export 'package:bars/features/events/presentation/screens/user_refunds.dart';
 export 'package:bars/widgets/general_widget/sale_receipt_widget.dart';
+export 'package:bars/features/events/presentation/widgets/event_deleted_message_widget.dart';
+export 'package:bars/features/events/presentation/widgets/refund_doc.dart';

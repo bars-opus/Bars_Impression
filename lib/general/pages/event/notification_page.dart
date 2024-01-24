@@ -248,7 +248,7 @@ class _NotificationPageState extends State<NotificationPage>
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-            height: ResponsiveHelper.responsiveHeight(context, 600.0),
+            height: ResponsiveHelper.responsiveHeight(context, 650.0),
             decoration: BoxDecoration(
                 color: Theme.of(context).primaryColorLight,
                 borderRadius: BorderRadius.circular(30)),
@@ -324,6 +324,15 @@ class _NotificationPageState extends State<NotificationPage>
                     },
                     width: width.toDouble(),
                     child: Text('Refund requests'),
+                  ),
+                  BottomModalSheetButton(
+                    onPressed: () async {
+                      HapticFeedback.mediumImpact();
+                      await Future.delayed(Duration(milliseconds: 300));
+                      _sort(NotificationActivityType.eventDeleted);
+                    },
+                    width: width.toDouble(),
+                    child: Text('Events deleted'),
                   ),
                   BottomModalSheetButton(
                     onPressed: () async {
