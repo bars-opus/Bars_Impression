@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:currency_picker/currency_picker.dart';
 import 'package:flutter/scheduler.dart';
 
 class EditProfileProfessional extends StatefulWidget {
@@ -423,6 +424,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                   _provider.skills.map((skills) => skills.toJson()).toList(),
               'subAccountType': [],
               'terms': _provider.termAndConditions,
+              'currency': _provider.currency,
             }));
         DocumentSnapshot doc =
             await userProfessionalRef.doc(widget.user.id).get();
@@ -825,7 +827,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                               _nameController.text.length > 0 &&
                               _linkController.text.length > 0)
                             Text(
-                              'You cannot add more than six $nameLabel',
+                              'You cannot add more than six ${nameLabel.toLowerCase()}',
                               style: TextStyle(
                                   color: Colors.red,
                                   fontWeight: FontWeight.bold),
@@ -862,7 +864,11 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                             height: 20,
                           ),
                           Text(
-                            'Link to ${nameLabel.toLowerCase()} fields cannot be empty. These links are necessary to provide people with a deeper understanding of your abilities. Each link should direct to a definition or explanation of the respective ${nameLabel.toLowerCase()}, providing additional context and clarification.',
+                            nameLabel.startsWith('Performance')
+                                ? 'Link to ${nameLabel.toLowerCase()} fields cannot be empty. These links are necessary to provide people with a deeper understanding of your abilities. Each link should direct to a video of the respective ${nameLabel.toLowerCase()}, providing additional context and clarification.'
+                                : nameLabel.startsWith('Awards')
+                                    ? 'You are required to add the award with its year and category you have won in the Award text field, e.g., Excellence Award 2023, Best Talent. \n\nLinks to ${nameLabel.toLowerCase()} fields cannot be empty. These links are necessary to provide people with a deeper understanding of your abilities. Each link should direct to a video or article of you receiving the award, providing additional context and clarification.'
+                                    : 'Link to ${nameLabel.toLowerCase()} fields cannot be empty. These links are necessary to provide people with a deeper understanding of your abilities. Each link should direct to a definition or explanation of the respective ${nameLabel.toLowerCase()}, providing additional context and clarification.',
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ],
@@ -961,7 +967,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                 ),
                               ),
                             _textField(
-                              'compan',
+                              'company',
                               'Company / organization name',
                               true,
                               _nameController,
@@ -990,7 +996,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                             ),
                             _textField(
                               'link to company',
-                              'website or socal media site of company',
+                              'website or socal media of company',
                               false,
                               _linkController,
                               (value) {
@@ -1070,7 +1076,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: 30.0),
                                   child: Text(
-                                    'You cannot add more than six contacts',
+                                    'You cannot add more than six ',
                                     style: TextStyle(
                                         color: Colors.red,
                                         fontWeight: FontWeight.bold),
@@ -1795,7 +1801,10 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
         break;
       case 'price':
         _widget = PriceRateWidget(
-            edit: false, prices: _provider.priceRate, seeMore: true);
+            currency: _provider.currency,
+            edit: false,
+            prices: _provider.priceRate,
+            seeMore: true);
         break;
       case 'companies':
         _widget = PortfolioCompanyWidget(
@@ -1847,7 +1856,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
             Navigator.pop(context);
           },
           title: error.isEmpty
-              ? 'You can add up to six $from'
+              ? 'You cannot add more than six ${from.toLowerCase()}'
               : '\n$result.toString(),',
           subTitle: '',
         );
@@ -1882,7 +1891,10 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
       case 'price':
         _onPressed = () => _showBottomPrice(_provider.priceRate);
         _widget = PriceRateWidget(
-            edit: true, prices: _provider.priceRate, seeMore: true);
+            currency: _provider.currency,
+            edit: true,
+            prices: _provider.priceRate,
+            seeMore: true);
         break;
       case 'collaborations':
         _onPressed = () => _showBottomSheetCollaboration(false);
@@ -1970,6 +1982,36 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     );
   }
 
+  void _showCurrencyPicker() {
+    UserData _provider = Provider.of<UserData>(context, listen: false);
+
+    showCurrencyPicker(
+      theme: CurrencyPickerThemeData(
+        backgroundColor: Theme.of(context).primaryColor,
+        flagSize: 25,
+        titleTextStyle: TextStyle(
+          fontSize: ResponsiveHelper.responsiveFontSize(context, 17.0),
+        ),
+        subtitleTextStyle: TextStyle(
+            fontSize: ResponsiveHelper.responsiveFontSize(context, 15.0),
+            color: Colors.blue),
+        bottomSheetHeight: MediaQuery.of(context).size.height / 1.2,
+      ),
+      context: context,
+      showFlag: true,
+      showSearchField: true,
+      showCurrencyName: true,
+      showCurrencyCode: true,
+      onSelect: (Currency currency) {
+        print(currency.code.toString());
+        _provider.setCurrency('${currency.name} | ${currency.code}');
+      },
+      favorite: _provider.userLocationPreference!.country == 'Ghana'
+          ? ['GHS']
+          : ['USD'],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var _provider = Provider.of<UserData>(
@@ -1979,7 +2021,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     bool _imageFileNull = _provider.professionalImageFile1 != null &&
         _provider.professionalImageFile2 != null &&
         _provider.professionalImageFile3 != null;
-    bool imageUrlIsEmpty = _provider.professionalImages.isNotEmpty;
+    bool imageUrlIsEmpty = _provider.professionalImages.isEmpty;
     bool _portfolioIsEmpty =
         _provider.skills.isEmpty || _provider.linksToWork.isEmpty;
     return EditProfileScaffold(
@@ -2065,6 +2107,23 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                   'contacts',
                   [],
                   _provider.bookingContacts.length),
+              PickOptionWidget(
+                title: 'Add Currency',
+                onPressed: () {
+                  _showCurrencyPicker();
+                },
+                dropDown: false,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                _provider.currency,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(
+                height: 30,
+              ),
               _addPotfolio(
                   'Prices',
                   'Please provide your price list and rates for collaborations, exhibitions, and performances. This will allow potential clients and collaborators to have a clear understanding of your pricing structure and make informed decisions when considering working with you.',
@@ -2111,7 +2170,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                 labelText: 'Terms and conditions',
                 hintText: " optional (terms and conditions)",
                 initialValue: widget.user.terms,
-                onValidateText: () {},
+                onValidateText: (input) => null,
                 onSavedText: (input) => _provider.setTermsAndConditions(input),
               ),
               Text(
@@ -2129,20 +2188,25 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                       isMini: true,
                       indicatorColor: Colors.blue,
                     )
-                  : !_portfolioIsEmpty && _imageFileNull
-                      ? Center(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(top: 20.0, bottom: 40),
-                            child: AlwaysWhiteButton(
-                              buttonText: 'Save',
-                              onPressed: _validateTextToxicity,
-                              //  _submit,
-                              buttonColor: Colors.blue,
-                            ),
-                          ),
-                        )
+                  : !_portfolioIsEmpty
+                      ? !imageUrlIsEmpty || _imageFileNull
+                          ? Center(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 20.0, bottom: 40),
+                                child: AlwaysWhiteButton(
+                                  buttonText: 'Save',
+                                  onPressed: _validateTextToxicity,
+                                  //  _submit,
+                                  buttonColor: Colors.blue,
+                                ),
+                              ),
+                            )
+                          : SizedBox.shrink()
                       : SizedBox.shrink(),
+              const SizedBox(
+                height: 70,
+              ),
             ],
           ),
         ),

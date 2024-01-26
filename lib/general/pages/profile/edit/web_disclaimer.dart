@@ -66,13 +66,17 @@ class _WebDisclaimerState extends State<WebDisclaimer> {
             ),
             BottomModalSheetButtonBlue(
               buttonText: 'Continue',
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => MyWebView(
-                              url: widget.link, title: widget.contentType,
-                            )));
+              onPressed: () async {
+                Navigator.pop(context);
+                if (!await launchUrl(Uri.parse(widget.link))) {
+                  throw 'Could not launch link';
+                }
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (_) => MyWebView(
+                //               url: widget.link, title: widget.contentType,
+                //             )));
               },
             ),
           ],

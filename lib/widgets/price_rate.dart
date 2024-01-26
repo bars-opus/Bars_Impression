@@ -4,11 +4,13 @@ class PriceRateWidget extends StatelessWidget {
   final List<PriceModel> prices;
   final bool edit;
   final bool seeMore;
+  final String currency;
 
   PriceRateWidget({
     required this.prices,
     required this.edit,
     required this.seeMore,
+    required this.currency,
   });
 
   _removePortfolio(PriceModel potfolio) {
@@ -17,6 +19,8 @@ class PriceRateWidget extends StatelessWidget {
   }
 
   _rateWidget(BuildContext context, PriceModel price) {
+    final List<String> currencyPartition =
+        currency.trim().replaceAll('\n', ' ').split("|");
     return Padding(
       padding: const EdgeInsets.only(bottom: 2.0),
       child: Container(
@@ -38,7 +42,8 @@ class PriceRateWidget extends StatelessWidget {
                 textScaleFactor: MediaQuery.of(context).textScaleFactor,
                 text: TextSpan(children: [
                   TextSpan(
-                    text: 'USD:${price.price.toString()}',
+                    text:
+                        '${currencyPartition.isEmpty ? '' : currencyPartition.length > 0 ? currencyPartition[1] : ''} ${price.price.toString()}',
                     style: TextStyle(
                       fontSize:
                           ResponsiveHelper.responsiveFontSize(context, 18.0),

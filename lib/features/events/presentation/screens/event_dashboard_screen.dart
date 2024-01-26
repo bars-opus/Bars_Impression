@@ -30,8 +30,8 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
 
   int _refundProcessedCount = 0;
 
-  final _messageController = TextEditingController();
-  ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
+  // final _messageController = TextEditingController();
+  // ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
   double totalSales = 0;
 
   @override
@@ -46,7 +46,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
     _setRefundCount('processed');
 
     someFunction();
-    _messageController.addListener(_onAskTextChanged);
+    // _messageController.addListener(_onAskTextChanged);
   }
 
   void someFunction() async {
@@ -89,19 +89,19 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
     return totalSum;
   }
 
-  void _onAskTextChanged() {
-    if (_messageController.text.isNotEmpty) {
-      _isTypingNotifier.value = true;
-    } else {
-      _isTypingNotifier.value = false;
-    }
-  }
+  // void _onAskTextChanged() {
+  //   if (_messageController.text.isNotEmpty) {
+  //     _isTypingNotifier.value = true;
+  //   } else {
+  //     _isTypingNotifier.value = false;
+  //   }
+  // }
 
-  @override
-  void dispose() {
-    super.dispose();
-    _messageController.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  //   _messageController.dispose();
+  // }
 
   _setUpEventInvites(String answer) async {
     DatabaseService.numAllEventInvites(widget.event.id, answer)
@@ -407,36 +407,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
     );
   }
 
-  _ticketFiled(
-    String labelText,
-    String hintText,
-    TextEditingController controler,
-    final Function onValidateText,
-  ) {
-    var style = Theme.of(context).textTheme.titleSmall;
-    var labelStyle = TextStyle(
-        fontSize: ResponsiveHelper.responsiveFontSize(context, 18.0),
-        color: Colors.blue);
-    var hintStyle = TextStyle(
-        fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-        color: Colors.grey);
-    return TextFormField(
-      controller: controler,
-      keyboardType: TextInputType.multiline,
-      keyboardAppearance: MediaQuery.of(context).platformBrightness,
-      style: style,
-      maxLines: null,
-      autofocus: true,
-      decoration: InputDecoration(
-        labelText: labelText,
-        hintText: hintText,
-        labelStyle: labelStyle,
-        hintStyle: hintStyle,
-      ),
-      validator: (string) => onValidateText(string),
-    );
-  }
-
   void _showBottomInvitationMessage() {
     Color _paletteDark = widget.palette == null
         ? Color(0xFF1a1a1a)
@@ -449,87 +419,14 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
         builder: (BuildContext context) {
-          return StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) {
-            return ValueListenableBuilder(
-                valueListenable: _isTypingNotifier,
-                builder: (BuildContext context, bool isTyping, Widget? child) {
-                  return Container(
-                    height: _size.height.toDouble() / 1.3,
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColorLight,
-                        borderRadius: BorderRadius.circular(30)),
-                    child: Scaffold(
-                      backgroundColor: Colors.transparent,
-                      body: Padding(
-                        padding: EdgeInsets.all(10),
-                        child: ListView(children: [
-                          _messageController.text.length > 0
-                              ? Align(
-                                  alignment: Alignment.centerRight,
-                                  child: MiniCircularProgressButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                      _navigateToPage(
-                                          context,
-                                          InviteSearchScreen(
-                                            event: widget.event,
-                                            currentUserId: widget.currentUserId,
-                                            inviteMessage:
-                                                _messageController.text.trim(),
-                                            paletteColor: _paletteDark,
-                                          ));
-                                    },
-                                    text: "Continue",
-                                    color: Colors.blue,
-                                  ),
-                                )
-                              : ListTile(
-                                  leading: _messageController.text.length > 0
-                                      ? SizedBox.shrink()
-                                      : IconButton(
-                                          icon: const Icon(Icons.close),
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          color: Theme.of(context)
-                                              .secondaryHeaderColor,
-                                        ),
-                                  trailing: GestureDetector(
-                                    onTap: () {
-                                      Navigator.pop(context);
-                                      _navigateToPage(
-                                          context,
-                                          InviteSearchScreen(
-                                            event: widget.event,
-                                            paletteColor: _paletteDark,
-                                            currentUserId: widget.currentUserId,
-                                            inviteMessage:
-                                                _messageController.text.trim(),
-                                          ));
-                                    },
-                                    child: Text(
-                                      'Skip',
-                                      style: TextStyle(
-                                          color: Colors.blue,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                ),
-                          const SizedBox(height: 40),
-                          _ticketFiled(
-                            'Invitation message',
-                            'A special invitation message to your guests',
-                            _messageController,
-                            () {},
-                          ),
-                          const SizedBox(height: 20),
-                        ]),
-                      ),
-                    ),
-                  );
-                });
-          });
+          return SendInviteMessage(
+            currentUserId: widget.currentUserId,
+            event: widget.event,
+          );
+          // return StatefulBuilder(
+          //     builder: (BuildContext context, StateSetter setState) {
+          //   return
+          // });
         });
   }
 
@@ -693,7 +590,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                         ),
                         TextSpan(
                           text:
-                              "\nWhen scanning a ticket, a blue linear loading indicator should appear on the ticket, indicating that it is being scanned. If this loading indicator does not appear, it suggests that the ticket is forged or a screenshot. We encourage you to only scan tickets presented by attendees within the app while it is open and to avoid scanning screenshots of tickets. Valid tickets will provide a gentle haptic feedback on your phone, while non-valid tickets will generate a more pronounced vibration impact. Additional Information:",
+                              "\nWhen scanning a ticket, a blue linear loading indicator should appear on the ticket, indicating that it is being scanned. If this loading indicator does not appear, it suggests that the ticket is forged or a screenshot. We encourage you to only scan tickets presented by attendees within the app while it is open and to avoid scanning screenshots of tickets. Valid tickets will provide a gentle haptic feedback on your phone, while non-valid tickets will generate a more pronounced vibration impact. \n\nAdditional Information:",
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         TextSpan(
@@ -740,7 +637,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                         ),
                         TextSpan(
                           text:
-                              "\n•	Avoid covering or damaging the QR code on your ticket, as it may affect scanning accuracy.",
+                              "\n•	Avoid covering the QR code on your ticket, as it may affect scanning accuracy.",
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         TextSpan(

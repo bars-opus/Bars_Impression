@@ -29,7 +29,7 @@ class _EventExpectedAttendeesScreenState
     with AutomaticKeepAliveClientMixin {
   List<TicketOrderModel> _inviteList = [];
   final _inviteSnapshot = <DocumentSnapshot>[];
-  int limit = 10;
+  // int limit = 10;
   bool _hasNext = true;
   bool _isLoading = true;
 
@@ -76,26 +76,64 @@ class _EventExpectedAttendeesScreenState
   }
 
   _setUpPeopleValidated() async {
-    QuerySnapshot inviteSnapShot = await newEventTicketOrderRef
-        .doc(widget.event.id)
-        .collection('eventInvite')
-        .where('validated', isEqualTo: widget.validated)
-        // .limit(limit)
-        .get();
-    List<TicketOrderModel> users = inviteSnapShot.docs
-        .map((doc) => TicketOrderModel.fromDoc(doc))
-        .toList();
-    _inviteSnapshot.addAll((inviteSnapShot.docs));
-    if (mounted) {
-      print(users.length.toString());
+    try {
+      QuerySnapshot inviteSnapShot = await newEventTicketOrderRef
+          .doc(widget.event.id)
+          .collection('eventInvite')
+          // .limit(limit) // Uncomment and set the limit if needed
+          .get();
+
+      // Filter users based on validation status within the 'tickets' array
+      var filteredUsers = inviteSnapShot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        List<dynamic> tickets = data['tickets'] ?? [];
+        bool hasValidatedTicket =
+            tickets.any((ticket) => ticket['validated'] == widget.validated);
+        return hasValidatedTicket ? TicketOrderModel.fromDoc(doc) : null;
+      }).where((user) =>
+          user != null); // Filter out nulls if no validated ticket found
+
+      // Cast away the nulls to get a non-nullable list
+      List<TicketOrderModel> users = List<TicketOrderModel>.from(filteredUsers);
+
+      _inviteSnapshot.addAll(inviteSnapShot.docs);
+      if (mounted) {
+        print(users.length.toString());
+        setState(() {
+          _hasNext = false;
+          _inviteList = users;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print(e.toString());
       setState(() {
-        _hasNext = false;
-        _inviteList = users;
         _isLoading = false;
       });
     }
-    return users;
+    return _inviteList;
   }
+  // _setUpPeopleValidated() async {
+  //   QuerySnapshot inviteSnapShot = await newEventTicketOrderRef
+  //       .doc(widget.event.id)
+  //       .collection('eventInvite')
+  //       .where('validated', isEqualTo: widget.validated)
+  //       // .limit(limit)
+  //       .get();
+  //   List<TicketOrderModel> users = inviteSnapShot.docs
+  //       .map((doc) => TicketOrderModel.fromDoc(doc))
+  //       .toList();
+  //   _inviteSnapshot.addAll((inviteSnapShot.docs));
+  //   if (mounted) {
+  //     print(users.length.toString());
+  //     setState(() {
+  //       _hasNext = false;
+  //       _inviteList = users;
+  //       _isLoading = false;
+  //     });
+  //   }
+  //   return users;
+  // }
 
   _setUpPeopleAttending() async {
     QuerySnapshot inviteSnapShot = await newEventTicketOrderRef

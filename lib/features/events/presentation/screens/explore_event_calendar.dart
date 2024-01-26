@@ -519,17 +519,21 @@ class _ExploreEventCalendarState extends State<ExploreEventCalendar> {
               lastDay: DateTime(2028),
               focusedDay: _focusedDay),
           loading
-              ? Center(
-                  child: SizedBox(
-                    height: ResponsiveHelper.responsiveFontSize(context, 20.0),
-                    width: ResponsiveHelper.responsiveFontSize(context, 20.0),
-                    child: CircularProgressIndicator(
-                      backgroundColor: Colors.transparent,
-                      valueColor: new AlwaysStoppedAnimation<Color>(
-                        Colors.blue,
+              ? Padding(
+                  padding: EdgeInsets.only(top: 30.0),
+                  child: Center(
+                    child: SizedBox(
+                      height:
+                          ResponsiveHelper.responsiveFontSize(context, 30.0),
+                      width: ResponsiveHelper.responsiveFontSize(context, 30.0),
+                      child: CircularProgressIndicator(
+                        backgroundColor: Colors.transparent,
+                        valueColor: new AlwaysStoppedAnimation<Color>(
+                          Colors.blue,
+                        ),
+                        strokeWidth:
+                            ResponsiveHelper.responsiveFontSize(context, 2.0),
                       ),
-                      strokeWidth:
-                          ResponsiveHelper.responsiveFontSize(context, 2.0),
                     ),
                   ),
                 )

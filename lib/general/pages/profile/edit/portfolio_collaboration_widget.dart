@@ -16,7 +16,6 @@ class PortfolioCollaborationWidget extends StatelessWidget {
         schedule.name == potfolio.name && schedule.id == potfolio.id);
   }
 
-
   void _showBottomSheetWork(
     BuildContext context,
     String type,
@@ -47,13 +46,17 @@ class PortfolioCollaborationWidget extends StatelessWidget {
                 ),
                 BottomModalSheetButtonBlue(
                   buttonText: type,
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => MyWebView(
-                                  url: link, title: '',
-                                )));
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    if (!await launchUrl(Uri.parse(link))) {
+                      throw 'Could not launch link';
+                    }
+                    //             Navigator.push(
+                    //                 context,
+                    //                 MaterialPageRoute(
+                    //                     builder: (_) => MyWebView(
+                    //                           url: link, title: '',
+                    //                         )));
                   },
                 ),
               ],
@@ -116,7 +119,6 @@ class PortfolioCollaborationWidget extends StatelessWidget {
               maxLines: fullWidth ? null : 2,
               overflow: fullWidth ? null : TextOverflow.ellipsis,
             ),
-           
           ),
         ),
       ),
@@ -134,7 +136,6 @@ class PortfolioCollaborationWidget extends StatelessWidget {
 
     return Container(
       height: ResponsiveHelper.responsiveHeight(context, 120),
-     
       child: GridView.count(
         physics: AlwaysScrollableScrollPhysics(),
         scrollDirection: Axis.horizontal,
@@ -181,8 +182,7 @@ class PortfolioCollaborationWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              subtitle: _buildDisplayPortfolioGrid(context, collaboration)
-              ),
+              subtitle: _buildDisplayPortfolioGrid(context, collaboration)),
         ),
       ),
     );

@@ -689,14 +689,14 @@ class _ProfileScreenState extends State<ProfileScreen>
   //                                 borderRadius: BorderRadius.circular(20.0),
   //                               ),
   //                             ),
-                              // onPressed: () => Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: (_) => CreateContents(
-                              //       user: user,
-                              //       from: 'Profile',
-                              //     ),
-                              //   ),
+  // onPressed: () => Navigator.push(
+  //   context,
+  //   MaterialPageRoute(
+  //     builder: (_) => CreateContents(
+  //       user: user,
+  //       from: 'Profile',
+  //     ),
+  //   ),
   //                             ),
   //                             child: Material(
   //                               color: Colors.transparent,
@@ -5233,7 +5233,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-          height: ResponsiveHelper.responsiveHeight(context, 500),
+          height: ResponsiveHelper.responsiveHeight(context, 550),
           decoration: BoxDecoration(
               color: Theme.of(context).primaryColorLight,
               borderRadius: BorderRadius.circular(30)),
@@ -5396,6 +5396,21 @@ class _ProfileScreenState extends State<ProfileScreen>
                             _blockOrUnBlock(user);
                           },
                     text: _isAuthor ? 'Invite a friend' : 'Block'),
+                BottomModelSheetListTileActionWidget(
+                  colorCode: '',
+                  icon: Icons.qr_code,
+                  onPressed: () {
+                    navigateToPage(
+                        context,
+                        UserBarcode(
+                          userDynamicLink: user.dynamicLink!,
+                          bio: user.bio!,
+                          userName: user.userName!,
+                          userId: user.userId!, profileImageUrl: user.profileImageUrl!,
+                        ));
+                  },
+                  text: 'Bar code',
+                ),
                 const SizedBox(
                   height: 10,
                 ),

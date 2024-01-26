@@ -93,25 +93,30 @@ class _SearchTicketState extends State<SearchTicket> {
                         return Expanded(child: SearchUserSchimmer());
                       }
                       if (snapshot.data!.docs.length == 0) {
-                        return Center(
-                          child: RichText(
-                              textScaleFactor:
-                                  MediaQuery.of(context).textScaleFactor,
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                      text: "No tickets found. ",
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.blueGrey)),
-                                  TextSpan(
-                                      text:
-                                          '\nCheck the event name and try again.'),
-                                ],
-                                style:
-                                    TextStyle(fontSize: 14, color: Colors.grey),
-                              )),
+                        return Padding(
+                          padding: EdgeInsets.only(
+                              top: ResponsiveHelper.responsiveHeight(
+                                  context, 250)),
+                          child: Center(
+                            child: RichText(
+                                textScaleFactor:
+                                    MediaQuery.of(context).textScaleFactor,
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                        text: "No tickets found. ",
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.blueGrey)),
+                                    TextSpan(
+                                        text:
+                                            '\nCheck the event name and try again.'),
+                                  ],
+                                  style: TextStyle(
+                                      fontSize: 14, color: Colors.grey),
+                                )),
+                          ),
                         );
                       }
                       return Expanded(

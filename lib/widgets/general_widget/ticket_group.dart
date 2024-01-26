@@ -395,14 +395,17 @@ class _TicketGroupState extends State<TicketGroup> {
               ),
               BottomModalSheetButtonBlue(
                 buttonText: 'Access ticket site',
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => MyWebView(
-                                url: link,
-                                title: '',
-                              )));
+                onPressed:  () async {
+        if (!await launchUrl(Uri.parse(link))) {
+          throw 'Could not launch link';
+        }
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (_) => MyWebView(
+                  //               url: link,
+                  //               title: '',
+                  //             )));
                 },
               ),
             ],

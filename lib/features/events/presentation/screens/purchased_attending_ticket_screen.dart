@@ -642,14 +642,15 @@ class _PurchasedAttendingTicketScreenState
     return EventBottomButton(
       buttonText: widget.event.isVirtual ? 'Host link' : 'Event location',
       onPressed: () {
-        widget.event.isVirtual
-            ? _navigateToPage(
-                context,
-                MyWebView(
-                  title: '',
-                  url: widget.event.virtualVenue,
-                ))
-            : _launchMap();
+        // widget.event.isVirtual
+        //     ? _navigateToPage(
+        //         context,
+        //         MyWebView(
+        //           title: '',
+        //           url: widget.event.virtualVenue,
+        //         ))
+        //     : 
+            _launchMap();
       },
     );
   }

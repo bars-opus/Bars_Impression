@@ -57,10 +57,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   _documentText(String title, String url) {
     return GestureDetector(
-      onTap: () {
-        _navigateToPage(MyWebView( title: '',
-          url: url,
-        ));
+      onTap: () async {
+        if (!await launchUrl(Uri.parse(url))) {
+          throw 'Could not launch link';
+        }
+        // _navigateToPage(MyWebView( title: '',
+        //   url: url,
+        // ));
       },
       child: Text(
         title,
@@ -147,12 +150,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     SignUpButton(
                       buttonText: 'Sign in',
                       onPressed: () {
-                       _navigateToPage(
-                                LoginScreenOptions(
-                                  from: 'Sign in',
-                                ),
-                              )
-                            ;
+                        _navigateToPage(
+                          LoginScreenOptions(
+                            from: 'Sign in',
+                          ),
+                        );
                       },
                     ),
                     SizedBox(

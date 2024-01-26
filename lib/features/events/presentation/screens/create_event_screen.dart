@@ -348,12 +348,14 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       FocusScope.of(context).unfocus();
       animateToPage(1);
       _isLoading = true;
+      String commonId = Uuid().v4();
       try {
         String imageUrl =
             await StorageService.uploadEvent(_provider.eventImage!);
 
         Event event = await _createEvent(
           imageUrl,
+          commonId,
         );
 
         PaletteGenerator _paletteGenerator =
@@ -362,7 +364,17 @@ class _CreateEventScreenState extends State<CreateEventScreen>
           size: Size(1110, 150),
           maximumColorCount: 20,
         );
+
+        DocumentSnapshot doc = await eventsRef
+            .doc(_provider.currentUserId)
+            .collection('userEvents')
+            .doc(commonId)
+            .get();
+
+        Event newEvent = Event.fromDoc(doc);
+
         _setNull(_provider);
+
         // await Future.delayed(Duration(milliseconds: 100));
         _isLoading = false;
         if (mounted) {
@@ -371,8 +383,8 @@ class _CreateEventScreenState extends State<CreateEventScreen>
               EventEnlargedScreen(
                 justCreated: true,
                 currentUserId: _provider.currentUserId!,
-                event: event,
-                type: event.type,
+                event: newEvent,
+                type: newEvent.type,
                 palette: _paletteGenerator,
               ));
 
@@ -389,6 +401,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
 
   Future<Event> _createEvent(
     String imageUrl,
+    String commonId,
   ) async {
     var _provider = Provider.of<UserData>(context, listen: false);
 
@@ -396,8 +409,6 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     var blurHash = await BlurHash.encode(bytes, 4, 3);
 
     // Calculate the total cost of the order
-
-    String commonId = Uuid().v4();
 
     String link = await DatabaseService.myDynamicLink(imageUrl, _provider.title,
         _provider.theme, 'https://www.barsopus.com/event_$commonId');
@@ -618,7 +629,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                         )
                       : const SizedBox(height: 50),
                   _ticketFiled(
-                    false,
+                    true,
                     true,
                     'Reason',
                     'Please provide the reason for your event cancellation',
@@ -887,7 +898,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       onSelect: (Currency currency) {
         print(currency.code.toString());
         _provider.setCurrency('${currency.name} | ${currency.code}');
-        currency.code != 'GHS' && !_provider.isCashPayment
+        !_provider.isFree && currency.code != 'GHS' && !_provider.isCashPayment
             ? showDialog(
                 context: context,
                 builder: (context) {
@@ -1260,7 +1271,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
         ? Theme.of(context).textTheme.titleSmall
         : TextStyle(
             fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
-            color: Theme.of(context).secondaryHeaderColor,
+            color: Colors.black,
           );
     var labelStyle = TextStyle(
         fontSize:

@@ -79,14 +79,17 @@ class _AboutUsState extends State<AboutUs> {
             Material(
               color: Colors.transparent,
               child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => MyWebView(
-                                title: '',
-                                url: 'https://www.barsopus.com/contact',
-                              )));
+                onTap: () async {
+        if (!await launchUrl(Uri.parse('https://www.barsopus.com/contact'))) {
+          throw 'Could not launch link';
+        }
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (_) => MyWebView(
+                  //               title: '',
+                  //               url: 'https://www.barsopus.com/contact',
+                  //             )));
                 },
                 child: Text(
                   'Contact us',
@@ -106,14 +109,17 @@ class _AboutUsState extends State<AboutUs> {
             Material(
               color: Colors.transparent,
               child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => MyWebView(
-                                title: '',
-                                url: 'https://www.barsopus.com/terms-of-use',
-                              )));
+                onTap:  () async {
+        if (!await launchUrl(Uri.parse('https://www.barsopus.com/terms-of-use'))) {
+          throw 'Could not launch link';
+        }
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (_) => MyWebView(
+                  //               title: '',
+                  //               url: 'https://www.barsopus.com/terms-of-use',
+                  //             )));
                 },
                 child: Text(
                   'Terms of use',
@@ -133,14 +139,17 @@ class _AboutUsState extends State<AboutUs> {
             Material(
               color: Colors.transparent,
               child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => MyWebView(
-                                title: '',
-                                url: 'https://www.barsopus.com/privacy',
-                              )));
+                onTap: () async {
+        if (!await launchUrl(Uri.parse('https://www.barsopus.com/privacy'))) {
+          throw 'Could not launch link';
+        }
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (_) => MyWebView(
+                  //               title: '',
+                  //               url: 'https://www.barsopus.com/privacy',
+                  //             )));
                 },
                 child: Text(
                   'Privacy policies',

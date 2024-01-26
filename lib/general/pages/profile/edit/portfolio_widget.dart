@@ -27,7 +27,7 @@ class PortfolioWidget extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-          height:ResponsiveHelper.responsiveHeight(context, 600),
+          height: ResponsiveHelper.responsiveHeight(context, 600),
           decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(30)),
@@ -46,13 +46,17 @@ class PortfolioWidget extends StatelessWidget {
                 ),
                 BottomModalSheetButtonBlue(
                   buttonText: type,
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => MyWebView(
-                                  url: link, title: '',
-                                )));
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    if (!await launchUrl(Uri.parse(link))) {
+                      throw 'Could not launch link';
+                    }
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (_) => MyWebView(
+                    //               url: link, title: '',
+                    //             )));
                   },
                 ),
               ],

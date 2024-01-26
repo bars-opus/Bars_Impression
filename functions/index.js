@@ -263,127 +263,6 @@ function isRetryableError(error) {
 }
 
 
-// Helper function to alert the admin by creating a Firestore document
-
-
-// async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
-//   let retryCount = 0;
-//   let delay = 1000; // Initial delay in milliseconds (1 second)
-//   const eventData = eventDoc.data();
-
-//   while (retryCount < maxRetries) {
-//     try {               
-//        // eslint-disable-next-line no-await-in-loop
-//       const organizerShare = await calculateOrganizerShare(eventData);
-//     // eslint-disable-next-line no-await-in-loop
-//       const response = await paystack.subaccount.createTransfer({
-//         source: "balance",
-//         reason: "organizer payment", 
-//         amount: organizerShare,
-//         recipient: eventData.subaccountId,
-//       });
-
-//       if (response.status) {
-//         // Transfer was successful
-//          // eslint-disable-next-line no-await-in-loop
-//         await alertAdminFundsDistributedSuccess(db, eventDoc.id, eventData.subaccountId);
-//         return response;
-//       } else {
-//         // Transfer failed without an exception, possibly a business logic error
-//         throw new Error('Transfer failed with a non-success status');
-//       }
-//     } catch (error) {
-//       console.error(`Attempt ${retryCount + 1} for event ${eventDoc.id} failed:`, error);
-
-//       // Check if the error is retryable, if not, alert admin and stop retrying
-//       if (!isRetryableError(error)) {
-//          // eslint-disable-next-line no-await-in-loop
-//         await alertAdminDistributeFundsError(db, eventDoc.id, eventData.subaccountId);
-//         throw error; // Non-retryable error, rethrow error
-//       }
-
-//       // Log the retryable error and wait before the next attempt
-//       console.log(`Retryable error encountered for event ${eventDoc.id}. Will retry after ${delay}ms...`);
-//        // eslint-disable-next-line no-await-in-loop
-//       await new Promise(resolve => setTimeout(resolve, delay));
-      
-//       // Increment the retry count and update the delay for exponential backoff
-//       retryCount++;
-//       delay *= 2;
-//     }
-//   }
-
-  // If all retry attempts fail, alert admin and throw an error
-   // eslint-disable-next-line no-await-in-loop
-//   await alertAdminDistributeFundsError(db, eventDoc.id, eventData.subaccountId);
-//   throw new Error(`All retry attempts failed for event ${eventDoc.id}`);
-// }
-
-
-// async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
-//   let retryCount = 0;
-//   let delay = 1000; // Initial delay in milliseconds (1 second)
-//   const eventData = eventDoc.data();
-//   // const paystackSecretKey = 'YOUR_SECRET_KEY'; // Replace with your actual secret key
-
-//   while (retryCount < maxRetries) {
-//     try {
-//         // eslint-disable-next-line no-await-in-loop
-//       const organizerShare = await calculateOrganizerShare(eventData);
-//         // eslint-disable-next-line no-await-in-loop
-//       const response = await fetch('https://api.paystack.co/transfer', {
-//         method: 'POST',
-//         headers: {
-//           'Authorization': `Bearer ${functions.config().paystack.secret_key}`,
-//           'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify({
-//           source: "balance",
-//           amount: organizerShare,
-//           recipient: eventData.subaccountId,
-//           reason: "Payment to organizer", // Add an appropriate reason for the transfer
-//         })
-//       });
-
-//       if (!response.ok) {
-//         throw new Error(`HTTP error: ${response.status} - ${response.statusText}`);
-//       }
-//   // eslint-disable-next-line no-await-in-loop
-//       const responseData = await response.json();
-
-//       if (responseData.status) {
-//           // eslint-disable-next-line no-await-in-loop
-//         await alertAdminFundsDistributedSuccess(db, eventDoc.id, eventData.subaccountId);
-//         return responseData.data;
-//       } else {
-//         throw new Error('Transfer failed with a non-success status');
-//       }
-//     }
-//     catch (error) {
-//       console.error(`Attempt ${retryCount + 1} for event ${eventDoc.id} failed:`, error);
-    
-//       // Check if the error should not be retried
-//       if (!isRetryableError(error)) {
-//         // Log the original error message directly to the database
-//          // eslint-disable-next-line no-await-in-loop
-//         await alertAdminDistributeFundsError(db, eventDoc.id, eventData.subaccountId, error.message || "Unknown error");
-//         throw error; // Rethrow the original error
-//       }
-//       // Log retryable error and delay next attempt
-//       console.log(`Retryable error encountered for event ${eventDoc.id}. Will retry after ${delay}ms...`);
-//        // eslint-disable-next-line no-await-in-loop
-//       await new Promise(resolve => setTimeout(resolve, delay));
-//       retryCount++;
-//       delay *= 2;
-//     }
-   
-//   }
-//     // eslint-disable-next-line no-await-in-loop
-//    await alertAdminDistributeFundsError(db, eventDoc.id, eventData.subaccountId, 'could bot procces funds');
-//   throw new Error(`All ${maxRetries} retries failed for event ${eventDoc.id}`);
-// }
-
-
 
 async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
   let retryCount = 0;
@@ -496,17 +375,6 @@ exports.distributeEventFunds = functions.pubsub.schedule('every 5 minutes').onRu
   }
 });
 
-// async function alertAdminFundsDistributedSuccess(db, eventId, subaccountId, ) {
-//   const successDoc = {
-//     eventId: eventId,
-//     subaccountId: subaccountId,
-//     status: 'successful', 
-//     date: admin.firestore.FieldValue.serverTimestamp()
-//   };
-//   await db.collection('distribute_funds_success').add(successDoc);
-// }
-
-
 
 
 // Example function to log success with more details
@@ -567,29 +435,6 @@ function sanitizeResponse(response) {
 
   return sanitized;
 }
-// async function alertAdminDistributeFundsError(db, eventId, subaccountId, error) {
-//   const failureDoc = {
-//     eventId: eventId,
-//     subaccountId: subaccountId,
-//     error: error,
-//     date: admin.firestore.FieldValue.serverTimestamp()
-//   };
-  
-//   await db.collection('distribute_funds_failures').add(failureDoc);
-// }
-
-
-
-// async function alertCalculateFundDistError(db, eventId, subaccountId, errorMessage) {
-//   const failureDoc = {
-//     eventId: eventId,
-//     errorMessage: errorMessage, 
-//     subaccountId: subaccountId,
-//     date: admin.firestore.FieldValue.serverTimestamp()
-//   }; 
- 
-//   await db.collection('calculate_funds_failures').add(failureDoc);
-// }
 
 async function calculateOrganizerShare(eventData) {
   try {

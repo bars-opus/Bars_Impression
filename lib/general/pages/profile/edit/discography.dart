@@ -154,6 +154,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
     provider.setOverview(widget.userPortfolio.overview);
     provider.setTermsAndConditions(widget.userPortfolio.terms);
     provider.setNoBooking(widget.userPortfolio.noBooking);
+    provider.setCurrency(widget.userPortfolio.currency);
 
     // Add user awards
     List<PortfolioModel> awards = widget.userPortfolio.awards;
@@ -234,32 +235,32 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
   //   }
   // }
 
-  void _showCurrencyPicker() {
-    showCurrencyPicker(
-      theme: CurrencyPickerThemeData(
-        backgroundColor: Theme.of(context).primaryColor,
-        flagSize: 25,
-        titleTextStyle: TextStyle(
-          fontSize: ResponsiveHelper.responsiveFontSize(context, 17.0),
-        ),
-        subtitleTextStyle: TextStyle(
-            fontSize: ResponsiveHelper.responsiveFontSize(context, 15.0),
-            color: Colors.blue),
-        bottomSheetHeight: MediaQuery.of(context).size.height / 1.2,
-      ),
-      context: context,
-      showFlag: true,
-      showSearchField: true,
-      showCurrencyName: true,
-      showCurrencyCode: true,
-      onSelect: (Currency currency) {
-        Provider.of<UserData>(context, listen: false)
-            .setCurrency('${currency.name}, ${currency.code} |');
-        // animateToPage(1);
-      },
-      favorite: ['USD'],
-    );
-  }
+  // void _showCurrencyPicker() {
+  //   showCurrencyPicker(
+  //     theme: CurrencyPickerThemeData(
+  //       backgroundColor: Theme.of(context).primaryColor,
+  //       flagSize: 25,
+  //       titleTextStyle: TextStyle(
+  //         fontSize: ResponsiveHelper.responsiveFontSize(context, 17.0),
+  //       ),
+  //       subtitleTextStyle: TextStyle(
+  //           fontSize: ResponsiveHelper.responsiveFontSize(context, 15.0),
+  //           color: Colors.blue),
+  //       bottomSheetHeight: MediaQuery.of(context).size.height / 1.2,
+  //     ),
+  //     context: context,
+  //     showFlag: true,
+  //     showSearchField: true,
+  //     showCurrencyName: true,
+  //     showCurrencyCode: true,
+  //     onSelect: (Currency currency) {
+  //       Provider.of<UserData>(context, listen: false)
+  //           .setCurrency('${currency.name}, ${currency.code} |');
+  //       // animateToPage(1);
+  //     },
+  //     favorite: ['USD'],
+  //   );
+  // }
 
   @override
   void dispose() {
@@ -1221,6 +1222,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                                                   edit: false,
                                                   prices: _provider.priceRate,
                                                   seeMore: true,
+                                                  currency: _provider.currency,
                                                 ),
                                               )
                                             : PortfolioWidget(
@@ -1611,6 +1613,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                     edit: false,
                     prices: _provider.priceRate,
                     seeMore: true,
+                    currency: _provider.currency,
                   ),
                   _divider('Work request', 'work', false),
                   _workRequest(),
@@ -1706,6 +1709,27 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                       },
                       false,
                     ),
+                  GestureDetector(
+                    onTap: () {
+                      _navigateToPage(
+                          context,
+                          UserBarcode(
+                            profileImageUrl:
+                                widget.userPortfolio.profileImageUrl,
+                            userDynamicLink: widget.userPortfolio.dynamicLink,
+                            bio: widget.userPortfolio.overview,
+                            userName: widget.userPortfolio.userName,
+                            userId: widget.userPortfolio.id,
+                          ));
+                    },
+                    child: Hero(
+                        tag: widget.userPortfolio.id,
+                        child: Icon(
+                          Icons.qr_code,
+                          color: Theme.of(context).secondaryHeaderColor,
+                          size: ResponsiveHelper.responsiveHeight(context, 40),
+                        )),
+                  ),
                   _divider('', '', false),
                   GestureDetector(
                       onTap: () {

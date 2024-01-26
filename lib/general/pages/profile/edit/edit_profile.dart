@@ -697,6 +697,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ),
                           ),
                     const SizedBox(height: 40),
+                    GestureDetector(
+                      onTap: () {
+                        _navigateToPage(
+                            context,
+                            UserBarcode(
+                              profileImageUrl: widget.user.profileImageUrl!,
+                              userDynamicLink: widget.user.dynamicLink!,
+                              bio: widget.user.bio!,
+                              userName: widget.user.userName!,
+                              userId: widget.user.userId!,
+                            ));
+                      },
+                      child: Hero(
+                          tag: widget.user.userId!,
+                          child: Icon(
+                            Icons.qr_code,
+                            color: Theme.of(context).secondaryHeaderColor,
+                            size:
+                                ResponsiveHelper.responsiveHeight(context, 40),
+                          )),
+                    ),
                     _closeWidget(),
                     const SizedBox(
                       height: 50.0,

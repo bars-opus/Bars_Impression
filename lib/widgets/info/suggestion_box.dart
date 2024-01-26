@@ -99,6 +99,7 @@ class _SuggestionBoxState extends State<SuggestionBox> {
                 ),
                 SizedBox(height: 30),
                 ContentFieldBlack(
+                  
                   onlyBlack: false,
                   labelText: "Tell us",
                   hintText: "How can we improve Bars Impression?",

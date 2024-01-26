@@ -167,14 +167,17 @@ class ScheduleWidget extends StatelessWidget {
                 ),
                 BottomModalSheetButtonBlue(
                   buttonText: type,
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => MyWebView(
-                                  url: link,
-                                  title: '',
-                                )));
+                  onPressed: () async {
+              if (!await launchUrl(Uri.parse(link))) {
+                throw 'Could not launch link';
+              }
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (_) => MyWebView(
+                    //               url: link,
+                    //               title: '',
+                    //             )));
                   },
                 ),
               ],

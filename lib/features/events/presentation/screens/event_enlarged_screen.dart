@@ -293,39 +293,6 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
         });
   }
 
-  _noSchedule() {
-    return Container(
-        height: ResponsiveHelper.responsiveHeight(context, 650.0),
-        decoration: BoxDecoration(
-            color: Theme.of(context).primaryColorLight,
-            borderRadius: BorderRadius.circular(30)),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            NoContents(
-                title: 'No Schedules',
-                subTitle:
-                    'The event organizer didn\'t provide schedules for this event. If you want to know more about the schedules and program lineup, you can',
-                icon: Icons.watch_later_outlined),
-            GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-                _showBottomSheetAskMore(context);
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(left: 30.0, right: 30),
-                child: Text(
-                  'ask a question here',
-                  style: TextStyle(color: Colors.blue, fontSize: 14),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-          ],
-        ));
-  }
-
   // display event dates and schedules on calendar
   void _showBottomSheetCalendar(BuildContext context) {
     showModalBottomSheet(
@@ -334,7 +301,13 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return widget.event.schedule.isEmpty
-            ? _noSchedule()
+            ? NoScheduleCalendar(
+                showAskMore: true,
+                askMoreOnpressed: () {
+                  Navigator.pop(context);
+                  _showBottomSheetAskMore(context);
+                },
+              )
             : EventSheduleCalendar(
                 event: widget.event,
                 currentUserId: widget.currentUserId,
@@ -359,7 +332,13 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return widget.event.schedule.isEmpty
-            ? _noSchedule()
+            ? NoScheduleCalendar(
+                showAskMore: true,
+                askMoreOnpressed: () {
+                  Navigator.pop(context);
+                  _showBottomSheetAskMore(context);
+                },
+              )
             : Stack(
                 children: [
                   Container(
@@ -781,6 +760,109 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
     );
   }
 
+  void _showBottomInvitationMessage() {
+    Color _paletteDark = widget.palette == null
+        ? Color(0xFF1a1a1a)
+        : widget.palette!.darkMutedColor == null
+            ? Color(0xFF1a1a1a)
+            : widget.palette!.darkMutedColor!.color;
+    var _size = MediaQuery.of(context).size;
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext context) {
+          return SendInviteMessage(
+            currentUserId: widget.currentUserId,
+            event: widget.event,
+          );
+          // return StatefulBuilder(
+          //     builder: (BuildContext context, StateSetter setState) {
+          //   return
+          // });
+        });
+  }
+
+  void _showBottomSheetFullTitleAndTheme() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Container(
+            height: ResponsiveHelper.responsiveHeight(context, 700),
+            decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(30)),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: ListView(
+                children: [
+                  TicketPurchasingIcon(
+                    title: '',
+                  ),
+                  const SizedBox(height: 40),
+                  RichText(
+                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: widget.event.title,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        TextSpan(
+                          text: "\n${widget.event.theme}",
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: _launchMap,
+                    child: RichText(
+                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text:
+                                "\nThis event would take place at ${widget.event.venue}: ",
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          TextSpan(
+                            text: widget.event.address,
+                            style: TextStyle(
+                                color: Colors.blue,
+                                fontSize: ResponsiveHelper.responsiveFontSize(
+                                    context, 14)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  RichText(
+                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    text: TextSpan(
+                      children: [
+                        if (widget.event.dressCode.isNotEmpty)
+                          TextSpan(
+                            text: "Dressing code:  ${widget.event.dressCode}",
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 60),
+                ],
+              ),
+            ),
+          );
+        });
+      },
+    );
+  }
+
   _resourceSummaryInfo() {
     final width = MediaQuery.of(context).size.width;
     var _provider = Provider.of<UserData>(context, listen: false);
@@ -906,7 +988,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         TextSpan(
-                          text: '\nAccess dashboard...',
+                          text: '\nAccess dashboard.',
                           style: TextStyle(
                             color: Colors.blue,
                             fontSize: ResponsiveHelper.responsiveFontSize(
@@ -937,7 +1019,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         TextSpan(
-                          text: '\nAccess room...',
+                          text: '\nAccess room.',
                           style: TextStyle(
                             color: Colors.blue,
                             fontSize: ResponsiveHelper.responsiveFontSize(
@@ -990,6 +1072,12 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                 ),
                 const SizedBox(
                   height: 50,
+                ),
+                _inviteonSummaryButton(
+                  'Send Invite',
+                  () async {
+                    _showBottomInvitationMessage();
+                  },
                 ),
                 _inviteonSummaryButton(
                   'Share link',
@@ -1236,74 +1324,85 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                     },
                   ),
                 ),
-            RichText(
-              textScaleFactor: MediaQuery.of(context).textScaleFactor,
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: namePartition[0].toUpperCase(),
-                    style: _titleStyle,
-                  ),
-                  if (namePartition.length > 1)
+            GestureDetector(
+              onTap: () {
+                _showBottomSheetFullTitleAndTheme();
+              },
+              child: RichText(
+                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                text: TextSpan(
+                  children: [
                     TextSpan(
-                        text: "\n${namePartition[1].toUpperCase()} ",
-                        style: _titleStyle),
-                  if (namePartition.length > 2)
-                    TextSpan(
-                        text: "\n${namePartition[2].toUpperCase()} ",
-                        style: _titleStyle),
-                  if (namePartition.length > 3)
-                    TextSpan(
-                        text: "${namePartition[3].toUpperCase()} ",
-                        style: _titleStyle),
-                  if (namePartition.length > 4)
-                    TextSpan(
-                        text: "${namePartition[4].toUpperCase()} ",
-                        style: _titleStyle),
-                  if (namePartition.length > 5)
-                    TextSpan(
-                        text: "${namePartition[5].toUpperCase()} ",
-                        style: _titleStyle),
-                  if (namePartition.length > 6)
-                    TextSpan(
-                        text: "${namePartition[6].toUpperCase()} ",
-                        style: _titleStyle),
-                  if (namePartition.length > 7)
-                    TextSpan(
-                        text: "${namePartition[7].toUpperCase()} ",
-                        style: _titleStyle),
-                  if (namePartition.length > 8)
-                    TextSpan(
-                        text: "${namePartition[8].toUpperCase()} ",
-                        style: _titleStyle),
-                  if (namePartition.length > 9)
-                    TextSpan(
-                        text: "${namePartition[9].toUpperCase()} ",
-                        style: _titleStyle),
-                  if (namePartition.length > 10)
-                    TextSpan(
-                        text: "${namePartition[10].toUpperCase()} ",
-                        style: _titleStyle),
-                ],
+                      text: namePartition[0].toUpperCase(),
+                      style: _titleStyle,
+                    ),
+                    if (namePartition.length > 1)
+                      TextSpan(
+                          text: "\n${namePartition[1].toUpperCase()} ",
+                          style: _titleStyle),
+                    if (namePartition.length > 2)
+                      TextSpan(
+                          text: "\n${namePartition[2].toUpperCase()} ",
+                          style: _titleStyle),
+                    if (namePartition.length > 3)
+                      TextSpan(
+                          text: "${namePartition[3].toUpperCase()} ",
+                          style: _titleStyle),
+                    if (namePartition.length > 4)
+                      TextSpan(
+                          text: "${namePartition[4].toUpperCase()} ",
+                          style: _titleStyle),
+                    if (namePartition.length > 5)
+                      TextSpan(
+                          text: "${namePartition[5].toUpperCase()} ",
+                          style: _titleStyle),
+                    if (namePartition.length > 6)
+                      TextSpan(
+                          text: "${namePartition[6].toUpperCase()} ",
+                          style: _titleStyle),
+                    if (namePartition.length > 7)
+                      TextSpan(
+                          text: "${namePartition[7].toUpperCase()} ",
+                          style: _titleStyle),
+                    if (namePartition.length > 8)
+                      TextSpan(
+                          text: "${namePartition[8].toUpperCase()} ",
+                          style: _titleStyle),
+                    if (namePartition.length > 9)
+                      TextSpan(
+                          text: "${namePartition[9].toUpperCase()} ",
+                          style: _titleStyle),
+                    if (namePartition.length > 10)
+                      TextSpan(
+                          text: "${namePartition[10].toUpperCase()} ",
+                          style: _titleStyle),
+                  ],
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 5,
+                overflow: TextOverflow.ellipsis,
               ),
-              textAlign: TextAlign.center,
-              maxLines: 5,
-              overflow: TextOverflow.ellipsis,
             ),
             SizedBox(
               height: ResponsiveHelper.responsiveWidth(context, 10.0),
             ),
-            Align(
-              alignment: Alignment.center,
-              child: Text(
-                "${widget.event.theme.trim().replaceAll('\n', ' ')}. \nThis event would take place at ${widget.event.address} ",
-                style: TextStyle(
-                  fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
-                  color: Colors.white,
+            GestureDetector(
+              onTap: () {
+                _showBottomSheetFullTitleAndTheme();
+              },
+              child: Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "${widget.event.theme.trim().replaceAll('\n', ' ')}. \nThis event would take place at ${widget.event.venue} ",
+                  style: TextStyle(
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 16.0),
+                    color: Colors.white,
+                  ),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
                 ),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
               ),
             ),
           ],

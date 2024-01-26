@@ -2463,20 +2463,53 @@ class DatabaseService {
       // Return an empty stream or handle the error as appropriate for your app
       return Stream.empty();
     }
-    return newEventTicketOrderRef
+
+    // Create a stream of snapshots for the entire eventInvite collection
+    Stream<QuerySnapshot> stream = newEventTicketOrderRef
         .doc(eventId)
         .collection('eventInvite')
-        .where('validated', isEqualTo: validated)
-        .get()
-        .then((querySnapshot) {
-      if (querySnapshot.size > 0) {
-        return querySnapshot.size;
-      } else {
-        // Return an appropriate value or handle the error case when the collection doesn't exist
-        return 0;
+        .snapshots();
+
+    return stream.map((QuerySnapshot querySnapshot) {
+      int count = 0;
+
+      // Iterate over each document in the eventInvite collection
+      for (var doc in querySnapshot.docs) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        List<dynamic> tickets = data['tickets'] ?? [];
+
+        // Count the number of tickets that match the validated status
+        for (var ticket in tickets) {
+          if ((ticket['validated'] ?? false) == validated) {
+            count++;
+          }
+        }
       }
-    }).asStream();
+
+      return count;
+    });
   }
+
+  // static Stream<int> numExpectedAttendees(String eventId, bool validated) {
+  //   if (eventId.isEmpty || eventId.trim() == '') {
+  //     print("Error: eventId is null or empty.");
+  //     // Return an empty stream or handle the error as appropriate for your app
+  //     return Stream.empty();
+  //   }
+  //   return newEventTicketOrderRef
+  //       .doc(eventId)
+  //       .collection('eventInvite')
+  //       .where('validated', isEqualTo: validated)
+  //       .get()
+  //       .then((querySnapshot) {
+  //     if (querySnapshot.size > 0) {
+  //       return querySnapshot.size;
+  //     } else {
+  //       // Return an appropriate value or handle the error case when the collection doesn't exist
+  //       return 0;
+  //     }
+  //   }).asStream();
+  // }
 
   static Stream<int> numTotalExpectedAttendees(
     String eventId,

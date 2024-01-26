@@ -71,6 +71,24 @@ class _UserBottomModalSheetActionsState
     );
   }
 
+  void _showBottomSheetCantMessage() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return DisplayErrorHandler(
+          buttonText: 'Ok',
+          onPressed: () async {
+            Navigator.pop(context);
+          },
+          title: 'You cannot send a message to yourself',
+          subTitle: '',
+        );
+      },
+    );
+  }
+
   void _showBottomSheetAdvice(
     BuildContext context,
   ) async {
@@ -249,19 +267,24 @@ class _UserBottomModalSheetActionsState
                 BottomModelSheetIconActionWidget(
                   dontPop: true,
                   icon: Icons.message_outlined,
-                  onPressed: () async {
-                    try {
-                      Chat? _chat = await DatabaseService.getUserChatWithId(
-                        widget.currentUserId,
-                        widget.user.id,
-                      );
+                  onPressed: widget.currentUserId == widget.user.id
+                      ? () {
+                          _showBottomSheetCantMessage();
+                        }
+                      : () async {
+                          try {
+                            Chat? _chat =
+                                await DatabaseService.getUserChatWithId(
+                              widget.currentUserId,
+                              widget.user.id,
+                            );
 
-                      _bottomModalSheetMessage(
-                        context,
-                        _chat,
-                      );
-                    } catch (e) {}
-                  },
+                            _bottomModalSheetMessage(
+                              context,
+                              _chat,
+                            );
+                          } catch (e) {}
+                        },
                   text: 'Message',
                 ),
               ],
@@ -279,6 +302,22 @@ class _UserBottomModalSheetActionsState
                     ));
               },
               text: 'Go to profile',
+            ),
+            BottomModelSheetListTileActionWidget(
+              colorCode: '',
+              icon: Icons.qr_code,
+              onPressed: () {
+                _navigateToPage(
+                    context,
+                    UserBarcode(
+                      userDynamicLink: widget.user.dynamicLink,
+                      bio: widget.user.overview,
+                      userName: widget.user.userName,
+                      userId: widget.user.id,
+                      profileImageUrl: widget.user.profileImageUrl,
+                    ));
+              },
+              text: 'Bar code',
             ),
             const SizedBox(
               height: 20,

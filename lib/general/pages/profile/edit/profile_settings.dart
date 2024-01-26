@@ -165,7 +165,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                 text: TextSpan(
                   children: [
                     TextSpan(
-                        text: "Version Release Date: August 2023\n",
+                        text: "Version Release Date: January 2024\n",
                         style: TextStyle(
                           fontSize: ResponsiveHelper.responsiveFontSize(
                               context, 14.0),
@@ -213,14 +213,18 @@ class _ProfileSettingsState extends State<ProfileSettings> {
               Material(
                 color: Colors.transparent,
                 child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => MyWebView(
-                                  url: 'https://www.barsopus.com/contact',
-                                  title: '',
-                                )));
+                  onTap: () async {
+                    if (!await launchUrl(
+                        Uri.parse('https://www.barsopus.com/contact'))) {
+                      throw 'Could not launch link';
+                    }
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (_) => MyWebView(
+                    //               url: 'https://www.barsopus.com/contact',
+                    //               title: '',
+                    //             )));
                   },
                   child: Text(
                     'Contact us',
@@ -242,14 +246,17 @@ class _ProfileSettingsState extends State<ProfileSettings> {
               Material(
                 color: Colors.transparent,
                 child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => MyWebView(
-                                  url: 'https://www.barsopus.com/terms-of-use',
-                                  title: '',
-                                )));
+                  onTap: () async {
+        if (!await launchUrl(Uri.parse('https://www.barsopus.com/terms-of-use'))) {
+          throw 'Could not launch link';
+        }
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (_) => MyWebView(
+                    //               url: 'https://www.barsopus.com/terms-of-use',
+                    //               title: '',
+                    //             )));
                   },
                   child: Text(
                     'Terms of use',
@@ -271,14 +278,17 @@ class _ProfileSettingsState extends State<ProfileSettings> {
               Material(
                 color: Colors.transparent,
                 child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => MyWebView(
-                                  title: '',
-                                  url: 'https://www.barsopus.com/privacy',
-                                )));
+                  onTap: () async {
+        if (!await launchUrl(Uri.parse('https://www.barsopus.com/privacy'))) {
+          throw 'Could not launch link';
+        }
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (_) => MyWebView(
+                    //               title: '',
+                    //               url: 'https://www.barsopus.com/privacy',
+                    //             )));
                   },
                   child: Text(
                     'Privacy policies',
@@ -612,13 +622,16 @@ class _ProfileSettingsState extends State<ProfileSettings> {
           ),
           const SizedBox(height: 70),
           GestureDetector(
-            onTap: () {
-              _navigateToPage(
-                  context,
-                  MyWebView(
-                    url: 'https://www.barsopus.com/',
-                    title: '',
-                  ));
+            onTap: () async {
+        if (!await launchUrl(Uri.parse('https://www.barsopus.com/'))) {
+          throw 'Could not launch link';
+        }
+              // _navigateToPage(
+              //     context,
+              //     MyWebView(
+              //       url: 'https://www.barsopus.com/',
+              //       title: '',
+              //     ));
             },
             child: Text(
               '          BARS IMPRESSION',
@@ -630,13 +643,16 @@ class _ProfileSettingsState extends State<ProfileSettings> {
             ),
           ),
           GestureDetector(
-            onTap: () {
-              _navigateToPage(
-                  context,
-                  MyWebView(
-                    url: 'https://www.barsopus.com/',
-                    title: '',
-                  ));
+            onTap: () async {
+        if (!await launchUrl(Uri.parse('https://www.barsopus.com/'))) {
+          throw 'Could not launch link';
+        }
+              // _navigateToPage(
+              //     context,
+              //     MyWebView(
+              //       url: 'https://www.barsopus.com/',
+              //       title: '',
+              //     ));
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,

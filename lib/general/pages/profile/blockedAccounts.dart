@@ -147,7 +147,7 @@ class _BlockedAccountsState extends State<BlockedAccounts>
   Widget build(BuildContext context) {
     super.build(context);
     return Container(
-      color: Theme.of(context).primaryColorLight,
+      color: Theme.of(context).primaryColor,
       child: NestedScrollView(
         controller: _hideButtonController,
         headerSliverBuilder: (context, innerBoxScrolled) => [
@@ -160,7 +160,7 @@ class _BlockedAccountsState extends State<BlockedAccounts>
             iconTheme: new IconThemeData(
               color: Theme.of(context).secondaryHeaderColor,
             ),
-            backgroundColor: Theme.of(context).primaryColorLight,
+            backgroundColor: Theme.of(context).primaryColor,
             title: Text(
               'Blocked Accounts',
               style: Theme.of(context).textTheme.bodyLarge,
@@ -172,13 +172,14 @@ class _BlockedAccountsState extends State<BlockedAccounts>
           context: context,
           removeTop: true,
           child: Container(
-            color: Theme.of(context).primaryColorLight,
+            color: Theme.of(context).primaryColor,
             child: SafeArea(
               child: MediaQuery(
                 data: MediaQuery.of(context).copyWith(
                     textScaleFactor:
                         MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
                 child: Material(
+                  color: Theme.of(context).primaryColor,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,

@@ -22,10 +22,16 @@ class EventBottomModalSheetActions extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
-        return EventSheduleCalendar(
-          event: event,
-          currentUserId: currentUserId,
-        );
+        return event.schedule.isEmpty
+            ? NoScheduleCalendar(
+                askMoreOnpressed: () {
+                 
+                }, showAskMore: false,
+              )
+            : EventSheduleCalendar(
+                event: event,
+                currentUserId: currentUserId,
+              );
       },
     );
   }

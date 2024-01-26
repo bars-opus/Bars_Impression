@@ -97,14 +97,18 @@ class _AcceptTermsState extends State<AcceptTerms>
                                   vertical: 5.0,
                                 ),
                                 child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (_) => MyWebView( title: '',
-                                                  url:
-                                                      'https://www.barsopus.com/terms-of-use',
-                                                )));
+                                  onTap: () async {
+                                    if (!await launchUrl(Uri.parse(
+                                        'https://www.barsopus.com/terms-of-use'))) {
+                                      throw 'Could not launch link';
+                                    }
+                                    // Navigator.push(
+                                    //     context,
+                                    //     MaterialPageRoute(
+                                    //         builder: (_) => MyWebView( title: '',
+                                    //               url:
+                                    //                   'https://www.barsopus.com/terms-of-use',
+                                    //             )));
                                   },
                                   child: RichText(
                                     textScaleFactor: MediaQuery.of(context)
@@ -147,15 +151,13 @@ class _AcceptTermsState extends State<AcceptTerms>
                                   textColor: Colors.black,
                                   buttonText: 'Accept',
                                   onPressed: () {
-                                  Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (_) =>
-                                                  LoginScreenOptions(
-                                                from: 'Register',
-                                              ),
-                                            ))
-                                      ;
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => LoginScreenOptions(
+                                            from: 'Register',
+                                          ),
+                                        ));
                                   },
                                   buttonColor: Colors.white,
                                 ),
@@ -167,14 +169,20 @@ class _AcceptTermsState extends State<AcceptTerms>
                               height: 60,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => MyWebView( title: '',
-                                              url:
-                                                  'https://www.barsopus.com/privacy',
-                                            )));
+                              onTap: () async {
+              if (!await launchUrl(Uri.parse('https://www.barsopus.com/privacy'))) {
+                throw 'Could not launch link';
+              }
+                                
+                                
+                                // Navigator.push(
+                                //     context,
+                                //     MaterialPageRoute(
+                                //         builder: (_) => MyWebView(
+                                //               title: '',
+                                //               url:
+                                //                   'https://www.barsopus.com/privacy',
+                                //             )));
                               },
                               child: Text(
                                 'Privacy',

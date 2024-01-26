@@ -22,6 +22,10 @@ class _CreateWorkState extends State<CreateWork> {
   final _overViewFormKey = GlobalKey<FormState>();
   final _genreFormKey = GlobalKey<FormState>();
   final _overViewController = TextEditingController();
+  final _addressSearchController = TextEditingController();
+  final FocusNode _addressSearchfocusNode = FocusNode();
+  final _debouncer = Debouncer(milliseconds: 500);
+
   ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
 
   List<String> selectedTypes = [];
@@ -31,10 +35,29 @@ class _CreateWorkState extends State<CreateWork> {
   void initState() {
     _textController.addListener(_onAskTextChanged);
     _overViewController.addListener(_onAskTextChanged);
-    widget.userPortfolio == null ? _setUpPortfoilio() : () {};
+    widget.userPortfolio == null ? _setUpPortfoilio() : _setWidgetPortfolio();
     _userPortfolio = widget.userPortfolio ?? _userPortfolio;
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _overViewController.dispose();
+    _addressSearchController.dispose();
+    _addressSearchfocusNode.dispose();
+    _isTypingNotifier.dispose();
+    _debouncer.cancel();
+    // _pageController2.dispose();
+
+    super.dispose();
+  }
+
+  _setWidgetPortfolio() {
+    setState(() {
+      _userPortfolio = widget.userPortfolio;
+      _isLoading = false;
+    });
   }
 
   _setUpPortfoilio() async {
@@ -133,6 +156,9 @@ class _CreateWorkState extends State<CreateWork> {
 
   _submit() async {
     if (!_isLoading) {
+      setState(() {
+        _isLoading = true;
+      });
       var _provider = context.read<UserData>();
       Future<T> retry<T>(Future<T> Function() function,
           {int retries = 3}) async {
@@ -172,7 +198,9 @@ class _CreateWorkState extends State<CreateWork> {
         'type': _provider.workRequesttype,
         'availableLocations': _provider.workRequestAvailableLocations,
         'price': _provider.workRequestPrice,
-        'currency': _provider.currency,
+        'currency': widget.userPortfolio == null
+            ? _provider.currency
+            : widget.userPortfolio!.currency,
         'timestamp': timestamp,
       });
 
@@ -185,7 +213,9 @@ class _CreateWorkState extends State<CreateWork> {
         'type': _provider.workRequesttype,
         'availableLocations': _provider.workRequestAvailableLocations,
         'price': _provider.workRequestPrice,
-        'currency': _provider.currency,
+        'currency': widget.userPortfolio == null
+            ? _provider.currency
+            : widget.userPortfolio!.currency,
         'timestamp': timestamp,
       });
 
@@ -258,7 +288,7 @@ class _CreateWorkState extends State<CreateWork> {
       showCurrencyCode: true,
       onSelect: (Currency currency) {
         Provider.of<UserData>(context, listen: false)
-            .setCurrency('${currency.name}, ${currency.code} |');
+            .setCurrency('${currency.name} | ${currency.code}');
       },
       favorite: ['USD'],
     );
@@ -311,6 +341,119 @@ class _CreateWorkState extends State<CreateWork> {
             color: Colors.grey,
           ),
         ));
+  }
+
+  _cancelSearch() {
+    FocusScope.of(context).unfocus();
+    _clearSearch();
+    Navigator.pop(context);
+  }
+
+  _clearSearch() {
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _addressSearchController.clear());
+    Provider.of<UserData>(context, listen: false).addressSearchResults = [];
+  }
+
+  void _showBottomVenue() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: false,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Container(
+            height: ResponsiveHelper.responsiveHeight(context, 750),
+            decoration: BoxDecoration(
+                color: Theme.of(context).primaryColorLight,
+                borderRadius: BorderRadius.circular(30)),
+            child: ListView(
+              children: [
+                const SizedBox(
+                  height: 10,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: SearchContentField(
+                      showCancelButton: true,
+                      cancelSearch: _cancelSearch,
+                      controller: _addressSearchController,
+                      focusNode: _addressSearchfocusNode,
+                      hintText: 'Type to search...',
+                      onClearText: () {
+                        _clearSearch();
+                      },
+                      onTap: () {},
+                      onChanged: (value) {
+                        _debouncer.run(() {
+                          _provider.searchPlaces(value);
+                        });
+                      }),
+                ),
+                Text(
+                  '        Select your address from the list below',
+                  style: TextStyle(
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 14.0),
+                  ),
+                ),
+                if (Provider.of<UserData>(
+                      context,
+                    ).addressSearchResults !=
+                    null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Container(
+                            height: MediaQuery.of(context).size.height,
+                            width: double.infinity,
+                            child: ListView.builder(
+                              itemCount: _provider.searchResults!.length,
+                              itemBuilder: (context, index) {
+                                return Column(
+                                  children: [
+                                    ListTile(
+                                        title: Text(
+                                          _provider.searchResults![index]
+                                              .description,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge,
+                                        ),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          _provider.setCity('');
+                                          _provider.setCountry('');
+                                          _provider
+                                              .setWorkRequestAvailableLocations(
+                                                  _provider
+                                                      .searchResults![index]
+                                                      .description);
+                                          // _provider.setAddress(_provider
+                                          //     .addressSearchResults![index]
+                                          //     .description);
+                                        }),
+                                    Divider(),
+                                  ],
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _showBottomSheetWorkRequest(
@@ -624,10 +767,10 @@ class _CreateWorkState extends State<CreateWork> {
                                 ],
                               ),
 
-                            Text(
-                              "Each creatives discography exhibit the neccesssary information to connect and collaborate with that creatives. This information provided are freely given out by this user to the creative world of Bars Impression. Creatives are grouped based on their skilss and expertise as provided by them and you can browse throguth creatives by tapping on the floating action button to go to the next creative of simmilar expertise or you can scroll left or right horizontally to change the expertise category you are browsing creatives in. ",
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
+                            // Text(
+                            //   "Each creatives discography exhibit the neccesssary information to connect and collaborate with that creatives. This information provided are freely given out by this user to the creative world of Bars Impression. Creatives are grouped based on their skilss and expertise as provided by them and you can browse throguth creatives by tapping on the floating action button to go to the next creative of simmilar expertise or you can scroll left or right horizontally to change the expertise category you are browsing creatives in. ",
+                            //   style: Theme.of(context).textTheme.bodySmall,
+                            // ),
                           ],
                         ),
                       ),
@@ -777,20 +920,19 @@ class _CreateWorkState extends State<CreateWork> {
                             PickOptionWidget(
                                 title: 'location',
                                 onPressed: () {
-                                  _showBottomSheetWorkRequest(
-                                    'location',
-                                    false,
-                                  );
+                                  _showBottomVenue();
                                 },
                                 dropDown: true),
                             _widgetStringListLocations,
-                            PickOptionWidget(
-                                title: 'currency',
-                                onPressed: () {
-                                  _showCurrencyPicker();
-                                },
-                                dropDown: true),
-                            _widgetStringListCurrency,
+                            if (widget.userPortfolio == null)
+                              PickOptionWidget(
+                                  title: 'currency',
+                                  onPressed: () {
+                                    _showCurrencyPicker();
+                                  },
+                                  dropDown: true),
+                            if (widget.userPortfolio == null)
+                              _widgetStringListCurrency,
                             PickOptionWidget(
                                 title: 'price',
                                 onPressed: () {
@@ -805,7 +947,7 @@ class _CreateWorkState extends State<CreateWork> {
                               height: 30,
                             ),
                             Text(
-                              "Each creatives discography exhibit the neccesssary information to connect and collaborate with that creatives. This information provided are freely given out by this user to the creative world of Bars Impression. Creatives are grouped based on their skilss and expertise as provided by them and you can browse throguth creatives by tapping on the floating action button to go to the next creative of simmilar expertise or you can scroll left or right horizontally to change the expertise category you are browsing creatives in. ",
+                              "A work request is a formal communication initiated by a creative professional, indicating their availability to provide services based on the specific requirements and information they provide.  \n\n The submitted work request will be showcased on the event discovery page. The selected types will determine the primary categories in which the request will be displayed. Additionally, the request will appear in the chosen locations.. ",
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
                             const SizedBox(

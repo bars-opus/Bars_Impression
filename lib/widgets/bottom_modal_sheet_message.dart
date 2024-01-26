@@ -323,14 +323,18 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: GestureDetector(
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => MyWebView(
-                          url: 'https://www.barsopus.com/terms-of-use',
-                          title: '',
-                        )));
+          onTap: () async {
+            if (!await launchUrl(
+                Uri.parse('https://www.barsopus.com/terms-of-use'))) {
+              throw 'Could not launch link';
+            }
+            // Navigator.push(
+            //     context,
+            //     MaterialPageRoute(
+            //         builder: (_) => MyWebView(
+            //               url: 'https://www.barsopus.com/terms-of-use',
+            //               title: '',
+            //             )));
           },
           child: RichText(
             textScaleFactor: MediaQuery.of(context).textScaleFactor,
@@ -873,7 +877,6 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
     );
   }
 
-
   Widget _buildMessageList(
       String chatId, Chat? chat, List<ChatMessage> messages) {
     final _provider = Provider.of<UserData>(context, listen: false);
@@ -1002,6 +1005,8 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
 
   @override
   Widget build(BuildContext context) {
+    bool _restricitedChat =
+        widget.chatLoaded == null ? false : widget.chatLoaded!.restrictChat;
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -1030,7 +1035,7 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
                   ? _future()
                   : _getMessages(widget.chatLoaded!),
               if (!_isBlockingUser && !_isBlockedUser)
-                if (!widget.chatLoaded!.restrictChat) _commentField()
+                if (!_restricitedChat) _commentField()
             ],
           ),
         ),

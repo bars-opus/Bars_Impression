@@ -487,7 +487,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
         batch.update(
           usersAuthorRef.doc(currentUserId),
           {
-            // 'name': name,
+            'dynamicLink': link,
             'profileImageUrl': profileImageUrl,
             'bio': bio,
           },
@@ -496,24 +496,25 @@ class _SetUpBrandState extends State<SetUpBrand> {
         batch.update(
           userProfessionalRef.doc(currentUserId),
           {
+            'dynamicLink': link,
             'profileImageUrl': profileImageUrl,
             'bio': bio,
           },
         );
 
-        batch.update(
-          usersAuthorRef.doc(currentUserId),
-          {
-            'dynamicLink': link,
-          },
-        );
+        // batch.update(
+        //   usersAuthorRef.doc(currentUserId),
+        //   {
+        //     'dynamicLink': link,
+        //   },
+        // );
 
-        batch.update(
-          userProfessionalRef.doc(currentUserId),
-          {
-            'dynamicLink': link,
-          },
-        );
+        // batch.update(
+        //   userProfessionalRef.doc(currentUserId),
+        //   {
+        //     'dynamicLink': link,
+        //   },
+        // );
         // try {
         batch.commit();
         _updateAuthorBioAndImgeUrlHive(bio, profileImageUrl, link);
