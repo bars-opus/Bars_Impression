@@ -74,7 +74,7 @@ class SearchContentField extends StatelessWidget {
             ),
             border: InputBorder.none,
             hintText: hintText,
-            prefixIcon: controller.text.length > 0
+            prefixIcon: controller.text.trim().length > 0
                 ? null
                 : Icon(
                     Icons.search,
@@ -82,7 +82,7 @@ class SearchContentField extends StatelessWidget {
                     color: Theme.of(context).secondaryHeaderColor,
                   ),
             hintStyle: Theme.of(context).textTheme.bodySmall,
-            suffixIcon: controller.text.length > 0
+            suffixIcon: controller.text.trim().isNotEmpty
                 ? IconButton(
                     icon: Icon(
                       Icons.clear,

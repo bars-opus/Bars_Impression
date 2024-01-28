@@ -27,7 +27,7 @@ class PortfolioCollaborationWidget extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-          height: MediaQuery.of(context).size.height.toDouble() / 2,
+          height: ResponsiveHelper.responsiveHeight(context, 430),
           decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(30)),
@@ -45,7 +45,7 @@ class PortfolioCollaborationWidget extends StatelessWidget {
                   height: 30,
                 ),
                 BottomModalSheetButtonBlue(
-                  buttonText: type,
+                  buttonText: 'Continue',
                   onPressed: () async {
                     Navigator.pop(context);
                     if (!await launchUrl(Uri.parse(link))) {
@@ -105,19 +105,32 @@ class PortfolioCollaborationWidget extends StatelessWidget {
                             context, person.name, person.externalProfileLink!);
                   },
             title: Text(
-              person.name + 'ppp',
+              person.name,
               style: Theme.of(context).textTheme.bodyMedium,
               maxLines: fullWidth ? null : 2,
               overflow: fullWidth ? null : TextOverflow.ellipsis,
             ),
-            subtitle: Text(
-              person.role,
-              style: TextStyle(
-                color: Colors.blue,
-                fontSize: ResponsiveHelper.responsiveFontSize(context, 12),
-              ),
-              maxLines: fullWidth ? null : 2,
-              overflow: fullWidth ? null : TextOverflow.ellipsis,
+            subtitle: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  person.role,
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontSize: ResponsiveHelper.responsiveFontSize(context, 12),
+                  ),
+                  maxLines: fullWidth ? null : 2,
+                  overflow: fullWidth ? null : TextOverflow.ellipsis,
+                ),
+                Icon(
+                  person.externalProfileLink!.isEmpty
+                      ? Icons.arrow_forward_ios
+                      : Icons.link,
+                  color: Colors.blue,
+                  size: ResponsiveHelper.responsiveHeight(
+                      context, person.externalProfileLink!.isEmpty ? 15 : 25),
+                ),
+              ],
             ),
           ),
         ),

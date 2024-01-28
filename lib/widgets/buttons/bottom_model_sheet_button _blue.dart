@@ -32,6 +32,7 @@ class BottomModalSheetButtonBlue extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Text(
+              
               buttonText,
               style: TextStyle(
                 color: dissable
@@ -39,6 +40,8 @@ class BottomModalSheetButtonBlue extends StatelessWidget {
                     : Colors.white,
                 fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
               ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
             ),
           ),
         ),

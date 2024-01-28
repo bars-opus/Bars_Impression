@@ -1706,7 +1706,7 @@ class DatabaseService {
         .doc(currentUserId)
         .collection('eventInvite')
         .where('answer', isEqualTo: "")
-        // .where('startDate', isGreaterThanOrEqualTo: currentDate)
+        // .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
         // .where('showOnExplorePage', isEqualTo: true)
         .get();
     return feedEventSnapShot.docs.length - 1;
@@ -1716,7 +1716,7 @@ class DatabaseService {
       String eventType, DateTime currentDate) async {
     QuerySnapshot feedEventSnapShot = await allEventsRef
         .where('type', isEqualTo: eventType)
-        // .where('startDate', isGreaterThanOrEqualTo: currentDate)
+        // .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
         // .where('showOnExplorePage', isEqualTo: true)
         .get();
     return feedEventSnapShot.docs.length - 1;
@@ -1724,7 +1724,8 @@ class DatabaseService {
 
   static Future<int> numEventsAll(DateTime currentDate) async {
     QuerySnapshot feedEventSnapShot = await allEventsRef
-        // .where('startDate', isGreaterThanOrEqualTo: currentDate)
+        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+        // .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
 
         // .where('type', isEqualTo: eventType)
         // .where('showOnExplorePage', isEqualTo: true)
@@ -1736,8 +1737,8 @@ class DatabaseService {
       DateTime currentDate, int sortNumberOfDays) async {
     final endDate = currentDate.add(Duration(days: sortNumberOfDays));
     QuerySnapshot feedEventSnapShot = await allEventsRef
-        .where('startDate', isGreaterThanOrEqualTo: currentDate)
-        .where('startDate', isLessThanOrEqualTo: endDate)
+        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+        // .where('clossingDay', isLessThanOrEqualTo: endDate)
 
         // .where('type', isEqualTo: eventType)
         // .where('showOnExplorePage', isEqualTo: true)
@@ -1750,8 +1751,8 @@ class DatabaseService {
     final endDate = currentDate.add(Duration(days: sortNumberOfDays));
     QuerySnapshot feedEventSnapShot = await allEventsRef
         .where('type', isEqualTo: eventType)
-        .where('startDate', isGreaterThanOrEqualTo: currentDate)
-        .where('startDate', isLessThanOrEqualTo: endDate)
+        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+        // .where('clossingDay', isLessThanOrEqualTo: endDate)
         // .where('showOnExplorePage', isEqualTo: true)
         .get();
     return feedEventSnapShot.docs.length - 1;
@@ -1760,7 +1761,7 @@ class DatabaseService {
   static Future<int> numEventsAllLiveLocation(
       String liveCity, String liveCountry, DateTime currentDate) async {
     QuerySnapshot feedEventSnapShot = await allEventsRef
-        .where('startDate', isGreaterThanOrEqualTo: currentDate)
+        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
         .where('city', isEqualTo: liveCity)
         .where('country', isEqualTo: liveCountry)
 
@@ -1773,7 +1774,7 @@ class DatabaseService {
   static Future<int> numEventsTypesLiveLocation(String eventType,
       String liveCity, String liveCountry, DateTime currentDate) async {
     QuerySnapshot feedEventSnapShot = await allEventsRef
-        .where('startDate', isGreaterThanOrEqualTo: currentDate)
+        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
         .where('type', isEqualTo: eventType)
         .where('city', isEqualTo: liveCity)
         .where('country', isEqualTo: liveCountry)
@@ -1787,7 +1788,7 @@ class DatabaseService {
     QuerySnapshot feedEventSnapShot = await eventFeedsRef
         .doc(userId)
         .collection('userEventFeed')
-        .where('startDate', isGreaterThanOrEqualTo: currentDate)
+        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
         .get();
     return feedEventSnapShot.docs.length - 1;
   }
@@ -1798,7 +1799,7 @@ class DatabaseService {
         .doc(userId)
         .collection('userEventFeed')
         .where('type', isEqualTo: eventType)
-        .where('startDate', isGreaterThanOrEqualTo: currentDate)
+        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
         .get();
     return feedEventSnapShot.docs.length - 1;
   }

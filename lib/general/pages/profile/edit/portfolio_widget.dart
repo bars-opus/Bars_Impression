@@ -1,7 +1,7 @@
 import 'package:bars/utilities/exports.dart';
 
 class PortfolioWidget extends StatelessWidget {
-  List<PortfolioModel> portfolios;
+  final List<PortfolioModel> portfolios;
   final bool seeMore;
   final bool edit;
 
@@ -27,7 +27,7 @@ class PortfolioWidget extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-          height: ResponsiveHelper.responsiveHeight(context, 600),
+          height: ResponsiveHelper.responsiveHeight(context, 430),
           decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(30)),
@@ -45,7 +45,7 @@ class PortfolioWidget extends StatelessWidget {
                   height: 30,
                 ),
                 BottomModalSheetButtonBlue(
-                  buttonText: type,
+                  buttonText: 'Continue',
                   onPressed: () async {
                     Navigator.pop(context);
                     if (!await launchUrl(Uri.parse(link))) {

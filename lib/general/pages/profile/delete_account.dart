@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:hive/hive.dart';
 
 // ignore: must_be_immutable
@@ -336,14 +337,40 @@ class _DeleteAccountState extends State<DeleteAccount> {
 
   // fiTBRa9hOJaownGdbv8jaoq5yO13
 
+  Future<void> deletePaystackData(
+      String subAccountId, String transferId) async {
+    HttpsCallable callable =
+        FirebaseFunctions.instance.httpsCallable('deletePaystackData');
+
+    try {
+      final result = await callable.call(<String, dynamic>{
+        'subAccountId': subAccountId,
+        'transferId': transferId,
+      });
+
+      // Use the data returned from the callable function
+      print(result.data);
+    } on FirebaseFunctionsException catch (e) {
+      // Handle Firebase Functions exceptions
+      print(e.code);
+      print(e.message);
+      print(e.details);
+    } catch (e) {
+      // Handle other exceptions
+      print(e);
+    }
+  }
+
   void _deleteAccount(BuildContext context) async {
-    final String currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId!;
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    await deletePaystackData(_provider.userLocationPreference!.subaccountId!,
+        _provider.userLocationPreference!.transferRecepientId!);
+    final String currentUserId = _provider.currentUserId!;
 
     print(currentUserId);
 
-    final String userName =
-        Provider.of<UserData>(context, listen: false).user!.userName!;
+    final String userName = _provider.user!.userName!;
     FocusScope.of(context).unfocus();
     // try {
 

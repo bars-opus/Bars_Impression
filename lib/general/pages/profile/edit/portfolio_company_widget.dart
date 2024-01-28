@@ -27,7 +27,7 @@ class PortfolioCompanyWidget extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-          height: MediaQuery.of(context).size.height.toDouble() / 2,
+          height: ResponsiveHelper.responsiveHeight(context, 420),
           decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(30)),
@@ -45,7 +45,7 @@ class PortfolioCompanyWidget extends StatelessWidget {
                   height: 30,
                 ),
                 BottomModalSheetButtonBlue(
-                  buttonText: type,
+                  buttonText: 'Continue',
                   onPressed: () async {
                     Navigator.pop(context);
                     if (!await launchUrl(Uri.parse(link))) {

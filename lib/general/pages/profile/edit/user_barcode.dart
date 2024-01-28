@@ -49,7 +49,7 @@ class UserBarcode extends StatelessWidget {
                       color: Colors.white,
                     ),
                     dataModuleStyle: QrDataModuleStyle(
-                      dataModuleShape: QrDataModuleShape.square,
+                      dataModuleShape: QrDataModuleShape.circle,
                       color: Colors.grey,
                     ),
                     backgroundColor: Colors.transparent,

@@ -73,18 +73,54 @@ const axios = require('axios');
 // });
 
 
+// exports.createSubaccount = functions.https.onCall(async (data, context) => {
+//   const PAYSTACK_SECRET_KEY = functions.config().paystack.secret_key;
+//   if (!context.auth) {
+//     throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+//   }
+
+//   try {
+//     const paystackResponse =  await axios.post('https://api.paystack.co/subaccount', {
+//       business_name: data.business_name, 
+//       settlement_bank: data.bank_code,   
+//       account_number: data.account_number, 
+//       percentage_charge: data.percentage_charge 
+//     }, {
+//       headers: {
+//         Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+//         'Content-Type': 'application/json'
+//       }
+//     });
+
+//     if (paystackResponse.data.status) {
+//       // eslint-disable-next-line no-await-in-loop
+//       const recipient_code = await createTransferRecipient(data, PAYSTACK_SECRET_KEY);
+
+//       return { subaccount_id: paystackResponse.data.data.subaccount_code, recipient_code: recipient_code };
+//     } else {
+//       throw new functions.https.HttpsError('unknown', 'Failed to create subaccount with Paystack');
+//     }
+//   } catch (error) {
+//     console.error('Paystack subaccount creation error:', error);
+//     throw new functions.https.HttpsError('unknown', 'Paystack subaccount creation failed', error);
+//   }
+// });
+
+
 exports.createSubaccount = functions.https.onCall(async (data, context) => {
   const PAYSTACK_SECRET_KEY = functions.config().paystack.secret_key;
   if (!context.auth) {
     throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
   }
 
+  let subaccountCode = null;
+
   try {
-    const paystackResponse =  await axios.post('https://api.paystack.co/subaccount', {
-      business_name: data.business_name, 
-      settlement_bank: data.bank_code,   
-      account_number: data.account_number, 
-      percentage_charge: data.percentage_charge 
+    const paystackResponse = await axios.post('https://api.paystack.co/subaccount', {
+      business_name: data.business_name,
+      settlement_bank: data.bank_code,
+      account_number: data.account_number,
+      percentage_charge: data.percentage_charge
     }, {
       headers: {
         Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
@@ -92,20 +128,42 @@ exports.createSubaccount = functions.https.onCall(async (data, context) => {
       }
     });
 
-    if (paystackResponse.data.status) {
-      // eslint-disable-next-line no-await-in-loop
-      const recipient_code = await createTransferRecipient(data, PAYSTACK_SECRET_KEY);
-
-      return { subaccount_id: paystackResponse.data.data.subaccount_code, recipient_code: recipient_code };
-    } else {
-      throw new functions.https.HttpsError('unknown', 'Failed to create subaccount with Paystack');
+    if (!paystackResponse.data.status) {
+      throw new Error('Subaccount creation failed');
     }
+
+    subaccountCode = paystackResponse.data.data.subaccount_code;
+
+    const recipientResponse = await createTransferRecipient(data, PAYSTACK_SECRET_KEY);
+    return { subaccount_id: subaccountCode, recipient_code: recipientResponse };
+
   } catch (error) {
-    console.error('Paystack subaccount creation error:', error);
-    throw new functions.https.HttpsError('unknown', 'Paystack subaccount creation failed', error);
+    alertAdminSubAccountIdFFailure(userId, error )
+    console.error('Error during subaccount creation or transfer recipient creation:', error);
+
+    // If subaccount creation was successful but transfer recipient creation failed,
+    // attempt to delete the subaccount to maintain system consistency.
+    if (subaccountCode) {
+      try {
+        await axios.delete(`https://api.paystack.co/subaccount/${subaccountCode}`, {
+          headers: {
+            Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        console.log(`Compensation transaction successful: Subaccount ${subaccountCode} deleted.`);
+      } catch (compensationError) {
+        alertAdminSubAccountIdFFailure(userId, compensationError )
+        console.error('Compensation transaction failed:', compensationError);
+        // Depending on your error handling policy, you might want to alert an admin here
+      }
+    }
+
+    // After attempting compensation, rethrow an error to inform the caller that the overall operation failed.
+    alertAdminSubAccountIdFFailure(userId, error )
+    throw new functions.https.HttpsError('unknown', 'Failed to create transfer recipient, compensation transaction attempted.', error);
   }
 });
-
 
 
 // // Helper function to create a transfer recipient
@@ -131,10 +189,12 @@ async function createTransferRecipient(data, PAYSTACK_SECRET_KEY) {
     } else {
       // Provide more detailed error informationy
       const message = response.data.message || 'Failed to create transfer recipient with Paystack';
+      alertAdminSubAccountIdFFailure(userId, message )
       console.error(message);
       throw new functions.https.HttpsError('unknown', message, response.data);
     }
   } catch (error) {
+    alertAdminSubAccountIdFFailure(userId, error.response ? error.response.data : error )
     console.error('Error creating transfer recipient:', error.response ? error.response.data : error);
     throw new functions.https.HttpsError(
       'unknown',
@@ -146,17 +206,60 @@ async function createTransferRecipient(data, PAYSTACK_SECRET_KEY) {
 
 
 
-async function deleteSubaccount(subaccountCode, PAYSTACK_SECRET_KEY) {
-  try {
-    await axios.delete(`https://api.paystack.co/subaccount/${subaccountCode}`, {
-      headers: {
-        Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-      },
-    });
-  } catch (error) {
-    throw error;
+
+
+const PAYSTACK_API_BASE_URL = 'https://api.paystack.co';
+
+exports.deletePaystackData = functions.https.onCall(async (data, context) => {
+  // Make sure the user is authenticated
+  if (!context.auth) {
+    throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
   }
+
+  const subAccountId = data.subAccountId;
+  const transferId = data.transferId;
+
+  // Perform the API calls to Paystack
+  try {
+    await axios({
+      method: 'DELETE',
+      url: `${PAYSTACK_API_BASE_URL}/subaccount/${subAccountId}`,
+      headers: { 'Authorization': `Bearer ${PAYSTACK_SECRET_KEY}` }
+    });
+
+    await axios({
+      method: 'DELETE',
+      url: `${PAYSTACK_API_BASE_URL}/transferrecipient/${transferId}`,
+      headers: { 'Authorization': `Bearer ${PAYSTACK_SECRET_KEY}` }
+    });
+
+    return { result: 'Paystack data deleted successfully' };
+  } catch (error) {
+    throw new functions.https.HttpsError('unknown', 'Failed to delete Paystack data', error);
+  }
+});
+
+
+
+
+function alertAdminSubAccountIdFFailure( userId,  response) {
+  const sanitizedResponse = sanitizeResponse(response);
+  const logEntry = {
+    date: admin.firestore.FieldValue.serverTimestamp(),
+    userId: userId,
+
+    response: sanitizedResponse
+  };
+
+  const db = admin.firestore();
+
+  const documentPath = getDocumentPath();
+  db.collection('subAccount_failures').doc(documentPath).collection('logs').add(logEntry)
+    .then(() => console.log('Logged failed with additional details'))
+    .catch(error => console.error('Error logging failed:', error));
 }
+
+
 
 
 
@@ -168,6 +271,7 @@ exports.verifyPaystackPayment = functions.https.onCall(async (data, context) => 
   }
 
   const paymentReference = data.reference;
+  const eventId = data.eventId;
   const expectedAmount = data.amount; // The expected amount in kobo.
   const PAYSTACK_SECRET_KEY =functions.config().paystack.secret_key; // Securely stored Paystack secret key
 
@@ -187,12 +291,13 @@ exports.verifyPaystackPayment = functions.https.onCall(async (data, context) => 
       // ...
 
       return { success: true, message: 'Payment verified successfully', transactionData: paymentData };
-    } else {
+    } else {  alertAdminPaymentVerificationFailure(eventId, paymentData )
       // Payment failed or the amount does not match
       return { success: false, message: 'Payment verification failed: Amount does not match or payment was unsuccessful.', transactionData: paymentData };
     }
   } catch (error) {
     // Handle errors
+    alertAdminPaymentVerificationFailure(eventId, error )
     console.error('Payment verification error:', error);
     // Return a sanitized error message to the client
     throw new functions.https.HttpsError('unknown', 'Payment verification failed. Please try again later.');
@@ -200,6 +305,21 @@ exports.verifyPaystackPayment = functions.https.onCall(async (data, context) => 
 });
 
 
+function alertAdminPaymentVerificationFailure( eventId,  response) {
+  const sanitizedResponse = sanitizeResponse(response);
+  const logEntry = {
+    timestamp: new Date(),
+       transferRecepientId: eventId,
+       eventId: eventId,
+    response: sanitizedResponse
+  };
+
+  const db = admin.firestore();
+  const documentPath = getDocumentPath();
+  db.collection('ticket_payment_verification_error_logs').doc(documentPath).collection('logs').add(logEntry)
+    .then(() => console.log('Logged error with additional details'))
+    .catch(error => console.error('Error logging error:', error));
+}
 
 // exports.verifyPaystackPayment = functions.https.onCall(async (data, context) => {
 //   // Ensure the user is authenticated
@@ -283,8 +403,7 @@ async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
         headers: {
           'Authorization': `Bearer ${functions.config().paystack.secret_key}`,
           'Content-Type': 'application/json'
-          // 'Authorization': `Bearer ${functions.config().paystack.secret_key}`,
-          // 'Content-Type': 'application/json'
+   
         }
       });
 
@@ -298,7 +417,7 @@ async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
         // Handle known errors without retrying
         if (responseData.message.includes("Transfer code is invalid")) {
           // eslint-disable-next-line no-await-in-loop
-          await alertAdminDistributeFundsError(db, eventDoc.id, eventData.organizerSubaccountId, responseData.message);
+          await alertAdminDistributeFundsError( eventDoc.id, eventData.transferRecepientId, "Transfer code is invalid", responseData.message);
           throw new Error(responseData.message);
         }
         // Throw a generic error to trigger a retry for other cases
@@ -310,7 +429,7 @@ async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
 
       if (!isRetryableError(error)) {
            // eslint-disable-next-line no-await-in-loop
-        await alertAdminDistributeFundsError(db, eventDoc.id, eventData.subaccountId, error.message || "Unknown error");
+        await alertAdminDistributeFundsError( eventDoc.id, eventData.transferRecepientId, "Could not retry", error.message || "Unknown error");
         throw error;
       }
 
@@ -322,7 +441,7 @@ async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
     }
   }
 
-  await alertAdminDistributeFundsError(db, eventDoc.id, eventData.subaccountId, 'could not process funds');
+  await alertAdminDistributeFundsError( eventDoc.id, eventData.transferRecepientId,'All retries failed', 'could not process funds');
      // eslint-disable-next-line no-await-in-loop
   throw new Error(`All ${maxRetries} retries failed for event ${eventDoc.id}`);
 }
@@ -370,71 +489,78 @@ exports.distributeEventFunds = functions.pubsub.schedule('every 5 minutes').onRu
       // If the transaction fails, log the error and alert the admin
       console.error(`Transaction failed for event ${eventId}:`, error);
        // eslint-disable-next-line no-await-in-loop
-      await alertAdminDistributeFundsError(db, eventId, eventData.subaccountId, `Transaction failed for event: ${error}:` );
+      await alertAdminDistributeFundsError(db, eventId, eventData.transferRecepientId, `Transaction failed for event: ${error}:` );
     }
   }
 });
 
+function getDocumentPath() {
+  const now = new Date();
+  const year = now.getFullYear();
+  // Ensure month is in "January" format
+  const month = now.toLocaleString('default', { month: 'long' });
+  // Calculate the week of the month
+  const weekOfMonth = `week${Math.ceil(now.getDate() / 7)}`;
 
+  // Construct the document path
+  return `${year}${month}/${weekOfMonth}`;
+}
 
 // Example function to log success with more details
 function alertAdminFundsDistributedSuccess(eventId, response) {
-  // Sanitize the response to remove sensitive data
   const sanitizedResponse = sanitizeResponse(response);
-
-  // Add additional logging information here
   const logEntry = {
     timestamp: new Date(),
     eventId: eventId,
     status: 'Success',
-    response: sanitizedResponse // Log the sanitized response
+    response: sanitizedResponse
   };
 
-  // Save the log entry to Firebase
   const db = admin.firestore();
-  db.collection('funds_distributed_success_logs').add(logEntry)
+  const documentPath = getDocumentPath();
+  db.collection('funds_distributed_success_logs').doc(documentPath).collection('logs').add(logEntry)
     .then(() => console.log('Logged success with additional details'))
     .catch(error => console.error('Error logging success:', error));
 }
 
-
-
-
 // Example function to log error with more details
-function alertCalculateFundDistError(eventId, error, response) {
-  // Sanitize the response to remove sensitive data
+function alertAdminDistributeFundsError(eventId, transferRecepientId, error, response) {
   const sanitizedResponse = sanitizeResponse(response);
-
-  // Add additional logging information here
   const logEntry = {
     timestamp: new Date(),
     eventId: eventId,
     status: 'Error',
-    error: error.toString(), // Log the error message
-    response: sanitizedResponse // Log the sanitized response
+    transferRecepientId: transferRecepientId,
+    error: error.toString(),
+    response: sanitizedResponse
   };
 
-  // Save the log entry to Firebase
   const db = admin.firestore();
-  db.collection('fund_distribution_error_logs').add(logEntry)
+  const documentPath = getDocumentPath();
+  db.collection('fund_distribution_error_logs').doc(documentPath).collection('logs').add(logEntry)
     .then(() => console.log('Logged error with additional details'))
     .catch(error => console.error('Error logging error:', error));
 }
 
-// Function to sanitize the response
-function sanitizeResponse(response) {
-  // Create a copy to avoid mutating the original response
-  let sanitized = Object.assign({}, response);
+// Example function to log error with more details
+function alertCalculateFundDistError(eventId, transferRecepientId, error, response) {
+  const sanitizedResponse = sanitizeResponse(response);
+  const logEntry = {
+    timestamp: new Date(),
+    eventId: eventId,
+    status: 'Error',
+    transferRecepientId: transferRecepientId,
+    error: error.toString(),
+    response: sanitizedResponse
+  };
 
-  // Remove or mask sensitive fields
-  if (sanitized.data && sanitized.data.customer && sanitized.data.customer.email) {
-    sanitized.data.customer.email = 'REDACTED'; // Example of data redaction
-  }
-
-  // Add more fields to redact as necessary based on the structure of your response
-
-  return sanitized;
+  const db = admin.firestore();
+  const documentPath = getDocumentPath();
+  db.collection('fund_calculate_error_logs').doc(documentPath).collection('logs').add(logEntry)
+    .then(() => console.log('Logged error with additional details'))
+    .catch(error => console.error('Error logging error:', error));
 }
+
 
 async function calculateOrganizerShare(eventData) {
   try {
@@ -467,7 +593,7 @@ async function calculateOrganizerShare(eventData) {
       } else {
         // Handle the scenario where ticket total is not a number
          // eslint-disable-next-line no-await-in-loop
-        await alertCalculateFundDistError(db, eventData.id, eventData.subaccountId, `Invalid ticket total for document: ${String(ticketTotal)}` );
+        await alertCalculateFundDistError( eventData.id, eventData.transferRecepientId, `Invalid ticket total `, `Invalid ticket total for document: ${String(ticketTotal)}` );
         console.error(`Invalid ticket total for document: ${eventDoc.id}`);
         // Depending on your error handling strategy, you can throw an error or skip this ticket total
         // throw new Error(`Invalid ticket total for document: ${eventDoc.id}`);
@@ -493,13 +619,138 @@ async function calculateOrganizerShare(eventData) {
 
   } catch (error) {
     // Use eventData.id instead of eventDoc.id to avoid referencing an undefined variable
-    await alertCalculateFundDistError(db, eventData.id, eventData.subaccountId, `Error calculating organizer share: ${error.message.toString()}` );
+    await alertCalculateFundDistError( eventData.id, eventData.transferRecepientId,'Error calculating organizer share:', `Error calculating organizer share: ${error.message.toString()}` );
     console.error('Error calculating organizer share:', error);
     throw error;
   }
 }
 
 
+
+
+
+// List of fields in the response that should be sanitized
+const sensitiveFields = [
+  'account_number',
+  'account_name',
+  'authorization_code',
+  'card_number',
+  'cvv',
+  'expiry_month',
+  'expiry_year',
+  'transaction_id',
+  // Add any other sensitive fields that may be present in the response
+];
+
+// Helper function to recursively sanitize sensitive fields in an object
+function sanitize(obj) {
+  if (Array.isArray(obj)) {
+      obj.forEach(sanitize);
+  } else {
+      for (const key in obj) {
+          if (sensitiveFields.includes(key)) {
+              obj[key] = '***SENSITIVE_DATA***';
+          } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+              sanitize(obj[key]);
+          }
+      }
+  }
+}
+
+function sanitizeResponse(response) {
+  // Clone the response to avoid mutating the original
+  const clonedResponse = JSON.parse(JSON.stringify(response));
+  sanitize(clonedResponse);
+  return clonedResponse;
+}
+
+
+
+
+
+
+// // Example function to log success with more details
+// function alertAdminFundsDistributedSuccess(eventId, response) {
+//   // Sanitize the response to remove sensitive data
+//   const sanitizedResponse = sanitizeResponse(response);
+
+//   // Add additional logging information here
+//   const logEntry = {
+//     timestamp: new Date(),
+//     eventId: eventId,
+//     status: 'Success',
+//     response: sanitizedResponse // Log the sanitized response
+//   };
+
+//   // Save the log entry to Firebase
+//   const db = admin.firestore();
+//   db.collection('funds_distributed_success_logs').add(logEntry)
+//     .then(() => console.log('Logged success with additional details'))
+//     .catch(error => console.error('Error logging success:', error));
+// }
+
+
+// function alertAdminDistributeFundsError(eventId, transferRecepientId,  error, response,) {
+//   // Sanitize the response to remove sensitive data
+//   const sanitizedResponse = sanitizeResponse(response);
+
+//   // Add additional logging information here
+//   const logEntry = {
+//     timestamp: new Date(),
+//     eventId: eventId,
+//     status: 'Error',
+//     transferRecepientId:  transferRecepientId,
+//     error: error.toString(),
+//     response: sanitizedResponse // Log the sanitized response
+//   };
+
+//   // Save the log entry to Firebase
+//   const db = admin.firestore();
+//   db.collection('fund_distribution_error_logs').add(logEntry)
+//     .then(() => console.log('Logged error with additional details'))
+//     .catch(error => console.error('Error logging errors:', error));
+// }
+
+
+
+
+
+// // Example function to log error with more details
+// function alertCalculateFundDistError(eventId, transferRecepientId, error, response) {
+//   // Sanitize the response to remove sensitive data
+//   const sanitizedResponse = sanitizeResponse(response);
+
+//   // Add additional logging information here
+//   const logEntry = {
+//     timestamp: new Date(),
+//     eventId: eventId,
+//     status: 'Error',
+//     transferRecepientId:  transferRecepientId,
+//     error: error.toString(), // Log the error message
+//     response: sanitizedResponse // Log the sanitized response
+//   };
+
+//   // Save the log entry to Firebase
+//   const db = admin.firestore();
+//   db.collection('fund_calculate_error_logs').add(logEntry)
+//     .then(() => console.log('Logged error with additional details'))
+//     .catch(error => console.error('Error logging error:', error));
+// }
+
+// // Function to sanitize the response
+// function sanitizeResponse(response) {
+//   // Create a copy to avoid mutating the original response
+//   let sanitized = Object.assign({}, response);
+
+//   // Remove or mask sensitive fields
+//   if (sanitized.data && sanitized.data.customer && sanitized.data.customer.email) {
+//     sanitized.data.customer.email = 'REDACTED'; // Example of data redaction
+//   }
+
+//   // Add more fields to redact as necessary based on the structure of your response
+
+//   return sanitized;
+// }
 
 
 // //Note
@@ -689,15 +940,18 @@ async function processRefund(refundRequestDoc) {
               created: admin.firestore.FieldValue.serverTimestamp()
             });
           } else {
+            await alertAdminRefundFailure(db, eventId, transactionId, response.data);
             console.log(`Refund already processed for transaction ID: ${transactionId}`);
             return;
           }
         });
          // eslint-disable-next-line no-await-in-loop
-        await alertAdminRefundSuccess(db, eventId, transactionId);
+         await alertAdminRefundSuccess(db, eventId, transactionId, response.data);
         console.log(`Refund processed for transaction ID: ${transactionId}`);
         return;
       } else {
+          // eslint-disable-next-line no-await-in-loop
+        await alertAdminRefundFailure(db, eventId, transactionId, response.data);
         throw new Error('Refund failed with a non-success status');
       }
     } catch (error) {
@@ -734,27 +988,63 @@ async function processRefund(refundRequestDoc) {
   }
 }
 
-async function alertAdminRefundFailure(db, eventId, transactionId, errorMessage) {
-  const failureDoc = {
+
+
+function alertAdminRefundFailure(db, eventId, transactionId, response) {
+  const sanitizedResponse = sanitizeResponse(response);
+  const logEntry = {
+    date: admin.firestore.FieldValue.serverTimestamp(),
     eventId: eventId,
+    // error: errorMessage,
     transactionId: transactionId,
-    error: errorMessage,
-    date: admin.firestore.FieldValue.serverTimestamp()
+    response: sanitizedResponse
   };
-   // eslint-disable-next-line no-await-in-loop
-  await db.collection('refund_failures').add(failureDoc);
+
+  const documentPath = getDocumentPath();
+  db.collection('refund_failures').doc(documentPath).collection('logs').add(logEntry)
+    .then(() => console.log('Logged failed with additional details'))
+    .catch(error => console.error('Error logging failed:', error));
 }
 
-async function alertAdminRefundSuccess(db, eventId, transactionId) {
-  const successDoc = {
+
+
+// async function alertAdminRefundFailure(db, eventId, transactionId, errorMessage) {
+//   const failureDoc = {
+//     eventId: eventId,
+//     transactionId: transactionId,
+//     error: errorMessage,
+//     date: admin.firestore.FieldValue.serverTimestamp()
+//   };
+//    // eslint-disable-next-line no-await-in-loop
+//   await db.collection('refund_failures').add(failureDoc);
+// }
+
+
+function alertAdminRefundSuccess(db, eventId, transactionId, response ) {
+  const sanitizedResponse = sanitizeResponse(response);
+  const logEntry = {
+    date: admin.firestore.FieldValue.serverTimestamp(),
     eventId: eventId,
     transactionId: transactionId,
-    status: 'successful',
-    date: admin.firestore.FieldValue.serverTimestamp()
+    response: sanitizedResponse
   };
-   // eslint-disable-next-line no-await-in-loop
-  await db.collection('refund_success').add(successDoc);
+
+  const documentPath = getDocumentPath();
+  db.collection('refund_success').doc(documentPath).collection('logs').add(logEntry)
+    .then(() => console.log('Logged succesful with additional details'))
+    .catch(error => console.error('Error logging succesful:', error));
 }
+
+// async function alertAdminRefundSuccess(db, eventId, transactionId) {
+//   const successDoc = {
+//     eventId: eventId,
+//     transactionId: transactionId,
+//     status: 'successful',
+//     date: admin.firestore.FieldValue.serverTimestamp()
+//   };
+//    // eslint-disable-next-line no-await-in-loop
+//   await db.collection('refund_success').add(successDoc);
+// }
 
 
 
@@ -777,6 +1067,9 @@ exports.scheduledRefundEventDeletedProcessor = functions.pubsub.schedule('every 
    }
  }
 });
+
+
+
 
 async function processRefundEventDeleted(refundRequestDoc) {
  const db = admin.firestore();
@@ -826,26 +1119,32 @@ async function processRefundEventDeleted(refundRequestDoc) {
              refundResponse: response.data,
              created: admin.firestore.FieldValue.serverTimestamp()
            });
-         } else {
+         } else {  
+            // eslint-disable-next-line no-await-in-loop
+          await alertAdminRefundFailure(db, eventId, transactionId, response.data); 
            console.log(`Refund already processed for transaction ID: ${transactionId}`);
            return;
          }
        });
         // eslint-disable-next-line no-await-in-loop
-       await alertAdminRefundSuccess(db, eventId, transactionId);
+        await alertAdminRefundSuccess(db, eventId, transactionId, response.data);
        console.log(`Refund processed for transaction ID: ${transactionId}`);
        return;
      } else {
+        // eslint-disable-next-line no-await-in-loop
+      await alertAdminRefundFailure(db, eventId, transactionId, response.data); 
        throw new Error('Refund failed with a non-success status');
      }
    } catch (error) {
+      // eslint-disable-next-line no-await-in-loop
+    await alertAdminRefundFailure(db, eventId, transactionId,  error.message); 
      console.error(`Attempt ${retryCount + 1} for refund ${transactionId} failed:`, error);
 
      if (!isRetryableError(error)) {
         // eslint-disable-next-line no-await-in-loop
        await refundRequestDoc.ref.update({ status: 'error' });
         // eslint-disable-next-line no-await-in-loop
-       await alertAdminRefundFailure(db, eventId, transactionId, error.message);
+         await alertAdminRefundFailure(db, eventId, transactionId, error.message);
        throw error; // Non-retryable error, rethrow error
      }
 

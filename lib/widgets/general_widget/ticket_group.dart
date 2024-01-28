@@ -266,6 +266,7 @@ class _TicketGroupState extends State<TicketGroup> {
       try {
         final verificationResult = await callable.call(<String, dynamic>{
           'reference': paymentResult.reference,
+          'eventId': widget.event!.id,
           'amount': totalPrice.toInt() *
               100, // Assuming this is the correct amount in kobo
         });
@@ -395,10 +396,10 @@ class _TicketGroupState extends State<TicketGroup> {
               ),
               BottomModalSheetButtonBlue(
                 buttonText: 'Access ticket site',
-                onPressed:  () async {
-        if (!await launchUrl(Uri.parse(link))) {
-          throw 'Could not launch link';
-        }
+                onPressed: () async {
+                  if (!await launchUrl(Uri.parse(link))) {
+                    throw 'Could not launch link';
+                  }
                   // Navigator.push(
                   //     context,
                   //     MaterialPageRoute(

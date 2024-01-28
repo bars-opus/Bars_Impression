@@ -75,20 +75,6 @@ class _StoreSearchState extends State<StoreSearch>
     }
   }
 
-  // void _search() {
-  //   var _provider = Provider.of<UserData>(context, listen: false);
-  //   String input = _searchController.text.trim();
-  //   _provider.setStoreSearchTerm(input);
-  //   String searchTermUpper = _provider.storeSearchTerm.toUpperCase();
-
-  //   setState(() {
-  //     _event = DatabaseService.searchEvent(searchTermUpper);
-  //   });
-  //   setState(() {
-  //     _users = DatabaseService.searchUsers(searchTermUpper);
-  //   });
-  // }
-
   _searchContainer() {
     return SearchContentField(
       showCancelButton: true,
@@ -101,10 +87,10 @@ class _StoreSearchState extends State<StoreSearch>
         _clearSearch();
       },
       onChanged: (value) {
-        if (_searchController.text.trim().isNotEmpty) {
-          _debouncer.run(() {
-            _search();
-          });
+        if (value.trim().isNotEmpty) {
+          // _debouncer.run(() {
+          _search();
+          // });
         }
       },
       onTap: () {},
@@ -137,7 +123,9 @@ class _StoreSearchState extends State<StoreSearch>
                   title: _searchContainer(),
                   bottom: TabBar(
                     onTap: (index) {
-                      _provider.storeSearchTerm.isNotEmpty ? _search() : null;
+                      _searchController.text.trim().isNotEmpty
+                          ? _search()
+                          : null;
                     },
                     controller: _tabController,
                     labelColor: Theme.of(context).secondaryHeaderColor,
@@ -164,7 +152,7 @@ class _StoreSearchState extends State<StoreSearch>
               body: Listener(
                 onPointerMove: (event) {
                   // _provider.setStoreSearchIndex(_tabController.index + 1);
-                  if (_provider.storeSearchTerm.isNotEmpty &&
+                  if (_searchController.text.trim().isNotEmpty &&
                       !_physycsNotifier.value) {
                     _search();
                     _physycsNotifier.value = true;

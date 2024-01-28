@@ -13,7 +13,6 @@ class PortfolioWorkRequestWidget extends StatelessWidget {
     required this.onTapToGoTODiscovery,
   });
 
-
   _buildDisplayPortfolioList(BuildContext context) {
     List<Widget> forumViews = [];
     workReQuests.forEach((portfolio) {
@@ -22,8 +21,7 @@ class PortfolioWorkRequestWidget extends StatelessWidget {
         seeMore: seeMore,
         workRequest: portfolio,
         onTapToGoTODiscovery: onTapToGoTODiscovery,
-      )
-          );
+      ));
     });
     return Column(children: forumViews);
   }
@@ -219,80 +217,14 @@ class _RequestWidgetState extends State<RequestWidget> {
                           ),
                         ),
                       ),
-                title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text:
-                                "${widget.workRequest.currency}   ${widget.workRequest.price.toString()}\n",
-                            style: TextStyle(
-                              fontSize: ResponsiveHelper.responsiveFontSize(
-                                  context, 14.0),
-                              color: Colors.blue,
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          TextSpan(
-                            text: widget.workRequest.overView
-                                .replaceAll('\n', ' '),
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ],
-                      ),
-                      maxLines: widget.seeMore ? 50 : 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (widget.edit)
-                      RichText(
-                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                                text: "Genre: ",
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: ResponsiveHelper.responsiveFontSize(
-                                      context, 14.0),
-                                )),
-                            TextSpan(
-                              text: widget.workRequest.genre
-                                  .map((genre) => genre)
-                                  .join(', '),
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            )
-                          ],
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    if (widget.edit)
-                      RichText(
-                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "Type:   ",
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontSize: ResponsiveHelper.responsiveFontSize(
-                                    context, 14.0),
-                              ),
-                            ),
-                            TextSpan(
-                              text: widget.workRequest.type
-                                  .map((type) => type)
-                                  .join(', '),
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            )
-                          ],
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                  ],
+                title: Text(
+                  "${widget.workRequest.currency}   ${widget.workRequest.price.toString()}\n",
+                  style: TextStyle(
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 14.0),
+                    color: Colors.blue,
+                    fontWeight: FontWeight.normal,
+                  ),
                 ),
               ),
               subtitle: widget.seeMore
@@ -300,6 +232,10 @@ class _RequestWidgetState extends State<RequestWidget> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
+                        Text(
+                          widget.workRequest.overView.replaceAll('\n', ' '),
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
                         Divider(
                           color: Theme.of(context).primaryColorLight,
                         ),

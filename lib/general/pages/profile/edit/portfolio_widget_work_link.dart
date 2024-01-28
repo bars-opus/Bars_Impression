@@ -45,7 +45,7 @@ class PortfolioWidgetWorkLink extends StatelessWidget {
                   height: 30,
                 ),
                 BottomModalSheetButtonBlue(
-                  buttonText: type,
+                  buttonText: 'Continue',
                   onPressed: () async {
                     Navigator.pop(context);
                     if (!await launchUrl(Uri.parse(link))) {

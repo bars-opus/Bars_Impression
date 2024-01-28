@@ -56,7 +56,14 @@ class ExpandEventBarcodeScreen extends StatelessWidget {
                 tag: event.id,
                 child: QrImageView(
                   version: QrVersions.auto,
-                  foregroundColor: Colors.white,
+                  eyeStyle: QrEyeStyle(
+                    eyeShape: QrEyeShape.square,
+                    color: Colors.white,
+                  ),
+                  dataModuleStyle: QrDataModuleStyle(
+                    dataModuleShape: QrDataModuleShape.circle,
+                    color: Colors.grey,
+                  ),
                   backgroundColor: Colors.transparent,
                   data: event.dynamicLink,
                   size: ResponsiveHelper.responsiveHeight(context, 200.0),

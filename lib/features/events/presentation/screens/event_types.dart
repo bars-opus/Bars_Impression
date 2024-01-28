@@ -200,9 +200,9 @@ class _EventTypesState extends State<EventTypes>
         country: country, isAll: isAll, from: 'Country'); // For country
     _setupEvents(isAll: true, from: ''); // For all
 
-    _setupWorkRequest(
-      city ?? '',
-    );
+    // _setupWorkRequest(
+    //   city ?? '',
+    // );
   }
 
   _setUpFeedLive() {
@@ -216,9 +216,9 @@ class _EventTypesState extends State<EventTypes>
         isAll: true,
         from: 'City');
 
-    _setupWorkRequest(
-      widget.liveCity,
-    );
+    // _setupWorkRequest(
+    //   widget.liveCity,
+    // );
 
     // _setupEvents(); // For all
   }
@@ -235,7 +235,7 @@ class _EventTypesState extends State<EventTypes>
         _setupEvents(
             country: country, isAll: true, from: 'Country'); // For country
 
-    _setupWorkRequest(city ?? '');
+    // _setupWorkRequest(city ?? '');
 
     // _setupEvents(); // For all
   }
@@ -284,7 +284,7 @@ class _EventTypesState extends State<EventTypes>
     if (city != null) query = query.where('city', isEqualTo: city);
 
     if (sortNumberOfDays != 0) {
-      query = query.where('startDate', isLessThanOrEqualTo: endDate);
+      query = query.where('clossingDay', isLessThanOrEqualTo: endDate);
     }
 
     try {
@@ -292,8 +292,8 @@ class _EventTypesState extends State<EventTypes>
       // QuerySnapshot eventFeedSnapShot = await query.limit(10).get();
 
       QuerySnapshot eventFeedSnapShot = await query
-          .where('startDate', isGreaterThanOrEqualTo: currentDate)
-          .orderBy('startDate', descending: false)
+          .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+          .orderBy('clossingDay', descending: false)
           // // .orderBy(FieldPath.documentId)
 
           // .where('fundsDistributed', isEqualTo: false)
@@ -374,8 +374,8 @@ class _EventTypesState extends State<EventTypes>
               .where('type', isEqualTo: widget.types);
 
       QuerySnapshot eventFeedSnapShot = await query
-          .where('startDate', isGreaterThanOrEqualTo: currentDate)
-          .orderBy('startDate', descending: false)
+          .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+          .orderBy('clossingDay', descending: false)
           .orderBy(FieldPath.documentId)
           .limit(30)
           .get();
@@ -486,15 +486,15 @@ class _EventTypesState extends State<EventTypes>
   }) async {
     int sortNumberOfDays = 7;
     final currentDate = DateTime(now.year, now.month, now.day);
-    final endDate = currentDate.add(Duration(days: sortNumberOfDays));
+    final sortDate = currentDate.add(Duration(days: sortNumberOfDays));
 
     Query<Map<String, dynamic>> query = widget.types.isEmpty
         ? allEventsRef
         : allEventsRef.where('type', isEqualTo: widget.types);
 
     query =
-        query.where('startDate', isGreaterThanOrEqualTo: currentDate).orderBy(
-              'startDate',
+        query.where('clossingDay', isGreaterThanOrEqualTo: currentDate).orderBy(
+              'clossingDay',
             );
     // Refine the query based on the provided country and city
     if (country != null) {
@@ -510,54 +510,54 @@ class _EventTypesState extends State<EventTypes>
 
     // if (sortNumberOfDays != 0) {
     if (!isFree) {
-      query = query.where('startDate', isLessThanOrEqualTo: endDate);
+      query = query.where('clossingDay', isLessThanOrEqualTo: sortDate);
     }
     // }
 
-    // try {
-    // Fetch events from Firestore up to the limit
+    try {
+      // Fetch events from Firestore up to the limit
 
-    QuerySnapshot eventFeedSnapShot = await query
-        // .where('startDate', isGreaterThanOrEqualTo: currentDate)
-        // .orderBy('startDate', descending: false)
-        .orderBy(FieldPath.documentId)
-        .limit(limit)
-        .get();
+      QuerySnapshot eventFeedSnapShot = await query
+          // .where('startDate', isGreaterThanOrEqualTo: currentDate)
+          // .orderBy('startDate', descending: false)
+          .orderBy(FieldPath.documentId)
+          .limit(limit)
+          .get();
 
-    // Transform the documents into Event objects
+      // Transform the documents into Event objects
 
-    List<Event> uniqueEvents = [];
+      List<Event> uniqueEvents = [];
 
-    List<Event> events =
-        eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
-    if (isFree) {
-      if (_eventFreeSnapshot.isEmpty) {
-        _eventFreeSnapshot.addAll(eventFeedSnapShot.docs);
-      }
-      for (var event in events) {
-        if (addedFreeEventIds.add(event.id)) {
-          uniqueEvents.add(event);
+      List<Event> events =
+          eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
+      if (isFree) {
+        if (_eventFreeSnapshot.isEmpty) {
+          _eventFreeSnapshot.addAll(eventFeedSnapShot.docs);
+        }
+        for (var event in events) {
+          if (addedFreeEventIds.add(event.id)) {
+            uniqueEvents.add(event);
+          }
         }
       }
-    }
 
-    // Add the documents to the appropriate snapshot
-    if (!isFree) {
-      if (_eventThisWeekSnapshot.isEmpty) {
-        _eventThisWeekSnapshot.addAll(eventFeedSnapShot.docs);
-      }
-      for (var event in events) {
-        if (addedThisWeekEventIds.add(event.id)) {
-          uniqueEvents.add(event);
+      // Add the documents to the appropriate snapshot
+      if (!isFree) {
+        if (_eventThisWeekSnapshot.isEmpty) {
+          _eventThisWeekSnapshot.addAll(eventFeedSnapShot.docs);
+        }
+        for (var event in events) {
+          if (addedThisWeekEventIds.add(event.id)) {
+            uniqueEvents.add(event);
+          }
         }
       }
+      // Return the fetched events
+      return uniqueEvents;
+    } catch (e) {
+      print('Failed to fetch events: $e');
+      return [];
     }
-    // Return the fetched events
-    return uniqueEvents;
-    // } catch (e) {
-    //   print('Failed to fetch events: $e');
-    //   return [];
-    // }
   }
 
   void _showBottomSheetErrorMessage() {
@@ -767,47 +767,47 @@ class _EventTypesState extends State<EventTypes>
   // }
 
 // This function is used to fetch work requests from
-// the Firestore database and updates the _userWorkRequest state.
-  Future<List<WorkRequestOrOfferModel>> _setupWorkRequest(String city) async {
-    Set<WorkRequestOrOfferModel> posts = {};
-    final randomValue = Random().nextDouble();
+// // the Firestore database and updates the _userWorkRequest state.
+//   Future<List<WorkRequestOrOfferModel>> _setupWorkRequest(String city) async {
+//     Set<WorkRequestOrOfferModel> posts = {};
+//     final randomValue = Random().nextDouble();
 
-    if (widget.types.isNotEmpty) {
-      Query typeQuery = allWorkRequestRef
-          .where('type', arrayContains: widget.types)
-          .where('randomId', isGreaterThanOrEqualTo: randomValue);
-      QuerySnapshot typeSnapshot = await typeQuery.limit(5).get();
-      posts.addAll(typeSnapshot.docs
-          .map((doc) => WorkRequestOrOfferModel.fromDoc(doc))
-          .toList());
+//     if (widget.types.isNotEmpty) {
+//       Query typeQuery = allWorkRequestRef
+//           .where('type', arrayContains: widget.types)
+//           .where('randomId', isGreaterThanOrEqualTo: randomValue);
+//       QuerySnapshot typeSnapshot = await typeQuery.limit(5).get();
+//       posts.addAll(typeSnapshot.docs
+//           .map((doc) => WorkRequestOrOfferModel.fromDoc(doc))
+//           .toList());
 
-      if (typeSnapshot.docs.length < 5) {
-        int remainingLimit = 5 - typeSnapshot.docs.length;
-        QuerySnapshot additionalSnapshot = await allWorkRequestRef
-            .where('type', arrayContains: widget.types)
-            .where('randomId', isLessThan: randomValue)
-            .limit(remainingLimit)
-            .get();
-        typeSnapshot.docs.addAll(additionalSnapshot.docs);
-      }
-    }
+//       if (typeSnapshot.docs.length < 5) {
+//         int remainingLimit = 5 - typeSnapshot.docs.length;
+//         QuerySnapshot additionalSnapshot = await allWorkRequestRef
+//             .where('type', arrayContains: widget.types)
+//             .where('randomId', isLessThan: randomValue)
+//             .limit(remainingLimit)
+//             .get();
+//         typeSnapshot.docs.addAll(additionalSnapshot.docs);
+//       }
+//     }
 
-    Query locationQuery = allWorkRequestRef
-        .where('availableLocations', arrayContains: city)
-        .where('randomId', isGreaterThanOrEqualTo: randomValue);
-    QuerySnapshot locationSnapshot = await locationQuery.limit(5).get();
-    posts.addAll(locationSnapshot.docs
-        .map((doc) => WorkRequestOrOfferModel.fromDoc(doc))
-        .toList());
+//     Query locationQuery = allWorkRequestRef
+//         .where('availableLocations', arrayContains: city)
+//         .where('randomId', isGreaterThanOrEqualTo: randomValue);
+//     QuerySnapshot locationSnapshot = await locationQuery.limit(5).get();
+//     posts.addAll(locationSnapshot.docs
+//         .map((doc) => WorkRequestOrOfferModel.fromDoc(doc))
+//         .toList());
 
-    if (mounted) {
-      setState(() {
-        _userWorkRequest = posts.toList();
-      });
-    }
+//     if (mounted) {
+//       setState(() {
+//         _userWorkRequest = posts.toList();
+//       });
+//     }
 
-    return posts.toList();
-  }
+//     return posts.toList();
+//   }
 
   // _setupWorkRequest(String city) async {
   //   print(city + 'cccccc');

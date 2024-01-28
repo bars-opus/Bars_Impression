@@ -1156,7 +1156,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
 
   void _showBottomSheetMore(String from) {
     var _provider = Provider.of<UserData>(context, listen: false);
-    final double height = MediaQuery.of(context).size.height;
+    // final double height = MediaQuery.of(context).size.height;
     final bool _isAuthor = widget.currentUserId == widget.userPortfolio.id;
 
     showModalBottomSheet(
@@ -1165,73 +1165,74 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-          height: height / 1.2,
+          height: ResponsiveHelper.responsiveHeight(context, 650),
           decoration: BoxDecoration(
             color: Theme.of(context).primaryColorLight,
             borderRadius: BorderRadius.circular(30),
           ),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 10,
-                ),
-                TicketPurchasingIcon(
-                  title: from,
-                ),
-                from.startsWith('contacts')
-                    ? PortfolioContactWidget(
-                        portfolios: _provider.bookingContacts,
-                        edit: _isAuthor,
-                      )
-                    : from.startsWith('company')
-                        ? PortfolioCompanyWidget(
-                            portfolios: _provider.company,
-                            seeMore: true,
-                            edit: false,
-                          )
-                        : from.startsWith('skills')
-                            ? PortfolioWidget(
-                                portfolios: _provider.skills,
-                                seeMore: true,
-                                edit: false,
-                              )
-                            : from.startsWith('performance')
-                                ? PortfolioWidget(
-                                    portfolios: _provider.performances,
-                                    seeMore: true,
-                                    edit: false,
-                                  )
-                                : from.startsWith('awards')
-                                    ? PortfolioWidget(
-                                        portfolios: _provider.awards,
-                                        seeMore: true,
-                                        edit: false,
-                                      )
-                                    : from.startsWith('work')
-                                        ? PortfolioWidgetWorkLink(
-                                            portfolios: _provider.linksToWork,
-                                            seeMore: true,
-                                            edit: false,
-                                          )
-                                        : from.startsWith('price')
-                                            ? Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 30.0),
-                                                child: PriceRateWidget(
-                                                  edit: false,
-                                                  prices: _provider.priceRate,
-                                                  seeMore: true,
-                                                  currency: _provider.currency,
-                                                ),
-                                              )
-                                            : PortfolioWidget(
-                                                portfolios: [],
-                                                seeMore: true,
+          child: ListView(
+            children: [
+              const SizedBox(
+                height: 10,
+              ),
+              TicketPurchasingIcon(
+                title: from,
+              ),
+              from.startsWith('contacts')
+                  ? PortfolioContactWidget(
+                      portfolios: _provider.bookingContacts,
+                      edit: _isAuthor,
+                    )
+                  : from.startsWith('company')
+                      ? PortfolioCompanyWidget(
+                          portfolios: _provider.company,
+                          seeMore: true,
+                          edit: false,
+                        )
+                      : from.startsWith('skills')
+                          ? PortfolioWidget(
+                              portfolios: _provider.skills,
+                              seeMore: true,
+                              edit: false,
+                            )
+                          : from.startsWith('performance')
+                              ? PortfolioWidget(
+                                  portfolios: _provider.performances,
+                                  seeMore: true,
+                                  edit: false,
+                                )
+                              : from.startsWith('awards')
+                                  ? PortfolioWidget(
+                                      portfolios: _provider.awards,
+                                      seeMore: true,
+                                      edit: false,
+                                    )
+                                  : from.startsWith('work')
+                                      ? PortfolioWidgetWorkLink(
+                                          portfolios: _provider.linksToWork,
+                                          seeMore: true,
+                                          edit: false,
+                                        )
+                                      : from.startsWith('price')
+                                          ? Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 30.0),
+                                              child: PriceRateWidget(
                                                 edit: false,
+                                                prices: _provider.priceRate,
+                                                seeMore: true,
+                                                currency: _provider.currency,
                                               ),
-              ],
-            ),
+                                            )
+                                          : PortfolioWidget(
+                                              portfolios: [],
+                                              seeMore: true,
+                                              edit: false,
+                                            ),
+              const SizedBox(
+                height: 40,
+              ),
+            ],
           ),
         );
       },
@@ -1424,21 +1425,21 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
 
   _workRequest() {
     return PortfolioWorkRequestWidget(
-      edit: widget.currentUserId == widget.userPortfolio.id ? true : false,
+      edit: false,
       seeMore: true,
       workReQuests: _userWorkRequest,
       onTapToGoTODiscovery: false,
     );
   }
 
-  _noContent() {
-    return Center(
-        child: NoContents(
-            title: 'No Info.',
-            subTitle:
-                'Each creative\'s discography showcases essential information to connect and collaborate with them. Explore their discography to find the necessary details and opportunities for connecting with these talented individuals',
-            icon: Icons.work_off_outlined));
-  }
+  // _noContent() {
+  //   return Center(
+  //       child: NoContents(
+  //           title: 'No Info.',
+  //           subTitle:
+  //               'Each creative\'s discography showcases essential information to connect and collaborate with them. Explore their discography to find the necessary details and opportunities for connecting with these talented individuals',
+  //           icon: Icons.work_off_outlined));
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -1638,8 +1639,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                     seeMore: false,
                     edit: false,
                   ),
-                  _divider('Collaborations', 'collaborations',
-                      _provider.collaborations.length >= 4 ? true : false),
+                  _divider('Collaborations', 'collaborations', false),
                   PortfolioCollaborationWidget(
                     collaborations: _provider.collaborations,
                     seeMore: false,

@@ -78,7 +78,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
   void initState() {
     super.initState();
     _setupIsBlockedUser();
-    _countDown();
+    // _countDown();
     // widget.justCreated ? () {} : _setUpAsks();
     _displayReportWarning = widget.event.report.isNotEmpty;
     _setUpTicket();
@@ -847,8 +847,8 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                       children: [
                         if (widget.event.dressCode.isNotEmpty)
                           TextSpan(
-                            text: "Dressing code:  ${widget.event.dressCode}",
-                            style: Theme.of(context).textTheme.titleLarge,
+                            text: "\nDressing code:  ${widget.event.dressCode}",
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                       ],
                     ),

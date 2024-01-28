@@ -27,7 +27,7 @@ class TaggedPeopleGroup extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-            height: ResponsiveHelper.responsiveHeight(context, 650),
+            height: ResponsiveHelper.responsiveHeight(context, 450),
             decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(30)),

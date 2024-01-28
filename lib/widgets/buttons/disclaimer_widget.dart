@@ -38,6 +38,8 @@ class DisclaimerWidget extends StatelessWidget {
               fontSize: ResponsiveHelper.responsiveFontSize(context, 20),
             ),
             textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
         SizedBox(
@@ -46,9 +48,9 @@ class DisclaimerWidget extends StatelessWidget {
         Container(
           color: Colors.grey,
           height: 1,
-          width: width / 8,
+          width: ResponsiveHelper.responsiveWidth(context, 70),
         ),
-         SizedBox(
+        SizedBox(
           height: ResponsiveHelper.responsiveHeight(context, 20),
         ),
         ShakeTransition(
