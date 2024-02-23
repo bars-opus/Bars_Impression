@@ -35,6 +35,7 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
   bool _isScanning = false;
   bool init = true;
   Timer? _delayTimer;
+  StreamSubscription<DocumentSnapshot>? _ticketSubscription;
 
   @override
   void initState() {
@@ -49,7 +50,7 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
         .collection('eventInvite')
         .doc(widget.event.id);
 
-    orderDocRef.snapshots().listen((snapshot) {
+    _ticketSubscription = orderDocRef.snapshots().listen((snapshot) {
       if (snapshot.exists) {
         TicketOrderModel order = TicketOrderModel.fromDoc(snapshot);
 
@@ -117,7 +118,7 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
 
   @override
   void dispose() {
-    // Cancel the timer when the widget is disposed
+    _ticketSubscription?.cancel();
     _delayTimer?.cancel();
     super.dispose();
   }

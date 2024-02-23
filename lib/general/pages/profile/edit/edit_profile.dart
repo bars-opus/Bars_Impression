@@ -36,24 +36,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     final file = await PickCropImage.pickedMedia(cropImage: _cropImage);
     if (file == null) return;
-    // ignore: unnecessary_null_comparison
-    _provider.setIsLoading(true);
-    bool isHarmful = await HarmfulContentChecker.checkForHarmfulContent(
-        context, file as File);
+    try {
+      // ignore: unnecessary_null_comparison
+      _provider.setIsLoading(true);
+      bool isHarmful = await HarmfulContentChecker.checkForHarmfulContent(
+          context, file as File);
 
-    // final isHarmful = await _checkForHarmfulContent(context, file as File);
+      // final isHarmful = await _checkForHarmfulContent(context, file as File);
 
-    if (isHarmful) {
-      mySnackBarModeration(context,
-          'Harmful content detected. Please choose a different image. Please review');
-      _provider.setIsLoading(false);
-    } else {
-      if (mounted) {
-        setState(() {
-          _provider.setIsLoading(false);
-          _profileImage = file;
-        });
+      if (isHarmful) {
+        mySnackBarModeration(context,
+            'Harmful content detected. Please choose a different image. Please review');
+        _provider.setIsLoading(false);
+      } else {
+        if (mounted) {
+          setState(() {
+            _provider.setIsLoading(false);
+            _profileImage = file;
+          });
+        }
       }
+    } catch (e) {
+      setState(() {
+        _provider.setIsLoading(false);
+        _profileImage = null;
+      });
+      mySnackBar(context,
+          'An error occured\nCheck your internet connection and try again.');
     }
 
     // if (file != null) {
@@ -121,7 +130,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _profileImageUrl,
         _provider.user!.userName!,
         _bio,
-        'https://www.barsopus.com/user_$_provider.currentUserId.uid',
+        'https://www.barsopus.com/user_${_provider.currentUserId}',
       );
 
       try {
@@ -287,7 +296,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             : '',
                     style: TextStyle(
                       color: Colors.blue,
-                      fontSize: 14,
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 14),
                     ),
                   ),
                 ),

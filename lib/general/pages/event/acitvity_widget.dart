@@ -182,6 +182,20 @@ class _ActivityWidgetState extends State<ActivityWidget> {
     }
   }
 
+  void _showBottomSheetPrivateEventMessage() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return CantFetchPrivateEvent(
+          body:
+              'To maintain this event\'s privacy, the event\'s contents can only be accessed through the ticket or via your profile if you are the organizer.',
+        );
+      },
+    );
+  }
+
   Future<void> _getActivityInviteReceived(Activity activity) async {
     var postId = activity.postId;
     if (postId == null) {
@@ -191,7 +205,8 @@ class _ActivityWidgetState extends State<ActivityWidget> {
     InviteModel? _invite =
         await DatabaseService.getEventIviteWithId(widget.currentUserId, postId);
     if (_invite != null) {
-      Event? _event = await DatabaseService.getEventWithId(_invite.eventId);
+      Event? _event = await DatabaseService.getUserEventWithId(
+          _invite.eventId, _invite.inviterId);
 
       TicketOrderModel? _ticket = await DatabaseService.getTicketWithId(
           _invite.eventId, widget.currentUserId);
@@ -246,7 +261,7 @@ class _ActivityWidgetState extends State<ActivityWidget> {
         ),
       );
     } else {
-      _showBottomSheetErrorDeletedEvent('Event not found');
+      _showBottomSheetPrivateEventMessage();
     }
   }
 

@@ -45,6 +45,8 @@ class _EventRoomScreenState extends State<EventRoomScreen>
     SchedulerBinding.instance.addPostFrameCallback((_) {
       Provider.of<UserData>(context, listen: false)
           .setReplyEventRoomMessage(null);
+      Provider.of<UserData>(context, listen: false)
+          .setChatRoomScrollVisibl(false);
     });
     _messageController.addListener(_onAskTextChanged);
 
@@ -166,8 +168,6 @@ class _EventRoomScreenState extends State<EventRoomScreen>
     );
     return croppedImage!;
   }
-
-
 
   void _showBottomPickImage() {
     showModalBottomSheet(
@@ -352,6 +352,7 @@ class _EventRoomScreenState extends State<EventRoomScreen>
               child: Padding(
                 padding: const EdgeInsets.only(left: 8.0, bottom: 10),
                 child: TextField(
+                  autofocus: true,
                   focusNode: _focusNode,
                   controller: controller,
                   keyboardAppearance: MediaQuery.of(context).platformBrightness,
@@ -382,7 +383,6 @@ class _EventRoomScreenState extends State<EventRoomScreen>
                           color: readyToSend ? titleColor : Colors.grey),
                       onPressed: onSend),
             ),
-           
           ],
         ),
       ),
@@ -566,12 +566,76 @@ class _EventRoomScreenState extends State<EventRoomScreen>
     );
   }
 
+  _streamBuilder() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    return StreamBuilder(
+      stream: eventsChatRoomsConverstionRef
+          .doc(widget.room.linkedEventId)
+          .collection('roomChats')
+          .orderBy('timestamp', descending: true)
+          .snapshots(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (!snapshot.hasData) {
+          return Expanded(
+            child: Center(
+              child: CircularProgress(
+                isMini: true,
+              ),
+            ),
+          );
+        }
+        return snapshot.data.docs.length == 0
+            ? Expanded(
+                child: Center(
+                  child: NoContents(
+                    icon: (Icons.chat_bubble_outline_sharp),
+                    title: 'No conversations,',
+                    subTitle:
+                        'You can be the first person to start a conversation. ',
+                  ),
+                ),
+              )
+            : Expanded(
+                child: Scrollbar(
+                  controller: _hideButtonController,
+                  child: ListView.builder(
+                    controller: _hideButtonController,
+                    reverse: true,
+                    itemCount: snapshot.data.docs.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      _updateChatSeen();
+                      EventRoomMessageModel message =
+                          EventRoomMessageModel.fromDoc(
+                              snapshot.data.docs[index]);
+
+                      return EventRoomMessageWidget(
+                        key: ValueKey(snapshot.data.docs[index].id),
+                        currentUserId: widget.currentUserId,
+                        onReply: (message) {
+                          _focusNode.requestFocus();
+                          setState(() {
+                            _provider.setReplyEventRoomMessage(message);
+                          });
+                        },
+                        message: message,
+                        palette: widget.palette,
+                        room: widget.room,
+                      );
+                    },
+                  ),
+                ),
+              );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var _provider = Provider.of<UserData>(context, listen: false);
     final double width = MediaQuery.of(context).size.width;
     Color _palleteColor = widget.palette == null
-        ? Colors.yellow
+        ? Colors.blue
         : widget.palette.dominantColor == null
             ? Colors.blue
             : widget.palette.dominantColor!.color;
@@ -653,72 +717,7 @@ class _EventRoomScreenState extends State<EventRoomScreen>
                           const SizedBox(
                             height: 20,
                           ),
-                          StreamBuilder(
-                            stream: eventsChatRoomsConverstionRef
-                                .doc(widget.room.linkedEventId)
-                                .collection('roomChats')
-                                .orderBy('timestamp', descending: true)
-                                .snapshots(),
-                            builder:
-                                (BuildContext context, AsyncSnapshot snapshot) {
-                              if (!snapshot.hasData) {
-                                return Expanded(
-                                  child: Center(
-                                    child: CircularProgress(
-                                      isMini: true,
-                                    ),
-                                  ),
-                                );
-                              }
-                              return snapshot.data.docs.length == 0
-                                  ? Expanded(
-                                      child: Center(
-                                        child: NoContents(
-                                          icon:
-                                              (Icons.chat_bubble_outline_sharp),
-                                          title: 'No conversations,',
-                                          subTitle:
-                                              'You can be the first person to start a conversation. ',
-                                        ),
-                                      ),
-                                    )
-                                  : Expanded(
-                                      child: Scrollbar(
-                                        controller: _hideButtonController,
-                                        child: ListView.builder(
-                                          controller: _hideButtonController,
-                                          reverse: true,
-                                          itemCount: snapshot.data.docs.length,
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            _updateChatSeen();
-                                            EventRoomMessageModel message =
-                                                EventRoomMessageModel.fromDoc(
-                                                    snapshot.data.docs[index]);
-
-                                            return EventRoomMessageWidget(
-                                              key: ValueKey(
-                                                  snapshot.data.docs[index].id),
-                                              currentUserId:
-                                                  widget.currentUserId,
-                                              onReply: (message) {
-                                                _focusNode.requestFocus();
-                                                setState(() {
-                                                  _provider
-                                                      .setReplyEventRoomMessage(
-                                                          message);
-                                                });
-                                              },
-                                              message: message,
-                                              palette: widget.palette,
-                                              room: widget.room,
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    );
-                            },
-                          ),
+                          _streamBuilder(),
                           _commentField(_palleteColor),
                           const SizedBox(
                             height: 40,

@@ -51,7 +51,7 @@ class _WebDisclaimerState extends State<WebDisclaimer> {
                   : widget.contentType.contains('Music Video')
                       ? 'Access the music video link featured with this mood punched. Note that the author of this mood punch might not be the owner or author of the music video link you are about to access. But rather an appreciator, lover, and promoter of the creativity of the original author(right owner/s).'
                       : widget.contentType.contains('Event ticket')
-                          ? ' Even though Bars Impression would direct you to the website provided by the publisher of this event,  We strongly advise that: you thoroughly research this event if you are interested.'
+                          ? 'This link serves to redirect users to an external website provided by the event organizer for the purpose of purchasing event tickets. \n\nPlease note that while Bars Impression facilitates this redirection, we strongly advise conducting thorough research on the event if you are interested. Bars Impression takes no responsibility for the contents and views expressed on the external website. Users should exercise caution and make informed decisions when accessing the linked page.'
                           : widget.contentType.contains('Previous Event')
                               ? 'Watch the previous event to get an idea of what to expect at the upcoming event.'
                               : widget.contentType.contains('Link') ||

@@ -61,14 +61,33 @@ class _EventPageViewState extends State<EventPageView> {
 
   final now = DateTime.now();
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _pageController2 = PageController(
+  //     initialPage: widget.pageIndex,
+  //   );
+  //   // _filteredEvents = widget.eventList;
+  //   _timer = Timer(Duration(seconds: 0), () {});
+  // }
+
   @override
   void initState() {
     super.initState();
     _pageController2 = PageController(
       initialPage: widget.pageIndex,
     );
-    // _filteredEvents = widget.eventList;
+    _currentPageIndex = widget.pageIndex; // Ensure this is initialized
+    _pageController2.addListener(_onPageChanged);
     _timer = Timer(Duration(seconds: 0), () {});
+  }
+
+  @override
+  void dispose() {
+    _pageController2.removeListener(_onPageChanged);
+    _pageController2.dispose();
+    _timer.cancel();
+    super.dispose();
   }
 
   void _onPageChanged() {
@@ -114,14 +133,14 @@ class _EventPageViewState extends State<EventPageView> {
     });
   }
 
-  @override
-  void dispose() {
-    _pageController2.dispose();
-    _pageController2.removeListener(_onPageChanged);
-    _timer.cancel();
+  // @override
+  // void dispose() {
+  //   _pageController2.dispose();
+  //   _pageController2.removeListener(_onPageChanged);
+  //   _timer.cancel();
 
-    super.dispose();
-  }
+  //   super.dispose();
+  // }
 
   Map<int, String> eventTypes = {
     0: 'All',
@@ -235,13 +254,13 @@ class _EventPageViewState extends State<EventPageView> {
     }
 
     if (sortNumberOfDays != 0) {
-      query = query.where('startDate', isLessThanOrEqualTo: endDate);
+      query = query.where('clossingDay', isLessThanOrEqualTo: endDate);
     }
 
     try {
       QuerySnapshot eventFeedSnapShot = await query
-          // .where('startDate', isGreaterThanOrEqualTo: currentDate)
-          // .orderBy('startDate', descending: false)
+          .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+          .orderBy('clossingDay', descending: false)
           // .orderBy(FieldPath.documentId) // add this line
           .limit(2)
           .get();

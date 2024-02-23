@@ -465,7 +465,8 @@ class _FeatureSurveyState extends State<FeatureSurvey> {
                         children: [
                           DirectionWidget(
                             text: 'Kindly leave an advice for us',
-                            fontSize: 16,
+                            fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 16),
                           ),
                           SizedBox(height: 10),
                           AnimatedContainer(
@@ -495,7 +496,9 @@ class _FeatureSurveyState extends State<FeatureSurvey> {
                                   decoration: InputDecoration.collapsed(
                                     hintText: 'What do you think?...',
                                     hintStyle: TextStyle(
-                                      fontSize: 14,
+                                      fontSize:
+                                          ResponsiveHelper.responsiveFontSize(
+                                              context, 14),
                                     ),
                                   ),
                                 ),

@@ -223,7 +223,7 @@ class _FollowerFollowingState extends State<FollowerFollowing>
             widget.follower.startsWith('Follower') ? 'Followers' : 'Following',
             style: TextStyle(
                 color: Theme.of(context).secondaryHeaderColor,
-                fontSize: 20,
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 20),
                 fontWeight: FontWeight.bold),
           ),
           centerTitle: true,

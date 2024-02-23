@@ -123,8 +123,9 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                                 _isLoading = true;
                                 try {
                                   Event? event =
-                                      await DatabaseService.getEventWithId(
-                                          widget.ticketOrder.eventId);
+                                      await DatabaseService.getUserEventWithId(
+                                          widget.ticketOrder.eventId,
+                                          widget.ticketOrder.eventAuthorId);
 
                                   if (event != null) {
                                     _navigateToPage(EventEnlargedScreen(
@@ -169,8 +170,9 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                                 _isLoading = true;
                                 try {
                                   Event? event =
-                                      await DatabaseService.getEventWithId(
-                                          widget.ticketOrder.eventId);
+                                      await DatabaseService.getUserEventWithId(
+                                          widget.ticketOrder.eventId,
+                                          widget.ticketOrder.eventAuthorId);
                                   if (event != null) {
                                     _launchMap(event);
                                   } else {
@@ -245,8 +247,8 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
         child: ListTile(
           trailing: _isLoading
               ? SizedBox(
-                  height: 20,
-                  width: 20,
+                  height: ResponsiveHelper.responsiveHeight(context, 20),
+                  width: ResponsiveHelper.responsiveHeight(context, 20),
                   child: CircularProgressIndicator(
                     strokeWidth: 3,
                   ),
@@ -280,11 +282,13 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                   _showBottomDeletedEvent(context);
                 }
               : () async {
+                  // print(widget.ticketOrder.eventAuthorId );
                   if (_isLoading) return;
                   _isLoading = true;
                   try {
-                    Event? event = await DatabaseService.getEventWithId(
-                        widget.ticketOrder.eventId);
+                    Event? event = await DatabaseService.getUserEventWithId(
+                        widget.ticketOrder.eventId,
+                        widget.ticketOrder.eventAuthorId);
 
                     if (event != null) {
                       PaletteGenerator _paletteGenerator =
@@ -318,6 +322,8 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
             color: Theme.of(context).secondaryHeaderColor,
             clossingDay: DateTime.now(),
             startDate: widget.ticketOrder.eventTimestamp!.toDate(),
+            eventHasEnded: false,
+            eventHasStarted: false,
           ),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

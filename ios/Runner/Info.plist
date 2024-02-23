@@ -45,7 +45,7 @@
 	<string>NO</string>
 	<key>FirebaseDynamicLinksCustomDomains</key>
 	<array>
-		<string>https://barsopus.com/barsImpression/</string>
+		<string>https://links.barsopus.com/barsImpression/</string>
 	</array>
 	<key>FlutterDeepLinkingEnabled</key>
 	<true/>

@@ -92,6 +92,8 @@ final newEventTicketOrderRef = _firestore.collection('new_eventTicketOrder');
 final sentEventIviteRef = _firestore.collection('new_sentEventInvite');
 // final userIviteRef = _firestore.collection('new_usersInvite');
 final userRefundRequestsRef = _firestore.collection('userRefundRequests');
+final userPayoutRequestRef = _firestore.collection('userPayoutRequests');
+
 
 final userInvitesRef = _firestore.collection('userInvites');
 

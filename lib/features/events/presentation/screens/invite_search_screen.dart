@@ -182,8 +182,8 @@ class _InviteSearchScreenState extends State<InviteSearchScreen>
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                height: 80,
-                width: 80,
+                height: 40,
+                width: 40,
                 child: CircularProgressIndicator(
                   backgroundColor: Colors.transparent,
                   valueColor: new AlwaysStoppedAnimation<Color>(
@@ -245,7 +245,8 @@ class _InviteSearchScreenState extends State<InviteSearchScreen>
 //The users selection map value is also cleared so the check list can mark new values.
 
   _clearSearch() {
-    WidgetsBinding.instance.addPostFrameCallback((_) => _controller.clear());
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _searchController.clear());
     setState(() {
       _users.value = []; // clear the list of users
       userSelection.clear(); // clear the selection map
@@ -264,6 +265,7 @@ class _InviteSearchScreenState extends State<InviteSearchScreen>
       autoFocus: true,
       cancelSearch: () {
         selectedUsersList.clear();
+        _clearSearch();
         Navigator.pop(context);
       },
       controller: _searchController,
@@ -302,7 +304,6 @@ class _InviteSearchScreenState extends State<InviteSearchScreen>
           }
         });
       },
-     
     );
   }
 
@@ -415,26 +416,28 @@ class _InviteSearchScreenState extends State<InviteSearchScreen>
                     const SizedBox(
                       height: 20,
                     ),
-                    SettingSwitch(
-                      isAlwaysWhite: true,
-                      title: 'Enable Free entry',
-                      subTitle: '',
-                      value: _isTicketPass,
-                      onChanged: (value) => setState(
-                        () {
-                          _isTicketPass = value;
-                        },
+                    if (!widget.event.isFree)
+                      SettingSwitch(
+                        isAlwaysWhite: true,
+                        title: 'Enable Free entry',
+                        subTitle: '',
+                        value: _isTicketPass,
+                        onChanged: (value) => setState(
+                          () {
+                            _isTicketPass = value;
+                          },
+                        ),
                       ),
-                    ),
-                    Text(
-                      'Enabling free entry would allow this invited attendees to attend this event without a purchasig a ticket. A free ticket would be generated for each person once they accept this invitation.',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize:
-                            ResponsiveHelper.responsiveFontSize(context, 14.0),
+                    if (!widget.event.isFree)
+                      Text(
+                        'Enabling free entry would allow this invited attendees to attend this event without a purchasig a ticket. A free ticket would be generated for each person once they accept this invitation.',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: ResponsiveHelper.responsiveFontSize(
+                              context, 14.0),
+                        ),
+                        textAlign: TextAlign.start,
                       ),
-                      textAlign: TextAlign.start,
-                    ),
                     const SizedBox(
                       height: 20,
                     ),
@@ -527,8 +530,7 @@ class _InviteSearchScreenState extends State<InviteSearchScreen>
                           )
                         : CircleAvatar(
                             backgroundColor: Colors.blue,
-                            backgroundImage: NetworkImage(
-                                imageUrl), 
+                            backgroundImage: NetworkImage(imageUrl),
                           ),
                     Positioned(
                       top: 3,

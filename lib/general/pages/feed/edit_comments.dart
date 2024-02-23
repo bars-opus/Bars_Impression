@@ -38,7 +38,7 @@ class _EditCommentsState extends State<EditComments> {
             title: Text(
               'Are you sure you want to delete this vibe?',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 16),
                 color: Colors.black,
               ),
             ),
@@ -263,7 +263,7 @@ class _EditCommentsState extends State<EditComments> {
             'Edit Vibe',
             style: TextStyle(
                 color: Theme.of(context).secondaryHeaderColor,
-                fontSize: 20,
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 20),
                 fontWeight: FontWeight.bold),
           ),
         ),
@@ -301,19 +301,24 @@ class _EditCommentsState extends State<EditComments> {
                                 initialValue: _content,
                                 autofocus: true,
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: ResponsiveHelper.responsiveFontSize(
+                                      context, 16),
                                   color: Theme.of(context).secondaryHeaderColor,
                                 ),
                                 decoration: InputDecoration(
                                     hintText:
                                         "lets know your perspective on this punch",
-                                    hintStyle: TextStyle(
-                                      fontSize: 14.0,
+                                    hintStyle: TextStyle(  fontSize: 
+                                      ResponsiveHelper.responsiveFontSize(
+                                          context, 14),
+                                     
                                       color: Colors.grey,
                                     ),
                                     labelText: 'Vibe',
-                                    labelStyle: TextStyle(
-                                      fontSize: 16.0,
+                                    labelStyle: TextStyle(  fontSize: 
+                                      ResponsiveHelper.responsiveFontSize(
+                                          context, 16),
+                                      
                                       fontWeight: FontWeight.bold,
                                       color: Colors.grey,
                                     ),
@@ -353,8 +358,10 @@ class _EditCommentsState extends State<EditComments> {
                             ),
                             Text(
                               'Save',
-                              style: TextStyle(
-                                fontSize: 16.0,
+                              style: TextStyle(  fontSize: 
+                                ResponsiveHelper.responsiveFontSize(
+                                    context, 16),
+                              
                                 fontWeight: FontWeight.bold,
                                 color: Theme.of(context).secondaryHeaderColor,
                               ),

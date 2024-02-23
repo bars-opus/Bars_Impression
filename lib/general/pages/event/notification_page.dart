@@ -418,7 +418,7 @@ class _NotificationPageState extends State<NotificationPage>
       'Sorted By: $title',
       style: TextStyle(
           color: Theme.of(context).primaryColorLight,
-          fontSize: 12,
+          fontSize:  ResponsiveHelper.responsiveFontSize( context, 12),
           fontWeight: FontWeight.normal),
     );
   }

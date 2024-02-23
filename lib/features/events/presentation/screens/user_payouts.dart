@@ -1,19 +1,19 @@
 import 'package:bars/utilities/exports.dart';
 
-class InvitationPages extends StatefulWidget {
-  static final id = 'InvitationPages';
+class UserPayouts extends StatefulWidget {
+  static final id = 'UserPayouts';
   final String currentUserId;
-  InvitationPages({
+  UserPayouts({
     required this.currentUserId,
   });
 
   @override
-  _InvitationPagesState createState() => _InvitationPagesState();
+  _UserPayoutsState createState() => _UserPayoutsState();
 }
 
-class _InvitationPagesState extends State<InvitationPages>
+class _UserPayoutsState extends State<UserPayouts>
     with AutomaticKeepAliveClientMixin {
-  List<InviteModel> _inviteList = [];
+  List<EventPayoutModel> _payoutList = [];
 
   DocumentSnapshot? _lastInviteDocument;
   DocumentSnapshot? _lastFiletedActivityDocument;
@@ -58,22 +58,22 @@ class _InvitationPagesState extends State<InvitationPages>
 
   _setUpInvites() async {
     try {
-      QuerySnapshot ticketOrderSnapShot = await userInvitesRef
+      QuerySnapshot ticketOrderSnapShot = await userPayoutRequestRef
           .doc(widget.currentUserId)
-          .collection('eventInvite')
-          // .where('eventTimestamp', isGreaterThanOrEqualTo: currentDate)
-          .orderBy('eventTimestamp', descending: true)
+          .collection('payoutRequests')
+          // .where('timestamp', isGreaterThanOrEqualTo: currentDate)
+          .orderBy('timestamp', descending: true)
           .limit(10)
           .get();
-      List<InviteModel> ticketOrder = ticketOrderSnapShot.docs
-          .map((doc) => InviteModel.fromDoc(doc))
+      List<EventPayoutModel> ticketOrder = ticketOrderSnapShot.docs
+          .map((doc) => EventPayoutModel.fromDoc(doc))
           .toList();
       if (ticketOrderSnapShot.docs.isNotEmpty) {
         _lastInviteDocument = ticketOrderSnapShot.docs.last;
       }
       if (mounted) {
         setState(() {
-          _inviteList = ticketOrder;
+          _payoutList = ticketOrder;
           _isLoading = false;
         });
       }
@@ -91,23 +91,24 @@ class _InvitationPagesState extends State<InvitationPages>
 
   _loadMoreInvites() async {
     try {
-      Query activitiesQuery = userInvitesRef
+      Query activitiesQuery = userPayoutRequestRef
           .doc(widget.currentUserId)
-          .collection('eventInvite')
-          .orderBy('eventTimestamp', descending: true)
+          .collection('payoutRequests')
+          .orderBy('timestamp', descending: true)
           .startAfterDocument(_lastInviteDocument!)
           .limit(limit);
 
       QuerySnapshot postFeedSnapShot = await activitiesQuery.get();
 
-      List<InviteModel> morePosts =
-          postFeedSnapShot.docs.map((doc) => InviteModel.fromDoc(doc)).toList();
+      List<EventPayoutModel> morePosts = postFeedSnapShot.docs
+          .map((doc) => EventPayoutModel.fromDoc(doc))
+          .toList();
       if (postFeedSnapShot.docs.isNotEmpty) {
         _lastInviteDocument = postFeedSnapShot.docs.last;
       }
       if (mounted) {
         setState(() {
-          _inviteList.addAll(morePosts);
+          _payoutList.addAll(morePosts);
           _hasNext = postFeedSnapShot.docs.length == limit;
         });
       }
@@ -124,11 +125,11 @@ class _InvitationPagesState extends State<InvitationPages>
   // final currentDate = DateTime(now.year, now.month, now.day);
 
   //   try {
-  //     Query activitiesQuery = userInvitesRef
+  //     Query activitiesQuery = userPayoutRequestRef
   //         .doc(widget.currentUserId)
-  //         .collection('eventInvite')
+  //         .collection('payoutRequests')
   //         .where('startDate', isGreaterThanOrEqualTo: currentDate)
-  //         .orderBy('eventTimestamp', descending: true)
+  //         .orderBy('timestamp', descending: true)
   //         .limit(10);
 
   //     if (_lastInviteDocument != null) {
@@ -137,13 +138,13 @@ class _InvitationPagesState extends State<InvitationPages>
   //     }
 
   //     QuerySnapshot userFeedSnapShot = await activitiesQuery.get();
-  //     List<InviteModel> activities =
-  //         userFeedSnapShot.docs.map((doc) => InviteModel.fromDoc(doc)).toList();
+  //     List<EventPayoutModel> activities =
+  //         userFeedSnapShot.docs.map((doc) => EventPayoutModel.fromDoc(doc)).toList();
 
   //     if (mounted) {
   //       setState(() {
-  //         _inviteList.addAll(
-  //             activities.where((activity) => !_inviteList.contains(activity)));
+  //         _payoutList.addAll(
+  //             activities.where((activity) => !_payoutList.contains(activity)));
   //         _hasNext = userFeedSnapShot.docs.length == 10;
   //         if (userFeedSnapShot.docs.isNotEmpty) {
   //           _lastInviteDocument = userFeedSnapShot.docs.last;
@@ -163,11 +164,11 @@ class _InvitationPagesState extends State<InvitationPages>
   //       final currentDate = DateTime(now.year, now.month, now.day);
 
   //   try {
-  //     Query activitiesQuery = userInvitesRef
+  //     Query activitiesQuery = userPayoutRequestRef
   //         .doc(widget.currentUserId)
-  //         .collection('eventInvite')
+  //         .collection('payoutRequests')
   //         .where('startDate', isGreaterThanOrEqualTo: currentDate)
-  //         .orderBy('eventTimestamp', descending: true)
+  //         .orderBy('timestamp', descending: true)
   //         .limit(10);
   //     // if _lastInviteDocument is not null, start after it
   //     if (_lastInviteDocument != null) {
@@ -176,12 +177,12 @@ class _InvitationPagesState extends State<InvitationPages>
   //     }
 
   //     QuerySnapshot userFeedSnapShot = await activitiesQuery.get();
-  //     List<InviteModel> activities =
-  //         userFeedSnapShot.docs.map((doc) => InviteModel.fromDoc(doc)).toList();
+  //     List<EventPayoutModel> activities =
+  //         userFeedSnapShot.docs.map((doc) => EventPayoutModel.fromDoc(doc)).toList();
 
   //     if (mounted) {
   //       setState(() {
-  //         _inviteList +=
+  //         _payoutList +=
   //             activities; // append new activities to the existing list
   //         _hasNext = userFeedSnapShot.docs.length == 10;
   //         if (userFeedSnapShot.docs.isNotEmpty) {
@@ -234,13 +235,13 @@ class _InvitationPagesState extends State<InvitationPages>
             try {
               // Call recursive function to delete documents in chunks
               await deleteActivityDocsInBatches();
-              _inviteList.clear();
+              _payoutList.clear();
             } catch (e) {
               _showBottomSheetErrorMessage('Error clearing notifications ');
             }
           },
-          title: 'Are you sure you want to clear your notifications?',
-          subTitle: 'Please make sure you don\'t miss any appointment',
+          title: 'Are you sure you want to clear your ticket payouts.',
+          subTitle: '',
         );
       },
     );
@@ -248,9 +249,9 @@ class _InvitationPagesState extends State<InvitationPages>
 
   Future<void> deleteActivityDocsInBatches() async {
     // get the first batch of documents to be deleted
-    var snapshot = await activitiesRef
+    var snapshot = await userPayoutRequestRef
         .doc(widget.currentUserId)
-        .collection('userActivities')
+        .collection('payoutRequests')
         .limit(500)
         .get();
 
@@ -274,9 +275,21 @@ class _InvitationPagesState extends State<InvitationPages>
     return deleteActivityDocsInBatches();
   }
 
+  void _navigateToPage(Widget page) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => page),
+    );
+  }
+
   _buildActivityBuilder(
-    List<InviteModel> _inviteList,
+    List<EventPayoutModel> _payoutList,
   ) {
+    var _textStyle = TextStyle(
+      fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+      color: Colors.grey,
+    );
+
     return Scrollbar(
       child: CustomScrollView(
         // controller: _hideButtonController,
@@ -285,12 +298,102 @@ class _InvitationPagesState extends State<InvitationPages>
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                InviteModel invite = _inviteList[index];
-                return InviteContainerWidget(
-                  invite: invite,
+                EventPayoutModel invite = _payoutList[index];
+                bool _isRefunded = invite.status == 'processed';
+                bool _isLoading = false;
+                var _textStyle2 = TextStyle(
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+                  color: Theme.of(context).secondaryHeaderColor,
+                  decoration: _isRefunded
+                      ? TextDecoration.lineThrough
+                      : TextDecoration.none,
+                );
+
+                return GestureDetector(
+                  onTap: () async {
+                    _isLoading = true;
+                    try {
+                      Event? event =
+                          await DatabaseService.getEventWithId(invite.eventId);
+
+                      if (event != null) {
+                        _navigateToPage(EventEnlargedScreen(
+                          currentUserId: widget.currentUserId,
+                          event: event,
+                          type: event.type,
+                        ));
+                      } else {
+                        _showBottomSheetErrorMessage('Failed to fetch event.');
+                      }
+                    } catch (e) {
+                      _showBottomSheetErrorMessage('Failed to fetch event');
+                    } finally {
+                      _isLoading = false;
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: RichText(
+                                textScaleFactor:
+                                    MediaQuery.of(context).textScaleFactor,
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: 'Status:                  ',
+                                      style: _textStyle,
+                                    ),
+                                    TextSpan(
+                                      text: invite.status,
+                                      style: TextStyle(
+                                        fontSize:
+                                            ResponsiveHelper.responsiveFontSize(
+                                                context, 14.0),
+                                        color: invite.status == 'pending'
+                                            ? Colors.red
+                                            : Colors.blue,
+                                        decoration: _isRefunded
+                                            ? TextDecoration.lineThrough
+                                            : TextDecoration.none,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: '\nApproved time:    ',
+                                      style: _textStyle,
+                                    ),
+                                    TextSpan(
+                                      text: MyDateFormat.toDate(
+                                          invite.timestamp.toDate()),
+                                      style: _textStyle2,
+                                    ),
+                                    TextSpan(
+                                      text: '\nEvent:                     ',
+                                      style: _textStyle,
+                                    ),
+                                    TextSpan(
+                                      text: invite.eventTitle,
+                                      style: _textStyle2,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Divider()
+                      ],
+                    ),
+                  ),
                 );
               },
-              childCount: _inviteList.length,
+              childCount: _payoutList.length,
             ),
           ),
         ],
@@ -305,14 +408,14 @@ class _InvitationPagesState extends State<InvitationPages>
   @override
   Widget build(BuildContext context) {
     var _provider = Provider.of<UserData>(context, listen: false);
-    int count = _provider.activityCount - 1;
+    // int  .count = _provider.activityCount - 1;
 
     super.build(context);
     // final width =
     //      MediaQuery.of(context).size.width;
 
     return Material(
-      color: Theme.of(context).primaryColor,
+      color: Theme.of(context).primaryColorLight,
       child: NotificationListener<ScrollNotification>(
         onNotification: _handleScrollNotification,
         child: Scrollbar(
@@ -327,9 +430,9 @@ class _InvitationPagesState extends State<InvitationPages>
                   ),
                   pinned: false,
                   centerTitle: false,
-                  backgroundColor: Theme.of(context).primaryColor,
+                  backgroundColor: Theme.of(context).primaryColorLight,
                   title: Text(
-                    'Event invitations',
+                    'Ticket refunds',
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   actions: [
@@ -358,30 +461,31 @@ class _InvitationPagesState extends State<InvitationPages>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  !_isLoading
+                  _isLoading
                       ? Expanded(
-                          child: _buildActivityBuilder(
-                          _inviteList,
-                        ))
-                      : count.isNegative
+                          child: ListView(
+                            physics: const NeverScrollableScrollPhysics(),
+                            children: List.generate(
+                                8,
+                                (index) => EventAndUserScimmerSkeleton(
+                                      from: 'Event',
+                                    )),
+                          ),
+                        )
+                      : _payoutList.isEmpty
                           ? Expanded(
                               child: Center(
                               child: NoContents(
-                                icon: (Icons.notifications_none_outlined),
-                                title: 'No invitations,',
-                                subTitle: '',
+                                icon: (Icons.payment_outlined),
+                                title: 'No refunds,',
+                                subTitle:
+                                    'All your refund requests would be displayed here.',
                               ),
                             ))
                           : Expanded(
-                              child: ListView(
-                                physics: const NeverScrollableScrollPhysics(),
-                                children: List.generate(
-                                    8,
-                                    (index) => EventAndUserScimmerSkeleton(
-                                          from: 'Event',
-                                        )),
-                              ),
-                            ),
+                              child: _buildActivityBuilder(
+                              _payoutList,
+                            )),
                   SizedBox(height: 16),
                 ],
               ),

@@ -2,10 +2,65 @@ import 'dart:math';
 
 import 'package:bars/utilities/exports.dart';
 
-class TaggedUsersWidget extends StatelessWidget {
+class TaggedUsersWidget extends StatefulWidget {
   List<TaggedEventPeopleModel> taggedPeopleOption;
 
   TaggedUsersWidget({required this.taggedPeopleOption});
+
+  @override
+  State<TaggedUsersWidget> createState() => _TaggedUsersWidgetState();
+}
+
+class _TaggedUsersWidgetState extends State<TaggedUsersWidget> {
+  List<Offset> positions = []; // Initialize positions to an empty list
+  final double taggedUserWidth = 100; // Adjust accordingly
+  final double taggedUserHeight = 50; // Adjust accordingly
+  final double minDistance = 100.0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final newPositions = _generatePositions();
+      // Use setState only if new positions are generated
+      if (newPositions.isNotEmpty) {
+        setState(() {
+          positions = newPositions;
+        });
+      }
+    });
+  }
+
+  List<Offset> _generatePositions() {
+    final random = Random();
+    final size = MediaQuery.of(context).size;
+    final List<Offset> newPositions = [];
+
+    for (int i = 0; i < widget.taggedPeopleOption.length; i++) {
+      // Ensure tagged users are within the visible area considering their size
+      final offsetX = random.nextDouble() * (size.width - taggedUserWidth);
+      final offsetY =
+          random.nextDouble() * (size.height - 100 - taggedUserHeight);
+      final newOffset = Offset(offsetX, offsetY);
+
+      bool isOverlapping = false;
+      for (final existingOffset in newPositions) {
+        final distance = (existingOffset - newOffset).distance;
+        if (distance < minDistance) {
+          isOverlapping = true;
+          break;
+        }
+      }
+
+      if (!isOverlapping) {
+        newPositions.add(newOffset);
+      } else {
+        i--; // Retry generating a position for this tagged user
+      }
+    }
+
+    return newPositions;
+  }
 
   void _navigateToPage(BuildContext context, Widget page) {
     Navigator.push(
@@ -22,7 +77,7 @@ class TaggedUsersWidget extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-            height: MediaQuery.of(context).size.height.toDouble() / 2,
+            height: ResponsiveHelper.responsiveHeight(context, 400),
             decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(30)),
@@ -37,34 +92,38 @@ class TaggedUsersWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    // final height = MediaQuery.of(context).size.height;
+    // final width = MediaQuery.of(context).size.width;
     var _provider = Provider.of<UserData>(context, listen: false);
-
-    final positions = _generatePositions(context);
+    if (positions.isEmpty) {
+      // Return a placeholder widget or an empty Container
+      return SizedBox.shrink();
+    }
 
     return Stack(
       alignment: FractionalOffset.center,
-      children: taggedPeopleOption.map((taggedPerson) {
-        var taggedType = taggedPerson.taggedType;
-        final color = taggedType.startsWith('Sponsor')
+      children: List.generate(widget.taggedPeopleOption.length, (index) {
+        var taggedPerson = widget.taggedPeopleOption[index];
+        final color = taggedPerson.taggedType.startsWith('Sponsor')
             ? Colors.yellow
-            : taggedType.startsWith('Partners')
+            : taggedPerson.taggedType.startsWith('Partner')
                 ? Colors.green
-                : taggedType.startsWith('Crew')
+                : taggedPerson.taggedType.startsWith('Crew')
                     ? Colors.black
                     : Colors.blue;
 
+        final position = positions[index];
+
         final random = Random();
-        final offsetX =
-            random.nextDouble() * width / 2; // Adjust the range as needed
-        final offsetY =
-            random.nextDouble() * height; // Adjust the range as needed
+        // final offsetX =
+        //     random.nextDouble() * width / 2; // Adjust the range as needed
+        // final offsetY =
+        //     random.nextDouble() * height; // Adjust the range as needed
         final isHorizontal = random.nextBool();
         final axis = isHorizontal ? Axis.horizontal : Axis.vertical;
         return Positioned(
-          left: offsetX,
-          top: offsetY,
+          left: position.dx,
+          top: position.dy,
           child: ShakeTransition(
             axis: axis,
             offset: 40,
@@ -114,7 +173,7 @@ class TaggedUsersWidget extends StatelessWidget {
                                       text: "${taggedPerson.role}\n",
                                       style: TextStyle(
                                           fontSize: ResponsiveHelper
-                                              .responsiveFontSize(context, 12),
+                                              .responsiveFontSize(context, 10),
                                           color: color,
                                           fontWeight: FontWeight.bold),
                                     ),
@@ -123,7 +182,7 @@ class TaggedUsersWidget extends StatelessWidget {
                                       style: TextStyle(
                                         fontSize:
                                             ResponsiveHelper.responsiveFontSize(
-                                                context, 14),
+                                                context, 12),
                                         color: Colors.white,
                                       ),
                                     )
@@ -163,34 +222,5 @@ class TaggedUsersWidget extends StatelessWidget {
         );
       }).toList(),
     );
-  }
-
-  List<Offset> _generatePositions(BuildContext context) {
-    final random = Random();
-    final size = MediaQuery.of(context).size;
-    final List<Offset> newPositions = [];
-    final double minDistance = 100.0; // Minimum distance between usernames
-    for (int i = 0; i < taggedPeopleOption.length; i++) {
-      final offsetX = random.nextDouble() * (size.width - minDistance);
-      final offsetY = random.nextDouble() * (size.height - minDistance);
-      final newOffset = Offset(offsetX, offsetY);
-
-      bool isOverlapping = false;
-      for (final existingOffset in newPositions) {
-        final distance = (existingOffset - newOffset).distance;
-        if (distance < minDistance) {
-          isOverlapping = true;
-          break;
-        }
-      }
-
-      if (!isOverlapping) {
-        newPositions.add(newOffset);
-      } else {
-        i--;
-      }
-    }
-
-    return newPositions;
   }
 }

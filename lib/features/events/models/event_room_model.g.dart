@@ -22,13 +22,14 @@ class EventRoomAdapter extends TypeAdapter<EventRoom> {
       imageUrl: fields[3] as String,
       linkedEventId: fields[2] as String,
       timestamp: fields[4] as Timestamp?,
+      eventAuthorId: fields[5] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, EventRoom obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class EventRoomAdapter extends TypeAdapter<EventRoom> {
       ..writeByte(3)
       ..write(obj.imageUrl)
       ..writeByte(4)
-      ..write(obj.timestamp);
+      ..write(obj.timestamp)
+      ..writeByte(5)
+      ..write(obj.eventAuthorId);
   }
 
   @override

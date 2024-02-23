@@ -119,6 +119,7 @@ class _EventDisplayWidgetState extends State<EventDisplayWidget> {
                 EditEventScreen(
                   currentUserId: widget.currentUserId,
                   event: widget.event,
+                  isCompleted: _eventHasEnded,
                 ),
               )
             : _navigateToPage(
@@ -293,41 +294,47 @@ class _EventDisplayWidgetState extends State<EventDisplayWidget> {
                             ),
                             textAlign: TextAlign.end,
                           ),
-                          _eventHasEnded
-                              ? Text(
-                                  "Completed",
-                                  style: TextStyle(
-                                    fontSize:
-                                        ResponsiveHelper.responsiveFontSize(
-                                            context, 12.0),
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  textAlign: TextAlign.end,
-                                )
-                              : _eventHasStarted
-                                  ? Text(
-                                      "Ongoing...",
-                                      style: TextStyle(
-                                        fontSize:
-                                            ResponsiveHelper.responsiveFontSize(
-                                                context, 12.0),
-                                        color: Colors.blue,
-                                        // fontWeight: FontWeight.bold,
-                                      ),
-                                      textAlign: TextAlign.end,
-                                    )
-                                  : CountdownTimer(
-                                      split: 'Single',
-                                      fontSize:
-                                          ResponsiveHelper.responsiveFontSize(
-                                              context, 14.0),
-                                      color: Theme.of(context)
-                                          .secondaryHeaderColor,
-                                      clossingDay: DateTime.now(),
-                                      startDate:
-                                          widget.event.startDate.toDate(),
-                                    ),
+                          // _eventHasStarted
+                          //     ? Text(
+                          //         "Ongoing...",
+                          //         style: TextStyle(
+                          //           fontSize:
+                          //               ResponsiveHelper.responsiveFontSize(
+                          //                   context, 12.0),
+                          //           color: Colors.blue,
+                          //           // fontWeight: FontWeight.bold,
+                          //         ),
+                          //         textAlign: TextAlign.end,
+                          //       )
+                          //     : _eventHasEnded
+                          //         ?
+
+                          // _eventHasStarted
+                          //     ? Text(
+                          //         _eventHasEnded ? 'Completed' : 'Ongoing',
+                          //         style: TextStyle(
+                          //           fontSize:
+                          //               ResponsiveHelper.responsiveFontSize(
+                          //                   context, 12.0),
+                          //           color: _eventHasEnded
+                          //               ? Colors.red
+                          //               : Colors.blue,
+                          //           fontWeight: FontWeight.bold,
+                          //         ),
+                          //         textAlign: TextAlign.end,
+                          //       )
+                          //     :
+
+                          CountdownTimer(
+                            split: 'Single',
+                            fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 14.0),
+                            color: Theme.of(context).secondaryHeaderColor,
+                            clossingDay: DateTime.now(),
+                            startDate: widget.event.startDate.toDate(),
+                             eventHasEnded: _eventHasEnded,
+                            eventHasStarted: _eventHasStarted,
+                          ),
                           if (widget.event.isPrivate)
                             Text(
                               "private.",

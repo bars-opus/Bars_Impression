@@ -23,7 +23,7 @@ class CreateContent extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return ConfirmationPrompt(
-          height: 300,
+          height: 400,
           buttonText: 'set up city',
           onPressed: () async {
             Navigator.pop(context);
@@ -71,7 +71,7 @@ class CreateContent extends StatelessWidget {
                                 context,
                                 CreateEventScreen(
                                   isEditting: false,
-                                  event: null,
+                                  event: null, isCompleted: false,
                                 ));
                       }
                     : () {},

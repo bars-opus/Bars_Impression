@@ -98,33 +98,43 @@ class _TicketScannerValidatorScreenState
         // Deserialize the order document into TicketOrderModel
         TicketOrderModel order = TicketOrderModel.fromDoc(orderSnapshot);
 
-        bool ticketFound = false;
-        List<Map<String, dynamic>> updatedTickets = [];
-
-        for (var ticket in order.tickets) {
+        bool ticketFoundAndValidated = false;
+        // Use the existing tickets and modify the one that is being validated
+        List<Map<String, dynamic>> updatedTickets = order.tickets.map((ticket) {
           if (ticket.entranceId == currentTicketId) {
-            ticketFound = true;
             DateTime eventDate = ticket.eventTicketDate.toDate();
             DateTime today = DateTime.now();
+            DateTime yesterday = today.subtract(Duration(days: 1));
+            DateTime tomorrow = today.add(Duration(days: 1));
+            bool isValidDate = (eventDate.year == yesterday.year &&
+                    eventDate.month == yesterday.month &&
+                    eventDate.day == yesterday.day) ||
+                (eventDate.year == today.year &&
+                    eventDate.month == today.month &&
+                    eventDate.day == today.day) ||
+                (eventDate.year == tomorrow.year &&
+                    eventDate.month == tomorrow.month &&
+                    eventDate.day == tomorrow.day);
+
+            if (!isValidDate) {
+              throw Exception('Ticket is not valid for validation today.');
+            }
 
             if (ticket.validated) {
               throw Exception('Ticket has already been validated.');
             }
 
-            if (eventDate.year != today.year ||
-                eventDate.month != today.month ||
-                eventDate.day != today.day) {
-              throw Exception('Ticket is not valid for today\'s date.');
-            }
-
             // Update the validated status of the ticket
-            ticket.validated = true;
-            updatedTickets.add(ticket.toJson());
-            break; // Break after finding and updating the ticket
+            ticketFoundAndValidated = true;
+            // Create a new map with the updated 'validated' field
+            Map<String, dynamic> updatedTicket = Map.from(ticket.toJson());
+            updatedTicket['validated'] = true;
+            return updatedTicket;
           }
-        }
+          return ticket.toJson(); // Unchanged ticket
+        }).toList();
 
-        if (!ticketFound) {
+        if (!ticketFoundAndValidated) {
           throw Exception('Ticket not found.');
         }
 
@@ -147,6 +157,83 @@ class _TicketScannerValidatorScreenState
 
     return isTicketValidated;
   }
+  // Future<bool> validateTicket(BuildContext context, Event event,
+  //     String ticketOrderUserId, String currentTicketId) async {
+  //   bool isTicketValidated = false;
+
+  //   try {
+  //     isTicketValidated = await FirebaseFirestore.instance
+  //         .runTransaction<bool>((transaction) async {
+  //       // Get the order document reference
+  //       DocumentReference orderDocRef = newEventTicketOrderRef
+  //           .doc(event.id)
+  //           .collection('eventInvite')
+  //           .doc(ticketOrderUserId);
+
+  //       DocumentReference userOrderDocRef = newUserTicketOrderRef
+  //           .doc(ticketOrderUserId)
+  //           .collection('eventInvite')
+  //           .doc(event.id);
+
+  //       // Read the order document
+  //       DocumentSnapshot orderSnapshot = await transaction.get(orderDocRef);
+
+  //       if (!orderSnapshot.exists) {
+  //         throw Exception('Ticket not found.');
+  //       }
+
+  //       // Deserialize the order document into TicketOrderModel
+  //       TicketOrderModel order = TicketOrderModel.fromDoc(orderSnapshot);
+
+  //       bool ticketFound = false;
+  //       List<Map<String, dynamic>> updatedTickets = [];
+
+  //       for (var ticket in order.tickets) {
+  //         if (ticket.entranceId == currentTicketId) {
+  //           ticketFound = true;
+  //           DateTime eventDate = ticket.eventTicketDate.toDate();
+  //           DateTime today = DateTime.now();
+
+  //           if (ticket.validated) {
+  //             throw Exception('Ticket has already been validated.');
+  //           }
+
+  //           if (eventDate.year != today.year ||
+  //               eventDate.month != today.month ||
+  //               eventDate.day != today.day) {
+  //             throw Exception('Ticket is not valid for today\'s date.');
+  //           }
+
+  //           // Update the validated status of the ticket
+  //           ticket.validated = true;
+  //           updatedTickets.add(ticket.toJson());
+  //           break; // Break after finding and updating the ticket
+  //         }
+  //       }
+
+  //       if (!ticketFound) {
+  //         throw Exception('Ticket not found.');
+  //       }
+
+  //       // Update the order document with the updated tickets array
+  //       transaction.update(orderDocRef, {'tickets': updatedTickets});
+  //       transaction.update(userOrderDocRef, {'tickets': updatedTickets});
+
+  //       return true; // Ticket successfully validated
+  //     });
+  //   } catch (e) {
+  //     // Handle errors by showing a Snackbar
+  //     bool canVibrate = await Vibration.hasVibrator() ?? false;
+  //     if (canVibrate) {
+  //       // Vibrate the device
+  //       Vibration.vibrate();
+  //     }
+  //     _mySnackBar(context, Colors.red, e.toString());
+  //     isTicketValidated = false;
+  //   }
+
+  //   return isTicketValidated;
+  // }
 
   void onQRViewCreated(QRViewController controller) {
     this.controller = controller;

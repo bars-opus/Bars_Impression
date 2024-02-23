@@ -4,9 +4,14 @@ import 'package:flutter/scheduler.dart';
 class EditEventScreen extends StatefulWidget {
   final Event event;
   final String? currentUserId;
+  final bool isCompleted;
+
   static final id = 'Edit_event';
 
-  EditEventScreen({required this.event, required this.currentUserId});
+  EditEventScreen(
+      {required this.event,
+      required this.currentUserId,
+      required this.isCompleted});
 
   @override
   _EditEventScreenState createState() => _EditEventScreenState();
@@ -39,6 +44,7 @@ class _EditEventScreenState extends State<EditEventScreen> {
       _provider.setPreviousEvent(widget.event.previousEvent);
       _provider.setCurrency(widget.event.rate);
       _provider.setIsFree(widget.event.isFree);
+      _provider.setIsPrivate(widget.event.isPrivate);
       _provider.setEventTermsAndConditions(widget.event.termsAndConditions);
       _provider.setStartDateString(widget.event.startDate.toDate().toString());
       _provider
@@ -116,6 +122,7 @@ class _EditEventScreenState extends State<EditEventScreen> {
     return CreateEventScreen(
       event: widget.event,
       isEditting: true,
+      isCompleted: widget.isCompleted,
     );
   }
 }

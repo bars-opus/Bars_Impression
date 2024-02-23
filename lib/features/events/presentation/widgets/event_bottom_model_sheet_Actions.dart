@@ -1,6 +1,6 @@
 import 'package:bars/utilities/exports.dart';
 
-class EventBottomModalSheetActions extends StatelessWidget {
+class EventBottomModalSheetActions extends StatefulWidget {
   final Event event;
   final String currentUserId;
   final bool eventHasEnded;
@@ -10,9 +10,18 @@ class EventBottomModalSheetActions extends StatelessWidget {
       required this.currentUserId,
       required this.eventHasEnded});
 
+  @override
+  State<EventBottomModalSheetActions> createState() =>
+      _EventBottomModalSheetActionsState();
+}
+
+class _EventBottomModalSheetActionsState
+    extends State<EventBottomModalSheetActions> {
+  bool _checkingTicketAvailability = false;
+
   //launch map to show event location
   _launchMap() {
-    return MapsLauncher.launchQuery(event.address);
+    return MapsLauncher.launchQuery(widget.event.address);
   }
 
 //display calendar
@@ -22,15 +31,15 @@ class EventBottomModalSheetActions extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
-        return event.schedule.isEmpty
+        return widget.event.schedule.isEmpty
             ? NoScheduleCalendar(
-                askMoreOnpressed: () {
-                 
-                }, showAskMore: false,
+                askMoreOnpressed: () {},
+                showAskMore: false,
               )
             : EventSheduleCalendar(
-                event: event,
-                currentUserId: currentUserId,
+                event: widget.event,
+                currentUserId: widget.currentUserId,
+                duration: 0,
               );
       },
     );
@@ -44,7 +53,7 @@ class EventBottomModalSheetActions extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return EventTaggedPeople(
-          event: event,
+          event: widget.event,
           isSponsor: isSponsor,
           showTagsOnImage: false,
         );
@@ -62,7 +71,7 @@ class EventBottomModalSheetActions extends StatelessWidget {
         backgroundColor: Colors.transparent,
         builder: (BuildContext context) {
           final width = MediaQuery.of(context).size.width;
-          List<TicketModel> tickets = event.ticket;
+          List<TicketModel> tickets = widget.event.ticket;
           Map<String, List<TicketModel>> ticketsByGroup = {};
           for (TicketModel ticket in tickets) {
             if (!ticketsByGroup.containsKey(ticket.group)) {
@@ -85,15 +94,61 @@ class EventBottomModalSheetActions extends StatelessWidget {
                   ),
                 ),
                 TicketGroup(
-                  currentUserId: currentUserId,
-                  groupTickets: event.ticket,
-                  event: event,
+                  currentUserId: widget.currentUserId,
+                  groupTickets: widget.event.ticket,
+                  event: widget.event,
                   inviteReply: '',
                 ),
               ],
             ),
           );
         });
+  }
+
+  _attendMethod(BuildContext context) async {
+    HapticFeedback.lightImpact();
+    if (mounted) {
+      setState(() {
+        _checkingTicketAvailability = true;
+      });
+    }
+
+    TicketOrderModel? _ticket = await DatabaseService.getTicketWithId(
+        widget.event.id, widget.currentUserId);
+
+    if (_ticket != null) {
+      PaletteGenerator _paletteGenerator =
+          await PaletteGenerator.fromImageProvider(
+        CachedNetworkImageProvider(widget.event.imageUrl),
+        size: Size(1110, 150),
+        maximumColorCount: 20,
+      );
+      Navigator.pop(context);
+
+      _navigateToPage(
+        context,
+        PurchasedAttendingTicketScreen(
+          ticketOrder: _ticket,
+          event: widget.event,
+          currentUserId: widget.currentUserId,
+          justPurchased: 'Already',
+          palette: _paletteGenerator,
+        ),
+      );
+      if (mounted) {
+        setState(() {
+          _checkingTicketAvailability = false;
+        });
+      }
+    } else {
+      if (mounted) {
+        setState(() {
+          _checkingTicketAvailability = false;
+        });
+        Navigator.pop(context);
+        _showBottomSheetAttendOptions(context);
+      }
+    }
   }
 
   void _navigateToPage(BuildContext context, Widget page) {
@@ -103,9 +158,43 @@ class EventBottomModalSheetActions extends StatelessWidget {
     );
   }
 
+  void _showBottomSheetPrivateEventMessage(BuildContext context, String body) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return CantFetchPrivateEvent(
+          body: body,
+        );
+      },
+    );
+  }
+
+  void _showBottomSheetExternalLink() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+            height: ResponsiveHelper.responsiveHeight(context, 550),
+            decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(30)),
+            child: WebDisclaimer(
+              link: widget.event.ticketSite,
+              contentType: 'Event ticket',
+              icon: Icons.link,
+            ));
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    bool _isAuthor = currentUserId == event.authorId ? true : false;
+    bool _isAuthor =
+        widget.currentUserId == widget.event.authorId ? true : false;
     return Container(
       height: ResponsiveHelper.responsiveHeight(context, 650.0),
       decoration: BoxDecoration(
@@ -125,42 +214,59 @@ class EventBottomModalSheetActions extends StatelessWidget {
               height: 30,
             ),
             ListTile(
-              trailing: eventHasEnded
+              trailing: widget.eventHasEnded
                   ? null
-                  : GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                        _isAuthor
-                            ? _navigateToPage(
-                                context,
-                                EditEventScreen(
-                                  currentUserId: currentUserId,
-                                  event: event,
+                  : !widget.event.isPrivate && !_isAuthor
+                      ? GestureDetector(
+                          onTap: _isAuthor
+                              ? () {
+                                  _navigateToPage(
+                                    context,
+                                    EditEventScreen(
+                                      currentUserId: widget.currentUserId,
+                                      event: widget.event, isCompleted: widget.eventHasEnded,
+                                    ),
+                                  );
+                                }
+                              : widget.event.ticketSite.isNotEmpty
+                                  ? () {
+                                      Navigator.pop(context);
+                                      _showBottomSheetExternalLink();
+                                    }
+                                  : () {
+                                      _attendMethod(context);
+                                    },
+                          child: _checkingTicketAvailability
+                              ? SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 3,
+                                  ),
+                                )
+                              : Icon(
+                                  widget.currentUserId == widget.event.authorId
+                                      ? Icons.edit_outlined
+                                      : Icons.payment_outlined,
+                                  color: Colors.blue,
+                                  size: ResponsiveHelper.responsiveHeight(
+                                      context, 30.0),
                                 ),
-                              )
-                            : _showBottomSheetAttendOptions(context);
-                      },
-                      child: Icon(
-                        currentUserId == event.authorId
-                            ? Icons.edit_outlined
-                            : Icons.payment_outlined,
-                        color: Colors.blue,
-                        size: ResponsiveHelper.responsiveHeight(context, 30.0),
-                      ),
-                    ),
+                        )
+                      : null,
               leading: Container(
                 height: 40,
                 width: 40,
                 decoration: BoxDecoration(
                   color: Theme.of(context).primaryColor,
                   image: DecorationImage(
-                    image: CachedNetworkImageProvider(event.imageUrl),
+                    image: CachedNetworkImageProvider(widget.event.imageUrl),
                     fit: BoxFit.cover,
                   ),
                 ),
               ),
               title: Text(
-                event.title.toUpperCase(),
+                widget.event.title.toUpperCase(),
                 style: Theme.of(context).textTheme.bodyMedium,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
@@ -175,7 +281,7 @@ class EventBottomModalSheetActions extends StatelessWidget {
                     colorCode: 'Blue',
                     icon: Icons.mail_outline,
                     onPressed: () {
-                      Share.share(event.dynamicLink);
+                      Share.share(widget.event.dynamicLink);
                     },
                     text: 'Invite people',
                   ),
@@ -185,23 +291,42 @@ class EventBottomModalSheetActions extends StatelessWidget {
                 BottomModelSheetIconActionWidget(
                   icon: Icons.send_outlined,
                   onPressed: () {
-                    _navigateToPage(
-                      context,
-                      SendToChats(
-                        currentUserId: currentUserId,
-                        sendContentType: 'Event',
-                        sendContentId: event.id,
-                        sendImageUrl: event.imageUrl,
-                        sendTitle: event.title,
-                      ),
-                    );
+                    !widget.event.isPrivate
+                        ? _navigateToPage(
+                            context,
+                            SendToChats(
+                              currentUserId: widget.currentUserId,
+                              sendContentType: 'Event',
+                              sendContentId: widget.event.id,
+                              sendImageUrl: widget.event.imageUrl,
+                              sendTitle: widget.event.title,
+                            ),
+                          )
+                        : widget.event.isPrivate && _isAuthor
+                            ? _navigateToPage(
+                                context,
+                                SendToChats(
+                                  currentUserId: widget.currentUserId,
+                                  sendContentType: 'Event',
+                                  sendContentId: widget.event.id,
+                                  sendImageUrl: widget.event.imageUrl,
+                                  sendTitle: widget.event.title,
+                                ),
+                              )
+                            : _showBottomSheetPrivateEventMessage(context,
+                                'To maintain this event\'s privacy, the event can only be shared by the organizer.');
                   },
                   text: 'Send',
                 ),
                 BottomModelSheetIconActionWidget(
                   icon: Icons.share_outlined,
                   onPressed: () async {
-                    Share.share(event.dynamicLink);
+                    !widget.event.isPrivate
+                        ? Share.share(widget.event.dynamicLink)
+                        : widget.event.isPrivate && _isAuthor
+                            ? Share.share(widget.event.dynamicLink)
+                            : _showBottomSheetPrivateEventMessage(context,
+                                'To maintain this event\'s privacy, the event can only be shared by the organizer.');
                   },
                   text: 'Share',
                 ),
@@ -260,8 +385,8 @@ class EventBottomModalSheetActions extends StatelessWidget {
                           context,
                           ProfileScreen(
                             user: null,
-                            currentUserId: currentUserId,
-                            userId: event.authorId,
+                            currentUserId: widget.currentUserId,
+                            userId: widget.event.authorId,
                           ));
                     },
                     text: 'Show organizer',
@@ -276,9 +401,9 @@ class EventBottomModalSheetActions extends StatelessWidget {
                 _navigateToPage(
                     context,
                     ReportContentPage(
-                      contentId: event.id,
-                      parentContentId: event.id,
-                      repotedAuthorId: event.authorId,
+                      contentId: widget.event.id,
+                      parentContentId: widget.event.id,
+                      repotedAuthorId: widget.event.authorId,
                       contentType: 'event',
                     ));
               },

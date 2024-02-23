@@ -4,6 +4,7 @@ import 'package:bars/widgets/general_widget/ticket_group_widget.dart';
 import 'package:bars/widgets/general_widget/ticket_group_widget.dart';
 import 'package:bars/widgets/general_widget/ticket_purchase_summary_widget.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter/scheduler.dart';
 
 import 'package:uuid/uuid.dart';
 
@@ -29,6 +30,14 @@ class TicketGroup extends StatefulWidget {
 class _TicketGroupState extends State<TicketGroup> {
   int _selectedSeat = 0;
   int _selectedRow = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      Provider.of<UserData>(context, listen: false).ticketList.clear();
+    });
+  }
 
   void _showBottomSheetErrorMessage(BuildContext context, String error) {
     showModalBottomSheet(
@@ -171,6 +180,19 @@ class _TicketGroupState extends State<TicketGroup> {
             ),
           );
           mySnackBar(context, ' Ticket purchased succesfully');
+        } else {
+          if (!widget.event!.isFree || !widget.event!.isCashPayment) {
+            Navigator.pop(context);
+            // await Future.delayed(Duration(milliseconds: 700));
+            Navigator.pop(context);
+            // await Future.delayed(Duration(milliseconds: 700));
+          }
+          if (widget.event!.termsAndConditions.isNotEmpty) {
+            Navigator.pop(context);
+            // await Future.delayed(Duration(milliseconds: 700));
+          }
+          // Navigator.pop(context);
+          mySnackBar(context, ' Ticket is already available');
         }
       } catch (e) {
         String error = e.toString();
@@ -203,6 +225,7 @@ class _TicketGroupState extends State<TicketGroup> {
         row: _selectedRow,
         seat: _selectedSeat,
         refundRequestStatus: '',
+        idempotencyKey: '',
         transactionId: transactionId,
       );
     }).toList();
@@ -227,7 +250,10 @@ class _TicketGroupState extends State<TicketGroup> {
       userOrderId: widget.currentUserId,
       eventTitle: widget.event!.title,
       purchaseReferenceId: purchaseReferenceId,
-      refundRequestStatus: '', transactionId: transactionId, isDeleted: false,
+      refundRequestStatus: '',
+      idempotencyKey: '',
+
+      transactionId: transactionId, isDeleted: false,
     );
 
     widget.event!.ticketOrder.add(order);
@@ -260,7 +286,7 @@ class _TicketGroupState extends State<TicketGroup> {
 
 // If the initial Paystack payment is successful, verify it server-side
     if (paymentResult.success) {
-      _provider.setIsLoading(true);
+      // _provider.setIsLoading(true);
       final HttpsCallable callable =
           FirebaseFunctions.instance.httpsCallable('verifyPaystackPayment');
       try {
@@ -273,6 +299,7 @@ class _TicketGroupState extends State<TicketGroup> {
 
         // If server-side verification is successful, generate tickets
         if (verificationResult.data['success']) {
+          FocusScope.of(context).unfocus();
           var transactionId =
               verificationResult.data['transactionData']['id'].toString();
           // Reference to the Firestore collection where event invites are stored
@@ -292,7 +319,7 @@ class _TicketGroupState extends State<TicketGroup> {
             _generateTickets(paymentResult.reference, transactionId.toString());
             // Proceed with any additional steps such as updating the user's tickets
           } else {
-            _provider.setIsLoading(false);
+            // _provider.setIsLoading(false);
             // A ticket has already been generated for this payment reference
             _showBottomSheetErrorMessage(context,
                 'Tickets have already been generated for this payment.');
@@ -300,7 +327,7 @@ class _TicketGroupState extends State<TicketGroup> {
 
           // _generateTickets(finalPurchasintgTicket, paymentResult.reference);
         } else {
-          _provider.setIsLoading(false);
+          // _provider.setIsLoading(false);
           _showBottomSheetErrorMessage(
               context, 'Couldn\'t verify your ticket payment');
           // Handle verification failure
@@ -316,15 +343,14 @@ class _TicketGroupState extends State<TicketGroup> {
         // Handle errors from calling the Cloud Function
         // Again, show an error message or log the error
       }
-      _provider.setIsLoading(false);
     } else {
-      _provider.setIsLoading(false);
+      // _provider.setIsLoading(false);
       _showBottomSheetErrorMessage(
           context, 'Couldn\'t pay for ticket please try again');
       // Handle Paystack payment failure
       // Inform the user that the payment process was not successful
     }
-    _provider.setIsLoading(false);
+    // _provider.setIsLoading(false);
   }
 
   void _showBottomConfirmTicketAddOrder(
@@ -337,6 +363,8 @@ class _TicketGroupState extends State<TicketGroup> {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return ConfirmationPrompt(
+          height:
+              widget.event!.isFree || widget.event!.isCashPayment ? 300 : 320,
           buttonText: widget.event!.isFree || widget.event!.isCashPayment
               ? 'Generate Ticket'
               : 'Purchase Ticket',
@@ -443,7 +471,13 @@ class _TicketGroupState extends State<TicketGroup> {
           height: 40,
         ),
         _provider.isLoading
-            ? LinearProgress()
+            ? SizedBox(
+                height: ResponsiveHelper.responsiveHeight(context, 30),
+                width: ResponsiveHelper.responsiveHeight(context, 30),
+                child: CircularProgressIndicator(
+                  strokeWidth: 3,
+                ),
+              )
             : Center(
                 child: widget.event!.ticketSite.isNotEmpty
                     ? AlwaysWhiteButton(
@@ -479,7 +513,7 @@ class _TicketGroupState extends State<TicketGroup> {
     BuildContext context,
   ) {
     // var _textStyle = TextStyle(
-    //   fontSize: 12,
+    //   fontSize:  ResponsiveHelper.responsiveFontSize( context, 16),
     //   color: Colors.grey,
     // );
     var _provider = Provider.of<UserData>(context, listen: false);
@@ -697,7 +731,7 @@ class _TicketGroupState extends State<TicketGroup> {
   //             child: Text(
   //               label,
   //               style: TextStyle(
-  //                 fontSize: 12.0,
+  //                ResponsiveHelper.responsiveFontSize( context, 12),.0,
   //                 color: Colors.black,
   //               ),
   //             ),

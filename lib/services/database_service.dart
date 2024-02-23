@@ -222,13 +222,14 @@ class DatabaseService {
     final sender = {
       'lastMessage': message.content,
       'isSeen': true,
-      'timestamp': FieldValue.serverTimestamp(),
+      'timestamp': Timestamp.fromDate(DateTime.now()),
+      //  FieldValue.serverTimestamp(),
     };
 
     final receivers = {
       'lastMessage': message.content,
       'isSeen': false,
-      'timestamp': FieldValue.serverTimestamp(),
+      'timestamp': Timestamp.fromDate(DateTime.now()),
     };
 
     final usersDocs = await newEventTicketOrderRef
@@ -330,41 +331,62 @@ class DatabaseService {
 
   static Future<void> shareBroadcastChatMessage({
     required ChatMessage message,
-    required String chatId,
+    // required String chatId,
     required String currentUserId,
+    required String contentSharing,
     required List<AccountHolderAuthor> users,
   }) async {
-    String messageId = Uuid().v4();
-
     WriteBatch batch = FirebaseFirestore.instance.batch();
 
     for (var user in users) {
+      // String messageId = Uuid().v4();
       // Create a unique chatId for each user
-      final uniqueChatId = chatId.isEmpty ? messageId + user.userId! : chatId;
+
+      final uniqueChatId = await usersAuthorRef
+          .doc(currentUserId)
+          .collection('new_chats')
+          .doc(user.userId)
+          .get()
+          .then((snapshot) => snapshot.data()?['messageId'] ?? '');
 
       final conversationRef =
           messageRef.doc(uniqueChatId).collection('conversation');
 
-      final newChat = {
-        'messageId': messageId,
-        'lastMessage': message.content,
-        'messageInitiator': message.senderId,
-        'restrictChat': false,
-        'muteMessage': false,
-        'firstMessage': message.content,
+      // final newChat = {
+      //   'messageId': messageId,
+      //   'lastMessage': message.content,
+      //   'messageInitiator': message.senderId,
+      //   'restrictChat': false,
+      //   'muteMessage': false,
+      //   'firstMessage': message.content,
+      //   'mediaType': '',
+      //   'timestamp': FieldValue.serverTimestamp(),
+      //   'seen': uniqueChatId,
+      //   'fromUserId': message.senderId,
+      //   'toUserId': user.userId, // Use user's id from the loop
+      //   'newMessageTimestamp': FieldValue.serverTimestamp(),
+      //   'clientTimestamp': Timestamp.fromDate(DateTime.now()),
+      // };
+
+      final updatedSenderChat = {
+        'lastMessage':
+            message.content.isEmpty ? 'sent $contentSharing' : message.content,
         'mediaType': '',
-        'timestamp': FieldValue.serverTimestamp(),
-        'seen': chatId.isNotEmpty,
-        'fromUserId': message.senderId,
-        'toUserId': user.userId, // Use user's id from the loop
+        'seen': true,
+        // 'seen': currentUserId == message.senderId ? true : false,
         'newMessageTimestamp': FieldValue.serverTimestamp(),
+        'clientTimestamp': Timestamp.fromDate(DateTime.now()),
       };
 
-      final updatedChat = {
-        'lastMessage': message.content,
-        'MediaType': '',
-        'seen': true,
+      final updatedReceiverChat = {
+        'lastMessage': message.content.isEmpty
+            ? 'received $contentSharing'
+            : message.content,
+        'mediaType': '',
+        'seen': false,
+        // 'seen': currentUserId == message.senderId ? true : false,
         'newMessageTimestamp': FieldValue.serverTimestamp(),
+        'clientTimestamp': Timestamp.fromDate(DateTime.now()),
       };
 
       // Add the message to the conversation collection
@@ -386,31 +408,141 @@ class DatabaseService {
             .toList(),
       });
 
-      // Add or update the chat in the sender's new_chats collection
+// Add or update the chat in the sender's new_chats collection
       final senderChatRef = usersAuthorRef
-          .doc(message.senderId)
+          .doc(currentUserId)
           .collection('new_chats')
           .doc(user.userId); // Use user's id from the loop
 
-      chatId.isEmpty
-          ? batch.set(senderChatRef, newChat)
-          : batch.update(senderChatRef, updatedChat);
+      // chatId.isEmpty
+      //     ? batch.set(
+      //         senderChatRef,
+      //         newChat,
+      //         SetOptions(merge: true),
+      //       )
+      //     :
+
+      batch.update(senderChatRef, updatedSenderChat);
 
       // Add or update the chat in the receiver's new_chats collection
       final receiverChatRef = usersAuthorRef
-          .doc(user.userId) // Use user's id from the loop
+          .doc(user.userId)
           .collection('new_chats')
-          .doc(message.senderId);
+          .doc(currentUserId);
+      // newChat['seen'] = false; // The receiver hasn't seen the message
+      // chatId.isEmpty
+      //     ? batch.set(
+      //         receiverChatRef,
+      //         newChat,
+      //         SetOptions(merge: true),
+      //       )
+      //     :
 
-      newChat['seen'] = false; // The receiver hasn't seen the message
-      chatId.isEmpty
-          ? batch.set(receiverChatRef, newChat)
-          : batch.update(receiverChatRef, updatedChat);
+      batch.update(receiverChatRef, updatedReceiverChat);
     }
 
     // Commit the batch
     return batch.commit();
   }
+
+//   static Future<void> shareBroadcastChatMessage({
+//     required ChatMessage message,
+//     required String chatId,
+//     required String currentUserId,
+//     required List<AccountHolderAuthor> users,
+//   }) async {
+//     String messageId = Uuid().v4();
+
+//     WriteBatch batch = FirebaseFirestore.instance.batch();
+
+//     for (var user in users) {
+//       // Create a unique chatId for each user
+//       final uniqueChatId = chatId.isEmpty ? messageId + user.userId! : chatId;
+
+//       final conversationRef =
+//           messageRef.doc(uniqueChatId).collection('conversation');
+
+//       final newChat = {
+//         'messageId': messageId,
+//         'lastMessage': message.content,
+//         'messageInitiator': message.senderId,
+//         'restrictChat': false,
+//         'muteMessage': false,
+//         'firstMessage': message.content,
+//         'mediaType': '',
+//         'timestamp': FieldValue.serverTimestamp(),
+//         'seen': chatId.isNotEmpty,
+//         'fromUserId': message.senderId,
+//         'toUserId': user.userId, // Use user's id from the loop
+//         'newMessageTimestamp': FieldValue.serverTimestamp(),
+
+//       };
+
+//       final updatedChat = {
+//         'lastMessage': message.content,
+//         'mediaType': '',
+//         'seen': true,
+//         'newMessageTimestamp': FieldValue.serverTimestamp(),
+//       };
+
+//       // Add the message to the conversation collection
+//       batch.set(conversationRef.doc(), {
+//         'senderId': message.senderId,
+//         'receiverId': user.userId,
+//         'content': message.content,
+//         'timestamp': FieldValue.serverTimestamp(),
+//         'isRead': message.isRead,
+//         'isSent': message.isSent,
+//         'isLiked': message.isLiked,
+//         'sendContent':
+//             message.sendContent == null ? null : message.sendContent!.toMap(),
+//         'replyToMessage': message.replyToMessage == null
+//             ? null
+//             : message.replyToMessage!.toMap(),
+//         'attachments': message.attachments
+//             .map((attachments) => attachments.toJson())
+//             .toList(),
+//       });
+
+// // Add or update the chat in the sender's new_chats collection
+//       final senderChatRef = usersAuthorRef
+//           .doc(message.senderId)
+//           .collection('new_chats')
+//           .doc(user.userId); // Use user's id from the loop
+
+//  chatId.isEmpty
+//         ? batch.set(senderChatRef, newChat)
+//         : batch.update(senderChatRef, updatedSenderChat);
+
+//     // Add or update the chat in the receiver's new_chats collection
+//     final receiverChatRef = usersAuthorRef
+//         .doc(message.receiverId)
+//         .collection('new_chats')
+//         .doc(message.senderId);
+//     // newChat['seen'] = false; // The receiver hasn't seen the message
+//     chatId.isEmpty
+//         ? batch.set(receiverChatRef, newChat)
+//         : batch.update(receiverChatRef, updatedReceiverChat);
+
+//       chatId.isEmpty
+//           ? batch.set(senderChatRef, newChat)
+//           : batch.update(senderChatRef, updatedChat);
+
+//       // Add or update the chat in the receiver's new_chats collection
+//       final receiverChatRef = usersAuthorRef
+//           .doc(user.userId) // Use user's id from the loop
+//           .collection('new_chats')
+//           .doc(message.senderId);
+
+//       newChat['seen'] = false; // The receiver hasn't seen the message
+//       chatId.isEmpty
+//           ? batch.set(receiverChatRef, newChat)
+//           : batch.update(receiverChatRef, updatedChat);
+//     }
+
+//     // Commit the batch
+//     return batch.commit();
+//   }
 
   static Future<void> firstChatMessage({
     required ChatMessage message,
@@ -442,7 +574,7 @@ class DatabaseService {
 
     final updatedSenderChat = {
       'lastMessage': message.content,
-      'MediaType': '',
+      'mediaType': '',
       'seen': true,
       // 'seen': currentUserId == message.senderId ? true : false,
       'newMessageTimestamp': FieldValue.serverTimestamp(),
@@ -450,7 +582,7 @@ class DatabaseService {
 
     final updatedReceiverChat = {
       'lastMessage': message.content,
-      'MediaType': '',
+      'mediaType': '',
       'seen': false,
       // 'seen': currentUserId == message.senderId ? true : false,
       'newMessageTimestamp': FieldValue.serverTimestamp(),
@@ -604,7 +736,7 @@ class DatabaseService {
       usersAuthorRef.doc(currentUserId).collection('chats').doc(userId).update({
         'lastMessage': message,
         'seen': 'seen',
-        'MediaType': mediaType,
+        'mediaType': mediaType,
         'newMessageTimestamp': Timestamp.fromDate(DateTime.now()),
       });
     });
@@ -634,7 +766,7 @@ class DatabaseService {
     }).then((value) {
       usersAuthorRef.doc(userId).collection('chats').doc(currentUserId).update({
         'lastMessage': message,
-        'MediaType': mediaType,
+        'mediaType': mediaType,
         'seen': ' ',
         'newMessageTimestamp': Timestamp.fromDate(DateTime.now()),
       });
@@ -681,10 +813,12 @@ class DatabaseService {
         eventsRef.doc(event.authorId).collection('userEvents').doc(event.id);
     batch.set(eventRef, eventData);
 
-    // Add the event to 'allEventsRef'
-    DocumentReference allEventRef = allEventsRef.doc(event.id);
-    // FirebaseFirestore.instance.collection('new_allEvents').doc(event.id);
-    batch.set(allEventRef, eventData);
+    if (!event.isPrivate) {
+      // Add the event to 'allEventsRef'
+      DocumentReference allEventRef = allEventsRef.doc(event.id);
+      // FirebaseFirestore.instance.collection('new_allEvents').doc(event.id);
+      batch.set(allEventRef, eventData);
+    }
 
     // Add the event to 'eventsChatRoomsRef'
     DocumentReference chatRoomRef = eventsChatRoomsRef.doc(event.id);
@@ -695,6 +829,7 @@ class DatabaseService {
       'report': event.report,
       'reportConfirmed': event.reportConfirmed,
       'isClossed': false,
+      'eventAuthorId': event.authorId,
       'timestamp': event.timestamp,
     });
 
@@ -715,6 +850,7 @@ class DatabaseService {
 
     final Map<String, dynamic> ticketOrderData = {
       'orderId': event.id,
+      'eventAuthorId': event.authorId,
       'eventId': event.id,
       'validated': true,
       'timestamp': FieldValue.serverTimestamp(),
@@ -725,6 +861,7 @@ class DatabaseService {
       'eventTitle': event.title,
       'orderNumber': event.id,
       'refundRequestStatus': '',
+      'idempotencyKey': '',
       'tickets': [],
       'total': 0,
       'userOrderId': event.authorId,
@@ -764,7 +901,7 @@ class DatabaseService {
       String userId = doc.id;
 
       // Create the activity document
-      if (userId == event.authorId) {
+      if (userId != event.authorId) {
         DocumentReference userActivityRef =
             activitiesRef.doc(userId).collection('userActivities').doc();
         activitiesBatch.set(userActivityRef, {
@@ -778,7 +915,7 @@ class DatabaseService {
           'timestamp': Timestamp.fromDate(DateTime.now()),
           'authorProfileImageUrl': '',
           'authorName': 'New event in ${event.city}',
-          'authorProfileHandle': '',
+          'authorProfileHandle': event.authorId,
           'authorVerification': false
         });
       }
@@ -824,8 +961,10 @@ class DatabaseService {
     batch.update(eventRef, eventData);
 
     // Update the event in 'allEventsRef'
-    DocumentReference allEventRef = allEventsRef.doc(event.id);
-    batch.update(allEventRef, eventData);
+    if (!event.isPrivate) {
+      DocumentReference allEventRef = allEventsRef.doc(event.id);
+      batch.update(allEventRef, eventData);
+    }
 
     // Update the event in 'eventsChatRoomsRef'
     DocumentReference chatRoomRef = eventsChatRoomsRef.doc(event.id);
@@ -882,7 +1021,7 @@ class DatabaseService {
         operationCount += 2; // Two operations for each invite
 
         // Check if user is the author and add user activity
-        if (userId == event.authorId) {
+        if (userId != event.authorId) {
           DocumentReference userActivityRef =
               activitiesRef.doc(userId).collection('userActivities').doc();
           batch.set(userActivityRef, {
@@ -896,7 +1035,7 @@ class DatabaseService {
             'timestamp': Timestamp.fromDate(DateTime.now()),
             'authorProfileImageUrl': '',
             'authorName': 'Event informaiton updated',
-            'authorProfileHandle': '',
+            'authorProfileHandle': event.authorId,
             'authorVerification': false
           });
           operationCount++; // One operation for the user activity
@@ -920,7 +1059,8 @@ class DatabaseService {
     }
   }
 
-  static Future<void> deleteEvent(Event event, String reason) async {
+  static Future<void> deleteEvent(
+      Event event, String reason, bool isCompleted) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
     await firestore.runTransaction((transaction) async {
@@ -929,9 +1069,11 @@ class DatabaseService {
           eventsRef.doc(event.authorId).collection('userEvents').doc(event.id);
       transaction.delete(eventRef);
 
-      // Reference to the event in 'allEventsRef' to be deleted
-      DocumentReference allEventRef = allEventsRef.doc(event.id);
-      transaction.delete(allEventRef);
+      if (!event.isPrivate) {
+        // Reference to the event in 'allEventsRef' to be deleted
+        DocumentReference allEventRef = allEventsRef.doc(event.id);
+        transaction.delete(allEventRef);
+      }
 
       // Reference to the event's chat room in 'eventsChatRoomsRef' to be deleted
       DocumentReference chatRoomRef = eventsChatRoomsRef.doc(event.id);
@@ -994,7 +1136,7 @@ class DatabaseService {
           userTicketIdDocRef,
         );
 
-        if (userId == event.authorId && !event.isFree) {
+        if (userId != event.authorId && !event.isFree && !isCompleted) {
           RefundModel refund = RefundModel(
             id: commonId,
             eventId: event.id,
@@ -1003,9 +1145,12 @@ class DatabaseService {
             userRequestId: userId,
             approvedTimestamp: Timestamp.fromDate(DateTime.now()),
             reason: reason,
+            idempotencyKey: '',
             city: '',
             transactionId: transactionId,
             orderId: orderId,
+            eventAuthorId: event.authorId,
+            eventTitle: event.title,
           );
 
           DocumentReference allRefundRequestRef = FirebaseFirestore.instance
@@ -1027,7 +1172,7 @@ class DatabaseService {
         // // Update the event invites
 
         // If user is not the author, add user activity for event deletion
-        if (userId == event.authorId) {
+        if (userId != event.authorId && !isCompleted) {
           DocumentReference userActivityRef =
               activitiesRef.doc(userId).collection('userActivities').doc();
           transaction.set(userActivityRef, {
@@ -1365,13 +1510,13 @@ class DatabaseService {
         .collection('userRefundRequests')
         .doc(currentUser.userId)
         .collection('refundRequests')
-        .doc(refund.id);
+        .doc(event.id);
 
     DocumentReference eventRefundRequestRef = FirebaseFirestore.instance
         .collection('eventRefundRequests')
         .doc(event.id)
         .collection('refundRequests')
-        .doc(refund.id);
+        .doc(currentUser.userId);
 
     batch.set(allRefundRequestRef, refundData);
 
@@ -1410,9 +1555,49 @@ class DatabaseService {
       'timestamp': Timestamp.fromDate(DateTime.now()),
       'authorProfileImageUrl': '',
       'authorName': 'Refund requested ',
-      'authorProfileHandle': '',
+      'authorProfileHandle': event.authorId,
       'authorVerification': false
     });
+
+    // Commit the batch
+    await batch.commit();
+  }
+
+  static Future<void> requestPayout(Event event, EventPayoutModel payout,
+      AccountHolderAuthor currentUser) async {
+    // Create a toJson method inside Event class to serialize the object into a map
+    Map<String, dynamic> payoutData = payout.toJson();
+
+    // Prepare the batch
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    // Add the refund request to 'allRefundRequests' collection
+    DocumentReference allPayoutRequestRef = FirebaseFirestore.instance
+        .collection('allFundsPayoutRequest')
+        .doc(payout.id);
+
+    DocumentReference userPayoutRequestRef = FirebaseFirestore.instance
+        .collection('userPayoutRequests')
+        .doc(currentUser.userId)
+        .collection('payoutRequests')
+        .doc(event.id);
+
+    batch.set(allPayoutRequestRef, payoutData);
+    batch.set(userPayoutRequestRef, payoutData);
+
+    DocumentReference eventRef =
+        eventsRef.doc(event.authorId).collection('userEvents').doc(event.id);
+    batch.update(eventRef, {
+      'fundsDistributed': true,
+    });
+    if (!event.isPrivate) {
+      // Add the event to 'allEventsRef'
+      DocumentReference allEventRef = allEventsRef.doc(event.id);
+      // FirebaseFirestore.instance.collection('new_allEvents').doc(event.id);
+      batch.update(allEventRef, {
+        'fundsDistributed': true,
+      });
+    }
 
     // Commit the batch
     await batch.commit();
@@ -1737,7 +1922,7 @@ class DatabaseService {
       DateTime currentDate, int sortNumberOfDays) async {
     final endDate = currentDate.add(Duration(days: sortNumberOfDays));
     QuerySnapshot feedEventSnapShot = await allEventsRef
-        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+        .where('clossingDay', isLessThanOrEqualTo: endDate)
         // .where('clossingDay', isLessThanOrEqualTo: endDate)
 
         // .where('type', isEqualTo: eventType)
@@ -1751,7 +1936,7 @@ class DatabaseService {
     final endDate = currentDate.add(Duration(days: sortNumberOfDays));
     QuerySnapshot feedEventSnapShot = await allEventsRef
         .where('type', isEqualTo: eventType)
-        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+        .where('clossingDay', isLessThanOrEqualTo: endDate)
         // .where('clossingDay', isLessThanOrEqualTo: endDate)
         // .where('showOnExplorePage', isEqualTo: true)
         .get();
@@ -1906,19 +2091,20 @@ class DatabaseService {
       return Chat.fromDoc(userDocSnapshot);
     }
     return Chat(
-        messageId: '',
-        firstMessage: '',
-        fromUserId: '',
-        id: '',
-        muteMessage: false,
-        lastMessage: '',
-        mediaType: '',
-        messageInitiator: '',
-        newMessageTimestamp: Timestamp.fromDate(DateTime.now()),
-        seen: false,
-        restrictChat: false,
-        timestamp: Timestamp.fromDate(DateTime.now()),
-        toUserId: '');
+      messageId: '',
+      firstMessage: '',
+      fromUserId: '',
+      id: '',
+      muteMessage: false,
+      lastMessage: '',
+      mediaType: '',
+      messageInitiator: '',
+      newMessageTimestamp: Timestamp.fromDate(DateTime.now()),
+      seen: false,
+      restrictChat: false,
+      timestamp: Timestamp.fromDate(DateTime.now()),
+      toUserId: '',
+    );
   }
 
   static Future<UserProfessionalModel?> getUserProfessionalWithId(
@@ -1994,7 +2180,7 @@ class DatabaseService {
   static Future<TicketOrderModel?> getUserTicketOrderWithId(
       String eventId, String userId) async {
     try {
-      DocumentSnapshot userDocSnapshot = await newEventTicketOrderRef
+      DocumentSnapshot userDocSnapshot = await newUserTicketOrderRef
           .doc(userId)
           .collection('eventInvite')
           .doc(eventId)
@@ -2013,6 +2199,26 @@ class DatabaseService {
   static Future<Event?> getEventWithId(String eventId) async {
     try {
       DocumentSnapshot userDocSnapshot = await allEventsRef.doc(eventId).get();
+
+      if (userDocSnapshot.exists) {
+        return Event.fromDoc(userDocSnapshot);
+      } else {
+        return null; // return null if document does not exist
+      }
+    } catch (e) {
+      print(e);
+      return null; // return null if an error occurs
+    }
+  }
+
+  static Future<Event?> getUserEventWithId(
+      String eventId, String userId) async {
+    try {
+      DocumentSnapshot userDocSnapshot = await eventsRef
+          .doc(userId)
+          .collection('userEvents')
+          .doc(eventId)
+          .get();
 
       if (userDocSnapshot.exists) {
         return Event.fromDoc(userDocSnapshot);
@@ -2491,26 +2697,27 @@ class DatabaseService {
     });
   }
 
-  // static Stream<int> numExpectedAttendees(String eventId, bool validated) {
-  //   if (eventId.isEmpty || eventId.trim() == '') {
-  //     print("Error: eventId is null or empty.");
-  //     // Return an empty stream or handle the error as appropriate for your app
-  //     return Stream.empty();
-  //   }
-  //   return newEventTicketOrderRef
-  //       .doc(eventId)
-  //       .collection('eventInvite')
-  //       .where('validated', isEqualTo: validated)
-  //       .get()
-  //       .then((querySnapshot) {
-  //     if (querySnapshot.size > 0) {
-  //       return querySnapshot.size;
-  //     } else {
-  //       // Return an appropriate value or handle the error case when the collection doesn't exist
-  //       return 0;
-  //     }
-  //   }).asStream();
-  // }
+  static Stream<int> numExpectedPeople(
+    String eventId,
+  ) {
+    if (eventId.isEmpty || eventId.trim() == '') {
+      print("Error: eventId is null or empty.");
+      // Return an empty stream or handle the error as appropriate for your app
+      return Stream.empty();
+    }
+    return newEventTicketOrderRef
+        .doc(eventId)
+        .collection('eventInvite')
+        .get()
+        .then((querySnapshot) {
+      if (querySnapshot.size > 0) {
+        return querySnapshot.size;
+      } else {
+        // Return an appropriate value or handle the error case when the collection doesn't exist
+        return 0;
+      }
+    }).asStream();
+  }
 
   static Stream<int> numTotalExpectedAttendees(
     String eventId,
@@ -2860,18 +3067,17 @@ class DatabaseService {
     });
   }
 
-  static sendEventInvite({
+  static Future<void> sendEventInvite({
     required Event event,
     required List<AccountHolderAuthor> users,
     required String message,
     required String generatedMessage,
     required AccountHolderAuthor currentUser,
     required bool isTicketPass,
-  }) {
+  }) async {
     WriteBatch batch = FirebaseFirestore.instance.batch();
 
     for (var user in users) {
-      // String commonId = Uuid().v4();
       DocumentReference newEventTicketOrderRef = sentEventIviteRef
           .doc(event.id)
           .collection('eventInvite')
@@ -2904,7 +3110,12 @@ class DatabaseService {
         'eventTimestamp': event.startDate,
       });
 
-      activitiesRef.doc(user.userId).collection('userActivities').add({
+      // This should also be included in the batch operation
+      DocumentReference userActivityRef = activitiesRef
+          .doc(user.userId)
+          .collection('userActivities')
+          .doc(); // Create a new document with a generated ID
+      batch.set(userActivityRef, {
         'authorId': event.authorId,
         'postId': event.id,
         'seen': false,
@@ -2915,14 +3126,80 @@ class DatabaseService {
         'timestamp': Timestamp.fromDate(DateTime.now()),
         'authorProfileImageUrl': '',
         'authorName': 'Cordially Invited',
-        'authorProfileHandle': '',
+        'authorProfileHandle': event.authorId,
         'authorVerification': user.verified,
       });
-      return batch.commit().then((value) => {}).catchError((error) {
-        throw error; // Re-throw the error
-      });
     }
+
+    // Commit the batch outside of the for loop
+    return batch.commit().catchError((error) {
+      throw error; // Re-throw the error
+    });
   }
+
+  // static sendEventInvite({
+  //   required Event event,
+  //   required List<AccountHolderAuthor> users,
+  //   required String message,
+  //   required String generatedMessage,
+  //   required AccountHolderAuthor currentUser,
+  //   required bool isTicketPass,
+  // }) {
+  //   WriteBatch batch = FirebaseFirestore.instance.batch();
+
+  //   for (var user in users) {
+  //     // String commonId = Uuid().v4();
+  //     DocumentReference newEventTicketOrderRef = sentEventIviteRef
+  //         .doc(event.id)
+  //         .collection('eventInvite')
+  //         .doc(user.userId);
+  //     batch.set(newEventTicketOrderRef, {
+  //       'eventId': event.id,
+  //       'inviteeId': user.userId,
+  //       'inviterId': currentUser.userId,
+  //       'inviterMessage': message,
+  //       'isTicketPass': isTicketPass,
+  //       'generatedMessage': generatedMessage,
+  //       'answer': '',
+  //       'timestamp': FieldValue.serverTimestamp(),
+  //       'eventTimestamp': event.startDate,
+  //     });
+
+  //     DocumentReference userInviteRef = userInvitesRef
+  //         .doc(user.userId)
+  //         .collection('eventInvite')
+  //         .doc(event.id);
+  //     batch.set(userInviteRef, {
+  //       'eventId': event.id,
+  //       'inviteeId': user.userId,
+  //       'inviterId': currentUser.userId,
+  //       'inviterMessage': message,
+  //       'isTicketPass': isTicketPass,
+  //       'generatedMessage': generatedMessage,
+  //       'answer': '',
+  //       'timestamp': FieldValue.serverTimestamp(),
+  //       'eventTimestamp': event.startDate,
+  //     });
+
+  //     activitiesRef.doc(user.userId).collection('userActivities').add({
+  //       'authorId': event.authorId,
+  //       'postId': event.id,
+  //       'seen': false,
+  //       'type': 'inviteRecieved',
+  //       'postImageUrl': event.imageUrl,
+  //       'comment': MyDateFormat.toDate(event.startDate.toDate()) +
+  //           '\n${message.isEmpty ? generatedMessage : message}',
+  //       'timestamp': Timestamp.fromDate(DateTime.now()),
+  //       'authorProfileImageUrl': '',
+  //       'authorName': 'Cordially Invited',
+  //       'authorProfileHandle': event.authorId,
+  //       'authorVerification': user.verified,
+  //     });
+  //     return batch.commit().then((value) => {}).catchError((error) {
+  //       throw error; // Re-throw the error
+  //     });
+  //   }
+  // }
 
   static void askAboutEvent(
       {required String currentUserId,
@@ -3228,7 +3505,8 @@ class DatabaseService {
           description: title,
         ),
         link: Uri.parse(urilink),
-        uriPrefix: 'https://barsopus.com/barsImpression',
+        // 'https://links.barsopus.com/barsImpression',
+        uriPrefix: 'https://links.barsopus.com/barsImpression',
         androidParameters:
             AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
         iosParameters: IOSParameters(

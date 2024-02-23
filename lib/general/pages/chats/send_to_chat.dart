@@ -35,6 +35,7 @@ class _SendToChatsState extends State<SendToChats> {
   void initState() {
     super.initState();
     _messageController.addListener(_onAskTextChanged);
+    var _provider = Provider.of<UserData>(context, listen: false);
   }
 
   @override
@@ -59,40 +60,50 @@ class _SendToChatsState extends State<SendToChats> {
 
   _submitMessageFirstMessage() async {
     var _provider = Provider.of<UserData>(context, listen: false);
+    _provider.setIsLoading(true);
     HapticFeedback.mediumImpact();
+    try {
+      var sendContent;
+      sendContent = SendContentMessage(
+        id: widget.sendContentId,
+        title: widget.sendTitle,
+        type: widget.sendContentType,
+        imageUrl: widget.sendImageUrl,
+      );
 
-    var sendContent;
-    sendContent = SendContentMessage(
-      id: widget.sendContentId,
-      title: widget.sendTitle,
-      type: widget.sendContentType,
-      imageUrl: widget.sendImageUrl,
-    );
+      ChatMessage message = ChatMessage(
+          content: _messageController.text.trim().isEmpty
+              ? ''
+              : _messageController.text.trim(),
+          id: '',
+          receiverId: '',
+          senderId: widget.currentUserId,
+          timestamp: Timestamp.fromDate(DateTime.now()),
+          isLiked: false,
+          isRead: false,
+          isSent: false,
+          replyToMessage: null,
+          sendContent: sendContent,
+          attachments: []);
+      await DatabaseService.shareBroadcastChatMessage(
+        // chatId: _provider.chatMessageId,
+        message: message,
+        currentUserId: widget.currentUserId,
+        users: selectedUsersList,
+        contentSharing: widget.sendContentType,
+      );
+      Navigator.pop(context);
 
-    ChatMessage message = ChatMessage(
-        content: _messageController.text.trim().isEmpty
-            ? ''
-            : _messageController.text.trim(),
-        id: '',
-        receiverId: '',
-        senderId: widget.currentUserId,
-        timestamp: Timestamp.fromDate(DateTime.now()),
-        isLiked: false,
-        isRead: false,
-        isSent: false,
-        replyToMessage: null,
-        sendContent: sendContent,
-        attachments: []);
-    await DatabaseService.shareBroadcastChatMessage(
-      chatId: _provider.chatMessageId,
-      message: message,
-      currentUserId: widget.currentUserId,
-      users: selectedUsersList,
-    );
+      _provider.setIsLoading(false);
 
-    mySnackBar(context, "${widget.sendTitle} sent successfully");
+      mySnackBar(context, "${widget.sendTitle} sent successfully");
+    } catch (e) {
+      mySnackBar(context, "An error occured try again");
 
-    Navigator.pop(context);
+      _provider.setIsLoading(false);
+    }
+
+    _provider.setIsLoading(false);
 
     _provider.setReplyChatMessage(null);
     selectedUsersList.clear();
@@ -100,6 +111,57 @@ class _SendToChatsState extends State<SendToChats> {
 
     _provider.setMessageImage(null);
     _messageController.clear();
+  }
+
+  // Future<AccountHolderAuthor?> _setUpProfileUser(String userId) async {
+  //   // final usersBox = Hive.box<AccountHolderAuthor>('accountHolderAuthor');
+  //   // if (usersBox.containsKey(chatUserId)) {
+  //   //   // // If the user data is already in the box, use it
+  //   //   return usersBox.get(chatUserId);
+  //   // } else {
+  //   //   // If the user data is not in the box, fetch it from the database and save it to the box
+  //   //   // try {
+  //   final author = await DatabaseService.getUserWithId(userId);
+  //   print(author!.userName);
+
+  //   // if (author != null) usersBox.put(chatUserId, author);
+  //   // print(author!.userName);
+  //   // return author;
+  //   // // } catch (e) {
+
+  //   // // }
+  //   // }
+  // }
+
+  _loadingSkeleton() {
+    return ListTile(
+        leading: CircleAvatar(
+          radius: 20.0,
+          backgroundColor: Colors.blue,
+        ),
+        title: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(right: 12.0),
+              child: Text(
+                'Loading...',
+                style: TextStyle(
+                  fontSize: ResponsiveHelper.responsiveFontSize(
+                    context,
+                    ResponsiveHelper.responsiveFontSize(context, 14.0),
+                  ),
+                  color: Theme.of(context).secondaryHeaderColor,
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 2.0,
+            ),
+          ],
+        ),
+        onTap: () {});
   }
 
   _chat() {
@@ -141,15 +203,42 @@ class _SendToChatsState extends State<SendToChats> {
                       SchedulerBinding.instance.addPostFrameCallback((_) {
                         _provider.setChatMessageId((chats.messageId));
                       });
-                      return GetAuthor(
-                        chats: chats,
-                        lastMessage: lastMessage,
-                        seen: seen,
-                        userId: userId,
-                        selectedUsersList: selectedUsersList,
-                        userSelection: userSelection,
-                        updateParent: updateListState,
+                      return FutureBuilder<AccountHolderAuthor?>(
+                        future: DatabaseService.getUserWithId(userId),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<AccountHolderAuthor?>
+                                authorSnapshot) {
+                          if (authorSnapshot.hasError) {
+                            return const Text('Error loading chat room');
+                          }
+                          if (!authorSnapshot.hasData) {
+                            return _loadingSkeleton(); // return a loading spinner or some other widget
+                          }
+                          final author = authorSnapshot.data;
+                          // limitRooms(); // Ensure these functions are defined and manage your data as expected
+                          // limitTicketIds(); // Ensure these functions are defined and manage your data as expected
+                          return GetAuthor(
+                            chats: chats,
+                            lastMessage: lastMessage,
+                            seen: seen,
+                            userId: userId,
+                            selectedUsersList: selectedUsersList,
+                            userSelection: userSelection,
+                            updateParent: updateListState,
+                            author: author!,
+                          );
+                        },
                       );
+
+                      // GetAuthor(
+                      //   chats: chats,
+                      //   lastMessage: lastMessage,
+                      //   seen: seen,
+                      //   userId: userId,
+                      //   // selectedUsersList: selectedUsersList,
+                      //   userSelection: userSelection,
+                      //   updateParent: updateListState,
+                      // );
                     },
                     childCount: snapshot.data.docs.length,
                   ),
@@ -192,14 +281,16 @@ class _SendToChatsState extends State<SendToChats> {
                           ResponsiveHelper.responsiveFontSize(context, 14),
                       color: Colors.grey,
                       fontWeight: FontWeight.normal),
-                
                 )),
           );
         });
   }
 
-
   _button() {
+    var _provider = Provider.of<UserData>(
+      context,
+    );
+
     final width = MediaQuery.of(context).size.width;
     return selectedUsersList.isEmpty
         ? SizedBox(
@@ -217,21 +308,31 @@ class _SendToChatsState extends State<SendToChats> {
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                 ),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 5.0, vertical: 2),
-                  child: Text(
-                    'Send',
-                    style: TextStyle(
-                      color: Theme.of(context).primaryColor,
-                      fontSize:
-                          ResponsiveHelper.responsiveFontSize(context, 12),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
+                child: _provider.isLoading
+                    ? SizedBox(
+                        height:
+                            ResponsiveHelper.responsiveHeight(context, 10.0),
+                        width: ResponsiveHelper.responsiveHeight(context, 10.0),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 3,
+                          color: Colors.white,
+                        ),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 5.0, vertical: 2),
+                        child: Text(
+                          'Send',
+                          style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 12),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
                 onPressed: () {
-                  _submitMessageFirstMessage();
+                  if (!_provider.isLoading) _submitMessageFirstMessage();
                 }),
           );
   }
@@ -247,7 +348,6 @@ class _SendToChatsState extends State<SendToChats> {
           color: Theme.of(context).secondaryHeaderColor,
         ),
         elevation: 0,
-
         backgroundColor: Theme.of(context).primaryColorLight,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -281,7 +381,6 @@ class _SendToChatsState extends State<SendToChats> {
             ),
           ],
         ),
-
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
@@ -313,6 +412,8 @@ class GetAuthor extends StatefulWidget {
   final bool seen;
   final String lastMessage;
   List<AccountHolderAuthor> selectedUsersList;
+  final AccountHolderAuthor author;
+
   Map<String, bool> userSelection;
   final Function updateParent;
 
@@ -325,6 +426,7 @@ class GetAuthor extends StatefulWidget {
     required this.selectedUsersList,
     required this.userSelection,
     required this.updateParent,
+    required this.author,
   });
 
   @override
@@ -333,56 +435,58 @@ class GetAuthor extends StatefulWidget {
 
 class _GetAuthorState extends State<GetAuthor>
     with AutomaticKeepAliveClientMixin {
-  AccountHolderAuthor? _author;
+  // AccountHolderAuthor? _author;
 
   @override
   void initState() {
     super.initState();
-    _setUpProfileUser();
+    // _setUpProfileUser();
     widget.userSelection[widget.userId] = false;
   }
 
-  Future<void> _setUpProfileUser() async {
-    AccountHolderAuthor? profileUser =
-        await DatabaseService.getUserWithId(widget.userId);
-    if (mounted) {
-      setState(() {
-        _author = profileUser;
-      });
-    }
-  }
+  // Future<void> _setUpProfileUser() async {
+  //   AccountHolderAuthor? profileUser =
+  //       await DatabaseService.getUserWithId(widget.userId);
+  //   if (mounted) {
+  //     setState(() {
+  //       _author = profileUser;
+  //     });
+  //   }
+  // }
 
-  _loadingSkeleton() {
-    return ListTile(
-        leading: CircleAvatar(
-          radius: 20.0,
-          backgroundColor: Colors.blue,
-        ),
-        title: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(right: 12.0),
-              child: Text(
-                'Loading...',
-                style: TextStyle(
-                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14),
-                  color: Theme.of(context).secondaryHeaderColor,
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 2.0,
-            ),
-          ],
-        ),
-        onTap: () {});
-  }
+  // _loadingSkeleton() {
+  //   return ListTile(
+  //       leading: CircleAvatar(
+  //         radius: 20.0,
+  //         backgroundColor: Colors.blue,
+  //       ),
+  //       title: Column(
+  //         mainAxisAlignment: MainAxisAlignment.start,
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: <Widget>[
+  //           Padding(
+  //             padding: const EdgeInsets.only(right: 12.0),
+  //             child: Text(
+  //               'Loading...',
+  //               style: TextStyle(
+  //                 fontSize: ResponsiveHelper.responsiveFontSize(context, 14),
+  //                 color: Theme.of(context).secondaryHeaderColor,
+  //               ),
+  //             ),
+  //           ),
+  //           const SizedBox(
+  //             height: 2.0,
+  //           ),
+  //         ],
+  //       ),
+  //       onTap: () {});
+  // }
 
   _display() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
     return Container(
-      color: widget.userSelection[_author!.userId]!
+      color: widget.userSelection[widget.author.userId]!
           ? Colors.blue.withOpacity(.1)
           : null,
       child: MediaQuery(
@@ -391,10 +495,10 @@ class _GetAuthorState extends State<GetAuthor>
                 MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
         child: CheckboxListTile(
           selectedTileColor:
-              widget.userSelection[_author!.userId]! ? Colors.blue : null,
+              widget.userSelection[widget.author.userId]! ? Colors.blue : null,
           title: Row(
             children: [
-              _author!.profileImageUrl!.isEmpty
+              widget.author.profileImageUrl!.isEmpty
                   ? Icon(
                       Icons.account_circle,
                       size: 40.0,
@@ -403,8 +507,8 @@ class _GetAuthorState extends State<GetAuthor>
                   : CircleAvatar(
                       radius: 18.0,
                       backgroundColor: Theme.of(context).primaryColor,
-                      backgroundImage:
-                          CachedNetworkImageProvider(_author!.profileImageUrl!),
+                      backgroundImage: CachedNetworkImageProvider(
+                          widget.author.profileImageUrl!),
                     ),
               const SizedBox(
                 width: 10,
@@ -414,11 +518,11 @@ class _GetAuthorState extends State<GetAuthor>
                     textScaleFactor: MediaQuery.of(context).textScaleFactor,
                     text: TextSpan(children: [
                       TextSpan(
-                        text: _author!.userName,
+                        text: widget.author.userName,
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       TextSpan(
-                        text: "\n${_author!.profileHandle}",
+                        text: "\n${widget.author.profileHandle}",
                         style: TextStyle(
                           fontSize:
                               ResponsiveHelper.responsiveFontSize(context, 12),
@@ -429,17 +533,17 @@ class _GetAuthorState extends State<GetAuthor>
               ),
             ],
           ),
-          value: widget.userSelection[_author!.userId] ?? false,
+          value: widget.userSelection[widget.author.userId] ?? false,
           onChanged: (bool? value) {
             HapticFeedback.lightImpact();
             setState(() {
-              widget.userSelection[_author!.userId!] = value!;
+              widget.userSelection[widget.author.userId!] = value!;
               if (value == true) {
                 widget.selectedUsersList
-                    .add(_author!); // add user to list if selected
+                    .add(widget.author); // add user to list if selected
               } else {
-                widget.selectedUsersList
-                    .remove(_author); // remove user from list if unselected
+                widget.selectedUsersList.remove(
+                    widget.author); // remove user from list if unselected
               }
               widget.updateParent(); // Call the callback function
             });
@@ -454,6 +558,8 @@ class _GetAuthorState extends State<GetAuthor>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return _author == null ? _loadingSkeleton() : _display();
+    return
+        //  widget.author == null ? _loadingSkeleton() :
+        _display();
   }
 }

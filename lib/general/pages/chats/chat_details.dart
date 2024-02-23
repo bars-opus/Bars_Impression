@@ -52,7 +52,7 @@ class _ChatDetailsState extends State<ChatDetails> {
     ));
   }
 
-   _blockser() async {
+  _blockser() async {
     AccountHolderAuthor? fromUser =
         await DatabaseService.getUserWithId(widget.currentUserId);
 
@@ -86,7 +86,6 @@ class _ChatDetailsState extends State<ChatDetails> {
       ),
     ));
   }
-
 
   void _showBottomSheetClearActivity(BuildContext context) {
     String text = widget.isBlockingUser
@@ -152,7 +151,7 @@ class _ChatDetailsState extends State<ChatDetails> {
                         widget.user.profileImageUrl!)),
             title: NameText(
               name: widget.user.userName!.toUpperCase(),
-              verified: true,
+              verified: widget.user!.verified! ? true : false,
             ),
             subtitle: Text(
               widget.user.profileHandle!,
@@ -213,7 +212,8 @@ class _ChatDetailsState extends State<ChatDetails> {
                     'Chat initiator',
                     style: TextStyle(
                       color: Colors.grey,
-                      fontSize: 14,
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 14),
                     ),
                   ),
                 ),
@@ -236,7 +236,8 @@ class _ChatDetailsState extends State<ChatDetails> {
                     'First message',
                     style: TextStyle(
                       color: Colors.grey,
-                      fontSize: 14,
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 14),
                     ),
                   ),
                 ),
@@ -257,7 +258,8 @@ class _ChatDetailsState extends State<ChatDetails> {
                     'First message date',
                     style: TextStyle(
                       color: Colors.grey,
-                      fontSize: 14,
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 14),
                     ),
                   ),
                 ),
@@ -272,7 +274,8 @@ class _ChatDetailsState extends State<ChatDetails> {
                             text: MyDateFormat.toDate(
                                 widget.chat.timestamp!.toDate()),
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: ResponsiveHelper.responsiveFontSize(
+                                  context, 16),
                               color: Theme.of(context).secondaryHeaderColor,
                             )),
                         TextSpan(
@@ -281,7 +284,8 @@ class _ChatDetailsState extends State<ChatDetails> {
                                   widget.chat.timestamp!.toDate(),
                                 ),
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: ResponsiveHelper.responsiveFontSize(
+                                  context, 16),
                               color: Colors.grey,
                             )),
                       ],
@@ -297,7 +301,8 @@ class _ChatDetailsState extends State<ChatDetails> {
                     'Last message',
                     style: TextStyle(
                       color: Colors.grey,
-                      fontSize: 14,
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 14),
                     ),
                   ),
                 ),
@@ -318,7 +323,8 @@ class _ChatDetailsState extends State<ChatDetails> {
                     'Last message date',
                     style: TextStyle(
                       color: Colors.grey,
-                      fontSize: 14,
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 14),
                     ),
                   ),
                 ),
@@ -334,7 +340,8 @@ class _ChatDetailsState extends State<ChatDetails> {
                               widget.chat.newMessageTimestamp!.toDate(),
                             ),
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: ResponsiveHelper.responsiveFontSize(
+                                  context, 16),
                               color: Theme.of(context).secondaryHeaderColor,
                             )),
                         TextSpan(
@@ -343,7 +350,8 @@ class _ChatDetailsState extends State<ChatDetails> {
                                   widget.chat.newMessageTimestamp!.toDate(),
                                 ),
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: ResponsiveHelper.responsiveFontSize(
+                                  context, 16),
                               color: Colors.grey,
                             )),
                       ],

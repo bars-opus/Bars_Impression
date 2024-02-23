@@ -10,11 +10,13 @@ import 'package:uuid/uuid.dart';
 class CreateEventScreen extends StatefulWidget {
   final bool isEditting;
   final Event? event;
+  final bool isCompleted;
   static final id = 'Create_event';
 
   CreateEventScreen({
     required this.isEditting,
     required this.event,
+    required this.isCompleted,
   });
 
   @override
@@ -172,7 +174,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     var _provider = Provider.of<UserData>(context, listen: false);
     final type = _ticketTypeController.text;
     final price = double.tryParse(_priceController.text) ?? 0.0;
-    final group = _groupController.text;
+    final group = _groupController.text.trim();
     final accessLevel = _accessLevelController.text;
     // final row = int.tryParse(_rowController.text) ?? 0;
     final maxSeatPerRow = int.tryParse(_maxSeatPerRowController.text) ?? 0;
@@ -410,18 +412,23 @@ class _CreateEventScreenState extends State<CreateEventScreen>
 
     // Calculate the total cost of the order
 
-    String link = await DatabaseService.myDynamicLink(imageUrl, _provider.title,
-        _provider.theme, 'https://www.barsopus.com/event_$commonId');
+    String link = await DatabaseService.myDynamicLink(
+        imageUrl,
+        _provider.title,
+        _provider.theme,
+        'https://www.barsopus.com/event_${commonId}_${_provider.currentUserId}');
 
-    if (!_provider.endDateSelected) {
-// Convert the Timestamp to a DateTime object
-      DateTime dateTime = _provider.startDate.toDate();
-// Add a one-day duration to the DateTime object
-      DateTime newDateTime = dateTime.add(Duration(days: 2));
-// Convert the DateTime back to a Timestamp object
-      Timestamp instantClosingDate = Timestamp.fromDate(newDateTime);
-      _provider.setClossingDay(instantClosingDate);
-    }
+    // 'https://www.barsopus.com/event_${commonId}_${_provider.currentUserId}}');
+
+//     if (!_provider.endDateSelected) {
+// // Convert the Timestamp to a DateTime object
+//       DateTime dateTime = _provider.startDate.toDate();
+// // Add a one-day duration to the DateTime object
+//       DateTime newDateTime = dateTime.add(Duration(days: 1));
+// // Convert the DateTime back to a Timestamp object
+//       Timestamp instantClosingDate = Timestamp.fromDate(newDateTime);
+//       _provider.setClossingDay(instantClosingDate);
+//     }
 
     Event event = Event(
       blurHash: blurHash,
@@ -459,7 +466,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       showOnExplorePage: false,
       fundsDistributed: false,
       showToFollowers: _provider.showToFollowers,
-      clossingDay: _provider.clossingDay,
+      clossingDay: _provider.startDate,
       authorName: _provider.user!.userName!,
       category: _provider.category,
       termsAndConditions: _provider.eventTermsAndConditions,
@@ -571,8 +578,10 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                     Navigator.pop(context);
                     // _showBottomSheetLoading();
                     Navigator.pop(context);
-                    await DatabaseService.deleteEvent(widget.event!,
-                        _cancellationRasonController.text.trim());
+                    await DatabaseService.deleteEvent(
+                        widget.event!,
+                        _cancellationRasonController.text.trim(),
+                        widget.isCompleted);
                     await _setNull(_provider);
 
                     Navigator.pop(context);
@@ -585,7 +594,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                   }
                 },
           title: 'Are you sure you want to Delete this event?',
-          subTitle: widget.event!.isFree
+          subTitle: widget.event!.isFree || widget.isCompleted
               ? "All data associated with this event, including the event room, will be deleted."
               : "If the event is deleted, all data related to the event, including the event room, will be deleted. Additionally, purchased tickets will be fully refunded",
         );
@@ -1013,6 +1022,58 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     );
   }
 
+  _deleteWidget() {
+    return Container(
+        width: ResponsiveHelper.responsiveHeight(context, 50.0),
+        height: ResponsiveHelper.responsiveHeight(context, 50.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white.withOpacity(.4),
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: widget.isCompleted
+              ? () {
+                  _showBottomSheetConfirmDeleteEvent();
+                }
+              : () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return _showBottomDeleteForm();
+                    },
+                  );
+                },
+          child: Ink(
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Container(
+              height: ResponsiveHelper.responsiveHeight(context, 40.0),
+              width: ResponsiveHelper.responsiveHeight(context, 40.0),
+              child: IconButton(
+                icon: Icon(Icons.delete_forever),
+                iconSize: ResponsiveHelper.responsiveHeight(context, 25.0),
+                color: Colors.white,
+                onPressed: widget.isCompleted
+                    ? () {
+                        _showBottomSheetConfirmDeleteEvent();
+                      }
+                    : () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return _showBottomDeleteForm();
+                          },
+                        );
+                      },
+              ),
+            ),
+          ),
+        ));
+  }
+
 //event categories: festivals, etc
   Widget _eventCategorySection() {
     UserData _provider = Provider.of<UserData>(context, listen: false);
@@ -1046,49 +1107,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
         if (widget.isEditting && widget.event != null)
           Positioned(
             right: 30,
-            child: Container(
-              width: ResponsiveHelper.responsiveHeight(context, 50.0),
-              height: ResponsiveHelper.responsiveHeight(context, 50.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.white.withOpacity(.4),
-              ),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(10),
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return _showBottomDeleteForm();
-                    },
-                  );
-                },
-                child: Ink(
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Container(
-                    height: ResponsiveHelper.responsiveHeight(context, 40.0),
-                    width: ResponsiveHelper.responsiveHeight(context, 40.0),
-                    child: IconButton(
-                      icon: Icon(Icons.delete_forever),
-                      iconSize:
-                          ResponsiveHelper.responsiveHeight(context, 25.0),
-                      color: Colors.white,
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return _showBottomDeleteForm();
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            child: _deleteWidget(),
           )
       ],
     );
@@ -1187,9 +1206,11 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                       },
                       onTap: () {},
                       onChanged: (value) {
-                        _debouncer.run(() {
-                          _provider.searchAddress(value);
-                        });
+                        if (value.trim().isNotEmpty) {
+                          _debouncer.run(() {
+                            _provider.searchAddress(value);
+                          });
+                        }
                       }),
                 ),
                 Text(
@@ -1413,7 +1434,9 @@ class _CreateEventScreenState extends State<CreateEventScreen>
   }
 
   _dateRange() {
-    UserData _provider = Provider.of<UserData>(context, listen: false);
+    UserData _provider = Provider.of<UserData>(
+      context,
+    );
     final width = MediaQuery.of(context).size.width;
     List<DateTime> dateList = getDatesInRange(
         _provider.startDate.toDate(), _provider.clossingDay.toDate());
@@ -1450,7 +1473,10 @@ class _CreateEventScreenState extends State<CreateEventScreen>
               child: ListTile(
                 title: Text(
                   MyDateFormat.toDate(date),
-                  style: TextStyle(fontSize: 12),
+                  style: TextStyle(
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 12.0),
+                  ),
 
                   // DateFormat('yyyy-MM-dd').format(date)
                 ),
@@ -1628,7 +1654,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                       ),
                       _provider.ticket.isEmpty || _provider.currency.isEmpty
                           ? SizedBox.shrink()
-                          : _provider.isFree
+                          : _provider.isFree || _provider.isCashPayment
                               ? MiniCircularProgressButton(
                                   onPressed: () {
                                     _validate();
@@ -1922,12 +1948,14 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                           },
                           onTap: () {},
                           onChanged: (input) {
-                            _debouncer.run(() {
-                              setState(() {
-                                _users = DatabaseService.searchUsers(
-                                    input.toUpperCase());
+                            if (input.trim().isNotEmpty) {
+                              _debouncer.run(() {
+                                setState(() {
+                                  _users = DatabaseService.searchUsers(
+                                      input.toUpperCase());
+                                });
                               });
-                            });
+                            }
                           }),
                       const SizedBox(
                         height: 30,
@@ -2036,6 +2064,8 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                                     () {
                                       if (_addPersonFormKey.currentState!
                                           .validate()) {
+                                        _addSchedulePeople(
+                                            _selectedNameToAdd, '');
                                         Navigator.pop(context);
                                       }
                                     },
@@ -2143,6 +2173,21 @@ class _CreateEventScreenState extends State<CreateEventScreen>
             text:
                 'Select a start and end date for your event. Even if your event would end within a day select the same date as start and end date. This would be helpful in displaying your program lineup. ',
           ),
+          if (widget.isEditting)
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.red,
+              ),
+              padding: const EdgeInsets.all(10),
+              margin: const EdgeInsets.only(bottom: 10),
+              width: double.infinity,
+              child: Text(
+                'If you decide to change your event and date, please note that it will impact the format of your schedules and tickets. We recommend adjusting the dates on your schedules and tickets to align with your new modified date.',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: ResponsiveHelper.responsiveFontSize(context, 12)),
+              ),
+            ),
           DatePicker(
             onStartDateChanged: (DateTime newDate) {
               _provider.setStartDate(Timestamp.fromDate(newDate));
@@ -3100,17 +3145,61 @@ class _CreateEventScreenState extends State<CreateEventScreen>
         : IconButton(
             icon: Icon(Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back,
                 color: Colors.white),
-            onPressed: widget.isEditting
+            onPressed: widget.isCompleted
                 ? () {
-                    widget.event!.isFree && _pageController.page == 2
-                        ? _pop()
-                        : _pageController.page == 1
-                            ? _pop()
-                            : animateToBack(1);
+                    _pop();
                   }
-                : () {
-                    _provider.int1 == 0 ? _pop() : animateToBack(1);
-                  });
+                : widget.isEditting
+                    ? () {
+                        widget.event!.isFree && _pageController.page == 2
+                            ? _pop()
+                            : _pageController.page == 1
+                                ? _pop()
+                                : animateToBack(1);
+                      }
+                    : () {
+                        _provider.int1 == 0 ? _pop() : animateToBack(1);
+                      });
+  }
+
+  _completed() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        ShakeTransition(
+          curve: Curves.easeInOut,
+          duration: const Duration(milliseconds: 600),
+          child: Icon(
+            Icons.check,
+            color: Colors.white,
+            size: ResponsiveHelper.responsiveHeight(context, 50.0),
+          ),
+        ),
+        SizedBox(height: ResponsiveHelper.responsiveHeight(context, 10.0)),
+        Text(
+          'Completed',
+          style: TextStyle(
+              color: Colors.white,
+              fontSize: ResponsiveHelper.responsiveFontSize(context, 20),
+              fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+        ),
+        SizedBox(height: 3),
+        Padding(
+          padding: const EdgeInsets.only(left: 30.0, right: 30),
+          child: Text(
+            'Congratulations on completing ${widget.event!.title}. We are thrilled that you have reached this milestone. Completing such an event is no easy feat, and we commend your dedication. We wish you the best for your upcoming events. Please note that completed events cannot be modified further. If you choose to, you have the option to delete the event. ',
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 14)),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        SizedBox(height: ResponsiveHelper.responsiveHeight(context, 30.0)),
+        _deleteWidget(),
+      ],
+    );
   }
 
   // Main event section
@@ -3127,64 +3216,65 @@ class _CreateEventScreenState extends State<CreateEventScreen>
         DisplayCreateImage(
           isEvent: true,
         ),
-        _provider.eventImage == null && !widget.isEditting
-            ? CreateSelectImageWidget(
-                isEditting: widget.isEditting,
-                feature: 'Punch',
-                selectImageInfo:
-                    '\nSelect a background image for your event. The image selected should not contain any text and should be of good pixel quality. The image selected should align with the context of your event. The right image can significantly enhance the atmosphere and engagement of your event. ',
-                featureInfo:
-                    '\n\nCreate an event where people can attend, have fun, create memories, and have unforgettable experiences. You can create a private or a public event. A public event can be attended by anybody (festivals, fun fairs, talent shows, night events).\n\nHowever, a private event can only be attended by specific people to whom you send invitations (weddings, birthday parties, music writing camps, house parties).',
-                isEvent: true,
-              )
-            : SafeArea(
-                child: PageView(
-                    controller: _pageController,
-                    physics: const NeverScrollableScrollPhysics(),
-                    onPageChanged: (int index) {
-                      _provider.setInt1(index);
-                    },
-                    children: [
-                      //setting section (private, virtual, etc)
-                      _eventSettingSection(),
+        widget.isCompleted
+            ? _completed()
+            : _provider.eventImage == null && !widget.isEditting
+                ? CreateSelectImageWidget(
+                    isEditting: widget.isEditting,
+                    feature: 'Punch',
+                    selectImageInfo:
+                        '\nSelect a background image for your event. The image selected should not contain any text and should be of good pixel quality. The image selected should align with the context of your event. The right image can significantly enhance the atmosphere and engagement of your event. ',
+                    featureInfo: '',
+                    isEvent: true,
+                  )
+                : SafeArea(
+                    child: PageView(
+                        controller: _pageController,
+                        physics: const NeverScrollableScrollPhysics(),
+                        onPageChanged: (int index) {
+                          _provider.setInt1(index);
+                        },
+                        children: [
+                          //setting section (private, virtual, etc)
+                          _eventSettingSection(),
 
-                      //select category, festiva, albums, etc.
-                      _eventCategorySection(),
+                          //select category, festiva, albums, etc.
+                          _eventCategorySection(),
 
-                      //pick date for event
-                      _eventPickDateSection(),
+                          //pick date for event
+                          _eventPickDateSection(),
 
-                      //pick time for event
-                      _eventPickTimeScheduleSection(),
+                          //pick time for event
+                          _eventPickTimeScheduleSection(),
 
-                      //rate section (feee)
-                      _eventRateSection(),
+                          //rate section (feee)
+                          _eventRateSection(),
 
-                      // //select clossing date and page for start editting.
-                      // _eventClossingDateStartEditing(),
+                          // //select clossing date and page for start editting.
+                          // _eventClossingDateStartEditing(),
 
-                      //event section for picking address and venue.
-                      _eventAdressSection(),
+                          //event section for picking address and venue.
+                          _eventAdressSection(),
 
-                      //event people performing and appearing
-                      _eventPeopleSection(false),
+                          //event people performing and appearing
+                          _eventPeopleSection(false),
 
-                      //event sponsors and partners
-                      _eventPeopleSection(true),
+                          //event sponsors and partners
+                          _eventPeopleSection(true),
 
-                      //event main information(title, theme, etc.)
-                      _eventMainInformation(),
+                          //event main information(title, theme, etc.)
+                          _eventMainInformation(),
 
-                      //event optional additional
-                      _eventPreviousEvent(),
+                          //event optional additional
+                          _eventPreviousEvent(),
 
-                      //event terms and conditions
-                      _eventTermsAndConditions(),
+                          //event terms and conditions
+                          _eventTermsAndConditions(),
 
-                      //loading --- creating event
-                      _loadingWidget(),
-                    ]),
-              ),
+                          //loading --- creating event
+                          _loadingWidget(),
+                        ]),
+                  ),
         Positioned(top: 50, left: 10, child: _popButton()),
         if (_provider.eventImage != null &&
             !widget.isEditting &&

@@ -153,6 +153,12 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
 
+                            if (ticketOrder.isInvited && ticketOrder.total == 0)
+                              TextSpan(
+                                text: finalPurchasintgTicket.type,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+
                             TextSpan(
                               text:
                                   "\n${MyDateFormat.toDate(finalPurchasintgTicket.eventTicketDate.toDate()).toString()}",
@@ -254,3 +260,15 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
     );
   }
 }
+
+
+
+
+// function getFirestorePath(baseCollection) {
+  // const now = new Date();
+  // const year = now.getFullYear().toString();
+  // const month = now.toLocaleString('default', { month: 'long' });
+  // const weekOfMonth = `week${Math.ceil(now.getDate() / 7)}`;
+  // const path = `${baseCollection}/${year}/${month}/${weekOfMonth}`;
+  // return path;
+// }

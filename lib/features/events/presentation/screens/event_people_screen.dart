@@ -22,7 +22,7 @@ class EventPeopleScreen extends StatelessWidget {
             'People in this Event',
             style: TextStyle(
                 color: Theme.of(context).secondaryHeaderColor,
-                fontSize: 20,
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 20.0),
                 fontWeight: FontWeight.bold),
           ),
           centerTitle: true,

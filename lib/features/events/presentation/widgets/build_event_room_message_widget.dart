@@ -167,7 +167,7 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
     final width = MediaQuery.of(context).size.width;
 
     Color _palleteColor = widget.palette == null
-        ? Colors.yellow
+        ? Colors.blue
         : widget.palette.dominantColor == null
             ? Colors.blue
             : widget.palette.dominantColor!.color;
@@ -282,7 +282,9 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
                                                 ? 'Me\n'
                                                 : "${message.authorName}\n",
                                             style: TextStyle(
-                                              fontSize: 12,
+                                              fontSize: ResponsiveHelper
+                                                  .responsiveFontSize(
+                                                      context, 16),
                                               color: textColor.withOpacity(.6),
                                               fontWeight: FontWeight.bold,
                                             ),
@@ -291,7 +293,9 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
                                             text:
                                                 message.replyToMessage!.message,
                                             style: TextStyle(
-                                              fontSize: 12,
+                                              fontSize: ResponsiveHelper
+                                                  .responsiveFontSize(
+                                                      context, 16),
                                               color: textColor,
                                             ),
                                           ),
@@ -311,7 +315,8 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
                                       message.content,
                                       style: TextStyle(
                                           color: textColor,
-                                          fontSize: 16,
+                                          fontSize: ResponsiveHelper
+                                              .responsiveFontSize(context, 16),
                                           fontWeight: FontWeight.normal),
                                     )
                                   : RichText(
@@ -322,14 +327,18 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
                                           text: "${message.authorName}\n",
                                           style: TextStyle(
                                               color: Colors.grey,
-                                              fontSize: 12,
+                                              fontSize: ResponsiveHelper
+                                                  .responsiveFontSize(
+                                                      context, 12),
                                               fontWeight: FontWeight.bold),
                                         ),
                                         TextSpan(
                                           text: message.content,
                                           style: TextStyle(
                                               color: textColor,
-                                              fontSize: 16,
+                                              fontSize: ResponsiveHelper
+                                                  .responsiveFontSize(
+                                                      context, 16),
                                               fontWeight: FontWeight.normal),
                                         )
                                       ])),
@@ -341,7 +350,8 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
                                       ),
                                 style: TextStyle(
                                   color: textColor,
-                                  fontSize: 10,
+                                  fontSize: ResponsiveHelper.responsiveFontSize(
+                                      context, 10),
                                   fontWeight: FontWeight.normal,
                                 ),
                                 textAlign: textAlign,

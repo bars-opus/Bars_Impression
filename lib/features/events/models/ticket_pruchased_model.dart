@@ -6,6 +6,7 @@ class TicketPurchasedModel {
   double price;
   bool isSold;
   String refundRequestStatus;
+  String idempotencyKey;
   String type;
   String group;
   String accessLevel;
@@ -13,7 +14,7 @@ class TicketPurchasedModel {
   final String transactionId;
   final Timestamp eventTicketDate;
   int row;
-  int seat; 
+  int seat;
 
   TicketPurchasedModel({
     required this.id,
@@ -29,6 +30,7 @@ class TicketPurchasedModel {
     required this.eventTicketDate,
     required this.entranceId,
     required this.transactionId,
+    required this.idempotencyKey,
   });
 
   factory TicketPurchasedModel.fromJson(Map<String, dynamic> json) {
@@ -37,6 +39,7 @@ class TicketPurchasedModel {
       price: json['price'].toDouble(),
       isSold: json['isSold'] ?? false,
       refundRequestStatus: json['refundRequestStatus'] ?? '',
+      idempotencyKey: json['idempotencyKey'] ?? '',
       transactionId: json['transactionId'] ?? '',
       validated: json['validated'] ?? false,
       type: json['type'],
@@ -59,6 +62,7 @@ class TicketPurchasedModel {
       'isSold': isSold,
       'transactionId': transactionId,
       'refundRequestStatus': refundRequestStatus,
+      'idempotencyKey': idempotencyKey,
       'type': type,
       'group': group,
       'accessLevel': accessLevel,
@@ -79,12 +83,14 @@ class TicketPurchasedModel {
     required int row,
     required int seat,
     required String refundRequestStatus,
+    required String idempotencyKey,
   }) {
     return TicketPurchasedModel(
       id: ticketModel.id,
       price: ticketModel.price,
       isSold: ticketModel.isSoldOut,
       refundRequestStatus: refundRequestStatus,
+      idempotencyKey: idempotencyKey,
       validated: validated,
       type: ticketModel.type,
       transactionId: transactionId,

@@ -149,11 +149,29 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
 
     try {
       await retry(() => sendInvites(), retries: 3);
+
+      List<TicketPurchasedModel> pasTicket = [];
       if (isAccepted) {
+        TicketPurchasedModel order = TicketPurchasedModel(
+            entranceId: commonId,
+            eventTicketDate: widget.event.startDate,
+            group: '',
+            id: '',
+            price: 0,
+            refundRequestStatus: '',
+            idempotencyKey: '',
+            seat: 0,
+            row: 0,
+            type: 'Free Pass',
+            validated: false,
+            transactionId: '');
+
+        pasTicket.add(order);
+
         try {
           TicketOrderModel order = await retry(
-              () => _createTicketOrder(
-                  transactionId, batch, commonId, [], purchaseReferenceId),
+              () => _createTicketOrder(transactionId, batch, commonId,
+                  pasTicket, purchaseReferenceId),
               retries: 3);
 
           PaletteGenerator _paletteGenerator =
@@ -222,7 +240,7 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
       userOrderId: widget.currentUserId,
       eventTitle: widget.event.title,
       purchaseReferenceId: purchaseReferenceId, refundRequestStatus: '',
-      transactionId: transactionId,
+      transactionId: transactionId, idempotencyKey: '',
       //  refundRequestStatus: '',
     );
 
@@ -496,6 +514,7 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return ConfirmationPrompt(
+          height: 300,
           buttonText: isAccepted ? 'Accept' : 'Reject',
           onPressed: () async {
             Navigator.pop(context);
@@ -521,7 +540,11 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
   ) {
     return Center(
       child: Container(
-        width: ResponsiveHelper.responsiveWidth(context, 150.0),
+        padding: EdgeInsets.symmetric(
+          horizontal: fullLength ? 20.0 : 0,
+        ),
+        width: ResponsiveHelper.responsiveWidth(
+            context, fullLength ? double.infinity : 145.0),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).primaryColorLight,
@@ -724,7 +747,7 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
                       //           url: widget.event.virtualVenue,
                       //         ))
                       //     :
-                           _launchMap();
+                      _launchMap();
                     },
                   ),
                   SizedBox(
@@ -807,110 +830,125 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
                   const SizedBox(
                     height: 50,
                   ),
-                  widget.invite.isTicketPass
-                      ? widget.invite.answer.isNotEmpty
-                          ? SizedBox.shrink()
-                          : Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20.0),
-                              child: Center(
+                  if (!_eventHasEnded)
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        widget.invite.isTicketPass
+                            ? widget.invite.answer.isNotEmpty
+                                ? SizedBox.shrink()
+                                : Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20.0),
+                                    child: Center(
+                                      child: Text(
+                                        "Answer invitation\n",
+                                        style: TextStyle(
+                                            fontSize: ResponsiveHelper
+                                                .responsiveFontSize(
+                                                    context, 14.0),
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  )
+                            : widget.invite.answer.isNotEmpty
+                                ? SizedBox.shrink()
+                                : Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20.0),
+                                    child: Text(
+                                      "Ticket Options",
+                                      style: TextStyle(
+                                          fontSize: ResponsiveHelper
+                                              .responsiveFontSize(
+                                                  context, 16.0),
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                        widget.invite.answer.isNotEmpty
+                            ? SizedBox.shrink()
+                            : Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0),
                                 child: Text(
-                                  "Answer invitation\n",
+                                  widget.invite.isTicketPass
+                                      ? 'This invite includes a pass that allows you to obtain a free ticket for the event without making a purchase. You may accept or reject the invite. '
+                                      : widget.event.isFree
+                                          ? 'This event is free, tap to generate a free ticket. Wishing you the best experience and create amazing memories.\n'
+                                          : 'These are the available tickets for the event. You can choose a ticket from the options provided and proceed with the purchase.',
                                   style: TextStyle(
-                                      fontSize:
-                                          ResponsiveHelper.responsiveFontSize(
-                                              context, 14.0),
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            )
-                      : widget.invite.answer.isNotEmpty
-                          ? SizedBox.shrink()
-                          : Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20.0),
-                              child: Text(
-                                "Ticket Options",
-                                style: TextStyle(
+                                    color: Colors.white,
                                     fontSize:
                                         ResponsiveHelper.responsiveFontSize(
-                                            context, 16.0),
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
+                                            context, 14.0),
+                                  ),
+                                  textAlign: TextAlign.start,
+                                ),
                               ),
-                            ),
-                  widget.invite.answer.isNotEmpty
-                      ? SizedBox.shrink()
-                      : Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Text(
-                            widget.invite.isTicketPass
-                                ? 'This invite includes a pass that allows you to obtain a free ticket for the event without making a purchase. You may accept or reject the invite. '
-                                : widget.event.isFree
-                                    ? 'This event is free, tap to generate a free ticket. Wishing you the best experience and create amazing memories.\n'
-                                    : 'These are the available tickets for the event. You can choose a ticket from the options provided and proceed with the purchase.',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: ResponsiveHelper.responsiveFontSize(
-                                  context, 14.0),
-                            ),
-                            textAlign: TextAlign.start,
-                          ),
-                        ),
-                  widget.invite.isTicketPass
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: _isLoadingSubmit
-                              ? CircularProgress(isMini: true)
-                              : widget.invite.answer.isNotEmpty
-                                  ? SizedBox.shrink()
-                                  : Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        _acceptRejectButton('Accept', () {
-                                          _showBottomSheetAcceptReject(
-                                            context,
-                                            true,
-                                          );
-                                        }, false),
-                                        _acceptRejectButton('Reject', () {
-                                          _showBottomSheetAcceptReject(
-                                            context,
-                                            false,
-                                          );
-                                        }, false),
-                                      ],
-                                    ),
-                        )
-                      : SizedBox.shrink(),
-
-                  widget.invite.isTicketPass
-                      ? SizedBox.shrink()
-                      : widget.invite.answer.isNotEmpty
-                          ? SizedBox.shrink()
-                          : Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Divider(
-                                    color: Colors.white,
+                        widget.invite.isTicketPass
+                            ? Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0),
+                                child: _isLoadingSubmit
+                                    ? CircularProgress(isMini: true)
+                                    : widget.invite.answer.isNotEmpty
+                                        ? SizedBox.shrink()
+                                        : Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              _acceptRejectButton('Accept', () {
+                                                _showBottomSheetAcceptReject(
+                                                  context,
+                                                  true,
+                                                );
+                                              }, false),
+                                              _acceptRejectButton('Reject', () {
+                                                _showBottomSheetAcceptReject(
+                                                  context,
+                                                  false,
+                                                );
+                                              }, false),
+                                            ],
+                                          ),
+                              )
+                            : SizedBox.shrink(),
+                        widget.invite.isTicketPass
+                            ? SizedBox.shrink()
+                            : widget.invite.answer.isNotEmpty
+                                ? SizedBox.shrink()
+                                : Column(
+                                    children: [
+                                      _acceptRejectButton('Reject', () {
+                                        _showBottomSheetAcceptReject(
+                                          context,
+                                          false,
+                                        );
+                                      }, true),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Divider(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10.0),
+                                        child: TicketGroup(
+                                          onInvite: true,
+                                          currentUserId: widget.currentUserId,
+                                          event: widget.event,
+                                          groupTickets: widget.event.ticket,
+                                          inviteReply: 'Accepted',
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10.0),
-                                  child: TicketGroup(
-                                    onInvite: true,
-                                    currentUserId: widget.currentUserId,
-                                    event: widget.event,
-                                    groupTickets: widget.event.ticket,
-                                    inviteReply: 'Accepted',
-                                  ),
-                                ),
-                              ],
-                            ),
+                      ],
+                    ),
                   const SizedBox(
                     height: 100,
                   ),
@@ -931,6 +969,8 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
                       color: Colors.white,
                       clossingDay: DateTime.now(),
                       startDate: widget.event.startDate.toDate(),
+                      eventHasEnded: _eventHasEnded,
+                      eventHasStarted: false,
                     ),
                   ),
                   Center(

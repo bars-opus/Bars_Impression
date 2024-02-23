@@ -6,13 +6,20 @@ class CountdownTimer extends StatefulWidget {
   final Color color;
   final double fontSize;
   final String split;
+  final bool eventHasStarted;
+  final bool eventHasEnded;
+  final bool big;
 
-  CountdownTimer(
-      {required this.startDate,
-      required this.clossingDay,
-      this.split = '',
-      required this.color,
-      required this.fontSize});
+  CountdownTimer({
+    required this.startDate,
+    required this.clossingDay,
+    this.split = '',
+    required this.color,
+    required this.fontSize,
+    required this.eventHasStarted,
+    required this.eventHasEnded,
+    this.big = false,
+  });
 
   @override
   _CountdownTimerState createState() => _CountdownTimerState();
@@ -20,11 +27,11 @@ class CountdownTimer extends StatefulWidget {
 
 class _CountdownTimerState extends State<CountdownTimer> {
   String _countDownToStartingDate = '';
-  String _singleCountDownToStartingDate = '';
+  // String _singleCountDownToStartingDate = '';
   String _metaData = '';
 
-  bool _eventHasStarted = false;
-  bool _eventHasEnded = false;
+  // bool _eventHasStarted = false;
+  // bool _eventHasEnded = false;
 
   @override
   void initState() {
@@ -33,81 +40,81 @@ class _CountdownTimerState extends State<CountdownTimer> {
   }
 
   void _countDown() async {
+    DateTime now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day);
+
     DateTime eventDate = widget.startDate == null
         ? DateTime.parse('2023-02-27 00:00:00.000')
-        : widget.startDate;
+        : DateTime(widget.startDate.year, widget.startDate.month,
+            widget.startDate.day);
 
-    DateTime clossingDate = widget.clossingDay;
+    DateTime closingDate = DateTime(widget.clossingDay.year,
+        widget.clossingDay.month, widget.clossingDay.day);
 
-    final toDaysDate = DateTime.now();
-
-    Duration _durationToStartingDate = eventDate.difference(toDaysDate);
-    Duration _duratoinDuringStartingToEndingDate =
-        clossingDate.difference(toDaysDate);
+    Duration durationToStartingDate = eventDate.difference(today);
+    Duration durationDuringStartingToEndingDate = closingDate.difference(today);
 
     // Determine whether the event date is in the past or future
-    bool isPastStartDate = eventDate.isBefore(toDaysDate);
+    bool isPastStartDate = eventDate.isBefore(today);
+    bool hasEventStarted = !durationToStartingDate.isNegative;
 
     // Calculate the absolute difference in days
-    int differenceInDays = _durationToStartingDate.inDays.abs();
+    int differenceInDays = hasEventStarted
+        ? durationToStartingDate.inDays
+        : durationToStartingDate.inDays.abs();
 
     // Format the countdown string based on the difference in days and whether the event date is in the past or future
-    String countdownString =
-        differenceInDays == 1 ? 'A day ' : '$differenceInDays\ndays ';
-    countdownString += isPastStartDate ? 'ago' : 'more';
+    String countdownString;
+    if (differenceInDays == 0 && hasEventStarted) {
+      countdownString = 'Today';
+    } else if (differenceInDays == 1) {
+      countdownString = isPastStartDate ? 'Yesterday' : 'Tomorrow';
+    } else {
+      countdownString = widget.split.startsWith('Multiple')
+          ? '$differenceInDays'
+          : '$differenceInDays days ' + (isPastStartDate ? 'ago' : 'more');
+    }
 
     // Update the state with the countdown string
     if (mounted) {
       setState(() {
         _countDownToStartingDate = countdownString;
-        _singleCountDownToStartingDate =
-            differenceInDays == 1 ? 'A day ' : '$differenceInDays';
-        _metaData = isPastStartDate ? 'days -' : 'days +';
+        _metaData = ' days ' + (isPastStartDate ? '-' : ' +');
+        //
+        //countdownString = widget.split.startsWith('Multiple')
+        //     ? (differenceInDays == 0)
+        //         ? ''
+        //         : (isPastStartDate ? '\nago' : '\nmore')
+        //     : (differenceInDays == 0)
+        //         ? ''
+        //         : (isPastStartDate ? 'ago' : 'more');
       });
-    }
-
-    // Check if the event has started or ended
-    // if (eventDate.isBefore(toDaysDate)) {
-    //   if (mounted) {
-    //     setState(() {
-    //       _eventHasStarted = true;
-    //     });
-    //   }
-    // }
-
-    if (EventHasStarted.hasEventStarted(widget.startDate)) {
-      if (mounted) {
-        setState(() {
-          _eventHasStarted = true;
-        });
-      }
-    }
-
-    if (EventHasStarted.hasEventEnded(widget.clossingDay)) {
-      if (mounted) {
-        setState(() {
-          _eventHasEnded = true;
-        });
-      }
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
+  _countDownWidget() {
+    bool _isToday = _countDownToStartingDate == 'Today';
+    bool _isCurrent = _countDownToStartingDate == 'Today' ||
+        _countDownToStartingDate == 'Yesterday' ||
+        _countDownToStartingDate == 'Tomorrow';
     return widget.split.startsWith('Multiple')
         ? RichText(
             textScaleFactor: MediaQuery.of(context).textScaleFactor,
             text: TextSpan(children: [
               TextSpan(
-                text: '$_singleCountDownToStartingDate',
+                text: '$_countDownToStartingDate',
                 style: TextStyle(
                   fontSize: ResponsiveHelper.responsiveFontSize(context, 20.0),
-                  color: widget.color,
-                  fontWeight: FontWeight.bold,
+                  color: _isToday ? Colors.blue : widget.color,
+                  fontWeight: _isToday ? FontWeight.bold : FontWeight.w100,
                 ),
               ),
               TextSpan(
-                text: '\n$_metaData',
+                text: _isToday
+                    ? '           '
+                    : _isCurrent
+                        ? ''
+                        : '\n$_metaData',
                 style: TextStyle(
                   fontSize: ResponsiveHelper.responsiveFontSize(context, 11.0),
                   color: widget.color,
@@ -115,21 +122,48 @@ class _CountdownTimerState extends State<CountdownTimer> {
                 ),
               ),
             ]))
-        : widget.split.startsWith('Single')
+        : Text(
+            _countDownToStartingDate,
+            style: TextStyle(color: widget.color, fontSize: widget.fontSize),
+            overflow: TextOverflow.ellipsis,
+          );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return
+
+        //  widget.eventHasStarted
+        //     ? Text('Ongiong...',
+        //         style: TextStyle(
+        //           fontWeight: FontWeight.bold,
+        //           fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+        //           color: Colors.blue,
+        //         ))
+        //     : widget.eventHasEnded
+        //         ?
+
+        widget.eventHasStarted
             ? Text(
-                '$_singleCountDownToStartingDate $_metaData',
+                widget.eventHasEnded ? 'Completed' : 'Ongoing',
                 style: TextStyle(
-                  fontSize: widget.fontSize,
-                  color: widget.color,
-                  // fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.bold,
+                  fontSize: ResponsiveHelper.responsiveFontSize(
+                      context, widget.big ? 16.0 : 12),
+                  color: widget.eventHasEnded ? Colors.red : Colors.blue,
                 ),
-                overflow: TextOverflow.ellipsis,
               )
-            : Text(
-                _countDownToStartingDate,
-                style:
-                    TextStyle(color: widget.color, fontSize: widget.fontSize),
-                overflow: TextOverflow.ellipsis,
-              );
+            : _countDownWidget();
+    //  if (!_eventHasEnded)
+    //         _eventHasStarted
+    //             ?   TextSpan(
+    //             text:'Ongiong...',
+    //                 style: TextStyle(
+    //                   fontWeight: FontWeight.bold,
+    //                   fontSize:
+    //                       ResponsiveHelper.responsiveFontSize(context, 12.0),
+    //                   color: Colors.blue,
+    //                 ))
+    //             :
   }
 }

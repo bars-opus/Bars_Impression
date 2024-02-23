@@ -655,11 +655,14 @@ class _EventsAttendingTicketScreenState
       timestamp: Timestamp.fromDate(DateTime.now()),
       userRequestId: _provider.user!.userId!,
       approvedTimestamp: Timestamp.fromDate(DateTime.now()),
-      reason:'',
-      orderId:widget.ticketOrder.orderId,
+      reason: '',
+      orderId: widget.ticketOrder.orderId,
       city: _provider.userLocationPreference!.city!,
+      idempotencyKey: '',
       status: 'pending',
       transactionId: widget.ticketOrder.transactionId,
+      eventAuthorId: widget.event.authorId,
+      eventTitle: widget.event.title,
     );
 
     await DatabaseService.requestRefund(widget.event, refund, _provider.user!);
@@ -883,8 +886,8 @@ class _EventsAttendingTicketScreenState
         //           title: '',
         //           url: widget.event.virtualVenue,
         //         ))
-            // :
-             _launchMap();
+        // :
+        _launchMap();
       },
     );
   }
@@ -1143,7 +1146,7 @@ class _EventsAttendingTicketScreenState
           top: 200,
           child: Container(
             width: ResponsiveHelper.responsiveFontSize(context, 320),
-            height: 50,
+            height: ResponsiveHelper.responsiveFontSize(context, 50),
             child: ShakeTransition(
               duration: const Duration(seconds: 2),
               child: Row(

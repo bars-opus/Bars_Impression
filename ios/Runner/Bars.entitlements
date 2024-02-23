@@ -10,7 +10,7 @@
 	</array>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>applinks:barsopus.com/barsImpression</string>
+		<string>applinks:links.barsopus.com/barsImpression</string>
 	</array>
 	<key>com.apple.developer.in-app-payments</key>
 	<array>

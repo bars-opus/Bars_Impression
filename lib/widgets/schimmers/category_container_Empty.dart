@@ -1,4 +1,3 @@
-import 'package:bars/general/pages/discover/fetching_location.dart';
 import 'package:bars/utilities/exports.dart';
 
 class CategoryContainerEmpty extends StatelessWidget {
@@ -33,7 +32,7 @@ class CategoryContainerEmpty extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-            height: MediaQuery.of(context).size.height.toDouble() / 1.5,
+            height: ResponsiveHelper.responsiveHeight(context, 350),
             decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(30)),

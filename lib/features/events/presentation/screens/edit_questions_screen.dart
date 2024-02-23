@@ -41,7 +41,7 @@
 //             title: Text(
 //               'Are you sure you want to delete this question?',
 //               style: TextStyle(
-//                 fontSize: 16,
+//                 fontSize:  ResponsiveHelper.responsiveFontSize( context, 16),
 //                 color: Colors.black,
 //               ),
 //             ),
@@ -194,7 +194,7 @@
 //             'Edit Question',
 //             style: TextStyle(
 //                 color: Theme.of(context).secondaryHeaderColor,
-//                 fontSize: 20,
+//                 fontSize:  ResponsiveHelper.responsiveFontSize( context, 20),
 //                 fontWeight: FontWeight.bold),
 //           ),
 //         ),
@@ -232,18 +232,18 @@
 //                                 autofocus: true,
 //                                 initialValue: _content,
 //                                 style: TextStyle(
-//                                   fontSize: 16,
+//                                   fontSize:  ResponsiveHelper.responsiveFontSize( context, 16),
 //                                   color: Theme.of(context).secondaryHeaderColor,
 //                                 ),
 //                                 decoration: InputDecoration(
 //                                     hintText: "ask more to know more",
 //                                     hintStyle: TextStyle(
-//                                       fontSize: 14.0,
+//                                      ResponsiveHelper.responsiveFontSize( context, 14),.0,
 //                                       color: Colors.grey,
 //                                     ),
 //                                     labelText: 'Ask',
 //                                     labelStyle: TextStyle(
-//                                       fontSize: 16.0,
+//                                      ResponsiveHelper.responsiveFontSize( context, 16),.0,
 //                                       fontWeight: FontWeight.bold,
 //                                       color: Colors.grey,
 //                                     ),
@@ -284,7 +284,7 @@
 //                             Text(
 //                               'Save',
 //                               style: TextStyle(
-//                                 fontSize: 16.0,
+//                                ResponsiveHelper.responsiveFontSize( context, 16),.0,
 //                                 fontWeight: FontWeight.bold,
 //                                 color: Theme.of(context).secondaryHeaderColor,
 //                               ),

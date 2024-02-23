@@ -327,3 +327,7 @@ export 'package:bars/features/events/presentation/widgets/refund_doc.dart';
 export 'package:bars/features/events/presentation/screens/send_invite_message.dart';
 export 'package:bars/features/events/presentation/screens/no_schedule_calendar.dart';
 export 'package:bars/general/pages/profile/edit/user_barcode.dart';
+export 'package:bars/widgets/info/cant_fetch_private_event.dart';
+export 'package:bars/general/pages/profile/create/event_date_info.dart';
+export 'package:bars/general/pages/discover/fetching_location.dart';
+export 'package:bars/features/events/models/event_payout_model.dart';

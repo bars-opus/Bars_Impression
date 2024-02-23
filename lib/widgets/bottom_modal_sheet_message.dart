@@ -592,7 +592,7 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
       title: NameText(
         name:
             _user.userName == null ? 'No name' : _user.userName!.toUpperCase(),
-        verified: true,
+        verified: _user!.verified! ? true : false,
       ),
       subtitle: Text(
         _user.profileHandle,
@@ -640,6 +640,7 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
                   ),
                 ),
           title: TextField(
+            autofocus: true,
             focusNode: _focusNode,
             controller: controller,
             keyboardAppearance: MediaQuery.of(context).platformBrightness,
@@ -785,7 +786,7 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
     try {
       return await Hive.openBox<ChatMessage>('chatMessages');
     } catch (e) {
-      print('Error opening the box: $e');
+      // print('Error opening the box: $e');
       // handle error, perhaps show a UI message
       throw e;
     }
@@ -804,6 +805,7 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
   }
 
   Widget _getMessages(Chat chat) {
+    final chatMessagesBox = Hive.box<ChatMessage>('chatMessages');
     _markAllMessagesAsRead(chat.messageId);
     final _provider = Provider.of<UserData>(context, listen: false);
     print(chat.messageId);
@@ -853,6 +855,16 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
                     retrievedMessages.add(messageFromBox);
                   }
                 }
+
+                List<ChatMessage> retrievedChats =
+                    chatMessagesBox.values.toList();
+// Sort the chats by newMessageTimestamp descending
+                retrievedChats.sort((ChatMessage a, ChatMessage b) {
+                  // Handle potential null values by treating them as dates far in the past
+                  var aTimestamp = a.timestamp?.toDate() ?? DateTime(1970);
+                  var bTimestamp = b.timestamp?.toDate() ?? DateTime(1970);
+                  return bTimestamp.compareTo(aTimestamp);
+                });
 
                 // Use retrievedMessages directly in your FutureBuilder
                 return FutureBuilder<List<ChatMessage>>(

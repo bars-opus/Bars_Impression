@@ -86,6 +86,7 @@ class _CreativesScreenState extends State<CreativesScreen>
 
   _setUpFeedCount() async {
     print(widget.liveCountry);
+    print(widget.liveCity);
     int feedCount = widget.liveCity.isNotEmpty
         ? await DatabaseService.numusersLiveLocation(
             widget.profileHandle, widget.liveCity, widget.liveCountry)
@@ -245,7 +246,7 @@ class _CreativesScreenState extends State<CreativesScreen>
 
       if (widget.seeMoreFrom.isNotEmpty || widget.liveCity.isNotEmpty) {
         newUsersAll = uniqueEvents;
-        print(newUsersAll.length.toString() + 'length');
+        // print(newUsersAll.length.toString() + 'length');
       } else {
         if (country != null && city != null) {
           newUsersCity = uniqueEvents;
@@ -356,7 +357,7 @@ class _CreativesScreenState extends State<CreativesScreen>
       query = query.where('randomId', isGreaterThanOrEqualTo: randomValue);
 
       QuerySnapshot userFeedSnapShot =
-          await query.startAfterDocument(_usersAllSnapshot.last).limit(2).get();
+          await query.startAfterDocument(_usersAllSnapshot.last).limit(5).get();
 
       // If you didn't get enough documents, query in the other direction
       if (userFeedSnapShot.docs.length < 5) {
@@ -664,7 +665,8 @@ class _CreativesScreenState extends State<CreativesScreen>
                                         pageIndex: widget.pageIndex,
                                         types: widget.profileHandle,
                                         // seeMoreFrom: 'City',
-                                        isEvent: false, isFrom: 'City',sortNumberOfDays: 0,
+                                        isEvent: false, isFrom: 'City',
+                                        sortNumberOfDays: 0,
                                       ));
                                 }),
                         if (hasCountry && _usersCountry.isNotEmpty)
@@ -683,7 +685,8 @@ class _CreativesScreenState extends State<CreativesScreen>
                                         pageIndex: widget.pageIndex,
                                         types: widget.profileHandle,
                                         isEvent: false,
-                                        isFrom: 'Country', sortNumberOfDays: 0,
+                                        isFrom: 'Country',
+                                        sortNumberOfDays: 0,
                                       ));
                                 }),
                         if (hasContinent && _usersContinent.isNotEmpty)
@@ -702,7 +705,8 @@ class _CreativesScreenState extends State<CreativesScreen>
                                         pageIndex: widget.pageIndex,
                                         types: widget.profileHandle,
                                         isEvent: false,
-                                        isFrom: 'Continent',sortNumberOfDays: 0,
+                                        isFrom: 'Continent',
+                                        sortNumberOfDays: 0,
                                       ));
                                 }),
                         AroundTheWorldWidget(),

@@ -144,6 +144,8 @@ class UserData extends ChangeNotifier {
   List<SchedulePeopleModel> _schedulePerson = [];
   List<TicketModel> _ticketList = [];
 
+  // List<AccountHolderAuthor> _selectedUsersList = [];
+
   late int _notificaitonTab;
   late bool _showEventTab;
   late bool _showUsersTab;
@@ -249,7 +251,7 @@ class UserData extends ChangeNotifier {
     _showEventTab = true;
     _showUsersTab = true;
     _isPrivate = false;
-    _showToFollowers = false;
+    _showToFollowers = true;
     // _expandEventBardcode = false;
     _isVirtual = false;
     _isFree = false;
@@ -297,6 +299,7 @@ class UserData extends ChangeNotifier {
 
     _schedulePerson = [];
     _ticketList = [];
+    // _selectedUsersList = [];
 
     _performances = [];
     _collaborations = [];
@@ -480,6 +483,8 @@ class UserData extends ChangeNotifier {
 
   List<SchedulePeopleModel> get schedulePerson => _schedulePerson;
   List<TicketModel> get ticketList => _ticketList;
+
+  // List<AccountHolderAuthor> get selectedUsersList => _selectedUsersList;
 
   List<PortfolioModel> get performances => _performances;
   List<PortfolioCollaborationModel> get collaborations => _collaborations;
@@ -949,6 +954,18 @@ class UserData extends ChangeNotifier {
     _ticketList.remove(ticket);
     notifyListeners();
   }
+
+  //  void addSelectedUsersToList(AccountHolderAuthor selectedUsersList) {
+  //   if (!_selectedUsersList.contains(selectedUsersList)) {
+  //     _selectedUsersList.add(selectedUsersList);
+  //     notifyListeners();
+  //   }
+  // }
+
+  // void removeSelectedUsersFromList(AccountHolderAuthor selectedUsersList) {
+  //   _selectedUsersList.remove(selectedUsersList);
+  //   notifyListeners();
+  // }
 
   // _performances = [];
   // _collaborations = [];

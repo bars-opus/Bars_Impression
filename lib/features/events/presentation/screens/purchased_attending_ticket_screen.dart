@@ -30,7 +30,7 @@ class _PurchasedAttendingTicketScreenState
   int _index = 0;
 
   int _expectedAttendees = 0;
-  bool _eventHasEnded = false;
+  bool _eventHasStarted = false;
 
   final _messageController = TextEditingController();
   ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
@@ -46,10 +46,11 @@ class _PurchasedAttendingTicketScreenState
   }
 
   void _countDown() async {
-    if (EventHasStarted.hasEventEnded(widget.event.clossingDay.toDate())) {
+    if (EventHasStarted.hasEventStarted(
+        widget.event.startDate.toDate().subtract(Duration(days: 2)))) {
       if (mounted) {
         setState(() {
-          _eventHasEnded = true;
+          _eventHasStarted = true;
         });
       }
     }
@@ -330,7 +331,7 @@ class _PurchasedAttendingTicketScreenState
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       TextSpan(
-                        text: '\n\nCalendar and schdeules.',
+                        text: '\n\nCalendar and schedules.',
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       TextSpan(
@@ -417,6 +418,10 @@ class _PurchasedAttendingTicketScreenState
       reason: _messageController.text.trim(),
       city: _provider.userLocationPreference!.city!,
       transactionId: widget.ticketOrder.transactionId,
+      eventAuthorId: widget.event.authorId,
+      idempotencyKey: '',
+            eventTitle: widget.event.title,
+
     );
 
     await DatabaseService.requestRefund(widget.event, refund, _provider.user!);
@@ -594,7 +599,15 @@ class _PurchasedAttendingTicketScreenState
               decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(30)),
-              child: RefundDoc());
+              child: RefundDoc(
+                refundOnPressed: isRefunding
+                    ? () {
+                        Navigator.pop(context);
+                        _showBottomRefundForm();
+                      }
+                    : () {},
+                isRefunding: isRefunding,
+              ));
         });
       },
     );
@@ -649,8 +662,8 @@ class _PurchasedAttendingTicketScreenState
         //           title: '',
         //           url: widget.event.virtualVenue,
         //         ))
-        //     : 
-            _launchMap();
+        //     :
+        _launchMap();
       },
     );
   }
@@ -860,11 +873,35 @@ class _PurchasedAttendingTicketScreenState
                         children: [
                           TextSpan(
                             text:
-                                '\n\nIf you wish to request a refund, please note that it must be done no later than 2 days before the event. For detailed information regarding our refund policy, please refer to the refund policy document available ',
+                                '\n\nIf you wish to request a refund, please note that it must be done no later than 2 days before the event. For detailed information regarding our refund policy, please refer to the ',
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           TextSpan(
-                            text: 'here.',
+                            text: 'refund policy document  ',
+                            style: TextStyle(color: Colors.blue, fontSize: 14),
+                          ),
+                          TextSpan(
+                            text:
+                                "\n\nIn the event of cancellation or deletion of the event by the organizer, a full refund of 100% will be issued to ticket holders.",
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      if (!await launchUrl(Uri.parse(
+                          'https://www.barsopus.com/ticket-system'))) {
+                        throw 'Could not launch ';
+                      }
+                    },
+                    child: RichText(
+                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Read more about the ticket system.',
                             style: TextStyle(color: Colors.blue, fontSize: 14),
                           ),
                         ],
@@ -882,12 +919,7 @@ class _PurchasedAttendingTicketScreenState
                         children: [
                           TextSpan(
                             text:
-                                "\n\nIn the event of cancellation or deletion of the event by the organizer, a full refund of 100% will be issued to ticket holders.",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          TextSpan(
-                            text:
-                                "\n\n\nWe appreciate your cooperation and hope you enjoy the event. If you have any further inquiries or require assistance, please don't hesitate to contact our ",
+                                "\n\nWe appreciate your cooperation and hope you enjoy the event. If you have any further inquiries or require assistance, please don't hesitate to contact our ",
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           TextSpan(
@@ -909,10 +941,15 @@ class _PurchasedAttendingTicketScreenState
   }
 
   _ticket() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
     final List<String> currencyPartition =
         widget.event.rate.trim().replaceAll('\n', ' ').split("|");
 
     bool isAuthor = widget.event.authorId == widget.ticketOrder.userOrderId;
+
+    bool isGhanaian = _provider.userLocationPreference!.country == 'Ghana' ||
+        _provider.userLocationPreference!.currency == 'Ghana Cedi | GHS';
     // List<TicketPurchasedModel> tickets = widget.ticketOrder.tickets;
 
     return ListView(
@@ -962,7 +999,7 @@ class _PurchasedAttendingTicketScreenState
                         ),
                         TextSpan(
                           text:
-                              "\nYou have requested a refund for this ticket order. Your refund request is being processed. You should receive your funds within 24 hours.",
+                              "\nYou have requested a refund for this ticket order. Your refund request is being processed. It may take up to 10 business days for customers to receive their funds.",
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ],
@@ -975,27 +1012,60 @@ class _PurchasedAttendingTicketScreenState
                     padding: const EdgeInsets.only(
                         bottom: 10.0, left: 20, right: 20),
                     child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 20.0, horizontal: 10),
-                        decoration:
-                            BoxDecoration(color: Colors.red, boxShadow: [
-                          BoxShadow(
-                            color: Colors.black26,
-                            offset: Offset(10, 10),
-                            blurRadius: 10.0,
-                            spreadRadius: 4.0,
-                          )
-                        ]),
-                        // width: width,
-                        child: Text(
-                          'Refund processed  ',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: ResponsiveHelper.responsiveFontSize(
-                                context, 14.0),
-                            color: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 20.0, horizontal: 10),
+                      decoration: BoxDecoration(color: Colors.red, boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          offset: Offset(10, 10),
+                          blurRadius: 10.0,
+                          spreadRadius: 4.0,
+                        )
+                      ]),
+                      // width: width,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Refund processed  ',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: ResponsiveHelper.responsiveFontSize(
+                                  context, 14.0),
+                              color: Colors.white,
+                            ),
                           ),
-                        )),
+                          // Container(
+                          //   width:
+                          //       ResponsiveHelper.responsiveHeight(context, 120),
+                          //   height:
+                          //       ResponsiveHelper.responsiveHeight(context, 30),
+                          //   child: Row(
+                          //     mainAxisAlignment: MainAxisAlignment.end,
+                          //     children: [
+                          //       Text(
+                          //         'view details ',
+                          //         style: TextStyle(
+                          //           fontWeight: FontWeight.bold,
+                          //           fontSize:
+                          //               ResponsiveHelper.responsiveFontSize(
+                          //                   context, 14.0),
+                          //           color: Colors.white,
+                          //         ),
+                          //       ),
+                          //       Icon(
+                          //         color: Colors.white,
+                          //         Icons.arrow_forward_ios_outlined,
+                          //         size: ResponsiveHelper.responsiveFontSize(
+                          //             context, 20),
+                          //       ),
+                          //     ],
+                          //   ),
+                          // ),
+                        ],
+                      ),
+                    ),
                   )
                 : SizedBox.shrink(),
 
@@ -1003,7 +1073,7 @@ class _PurchasedAttendingTicketScreenState
         //   // event: widget.event,
         //   palette: widget.palette,
         //   ticketOrder: widget.ticketOrder,
-        //   hasEnded: _eventHasEnded,
+        //   hasEnded: _eventHasStarted,
         //   currency: widget.event.isFree || widget.event.rate.isEmpty
         //       ? ''
         //       : currencyPartition.length > 0
@@ -1149,13 +1219,15 @@ class _PurchasedAttendingTicketScreenState
         _locationButton(),
         _eventRoomButton(),
         if (!isAuthor) _organizerButton(),
-        // const SizedBox(
-        //   height: 8,
-        // ),
+        const SizedBox(
+          height: 8,
+        ),
 
         if (widget.currentUserId != widget.event.authorId)
-          if (!_eventHasEnded)
-            if (widget.ticketOrder.refundRequestStatus.isEmpty) _refundButton(),
+          if (!_eventHasStarted)
+            if (widget.ticketOrder.refundRequestStatus.isEmpty)
+              if (widget.ticketOrder.isInvited || widget.ticketOrder.total != 0)
+        _refundButton(),
         const SizedBox(
           height: 100,
         ),
@@ -1168,50 +1240,50 @@ class _PurchasedAttendingTicketScreenState
         const SizedBox(
           height: 100,
         ),
+        if (isGhanaian)
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                'Docs.',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+                ),
+                textAlign: TextAlign.start,
+              ),
+              GestureDetector(
+                onTap: () {
+                  _showBottomSheetTicketDoc();
+                },
+                child: Text(
+                  '\nTicket.',
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 12.0),
+                  ),
+                  textAlign: TextAlign.start,
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  _showBottomSheetRefund(false);
+                },
+                child: Text(
+                  '\nRefund.',
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 12.0),
+                  ),
+                  textAlign: TextAlign.start,
+                ),
+              ),
+            ],
+          ),
 
-        GestureDetector(
-          onTap: () {},
-          child: Center(
-            child: Text(
-              'Docs.',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-              ),
-              textAlign: TextAlign.start,
-            ),
-          ),
-        ),
-        GestureDetector(
-          onTap: () {
-            _showBottomSheetTicketDoc();
-          },
-          child: Center(
-            child: Text(
-              '\nTicket.',
-              style: TextStyle(
-                color: Colors.blue,
-                fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-              ),
-              textAlign: TextAlign.start,
-            ),
-          ),
-        ),
-        GestureDetector(
-          onTap: () {
-            _showBottomSheetRefund(false);
-          },
-          child: Center(
-            child: Text(
-              '\nRefund.',
-              style: TextStyle(
-                color: Colors.blue,
-                fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-              ),
-              textAlign: TextAlign.start,
-            ),
-          ),
-        ),
         const SizedBox(
           height: 100,
         ),
@@ -1307,7 +1379,7 @@ class _PurchasedAttendingTicketScreenState
   //   //     // const SizedBox(
   //   //     //   height: 10,
   //   //     // ),
-  //   //     // if (!_eventHasEnded) _refundButton(),
+  //   //     // if (!_eventHasStarted) _refundButton(),
   //   //     // const SizedBox(
   //   //     //   height: 100,
   //   //     // ),

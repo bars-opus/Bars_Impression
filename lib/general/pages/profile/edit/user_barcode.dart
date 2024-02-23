@@ -101,7 +101,7 @@ class UserBarcode extends StatelessWidget {
               ),
               if (_provider.currentUserId == userId)
                 Text(
-                  'This is your account barcode, you can take a screenshot of this barcode and paste it in your studio or workplace so new customers can scan it and eget access to your Bars Imprssoin page and keep intouch with you.',
+                  'This is your account barcode. You can take a screenshot of this barcode and display it in your studio or workplace. This way, new customers can scan it to access your Bars Impression page and stay in touch with you.',
                   style: TextStyle(
                     fontSize: ResponsiveHelper.responsiveFontSize(context,
                         ResponsiveHelper.responsiveFontSize(context, 12)),

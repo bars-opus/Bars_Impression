@@ -9,104 +9,6 @@ const axios = require('axios');
 
 
 
-
-
-// const PAYSTACK_SECRET_KEY = functions.config().paystack.secret_key; // Assuming you've set this in your environment config
-
-// exports.createSubaccount = functions.https.onCall(async (data, context) => {
-//   // Check if the user is authenticated
-//   if (!context.auth) {
-//     throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
-//   }
-
-//   const PAYSTACK_SECRET_KEY = functions.config().paystack.secret_key;
-
-
-//   // Verify the bank account first
-//   try {
-//       // eslint-disable-next-line no-await-in-loop
-//     const verificationResponse = await axios.get(`https://api.paystack.co/bank/resolve?account_number=${data.account_number}&bank_code=${data.bank_code}`, {
-//       headers: {
-//         Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-//       },
-//     });
-
-//     // Check if verification was successful
-//     if (!verificationResponse.data.status) {
-//       throw new functions.https.HttpsError('aborted', 'Bank account verification failed.');
-//     }
-
-//     // Bank account is verified, proceed with creating the subaccount
-//     // eslint-disable-next-line no-await-in-loop
-//     const paystackResponse = await axios.post('https://api.paystack.co/subaccount', {
-//       business_name: data.business_name, 
-//       settlement_bank: data.bank_code,   
-//       account_number: data.account_number, 
-//       percentage_charge: data.percentage_charge 
-//     }, {
-//       headers: {
-//         Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-//         'Content-Type': 'application/json'
-//       }
-//     });
-
-//     if (paystackResponse.data.status) {
-//       // eslint-disable-next-line no-await-in-loop
-      // const recipient_code = await createTransferRecipient(data, PAYSTACK_SECRET_KEY   )
-//       return { subaccount_id: paystackResponse.data.data.subaccount_code, transferRecepientId: recipient_code};
-//     } else {
-//       // Failed to create subaccount
-//       throw new functions.https.HttpsError('unknown', 'Failed to create subaccount with Paystack');
-//     }
-//   } catch (error) {
-//     console.error('Detailed error:', {
-//       message: error.message,
-//       stack: error.stack,
-//       response: error.response ? error.response.data : null,
-//     });
-//     throw new functions.https.HttpsError(
-//       'unknown',
-//       'Error creating subaccount',
-//       error.response ? error.response.data : error.message
-//     );
-//   }
-// });
-
-
-// exports.createSubaccount = functions.https.onCall(async (data, context) => {
-//   const PAYSTACK_SECRET_KEY = functions.config().paystack.secret_key;
-//   if (!context.auth) {
-//     throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
-//   }
-
-//   try {
-//     const paystackResponse =  await axios.post('https://api.paystack.co/subaccount', {
-//       business_name: data.business_name, 
-//       settlement_bank: data.bank_code,   
-//       account_number: data.account_number, 
-//       percentage_charge: data.percentage_charge 
-//     }, {
-//       headers: {
-//         Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-//         'Content-Type': 'application/json'
-//       }
-//     });
-
-//     if (paystackResponse.data.status) {
-//       // eslint-disable-next-line no-await-in-loop
-//       const recipient_code = await createTransferRecipient(data, PAYSTACK_SECRET_KEY);
-
-//       return { subaccount_id: paystackResponse.data.data.subaccount_code, recipient_code: recipient_code };
-//     } else {
-//       throw new functions.https.HttpsError('unknown', 'Failed to create subaccount with Paystack');
-//     }
-//   } catch (error) {
-//     console.error('Paystack subaccount creation error:', error);
-//     throw new functions.https.HttpsError('unknown', 'Paystack subaccount creation failed', error);
-//   }
-// });
-
-
 exports.createSubaccount = functions.https.onCall(async (data, context) => {
   const PAYSTACK_SECRET_KEY = functions.config().paystack.secret_key;
   if (!context.auth) {
@@ -206,8 +108,6 @@ async function createTransferRecipient(data, PAYSTACK_SECRET_KEY) {
 
 
 
-
-
 const PAYSTACK_API_BASE_URL = 'https://api.paystack.co';
 
 exports.deletePaystackData = functions.https.onCall(async (data, context) => {
@@ -241,7 +141,6 @@ exports.deletePaystackData = functions.https.onCall(async (data, context) => {
 
 
 
-
 function alertAdminSubAccountIdFFailure( userId,  response) {
   const sanitizedResponse = sanitizeResponse(response);
   const logEntry = {
@@ -258,8 +157,6 @@ function alertAdminSubAccountIdFFailure( userId,  response) {
     .then(() => console.log('Logged failed with additional details'))
     .catch(error => console.error('Error logging failed:', error));
 }
-
-
 
 
 
@@ -321,45 +218,6 @@ function alertAdminPaymentVerificationFailure( eventId,  response) {
     .catch(error => console.error('Error logging error:', error));
 }
 
-// exports.verifyPaystackPayment = functions.https.onCall(async (data, context) => {
-//   // Ensure the user is authenticated
-//   if (!context.auth) {
-//     throw new functions.https.HttpsError('unauthenticated', 
-//       'User must be authenticated to verify payment.');
-//   }
-
-//   const paymentReference = data.reference;
-//   const expectedAmount = data.amount; // The expected amount in kobo.
-
-//   try {
-//     const verificationURL = `https://api.paystack.co/transaction/verify/${encodeURIComponent(paymentReference)}`;
-//     const response = await axios.get(verificationURL, {
-//       headers: { Authorization: `Bearer ${PAYSTACK_SECRET_KEY}` },
-//     });
-
-//     const paymentData = response.data.data;
-
-//     // Verify the amount paid is what you expect
-//     if (paymentData.status === 'success' && parseInt(paymentData.amount) === expectedAmount) {
-//       // Payment is successful and the amount matches
-//       // You can proceed to grant the service or update your database here
-//       // ...
-
-//       return { success: true, message: 'Payment verified successfully' };
-//     } else {
-//       // Payment failed or the amount does not match
-//       return { success: false, message: 'Payment verification failed: Amount does not match or payment was unsuccessful.' };
-//     }
-//   } catch (error) {
-//     // Handle errors
-//     console.error('Payment verification error:', error);
-//     // Return a sanitized error message to the client
-//     throw new functions.https.HttpsError('unknown', 'Payment verification failed. Please try again later.');
-//   }
-// });
-
-
-
 
 
 
@@ -398,26 +256,25 @@ async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
         source: "balance",
         amount: organizerShare,
         recipient: eventData.transferRecepientId,
-        reason:  `Payment to organizer for :  ${ eventData.title}`, 
+        reason:  `Payment to organizer for:  ${ eventData.eventTitle}`, 
       }, {
         headers: {
           'Authorization': `Bearer ${functions.config().paystack.secret_key}`,
           'Content-Type': 'application/json'
-   
         }
       });
 
       const responseData = response.data;
 
-      if (responseData.status) {
+      if (response.status) {
            // eslint-disable-next-line no-await-in-loop
-        await alertAdminFundsDistributedSuccess(db, eventDoc.id, eventData.subaccountId);
-        return responseData.data;
+      
+        return responseData;
       }else {
         // Handle known errors without retrying
         if (responseData.message.includes("Transfer code is invalid")) {
           // eslint-disable-next-line no-await-in-loop
-          await alertAdminDistributeFundsError( eventDoc.id, eventData.transferRecepientId, "Transfer code is invalid", responseData.message);
+          await alertAdminDistributeFundsError(db,eventData.eventId, eventData.transferRecepientId, eventData.subaccountId, responseData.message ||"Transfer code is invalid" ,  eventData.eventAuthorId, );
           throw new Error(responseData.message);
         }
         // Throw a generic error to trigger a retry for other cases
@@ -429,7 +286,7 @@ async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
 
       if (!isRetryableError(error)) {
            // eslint-disable-next-line no-await-in-loop
-        await alertAdminDistributeFundsError( eventDoc.id, eventData.transferRecepientId, "Could not retry", error.message || "Unknown error");
+        await alertAdminDistributeFundsError(db,eventData.eventId, eventData.transferRecepientId, eventData.subaccountId, error.message || "Unknown error",  eventData.eventAuthorId, );
         throw error;
       }
 
@@ -440,27 +297,27 @@ async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
       delay *= 2;
     }
   }
-
-  await alertAdminDistributeFundsError( eventDoc.id, eventData.transferRecepientId,'All retries failed', 'could not process funds');
+  await alertAdminDistributeFundsError(db,eventData.eventId, eventData.transferRecepientId, eventData.subaccountId, 'All retries failed', eventData.eventAuthorId,);
      // eslint-disable-next-line no-await-in-loop
   throw new Error(`All ${maxRetries} retries failed for event ${eventDoc.id}`);
 }
 
-exports.distributeEventFunds = functions.pubsub.schedule('every 5 minutes').onRun(async (context) => {
+exports.distributeEventFunds = functions.pubsub.schedule('every 24 hours').onRun(async (context) => {
   const db = admin.firestore();
   
   // Assume this is where you fetch events from Firestore
-  const eventsSnapshot = await db.collection('new_allEvents')
+  const eventsSnapshot = await db.collection('allFundsPayoutRequest')
     .where('clossingDay', '<=', admin.firestore.Timestamp.now())
-    .where('fundsDistributed', '==', false)
+    .where('status', '==', 'pending')
     .get();
 
   for (const eventDoc of eventsSnapshot.docs) {
-    const eventId = eventDoc.id;
     const eventData = eventDoc.data();
+    const eventId = eventDoc.data().eventId;
+
     const idempotencyKey = `${eventId}_${new Date().toISOString().slice(0, 10)}`;
   
-    const idempotencyDocRef = db.collection('idempotency_keys').doc(idempotencyKey);
+    const idempotencyDocRef = db.collection('fundsDistributedSuccessIdempotencyKeys').doc(idempotencyKey);
     const eventDocRef = eventDoc.ref;
   
     try {
@@ -481,151 +338,371 @@ exports.distributeEventFunds = functions.pubsub.schedule('every 5 minutes').onRu
         // If the transfer is successful, mark the event as processed and store the idempotency key
         transaction.update(eventDocRef, { fundsDistributed: true });
         transaction.set(idempotencyDocRef, {
-          transferResponse: response.data, // Assume the API response has a data field
+          transferResponse: response, // Assume the API response has a data field
           created: admin.firestore.FieldValue.serverTimestamp()
         });
       });
+
+           // eslint-disable-next-line no-await-in-loop
+           await alertAdminFundsDistributedSuccess(db, eventId, eventData.transferRecepientId,idempotencyKey, eventData.subaccountId,  eventData.eventAuthorId,);
+
+      
+      const userId = eventData.eventAuthorId;
+      const userRef = firestore.doc(`user_general_settings/${userId}`);
+        // eslint-disable-next-line no-await-in-loop
+      const userDoc = await userRef.get(); // eslint-disable-next-line no-await-in-loop
+
+      if (!userDoc.exists) {
+        console.log(`User settings not found for user ${userId}`);
+        // continue;
+      }
+
+      const userData = userDoc.data();
+      const androidNotificationToken = userData.androidNotificationToken;
+
+      if (androidNotificationToken) {
+        try {
+            // eslint-disable-next-line no-await-in-loop
+            await sendFundDistributedNotification(androidNotificationToken, userId, eventId, eventData.eventAuthorId, eventData.eventTitle); // eslint-disable-next-line no-await-in-loop
+        } catch (error) {
+          console.error(`Error sending  funds distributed notification:`, error);
+        }
+      } else {
+        console.log(`No notification token for user ${userId} or notifications are muted.`);
+      }
+
+
+      // const userId = eventData.authorId;
+      // const userData = userDoc.data();
+      // const androidNotificationToken = userData.androidNotificationToken;
+
+      // if (androidNotificationToken) {
+      //   try {
+      //       // eslint-disable-next-line no-await-in-loop
+      //     await sendFundDistributedNotification(androidNotificationToken, userId, eventId, eventData.authorId, eventData.title); // eslint-disable-next-line no-await-in-loop
+      //   } catch (error) {
+      //     console.error(`Error sending  funds distributed notification:`, error);
+      //   }
+      // } else {
+      //   console.log(`No notification token for user ${userId} or notifications are muted.`);
+      // }
+
+    
+    
     } catch (error) {
-      // If the transaction fails, log the error and alert the admin
+      if (error.response && error.response.data) {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.error(error.response.data);
+          console.error(error.response.status);
+          console.error(error.response.headers);
+      }
+        console.error(`Attempt ${retryCount + 1} for event ${eventId} failed:`, error.response.data);
+    
+        if (error.response.data.code === 'insufficient_balance') {
+          // Handle insufficient balance error specifically
+            // eslint-disable-next-line no-await-in-loop
+          await alertAdminDistributeFundsError(
+            db, 
+            eventId,
+            eventData.transferRecepientId, 
+            eventData.subaccountId, 
+            "Insufficient balance for transfer", 
+            eventData.eventAuthorId
+          );
+          // Break out of the loop since retrying won't resolve insufficient funds
+          break;
+        }
+      } else {
+        // Handle other errors
+           // If the transaction fails, log the error and alert the admin
       console.error(`Transaction failed for event ${eventId}:`, error);
-       // eslint-disable-next-line no-await-in-loop
-      await alertAdminDistributeFundsError(db, eventId, eventData.transferRecepientId, `Transaction failed for event: ${error}:` );
+      // eslint-disable-next-line no-await-in-loop
+        await alertAdminDistributeFundsError(db, eventId, eventData.transferRecepientId, eventData.subaccountId, `Transaction failed for event:${ eventData.eventTitle} \n ${error}:`, eventData.eventAuthorId, );
+        console.error(`Attempt ${retryCount + 1} for event ${eventDoc.id} failed with an unknown error:`, error);
+      }
+     
+   
     }
   }
 });
 
 function getDocumentPath() {
   const now = new Date();
-  const year = now.getFullYear();
-  // Ensure month is in "January" format
+  const year = now.getFullYear().toString();
   const month = now.toLocaleString('default', { month: 'long' });
-  // Calculate the week of the month
   const weekOfMonth = `week${Math.ceil(now.getDate() / 7)}`;
-
-  // Construct the document path
-  return `${year}${month}/${weekOfMonth}`;
+  const path = `${year}/${month}/${weekOfMonth}`;
+  return path;
 }
 
-// Example function to log success with more details
-function alertAdminFundsDistributedSuccess(eventId, response) {
-  const sanitizedResponse = sanitizeResponse(response);
-  const logEntry = {
-    timestamp: new Date(),
-    eventId: eventId,
-    status: 'Success',
-    response: sanitizedResponse
+async function sendFundDistributedNotification(androidNotificationToken, userId, eventId, eventAuthorId, eventTitle) {
+  const title = 'Funds distributed for event' ;
+  const body = eventTitle;
+  
+  let message = {
+  notification: { title, body },
+  data: {
+  recipient: String(userId),
+  contentType: 'FundsDistributed',
+  contentId: String(eventId),
+  eventAuthorId: String(eventAuthorId),
+  },
+  token: androidNotificationToken,
+  apns: {
+    payload: {
+      aps: {
+        sound: 'default',
+      },
+    },
+  },
+  android: {
+    priority: 'high', // or "normal" (default)
+  },
   };
+  
+  try {
+  const response = await admin.messaging().send(message);
+  console.log('Message sent', response);
+  } catch (error) {
+  console.log('Error sending message', error);
+  throw error;
+  }
+  }
 
-  const db = admin.firestore();
-  const documentPath = getDocumentPath();
-  db.collection('funds_distributed_success_logs').doc(documentPath).collection('logs').add(logEntry)
-    .then(() => console.log('Logged success with additional details'))
-    .catch(error => console.error('Error logging success:', error));
-}
 
-// Example function to log error with more details
-function alertAdminDistributeFundsError(eventId, transferRecepientId, error, response) {
+
+function alertAdminDistributeFundsError(db, eventId, transferRecepientId, subaccountId, response,  authorId) {
   const sanitizedResponse = sanitizeResponse(response);
   const logEntry = {
-    timestamp: new Date(),
+    date: admin.firestore.FieldValue.serverTimestamp(),
     eventId: eventId,
-    status: 'Error',
+    // error: errorMessage,
     transferRecepientId: transferRecepientId,
-    error: error.toString(),
+    subaccountId: subaccountId,
+    authorId: authorId,
     response: sanitizedResponse
   };
 
-  const db = admin.firestore();
   const documentPath = getDocumentPath();
-  db.collection('fund_distribution_error_logs').doc(documentPath).collection('logs').add(logEntry)
-    .then(() => console.log('Logged error with additional details'))
-    .catch(error => console.error('Error logging error:', error));
+  db.collection('fundDistributionFailures').doc(documentPath).collection('logs').add(logEntry)
+    .then(() => console.log('Logged failed with additional details'))
+    .catch(error => console.error('Error logging failed:', error));
 }
 
-// Example function to log error with more details
-function alertCalculateFundDistError(eventId, transferRecepientId, error, response) {
+
+
+function alertCalculateFundDistError(db, eventId, transactionId,  subaccountId,response,  authorId,) {
   const sanitizedResponse = sanitizeResponse(response);
   const logEntry = {
-    timestamp: new Date(),
+    date: admin.firestore.FieldValue.serverTimestamp(),
     eventId: eventId,
-    status: 'Error',
-    transferRecepientId: transferRecepientId,
-    error: error.toString(),
+    // error: errorMessage,
+    transactionId: transactionId,
+    authorId: authorId,
+    subaccountId: subaccountId,    
     response: sanitizedResponse
+
   };
 
-  const db = admin.firestore();
   const documentPath = getDocumentPath();
-  db.collection('fund_calculate_error_logs').doc(documentPath).collection('logs').add(logEntry)
-    .then(() => console.log('Logged error with additional details'))
-    .catch(error => console.error('Error logging error:', error));
+  db.collection('fundCalculateDistributeFailures').doc(documentPath).collection('logs').add(logEntry)
+    .then(() => console.log('Logged failed with additional details'))
+    .catch(error => console.error('Error logging failed:', error));
 }
 
+
+
+function alertAdminFundsDistributedSuccess(db, eventId, transferRecepientId, idempotencyKey, subaccountId,  authorId, ) {
+  // const sanitizedResponse = sanitizeResponse(response);
+  const logEntry = {
+    date: admin.firestore.FieldValue.serverTimestamp(),
+    eventId: eventId,
+    transferRecepientId: transferRecepientId,
+    authorId: authorId,
+    subaccountId: subaccountId,
+    idempotencyKey: idempotencyKey
+  };
+
+  const documentPath = getDocumentPath();
+  db.collection('fundsDistributedSuccess').doc(documentPath).collection('logs').add(logEntry)
+    .then(() => console.log('Logged succesful with additional details'))
+    .catch(error => console.error('Error logging succesful:', error));
+}
+
+
+// // Example function to log success with more details
+// function alertAdminFundsDistributedSuccess(eventId, response) {
+//   const sanitizedResponse = sanitizeResponse(response);
+//   const logEntry = {
+//     timestamp: new Date(),
+//     eventId: eventId,
+//     status: 'Success',
+//     response: sanitizedResponse
+//   };
+
+//   const db = admin.firestore();
+//   const documentPath = getDocumentPath();
+//   db.collection('fundsDistributedSuccessLogs').doc(documentPath).collection('logs').add(logEntry)
+//     .then(() => console.log('Logged success with additional details'))
+//     .catch(error => console.error('Error logging success:', error));
+// }
+
+// // Example function to log error with more details
+// function alertAdminDistributeFundsError(eventId, transferRecepientId, error, response) {
+//   const sanitizedResponse = sanitizeResponse(response);
+//   const logEntry = {
+//     timestamp: new Date(),
+//     eventId: eventId,
+//     status: 'Error',
+//     transferRecepientId: transferRecepientId,
+//     error: error.toString(),
+//     response: sanitizedResponse
+//   };
+
+//   const db = admin.firestore();
+//   const documentPath = getDocumentPath();
+//   db.collection('fundDistributionErrorLogs').doc(documentPath).collection('logs').add(logEntry)
+//     .then(() => console.log('Logged error with additional details'))
+//     .catch(error => console.error('Error logging error:', error));
+// }
+
+// // Example function to log error with more details
+// function alertCalculateFundDistError(eventId, transferRecepientId, error, response) {
+//   const sanitizedResponse = sanitizeResponse(response);
+//   const logEntry = {
+//     timestamp: new Date(),
+//     eventId: eventId,
+//     status: 'Error',
+//     transferRecepientId: transferRecepientId,
+//     error: error.toString(),
+//     response: sanitizedResponse
+//   };
+
+//   const db = admin.firestore();
+//   const documentPath = getDocumentPath();
+//   db.collection('fundCalculateErrorLogs').doc(documentPath).collection('logs').add(logEntry)
+//     .then(() => console.log('Logged error with additional details'))
+//     .catch(error => console.error('Error logging error:', error));
+// }
 
 async function calculateOrganizerShare(eventData) {
-  try {
-    // Initialize a variable to hold the sum of all ticket totals
-    let totalAmountCollected = 0;
+  const db = admin.firestore();
 
-    // Get a reference to the subcollection
+  try {
+    let totalAmountCollected = 0;
     const ticketOrderCollection = admin.firestore()
       .collection('new_eventTicketOrder')
-      .doc(eventData.id)
+      .doc(eventData.eventId)
       .collection('eventInvite');
-
-    // Retrieve the snapshot
     const totalTicketSnapshot = await ticketOrderCollection.get();
 
-    // Check if there are any ticket orders
     if (totalTicketSnapshot.empty) {
-      console.log(`No ticket orders found for event: ${eventData.id}`);
-      // Handle the scenario where there are no ticket orders, e.g., return 0 or throw an error
-      return 0; // Assuming the organizer's share is zero if there are no ticket sales
+      console.log(`No ticket orders found for event: ${eventData.eventId}`);
+      return 0;
     }
 
-    // Loop through each document in the snapshot
     for (const eventDoc of totalTicketSnapshot.docs) {
-      // Accumulate the total amount from each ticket order
-      // Ensure that the total is a number and not undefined or null
       const ticketTotal = eventDoc.data().total;
-      if (typeof ticketTotal === 'number') {
+      if (typeof ticketTotal === 'number' && !isNaN(ticketTotal)) {
         totalAmountCollected += ticketTotal;
       } else {
-        // Handle the scenario where ticket total is not a number
-         // eslint-disable-next-line no-await-in-loop
-        await alertCalculateFundDistError( eventData.id, eventData.transferRecepientId, `Invalid ticket total `, `Invalid ticket total for document: ${String(ticketTotal)}` );
         console.error(`Invalid ticket total for document: ${eventDoc.id}`);
-        // Depending on your error handling strategy, you can throw an error or skip this ticket total
-        // throw new Error(`Invalid ticket total for document: ${eventDoc.id}`);
+        // Collect errors for reporting after the loop, if needed
       }
     }
 
-    // Calculate your commission (10% of the total amount)
-    const commissionRate = 0.10; // 10% commission rate
+    // Compute the commission and organizer's share
+    const commissionRate = 0.10;
     const commission = totalAmountCollected * commissionRate;
-
-    // The organizer's share is the remaining 90%
     const organizerShare = totalAmountCollected - commission;
 
-    // Ensure the organizer's share is not negative
     if (organizerShare < 0) {
       throw new Error('Calculated organizer share is negative, which is not possible.');
     }
 
-    // Return the organizer's share
+    // Assuming that the organizer's share should be in the smallest currency unit
     return Math.round(organizerShare * 100);
-
-    // return organizerShare;
-
   } catch (error) {
-    // Use eventData.id instead of eventDoc.id to avoid referencing an undefined variable
-    await alertCalculateFundDistError( eventData.id, eventData.transferRecepientId,'Error calculating organizer share:', `Error calculating organizer share: ${error.message.toString()}` );
+
+     //  eslint-disable-next-line no-await-in-loop
+    await alertCalculateFundDistError(
+      
+      db,
+       eventData.eventId,
+      eventData.transferRecepientId,
+      eventData.subaccountId,
+      `Error calculating organizer share: ${error.message}`,
+      eventData.eventAuthorId
+    );
     console.error('Error calculating organizer share:', error);
     throw error;
   }
 }
 
+// async function calculateOrganizerShare(eventData) {
+//   try {
+//     // Initialize a variable to hold the sum of all ticket totals
+//     let totalAmountCollected = 0;
 
+//     // Get a reference to the subcollection
+//     const ticketOrderCollection = admin.firestore()
+//       .collection('new_eventTicketOrder')
+//       .doc(eventData.id)
+//       .collection('eventInvite');
+
+//     // Retrieve the snapshot
+//     const totalTicketSnapshot = await ticketOrderCollection.get();
+
+//     // Check if there are any ticket orders
+//     if (totalTicketSnapshot.empty) {
+//       console.log(`No ticket orders found for event: ${eventData.id}`);
+//       // Handle the scenario where there are no ticket orders, e.g., return 0 or throw an error
+//       return 0; // Assuming the organizer's share is zero if there are no ticket sales
+//     }
+
+//     // Loop through each document in the snapshot
+//     for (const eventDoc of totalTicketSnapshot.docs) {
+//       // Accumulate the total amount from each ticket order
+//       // Ensure that the total is a number and not undefined or null
+//       const ticketTotal = eventDoc.data().total;
+//       if (typeof ticketTotal === 'number') {
+//         totalAmountCollected += ticketTotal;
+//       } else {
+//         // Handle the scenario where ticket total is not a number
+        //  eslint-disable-next-line no-await-in-loop
+//         await alertCalculateFundDistError(db,  eventData.id, eventData.transferRecepientId, eventData.subaccountId, `Invalid ticket total for document: ${String(ticketTotal)}`,  eventData.authorId, );
+//         console.error(`Invalid ticket total for document: ${eventDoc.id}`);
+//         // Depending on your error handling strategy, you can throw an error or skip this ticket total
+//         // throw new Error(`Invalid ticket total for document: ${eventDoc.id}`);
+//       }
+//     }
+
+//     // Calculate your commission (10% of the total amount)
+//     const commissionRate = 0.10; // 10% commission rate
+//     const commission = totalAmountCollected * commissionRate;
+
+//     // The organizer's share is the remaining 90%
+//     const organizerShare = totalAmountCollected - commission;
+
+//     // Ensure the organizer's share is not negative
+//     if (organizerShare < 0) {
+//       throw new Error('Calculated organizer share is negative, which is not possible.');
+//     }
+
+//     // Return the organizer's share
+//     return Math.round(organizerShare * 100);
+
+//     // return organizerShare;
+
+//   } catch (error) {
+//     // Use eventData.id instead of eventDoc.id to avoid referencing an undefined variable
+//     await alertCalculateFundDistError(db,  eventData.id, eventData.transferRecepientId, eventData.subaccountId, `Error calculating organizer share: ${error.message.toString()}`, eventData.authorId, );
+//     console.error('Error calculating organizer share:', error);
+//     throw error;
+//   }
+// }
 
 
 
@@ -664,213 +741,6 @@ function sanitizeResponse(response) {
   return clonedResponse;
 }
 
-
-
-
-
-
-// // Example function to log success with more details
-// function alertAdminFundsDistributedSuccess(eventId, response) {
-//   // Sanitize the response to remove sensitive data
-//   const sanitizedResponse = sanitizeResponse(response);
-
-//   // Add additional logging information here
-//   const logEntry = {
-//     timestamp: new Date(),
-//     eventId: eventId,
-//     status: 'Success',
-//     response: sanitizedResponse // Log the sanitized response
-//   };
-
-//   // Save the log entry to Firebase
-//   const db = admin.firestore();
-//   db.collection('funds_distributed_success_logs').add(logEntry)
-//     .then(() => console.log('Logged success with additional details'))
-//     .catch(error => console.error('Error logging success:', error));
-// }
-
-
-// function alertAdminDistributeFundsError(eventId, transferRecepientId,  error, response,) {
-//   // Sanitize the response to remove sensitive data
-//   const sanitizedResponse = sanitizeResponse(response);
-
-//   // Add additional logging information here
-//   const logEntry = {
-//     timestamp: new Date(),
-//     eventId: eventId,
-//     status: 'Error',
-//     transferRecepientId:  transferRecepientId,
-//     error: error.toString(),
-//     response: sanitizedResponse // Log the sanitized response
-//   };
-
-//   // Save the log entry to Firebase
-//   const db = admin.firestore();
-//   db.collection('fund_distribution_error_logs').add(logEntry)
-//     .then(() => console.log('Logged error with additional details'))
-//     .catch(error => console.error('Error logging errors:', error));
-// }
-
-
-
-
-
-// // Example function to log error with more details
-// function alertCalculateFundDistError(eventId, transferRecepientId, error, response) {
-//   // Sanitize the response to remove sensitive data
-//   const sanitizedResponse = sanitizeResponse(response);
-
-//   // Add additional logging information here
-//   const logEntry = {
-//     timestamp: new Date(),
-//     eventId: eventId,
-//     status: 'Error',
-//     transferRecepientId:  transferRecepientId,
-//     error: error.toString(), // Log the error message
-//     response: sanitizedResponse // Log the sanitized response
-//   };
-
-//   // Save the log entry to Firebase
-//   const db = admin.firestore();
-//   db.collection('fund_calculate_error_logs').add(logEntry)
-//     .then(() => console.log('Logged error with additional details'))
-//     .catch(error => console.error('Error logging error:', error));
-// }
-
-// // Function to sanitize the response
-// function sanitizeResponse(response) {
-//   // Create a copy to avoid mutating the original response
-//   let sanitized = Object.assign({}, response);
-
-//   // Remove or mask sensitive fields
-//   if (sanitized.data && sanitized.data.customer && sanitized.data.customer.email) {
-//     sanitized.data.customer.email = 'REDACTED'; // Example of data redaction
-//   }
-
-//   // Add more fields to redact as necessary based on the structure of your response
-
-//   return sanitized;
-// }
-
-
-// //Note
-// //i have a create a refund functoin so users can use to refund already purchase tickets.
-// //it should have a collection with events and their refunds.
-// // Cloud Function to distribute event funds
-
-// exports.scheduledRefundProcessor = functions.pubsub.schedule('every 24 hours').onRun(async (context) => {
-//   const db = admin.firestore();
-//   const refundRequestsSnapshot = await db.collection('refundRequests').where('status', '==', 'pending').get();
-
-//   for (const refundRequestDoc of refundRequestsSnapshot.docs) {
-//     try {
-//       await processRefund(refundRequestDoc);
-//     } catch (error) {
-//       console.error(`Error processing refund for transaction ID: ${refundRequestDoc.id}`, error);
-//       await alertAdminRefundSuccess(db, refundRequestDoc.data().eventId, refundRequestDoc.id, error.message);
-//     }
-//   }
-// });
-
-// async function processRefund(refundRequestDoc) {
-//   const db = admin.firestore(); // Ensure that 'admin' is initialized and 'db' is in scope.
-//   const refundData = refundRequestDoc.data();
-//   const transactionId = refundData.transactionId;
-//   const eventId = refundData.eventId;
-//   const refundAmount = Math.floor(refundData.amount * 0.80); // 80% of the original amount
-//   const idempotencyKey = `refund_${transactionId}`;
-
-//   const payload = {
-//     transaction: transactionId,
-//     amount: refundAmount
-//   };
-
-//   const headers = {
-//     'Authorization': `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-//     'Content-Type': 'application/json'
-//   };
-
-//   let retryCount = 0;
-//   let delay = 1000; // 1 second initial delay
-//   const maxRetries = 3;
-
-//   while (retryCount < maxRetries) {
-//     try {
-//       const response = await axios.post('https://api.paystack.co/refund', payload, { headers });
-
-//       if (response.data.status) {
-//         await db.runTransaction(async (transaction) => {
-//           const refundRequestRef = refundRequestDoc.ref;
-//           const idempotencyDocRef = db.collection('idempotency_keys').doc(idempotencyKey);
-//           const idempotencyDocSnapshot = await transaction.get(idempotencyDocRef);
-
-//           if (!idempotencyDocSnapshot.exists) {
-//             transaction.update(refundRequestRef, { status: 'processed' });
-//             transaction.set(idempotencyDocRef, {
-//               refundResponse: response.data,
-//               created: admin.firestore.FieldValue.serverTimestamp()
-//             });
-//           } else {
-//             console.log(`Refund already processed for transaction ID: ${transactionId}`);
-//             return;
-//           }
-//         });
-//         await alertAdminRefundSuccess(db, eventId, transactionId); // Pass 'db' to these functions.
-//         console.log(`Refund processed for transaction ID: ${transactionId}`);
-//         return;
-//       } else {
-//         throw new Error('Refund failed with a non-success status');
-//       }
-//     } catch (error) {
-//       console.error(`Attempt ${retryCount + 1} for refund ${transactionId} failed:`, error);
-
-//       if (!isRetryableError(error)) {
-//         await refundRequestDoc.ref.update({ status: 'error' }); // This update could also be in a transaction.
-//         await alertAdminRefundFialure(db, eventId, transactionId,  error.message);
-//         throw error; // Non-retryable error, rethrow error
-//       }
-
-//       if (retryCount === maxRetries - 1) {
-//         await alertAdminRefundFialure(db, eventId, transactionId, `Max retry attempts reached. Last error: ${error.message}`);
-//       }
-
-
-//       console.log(`Retryable error encountered for refund ${transactionId}. Retrying after ${delay}ms...`);
-//       await new Promise(resolve => setTimeout(resolve, delay));
-//       retryCount++;
-//       delay *= 2; // Exponential backoff
-//     }
-//   }
-
-//   await refundRequestDoc.ref.update({ status: 'failed' }); // This update could also be in a transaction.
-//   await alertAdminRefundFialure(db, eventId, transactionId, 'All refund requst failed');
-//   throw new Error(`All retry attempts failed for refund ${transactionId}`);
-// }
-
-
-
-
-//   async function alertAdminRefundFialure(db, eventId, transactionId, errorMessage) {
-//     const failureDoc = {
-//       eventId: eventId,
-//       transactionId: transactionId,
-//       error: errorMessage, 
-//       date: admin.firestore.FieldValue.serverTimestamp()
-//     };
-//     await db.collection('refund_failures').add(failureDoc);
-//   }
-  
-
-//   async function alertAdminRefundSuccess(db, eventId, transactionId,) {
-//     const successDoc = {
-//       eventId: eventId,
-//       status: 'succesful', 
-//       transactionId: transactionId,
-//       date: admin.firestore.FieldValue.serverTimestamp()
-//     };
-//     await db.collection('refund_success').add(successDoc);
-//   }
-  
   
 
 exports.scheduledRefundProcessor = functions.pubsub.schedule('every 24 hours').onRun(async (context) => {
@@ -880,13 +750,15 @@ exports.scheduledRefundProcessor = functions.pubsub.schedule('every 24 hours').o
   const refundRequestsSnapshot = await db.collection('allRefundRequests').where('status', '==', 'pending').get();
 
   for (const refundRequestDoc of refundRequestsSnapshot.docs) {
+
+  const refundData = refundRequestDoc.data();
     try { // eslint-disable-next-line no-await-in-loop
       await processRefund(refundRequestDoc);
     } catch (error) {
       console.error(`Error processing refund for transaction ID: ${refundRequestDoc.id}`, error);
       // Handle the error appropriately, e.g., alert the admin
        // eslint-disable-next-line no-await-in-loop
-      await alertAdminRefundFailure(db, refundRequestDoc.data().eventId, refundRequestDoc.data().transactionId, error.message);
+      await alertAdminRefundFailure(db, refundRequestDoc.data().eventId, refundRequestDoc.data().transactionId, error.message, refundData.userRequestId, refundData.orderId,);
     }
   }
 });
@@ -924,34 +796,62 @@ async function processRefund(refundRequestDoc) {
          // eslint-disable-next-line no-await-in-loop
         await db.runTransaction(async (transaction) => {
           const refundRequestRef = refundRequestDoc.ref;
-          const idempotencyDocRef = db.collection('idempotency_keys').doc(idempotencyKey);
+          const idempotencyDocRef = db.collection('refundSuccessIdempotencyKeys').doc(idempotencyKey);
           const eventDocRef = db.collection('new_eventTicketOrder').doc(refundData.eventId).collection('eventInvite').doc(refundData.userRequestId);
           const userDocRef = db.collection('new_userTicketOrder').doc(refundData.userRequestId).collection('eventInvite').doc(refundData.eventId);
           const userTicketIdRef = db.collection('new_ticketId').doc(refundData.userRequestId).collection('eventInvite').doc(refundData.eventId);
+          const userRefundRequestRef = db.collection('userRefundRequests').doc(refundData.userRequestId).collection('refundRequests').doc(refundData.eventId);
           const idempotencyDocSnapshot = await transaction.get(idempotencyDocRef);
 
           if (!idempotencyDocSnapshot.exists) {
-            transaction.update(refundRequestRef, { status: 'processed' });
-            transaction.update(eventDocRef, { refundRequestStatus: 'processed' });
-            transaction.update(userDocRef, { refundRequestStatus: 'processed' });
+            transaction.update(refundRequestRef, { status: 'processed', idempotencyKey: idempotencyKey });
+            transaction.update(eventDocRef, { refundRequestStatus: 'processed', idempotencyKey: idempotencyKey  });
+            transaction.update(userDocRef, { refundRequestStatus: 'processed', idempotencyKey: idempotencyKey  });
+            transaction.update(userRefundRequestRef, { status: 'processed', idempotencyKey: idempotencyKey  });
             transaction.delete(userTicketIdRef);
             transaction.set(idempotencyDocRef, {
               refundResponse: response.data,
               created: admin.firestore.FieldValue.serverTimestamp()
             });
+
+            const userId = refundData.userRequestId;
+            const userRef = firestore.doc(`user_general_settings/${userId}`);
+              // eslint-disable-next-line no-await-in-loop
+            const userDoc = await userRef.get(); // eslint-disable-next-line no-await-in-loop
+  
+            if (!userDoc.exists) {
+              console.log(`User settings not found for user ${userId}`);
+              // continue;
+            }
+  
+            const userData = userDoc.data();
+            const androidNotificationToken = userData.androidNotificationToken;
+  
+            if (androidNotificationToken) {
+              try {
+                  // eslint-disable-next-line no-await-in-loop
+                await sendRefundNotification(androidNotificationToken, userId, refundData.eventId, refundData.eventAuthorId, refundData.eventTitle ); // eslint-disable-next-line no-await-in-loop
+              } catch (error) {
+                console.error(`Error sending seding refund notification:`, error);
+              }
+            } else {
+              console.log(`No notification token for user ${userId} or notifications are muted.`);
+            }
+
           } else {
-            await alertAdminRefundFailure(db, eventId, transactionId, response.data);
+               // eslint-disable-next-line no-await-in-loop
+            await alertAdminRefundFailure(db, eventId, transactionId, response.data, refundData.userRequestId, refundData.orderId,);
             console.log(`Refund already processed for transaction ID: ${transactionId}`);
             return;
           }
         });
          // eslint-disable-next-line no-await-in-loop
-         await alertAdminRefundSuccess(db, eventId, transactionId, response.data);
+         await alertAdminRefundSuccess(db, eventId, transactionId, idempotencyKey, refundData.userRequestId, refundData.orderId,);
         console.log(`Refund processed for transaction ID: ${transactionId}`);
         return;
       } else {
           // eslint-disable-next-line no-await-in-loop
-        await alertAdminRefundFailure(db, eventId, transactionId, response.data);
+        await alertAdminRefundFailure(db, eventId, transactionId, response.data, refundData.userRequestId, refundData.orderId,);
         throw new Error('Refund failed with a non-success status');
       }
     } catch (error) {
@@ -967,7 +867,7 @@ async function processRefund(refundRequestDoc) {
 
       if (retryCount === maxRetries - 1) {
          // eslint-disable-next-line no-await-in-loop
-        await alertAdminRefundFailure(db, eventId, transactionId, `Max retry attempts reached. Last error: ${error.message}`);
+        await alertAdminRefundFailure(db, eventId, transactionId, `Max retry attempts reached. Last error: ${error.message}`, refundData.userRequestId, refundData.orderId,);
       }
 
       // Exponential backoff with a maximum delay cap
@@ -983,71 +883,90 @@ async function processRefund(refundRequestDoc) {
      // eslint-disable-next-line no-await-in-loop
     await refundRequestDoc.ref.update({ status: 'failed' });
      // eslint-disable-next-line no-await-in-loop
-    await alertAdminRefundFailure(db, eventId, transactionId, 'All retry attempts failed');
+    await alertAdminRefundFailure(db, eventId, transactionId, 'All retry attempts failed', refundData.userRequestId, refundData.orderId, );
     throw new Error(`All retry attempts failed for refund ${transactionId}`);
   }
 }
 
 
 
-function alertAdminRefundFailure(db, eventId, transactionId, response) {
+
+async function sendRefundNotification(androidNotificationToken, userId, eventId, eventAuthorId, subtitle) {
+  const title = 'Refund processed' ;
+  const body = subtitle;
+  
+  let message = {
+  notification: { title, body },
+  data: {
+  recipient: String(userId),
+  contentType: 'refundProcessed',
+  contentId: String(eventId),
+  eventAuthorId: String(eventAuthorId),
+  },
+  token: androidNotificationToken,
+  apns: {
+    payload: {
+      aps: {
+        sound: 'default',
+      },
+    },
+  },
+  android: {
+    priority: 'high', // or "normal" (default)
+  },
+  };
+  
+  try {
+  const response = await admin.messaging().send(message);
+  console.log('Message sent', response);
+  } catch (error) {
+  console.log('Error sending message', error);
+  throw error;
+  }
+  }
+
+
+  
+
+
+
+
+function alertAdminRefundFailure(db, eventId, transactionId, response, userRequestId, orderId) {
   const sanitizedResponse = sanitizeResponse(response);
   const logEntry = {
     date: admin.firestore.FieldValue.serverTimestamp(),
     eventId: eventId,
     // error: errorMessage,
     transactionId: transactionId,
+    userRequestId: userRequestId,
+    orderId: orderId,
     response: sanitizedResponse
   };
 
   const documentPath = getDocumentPath();
-  db.collection('refund_failures').doc(documentPath).collection('logs').add(logEntry)
+  db.collection('refundFailures').doc(documentPath).collection('logs').add(logEntry)
     .then(() => console.log('Logged failed with additional details'))
     .catch(error => console.error('Error logging failed:', error));
 }
 
 
 
-// async function alertAdminRefundFailure(db, eventId, transactionId, errorMessage) {
-//   const failureDoc = {
-//     eventId: eventId,
-//     transactionId: transactionId,
-//     error: errorMessage,
-//     date: admin.firestore.FieldValue.serverTimestamp()
-//   };
-//    // eslint-disable-next-line no-await-in-loop
-//   await db.collection('refund_failures').add(failureDoc);
-// }
-
-
-function alertAdminRefundSuccess(db, eventId, transactionId, response ) {
-  const sanitizedResponse = sanitizeResponse(response);
+function alertAdminRefundSuccess(db, eventId, transactionId, idempotencyKey,  userRequestId, orderId ) {
+  // const sanitizedResponse = sanitizeResponse(response);
   const logEntry = {
     date: admin.firestore.FieldValue.serverTimestamp(),
     eventId: eventId,
     transactionId: transactionId,
-    response: sanitizedResponse
+    userRequestId: userRequestId,
+    orderId: orderId,
+    idempotencyKey: idempotencyKey
   };
 
   const documentPath = getDocumentPath();
-  db.collection('refund_success').doc(documentPath).collection('logs').add(logEntry)
+  db.collection('refundSuccess').doc(documentPath).collection('logs').add(logEntry)
     .then(() => console.log('Logged succesful with additional details'))
     .catch(error => console.error('Error logging succesful:', error));
 }
-
-// async function alertAdminRefundSuccess(db, eventId, transactionId) {
-//   const successDoc = {
-//     eventId: eventId,
-//     transactionId: transactionId,
-//     status: 'successful',
-//     date: admin.firestore.FieldValue.serverTimestamp()
-//   };
-//    // eslint-disable-next-line no-await-in-loop
-//   await db.collection('refund_success').add(successDoc);
-// }
-
-
-
 
 
 exports.scheduledRefundEventDeletedProcessor = functions.pubsub.schedule('every 24 hours').onRun(async (context) => {
@@ -1057,17 +976,18 @@ exports.scheduledRefundEventDeletedProcessor = functions.pubsub.schedule('every 
  const refundRequestsSnapshot = await db.collection('allRefundRequestsEventDeleted').where('status', '==', 'pending').get();
 
  for (const refundRequestDoc of refundRequestsSnapshot.docs) {
+  const refundData = refundRequestDoc.data();
+
    try { // eslint-disable-next-line no-await-in-loop
      await processRefundEventDeleted(refundRequestDoc);
    } catch (error) {
      console.error(`Error processing refund for transaction ID: ${refundRequestDoc.id}`, error);
      // Handle the error appropriately, e.g., alert the admin
       // eslint-disable-next-line no-await-in-loop
-     await alertAdminRefundFailure(db, refundRequestDoc.data().eventId, refundRequestDoc.data().transactionId, error.message);
+     await alertAdminRefundFailure(db, refundRequestDoc.data().eventId, refundRequestDoc.data().transactionId, error.message, refundData.userRequestId, refundData.orderId,);
    }
  }
 });
-
 
 
 
@@ -1104,7 +1024,7 @@ async function processRefundEventDeleted(refundRequestDoc) {
         // eslint-disable-next-line no-await-in-loop
        await db.runTransaction(async (transaction) => {
          const refundRequestRef = refundRequestDoc.ref;
-         const idempotencyDocRef = db.collection('idempotency_keys').doc(idempotencyKey);
+         const idempotencyDocRef = db.collection('refundSuccessIdempotencyKeys').doc(idempotencyKey);
         //  const eventDocRef = db.collection('new_eventTicketOrder').doc(refundData.eventId).collection('eventInvite').doc(refundData.userRequestId);
          const userDocRef = db.collection('new_userTicketOrder').doc(refundData.userRequestId).collection('eventInvite').doc(refundData.eventId);
          const userTicketIdRef = db.collection('new_ticketId').doc(refundData.userRequestId).collection('eventInvite').doc(refundData.eventId);
@@ -1119,38 +1039,62 @@ async function processRefundEventDeleted(refundRequestDoc) {
              refundResponse: response.data,
              created: admin.firestore.FieldValue.serverTimestamp()
            });
+           const userId = refundData.userRequestId;
+           const userRef = firestore.doc(`user_general_settings/${userId}`);
+             // eslint-disable-next-line no-await-in-loop
+           const userDoc = await userRef.get(); // eslint-disable-next-line no-await-in-loop
+ 
+           if (!userDoc.exists) {
+             console.log(`User settings not found for user ${userId}`);
+             // continue;
+           }
+ 
+           const userData = userDoc.data();
+           const androidNotificationToken = userData.androidNotificationToken;
+ 
+           if (androidNotificationToken) {
+             try {
+                 // eslint-disable-next-line no-await-in-loop
+               await sendRefundNotification(androidNotificationToken, userId, refundData.eventId, refundData.eventAuthorId, 'Refund processed for a deleted event.'); // eslint-disable-next-line no-await-in-loop
+             } catch (error) {
+               console.error(`Error sending seding refund notification:`, error);
+             }
+           } else {
+             console.log(`No notification token for user ${userId} or notifications are muted.`);
+           }
          } else {  
             // eslint-disable-next-line no-await-in-loop
-          await alertAdminRefundFailure(db, eventId, transactionId, response.data); 
+          await alertAdminRefundFailure(db, eventId, transactionId, response.data, refundData.userRequestId, refundData.orderId,); 
            console.log(`Refund already processed for transaction ID: ${transactionId}`);
            return;
          }
        });
         // eslint-disable-next-line no-await-in-loop
-        await alertAdminRefundSuccess(db, eventId, transactionId, response.data);
+        await alertAdminRefundSuccess(db, eventId, transactionId, idempotencyKey, refundData.userRequestId, refundData.orderId,);
+        // await alertAdminRefundSuccess(db, eventId, transactionId, response.data, refundData.userRequestId, refundData.orderId,);
        console.log(`Refund processed for transaction ID: ${transactionId}`);
        return;
      } else {
         // eslint-disable-next-line no-await-in-loop
-      await alertAdminRefundFailure(db, eventId, transactionId, response.data); 
+      await alertAdminRefundFailure(db, eventId, transactionId, response.data, refundData.userRequestId, refundData.orderId,); 
        throw new Error('Refund failed with a non-success status');
      }
    } catch (error) {
       // eslint-disable-next-line no-await-in-loop
     await alertAdminRefundFailure(db, eventId, transactionId,  error.message); 
-     console.error(`Attempt ${retryCount + 1} for refund ${transactionId} failed:`, error);
+     console.error(`Attempt ${retryCount + 1} for refund ${transactionId} failed:`, error, refundData.userRequestId, refundData.orderId,);
 
      if (!isRetryableError(error)) {
         // eslint-disable-next-line no-await-in-loop
        await refundRequestDoc.ref.update({ status: 'error' });
         // eslint-disable-next-line no-await-in-loop
-         await alertAdminRefundFailure(db, eventId, transactionId, error.message);
+         await alertAdminRefundFailure(db, eventId, transactionId, error.message, refundData.userRequestId, refundData.orderId,);
        throw error; // Non-retryable error, rethrow error
      }
 
      if (retryCount === maxRetries - 1) {
         // eslint-disable-next-line no-await-in-loop
-       await alertAdminRefundFailure(db, eventId, transactionId, `Max retry attempts reached. Last error: ${error.message}`);
+       await alertAdminRefundFailure(db, eventId, transactionId, `Max retry attempts reached. Last error: ${error.message}`, refundData.userRequestId, refundData.orderId,);
      }
 
      // Exponential backoff with a maximum delay cap
@@ -1166,153 +1110,10 @@ async function processRefundEventDeleted(refundRequestDoc) {
     // eslint-disable-next-line no-await-in-loop
    await refundRequestDoc.ref.update({ status: 'failed' });
     // eslint-disable-next-line no-await-in-loop
-   await alertAdminRefundFailure(db, eventId, transactionId, 'All retry attempts failed');
+   await alertAdminRefundFailure(db, eventId, transactionId, 'All retry attempts failed', refundData.userRequestId, refundData.orderId,);
    throw new Error(`All retry attempts failed for refund ${transactionId}`);
  }
 }
-
-
-
-
-
-// //event attending schedule reminder
-// exports.dailyEventReminder = functions.pubsub.schedule('every 24 hours').onRun(async (context) => {
-//   const today = new Date();
-//   today.setHours(0, 0, 0, 0);
-//   const sevenDaysFromNow = new Date();
-//   sevenDaysFromNow.setDate(today.getDate() + 7);
-//   sevenDaysFromNow.setHours(23, 59, 59, 999);
-
-//   let processedAllEvents = false;
-//   let lastEventDoc = null;
-
-//   while (!processedAllEvents) {
-//     let query =firestore.collection('new_allEvents')
-//       .where('startDate', '>=', today)
-//       .where('startDate', '<=', sevenDaysFromNow)
-//       .orderBy('startDate')
-//       .limit(BATCH_SIZE);
-
-//     if (lastEventDoc) {
-//       query = query.startAfter(lastEventDoc);
-//     }
-// // eslint-disable-next-line no-await-in-loop
-//     const eventsSnapshot = await query.get();
-
-//     if (eventsSnapshot.empty) {
-//       processedAllEvents = true;
-//       break;
-//     }
-
-//     for (const eventDoc of eventsSnapshot.docs) {
-//       const event = eventDoc.data();
-
-//       let processedAllInvites = false;
-//       let lastInviteDoc = null;
-
-//       while (!processedAllInvites) {
-//         let invitesQuery = firestore.collection.collection('new_eventTicketOrder')
-//           .doc(event.id)
-//           .collection('eventInvite')
-//           .limit(BATCH_SIZE);
-
-//         if (lastInviteDoc) {
-//           invitesQuery = invitesQuery.startAfter(lastInviteDoc);
-//         }
-// // eslint-disable-next-line no-await-in-loop
-//         const invitesSnapshot = await invitesQuery.get();
-
-//         if (invitesSnapshot.empty) {
-//           processedAllInvites = true;
-//           break;
-//         }
-
-//         for (const inviteDoc of invitesSnapshot.docs) {
-//           const userId = inviteDoc.id;
-//           const userRef = admin.firestore().doc(`user_general_settings/${userId}`);
-//           const userDoc = await userRef.get();
-
-          
-//           const androidNotificationToken = userDoc.data().androidNotificationToken;
-
-    
-
-//           try {
-//             // eslint-disable-next-line no-await-in-loop
-//             if (androidNotificationToken) {
-//               return sendNotification(androidNotificationToken, userId, userTicketNotificationMute  );
-//               // await sendReminderNotification( androidNotificationToken,   userId, event);
-//               // return sendNotification(androidNotificationToken, newMessage, userId, userTicketNotificationMute  );
-//           } else {
-//               console.log(`No notification token for user ${userId}`);
-//           }
-
-           
-//           } catch (error) {
-//             console.error(`Error sending reminder to user ${userId} for event ${event.title}:`, error);
-//           }
-//         }
-
-//         lastInviteDoc = invitesSnapshot.docs[invitesSnapshot.docs.length - 1];
-//       }
-//     }
-
-//     lastEventDoc = eventsSnapshot.docs[eventsSnapshot.docs.length - 1];
-//   }
-
-//   async function sendNotification(androidNotificationToken, userId, userTicketNotificationMute) {
-//     const title = `Reminder`;
-//     const body = 'This week event';
-
-//     let message = {
-//       notification: { body: body, title: title },
-//       data: {
-//           recipient: String(userId),
-//           contentType: 'eventRoom',
-//           contentId: String(newMessage.senderId),
-//       },
-//       token: androidNotificationToken
-//   };
-
-//   // If notifications are not muted, add the APNS payload with default sound
-//   if (!userTicketNotificationMute) {
-//       message.apns = {
-//           payload: {
-//               aps: {
-//                   sound: 'default', // Or specify your custom notification sound file
-//               },
-//           },
-//       };
-//   }
-
-//     try {
-//         const response = await admin
-//         .messaging()
-//         .send(message);
-//         console.log('message sent', response);
-//     } catch (error) {
-//         console.log('error sending message', error);
-//         throw error;
-//     }
-// }
-  
-// });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1416,6 +1217,8 @@ async function sendNotification(androidNotificationToken, userId, event) {
       recipient: String(userId),
       contentType: 'eventReminder',
       contentId: String(event.id),
+      eventAuthorId: String(event.authorId),
+
     },
     token: androidNotificationToken,
     apns: {
@@ -1440,221 +1243,6 @@ async function sendNotification(androidNotificationToken, userId, event) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// exports.distributeEventFunds = functions.pubsub.schedule('every 24 hours').onRun(async (context) => {
-//   const firestore.collection = admin.firestore();
-//   const eventsSnapshot = await db.collection('new_allEvents')
-//     .where('closingDay', '<=', admin.firestore.Timestamp.now())
-//     .where('fundsDistributed', '==', false)
-//     .get();
-
-//   let batch = db.batch();
-//   let operationCount = 0;
-//   const batches = [batch]; // An array to keep track of all batches
-
-//   for (const eventDoc of eventsSnapshot.docs) {
-//     const eventId = eventDoc.id;
-//     const idempotencyKey = `transfer_${eventId}_${new Date().toISOString().split('T')[0]}`;
-
-//     const idempotencyDoc = await db.collection('idempotency_keys').doc(idempotencyKey).get();
-//     if (idempotencyDoc.exists) {
-//       console.log(`Transfer for event ${eventId} has already been made.`);
-//       continue;
-//     }
-
-//     if (operationCount >= 500) {
-//       // Start a new batch
-//       batch = db.batch();
-//       batches.push(batch);
-//       operationCount = 0;
-//     }
-
-//     try {
-//       const organizerShare = await calculateOrganizerShare(eventDoc.data());
-//       const response = await paystack.subaccount.createTransfer({
-//         source: "balance",
-//         amount: organizerShare,
-//         recipient: eventData.subaccountId,
-//       });
-
-//       if (response.status) {
-//         batch.update(eventDoc.ref, { fundsDistributed: true });
-//         batch.set(db.collection('idempotency_keys').doc(idempotencyKey), {
-//           created: admin.firestore.FieldValue.serverTimestamp()
-//         });
-//         operationCount += 2; // Update and Set are two operations
-//       } else {
-//         throw new Error('Transfer failed');
-//       }
-//     } catch (error) {
-//       console.error('Error when attempting to distribute funds:', error);
-//     }
-//   }
-
-//   // Commit all batches
-//   const commitPromises = batches.map(b => b.commit());
-//   await Promise.all(commitPromises);
-
-//   console.log('All batches committed successfully.');
-// });
-
-
-
-
-
-
-// exports.createSubaccount = functions.https.onCall(async (data, context) => {
-//   // Check if the user is authenticated
-//   if (!context.auth) {
-//     throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
-//   }
-
-//   const PAYSTACK_SECRET_KEY = functions.config().paystack.secret_key; // Assuming you've set this in your environment config
-
-//   // Verify the bank account first
-//   try {
-//     const verificationResponse = await axios.get(`https://api.paystack.co/bank/resolve?account_number=${data.account_number}&bank_code=${data.bank_code}`, {
-//       headers: {
-//         Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-//       },
-//     });
-
-//     // Check if verification was successful
-//     if (!verificationResponse.data.status) {
-//       throw new functions.https.HttpsError('aborted', 'Bank account verification failed.');
-//     }
-
-//     // Bank account is verified, proceed with creating the subaccount
-//     const paystackResponse = await axios.post('https://api.paystack.co/subaccount', {
-//       business_name: data.business_name, 
-//       settlement_bank: data.bank_code,   
-//       account_number: data.account_number, 
-//       percentage_charge: data.percentage_charge 
-//     }, {
-//       headers: {
-//         Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-//         'Content-Type': 'application/json'
-//       }
-//     });
-
-//     if (paystackResponse.data.status) {
-//       // Subaccount created successfully
-//       return { subaccount_id: paystackResponse.data.data.subaccount_code};
-//     } else {
-//       // Failed to create subaccount
-//       throw new functions.https.HttpsError('unknown', 'Failed to create subaccount with Paystack');
-//     }
-//   } catch (error) {
-//     console.error('Detailed error:', {
-//       message: error.message,
-//       stack: error.stack,
-//       response: error.response ? error.response.data : null,
-//     });
-//     throw new functions.https.HttpsError(
-//       'unknown',
-//       'Error creating subaccount',
-//       error.response ? error.response.data : error.message
-//     );
-//   }
-// });
-
-
-
-
-// exports.deleteEmptyVideoUsers = functions.pubsub.schedule('every 24 hours').onRun(async (context) => {
-//   // Wait for 2 minutes
-//   await new Promise(resolve => setTimeout(resolve, 2 * 60 * 1000));
-
-//   // Loop through each user
-//   users.forEach(async (userDoc) => {
-//     const user = userDoc.data();
-
-//     // Check if professionalVideo1 field is empty
-//     if (!user.professionalVideo1) {
-//       const userId = userDoc.id;
-
-//       const collections = [
-//         { collection: 'forums', subCollection: 'userForums' },
-//         { collection: 'posts', subCollection: 'userPosts' },
-//         { collection: 'new_events', subCollection: 'userEvents' },
-//         { collection: 'following', subCollection: 'userFollowing' },
-//         { collection: 'followers', subCollection: 'userFollowers' },
-//         { collection: 'users', subCollection: 'chats' },
-//       ];
-      
-//       // Delete Firestore data
-//       const deletions = collections.map(async (collection) => {
-//         try {
-//           const docs = await firestore.collection(collection.collection).doc(userId).collection(collection.subCollection).listDocuments();
-//           docs.forEach((doc) => doc.delete());
-//         } catch (error) {
-//           console.error(`Failed to delete Firestore data for user ${userId} in collection ${collection.collection}/${collection.subCollection}: `, error);
-//         }
-//       });
-      
-//       // Delete Storage data
-//       const storagePaths = [
-//         `images/events/${userId}`,
-//         `images/messageImage/${userId}`,
-//         `images/users/${userId}`,
-//         `images/professionalPicture1/${userId}`,
-//         `images/professionalPicture2/${userId}`,
-//         `images/professionalPicture3/${userId}`,
-//         `images/validate/${userId}`,
-//       ];
-      
-//       storagePaths.forEach(async (path) => {
-//         try {
-//           const files = await storage.bucket().getFiles({ prefix: path });
-//           files[0].forEach((file) => {
-//             file.delete();
-//           });
-//         } catch (error) {
-//           console.error(`Failed to delete Storage data for user ${userId} in path ${path}: `, error);
-//         }
-//       });
-
-//       // Delete user document
-//       try {
-//         await firestore.collection('users').doc(userId).delete();
-//         await firestore.collection('usersAuthors').doc(userId).delete();
-//       } catch (error) {
-//         console.error(`Failed to delete user document for user ${userId}: `, error);
-//       }
-//   // Remove user from follow lists
-//   await removeUserFromFollowLists(userId);
-
-//       // Delete user from Authentication
-//       try {
-//         await admin.auth().deleteUser(userId);
-//       } catch (error) {
-//         console.error(`Failed to delete user from Authentication for user ${userId}: `, error);
-//       }
-
-//       // Wait for all deletions to finish
-//       await Promise.all(deletions);
-//     }
-//   });
-// });
 
 
 async function removeUserFromFollowLists(userId) {
@@ -1788,10 +1376,6 @@ exports.deleteUserData = functions.auth.user().onDelete(async (user) => {
   // Wait for all deletions to finish
   await Promise.all(deletions);
 });
-
-
-
-
 
 
 
@@ -2040,7 +1624,8 @@ exports.onUploadEvent = functions.firestore
     console.log(snapshot.data());
     const userId = context.params.userId;
     const eventId = context.params.eventId;
-    const userFollowersRef = admin
+    if( snapshot.data().showToFollowers ){
+      const userFollowersRef = admin
       .firestore()
       .collection('new_followers')
       .doc(userId)
@@ -2048,7 +1633,7 @@ exports.onUploadEvent = functions.firestore
     const userFollowersSnapshot = await userFollowersRef.get();
 
     const batch = admin.firestore().batch();
-
+ 
     userFollowersSnapshot.forEach((doc) => {
       const followerId = doc.id;
       const eventFeedRef = admin
@@ -2062,7 +1647,11 @@ exports.onUploadEvent = functions.firestore
 
     // Commit the batch operation to update all follower documents
     return batch.commit();
+    }
+    
   });
+
+
 
 // exports.onDeleteFeedEvent = functions.firestore
 //   .document('/new_events/{userId}/userEvents/{eventId}')
@@ -2591,6 +2180,7 @@ exports.onCreateNewActivity = functions.firestore
         recipient: userId,
         contentType: createdActivityItem.type,
         contentId: createdActivityItem.postId,
+        eventAuthorId: createdActivityItem.authorProfileHandle,
         // title: title,
         // body: body,
       },

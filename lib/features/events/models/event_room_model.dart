@@ -16,13 +16,17 @@ class EventRoom {
   final String imageUrl;
   @HiveField(4)
   final Timestamp? timestamp;
+  @HiveField(5)
+  final String eventAuthorId;
 
-  EventRoom(
-      {required this.id,
-      required this.title,
-      required this.imageUrl,
-      required this.linkedEventId,
-      required this.timestamp});
+  EventRoom({
+    required this.id,
+    required this.title,
+    required this.imageUrl,
+    required this.linkedEventId,
+    required this.timestamp,
+    required this.eventAuthorId,
+  });
 
   factory EventRoom.fromDoc(DocumentSnapshot doc) {
     return EventRoom(
@@ -31,6 +35,7 @@ class EventRoom {
       imageUrl: doc['imageUrl'] ?? '',
       linkedEventId: doc['linkedEventId'] ?? '',
       timestamp: doc['timestamp'],
+      eventAuthorId: doc['eventAuthorId'],
     );
   }
 }

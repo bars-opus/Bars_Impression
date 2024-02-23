@@ -69,7 +69,7 @@ class _EventPagesState extends State<EventPages> {
     int sortNumberOfDays = 0,
   }) async {
     sortNumberOfDays = widget.sortNumberOfDays;
-    print('AftereCity: $city, ');
+    // print('AftereCity: $city, ');
 
     final currentDate = DateTime(now.year, now.month, now.day);
     // Calculate the end date based on the sortNumberOfDays
@@ -86,13 +86,13 @@ class _EventPagesState extends State<EventPages> {
       query = query.where('city', isEqualTo: city);
     }
     if (sortNumberOfDays != 0) {
-      query = query.where('startDate', isLessThanOrEqualTo: endDate);
+      query = query.where('clossingDay', isLessThanOrEqualTo: endDate);
     }
 
     try {
       QuerySnapshot eventFeedSnapShot = await query
-          // .where('startDate', isGreaterThanOrEqualTo: currentDate)
-          // .orderBy('startDate', descending: false)
+          .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+          .orderBy('clossingDay', descending: false)
           // .orderBy(FieldPath.documentId) // add this line
           .startAfterDocument(eventSnapshot.last)
           .limit(2)

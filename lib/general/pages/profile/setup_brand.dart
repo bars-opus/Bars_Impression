@@ -481,7 +481,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
               ? _controller.text.toUpperCase()
               : _provider.changeNewUserName.toUpperCase(),
           bio,
-          'https://www.barsopus.com/user_$currentUserId.uid',
+          'https://www.barsopus.com/user_$currentUserId',
         );
         WriteBatch batch = FirebaseFirestore.instance.batch();
         batch.update(
@@ -568,7 +568,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
       '',
       _provider.changeNewUserName,
       '',
-      'https://www.barsopus.com/user_$currentUserId.uid',
+      'https://www.barsopus.com/user_$currentUserId',
     );
 
     batch.update(

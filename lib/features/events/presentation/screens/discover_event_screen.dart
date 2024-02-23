@@ -411,7 +411,9 @@ class _DiscoverEventScreenState extends State<DiscoverEventScreen>
       child: DefaultTabController(
         length: 10,
         child: Scaffold(
-          backgroundColor: Theme.of(context).primaryColorLight,
+          backgroundColor:
+              // Colors.blue,
+              Theme.of(context).primaryColorLight,
           appBar: PreferredSize(
             preferredSize: Size.fromHeight(MediaQuery.of(context).size.height),
             child: SafeArea(

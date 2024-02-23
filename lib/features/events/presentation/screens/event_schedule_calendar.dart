@@ -2,15 +2,19 @@ import 'package:bars/utilities/exports.dart';
 
 class EventSheduleCalendar extends StatelessWidget {
   final Event event;
+  final int duration;
   final String currentUserId;
 
   const EventSheduleCalendar(
-      {super.key, required this.event, required this.currentUserId});
+      {super.key,
+      required this.event,
+      required this.currentUserId,
+      required this.duration});
 
   Map<DateTime, List<Schedule>> convertToMap(List<Schedule> shedules) {
     Map<DateTime, List<Schedule>> scheduleMap = {};
     for (Schedule schedule in shedules) {
-      DateTime date = schedule.startTime.toDate();
+      DateTime date = schedule.scheduleDate.toDate();
       DateTime normalizedDate = DateTime(date.year, date.month, date.day);
       if (scheduleMap[normalizedDate] == null) {
         scheduleMap[normalizedDate] = [];
@@ -24,18 +28,16 @@ class EventSheduleCalendar extends StatelessWidget {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
 
-    // var _currentUserId =
-    //     Provider.of<UserData>(context, listen: false).currentUserId;
     List<Schedule> scheduleOptions = [];
 
     for (Schedule schedule in event.schedule) {
       scheduleOptions.add(schedule);
     }
-    scheduleOptions
-        .sort((a, b) => a.startTime.toDate().compareTo(b.startTime.toDate()));
+    scheduleOptions.sort(
+        (a, b) => a.scheduleDate.toDate().compareTo(b.scheduleDate.toDate()));
 
-    DateTime _scheduleFirsttDay = scheduleOptions.first.startTime.toDate();
-    DateTime _scheduleLastDay = scheduleOptions.last.startTime.toDate();
+    DateTime _scheduleFirsttDay = scheduleOptions.first.scheduleDate.toDate();
+    DateTime _scheduleLastDay = scheduleOptions.last.scheduleDate.toDate();
     DateTime _startDay = event.startDate.toDate();
     DateTime _astDay = event.clossingDay.toDate();
 
@@ -73,6 +75,8 @@ class EventSheduleCalendar extends StatelessWidget {
                       startDate: event.startDate.toDate(),
                       fontSize:
                           ResponsiveHelper.responsiveFontSize(context, 14.0),
+                      eventHasEnded: false,
+                      eventHasStarted: false,
                     ),
                   ],
                 ),
@@ -109,6 +113,9 @@ class EventSheduleCalendar extends StatelessWidget {
                               color: Colors.blue,
                               shape: BoxShape.circle,
                             ),
+                            defaultTextStyle: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold),
                             markerDecoration: BoxDecoration(
                               color: Colors.red,
                               shape: BoxShape.circle,
@@ -157,18 +164,28 @@ class EventSheduleCalendar extends StatelessWidget {
                                           context, 800),
                                       width: ResponsiveHelper.responsiveHeight(
                                           context, 300),
-                                      child: ListView(
+                                      child: selectedEvents.isEmpty
+                                          ? Center(
+                                              child: NoContents(
+                                                  title: 'No Schedules',
+                                                  subTitle:
+                                                      'The event organizer didn\'t provide schedules for this date. If you want to know more about the schedules and program lineup, you can contact the organizer',
+                                                  icon: Icons
+                                                      .watch_later_outlined),
+                                            )
+                                          : ListView(
 
-                                          // mainAxisSize: MainAxisSize.min,
-                                          children: selectedEvents
-                                              .map((schedule) => ScheduleWidget(
-                                                    schedule: schedule,
-                                                    edit: false,
-                                                    from: 'Calendar',
-                                                    currentUserId:
-                                                        currentUserId,
-                                                  ))
-                                              .toList()),
+                                              // mainAxisSize: MainAxisSize.min,
+                                              children: selectedEvents
+                                                  .map((schedule) =>
+                                                      ScheduleWidget(
+                                                        schedule: schedule,
+                                                        edit: false,
+                                                        from: 'Calendar',
+                                                        currentUserId:
+                                                            currentUserId,
+                                                      ))
+                                                  .toList()),
                                     ));
                               },
                             );
@@ -176,6 +193,19 @@ class EventSheduleCalendar extends StatelessWidget {
                         ),
                       ),
               ],
+            ),
+            Padding(
+              padding: EdgeInsets.only(
+                bottom: ResponsiveHelper.responsiveHeight(
+                  context,
+                  20,
+                ),
+              ),
+              child: EventDateInfo(
+                duration: duration,
+                endDate: event.clossingDay.toDate(),
+                startDate: event.startDate.toDate(),
+              ),
             ),
             Container(
               width: double.infinity,

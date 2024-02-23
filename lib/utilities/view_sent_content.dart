@@ -1,10 +1,15 @@
 import 'package:bars/utilities/exports.dart';
 
 class ViewSentContent extends StatefulWidget {
+  final String eventAuthorId;
+
   final String contentId;
   final String contentType;
 
-  ViewSentContent({required this.contentType, required this.contentId});
+  ViewSentContent(
+      {required this.contentType,
+      required this.contentId,
+      required this.eventAuthorId});
   @override
   _ViewSentContentState createState() => _ViewSentContentState();
 }
@@ -43,7 +48,8 @@ class _ViewSentContentState extends State<ViewSentContent> {
         child: widget.contentType.startsWith('Event') ||
                 widget.contentType.startsWith('Ask')
             ? FutureBuilder(
-                future: DatabaseService.getEventWithId(widget.contentId),
+                future: DatabaseService.getUserEventWithId(
+                    widget.contentId, widget.eventAuthorId),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (!snapshot.hasData) {
                     return Container(
@@ -68,9 +74,8 @@ class _ViewSentContentState extends State<ViewSentContent> {
             : widget.contentType.startsWith('InviteRecieved')
                 ? FutureBuilder<List<dynamic>>(
                     future: Future.wait([
-                      DatabaseService.getEventWithId(
-                        widget.contentId,
-                      ),
+                      DatabaseService.getUserEventWithId(
+                          widget.contentId, widget.eventAuthorId),
                       DatabaseService.getEventIviteWithId(
                           _provider.currentUserId!, widget.contentId),
                       DatabaseService.getTicketWithId(
@@ -201,7 +206,7 @@ class _ViewSentContentState extends State<ViewSentContent> {
                             ]),
                             builder: (BuildContext context,
                                 AsyncSnapshot<List<dynamic>> snapshot) {
-                              print('id        ' + widget.contentId);
+                              // print('id        ' + widget.contentId);
                               if (!snapshot.hasData ||
                                   snapshot.data![0] == null ||
                                   snapshot.data![1] == null) {
@@ -252,31 +257,100 @@ class _ViewSentContentState extends State<ViewSentContent> {
                               );
                             },
                           )
-                        : widget.contentType.startsWith('eventDeleted')
-                            ? FutureBuilder(
-                                future:
-                                    DatabaseService.getUserTicketOrderWithId(
-                                  widget.contentId,
-                                  _provider.currentUserId!,
-                                ),
+                        : widget.contentType.startsWith('refundProcessed')
+                            ? FutureBuilder<List<dynamic>>(
+                                future: Future.wait([
+                                  DatabaseService.getUserTicketOrderWithId(
+                                    widget.contentId,
+                                    _provider.currentUserId!,
+                                  ),
+                                  DatabaseService.getUserEventWithId(
+                                      widget.contentId, widget.eventAuthorId),
+                                ]),
                                 builder: (BuildContext context,
-                                    AsyncSnapshot snapshot) {
-                                  if (!snapshot.hasData) {
+                                    AsyncSnapshot<List<dynamic>> snapshot) {
+                                  // print('eventId        ' + widget.contentId);
+                                  // print('eventAuthorId     ' +
+                                      // widget.eventAuthorId);
+                                  if (!snapshot.hasData ||
+                                      snapshot.data![0] == null ||
+                                      snapshot.data![1] == null) {
                                     return Container(
                                       width: width,
                                       height: height,
                                       color: Colors.black,
                                       child: Center(
-                                          child: CircularProgressIndicator(
-                                        color: Colors.blue,
-                                      )),
+                                        child: CircularProgressIndicator(
+                                          color: Colors.blue,
+                                        ),
+                                      ),
                                     );
                                   }
-                                  TicketOrderModel _ticketOrder = snapshot.data;
 
-                                  return _ticketOrderDeleted(
-                                      _provider.currentUserId!, _ticketOrder);
-                                })
-                            : const SizedBox.shrink());
+                                  TicketOrderModel _ticketOrder =
+                                      snapshot.data![0];
+                                  Event? event = snapshot.data![1];
+                                  return FutureBuilder<PaletteGenerator>(
+                                    future: _generatePalette(event!.imageUrl),
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot<PaletteGenerator>
+                                            paletteSnapshot) {
+                                      if (!paletteSnapshot.hasData) {
+                                        return Container(
+                                          width: width,
+                                          height: height,
+                                          color: Colors.black,
+                                          child: Center(
+                                            child: CircularProgressIndicator(
+                                              color: Colors.blue,
+                                            ),
+                                          ),
+                                        );
+                                      }
+
+                                      PaletteGenerator _palette =
+                                          paletteSnapshot.data!;
+
+                                      // TicketIdModel? ticketId = snapshot.data![1];
+
+                                      return PurchasedAttendingTicketScreen(
+                                        ticketOrder: _ticketOrder,
+                                        event: event,
+                                        currentUserId: _provider.currentUserId!,
+                                        justPurchased: '',
+                                        palette: _palette,
+                                      );
+                                    },
+                                  );
+                                },
+                              )
+                            : widget.contentType.startsWith('eventDeleted')
+                                ? FutureBuilder(
+                                    future: DatabaseService
+                                        .getUserTicketOrderWithId(
+                                      widget.contentId,
+                                      _provider.currentUserId!,
+                                    ),
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot snapshot) {
+                                      if (!snapshot.hasData) {
+                                        return Container(
+                                          width: width,
+                                          height: height,
+                                          color: Colors.black,
+                                          child: Center(
+                                              child: CircularProgressIndicator(
+                                            color: Colors.blue,
+                                          )),
+                                        );
+                                      }
+                                      TicketOrderModel _ticketOrder =
+                                          snapshot.data;
+
+                                      return _ticketOrderDeleted(
+                                          _provider.currentUserId!,
+                                          _ticketOrder);
+                                    })
+                                : const SizedBox.shrink());
   }
 }

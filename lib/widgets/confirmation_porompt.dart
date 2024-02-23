@@ -13,7 +13,7 @@ class ConfirmationPrompt extends StatelessWidget {
     required this.subTitle,
     required this.onPressed,
     required this.buttonText,
-    this.height = 250,
+    this.height = 280,
   });
 
   @override

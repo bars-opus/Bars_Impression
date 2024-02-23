@@ -115,8 +115,12 @@ class _ExploreEventCalendarState extends State<ExploreEventCalendar> {
     }
 
     try {
-      QuerySnapshot eventFeedSnapShot =
-          await query.orderBy(FieldPath.documentId).limit(limit).get();
+      QuerySnapshot eventFeedSnapShot = await query
+          .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+          .orderBy('clossingDay')
+          .orderBy(FieldPath.documentId)
+          .limit(limit)
+          .get();
 
       List<Event> uniqueEvents = [];
 

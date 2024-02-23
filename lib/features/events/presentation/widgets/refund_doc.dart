@@ -4,7 +4,10 @@ import 'package:bars/widgets/ticket_purchasing_process_icon.dart';
 import 'package:flutter/material.dart';
 
 class RefundDoc extends StatelessWidget {
-  const RefundDoc({super.key});
+  final VoidCallback refundOnPressed;
+  final bool isRefunding;
+  const RefundDoc(
+      {super.key, required this.refundOnPressed, required this.isRefunding});
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +28,15 @@ class RefundDoc extends StatelessWidget {
           TicketPurchasingIcon(
             title: '',
           ),
+          if (isRefunding)
+            Align(
+              alignment: Alignment.centerRight,
+              child: MiniCircularProgressButton(
+                onPressed: refundOnPressed,
+                text: "Continue",
+                color: Colors.blue,
+              ),
+            ),
           const SizedBox(height: 40),
           // RichText(
           //   textScaleFactor: MediaQuery.of(context).textScaleFactor,
@@ -43,10 +55,10 @@ class RefundDoc extends StatelessWidget {
           // ),
           GestureDetector(
             onTap: () async {
-              if (!await launchUrl(Uri.parse('https://www.barsopus.com/'))) {
+              if (!await launchUrl(
+                  Uri.parse('https://www.barsopus.com/refund-policy'))) {
                 throw 'Could not launch ';
               }
-            
             },
             child: RichText(
               textScaleFactor: MediaQuery.of(context).textScaleFactor,
@@ -134,7 +146,8 @@ class RefundDoc extends StatelessWidget {
                     text: "\n\nRed full refund policy.",
                     style: TextStyle(
                       color: Colors.blue,
-                      fontSize: 14,
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 14),
                     ),
                   ),
                 ],

@@ -43,7 +43,8 @@ class EventDeletedMessageWidget extends StatelessWidget {
                   Text(
                     ' Deleted',
                     style: TextStyle(
-                        fontSize: 16,
+                        fontSize:
+                            ResponsiveHelper.responsiveFontSize(context, 20),
                         color: Colors.grey,
                         fontWeight: FontWeight.bold),
                   ),

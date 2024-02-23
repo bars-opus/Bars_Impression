@@ -1,76 +1,71 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class RefundModel {
+class EventPayoutModel {
   String id;
   String eventId;
   String status;
-  String userRequestId;
+  String subaccountId;
   String eventTitle;
-
-  String orderId;
-  String city;
-  final String transactionId;
+  // String city;
+  final String transferRecepientId;
   final String eventAuthorId;
   final String idempotencyKey;
 
-  String reason;
-  Timestamp approvedTimestamp;
+  // String reason;
+  // Timestamp approvedTimestamp;
   final Timestamp timestamp;
 
-  RefundModel({
+  EventPayoutModel({
     required this.id,
     required this.eventId,
     required this.status,
-    required this.userRequestId,
-    required this.reason,
-    required this.city,
-    required this.approvedTimestamp,
+    required this.subaccountId,
+    // required this.reason,
+    // required this.city,
+    // required this.approvedTimestamp,
     required this.timestamp,
-    required this.transactionId,
-    required this.orderId,
+    required this.transferRecepientId,
     required this.eventTitle,
     required this.eventAuthorId,
     required this.idempotencyKey,
   });
 
-  factory RefundModel.fromDoc(DocumentSnapshot doc) {
-    return RefundModel(
+  factory EventPayoutModel.fromDoc(DocumentSnapshot doc) {
+    return EventPayoutModel(
       eventId: doc['eventId']!,
-      city: doc['city'] ?? '',
-      reason: doc['reason'] ?? '',
+      // city: doc['city'] ?? '',
+      // reason: doc['reason'] ?? '',
       status: doc['status'] ?? '',
       idempotencyKey: doc['idempotencyKey'] ?? '',
-      transactionId: doc['transactionId'] ?? '',
+      transferRecepientId: doc['transferRecepientId'] ?? '',
       eventTitle: doc['eventTitle'] ?? '',
-      orderId: doc['orderId'] ?? '',
-      userRequestId: doc['userRequestId'] ?? '',
+      subaccountId: doc['subaccountId'] ?? '',
       eventAuthorId: doc['eventAuthorId'] ?? '',
       id: doc['id'] ?? '',
       timestamp: doc['timestamp'] ??
           Timestamp.fromDate(
             DateTime.now(),
           ),
-      approvedTimestamp: doc['approvedTimestamp'] ??
-          Timestamp.fromDate(
-            DateTime.now(),
-          ),
+      // approvedTimestamp: doc['approvedTimestamp'] ??
+      //     Timestamp.fromDate(
+      //       DateTime.now(),
+      //     ),
     );
   }
 
-  factory RefundModel.fromJson(Map<String, dynamic> json) {
-    return RefundModel(
+  factory EventPayoutModel.fromJson(Map<String, dynamic> json) {
+    return EventPayoutModel(
       id: json['id'],
       eventId: json['eventId'],
       status: json['status'],
-      transactionId: json['transactionId'],
+      transferRecepientId: json['transferRecepientId'],
       eventTitle: json['eventTitle'],
-      orderId: json['orderId'],
       idempotencyKey: json['idempotencyKey'],
-      city: json['city'],
-      userRequestId: json['userRequestId'],
+      // city: json['city'],
+      subaccountId: json['subaccountId'],
       eventAuthorId: json['eventAuthorId'],
-      reason: json['reason'],
-      approvedTimestamp: json['approvedTimestamp'],
+      // reason: json['reason'],
+      // approvedTimestamp: json['approvedTimestamp'],
       timestamp: json['timestamp'],
     );
   }
@@ -80,15 +75,14 @@ class RefundModel {
       'id': id,
       'eventId': eventId,
       'status': status,
-      'transactionId': transactionId,
+      'transferRecepientId': transferRecepientId,
       'eventTitle': eventTitle,
-      'orderId': orderId,
-      'userRequestId': userRequestId,
+      'subaccountId': subaccountId,
       'eventAuthorId': eventAuthorId,
       'idempotencyKey': idempotencyKey,
-      'city': city,
-      'reason': reason,
-      'approvedTimestamp': approvedTimestamp,
+      // 'city': city,
+      // 'reason': reason,
+      // 'approvedTimestamp': approvedTimestamp,
       'timestamp': timestamp,
     };
   }

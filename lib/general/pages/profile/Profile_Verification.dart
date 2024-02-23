@@ -320,7 +320,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
             title: Text(
               'Pick image',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 16),
                 color: Colors.black,
               ),
             ),
@@ -448,7 +448,8 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                   TextSpan(
                     text: 'Account  Information\n',
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 20),
                       color: Colors.blue,
                     ),
                   ),
@@ -510,7 +511,8 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                   TextSpan(
                     text: 'Account  Information\n',
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 20),
                       color: Colors.blue,
                     ),
                   ),
@@ -761,8 +763,11 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                   child: Text(
                                     'A blue check is added to a verified account to establish the authenticity of that account. You will need to confirm your identity with Bars Impression in order to be Verified. This helps encourage and maintain trust between users.',
                                     style: TextStyle(
-                                        color: Theme.of(context).primaryColor,
-                                        fontSize: 14),
+                                      color: Theme.of(context).primaryColor,
+                                        fontSize: 
+                                      ResponsiveHelper.responsiveFontSize(
+                                          context, 14),
+                                    ),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
@@ -801,7 +806,8 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                 DirectionWidget(
                                   text:
                                       'Specific requirements must be met in order to be verifified.',
-                                  fontSize: 14,
+                                  fontSize: ResponsiveHelper.responsiveFontSize(
+                                      context, 14),
                                   sizedBox: 10,
                                 ),
                                 SizedBox(height: 30),
@@ -937,7 +943,8 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                   text: _govIdType.isEmpty
                                       ? 'You will need to confirm your identity with Bars Impression to be Verified. This helps encourage and maintain trust between users on the platform.  Provide a photo of a valid official government-issued identification document, such as your Driver’s License or Passport if you are and individual. Companies, brands, or organizations are required to provide their document of incorporation.'
                                       : 'Attach an image of your $_govIdType and lets continue',
-                                  fontSize: 14,
+                                  fontSize: ResponsiveHelper.responsiveFontSize(
+                                      context, 14),
                                   sizedBox: 10,
                                 ),
                                 SizedBox(height: 10),
@@ -985,7 +992,8 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                 DirectionWidget(
                                   text:
                                       'Your account must represent or otherwise be associated with a prominently recognized individual or brand. Add articles, social media accounts, and other links that show your account is in the public interest. ',
-                                  fontSize: 14,
+                                  fontSize: ResponsiveHelper.responsiveFontSize(
+                                      context, 14),
                                   sizedBox: 10,
                                 ),
                                 SizedBox(height: 20),
@@ -1065,7 +1073,8 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                 DirectionWidget(
                                   text:
                                       'Your account must represent or otherwise be associated with a prominently recognized individual or brand. Add articles, social media accounts, and other links that show your account is in the public interest. ',
-                                  fontSize: 14,
+                                  fontSize: ResponsiveHelper.responsiveFontSize(
+                                      context, 14),
                                   sizedBox: 10,
                                 ),
                                 ContentFieldBlack(
@@ -1144,13 +1153,17 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                           //     ? 'This final step requires you to provide a picture of yourself holding a paper with a generated code.\nYou can generate the code by tapping on the button below.\nYou have 5 minutes to boldly write the code on paper and take a picture with it for submission.'
                                           //     :
                                           'You have 5 minutes to boldly write the code on paper and take a picture with it for submission',
-                                      fontSize: 14,
+                                      fontSize:
+                                          ResponsiveHelper.responsiveFontSize(
+                                              context, 14),
                                       sizedBox: 10,
                                     )
                                   : DirectionWidget(
                                       text:
                                           'You can submit your request for review',
-                                      fontSize: 14,
+                                      fontSize:
+                                          ResponsiveHelper.responsiveFontSize(
+                                              context, 14),
                                       sizedBox: 10,
                                     ),
                               Center(

@@ -13,6 +13,7 @@ class TicketOrderModel {
   final String purchaseReferenceId;
   final String transactionId;
   final String refundRequestStatus;
+  final String idempotencyKey;
   final bool isDeleted;
   final String canlcellationReason;
   final String eventAuthorId;
@@ -36,6 +37,7 @@ class TicketOrderModel {
     required this.eventTitle,
     required this.purchaseReferenceId,
     required this.refundRequestStatus,
+    required this.idempotencyKey,
     required this.transactionId,
   });
 
@@ -48,10 +50,12 @@ class TicketOrderModel {
     return TicketOrderModel(
       orderId: data['orderId'] ?? '',
       refundRequestStatus: data['refundRequestStatus'] ?? '',
+      idempotencyKey: data['idempotencyKey'] ?? '',
+
       transactionId: data['transactionId'] ?? '',
       eventId: data['eventId'] ?? '',
       canlcellationReason: data['canlcellationReason'] ?? '',
-      eventAuthorId: data['eventAuthorId'] ?? '',
+      eventAuthorId: data['eventAuthorId'],
 
       timestamp:
           data['timestamp'] as Timestamp? ?? Timestamp.fromDate(DateTime.now()),
@@ -95,6 +99,8 @@ class TicketOrderModel {
       transactionId: json['transactionId'] ?? '',
 
       refundRequestStatus: json['refundRequestStatus'] ?? '',
+      idempotencyKey: json['idempotencyKey'] ?? '',
+
       eventImageUrl: json['eventImageUrl'] ?? '',
       eventTitle: json['eventTitle'] ?? '',
       isInvited: json['isInvited'] ?? false,
@@ -125,6 +131,8 @@ class TicketOrderModel {
       'eventTimestamp': eventTimestamp,
       // 'entranceId': entranceId,
       'refundRequestStatus': refundRequestStatus,
+      'idempotencyKey': idempotencyKey,
+
       'eventImageUrl': eventImageUrl,
       'isInvited': isInvited,
       'purchaseReferenceId': purchaseReferenceId,

@@ -76,64 +76,64 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
         'account_number': _accountNumber.text.trim(),
         'percentage_charge': percentageCharge,
         'currency': _user!.currency,
-         'userId': _user.userId
+        'userId': _user.userId
       };
 
       try {
-      final HttpsCallableResult<dynamic> result =
-          await createSubaccountCallable.call(
-        subaccountData,
-      );
+        final HttpsCallableResult<dynamic> result =
+            await createSubaccountCallable.call(
+          subaccountData,
+        );
 
-      print('Full result data: ${result.data}');
+        print('Full result data: ${result.data}');
 
-      var subaccountId = result.data['subaccount_id'];
-      var transferRecepient = result.data['recipient_code'];
+        var subaccountId = result.data['subaccount_id'];
+        var transferRecepient = result.data['recipient_code'];
 
-      // print('Result data: $result.data);
+        // print('Result data: $result.data);
 
-      if (subaccountId != null && _user != null) {
-        try {
-          await usersLocationSettingsRef.doc(_user.userId).update({
-            'subaccountId': subaccountId.toString(),
-            'transferRecepientId': transferRecepient.toString(),
-          });
+        if (subaccountId != null && _user != null) {
+          try {
+            await usersLocationSettingsRef.doc(_user.userId).update({
+              'subaccountId': subaccountId.toString(),
+              'transferRecepientId': transferRecepient.toString(),
+            });
 
-          Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content:
-                Text('Subaccount created, continue with your event process.'),
-          ));
-          _updateAuthorHive(subaccountId.toString(), transferRecepient);
-        } catch (e) {
+            Navigator.pop(context);
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content:
+                  Text('Subaccount created, continue with your event process.'),
+            ));
+            _updateAuthorHive(subaccountId.toString(), transferRecepient);
+          } catch (e) {
+            if (mounted) {
+              setState(() {
+                _isLoading = false;
+              });
+            }
+
+            // Log the error or use a debugger to inspect the error
+            // print('Error updating Firestore with subaccount ID: $e');
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Failed to update subaccount information'),
+            ));
+          }
+        } else {
           if (mounted) {
             setState(() {
               _isLoading = false;
             });
           }
 
-          // Log the error or use a debugger to inspect the error
-          // print('Error updating Firestore with subaccount ID: $e');
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Failed to update subaccount information'),
+            content: Text('Received invalid subaccount data'),
           ));
         }
-      } else {
         if (mounted) {
           setState(() {
             _isLoading = false;
           });
         }
-
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Received invalid subaccount data'),
-        ));
-      }
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
       } on FirebaseFunctionsException catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Failed to create subaccount: ${e.message}'),
@@ -194,70 +194,6 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
         updatedLocationPreference.userId, updatedLocationPreference);
   }
 
-  // void _submitForm(BuildContext context) async {
-  //   FirebaseFunctions functions = FirebaseFunctions.instance;
-  //   var createSubaccountCallable = functions.httpsCallable('createSubaccount');
-
-  //   var _user =
-  //       Provider.of<UserData>(context, listen: false).userLocationPreference;
-
-  //   if (_formKey.currentState!.validate()) {
-  //     _formKey.currentState!.save();
-
-  //     final bankCode = _selectedBankCode;
-
-  //     if (bankCode == null || bankCode.isEmpty) {
-  //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //         content: Text('Please select a bank'),
-  //       ));
-  //       return;
-  //     }
-
-  //     // Ensure you collect the percentage charge properly
-  //     final percentageCharge = 10; // Replace with your method/logic
-
-  //     final subaccountData = {
-  //       'business_name': _bussinessNameController.text.trim(),
-  //       'bank_code': bankCode,
-  //       'account_number': _accountNumber.text.trim(),
-  //       'percentage_charge': percentageCharge,
-  //     };
-
-  //     try {
-  //       final HttpsCallableResult<dynamic> result =
-  //           await createSubaccountCallable.call(subaccountData);
-
-  //       var subaccountId = result.data['subaccount_id'];
-
-  //       if (subaccountId != null && _user != null) {
-  //         await usersLocationSettingsRef.doc(_user.userId).update({
-  //           'subaccount_id': subaccountId,
-  //         });
-  //         Navigator.pop(context);
-  //         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //           content: Text('Subaccount created: $subaccountId'),
-  //         ));
-  //       } else {
-  //         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //           content: Text('Received invalid subaccount data'),
-  //         ));
-  //       }
-  //     } on FirebaseFunctionsException catch (e) {
-  //       print(e.toString() + ' oooo');
-  //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //         content: Text('Failed to create subaccount: ${e.message}'),
-  //       ));
-  //     } catch (e) {
-  //       print(e.toString() + ' bbbb');
-
-  //       print(e.toString());
-  //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //         content: Text('An unexpected error occurred'),
-  //       ));
-  //     }
-  //   }
-  // }
-
   // Function to retrieve bank list from Paystack
   Future<List<dynamic>> getBankList() async {
     var _country = Provider.of<UserData>(context, listen: false)
@@ -278,11 +214,50 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
 
     if (response.statusCode == 200) {
       final List banks = json.decode(response.body)['data'];
-      return banks;
+
+      // List of bank names to exclude
+      const List<String> excludedBankNames = [
+        'Absa Bank Ghana Ltd',
+        'Ecobank Ghana Limited',
+        'Bank of Ghana',
+        'OmniBSCI Bank',
+        'Société Générale Ghana Limited',
+      ];
+
+      // Filter out the banks that should be excluded
+      final filteredBanks = banks.where((bank) {
+        return !excludedBankNames.contains(bank['name']);
+      }).toList();
+      print(filteredBanks);
+      return filteredBanks;
     } else {
       throw Exception('Failed to load banks from Paystack');
     }
   }
+  // Future<List<dynamic>> getBankList() async {
+  //   var _country = Provider.of<UserData>(context, listen: false)
+  //       .userLocationPreference!
+  //       .country;
+
+  //   const String url = 'https://api.paystack.co/bank';
+  //   const String paystackApiKey =
+  //       PayStackKey.PAYSTACK_KEY; // Replace with your actual key
+
+  //   final response = await http.get(
+  //     Uri.parse(url).replace(queryParameters: {'country': _country}),
+  //     headers: {
+  //       'Authorization': 'Bearer $paystackApiKey',
+  //       'Content-Type': 'application/json',
+  //     },
+  //   );
+
+  //   if (response.statusCode == 200) {
+  //     final List banks = json.decode(response.body)['data'];
+  //     return banks;
+  //   } else {
+  //     throw Exception('Failed to load banks from Paystack');
+  //   }
+  // }
 
   _saveButotn(VoidCallback onPressed, String text) {
     return AnimatedContainer(
@@ -445,63 +420,72 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
               padding: const EdgeInsets.all(20.0),
               child: ListView(
                 children: <Widget>[
+                  RichText(
+                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Payout \nAccount Information',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        TextSpan(
+                          text:
+                              "\n\nTo ensure you receive your earnings from ticket sales promptly, we require your bank account details. Your payouts will be processed securely through Paystack, a trusted payment platform that adheres to the highest levels of security compliance.",
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        TextSpan(
+                          text: "\n\nDirect Deposits.",
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        TextSpan(
+                          text:
+                              "\n\nYour earnings from ticket sales will be securely deposited into the bank account you provide.",
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        TextSpan(
+                          text: "\n\nPrivacy.",
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        TextSpan(
+                          text:
+                              "\n\nWe take your privacy seriously. Your bank details are encrypted and safely transmitted to our payment processors.",
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        TextSpan(
+                          text: "\n\nSecurity.",
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        TextSpan(
+                          text:
+                              "\n\nBars Impression partners with leading financial institutions for secure processing.",
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        TextSpan(
+                          text:
+                              "\n\nWe will issue your payout approximately 48 hours after the closing date of your event. Once the payout has been processed, you should receive the funds within 24 hours. ",
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ],
+                    ),
+                  ),
                   GestureDetector(
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      _sendMail('support@barsopus.com', context);
+                    onTap: () async {
+                      if (!await launchUrl(
+                          Uri.parse('https://www.barsopus.com/terms-of-use'))) {
+                        throw 'Could not launch link';
+                      }
                     },
                     child: RichText(
                       textScaleFactor: MediaQuery.of(context).textScaleFactor,
                       text: TextSpan(
                         children: [
                           TextSpan(
-                            text: 'Payout \nAccount Information',
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                          TextSpan(
                             text:
-                                "\n\nTo ensure you receive your earnings from ticket sales promptly, we require your bank account details. Your payouts will be processed securely through Paystack, a trusted payment platform that adheres to the highest levels of security compliance.",
+                                "\n\nBy entering your bank account details, you agree to Bars Impression's ",
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           TextSpan(
-                            text: "\n\nDirect Deposits.",
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                          TextSpan(
-                            text:
-                                "\n\nYour earnings from ticket sales will be securely deposited into the bank account you provide.",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          TextSpan(
-                            text: "\n\nPrivacy.",
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                          TextSpan(
-                            text:
-                                "\n\nWe take your privacy seriously. Your bank details are encrypted and safely transmitted to our payment processors.",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          TextSpan(
-                            text: "\n\nSecurity.",
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                          TextSpan(
-                            text:
-                                "\n\nBars Impression partners with leading financial institutions for secure processing.",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          TextSpan(
-                            text:
-                                "\n\n\n\nWe will issue your payout approximately 48 hours after the closing date of your event. Once the payout has been processed, you should receive the funds within 24 hours. ",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          TextSpan(
-                            text:
-                                "\n\n\n\nBy entering your bank account details, you agree to Bars Impression's ",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          TextSpan(
-                            text: "[Terms of Service](#) ",
+                            text: "Terms of Service ",
                             style: TextStyle(
                               color: Colors.blue,
                               fontSize: ResponsiveHelper.responsiveFontSize(
@@ -513,6 +497,19 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
                                 "and acknowledge that this information is necessary for receiving your hosting payouts.",
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      _sendMail('support@barsopus.com', context);
+                    },
+                    child: RichText(
+                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      text: TextSpan(
+                        children: [
                           TextSpan(
                             text:
                                 "\n\nShould you have any questions or require further clarification, please feel free to reach out to our support team at .",
@@ -556,6 +553,21 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
                     const SizedBox(height: 30),
                     Container(
                       decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(0)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Please ensure that you add a bank account denominated in Ghanaian Cedis (GHS) for payout purposes. Our payment providers do not support payouts to foreign accounts, so it is important that your account is in Ghanaian Cedis and not in foreign currencies.',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: ResponsiveHelper.responsiveHeight(
+                                  context, 12)),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
                         color: Theme.of(context).primaryColor,
                       ),
                       child: Column(
@@ -563,6 +575,7 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
                           // const SizedBox(
                           //   height: 30,
                           // ),
+
                           Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: Column(

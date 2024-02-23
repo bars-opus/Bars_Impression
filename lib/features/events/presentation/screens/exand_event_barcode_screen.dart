@@ -2,9 +2,11 @@ import 'package:bars/utilities/exports.dart';
 
 class ExpandEventBarcodeScreen extends StatelessWidget {
   final Event event;
+  bool justCreated;
 
   ExpandEventBarcodeScreen({
     required this.event,
+      this.justCreated = false,
   });
 
   @override
@@ -53,7 +55,7 @@ class ExpandEventBarcodeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Hero(
-                tag: event.id,
+                tag: justCreated?  "new ${event.id}" : event.id,
                 child: QrImageView(
                   version: QrVersions.auto,
                   eyeStyle: QrEyeStyle(

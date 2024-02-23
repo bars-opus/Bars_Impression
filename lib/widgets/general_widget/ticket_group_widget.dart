@@ -247,7 +247,7 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
                       color: widget.isEditing || widget.onInvite
                           ? Colors.white
                           : Theme.of(context).secondaryHeaderColor,
-                      fontSize: 20,
+                      fontSize:  ResponsiveHelper.responsiveFontSize(context, 20),
                       fontWeight: FontWeight.bold),
                 ),
               ),

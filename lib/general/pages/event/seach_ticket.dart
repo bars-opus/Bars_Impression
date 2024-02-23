@@ -60,18 +60,19 @@ class _SearchTicketState extends State<SearchTicket> {
                   cancelSearch: _cancelSearch,
                   controller: _searchController,
                   focusNode: _addressSearchfocusNode,
-                  hintText: 'Type event name...',
+                  hintText: 'Type event title...',
                   onClearText: () {
                     _clearSearch();
                   },
                   onTap: () {},
                   onChanged: (input) {
-                    _debouncer.run(() {
-                      setState(() {
-                        _ticketOrder = DatabaseService.serchTicket(
-                            input.toUpperCase(), widget.currentUserId);
+                    if (input.trim().isNotEmpty)
+                      _debouncer.run(() {
+                        setState(() {
+                          _ticketOrder = DatabaseService.serchTicket(
+                              input.toUpperCase(), widget.currentUserId);
+                        });
                       });
-                    });
                   }),
             ),
             _ticketOrder == null
@@ -82,7 +83,7 @@ class _SearchTicketState extends State<SearchTicket> {
                     child: NoContents(
                         title: "Searh for ticket. ",
                         subTitle:
-                            'Enter the name of the event\'s ticket you want to search for.',
+                            'Enter the title of the event\'s ticket you want to search for.',
                         icon: Icons.search),
                   ))
                 : FutureBuilder<QuerySnapshot>(
@@ -106,7 +107,9 @@ class _SearchTicketState extends State<SearchTicket> {
                                     TextSpan(
                                         text: "No tickets found. ",
                                         style: TextStyle(
-                                            fontSize: 20,
+                                            fontSize: ResponsiveHelper
+                                                .responsiveFontSize(
+                                                    context, 20),
                                             fontWeight: FontWeight.bold,
                                             color: Colors.blueGrey)),
                                     TextSpan(
@@ -114,7 +117,10 @@ class _SearchTicketState extends State<SearchTicket> {
                                             '\nCheck the event name and try again.'),
                                   ],
                                   style: TextStyle(
-                                      fontSize: 14, color: Colors.grey),
+                                      fontSize:
+                                          ResponsiveHelper.responsiveFontSize(
+                                              context, 14),
+                                      color: Colors.grey),
                                 )),
                           ),
                         );

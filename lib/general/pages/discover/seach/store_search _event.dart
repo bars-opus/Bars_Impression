@@ -53,7 +53,9 @@ class _StoreSearchEventsState extends State<StoreSearchEvents> {
                             TextSpan(
                                 text: "No events found. ",
                                 style: TextStyle(
-                                    fontSize: 20,
+                                    fontSize:
+                                        ResponsiveHelper.responsiveFontSize(
+                                            context, 20),
                                     fontWeight: FontWeight.bold,
                                     color: Colors.blueGrey)),
                             TextSpan(text: '\nCheck title and try again.'),
@@ -109,7 +111,7 @@ class _StoreSearchEventsState extends State<StoreSearchEvents> {
           //               TextSpan(
           //                   text: "No events found. ",
           //                   style: TextStyle(
-          //                       fontSize: 20,
+          //                       fontSize:  ResponsiveHelper.responsiveFontSize( context, 20),
           //                       fontWeight: FontWeight.bold,
           //                       color: Colors.blueGrey)),
           //               TextSpan(text: '\nCheck title and try again.'),

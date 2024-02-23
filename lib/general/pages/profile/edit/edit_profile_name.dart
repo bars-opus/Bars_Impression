@@ -49,6 +49,7 @@ class _EditProfileNameState extends State<EditProfileName> {
     var _provider = Provider.of<UserData>(context, listen: false);
 
     try {
+      _provider.setIsLoading(true);
       await _firestore.runTransaction((transaction) async {
         DocumentSnapshot oldUsernameDoc = await transaction
             .get(_firestore.collection('usernames').doc(oldUsername));
@@ -67,7 +68,7 @@ class _EditProfileNameState extends State<EditProfileName> {
           _provider.user!.profileImageUrl!,
           newUsername.toUpperCase(),
           _provider.user!.bio!,
-          'https://www.barsopus.com/user_$_provider.currentUserId.uid',
+          'https://www.barsopus.com/user_${_provider.currentUserId}',
         );
         // Create the new username document
         DocumentReference newUsernameRef =
@@ -101,7 +102,9 @@ class _EditProfileNameState extends State<EditProfileName> {
             .setChangeUserName(newUsername.toUpperCase());
         // widget.user.userName = newUsername;
       });
+      _provider.setIsLoading(false);
     } catch (e) {
+      _provider.setIsLoading(false);
       // Rethrow the caught exception to handle it in the _validate method
       throw e;
     }
@@ -201,16 +204,23 @@ class _EditProfileNameState extends State<EditProfileName> {
 
   @override
   Widget build(BuildContext context) {
+    var _provider = Provider.of<UserData>(
+      context,
+    );
     return EditProfileScaffold(
       title: '',
       widget: Form(
         key: _formKey,
         child: Padding(
-          padding: const EdgeInsets.all(30.0),
+          padding: const EdgeInsets.symmetric(horizontal: 30.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
+              if (_provider.isLoading) LinearProgress(),
+              const SizedBox(
+                height: 30,
+              ),
               EditProfileInfo(
                   editTitle: 'Select \nUsername',
                   info:

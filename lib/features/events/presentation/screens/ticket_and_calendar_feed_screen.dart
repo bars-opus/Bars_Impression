@@ -1,5 +1,4 @@
 import 'package:bars/utilities/exports.dart';
-import 'package:flutter/cupertino.dart';
 
 class TicketAndCalendarFeedScreen extends StatefulWidget {
   static final id = 'TicketAndCalendarFeedScreen';
@@ -73,7 +72,7 @@ class _TicketAndCalendarFeedScreenState
       QuerySnapshot ticketOrderSnapShot = await newUserTicketOrderRef
           .doc(widget.currentUserId)
           .collection('eventInvite')
-          .orderBy('eventTimestamp', descending: false)
+          .orderBy('eventTimestamp', descending: true)
           .limit(10)
           .get();
 
@@ -81,9 +80,12 @@ class _TicketAndCalendarFeedScreenState
           .map((doc) => TicketOrderModel.fromDoc(doc))
           .toList();
 
+      List<TicketOrderModel> sortedTicketOrders =
+          _sortTicketOrders(ticketOrders);
+
       List<TicketOrderModel> uniqueEvents = [];
 
-      for (var ticketOrder in ticketOrders) {
+      for (var ticketOrder in sortedTicketOrders) {
         if (addedTicketIds.add(ticketOrder.eventId)) {
           uniqueEvents.add(ticketOrder);
         }
@@ -122,18 +124,21 @@ class _TicketAndCalendarFeedScreenState
       QuerySnapshot postFeedSnapShot = await newUserTicketOrderRef
           .doc(widget.currentUserId)
           .collection('eventInvite')
-          .orderBy('eventTimestamp', descending: false) // Keep consistent order
+          .orderBy('eventTimestamp', descending: true) // Keep consistent order
           .startAfterDocument(_lastTicketOrderDocument!)
           .limit(limit)
           .get();
 
-      List<TicketOrderModel> morePosts = postFeedSnapShot.docs
+      List<TicketOrderModel> ticketOrders = postFeedSnapShot.docs
           .map((doc) => TicketOrderModel.fromDoc(doc))
           .toList();
 
+      List<TicketOrderModel> sortedTicketOrders =
+          _sortTicketOrders(ticketOrders);
+
       List<TicketOrderModel> uniqueEvents = [];
 
-      for (var ticketOrder in morePosts) {
+      for (var ticketOrder in sortedTicketOrders) {
         if (addedTicketIds.add(ticketOrder.eventId)) {
           uniqueEvents.add(ticketOrder);
         }
@@ -171,6 +176,48 @@ class _TicketAndCalendarFeedScreenState
     }
   }
 
+// Custom sort function
+  List<TicketOrderModel> _sortTicketOrders(
+      List<TicketOrderModel> ticketOrders) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final tomorrow = today.add(Duration(days: 1));
+
+    // Function to determine the sort weight, considering only the date part
+    int sortWeight(DateTime eventDate) {
+      final eventDay = DateTime(eventDate.year, eventDate.month, eventDate.day);
+      if (eventDay.isAtSameMomentAs(today)) {
+        return 0; // Today's events
+      } else if (eventDay.isAtSameMomentAs(tomorrow)) {
+        return 1; // Tomorrow's events
+      } else {
+        return 2; // Future events
+      }
+    }
+
+    // Sort the list
+    ticketOrders.sort((a, b) {
+      final eventADate =
+          a.eventTimestamp!.toDate(); // Convert Timestamp to DateTime if needed
+      final eventBDate =
+          b.eventTimestamp!.toDate(); // Convert Timestamp to DateTime if needed
+
+      // Get the sort weight for both events
+      final weightA = sortWeight(eventADate);
+      final weightB = sortWeight(eventBDate);
+
+      if (weightA != weightB) {
+        // Compare based on calculated weight
+        return weightA.compareTo(weightB);
+      } else {
+        // If events have the same weight, sort by timestamp
+        // Assuming you still want to sort descending
+        return b.eventTimestamp!.compareTo(a.eventTimestamp!);
+      }
+    });
+
+    return ticketOrders;
+  }
   // _loadMoreActivities() async {
   //   if (!_hasNext || _lastTicketOrderDocument == null) {
   //     // No more documents to load or initial load has not been done

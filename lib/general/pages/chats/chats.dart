@@ -315,17 +315,6 @@ class _ChatsState extends State<Chats>
 // If the difference between the current time (now) and the chat's
 // newMessageTimestamp is greater than the ageLimit, it deletes that chat from the box.
 
-  void expireOldChats(Duration ageLimit) async {
-    var box = await Hive.openBox<Chat>('chats');
-    var now = DateTime.now();
-
-    for (var message in box.values) {
-      if (now.difference(message.newMessageTimestamp!.toDate()) > ageLimit) {
-        box.delete(message.id);
-      }
-    }
-  }
-
   void expireOldRooms(Duration ageLimit) async {
     var box = await Hive.openBox<EventRoom>('eventRooms');
     var now = DateTime.now();
@@ -362,9 +351,19 @@ class _ChatsState extends State<Chats>
     );
   }
 
+  void expireOldChats(Duration ageLimit) async {
+    var box = await Hive.openBox<Chat>('chats');
+    var now = DateTime.now();
+
+    for (var message in box.values) {
+      if (now.difference(message.newMessageTimestamp!.toDate()) > ageLimit) {
+        box.delete(message.id);
+      }
+    }
+  }
+
   void _listenToChatUpdates(String chatId) {
     final chatsBox = Hive.box<Chat>('chats');
-
     var subscription = usersAuthorRef
         .doc(widget.currentUserId)
         .collection('new_chats')
@@ -373,22 +372,58 @@ class _ChatsState extends State<Chats>
         .listen((snapshot) {
       if (snapshot.exists) {
         Chat updatedChat = Chat.fromDoc(snapshot);
-        chatsBox.put(chatId, updatedChat);
+        _updateHiveChat(chatsBox, updatedChat);
+
+        // chatsBox.put(chatId, updatedChat);
       }
     }, onError: (error) => print("Listen failed: $error"));
 
     _chatSubscriptions.add(subscription);
   }
 
+  void _updateHiveChat(Box<Chat> chatsBox, Chat chat) {
+    // If the chat doesn't exist or is different from the existing one, update Hive.
+    var existingChat = chatsBox.get(chat.id);
+    if (existingChat == null || !areChatsEqual(existingChat, chat)) {
+      chatsBox.put(chat.id, chat);
+    }
+  }
+
+  bool areChatsEqual(Chat chat1, Chat chat2) {
+    return chat1.id == chat2.id &&
+        chat1.newMessageTimestamp == chat2.newMessageTimestamp &&
+        chat1.lastMessage == chat2.lastMessage &&
+        chat1.messageId == chat2.messageId; // Example of an additional field
+  }
+
+  Future<AccountHolderAuthor?> _setUpProfileUser(String chatUserId) async {
+    final usersBox = Hive.box<AccountHolderAuthor>('accountHolderAuthor');
+    if (usersBox.containsKey(chatUserId)) {
+      // // If the user data is already in the box, use it
+      return usersBox.get(chatUserId);
+    } else {
+      // If the user data is not in the box, fetch it from the database and save it to the box
+      // try {
+      final author = await DatabaseService.getUserWithId(chatUserId);
+      print(author!.userName);
+
+      if (author != null) usersBox.put(chatUserId, author);
+      print(author!.userName);
+      return author;
+      // } catch (e) {
+
+      // }
+    }
+  }
+
   _chat() {
+    final chatsBox = Hive.box<Chat>('chats');
     // Stream from Firestore
     Stream<QuerySnapshot> stream = usersAuthorRef
         .doc(widget.currentUserId)
         .collection('new_chats')
         .orderBy('newMessageTimestamp', descending: true)
         .snapshots();
-
-    final chatsBox = Hive.box<Chat>('chats');
 
     return StreamBuilder<QuerySnapshot>(
       stream: stream,
@@ -410,18 +445,47 @@ class _ChatsState extends State<Chats>
           snapshot.data!.docs.forEach((doc) {
             Chat chat = Chat.fromDoc(doc);
 
+            // Check if the chat is already in the box and if it has changed
+            // Check if the chat is already in the box and if it has changed
+            var existingChat = chatsBox.get(chat.id);
+            if (existingChat == null || !areChatsEqual(existingChat, chat)) {
+              // Only update the box if the chat is new or has changed
+              chatsBox.put(chat.id, chat);
+            }
             // Update the local cache and listen for updates
             if (!_activeChatListeners.contains(chat.id)) {
               _listenToChatUpdates(chat.id);
               _activeChatListeners.add(chat.id);
             }
 
-            chatsBox.put(chat.id, chat);
+            // chatsBox.put(chat.id, chat);
           });
 
           // Fetch chats from Hive directly
-          List<Chat> retrievedChats = chatsBox.values.toList();
+          // List<Chat> retrievedChats = chatsBox.values.toList();
 
+          List<Chat> retrievedChats = chatsBox.values.toList();
+          retrievedChats.sort((Chat a, Chat b) {
+            // Attempt to use the timestamp if available
+            var aTimestamp = a.newMessageTimestamp?.toDate();
+            var bTimestamp = b.newMessageTimestamp?.toDate();
+
+            // If both timestamps are available, compare them
+            if (aTimestamp != null && bTimestamp != null) {
+              return bTimestamp.compareTo(aTimestamp);
+            } else {
+              // If timestamps are not available, do not sort and keep the original order
+              // This assumes that your list retrievedChats is already in the original order
+              // that you wish to preserve. If not, you might need to implement a logic
+              // to maintain the original order when retrieving the chats.
+              return 0; // Returning 0 keeps the original order
+            }
+          });
+          // retrievedChats.sort((Chat a, Chat b) {
+          //   var aTimestamp = a.newMessageTimestamp?.toDate() ?? DateTime.now();
+          //   var bTimestamp = b.newMessageTimestamp?.toDate() ?? DateTime.now();
+          //   return bTimestamp.compareTo(aTimestamp);
+          // });
           // Use retrievedChats directly in your ListView
           return _buildChatViewFromList(
             chats: retrievedChats,
@@ -429,23 +493,39 @@ class _ChatsState extends State<Chats>
             noContentIcon: Icons.send_outlined,
             itemBuilder: (context, index, chat) {
               limitChats();
+              //  Chat updatedChat = box.get(chat.id) ?? chat;
 
-              return ValueListenableBuilder(
-                valueListenable: chatsBox.listenable(),
-                builder: (context, Box<Chat> box, _) {
-                  // Retrieve the updated TicketIdModel from the box using the correct key.
-
-                  Chat updatedChat = box.get(chat.id) ?? chat;
-                  return GetAuthor(
-                    connectivityStatus: _connectivityStatus,
-                    chats: updatedChat,
-                    lastMessage: updatedChat.lastMessage,
-                    seen: chat.seen,
-                    chatUserId: chat.toUserId == widget.currentUserId
-                        ? chat.fromUserId
-                        : chat.toUserId,
-                    isEventRoom: false,
-                    room: null,
+              return FutureBuilder<AccountHolderAuthor?>(
+                future: _setUpProfileUser(chat.id),
+                builder: (BuildContext context,
+                    AsyncSnapshot<AccountHolderAuthor?> authorSnapshot) {
+                  if (authorSnapshot.hasError) {
+                    return const Text('Error loading chat room');
+                  }
+                  if (!authorSnapshot.hasData) {
+                    return _loadingSkeleton(); // return a loading spinner or some other widget
+                  }
+                  final author = authorSnapshot.data;
+                  // limitRooms(); // Ensure these functions are defined and manage your data as expected
+                  // limitTicketIds(); // Ensure these functions are defined and manage your data as expected
+                  return ValueListenableBuilder(
+                    valueListenable: chatsBox.listenable(),
+                    builder: (context, Box<Chat> box, _) {
+                      // Retrieve the updated TicketIdModel from the box using the correct key.
+                      Chat updatedChat = box.get(chat.id) ?? chat;
+                      return GetAuthor(
+                        connectivityStatus: _connectivityStatus,
+                        chats: updatedChat,
+                        lastMessage: updatedChat.lastMessage,
+                        seen: chat.seen,
+                        chatUserId: updatedChat.toUserId == widget.currentUserId
+                            ? updatedChat.fromUserId
+                            : updatedChat.toUserId,
+                        isEventRoom: false,
+                        room: null,
+                        author: author,
+                      );
+                    },
                   );
                 },
               );
@@ -516,8 +596,8 @@ class _ChatsState extends State<Chats>
         if (snapshot.exists) {
           TicketIdModel updatedTicketId = TicketIdModel.fromDoc(snapshot);
           ticketIdsBox.put(ticketIdKey, updatedTicketId);
-          print(
-              "Updated Hive box for $ticketIdKey with data: ${updatedTicketId.toJson()}");
+          // print(
+          //     "Updated Hive box for $ticketIdKey with data: ${updatedTicketId.toJson()}");
         }
       } catch (e) {
         print("Error updating Hive box for $ticketIdKey: $e");
@@ -575,6 +655,28 @@ class _ChatsState extends State<Chats>
             ),
           );
         }
+        List<TicketIdModel> sortedTicketIds = ticketIdsBox.values.toList();
+        sortedTicketIds.sort((a, b) {
+          // Attempt to use the timestamp if available
+          var aTimestamp = a.timestamp?.toDate();
+          var bTimestamp = b.timestamp?.toDate();
+
+          // If both timestamps are available, compare them
+          if (aTimestamp != null && bTimestamp != null) {
+            return bTimestamp.compareTo(aTimestamp);
+          } else {
+            // If timestamps are not available, do not sort and keep the original order
+            // This assumes that your list retrievedChats is already in the original order
+            // that you wish to preserve. If not, you might need to implement a logic
+            // to maintain the original order when retrieving the chats.
+            return 0; // Returning 0 keeps the original order
+          }
+        });
+        // sortedTicketIds.sort((a, b) {
+        //   var aTimestamp = a.timestamp?.toDate() ?? DateTime.now();
+        //   var bTimestamp = b.timestamp?.toDate() ?? DateTime.now();
+        //   return bTimestamp.compareTo(aTimestamp);
+        // });
 
         // Now you can access the documents through streamSnapshot.data.docs
         return ListView.builder(
@@ -627,6 +729,7 @@ class _ChatsState extends State<Chats>
                       chatUserId: '',
                       isEventRoom: true,
                       room: room,
+                      author: null,
                     );
                   },
                 );
@@ -737,6 +840,7 @@ class GetAuthor extends StatefulWidget {
   final bool isEventRoom;
   final EventRoom? room;
   final TicketIdModel? ticketId;
+  final AccountHolderAuthor? author;
 
   const GetAuthor({
     Key? key,
@@ -747,6 +851,7 @@ class GetAuthor extends StatefulWidget {
     required this.isEventRoom,
     required this.room,
     required this.connectivityStatus,
+    required this.author,
     this.ticketId,
   }) : super(key: key);
 
@@ -756,39 +861,39 @@ class GetAuthor extends StatefulWidget {
 
 class _GetAuthorState extends State<GetAuthor>
     with AutomaticKeepAliveClientMixin {
-  AccountHolderAuthor? _author;
+  // AccountHolderAuthor? _author;
   Object? _error;
-  bool _loading = true;
+  // bool _loading = true;
   // late Future<Box> box;
 
-  @override
-  void initState() {
-    super.initState();
-    //  box = Hive.openBox('accountHolderAuthorBox');
-    _loading = widget.isEventRoom ? false : true;
-    widget.isEventRoom ? () {} : _setUpProfileUser();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   //  box = Hive.openBox('accountHolderAuthorBox');
+  //   _loading = widget.isEventRoom ? false : true;
+  //   widget.isEventRoom ? () {} : _setUpProfileUser();
+  // }
 
-  Future<void> _setUpProfileUser() async {
-    final usersBox = Hive.box<AccountHolderAuthor>('accountHolderAuthor');
-    if (usersBox.containsKey(widget.chatUserId)) {
-      // // If the user data is already in the box, use it
-      _author = usersBox.get(widget.chatUserId);
-    } else {
-      // If the user data is not in the box, fetch it from the database and save it to the box
-      try {
-        _author = await DatabaseService.getUserWithId(widget.chatUserId);
-        usersBox.put(widget.chatUserId, _author!);
-      } catch (e) {
-        _error = e;
-      }
-    }
-    if (mounted) {
-      setState(() {
-        _loading = false;
-      });
-    }
-  }
+  // Future<void> _setUpProfileUser() async {
+  //   final usersBox = Hive.box<AccountHolderAuthor>('accountHolderAuthor');
+  //   if (usersBox.containsKey(widget.chatUserId)) {
+  //     // // If the user data is already in the box, use it
+  //     _author = usersBox.get(widget.chatUserId);
+  //   } else {
+  //     // If the user data is not in the box, fetch it from the database and save it to the box
+  //     try {
+  //       _author = await DatabaseService.getUserWithId(widget.chatUserId);
+  //       usersBox.put(widget.chatUserId, _author!);
+  //     } catch (e) {
+  //       _error = e;
+  //     }
+  //   }
+  //   if (mounted) {
+  //     setState(() {
+  //       _loading = false;
+  //     });
+  //   }
+  // }
 
   _loadingSkeleton() {
     return ListTile(
@@ -823,24 +928,24 @@ class _GetAuthorState extends State<GetAuthor>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    if (_loading) {
-      return _loadingSkeleton();
-    } else if (_error != null) {
-      return Text('Error loading user data: $_error');
-    } else {
-      return Display(
-        connectivityStatus: widget.connectivityStatus,
-        author: _author,
-        chats: widget.chats,
-        lastMessage: widget.lastMessage,
-        seen: widget.seen,
-        chatUserId: widget.chatUserId,
-        isEventRoom: widget.isEventRoom,
-        room: widget.room,
-        ticketId: widget.ticketId,
-      );
-    }
+    // if (_loading) {
+    //   return _loadingSkeleton();
+    // } else if (_error != null) {
+    //   return Text('Error loading user data: $_error');
+    // } else {
+    return Display(
+      connectivityStatus: widget.connectivityStatus,
+      author: widget.author,
+      chats: widget.chats,
+      lastMessage: widget.lastMessage,
+      seen: widget.seen,
+      chatUserId: widget.chatUserId,
+      isEventRoom: widget.isEventRoom,
+      room: widget.room,
+      ticketId: widget.ticketId,
+    );
   }
+  // }
 }
 
 class Display extends StatefulWidget {
@@ -873,14 +978,14 @@ class Display extends StatefulWidget {
 
 class _DisplayState extends State<Display> {
   bool _isLoading = false;
-  late PaletteGenerator _paletteGenerator;
+  // late PaletteGenerator _paletteGenerator;
   bool muteEvent = false;
   bool muteMessage = false;
 
   @override
   void initState() {
     super.initState();
-    widget.room == null ? () {} : _initPaletteGenerator();
+    // widget.room == null ? () {} : _initPaletteGenerator();
     widget.ticketId == null ? _seMuteMessage() : _seMute();
   }
 
@@ -896,15 +1001,15 @@ class _DisplayState extends State<Display> {
     });
   }
 
-  Future<void> _initPaletteGenerator() async {
-    _paletteGenerator = await PaletteGenerator.fromImageProvider(
-      CachedNetworkImageProvider(widget.room!.imageUrl),
-      size: const Size(1110, 150),
-      maximumColorCount: 20,
-    );
-  }
+  // Future<void> _initPaletteGenerator() async {
+  //   _paletteGenerator = await PaletteGenerator.fromImageProvider(
+  //     CachedNetworkImageProvider(widget.room!.imageUrl),
+  //     size: const Size(1110, 150),
+  //     maximumColorCount: 20,
+  //   );
+  // }
 
-  void _showBottomSheetErrorMessage(BuildContext context) {
+  void _showBottomSheetErrorMessage() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1056,8 +1161,9 @@ class _DisplayState extends State<Display> {
                             _isLoading = true;
                             try {
                               Event? event =
-                                  await DatabaseService.getEventWithId(
+                                  await DatabaseService.getUserEventWithId(
                                 widget.room!.linkedEventId,
+                                widget.room!.eventAuthorId,
                               );
 
                               if (event != null) {
@@ -1067,10 +1173,10 @@ class _DisplayState extends State<Display> {
                                   type: event.type,
                                 ));
                               } else {
-                                _showBottomSheetErrorMessage(context);
+                                _showBottomSheetErrorMessage();
                               }
                             } catch (e) {
-                              _showBottomSheetErrorMessage(context);
+                              _showBottomSheetErrorMessage();
                             } finally {
                               _isLoading = false;
                             }
@@ -1083,26 +1189,25 @@ class _DisplayState extends State<Display> {
                           onPressed: () async {
                             _isLoading = true;
                             try {
-                              Event? event =
-                                  await DatabaseService.getEventWithId(
-                                widget.room!.linkedEventId,
-                              );
+                              // Event? event =
+                              //     await DatabaseService.getUserEventWithId(
+                              //   widget.room!.linkedEventId,
+                              // );
 
-                              if (event != null) {
-                                _navigateToPage(ProfileScreen(
-                                  currentUserId: _provider.currentUserId!,
-                                  userId: event.authorId,
-                                  user: null,
-                                ));
-                              } else {
-                                _showBottomSheetErrorMessage(context);
-                              }
+                              // if (event != null) {
+                              _navigateToPage(ProfileScreen(
+                                currentUserId: _provider.currentUserId!,
+                                userId: widget.room!.eventAuthorId,
+                                user: null,
+                              ));
+                              // } else {
+                              //   _showBottomSheetErrorMessage();
+                              // }
                             } catch (e) {
-                              _showBottomSheetErrorMessage(context);
+                              _showBottomSheetErrorMessage();
                             } finally {
                               _isLoading = false;
                             }
-                           
                           },
                           text: 'View event organizer',
                         ),
@@ -1228,6 +1333,7 @@ class _DisplayState extends State<Display> {
             width: width / 2,
             child: Text(
               widget.isEventRoom ? 'Report room' : 'Report chat',
+              style: TextStyle(color: Colors.black),
               overflow: TextOverflow.ellipsis,
               textScaleFactor: MediaQuery.of(context).textScaleFactor,
             ),
@@ -1250,7 +1356,9 @@ class _DisplayState extends State<Display> {
                 MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
         child: ListTile(
             leading: Hero(
-              tag: widget.isEventRoom ? widget.room!.id : widget.chatUserId,
+              tag: widget.isEventRoom
+                  ? "${widget.room!.id} v"
+                  : widget.chatUserId,
               child: widget.isEventRoom
                   ? CircleAvatar(
                       radius: 20.0,
@@ -1329,8 +1437,8 @@ class _DisplayState extends State<Display> {
                         verified: widget.isEventRoom
                             ? false
                             : widget.author!.verified!
-                                ? false
-                                : true,
+                                ? true
+                                : false,
                       ),
                     ),
                     Text(
@@ -1416,6 +1524,12 @@ class _DisplayState extends State<Display> {
             ),
             onTap: widget.isEventRoom
                 ? () async {
+                    var _paletteGenerator =
+                        await PaletteGenerator.fromImageProvider(
+                      CachedNetworkImageProvider(widget.room!.imageUrl),
+                      size: const Size(1110, 150),
+                      maximumColorCount: 20,
+                    );
                     _navigateToPage(EventRoomScreen(
                       currentUserId: currentUserId,
                       room: widget.room!,

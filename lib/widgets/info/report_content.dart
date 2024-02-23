@@ -53,17 +53,14 @@ class _ReportContentPageState extends State<ReportContentPage> {
         automaticallyImplyLeading: true,
         elevation: 0,
         backgroundColor: Theme.of(context).primaryColorLight,
-        title: Hero(
-          tag: "report",
-          child: Material(
-            color: Colors.transparent,
-            child: Text(
-              'Report ' + widget.contentType,
-              style: TextStyle(
-                  color: Theme.of(context).secondaryHeaderColor,
-                  fontSize: ResponsiveHelper.responsiveFontSize(context, 20.0),
-                  fontWeight: FontWeight.bold),
-            ),
+        title: Material(
+          color: Colors.transparent,
+          child: Text(
+            'Report ' + widget.contentType,
+            style: TextStyle(
+                color: Theme.of(context).secondaryHeaderColor,
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 20.0),
+                fontWeight: FontWeight.bold),
           ),
         ),
         centerTitle: true,

@@ -94,19 +94,24 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
                           : MiniCircularProgressButton(
                               color: Colors.blue,
                               text: 'Continue',
-                              onPressed: () async {
-                                if (mounted) {
-                                  setState(() {
-                                    _checkingTicketAvailability = true;
-                                  });
-                                }
-                                await _attendMethod();
-                                if (mounted) {
-                                  setState(() {
-                                    _checkingTicketAvailability = false;
-                                  });
-                                }
-                              })
+                              onPressed: widget.event.ticketSite.isNotEmpty
+                                  ? () {
+                                      Navigator.pop(context);
+                                      _showBottomSheetExternalLink();
+                                    }
+                                  : () async {
+                                      if (mounted) {
+                                        setState(() {
+                                          _checkingTicketAvailability = true;
+                                        });
+                                      }
+                                      await _attendMethod();
+                                      if (mounted) {
+                                        setState(() {
+                                          _checkingTicketAvailability = false;
+                                        });
+                                      }
+                                    })
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -224,6 +229,26 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
             ),
           );
         });
+  }
+
+  void _showBottomSheetExternalLink() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+            height: ResponsiveHelper.responsiveHeight(context, 550),
+            decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(30)),
+            child: WebDisclaimer(
+              link: widget.event.ticketSite,
+              contentType: 'Event ticket',
+              icon: Icons.link,
+            ));
+      },
+    );
   }
 
   @override
@@ -432,7 +457,9 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
                                 _showBottomSheetTermsAndConditions();
                               }
                             : () async {
-                                _attendMethod();
+                                widget.event.ticketSite.isNotEmpty
+                                    ? _showBottomSheetExternalLink()
+                                    : _attendMethod();
                               },
 
                         //  () async {

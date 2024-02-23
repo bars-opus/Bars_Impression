@@ -66,7 +66,8 @@ class _StoreSearchUsersState extends State<StoreSearchUsers> {
                                   TextSpan(
                                       text: "No users found. ",
                                       style: TextStyle(
-                                          fontSize: 20,
+                                          fontSize: ResponsiveHelper
+                                              .responsiveFontSize(context, 20),
                                           fontWeight: FontWeight.bold,
                                           color: Colors.blueGrey)),
                                   TextSpan(
@@ -165,7 +166,7 @@ class _StoreSearchUsersState extends State<StoreSearchUsers> {
 //                                   TextSpan(
 //                                       text: "No users found. ",
 //                                       style: TextStyle(
-//                                           fontSize: 20,
+//                                           fontSize:  ResponsiveHelper.responsiveFontSize( context, 20),
 //                                           fontWeight: FontWeight.bold,
 //                                           color: Colors.blueGrey)),
 //                                   TextSpan(
@@ -269,7 +270,7 @@ class _StoreSearchUsersState extends State<StoreSearchUsers> {
 //                                   TextSpan(
 //                                       text: "No users found. ",
 //                                       style: TextStyle(
-//                                           fontSize: 20,
+//                                           fontSize:  ResponsiveHelper.responsiveFontSize( context, 20),
 //                                           fontWeight: FontWeight.bold,
 //                                           color: Colors.blueGrey)),
 //                                   TextSpan(

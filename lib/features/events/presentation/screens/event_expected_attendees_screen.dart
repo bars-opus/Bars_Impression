@@ -294,7 +294,7 @@ class _EventExpectedAttendeesScreenState
                       ? Color(0xFF1a1a1a)
                       : widget.palette.darkMutedColor!.color,
                   title: Text(
-                    'Invites ',
+                    'Attendees ',
                     style: TextStyle(
                         color: Colors.white,
                         fontSize:

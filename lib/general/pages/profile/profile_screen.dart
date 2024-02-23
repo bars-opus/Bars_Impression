@@ -929,7 +929,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   //               ? ' unfollow'
   //               : 'follow',
   //       style: TextStyle(
-  //         fontSize: 14.0,
+  //        ResponsiveHelper.responsiveFontSize( context, 14),.0,
   //         color: _isFollowing ? Colors.black : Colors.white,
   //         fontWeight: _isFecthing
   //             ? FontWeight.normal
@@ -1664,7 +1664,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   //       description: _profileUser.bio,
   //     ),
   //     link: Uri.parse('https://www.barsopus.com/user_${_profileUser.id}'),
-  //     uriPrefix: 'https://barsopus.com/barsImpression',
+  //     uriPrefix: 'https://links.barsopus.com/barsImpression/share',
   //     androidParameters:
   //         AndroidParameters(packageName: 'com.barsOpus.barsImpression'),
   //     iosParameters: IOSParameters(
@@ -1823,7 +1823,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   // _writtenInfo(AccountHolderAuthor user) {
   //   var style1 = const TextStyle(
-  //     fontSize: 12,
+  //     fontSize:  ResponsiveHelper.responsiveFontSize( context, 16),
   //     color: Colors.grey,
   //   );
   //   var style2 = Theme.of(context).textTheme.bodyMedium;
@@ -3575,7 +3575,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //                 user.profileHandle!,
     //                 style: TextStyle(
     //                   color: Colors.blue,
-    //                   fontSize: 12.0,
+    //                  ResponsiveHelper.responsiveFontSize( context, 12),.0,
     //                   fontWeight: FontWeight.w400,
     //                 ),
     //               ),
@@ -3598,7 +3598,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //                     maxLines: 2,
     //                     style: TextStyle(
     //                       color: Colors.white,
-    //                       fontSize: 16.0,
+    //                      ResponsiveHelper.responsiveFontSize( context, 16),.0,
     //                       fontWeight: FontWeight.bold,
     //                     ),
     //                     textAlign: TextAlign.center,
@@ -3643,7 +3643,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //           //       //         :
     //           //       'Create',
     //           //       style: TextStyle(
-    //           //         fontSize: 14.0,
+    //           //        ResponsiveHelper.responsiveFontSize( context, 14),.0,
     //           //         color:
     //           //             _isFollowing ? Colors.black : Colors.white,
     //           //         fontWeight: _isFecthing
@@ -3673,7 +3673,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //                   //     :
     //                   'Follow',
     //                   style: TextStyle(
-    //                     fontSize: 12.0,
+    //                    ResponsiveHelper.responsiveFontSize( context, 12),.0,
     //                     color: Colors.white,
     //                     fontWeight: _isFecthing
     //                         ? FontWeight.normal
@@ -3709,7 +3709,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //                       //     :
     //                       'Book Me',
     //                       style: TextStyle(
-    //                         fontSize: 12.0,
+    //                        ResponsiveHelper.responsiveFontSize( context, 12),.0,
     //                         color: Colors.white,
     //                         fontWeight: _isFecthing
     //                             ? FontWeight.normal
@@ -3739,7 +3739,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //                       //     :
     //                       'Message',
     //                       style: TextStyle(
-    //                         fontSize: 12.0,
+    //                        ResponsiveHelper.responsiveFontSize( context, 12),.0,
     //                         color: Colors.white,
     //                         fontWeight: _isFecthing
     //                             ? FontWeight.normal
@@ -3772,7 +3772,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //                       //     :
     //                       'Advice',
     //                       style: TextStyle(
-    //                         fontSize: 12.0,
+    //                        ResponsiveHelper.responsiveFontSize( context, 12),.0,
     //                         color: Colors.white,
     //                         fontWeight: _isFecthing
     //                             ? FontWeight.normal
@@ -3793,7 +3793,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //               user.bio!.trim().replaceAll('\n', ' '),
     //               maxLines: 5,
     //               style: TextStyle(
-    //                 fontSize: 12.0,
+    //                ResponsiveHelper.responsiveFontSize( context, 12),.0,
     //                 color: Colors.white,
     //                 fontWeight: FontWeight.normal,
     //               ),
@@ -3888,7 +3888,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //         //                   ? 'lights\noff'
     //         //                   : 'lights\non',
     //         //               style: TextStyle(
-    //         //                 fontSize: 10,
+    //         //                 fontSize:  ResponsiveHelper.responsiveFontSize( context, 20),
     //         //                 color: ConfigBloc().darkModeOn
     //         //                     ? Colors.blueGrey
     //         //                     : Colors.white,
@@ -4017,7 +4017,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //                                               text:
     //                                                   '\nYou must provide your booking information to appear on the discover page. Tap here to provide information.\n',
     //                                               style: TextStyle(
-    //                                                 fontSize: 12,
+    //                                                 fontSize:  ResponsiveHelper.responsiveFontSize( context, 16),
     //                                                 color: Colors.blue,
     //                                               )),
     //                                         ],
@@ -4077,7 +4077,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //                               user.profileHandle!,
     //                               style: TextStyle(
     //                                 color: Colors.white,
-    //                                 fontSize: 12.0,
+    //                                ResponsiveHelper.responsiveFontSize( context, 12),.0,
     //                                 fontWeight: FontWeight.w400,
     //                               ),
     //                             ),
@@ -4097,7 +4097,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //                                   user.userName!.toUpperCase(),
     //                                   style: TextStyle(
     //                                     color: Colors.white,
-    //                                     fontSize: 16.0,
+    //                                    ResponsiveHelper.responsiveFontSize( context, 16),.0,
     //                                     fontWeight: FontWeight.bold,
     //                                   ),
     //                                   textAlign: TextAlign.center,
@@ -4144,7 +4144,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //                             child: Text(
     //                               'Create',
     //                               style: TextStyle(
-    //                                 fontSize: 12.0,
+    //                                ResponsiveHelper.responsiveFontSize( context, 12),.0,
     //                                 color: _isFollowing
     //                                     ? Colors.black
     //                                     : Colors.white,
@@ -4272,7 +4272,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //                         //                     'B',
     //                         //                     style: TextStyle(
     //                         //                       color: Colors.white,
-    //                         //                       fontSize: 14,
+    //                         //                       fontSize:  ResponsiveHelper.responsiveFontSize( context, 14),
     //                         //                     ),
     //                         //                     textAlign: TextAlign.center,
     //                         //                   ),
@@ -4314,7 +4314,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //                         //           'A',
     //                         //           style: TextStyle(
     //                         //             color: Colors.white,
-    //                         //             fontSize: 14,
+    //                         //             fontSize:  ResponsiveHelper.responsiveFontSize( context, 14),
     //                         //           ),
     //                         //           textAlign: TextAlign.center,
     //                         //         ),
@@ -4411,7 +4411,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //                     //                   '${user.favouritePunchline} '
     //                     //                       .toLowerCase(),
     //                     //                   style: TextStyle(
-    //                     //                     fontSize: 12,
+    //                     //                     fontSize:  ResponsiveHelper.responsiveFontSize( context, 16),
     //                     //                     color: Colors.white,
     //                     //                   ),
     //                     //                   textAlign: TextAlign.left,
@@ -4432,7 +4432,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //                     //         color: ConfigBloc().darkModeOn
     //                     //             ? Colors.blueGrey
     //                     //             : Colors.white,
-    //                     //         fontSize: 14.0,
+    //                     //        ResponsiveHelper.responsiveFontSize( context, 14),.0,
     //                     //       ),
     //                     //     ),
     //                     //   ),
@@ -4447,7 +4447,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //                     //           user.subAccountType!,
     //                     //           style: TextStyle(
     //                     //             color: Colors.black,
-    //                     //             fontSize: 12.0,
+    //                     //            ResponsiveHelper.responsiveFontSize( context, 12),.0,
     //                     //             fontWeight: FontWeight.w400,
     //                     //           ),
     //                     //           textAlign: TextAlign.center,
@@ -4460,7 +4460,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //                     //         user.company!.trim(),
     //                     //         style: TextStyle(
     //                     //           color: Colors.black,
-    //                     //           fontSize: 14,
+    //                     //           fontSize:  ResponsiveHelper.responsiveFontSize( context, 14),
     //                     //         ),
     //                     //       ),
     //                     // SizedBox(
@@ -4506,7 +4506,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //             //       child: Text(
     //             //         '<     Swipe',
     //             //         style: TextStyle(
-    //             //           fontSize: 12,
+    //             //           fontSize:  ResponsiveHelper.responsiveFontSize( context, 16),
     //             //           color: Colors.blue,
     //             //         ),
     //             //         textAlign: TextAlign.center,
@@ -4529,7 +4529,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //             //           'Loading...',
     //             //           style: TextStyle(
     //             //             color: Colors.grey,
-    //             //             fontSize: 12,
+    //             //             fontSize:  ResponsiveHelper.responsiveFontSize( context, 16),
     //             //           ),
     //             //         ),
     //             //       )
@@ -4544,7 +4544,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //     'Favorite Punchline',
     //     style: TextStyle(
     //       color: Colors.grey,
-    //       fontSize: 12,
+    //       fontSize:  ResponsiveHelper.responsiveFontSize( context, 16),
     //     ),
     //   ),
     // ),
@@ -4560,7 +4560,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //                               text:
     //                                   '"  ${user.favouritePunchline!.toLowerCase()} "',
     //                               style: TextStyle(
-    //                                 fontSize: 12,
+    //                                 fontSize:  ResponsiveHelper.responsiveFontSize( context, 16),
     //                                 color:
     //                                     Theme.of(context).secondaryHeaderColor,
     //                               )),
@@ -4598,7 +4598,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //             //               color: ConfigBloc().darkModeOn
     //             //                   ? Colors.grey
     //             //                   : Colors.black,
-    //             //               fontSize: 12,
+    //             //               fontSize:  ResponsiveHelper.responsiveFontSize( context, 16),
     //             //             ),
     //             //           ),
     //             //         ),
@@ -4798,7 +4798,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     //       //                         'Follow',
     //       //                         style: TextStyle(
     //       //                           color: Colors.white,
-    //       //                           fontSize: 12,
+    //       //                           fontSize:  ResponsiveHelper.responsiveFontSize( context, 16),
     //       //                         ),
     //       //                         textAlign: TextAlign.center,
     //       //                       ),
@@ -4870,7 +4870,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   //                         ? 'Are you sure you want to unblock ${user.userName}?'
   //                         : '',
   //             style: TextStyle(
-  //               fontSize: 16,
+  //               fontSize:  ResponsiveHelper.responsiveFontSize( context, 16),
   //               color: Colors.black,
   //             ),
   //           ),
@@ -4994,7 +4994,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   //           title: Text(
   //             'Actions',
   //             style: TextStyle(
-  //               fontSize: 16,
+  //               fontSize:  ResponsiveHelper.responsiveFontSize( context, 16),
   //               color: Colors.black,
   //             ),
   //           ),
@@ -5406,7 +5406,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                           userDynamicLink: user.dynamicLink!,
                           bio: user.bio!,
                           userName: user.userName!,
-                          userId: user.userId!, profileImageUrl: user.profileImageUrl!,
+                          userId: user.userId!,
+                          profileImageUrl: user.profileImageUrl!,
                         ));
                   },
                   text: 'Bar code',

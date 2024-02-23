@@ -87,9 +87,10 @@ class _TaggedUserState extends State<TaggedUser> {
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(100.0),
                                 ),
-                                child:  CircleAvatar(
+                                child: CircleAvatar(
                                   backgroundColor: Color(0xFFf2f2f2),
-                                  radius:  ResponsiveHelper.responsiveHeight(context, 80), 
+                                  radius: ResponsiveHelper.responsiveHeight(
+                                      context, 80),
                                 ),
                               ),
                             ),
@@ -174,7 +175,9 @@ class _TaggedUserState extends State<TaggedUser> {
                               ),
                               Text('not found',
                                   style: TextStyle(
-                                    fontSize: 14,
+                                    fontSize:
+                                        ResponsiveHelper.responsiveFontSize(
+                                            context, 14),
                                     color: Colors.red,
                                   )),
                             ],
@@ -214,7 +217,8 @@ class _TaggedUserState extends State<TaggedUser> {
                                 height: 20.0,
                               ),
                               NameText(
-                                fontSize: 20,
+                                fontSize: ResponsiveHelper.responsiveFontSize(
+                                    context, 20),
                                 name: user.userName!,
                                 verified: user.verified! ? false : true,
                               ),
@@ -236,7 +240,7 @@ class _TaggedUserState extends State<TaggedUser> {
                               //             //     ?
                               //                  Colors.blueGrey,
                               //                 // : Colors.white,
-                              //             fontSize: 20.0,
+                              //            ResponsiveHelper.responsiveFontSize( context, 20),.0,
                               //             fontWeight: FontWeight.bold,
                               //           ),
                               //           textAlign: TextAlign.center,

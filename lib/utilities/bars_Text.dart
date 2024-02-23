@@ -13,7 +13,7 @@ class BarsTextHeading extends StatelessWidget {
       text,
       style: TextStyle(
         fontWeight: FontWeight.bold,
-        fontSize: 20,
+        fontSize: ResponsiveHelper.responsiveFontSize(context, 20),
         color: Theme.of(context).secondaryHeaderColor,
       ),
     );
@@ -32,7 +32,7 @@ class BarsTextTitle extends StatelessWidget {
     return Text(
       text,
       style: TextStyle(
-        fontSize: 16,
+        fontSize: ResponsiveHelper.responsiveFontSize(context,16),
         color: Theme.of(context).secondaryHeaderColor,
       ),
     );
@@ -66,8 +66,8 @@ class BarsTextFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: const TextStyle(
-        fontSize: 10,
+      style:  TextStyle(
+        fontSize:  ResponsiveHelper.responsiveFontSize(context, 10),
         color: Colors.grey,
       ),
     );
@@ -116,7 +116,7 @@ class BarsTextConfirm extends StatelessWidget {
           TextSpan(
             text: text,
             style: TextStyle(
-              fontSize: 12.0,
+              fontSize:  ResponsiveHelper.responsiveFontSize(context, 12),
               fontWeight: FontWeight.bold,
               color: Colors.grey,
             ),
@@ -124,7 +124,7 @@ class BarsTextConfirm extends StatelessWidget {
           TextSpan(
             text: "\n$subText",
             style: TextStyle(
-              fontSize: 16.0,
+              fontSize:  ResponsiveHelper.responsiveFontSize(context, 16),
               color: Theme.of(context).secondaryHeaderColor,
             ),
           )

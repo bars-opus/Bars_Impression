@@ -28,13 +28,15 @@ class _AboutUsState extends State<AboutUs> {
                     TextSpan(
                         text: "Version Release Date: February 2023\n",
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize:
+                              ResponsiveHelper.responsiveFontSize(context, 14),
                           color: Colors.black,
                         )),
                     TextSpan(
                         text: "Language: English.",
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize:
+                              ResponsiveHelper.responsiveFontSize(context, 14),
                           color: Colors.black,
                         )),
                   ],
@@ -80,9 +82,10 @@ class _AboutUsState extends State<AboutUs> {
               color: Colors.transparent,
               child: GestureDetector(
                 onTap: () async {
-        if (!await launchUrl(Uri.parse('https://www.barsopus.com/contact'))) {
-          throw 'Could not launch link';
-        }
+                  if (!await launchUrl(
+                      Uri.parse('https://www.barsopus.com/contact'))) {
+                    throw 'Could not launch link';
+                  }
                   // Navigator.push(
                   //     context,
                   //     MaterialPageRoute(
@@ -109,10 +112,11 @@ class _AboutUsState extends State<AboutUs> {
             Material(
               color: Colors.transparent,
               child: GestureDetector(
-                onTap:  () async {
-        if (!await launchUrl(Uri.parse('https://www.barsopus.com/terms-of-use'))) {
-          throw 'Could not launch link';
-        }
+                onTap: () async {
+                  if (!await launchUrl(
+                      Uri.parse('https://www.barsopus.com/terms-of-use'))) {
+                    throw 'Could not launch link';
+                  }
                   // Navigator.push(
                   //     context,
                   //     MaterialPageRoute(
@@ -140,9 +144,10 @@ class _AboutUsState extends State<AboutUs> {
               color: Colors.transparent,
               child: GestureDetector(
                 onTap: () async {
-        if (!await launchUrl(Uri.parse('https://www.barsopus.com/privacy'))) {
-          throw 'Could not launch link';
-        }
+                  if (!await launchUrl(
+                      Uri.parse('https://www.barsopus.com/privacy'))) {
+                    throw 'Could not launch link';
+                  }
                   // Navigator.push(
                   //     context,
                   //     MaterialPageRoute(
@@ -191,14 +196,14 @@ class _AboutUsState extends State<AboutUs> {
               children: [
                 Icon(
                   Icons.copyright,
-                  size: 15,
+                  size: ResponsiveHelper.responsiveFontSize(context, 15),
                   color: Colors.white,
                 ),
                 Text(
                   ' BARS OPUS LTD',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 12.0,
+                    fontSize: ResponsiveHelper.responsiveFontSize(context, 12),
                   ),
                   textAlign: TextAlign.center,
                 ),

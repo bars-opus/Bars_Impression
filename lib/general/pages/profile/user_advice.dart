@@ -107,6 +107,7 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
   _buildAskTF() {
     final currentUserId = Provider.of<UserData>(context).currentUserId;
     return CommentContentField(
+      autofocus: true,
       controller: _adviceControler,
       onSend: () {
         if (_adviceControler.text.trim().isNotEmpty) {

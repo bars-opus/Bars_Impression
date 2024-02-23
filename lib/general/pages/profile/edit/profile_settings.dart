@@ -16,7 +16,7 @@ class ProfileSettings extends StatefulWidget {
 class _ProfileSettingsState extends State<ProfileSettings> {
   bool _isLoadingGeneralSettins = false;
 
-  void _showBottomSheetErrorMessage(String error) {
+  void _showBottomSheetErrorMessage(String title, String error) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -27,7 +27,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
           onPressed: () async {
             Navigator.pop(context);
           },
-          title: 'Failed to log out',
+          title: title,
           subTitle: error,
         );
       },
@@ -38,63 +38,86 @@ class _ProfileSettingsState extends State<ProfileSettings> {
   void _logOutUser(
     BuildContext context,
   ) async {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    _provider.currentUserId = '';
     try {
-      if (Hive.isBoxOpen('chatMessages')) {
-        final box = Hive.box<ChatMessage>('chatMessages');
-        await box.clear();
-      } else {
-        final box = await Hive.openBox<ChatMessage>('chatMessages');
-        await box.clear();
-      }
-
-      if (Hive.isBoxOpen('chats')) {
-        final box = Hive.box<Chat>('chats');
-        await box.clear();
-      } else {
-        final box = await Hive.openBox<Chat>('chats');
+      // Helper function to clear a box
+      Future<void> _clearBox<T>(String boxName) async {
+        Box<T> box;
+        if (Hive.isBoxOpen(boxName)) {
+          box = Hive.box<T>(boxName);
+        } else {
+          box = await Hive.openBox<T>(boxName);
+        }
         await box.clear();
       }
 
-      if (Hive.isBoxOpen('ticketIds')) {
-        final box = Hive.box<TicketIdModel>('ticketIds');
-        await box.clear();
-      } else {
-        final box = await Hive.openBox<TicketIdModel>('ticketIds');
-        await box.clear();
-      }
+      await usersGeneralSettingsRef
+          .doc(_auth.currentUser!.uid)
+          .update({'androidNotificationToken': ''});
+      // Clear all the required Hive boxes
+      await _clearBox<ChatMessage>('chatMessages');
+      await _clearBox<Chat>('chats');
+      await _clearBox<AccountHolderAuthor>('accountHolderAuthor');
+      await _clearBox<TicketIdModel>('ticketIds');
+      await _clearBox<AccountHolderAuthor>('currentUser');
+      await _clearBox<UserSettingsLoadingPreferenceModel>(
+          'accountLocationPreference');
 
-      if (Hive.isBoxOpen('accountHolderAuthor')) {
-        final box = Hive.box<AccountHolderAuthor>('accountHolderAuthor');
-        await box.clear();
-      } else {
-        final box =
-            await Hive.openBox<AccountHolderAuthor>('accountHolderAuthor');
-        await box.clear();
-      }
+      // if (Hive.isBoxOpen('chatMessages')) {
+      //   final box = Hive.box<ChatMessage>('chatMessages');
+      //   await box.clear();
+      // } else {
+      //   final box = await Hive.openBox<ChatMessage>('chatMessages');
+      //   await box.clear();
+      // }
 
-      if (Hive.isBoxOpen('currentUser')) {
-        final box = Hive.box<AccountHolderAuthor>('currentUser');
-        await box.clear();
-      } else {
-        final box = await Hive.openBox<AccountHolderAuthor>('currentUser');
-        await box.clear();
-      }
+      // if (Hive.isBoxOpen('chats')) {
+      //   final box = Hive.box<Chat>('chats');
+      //   await box.clear();
+      // } else {
+      //   final box = await Hive.openBox<Chat>('chats');
+      //   await box.clear();
+      // }
 
-      if (Hive.isBoxOpen('accountLocationPreference')) {
-        final box = Hive.box<UserSettingsLoadingPreferenceModel>(
-            'accountLocationPreference');
-        await box.clear();
-      } else {
-        final box = await Hive.openBox<UserSettingsLoadingPreferenceModel>(
-            'accountLocationPreference');
-        await box.clear();
-      }
+      // if (Hive.isBoxOpen('ticketIds')) {
+      //   final box = Hive.box<TicketIdModel>('ticketIds');
+      //   await box.clear();
+      // } else {
+      //   final box = await Hive.openBox<TicketIdModel>('ticketIds');
+      //   await box.clear();
+      // }
 
-      usersGeneralSettingsRef.doc(widget.user.userId).update({
-        'androidNotificationToken': '',
-      });
-      var _provider = Provider.of<UserData>(context, listen: false);
-      _provider.currentUserId = '';
+      // if (Hive.isBoxOpen('accountHolderAuthor')) {
+      //   final box = Hive.box<AccountHolderAuthor>('accountHolderAuthor');
+      //   await box.clear();
+      // } else {
+      //   final box =
+      //       await Hive.openBox<AccountHolderAuthor>('accountHolderAuthor');
+      //   await box.clear();
+      // }
+
+      // if (Hive.isBoxOpen('currentUser')) {
+      //   final box = Hive.box<AccountHolderAuthor>('currentUser');
+      //   await box.clear();
+      // } else {
+      //   final box = await Hive.openBox<AccountHolderAuthor>('currentUser');
+      //   await box.clear();
+      // }
+
+      // if (Hive.isBoxOpen('accountLocationPreference')) {
+      //   final box = Hive.box<UserSettingsLoadingPreferenceModel>(
+      //       'accountLocationPreference');
+      //   await box.clear();
+      // } else {
+      //   final box = await Hive.openBox<UserSettingsLoadingPreferenceModel>(
+      //       'accountLocationPreference');
+      //   await box.clear();
+      // }
+
+      // usersGeneralSettingsRef.doc(widget.user.userId).update({
+      //   'androidNotificationToken': '',
+      // });
 
       await _auth.signOut();
       _provider.setUser(null);
@@ -111,7 +134,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
       String result = error.contains(']')
           ? error.substring(error.lastIndexOf(']') + 1)
           : error;
-      _showBottomSheetErrorMessage(result);
+      _showBottomSheetErrorMessage('Failed to log out', result);
     }
   }
 
@@ -247,9 +270,10 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                 color: Colors.transparent,
                 child: GestureDetector(
                   onTap: () async {
-        if (!await launchUrl(Uri.parse('https://www.barsopus.com/terms-of-use'))) {
-          throw 'Could not launch link';
-        }
+                    if (!await launchUrl(
+                        Uri.parse('https://www.barsopus.com/terms-of-use'))) {
+                      throw 'Could not launch link';
+                    }
                     // Navigator.push(
                     //     context,
                     //     MaterialPageRoute(
@@ -279,9 +303,10 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                 color: Colors.transparent,
                 child: GestureDetector(
                   onTap: () async {
-        if (!await launchUrl(Uri.parse('https://www.barsopus.com/privacy'))) {
-          throw 'Could not launch link';
-        }
+                    if (!await launchUrl(
+                        Uri.parse('https://www.barsopus.com/privacy'))) {
+                      throw 'Could not launch link';
+                    }
                     // Navigator.push(
                     //     context,
                     //     MaterialPageRoute(
@@ -454,11 +479,12 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                         );
                       } else {
                         _showBottomSheetErrorMessage(
-                            'Failed to fetch user general settings.');
+                            'Failed to fetch settings.',
+                            'Check your internet connection and try again');
                       }
                     } catch (e) {
-                      _showBottomSheetErrorMessage(
-                          'Failed to fetch booking data.');
+                      _showBottomSheetErrorMessage('Failed to fetch settings.',
+                          'Check your internet connection and try again');
                     } finally {
                       _isLoadingGeneralSettins = false;
                     }
@@ -481,6 +507,23 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                     );
                   },
                   subTitle: "Refund for tickets.",
+                  icon: Icons.arrow_forward_ios_outlined,
+                ),
+                Divider(
+                  color: Colors.grey,
+                ),
+                IntroInfo(
+                  titleColor: Theme.of(context).secondaryHeaderColor,
+                  title: 'Payouts',
+                  onPressed: () {
+                    _navigateToPage(
+                      context,
+                      UserRefunds(
+                        currentUserId: widget.user.userId!,
+                      ),
+                    );
+                  },
+                  subTitle: "Payout for event ticket sales.",
                   icon: Icons.arrow_forward_ios_outlined,
                 ),
                 Divider(
@@ -623,9 +666,9 @@ class _ProfileSettingsState extends State<ProfileSettings> {
           const SizedBox(height: 70),
           GestureDetector(
             onTap: () async {
-        if (!await launchUrl(Uri.parse('https://www.barsopus.com/'))) {
-          throw 'Could not launch link';
-        }
+              if (!await launchUrl(Uri.parse('https://www.barsopus.com/'))) {
+                throw 'Could not launch link';
+              }
               // _navigateToPage(
               //     context,
               //     MyWebView(
@@ -644,9 +687,9 @@ class _ProfileSettingsState extends State<ProfileSettings> {
           ),
           GestureDetector(
             onTap: () async {
-        if (!await launchUrl(Uri.parse('https://www.barsopus.com/'))) {
-          throw 'Could not launch link';
-        }
+              if (!await launchUrl(Uri.parse('https://www.barsopus.com/'))) {
+                throw 'Could not launch link';
+              }
               // _navigateToPage(
               //     context,
               //     MyWebView(

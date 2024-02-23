@@ -22,44 +22,42 @@ class EventTaggedPeople extends StatelessWidget {
     }
     taggedPeopleOption.sort((a, b) => a.role.compareTo(b.role));
     return showTagsOnImage
-        ? SafeArea(
-            child: taggedPeopleOption.isEmpty
-                ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      ShakeTransition(
-                        offset: 40,
-                        child: ShakeTransition(
-                          child: Icon(
-                            Icons.people_outline,
-                            color: Colors.white,
-                            size: ResponsiveHelper.responsiveHeight(
-                                context, 50.0),
-                          ),
-                        ),
+        ? taggedPeopleOption.isEmpty
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ShakeTransition(
+                    offset: 40,
+                    child: ShakeTransition(
+                      child: Icon(
+                        Icons.people_outline,
+                        color: Colors.white,
+                        size: ResponsiveHelper.responsiveHeight(context, 50.0),
                       ),
-                      SizedBox(height: 10),
-                      ShakeTransition(
-                        axis: Axis.vertical,
-                        offset: 40,
-                        child: Text(
-                          'No tagged people',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: ResponsiveHelper.responsiveFontSize(
-                                context, 14),
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  ShakeTransition(
+                    axis: Axis.vertical,
+                    offset: 40,
+                    child: Text(
+                      'No tagged people',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize:
+                            ResponsiveHelper.responsiveFontSize(context, 14),
                       ),
-                    ],
-                  )
-                : TaggedUsersWidget(
-                    taggedPeopleOption: taggedPeopleOption,
-                  ))
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              )
+            : TaggedUsersWidget(
+              taggedPeopleOption: taggedPeopleOption,
+            )
         : Container(
-            height: MediaQuery.of(context).size.height.toDouble() / 1.2,
+            height: ResponsiveHelper.responsiveHeight(context, 700),
             decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(30)),
@@ -73,6 +71,7 @@ class EventTaggedPeople extends StatelessWidget {
                   tabText2: isSponsor ? 'Partners' : 'Crew',
                   initalTab: 0,
                   widget1: ListView(
+                    physics: const NeverScrollableScrollPhysics(),
                     children: [
                       isSponsor
                           ? TaggedPeopleGroup(

@@ -415,7 +415,7 @@ class _UserRefundsState extends State<UserRefunds>
   @override
   Widget build(BuildContext context) {
     var _provider = Provider.of<UserData>(context, listen: false);
-    int count = _provider.activityCount - 1;
+    // int  .count = _provider.activityCount - 1;
 
     super.build(context);
     // final width =
@@ -453,7 +453,8 @@ class _UserRefundsState extends State<UserRefunds>
                           'Clear all',
                           style: TextStyle(
                             color: Colors.red,
-                            fontSize: 14,
+                            fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 14),
                           ),
                         ),
                       ),
@@ -467,30 +468,31 @@ class _UserRefundsState extends State<UserRefunds>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  !_isLoading
+                  _isLoading
                       ? Expanded(
-                          child: _buildActivityBuilder(
-                          _refundList,
-                        ))
-                      : count.isNegative
+                          child: ListView(
+                            physics: const NeverScrollableScrollPhysics(),
+                            children: List.generate(
+                                8,
+                                (index) => EventAndUserScimmerSkeleton(
+                                      from: 'Event',
+                                    )),
+                          ),
+                        )
+                      : _refundList.isEmpty
                           ? Expanded(
                               child: Center(
                               child: NoContents(
-                                icon: (Icons.notifications_none_outlined),
-                                title: 'No invitations,',
-                                subTitle: '',
+                                icon: (Icons.payment_outlined),
+                                title: 'No refunds,',
+                                subTitle:
+                                    'All your refund requests would be displayed here.',
                               ),
                             ))
                           : Expanded(
-                              child: ListView(
-                                physics: const NeverScrollableScrollPhysics(),
-                                children: List.generate(
-                                    8,
-                                    (index) => EventAndUserScimmerSkeleton(
-                                          from: 'Event',
-                                        )),
-                              ),
-                            ),
+                              child: _buildActivityBuilder(
+                              _refundList,
+                            )),
                   SizedBox(height: 16),
                 ],
               ),

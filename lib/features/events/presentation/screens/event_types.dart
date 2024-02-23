@@ -492,10 +492,6 @@ class _EventTypesState extends State<EventTypes>
         ? allEventsRef
         : allEventsRef.where('type', isEqualTo: widget.types);
 
-    query =
-        query.where('clossingDay', isGreaterThanOrEqualTo: currentDate).orderBy(
-              'clossingDay',
-            );
     // Refine the query based on the provided country and city
     if (country != null) {
       query = query.where('country', isEqualTo: country);
@@ -508,21 +504,34 @@ class _EventTypesState extends State<EventTypes>
       query = query.where('isFree', isEqualTo: true);
     }
 
-    // if (sortNumberOfDays != 0) {
-    if (!isFree) {
-      query = query.where('clossingDay', isLessThanOrEqualTo: sortDate);
-    }
+    query = query
+        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+        .where('clossingDay', isLessThanOrEqualTo: sortDate)
+        .orderBy('clossingDay');
+
+    // if (isFree) {
+    //   query = query
+    //       .where('isFree', isEqualTo: true)
+    //       .where('clossingDay', isGreaterThanOrEqualTo: sortDate)
+    //       .orderBy('clossingDay');
     // }
 
+    // // if (sortNumberOfDays != 0) {
+    // if (!isFree) {
+    //   query = query
+    //       .where('clossingDay', isGreaterThanOrEqualTo: sortDate)
+    //       .orderBy('clossingDay');
+    // }
+
+    // }
+
+    query = query.orderBy(FieldPath.documentId);
+
+//  .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
     try {
       // Fetch events from Firestore up to the limit
 
-      QuerySnapshot eventFeedSnapShot = await query
-          // .where('startDate', isGreaterThanOrEqualTo: currentDate)
-          // .orderBy('startDate', descending: false)
-          .orderBy(FieldPath.documentId)
-          .limit(limit)
-          .get();
+      QuerySnapshot eventFeedSnapShot = await query.limit(limit).get();
 
       // Transform the documents into Event objects
 
@@ -645,15 +654,15 @@ class _EventTypesState extends State<EventTypes>
     }
 
     if (sortNumberOfDays != 0) {
-      query = query.where('startDate', isLessThanOrEqualTo: endDate);
+      query = query.where('clossingDay', isLessThanOrEqualTo: endDate);
     }
 
     try {
       QuerySnapshot eventFeedSnapShot = await query
-          .where('startDate', isGreaterThanOrEqualTo: currentDate)
-          .orderBy('startDate', descending: false)
+          .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+          .orderBy('clossingDay', descending: false)
           .startAfterDocument(documentSnapshot.last)
-          .limit(2)
+          .limit(5)
           .get();
 
       List<Event> events =

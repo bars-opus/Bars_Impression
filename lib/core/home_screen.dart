@@ -29,9 +29,14 @@ class HomeScreenState extends State<HomeScreen> {
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _setUpactivityCount();
+      _configureNotification();
+      initDynamicLinks();
     });
-    _configureNotification();
-    initDynamicLinks();
+
+    // https://links.barsopus.com/barsImpression/VAuu
+
+    _newLink();
+
     // _createFields();
 
     // initializeData();
@@ -1353,10 +1358,42 @@ class HomeScreenState extends State<HomeScreen> {
   //   await batch.commit();
   // }
 
+  _newLink() async {
+    final _firestore = FirebaseFirestore.instance;
+    CollectionReference targetRef = _firestore.collection('user_author');
+
+    // Get documents from target collection
+    QuerySnapshot targetSnapshot = await targetRef.get();
+
+    // Initialize Firestore batch
+    WriteBatch batch = _firestore.batch();
+
+    for (var targetDoc in targetSnapshot.docs) {
+      DocumentReference sourceDocRef = targetRef.doc(targetDoc.id);
+      DocumentReference sourceRef =
+          _firestore.collection('user_professsional').doc(targetDoc.id);
+
+      // Check if a document with the same ID exists in the source collection
+      DocumentSnapshot sourceDoc = await sourceDocRef.get();
+      if (sourceDoc.exists) {
+        // Create dynamic link
+        String dynamicLink = await _createDynamicLink(sourceDoc);
+
+        // Write the dynamic link to the target document
+        batch.update(targetDoc.reference, {'dynamicLink': dynamicLink});
+        batch.update(sourceRef, {'dynamicLink': dynamicLink});
+        // SetOptions(merge: true));
+      } else {
+        print('No document with ID ${targetDoc.id} in source collection');
+      }
+    }
+
+    await batch.commit();
+  }
+
   // _newLink() async {
   //   final _firestore = FirebaseFirestore.instance;
-  //   CollectionReference targetRef = _firestore.collection('user_professsional');
-  //   CollectionReference sourceRef = _firestore.collection('users');
+  //   CollectionReference targetRef = _firestore.collection('user_author');
 
   //   // Get documents from target collection
   //   QuerySnapshot targetSnapshot = await targetRef.get();
@@ -1365,17 +1402,22 @@ class HomeScreenState extends State<HomeScreen> {
   //   WriteBatch batch = _firestore.batch();
 
   //   for (var targetDoc in targetSnapshot.docs) {
-  //     DocumentReference sourceDocRef = sourceRef.doc(targetDoc.id);
+  //     DocumentReference sourceDocRef = targetRef.doc(targetDoc.id);
+  //     DocumentReference sourceRef =
+  //         _firestore.collection('user_professional').doc(targetDoc.id);
 
   //     // Check if a document with the same ID exists in the source collection
   //     DocumentSnapshot sourceDoc = await sourceDocRef.get();
   //     if (sourceDoc.exists) {
-  //       // Create dynamic link
-  //       String dynamicLink = await _createDynamicLink(sourceDoc);
+  //       // Check if the document does not have a dynamic link
+  //       if (!targetDoc.data()!.conta('dynamicLink')) {
+  //         // Create dynamic link
+  //         String dynamicLink = await _createDynamicLink(sourceDoc);
 
-  //       // Write the dynamic link to the target document
-  //       batch.set(targetDoc.reference, {'dynamicLink': dynamicLink},
-  //           SetOptions(merge: true));
+  //         // Write the dynamic link to the target document
+  //         batch.update(targetDoc.reference, {'dynamicLink': dynamicLink});
+  //         batch.update(sourceRef, {'dynamicLink': dynamicLink});
+  //       }
   //     } else {
   //       print('No document with ID ${targetDoc.id} in source collection');
   //     }
@@ -1384,21 +1426,20 @@ class HomeScreenState extends State<HomeScreen> {
   //   await batch.commit();
   // }
 
-  // Future<String> _createDynamicLink(DocumentSnapshot sourceDoc) async {
-  //   String profileImageUrl = sourceDoc.get('profileImageUrl');
-  //   String userName = sourceDoc.get('userName');
-  //   String bio = sourceDoc.get('bio');
-  //   String userId = sourceDoc.id;
+  Future<String> _createDynamicLink(DocumentSnapshot sourceDoc) async {
+    String profileImageUrl = sourceDoc.get('profileImageUrl');
+    String userName = sourceDoc.get('userName');
+    String bio = sourceDoc.get('bio');
+    String userId = sourceDoc.id;
 
-  // String link = await DatabaseService.myDynamicLink(
-  //   profileImageUrl,
-  //   userName,
-  //   bio,
-  //   'https://www.barsopus.com/user_$userId',
-  // );
+    String link = await DatabaseService.myDynamicLink(
+      profileImageUrl, userName, bio,
+      'https://www.barsopus.com/user_$userId',
+      // 'https://www.barsopus.com/user_$userId',
+    );
 
-  //   return link;
-  // }
+    return link;
+  }
 
   // _brutal() async {
   //   final _firestore = FirebaseFirestore.instance;
@@ -1870,8 +1911,7 @@ class HomeScreenState extends State<HomeScreen> {
 
   void _handleNotification(RemoteMessage? message,
       {bool fromBackground = false}) async {
-      final String currentUserId =
-          Provider.of<UserData>(context, listen: false).currentUserId!;
+    final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
     if (message?.data != null) {
       const AndroidNotificationDetails androidNotificationDetails =
@@ -1898,6 +1938,8 @@ class HomeScreenState extends State<HomeScreen> {
         // String? recipient = message.data['recipient'];
         String? contentType = message.data['contentType'];
         String? contentId = message.data['contentId'];
+        String? eventAuthorId = message.data['eventAuthorId'];
+
         // String? title = message.data['title'];
         // String? body = message.data['body'];
 
@@ -1947,7 +1989,8 @@ class HomeScreenState extends State<HomeScreen> {
                       context,
                       ProfileScreen(
                         currentUserId:
-                            Provider.of<UserData>(context).currentUserId!,
+                            Provider.of<UserData>(context, listen: false)
+                                .currentUserId!,
                         userId: contentId,
                         user: null,
                       ))
@@ -1957,6 +2000,7 @@ class HomeScreenState extends State<HomeScreen> {
                           ViewSentContent(
                             contentId: contentId,
                             contentType: 'message',
+                            eventAuthorId: '',
                           ),
                         )
                       : contentType.endsWith('eventRoom')
@@ -1965,6 +2009,7 @@ class HomeScreenState extends State<HomeScreen> {
                               ViewSentContent(
                                 contentId: contentId,
                                 contentType: 'eventRoom',
+                                eventAuthorId: '',
                               ),
                             )
                           : contentType.endsWith('eventDeleted')
@@ -1973,29 +2018,45 @@ class HomeScreenState extends State<HomeScreen> {
                                   ViewSentContent(
                                     contentId: contentId,
                                     contentType: 'eventDeleted',
+                                    eventAuthorId: '',
                                   ),
                                 )
-                              : _navigateToPage(
-                                  context,
-                                  ViewSentContent(
-                                    contentId: contentId,
-                                    contentType: contentType
-                                            .endsWith('newEventInNearYou')
-                                        ? 'Event'
-                                        : contentType.endsWith('eventUpdate')
+                              : contentType.endsWith('refundProcessed')
+                                  ? _navigateToPage(
+                                      context,
+                                      ViewSentContent(
+                                        contentId: contentId,
+                                        contentType: 'refundProcessed',
+                                        eventAuthorId: eventAuthorId!,
+                                      ),
+                                    )
+                                  : _navigateToPage(
+                                      context,
+                                      ViewSentContent(
+                                        contentId: contentId,
+                                        contentType: contentType
+                                                .endsWith('FundsDistributed')
                                             ? 'Event'
-                                            : contentType
-                                                    .endsWith('eventReminder')
+                                            : contentType.endsWith(
+                                                    'newEventInNearYou')
                                                 ? 'Event'
-                                                : contentType.endsWith(
-                                                        'refundRequested')
+                                                : contentType
+                                                        .endsWith('eventUpdate')
                                                     ? 'Event'
-                                                    : contentType.startsWith(
-                                                            'inviteRecieved')
-                                                        ? 'InviteRecieved'
-                                                        : '',
-                                  ),
-                                );
+                                                    : contentType.endsWith(
+                                                            'eventReminder')
+                                                        ? 'Event'
+                                                        : contentType.endsWith(
+                                                                'refundRequested')
+                                                            ? 'Event'
+                                                            : contentType
+                                                                    .startsWith(
+                                                                        'inviteRecieved')
+                                                                ? 'InviteRecieved'
+                                                                : '',
+                                        eventAuthorId: eventAuthorId!,
+                                      ),
+                                    );
         }
         // }
       }
@@ -2003,42 +2064,107 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> initDynamicLinks() async {
-    FirebaseDynamicLinks.instance.getInitialLink();
+    // Handle the initial dynamic link if the app was opened with one
+    final PendingDynamicLinkData? initialLink =
+        await FirebaseDynamicLinks.instance.getInitialLink();
+    if (initialLink != null) {
+      await _handleDynamicLink(initialLink);
+    }
 
+    // Listen for new dynamic links while the app is running
     FirebaseDynamicLinks.instance.onLink
         .listen((PendingDynamicLinkData? dynamicLinkData) async {
-      final Uri? link = dynamicLinkData?.link;
-      if (link != null && link.path.isNotEmpty) {
-        final List<String> parts = link.path.split("_");
-        if (parts.length >= 2) {
-          parts[0].endsWith('user')
-              ? _navigateToPage(
-                  context,
-                  ProfileScreen(
-                    currentUserId:
-                        Provider.of<UserData>(context).currentUserId!,
-                    userId: parts[1],
-                    user: null,
-                  ))
-              : _navigateToPage(
-                  context,
-                  ViewSentContent(
-                    contentId: parts[1],
-                    contentType: parts[0].endsWith('punched')
-                        ? 'Mood Punched'
-                        : parts[0].endsWith('event')
-                            ? 'Event'
-                            : '',
-                  ),
-                );
-        } else {
-          print('Link format not as expected: $link');
-        }
-      }
+      await _handleDynamicLink(dynamicLinkData);
     }).onError((error) {
       print('Dynamic Link Failed: $error');
     });
   }
+
+  Future<void> _handleDynamicLink(
+      PendingDynamicLinkData? dynamicLinkData) async {
+    final Uri? link = dynamicLinkData?.link;
+    if (link != null && link.path.isNotEmpty) {
+      // Normalize the path by removing the leading slash if it exists
+      final String normalizedPath =
+          link.path.startsWith('/') ? link.path.substring(1) : link.path;
+      final List<String> parts = normalizedPath.split("_");
+      if (parts.length >= 2) {
+        print(link);
+        // print(parts[1]);
+        // print(parts[0]);
+        // print(parts[2]);
+
+        // Handle the dynamic link based on its type
+        if (parts[0].endsWith('user')) {
+          _navigateToPage(
+            context,
+            ProfileScreen(
+              currentUserId:
+                  Provider.of<UserData>(context, listen: false).currentUserId!,
+              userId: parts[1],
+              user: null,
+            ),
+          );
+        } else {
+          _navigateToPage(
+            context,
+            ViewSentContent(
+              contentId: parts[1],
+              contentType: parts[0].endsWith('punched')
+                  ? 'Mood Punched'
+                  : parts[0].endsWith('event')
+                      ? 'Event'
+                      : '',
+              eventAuthorId: parts[2].trim(),
+            ),
+          );
+        }
+      } else {
+        print('Link format not as expected: $link');
+      }
+    }
+  }
+
+  // Future<void> initDynamicLinks() async {
+  //   FirebaseDynamicLinks.instance.getInitialLink();
+
+  //   FirebaseDynamicLinks.instance.onLink
+  //       .listen((PendingDynamicLinkData? dynamicLinkData) async {
+  //     final Uri? link = dynamicLinkData?.link;
+  //     if (link != null && link.path.isNotEmpty) {
+  //       final List<String> parts = link.path.split("_");
+  //       if (parts.length >= 2) {
+  //         print(parts[1]);
+  //         print(parts[0]);
+
+  //         parts[0].endsWith('user')
+  //             ? _navigateToPage(
+  //                 context,
+  //                 ProfileScreen(
+  //                   currentUserId: Provider.of<UserData>(context, listen: false)
+  //                       .currentUserId!,
+  //                   userId: parts[1],
+  //                   user: null,
+  //                 ))
+  //             : _navigateToPage(
+  //                 context,
+  //                 ViewSentContent(
+  //                   contentId: parts[1],
+  //                   contentType: parts[0].endsWith('punched')
+  //                       ? 'Mood Punched'
+  //                       : parts[0].endsWith('event')
+  //                           ? 'Event'
+  //                           : '',
+  //                 ),
+  //               );
+  //       } else {
+  //         print('Link format not as expected: $link');
+  //       }
+  //     }
+  //   }).onError((error) {
+  //     print('Dynamic Link Failed: $error');
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -2083,7 +2209,7 @@ class HomeMobile extends StatefulWidget {
 
 class _HomeMobileState extends State<HomeMobile>
     with SingleTickerProviderStateMixin {
-  FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
+  // FirebaseDynamicLinks dynamicLi,nks = FirebaseDynamicLinks.instance;
   int _currentTab = 1;
   late PageController _pageController;
   int _version = 0;
@@ -2106,7 +2232,7 @@ class _HomeMobileState extends State<HomeMobile>
     _version = version!;
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       _setUpInvites();
-      await initDynamicLinks();
+
       _setShowDelayInfo();
     });
   }
@@ -2130,6 +2256,8 @@ class _HomeMobileState extends State<HomeMobile>
 
   _setUpInvites() async {
     final currentDate = DateTime(now.year, now.month, now.day);
+    int sortNumberOfDays = 7;
+    final sortDate = currentDate.add(Duration(days: sortNumberOfDays));
     try {
       final String currentUserId =
           Provider.of<UserData>(context, listen: false).currentUserId!;
@@ -2140,8 +2268,12 @@ class _HomeMobileState extends State<HomeMobile>
         eventFeedSnapShot = await userInvitesRef
             .doc(currentUserId)
             .collection('eventInvite')
+            .where('answer', isEqualTo: '')
             // .where('startDate', isGreaterThanOrEqualTo: currentDate)
-            .orderBy('eventTimestamp', descending: true)
+            // .orderBy('eventTimestamp', descending: true)
+            .where('eventTimestamp', isGreaterThanOrEqualTo: currentDate)
+            .where('eventTimestamp', isLessThanOrEqualTo: sortDate)
+            .orderBy('eventTimestamp')
             .limit(inviteLimit)
             .get();
       } else {
@@ -2149,8 +2281,12 @@ class _HomeMobileState extends State<HomeMobile>
         eventFeedSnapShot = await userInvitesRef
             .doc(currentUserId)
             .collection('eventInvite')
+            .where('answer', isEqualTo: '')
             // .where('startDate', isGreaterThanOrEqualTo: currentDate)
-            .orderBy('eventTimestamp', descending: true)
+            // .orderBy('eventTimestamp', descending: true)
+            .where('eventTimestamp', isGreaterThanOrEqualTo: currentDate)
+            .where('eventTimestamp', isLessThanOrEqualTo: sortDate)
+            .orderBy('eventTimestamp')
             .startAfterDocument(lastDocument!)
             .limit(inviteLimit)
             .get();
@@ -2200,29 +2336,6 @@ class _HomeMobileState extends State<HomeMobile>
         }
       });
     }
-  }
-
-  Future<void> initDynamicLinks() async {
-    FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
-    FirebaseDynamicLinks.instance.getInitialLink(); //
-    dynamicLinks.onLink.listen((dynamicLinkData) async {
-      final List<String> link = dynamicLinkData.link.path.toString().split("_");
-
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (_) => ViewSentContent(
-                  contentId: link[1],
-                  contentType: link[0].endsWith('punched')
-                      ? 'Mood Punched'
-                      : link[0].endsWith('forum')
-                          ? 'Forum'
-                          : link[0].endsWith('event')
-                              ? 'Event'
-                              : link[0].endsWith('user')
-                                  ? 'User'
-                                  : '')));
-    }).onError((error) {});
   }
 
   _tabColumn(IconData icon, int currentTab, int index) {
@@ -2310,6 +2423,8 @@ class _HomeMobileState extends State<HomeMobile>
     final double width = MediaQuery.of(context).size.width;
     final double height = MediaQuery.of(context).size.height;
     bool dontShowActivityCount = _provider.activityCount == 0 || !_showInfo;
+    bool dontShowInvite = _inviteList.length < 1 || !_showInfo;
+
     return widget.updateAppVersion < _version &&
             widget.updateApp.displayFullUpdate!
         ? UpdateAppInfo(
@@ -2419,62 +2534,6 @@ class _HomeMobileState extends State<HomeMobile>
                           )),
                       Positioned(bottom: 7, child: NoConnection()),
 
-                      Positioned(
-                        bottom: 1,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: AnimatedContainer(
-                            curve: Curves.easeInOut,
-                            duration: Duration(milliseconds: 800),
-                            height: dontShowActivityCount ? 0.0 : 40,
-                            width: dontShowActivityCount ? 1 : 150,
-                            decoration: BoxDecoration(
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(5)),
-                            child: Center(
-                              child: SingleChildScrollView(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    _navigateToPage(NotificationPage(
-                                        currentUserId: currentUserId));
-                                  },
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        // color: Colors.green,
-                                        width: 30,
-                                        child: Icon(
-                                          Icons.notifications_active_outlined,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text(
-                                        NumberFormat.compact()
-                                            .format(_provider.activityCount),
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: dontShowActivityCount
-                                                ? 0
-                                                : ResponsiveHelper
-                                                    .responsiveFontSize(
-                                                        context, 16.0),
-                                            fontWeight: FontWeight.bold),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
                       // Positioned(bottom: 30, child: _createAnimator()),
                     ],
                   ),
@@ -2562,7 +2621,7 @@ class _HomeMobileState extends State<HomeMobile>
                             ],
                           ),
               ),
-              _inviteList.length < 1
+              dontShowInvite
                   // _inviteCount.isNegative
                   ? const SizedBox.shrink()
                   : Container(
@@ -2577,7 +2636,7 @@ class _HomeMobileState extends State<HomeMobile>
                   child: AnimatedContainer(
                     curve: Curves.easeInOut,
                     duration: const Duration(milliseconds: 800),
-                    height: _inviteList.length < 1
+                    height: dontShowInvite
                         ? 0
                         : ResponsiveHelper.responsiveHeight(context, 500.0),
                     width: width,
@@ -2652,6 +2711,62 @@ class _HomeMobileState extends State<HomeMobile>
                               ),
                             ),
                           ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 1,
+                child: Padding(
+                  padding: EdgeInsets.only(
+                      bottom: ResponsiveHelper.responsiveHeight(
+                          context, _inviteList.length < 1 ? 100 : 70)),
+                  child: AnimatedContainer(
+                    curve: Curves.easeInOut,
+                    duration: Duration(milliseconds: 800),
+                    height: dontShowActivityCount ? 0.0 : 40,
+                    width: dontShowActivityCount ? 1 : 150,
+                    decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Center(
+                      child: SingleChildScrollView(
+                        child: GestureDetector(
+                          onTap: () {
+                            _navigateToPage(
+                                NotificationPage(currentUserId: currentUserId));
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.notifications_active_outlined,
+                                color: Colors.white,
+                                size: 30,
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Material(
+                                color: Colors.transparent,
+                                child: Text(
+                                  NumberFormat.compact()
+                                      .format(_provider.activityCount),
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: dontShowActivityCount
+                                          ? 0
+                                          : ResponsiveHelper.responsiveFontSize(
+                                              context, 16.0),
+                                      fontWeight: FontWeight.bold),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),

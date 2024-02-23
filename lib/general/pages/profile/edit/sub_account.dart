@@ -15,7 +15,6 @@ class SubAccounts extends StatefulWidget {
 }
 
 class _SubAccountsState extends State<SubAccounts> {
- 
   _showSelectImageDialog() {
     return Platform.isIOS ? _iosBottomSheet() : _androidDialog(context);
   }
@@ -28,7 +27,7 @@ class _SubAccountsState extends State<SubAccounts> {
             title: Text(
               'This action would clear your current sub-accounts to enable you re-select new sub-accounts.',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 16),
                 color: Colors.black,
               ),
             ),
@@ -181,79 +180,79 @@ class _SubAccountsState extends State<SubAccounts> {
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
-          backgroundColor: Theme.of(context).primaryColor,
-          appBar: AppBar(
-            iconTheme: IconThemeData(
+    return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
+      appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Theme.of(context).secondaryHeaderColor,
+        ),
+        automaticallyImplyLeading: true,
+        elevation: 0,
+        backgroundColor: Theme.of(context).primaryColor,
+        title: Text(
+          'Edit Profile',
+          style: TextStyle(
               color: Theme.of(context).secondaryHeaderColor,
-            ),
-            automaticallyImplyLeading: true,
-            elevation: 0,
-            backgroundColor: Theme.of(context).primaryColor,
-            title: Text(
-              'Edit Profile',
-              style: TextStyle(
-                  color: Theme.of(context).secondaryHeaderColor,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-            ),
-            centerTitle: true,
-          ),
-          body: SafeArea(
-            child: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
-              child: SingleChildScrollView(
-                child: Center(
-                  child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
-                    child: Column(
-                      children: [
-                        EditProfileInfo(
-                          editTitle: 'Select \nSub-account skills',
-                          info:
-                              'You can add multiple  sub-accounts skills if you offer more than one skill. For instance, main account Artist, sub-accounts: producer, video director.',
-                          icon: Icons.account_box_outlined,
-                        ),
-                        // Text(
-                        //   widget.user.subAccountType!,
-                        //   style: TextStyle(fontSize: 12, color: Colors.blue),
-                        // ),
-                        Center(
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 30.0),
-                            child: Container(
-                              width: MediaQuery.of(context).size.width,
-                              child: TextButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
-                                  foregroundColor: Colors.blue,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                ),
-                                onPressed: () => _showSelectImageDialog(),
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: Text(
-                                    'Edit sub_accounts',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.white,
-                                    ),
-                                  ),
+              fontSize: ResponsiveHelper.responsiveFontSize(context, 20),
+              fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: SingleChildScrollView(
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
+                child: Column(
+                  children: [
+                    EditProfileInfo(
+                      editTitle: 'Select \nSub-account skills',
+                      info:
+                          'You can add multiple  sub-accounts skills if you offer more than one skill. For instance, main account Artist, sub-accounts: producer, video director.',
+                      icon: Icons.account_box_outlined,
+                    ),
+                    // Text(
+                    //   widget.user.subAccountType!,
+                    //   style: TextStyle(fontSize: 12, color: Colors.blue),
+                    // ),
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 30.0),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          child: TextButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.blue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                            ),
+                            onPressed: () => _showSelectImageDialog(),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: Text(
+                                'Edit sub_accounts',
+                                style: TextStyle(
+                                  fontSize: ResponsiveHelper.responsiveFontSize(
+                                      context, 16),
+                                  color: Colors.white,
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),
           ),
+        ),
+      ),
     );
   }
 }

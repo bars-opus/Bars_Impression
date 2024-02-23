@@ -55,9 +55,8 @@ class _InviteContainerWidgetState extends State<InviteContainerWidget> {
           if (_isLoading) return;
           _isLoading = true;
           try {
-            Event? event = await DatabaseService.getEventWithId(
-              widget.invite.eventId,
-            );
+            Event? event = await DatabaseService.getUserEventWithId(
+                widget.invite.eventId, widget.invite.inviterId);
 
             TicketOrderModel? _ticket = await DatabaseService.getTicketWithId(
                 widget.invite.eventId, _provider.currentUserId!);

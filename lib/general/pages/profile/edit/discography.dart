@@ -492,36 +492,6 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
     _provider.setWorkRequestisEvent(false);
   }
 
-  void _showBottomSheetAdvice() async {
-    await showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return Container(
-          height: ResponsiveHelper.responsiveHeight(context, 650),
-          decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(30)),
-          child: Padding(
-            padding: const EdgeInsets.only(top: 25.0),
-            child: UserAdviceScreen(
-              currentUserId: widget.currentUserId,
-              userId: widget.userPortfolio.id,
-              userName: widget.userPortfolio.userName,
-              isBlocked: _isBlockedUser,
-              isBlocking: _isBlockingUser,
-              updateBlockStatus: () {
-                setState(() {});
-              },
-              user: widget.userPortfolio,
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   void _showBottomSheet() {
     showModalBottomSheet(
       context: context,
@@ -543,7 +513,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-          height: MediaQuery.of(context).size.height.toDouble() / 1.2,
+          height: ResponsiveHelper.responsiveHeight(context, 650),
           decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(30)),
@@ -582,6 +552,36 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showBottomSheetAdvice(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return Container(
+          height: ResponsiveHelper.responsiveHeight(context, 650),
+          decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(30)),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 25.0),
+            child: UserAdviceScreen(
+              currentUserId: widget.currentUserId,
+              userId: widget.userPortfolio.id,
+              userName: widget.userPortfolio.userName,
+              isBlocked: _isBlockedUser,
+              isBlocking: _isBlockingUser,
+              updateBlockStatus: () {
+                setState(() {});
+              },
+              user: widget.userPortfolio,
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -1517,7 +1517,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                       child: GestureDetector(
                         onTap: _isCurrentUser
                             ? () {
-                                _showBottomSheetAdvice();
+                                _showBottomSheetAdvice(context);
                               }
                             : () async {
                                 if (_isLoading) return;
@@ -1705,7 +1705,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                           ? 'Advices for you'
                           : 'Advice ${widget.userPortfolio.userName}',
                       () {
-                        _showBottomSheetAdvice();
+                        _showBottomSheetAdvice(context);
                       },
                       false,
                     ),

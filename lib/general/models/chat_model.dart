@@ -32,6 +32,9 @@ class Chat {
   final Timestamp? timestamp;
   @HiveField(12)
   final bool muteMessage;
+  //  @HiveField(13)
+  // Timestamp? clientTimestamp;
+
 
   Chat({
     required this.id,
@@ -47,6 +50,7 @@ class Chat {
     required this.timestamp,
     required this.messageId,
     required this.muteMessage,
+    //  required this.clientTimestamp,
   });
 
   factory Chat.fromDoc(DocumentSnapshot doc) {
@@ -62,6 +66,9 @@ class Chat {
       muteMessage: doc['muteMessage'] ?? false,
       // 'timestamp':timestamp ?? FieldValue.serverTimestamp(),
       newMessageTimestamp: doc['newMessageTimestamp'] as Timestamp?,
+      //  clientTimestamp: doc['clientTimestamp'] as Timestamp?,
+
+      
       toUserId: doc['toUserId'] ?? '',
       timestamp: doc['timestamp'] as Timestamp?,
       messageId: doc['messageId'] ?? '',
