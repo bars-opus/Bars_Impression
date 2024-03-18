@@ -268,17 +268,23 @@ class _SignpsScreenState extends State<SignpsScreen>
                               ),
                             ),
                             if (_isLoading)
-                              Align(
-                                alignment: Alignment.bottomCenter,
-                                child: SizedBox(
-                                  height: 0.5,
-                                  child: LinearProgressIndicator(
-                                    backgroundColor: Colors.transparent,
-                                    valueColor:
-                                        AlwaysStoppedAnimation(Colors.white),
-                                  ),
-                                ),
-                              ),
+                              if (_isLoading)
+                                CircularProgress(
+                                  isMini: true,
+                                  indicatorColor:
+                                      Colors.grey[800] ?? Colors.grey,
+                                )
+                            // Align(
+                            //   alignment: Alignment.bottomCenter,
+                            //   child: SizedBox(
+                            //     height: 0.5,
+                            //     child: LinearProgressIndicator(
+                            //       backgroundColor: Colors.transparent,
+                            //       valueColor:
+                            //           AlwaysStoppedAnimation(Colors.white),
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),

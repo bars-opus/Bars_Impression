@@ -84,21 +84,24 @@ class UserBarcode extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              Text(
-                '${bio.trim().replaceAll('\n', ' ')}',
-                style: TextStyle(
-                  fontSize: ResponsiveHelper.responsiveFontSize(context,
-                      ResponsiveHelper.responsiveFontSize(context, 14)),
-                  color: Colors.white,
+              if (bio.isNotEmpty)
+                const SizedBox(
+                  height: 10,
                 ),
-                maxLines: 5,
-              ),
-              SizedBox(
-                height: ResponsiveHelper.responsiveHeight(context, 50),
-              ),
+              if (bio.isNotEmpty)
+                Text(
+                  '${bio.trim().replaceAll('\n', ' ')}',
+                  style: TextStyle(
+                    fontSize: ResponsiveHelper.responsiveFontSize(context,
+                        ResponsiveHelper.responsiveFontSize(context, 14)),
+                    color: Colors.white,
+                  ),
+                  maxLines: 5,
+                ),
+              if (_provider.currentUserId == userId)
+                SizedBox(
+                  height: ResponsiveHelper.responsiveHeight(context, 50),
+                ),
               if (_provider.currentUserId == userId)
                 Text(
                   'This is your account barcode. You can take a screenshot of this barcode and display it in your studio or workplace. This way, new customers can scan it to access your Bars Impression page and stay in touch with you.',
@@ -108,6 +111,22 @@ class UserBarcode extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
+              const SizedBox(
+                height: 10,
+              ),
+              GestureDetector(
+                onTap: () {
+                  Share.share(userDynamicLink);
+                },
+                child: Text(
+                  'Share link instead.',
+                  style: TextStyle(
+                    fontSize: ResponsiveHelper.responsiveFontSize(context,
+                        ResponsiveHelper.responsiveFontSize(context, 12)),
+                    color: Colors.blue,
+                  ),
+                ),
+              ),
             ]),
       )),
     );

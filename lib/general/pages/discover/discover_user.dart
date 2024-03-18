@@ -36,7 +36,7 @@ class _DiscoverUserState extends State<DiscoverUser>
   void initState() {
     super.initState();
     _tabController = TabController(
-        length: 20, initialIndex: widget.liveLocationIntialPage, vsync: this);
+        length: 23, initialIndex: widget.liveLocationIntialPage, vsync: this);
     _tabController.addListener(() {
       // Check if the animation is completed. This indicates that tab has fully changed
       if (!_tabController.indexIsChanging) {
@@ -114,6 +114,18 @@ class _DiscoverUserState extends State<DiscoverUser>
           ),
           Text(
             style: Theme.of(context).textTheme.bodySmall,
+            'Caterers',
+          ),
+          Text(
+            style: Theme.of(context).textTheme.bodySmall,
+            'Sound_and_Light',
+          ),
+          Text(
+            style: Theme.of(context).textTheme.bodySmall,
+            'Decorator',
+          ),
+          Text(
+            style: Theme.of(context).textTheme.bodySmall,
             'Record_Label',
           ),
           Text(
@@ -175,7 +187,7 @@ class _DiscoverUserState extends State<DiscoverUser>
       onPointerMove: (event) {
         final offset = event.delta.dx;
         final index = _tabController.index;
-        if (((offset > 0 && index == 0) || (offset < 0 && index == 20 - 1)) &&
+        if (((offset > 0 && index == 0) || (offset < 0 && index == 23 - 1)) &&
             !_physycsNotifier.value) {
           _physycsNotifier.value = true;
         }
@@ -187,7 +199,7 @@ class _DiscoverUserState extends State<DiscoverUser>
             return TabBarView(
               controller: _tabController,
               physics: value ? NeverScrollableScrollPhysics() : null,
-              children: List.generate(20, (index) {
+              children: List.generate(23, (index) {
                 String eventType = '';
                 int tabIndex = 0;
                 switch (index) {
@@ -220,56 +232,68 @@ class _DiscoverUserState extends State<DiscoverUser>
                     tabIndex = 6;
                     break;
                   case 7:
-                    eventType = 'Record_Label';
+                    eventType = 'Caterers';
                     tabIndex = 7;
                     break;
                   case 8:
-                    eventType = 'Brand_Influencer';
+                    eventType = 'Sound_and_Light';
                     tabIndex = 8;
                     break;
                   case 9:
-                    eventType = 'Event_organiser';
+                    eventType = 'Decorator';
                     tabIndex = 9;
                     break;
                   case 10:
-                    eventType = 'Band';
+                    eventType = 'Record_Label';
                     tabIndex = 10;
                     break;
                   case 11:
-                    eventType = 'Instrumentalist';
+                    eventType = 'Brand_Influencer';
                     tabIndex = 11;
                     break;
                   case 12:
-                    eventType = 'Cover_Art_Designer';
+                    eventType = 'Event_organiser';
                     tabIndex = 12;
                     break;
                   case 13:
-                    eventType = 'Makeup_Artist';
+                    eventType = 'Band';
                     tabIndex = 13;
                     break;
                   case 14:
-                    eventType = 'Video_Vixen';
+                    eventType = 'Instrumentalist';
                     tabIndex = 14;
                     break;
                   case 15:
-                    eventType = 'Blogger';
+                    eventType = 'Cover_Art_Designer';
                     tabIndex = 15;
                     break;
                   case 16:
-                    eventType = 'MC(Host)';
+                    eventType = 'Makeup_Artist';
                     tabIndex = 16;
                     break;
                   case 17:
-                    eventType = 'Choire';
+                    eventType = 'Video_Vixen';
                     tabIndex = 17;
                     break;
                   case 18:
-                    eventType = 'Battle_Rapper';
+                    eventType = 'Blogger';
                     tabIndex = 18;
                     break;
                   case 19:
-                    eventType = 'Fan';
+                    eventType = 'MC(Host)';
                     tabIndex = 19;
+                    break;
+                  case 20:
+                    eventType = 'Choire';
+                    tabIndex = 20;
+                    break;
+                  case 21:
+                    eventType = 'Battle_Rapper';
+                    tabIndex = 21;
+                    break;
+                  case 22:
+                    eventType = 'Fan';
+                    tabIndex = 22;
                     break;
                 }
                 return CreativesScreen(
@@ -281,7 +305,7 @@ class _DiscoverUserState extends State<DiscoverUser>
                   //  isLiveLocation: widget.isLiveLocation,
                   liveCity: widget.liveCity,
                   liveCountry: widget.liveCountry,
-                  seeMoreFrom: '', 
+                  seeMoreFrom: '',
                   isFrom: '',
                 );
               }),
@@ -298,7 +322,7 @@ class _DiscoverUserState extends State<DiscoverUser>
           textScaleFactor:
               MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.3)),
       child: DefaultTabController(
-        length: _currentPage == 1 ? 4 : 20,
+        length: _currentPage == 1 ? 4 : 23,
         child: Scaffold(
           backgroundColor: Theme.of(context).primaryColorLight,
           appBar: PreferredSize(
@@ -310,7 +334,6 @@ class _DiscoverUserState extends State<DiscoverUser>
                     ? Padding(
                         padding: const EdgeInsets.all(30.0),
                         child: Text(
-                          // 'Dsicover creatives',
                           _tabController.index == 0
                               ? 'All Artists'
                               : _tabController.index == 1
@@ -327,42 +350,104 @@ class _DiscoverUserState extends State<DiscoverUser>
                                                       ? 'All Photographer'
                                                       : _tabController.index ==
                                                               7
-                                                          ? 'All Record_Label'
+                                                          ? 'All Caterers'
                                                           : _tabController
                                                                       .index ==
                                                                   8
-                                                              ? 'All Brand_Influencer'
+                                                              ? 'All Sound_and_Light'
                                                               : _tabController
                                                                           .index ==
                                                                       9
-                                                                  ? 'All Event_organiser'
+                                                                  ? 'All Decorator'
                                                                   : _tabController
                                                                               .index ==
                                                                           10
-                                                                      ? 'All Band'
+                                                                      ? 'All Record_Label'
                                                                       : _tabController.index ==
                                                                               11
-                                                                          ? 'All Instrumentalist'
+                                                                          ? 'All Brand_Influencer'
                                                                           : _tabController.index == 12
-                                                                              ? 'All Cover_Art_Designer'
+                                                                              ? 'All Event_organiser'
                                                                               : _tabController.index == 13
-                                                                                  ? 'AllMakeup_Artists'
+                                                                                  ? 'All Band'
                                                                                   : _tabController.index == 14
-                                                                                      ? 'All Video_Vixens'
+                                                                                      ? 'All Instrumentalist'
                                                                                       : _tabController.index == 15
-                                                                                          ? 'All Bloggers'
+                                                                                          ? 'All Cover_Art_Designer'
                                                                                           : _tabController.index == 16
-                                                                                              ? 'All MC(Host)s'
+                                                                                              ? 'All Makeup_Artist'
                                                                                               : _tabController.index == 17
-                                                                                                  ? 'All Choire'
+                                                                                                  ? 'All Video_Vixen'
                                                                                                   : _tabController.index == 18
-                                                                                                      ? 'Battle_Rapper'
+                                                                                                      ? 'All Blogger'
                                                                                                       : _tabController.index == 19
-                                                                                                          ? 'All Fans'
-                                                                                                          : '',
+                                                                                                          ? 'All MC(Host)'
+                                                                                                          : _tabController.index == 20
+                                                                                                              ? 'All Choir'
+                                                                                                              : _tabController.index == 21
+                                                                                                                  ? 'All Battle_Rapper'
+                                                                                                                  : _tabController.index == 22
+                                                                                                                      ? 'All Fan'
+                                                                                                                      : '',
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                       )
+                    // Padding(
+                    //     padding: const EdgeInsets.all(30.0),
+                    //     child: Text(
+                    //       // 'Dsicover creatives',
+                    //       _tabController.index == 0
+                    //           ? 'All Artists'
+                    //           : _tabController.index == 1
+                    //               ? 'All Producers'
+                    //               : _tabController.index == 2
+                    //                   ? 'All DJ'
+                    //                   : _tabController.index == 3
+                    //                       ? 'All Dancer'
+                    //                       : _tabController.index == 4
+                    //                           ? 'All Music_Video_Director'
+                    //                           : _tabController.index == 5
+                    //                               ? 'All Content_creator'
+                    //                               : _tabController.index == 6
+                    //                                   ? 'All Photographer'
+                    //                                   : _tabController.index ==
+                    //                                           7
+                    //                                       ? 'All Record_Label'
+                    //                                       : _tabController
+                    //                                                   .index ==
+                    //                                               8
+                    //                                           ? 'All Brand_Influencer'
+                    //                                           : _tabController
+                    //                                                       .index ==
+                    //                                                   9
+                    //                                               ? 'All Event_organiser'
+                    //                                               : _tabController
+                    //                                                           .index ==
+                    //                                                       10
+                    //                                                   ? 'All Band'
+                    //                                                   : _tabController.index ==
+                    //                                                           11
+                    //                                                       ? 'All Instrumentalist'
+                    //                                                       : _tabController.index == 12
+                    //                                                           ? 'All Cover_Art_Designer'
+                    //                                                           : _tabController.index == 13
+                    //                                                               ? 'AllMakeup_Artists'
+                    //                                                               : _tabController.index == 14
+                    //                                                                   ? 'All Video_Vixens'
+                    //                                                                   : _tabController.index == 15
+                    //                                                                       ? 'All Bloggers'
+                    //                                                                       : _tabController.index == 16
+                    //                                                                           ? 'All MC(Host)s'
+                    //                                                                           : _tabController.index == 17
+                    //                                                                               ? 'All Choire'
+                    //                                                                               : _tabController.index == 18
+                    //                                                                                   ? 'Battle_Rapper'
+                    //                                                                                   : _tabController.index == 19
+                    //                                                                                       ? 'All Fans'
+                    //                                                                                       : '',
+                    //       style: Theme.of(context).textTheme.titleMedium,
+                    //     ),
+                    //   )
                     : Container(
                         height: ResponsiveHelper.responsiveHeight(context, 100),
                         child: SingleChildScrollView(

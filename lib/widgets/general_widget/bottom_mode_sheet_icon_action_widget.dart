@@ -5,12 +5,15 @@ class BottomModelSheetIconActionWidget extends StatelessWidget {
   final String text;
   final IconData icon;
   final bool dontPop;
+    final Color? color;
+
 
   BottomModelSheetIconActionWidget({
     required this.onPressed,
     required this.text,
     required this.icon,
     this.dontPop = false,
+    this.color
   });
 
   @override
@@ -26,6 +29,7 @@ class BottomModelSheetIconActionWidget extends StatelessWidget {
               },
         width: ResponsiveHelper.responsiveWidth(context, 177),
         child: BottomModelSheetIconsWidget(
+          color: color,
           icon: icon,
           text: text,
         ));

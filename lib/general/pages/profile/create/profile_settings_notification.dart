@@ -47,8 +47,6 @@ class _ProfileSettingsNotificationState
         widget.userGeneralSettings.muteWorkVacancyNotifications;
   }
 
-
-
   _divider() {
     return Container(
       color: Colors.grey,
@@ -71,310 +69,375 @@ class _ProfileSettingsNotificationState
     );
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    return  EditProfileScaffold(
-          title: 'Notification Settings',
-          widget: Column(children: [
-            const SizedBox(
-              height: 20,
-            ),
-            _divider(),
-            _settingCategoryColumn(
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SettingSwitch(
-                      title: 'Private account',
-                      subTitle:
-                          'Provides you with more control over who can see your content and engage with you on the app.',
-                      value: _privateAccount,
-                      onChanged: (value) => setState(() {
-                            _privateAccount = value;
-                            WriteBatch batch =
-                                FirebaseFirestore.instance.batch();
-                            batch.update(
-                              usersGeneralSettingsRef
-                                  .doc(widget.userGeneralSettings.userId),
-                              {'privateAccount': _privateAccount},
-                            );
+    return EditProfileScaffold(
+      title: 'Notification Settings',
+      widget: Column(children: [
+        const SizedBox(
+          height: 20,
+        ),
+        _divider(),
+        _settingCategoryColumn(
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SettingSwitch(
+                  title: 'Private account',
+                  subTitle:
+                      'Provides you with more control over who can see your content and engage with you on the app.',
+                  value: _privateAccount,
+                  onChanged: (value) => setState(() {
+                        _privateAccount = value;
+                        WriteBatch batch = FirebaseFirestore.instance.batch();
+                        batch.update(
+                          usersGeneralSettingsRef
+                              .doc(widget.userGeneralSettings.userId),
+                          {'privateAccount': _privateAccount},
+                        );
 
+                        batch.update(
+                          usersAuthorRef.doc(widget.userGeneralSettings.userId),
+                          {'privateAccount': _privateAccount},
+                        );
 
-                            try {
-                              batch.commit();
-                            } catch (error) {
-                            }
-                          })),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: _divider(),
-                  ),
-                  SettingSwitch(
-                      title: 'Disable messaging',
-                      subTitle:
-                          'This prevents other users from sending you direct messages or initiating conversations with you.',
-                      value: _disableChat,
-                      onChanged: (value) => setState(() {
-                            _disableChat = value;
-
-                            WriteBatch batch =
-                                FirebaseFirestore.instance.batch();
-
-                            batch.update(
-                              usersGeneralSettingsRef
-                                  .doc(widget.userGeneralSettings.userId),
-                              {'disableChat': _disableChat},
-                            );
-
-                            try {
-                              batch.commit();
-                            } catch (error) {
-                              // Handle the error appropriately
-                            }
-                          })),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: _divider(),
-                  ),
-                  SettingSwitch(
-                    title: 'Disable advicing',
-                    subTitle:
-                        'This prevents other users from sending you insights aimed at inspiring and guiding your artistic craft.',
-                    value: _disableAdvice,
-                    onChanged: (value) => setState(
-                      () {
-                        _disableAdvice = value;
-
-                        usersGeneralSettingsRef
-                            .doc(
-                          widget.userGeneralSettings.userId,
-                        )
-                            .update({
-                          'disableAdvice': _disableAdvice,
-                        });
-                       
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: _divider(),
-                  ),
-                  SettingSwitch(
-                    title: 'Hide advices',
-                    subTitle:
-                        'When you disable chats, other users will not be able to initiate conversations with you.',
-                    value: _hideAdvice,
-                    onChanged: (value) => setState(
-                      () {
-                        _hideAdvice = value;
-
-                        usersGeneralSettingsRef
-                            .doc(
-                          widget.userGeneralSettings.userId,
-                        )
-                            .update({
-                          'hideAdvice': _hideAdvice,
-                        });
-                       
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: _divider(),
-                  ),
-                  SettingSwitch(
-                    title: 'Disable booking',
-                    subTitle:
-                        'Restricts other users from booking appointments or services with you through the app.',
-                    value: _disableBooking,
-                    onChanged: (value) => setState(
-                      () {
-                        _disableBooking = value;
-
-                        usersGeneralSettingsRef
-                            .doc(
-                          widget.userGeneralSettings.userId,
-                        )
-                            .update({
-                          'disableBooking': _disableBooking,
-                        });
-                       
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: _divider(),
-                  ),
-                  SettingSwitch(
-                    title: 'Disable event suggestion notification',
-                    subTitle:
-                        'Turn off suggestion notifications from events nearby.',
-                    value: _disableEventSuggestionNotification,
-                    onChanged: (value) => setState(
-                      () {
-                        _disableEventSuggestionNotification = value;
-
-                        usersGeneralSettingsRef
-                            .doc(
-                          widget.userGeneralSettings.userId,
-                        )
-                            .update({
-                          'disableEventSuggestionNotification':
-                              _disableEventSuggestionNotification,
-                        });
-                      
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: _divider(),
-                  ),
-                  SettingSwitch(
-                    title: 'Mute event suggestion notifications',
-                    subTitle:
-                        'Silence suggestion notifications from events nearby.',
-                    value: _muteEventSuggestionNotification,
-                    onChanged: (value) => setState(
-                      () {
-                        _muteEventSuggestionNotification = value;
-
-                        usersGeneralSettingsRef
-                            .doc(
-                          widget.userGeneralSettings.userId,
-                        )
-                            .update({
-                          'muteEventSuggestionNotification':
-                              _muteEventSuggestionNotification,
-                        });
-                       
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: _divider(),
-                  ),
-                  SettingSwitch(
-                    title: 'Disable new creative suggestion notification',
-                    subTitle:
-                        'Turn off suggestion notifications for new creatives nearby.',
-                    value: _disableNewCreativeNotifications,
-                    onChanged: (value) => setState(
-                      () {
-                        _disableNewCreativeNotifications = value;
-
-                        usersGeneralSettingsRef
-                            .doc(
-                          widget.userGeneralSettings.userId,
-                        )
-                            .update({
-                          'disableNewCreativeNotifications':
-                              _disableNewCreativeNotifications,
-                        });
-                       
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: _divider(),
-                  ),
-                  SettingSwitch(
-                    title: 'Disable work vacancy notification',
-                    subTitle:
-                        'Turn off work available vacancy notifications nearby.',
-                    value: _disableWorkVacancyNotifications,
-                    onChanged: (value) => setState(
-                      () {
-                        _disableWorkVacancyNotifications = value;
-
-                        usersGeneralSettingsRef
-                            .doc(
-                          widget.userGeneralSettings.userId,
-                        )
-                            .update({
-                          'disableWorkVacancyNotifications':
-                              _disableWorkVacancyNotifications,
-                        });
-                       
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: _divider(),
-                  ),
-                  SettingSwitch(
-                    title: 'Mute work vacancy notification',
-                    subTitle:
-                        'Silence work available vacancy notifications nearby.',
-                    value: _muteWorkVacancyNotifications,
-                    onChanged: (value) => setState(
-                      () {
-                        _muteWorkVacancyNotifications = value;
-
-                        usersGeneralSettingsRef
-                            .doc(
-                          widget.userGeneralSettings.userId,
-                        )
-                            .update({
-                          'muteWorkVacancyNotifications':
-                              _muteWorkVacancyNotifications,
-                        });
-                       
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: _divider(),
-                  ),
-                  SettingSwitch(
-                      title: 'Disable account',
-                      subTitle:
-                          'Your profile, events, and any associated information will no longer be visible to other users',
-                      value: _disabledAccount,
-                      onChanged: (value) => setState(() {
-                            _disabledAccount = value;
-
-                            WriteBatch batch =
-                                FirebaseFirestore.instance.batch();
-
-                            batch.update(
-                              usersGeneralSettingsRef
-                                  .doc(widget.userGeneralSettings.userId),
-                              {'disabledAccount': _disabledAccount},
-                            );
-
-                            batch.update(
-                              usersAuthorRef
-                                  .doc(widget.userGeneralSettings.userId),
-                              {'disabledAccount': _disabledAccount},
-                            );
-
-                            try {
-                              batch.commit();
-                            } catch (error) {
-                              // Handle the error appropriately
-                            }
-                          })),
-
-                ],
+                        try {
+                          batch.commit();
+                        } catch (error) {}
+                      })),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                child: _divider(),
               ),
-            ),
-            _divider(),
-            
-            const SizedBox(
-              height: 10,
-            ),
-          ]),
+              SettingSwitch(
+                  title: 'Disable messaging',
+                  subTitle:
+                      'This prevents other users from sending you direct messages or initiating conversations with you.',
+                  value: _disableChat,
+                  onChanged: (value) => setState(() {
+                        _disableChat = value;
+
+                        WriteBatch batch = FirebaseFirestore.instance.batch();
+
+                        batch.update(
+                          usersGeneralSettingsRef
+                              .doc(widget.userGeneralSettings.userId),
+                          {'disableChat': _disableChat},
+                        );
+
+                        try {
+                          batch.commit();
+                        } catch (error) {
+                          // Handle the error appropriately
+                        }
+                      })),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                child: _divider(),
+              ),
+              SettingSwitch(
+                title: 'Disable advicing',
+                subTitle:
+                    'This prevents other users from sending you insights aimed at inspiring and guiding your artistic craft.',
+                value: _disableAdvice,
+                onChanged: (value) => setState(
+                  () {
+                    _disableAdvice = value;
+                    //  _disableChat = value;
+
+                    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+                    batch.update(
+                      usersGeneralSettingsRef
+                          .doc(widget.userGeneralSettings.userId),
+                      {
+                        'disableAdvice': _disableAdvice,
+                      },
+                    );
+
+                    batch.update(
+                      userProfessionalRef
+                          .doc(widget.userGeneralSettings.userId),
+                      {
+                        'disableAdvice': _disableAdvice,
+                      },
+                    );
+
+                    try {
+                      batch.commit();
+                    } catch (error) {
+                      // Handle the error appropriately
+                    }
+
+                    // usersGeneralSettingsRef
+                    //     .doc(
+                    //   widget.userGeneralSettings.userId,
+                    // )
+                    //     .update({
+                    //   'disableAdvice': _disableAdvice,
+                    // });
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                child: _divider(),
+              ),
+              SettingSwitch(
+                title: 'Hide advices',
+                subTitle:
+                    'When you disable chats, other users will not be able to initiate conversations with you.',
+                value: _hideAdvice,
+                onChanged: (value) => setState(
+                  () {
+                    _hideAdvice = value;
+
+                    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+                    batch.update(
+                      usersGeneralSettingsRef
+                          .doc(widget.userGeneralSettings.userId),
+                      {
+                        'hideAdvice': _hideAdvice,
+                      },
+                    );
+
+                    batch.update(
+                      userProfessionalRef
+                          .doc(widget.userGeneralSettings.userId),
+                      {
+                        'hideAdvice': _hideAdvice,
+                      },
+                    );
+
+                    try {
+                      batch.commit();
+                    } catch (error) {
+                      // Handle the error appropriately
+                    }
+                    // usersGeneralSettingsRef
+                    //     .doc(
+                    //   widget.userGeneralSettings.userId,
+                    // )
+                    //     .update({
+                    //   'hideAdvice': _hideAdvice,
+                    // });
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                child: _divider(),
+              ),
+              SettingSwitch(
+                title: 'Disable booking',
+                subTitle:
+                    'Restricts other users from booking appointments or services with you through the app.',
+                value: _disableBooking,
+                onChanged: (value) => setState(
+                  () {
+                    _disableBooking = value;
+                    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+                    batch.update(
+                      usersGeneralSettingsRef
+                          .doc(widget.userGeneralSettings.userId),
+                      {
+                        'disableBooking': _disableBooking,
+                      },
+                    );
+
+                    batch.update(
+                      userProfessionalRef
+                          .doc(widget.userGeneralSettings.userId),
+                      {
+                        'noBooking': _disableBooking,
+                      },
+                    );
+                    try {
+                      batch.commit();
+                    } catch (error) {
+                      // Handle the error appropriately
+                    }
+
+                    // usersGeneralSettingsRef
+                    //     .doc(
+                    //   widget.userGeneralSettings.userId,
+                    // )
+                    //     .update({
+                    //   'disableBooking': _disableBooking,
+                    // });
+
+                    // userProfessionalRef
+                    //     .doc(
+                    //   widget.userGeneralSettings.userId,
+                    // )
+                    //     .update({
+                    //   'noBooking': _disableBooking,
+                    // });
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                child: _divider(),
+              ),
+              SettingSwitch(
+                title: 'Disable event suggestion notification',
+                subTitle:
+                    'Turn off suggestion notifications from events nearby.',
+                value: _disableEventSuggestionNotification,
+                onChanged: (value) => setState(
+                  () {
+                    _disableEventSuggestionNotification = value;
+
+                    usersGeneralSettingsRef
+                        .doc(
+                      widget.userGeneralSettings.userId,
+                    )
+                        .update({
+                      'disableEventSuggestionNotification':
+                          _disableEventSuggestionNotification,
+                    });
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                child: _divider(),
+              ),
+              SettingSwitch(
+                title: 'Mute event suggestion notifications',
+                subTitle:
+                    'Silence suggestion notifications from events nearby.',
+                value: _muteEventSuggestionNotification,
+                onChanged: (value) => setState(
+                  () {
+                    _muteEventSuggestionNotification = value;
+
+                    usersGeneralSettingsRef
+                        .doc(
+                      widget.userGeneralSettings.userId,
+                    )
+                        .update({
+                      'muteEventSuggestionNotification':
+                          _muteEventSuggestionNotification,
+                    });
+                  },
+                ),
+              ),
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(vertical: 10.0),
+              //   child: _divider(),
+              // ),
+              // SettingSwitch(
+              //   title: 'Disable new creative suggestion notification',
+              //   subTitle:
+              //       'Turn off suggestion notifications for new creatives nearby.',
+              //   value: _disableNewCreativeNotifications,
+              //   onChanged: (value) => setState(
+              //     () {
+              //       _disableNewCreativeNotifications = value;
+
+              //       usersGeneralSettingsRef
+              //           .doc(
+              //         widget.userGeneralSettings.userId,
+              //       )
+              //           .update({
+              //         'disableNewCreativeNotifications':
+              //             _disableNewCreativeNotifications,
+              //       });
+              //     },
+              //   ),
+              // ),
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(vertical: 10.0),
+              //   child: _divider(),
+              // ),
+              // SettingSwitch(
+              //   title: 'Disable work vacancy notification',
+              //   subTitle:
+              //       'Turn off work available vacancy notifications nearby.',
+              //   value: _disableWorkVacancyNotifications,
+              //   onChanged: (value) => setState(
+              //     () {
+              //       _disableWorkVacancyNotifications = value;
+
+              //       usersGeneralSettingsRef
+              //           .doc(
+              //         widget.userGeneralSettings.userId,
+              //       )
+              //           .update({
+              //         'disableWorkVacancyNotifications':
+              //             _disableWorkVacancyNotifications,
+              //       });
+              //     },
+              //   ),
+              // ),
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(vertical: 10.0),
+              //   child: _divider(),
+              // ),
+              // SettingSwitch(
+              //   title: 'Mute work vacancy notification',
+              //   subTitle:
+              //       'Silence work available vacancy notifications nearby.',
+              //   value: _muteWorkVacancyNotifications,
+              //   onChanged: (value) => setState(
+              //     () {
+              //       _muteWorkVacancyNotifications = value;
+
+              //       usersGeneralSettingsRef
+              //           .doc(
+              //         widget.userGeneralSettings.userId,
+              //       )
+              //           .update({
+              //         'muteWorkVacancyNotifications':
+              //             _muteWorkVacancyNotifications,
+              //       });
+              //     },
+              //   ),
+              // ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                child: _divider(),
+              ),
+              SettingSwitch(
+                  title: 'Disable account',
+                  subTitle:
+                      'Your profile, events, and any associated information will no longer be visible to other users',
+                  value: _disabledAccount,
+                  onChanged: (value) => setState(() {
+                        _disabledAccount = value;
+
+                        WriteBatch batch = FirebaseFirestore.instance.batch();
+
+                        batch.update(
+                          usersGeneralSettingsRef
+                              .doc(widget.userGeneralSettings.userId),
+                          {'disabledAccount': _disabledAccount},
+                        );
+
+                        batch.update(
+                          usersAuthorRef.doc(widget.userGeneralSettings.userId),
+                          {'disabledAccount': _disabledAccount},
+                        );
+
+                        try {
+                          batch.commit();
+                        } catch (error) {
+                          // Handle the error appropriately
+                        }
+                      })),
+            ],
+          ),
+        ),
+        _divider(),
+        const SizedBox(
+          height: 10,
+        ),
+      ]),
     );
   }
 }

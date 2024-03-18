@@ -198,6 +198,8 @@ class _SetUpBrandState extends State<SetUpBrand> {
       userId: _provider.currentUserId,
       userName: userName,
       verified: false,
+      privateAccount: false,
+      disableChat: false,
     );
 
     // Put the new object back into the box with the same key
@@ -222,6 +224,8 @@ class _SetUpBrandState extends State<SetUpBrand> {
       userId: _provider.currentUserId,
       userName: _provider.changeNewUserName,
       verified: false,
+      privateAccount: false,
+      disableChat: false,
     );
 
     // Put the new object back into the box with the same key
@@ -249,6 +253,8 @@ class _SetUpBrandState extends State<SetUpBrand> {
           ? _controller.text.toUpperCase()
           : _provider.changeNewUserName.toUpperCase(),
       verified: false,
+      privateAccount: false,
+      disableChat: false,
     );
 
     // Put the new object back into the box with the same key
@@ -394,8 +400,9 @@ class _SetUpBrandState extends State<SetUpBrand> {
   }
 
   _validateTextToxicityBio(AccountHolderAuthor user) async {
+    animateToPage();
     var _provider = Provider.of<UserData>(context, listen: false);
-    _provider.setIsLoading(true);
+    // _provider.setIsLoading(true);
 
     TextModerator moderator = TextModerator();
 
@@ -409,7 +416,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
     for (String text in textsToCheck) {
       if (text.isEmpty) {
         // Handle the case where the text is empty
-        _provider.setIsLoading(false);
+        // _provider.setIsLoading(false);
         _submitProfileImage(user);
         // mySnackBar(context, 'Text cannot be empty.');
         allTextsValid = false;
@@ -426,15 +433,17 @@ class _SetUpBrandState extends State<SetUpBrand> {
           // If any text's score is above the threshold, show a Snackbar and set allTextsValid to false
           mySnackBarModeration(context,
               'Your bio,contains inappropriate content. Please review');
-          _provider.setIsLoading(false);
+          // _provider.setIsLoading(false);
 
           allTextsValid = false;
+          animateBack();
           break; // Exit loop as we already found inappropriate content
         }
       } else {
         // Handle the case where the API call failed
-        _provider.setIsLoading(false);
+        // _provider.setIsLoading(false);
         mySnackBar(context, 'Try again.');
+        animateBack();
         allTextsValid = false;
         break; // Exit loop as there was an API error
       }
@@ -442,7 +451,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
 
     // Animate to the next page if all texts are valid
     if (allTextsValid) {
-      _provider.setIsLoading(false);
+      // _provider.setIsLoading(false);
 
       _submitProfileImage(user); // animateToPage(1);
     }
@@ -474,7 +483,6 @@ class _SetUpBrandState extends State<SetUpBrand> {
       String bio = _provider.bio.trim().replaceAll('\n', ' ');
 
       try {
-        animateToPage();
         String link = await DatabaseService.myDynamicLink(
           profileImageUrl,
           _provider.changeNewUserName.isEmpty
@@ -766,7 +774,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
     );
   }
 
-  _directionWidget(String title, String subTItle) {
+  _directionWidget(String title, String subTItle, bool showMore) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -779,9 +787,37 @@ class _SetUpBrandState extends State<SetUpBrand> {
               height: 1),
         ),
         DirectionWidget(
+          sizedBox: 0,
           text: subTItle,
           fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
         ),
+        if (showMore)
+          GestureDetector(
+            onTap: () {
+              _showBottomMoreAboutAccountTypes();
+            },
+            child: RichText(
+              textScaleFactor:
+                  MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5),
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'If you are uncertain about where you fit in,',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  TextSpan(
+                    text: ' learn more',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 14.0),
+                    ),
+                  ),
+                ],
+              ),
+              textAlign: TextAlign.start,
+            ),
+          ),
       ],
     );
   }
@@ -800,6 +836,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
                   _directionWidget(
                     'Select \nUsername',
                     'Choose a username for your brand. If you\'re a music creative, it can be your stage name. Remember, all usernames are converted to uppercase.',
+                    false,
                   ),
                   const SizedBox(height: 10),
                   new Material(
@@ -850,6 +887,25 @@ class _SetUpBrandState extends State<SetUpBrand> {
     );
   }
 
+  void _showBottomMoreAboutAccountTypes() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Container(
+              height: ResponsiveHelper.responsiveHeight(context, 700),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(30)),
+              child: MoreAboutAccountTypes());
+        });
+      },
+    );
+  }
+
   _selectAccountType() {
     return SingleChildScrollView(
       child: Padding(
@@ -872,6 +928,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
             _directionWidget(
               ' Select \nAccount Type',
               'Choose an account type that allows other users to easily identify you for business purposes. You can select only one account type at a time.',
+              true,
             ),
             buildRadios(),
             const SizedBox(
@@ -900,16 +957,24 @@ class _SetUpBrandState extends State<SetUpBrand> {
                   alignment: Alignment.centerRight,
                   child: MiniCircularProgressButton(
                     color: Colors.blue,
-                    text: 'Skip',
-                    onPressed: () {
-                      Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (context) => ConfigPage()),
-                          (Route<dynamic> route) => false);
-                    },
+                    text: _provider.bio.isNotEmpty || _profileImage != null
+                        ? 'Save'
+                        : 'Skip',
+                    onPressed: _provider.bio.isNotEmpty || _profileImage != null
+                        ? () {
+                            _validateTextToxicityBio(user);
+                          }
+                        : () {
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (context) => ConfigPage()),
+                                (Route<dynamic> route) => false);
+                          },
                   )),
               _directionWidget(
                 'Set\nPhoto',
                 'Choose a brand picture that represents your identity. Utilize the bio text field to share more about yourself, allowing others to get to know you better.',
+                false,
               ),
               Center(
                 child: _provider.isLoading

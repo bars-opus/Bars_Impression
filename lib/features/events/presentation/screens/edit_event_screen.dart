@@ -80,6 +80,14 @@ class _EditEventScreenState extends State<EditEventScreen> {
 
       _provider.setTaggedEventPeopel(taggedPersonOption);
     }
+
+//contacts
+    List<String> eventContact = widget.event.contacts;
+    for (String contact in eventContact) {
+      String contactOption = contact;
+
+      _provider.setEventOrganizerContacts(contactOption);
+    }
   }
 
   _setNull(UserData provider) {

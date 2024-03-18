@@ -191,7 +191,8 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
       final portfolio = PortfolioContactModel(
         id: UniqueKey().toString(),
         email: isEmail ? _nameController.text : '',
-        number: !isEmail ? int.parse(_linkController.text) : 0,
+        number: _linkController.text
+        // number: !isEmail ? int.parse(_linkController.text) : 0,
       );
 
       // adds ticket to ticket list
@@ -1458,10 +1459,12 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                 },
                                 onTap: () {},
                                 onChanged: (input) {
-                                  setState(() {
-                                    _users = DatabaseService.searchUsers(
-                                        input.toUpperCase());
-                                  });
+                                  if (input.isNotEmpty) {
+                                    setState(() {
+                                      _users = DatabaseService.searchUsers(
+                                          input.toUpperCase());
+                                    });
+                                  }
                                 }),
                             const SizedBox(
                               height: 30,

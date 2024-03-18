@@ -1,7 +1,7 @@
 class PortfolioContactModel {
   String id;
   final String email;
-  final int number;
+  final String number;
 
   PortfolioContactModel({
     required this.id,

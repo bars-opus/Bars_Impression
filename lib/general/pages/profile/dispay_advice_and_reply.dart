@@ -3,12 +3,12 @@ import 'package:bars/utilities/exports.dart';
 class DisplayAdviceAndReply extends StatefulWidget {
   final UserAdvice advice;
   final String userId;
-  var user;
+  // var user;
 
   DisplayAdviceAndReply(
       {super.key,
       required this.userId,
-      required this.user,
+      // required this.user,
       required this.advice});
 
   @override

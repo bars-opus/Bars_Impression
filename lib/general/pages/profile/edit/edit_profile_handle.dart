@@ -97,6 +97,8 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
       userId: _provider.user!.userId,
       userName: _provider.user!.userName,
       verified: _provider.user!.verified,
+      privateAccount: _provider.user!.privateAccount,
+      disableChat: _provider.user!.disableChat,
     );
 
     // Put the new object back into the box with the same key
@@ -138,25 +140,50 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
 
   static const values = <String>[
     "Artist",
-    "Producer",
-    "DJ",
-    "Dancer",
-    "Music_Video_Director",
-    "Content_creator",
-    "Photographer",
-    "Record_Label",
-    "Brand_Influencer",
-    "Event_organiser",
     "Band",
-    "Instrumentalist",
-    "Cover_Art_Designer",
-    "Makeup_Artist",
-    "Video_Vixen",
-    "Blogger",
-    "MC(Host)",
-    "Choire",
     "Battle_Rapper",
+    "Blogger",
+    "Brand_Influencer",
+
+    "Choire",
+    "Content_creator",
+    "Cover_Art_Designer",
+    "Dancer",
+    "DJ",
+    "Event_organiser",
     "Fan",
+    "Instrumentalist",
+    "Makeup_Artist",
+    "MC(Host)",
+    "Music_Video_Director",
+    "Photographer",
+    "Producer",
+    "Record_Label",
+    "Video_Vixen",
+
+    'Caterers',
+    'Sound_and_Light',
+    'Decorator',
+
+    // "Producer",
+    // "DJ",
+    // "Dancer",
+    // "Music_Video_Director",
+    // "Content_creator",
+    // "Photographer",
+    // "Record_Label",
+    // "Brand_Influencer",
+    // "Event_organiser",
+    // "Band",
+    // "Instrumentalist",
+    // "Cover_Art_Designer",
+    // "Makeup_Artist",
+    // "Video_Vixen",
+    // "Blogger",
+    // "MC(Host)",
+    // "Choire",
+    // "Battle_Rapper",
+    // "Fan",
   ];
 
   Widget buildRadios() => Theme(
@@ -199,6 +226,25 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
     );
   }
 
+  void _showBottomMoreAboutAccountTypes() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Container(
+              height: ResponsiveHelper.responsiveHeight(context, 700),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(30)),
+              child: MoreAboutAccountTypes());
+        });
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return EditProfileScaffold(
@@ -215,8 +261,12 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
                 EditProfileInfo(
                   editTitle: 'Select \nAccount Type',
                   info:
-                      'Select an account type to help other users easily identify you for business. You can add one main account with multiple  sub-accounts skills if you offer more than one skill. For instance, main account Artist, sub-accounts: producer, video director.',
+                      'Choose an account type that allows other users to easily identify you for business purposes. You can select only one account type at a time.',
                   icon: Icons.account_circle,
+                  showMore: true,
+                  moreOnPressed: () {
+                    _showBottomMoreAboutAccountTypes();
+                  },
                 ),
                 // _profileHandle.startsWith('Fan') ||
                 //         _profileHandle.startsWith('Record_Label')

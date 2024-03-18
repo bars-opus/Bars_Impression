@@ -12,7 +12,10 @@ class FollowerUserSchimmerSkeleton extends StatelessWidget {
           children: <Widget>[
             Container(
               width: MediaQuery.of(context).size.width,
-              height: ResponsiveHelper.responsiveHeight(context, 50,),
+              height: ResponsiveHelper.responsiveHeight(
+                context,
+                50,
+              ),
               child:
                   ListView(scrollDirection: Axis.horizontal, children: <Widget>[
                 SchimmerSkeleton(
@@ -23,7 +26,10 @@ class FollowerUserSchimmerSkeleton extends StatelessWidget {
                     ),
                     child: CircleAvatar(
                       backgroundColor: Color(0xFFf2f2f2),
-                      radius: ResponsiveHelper.responsiveHeight(context, 25,),
+                      radius: ResponsiveHelper.responsiveHeight(
+                        context,
+                        25,
+                      ),
                     ),
                   ),
                 ),
@@ -38,8 +44,14 @@ class FollowerUserSchimmerSkeleton extends StatelessWidget {
                       color: Colors.transparent,
                       child: SchimmerSkeleton(
                         schimmerWidget: Container(
-                          height: ResponsiveHelper.responsiveHeight(context, 10,),
-                          width: ResponsiveHelper.responsiveHeight(context, 100,),
+                          height: ResponsiveHelper.responsiveHeight(
+                            context,
+                            10,
+                          ),
+                          width: ResponsiveHelper.responsiveHeight(
+                            context,
+                            100,
+                          ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50),
                             gradient: LinearGradient(
@@ -60,8 +72,14 @@ class FollowerUserSchimmerSkeleton extends StatelessWidget {
                       color: Colors.transparent,
                       child: SchimmerSkeleton(
                         schimmerWidget: Container(
-                          height: ResponsiveHelper.responsiveHeight(context, 10,),
-                          width: ResponsiveHelper.responsiveHeight(context, 200,),
+                          height: ResponsiveHelper.responsiveHeight(
+                            context,
+                            10,
+                          ),
+                          width: ResponsiveHelper.responsiveHeight(
+                            context,
+                            200,
+                          ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50),
                             gradient: LinearGradient(
@@ -76,8 +94,11 @@ class FollowerUserSchimmerSkeleton extends StatelessWidget {
                       ),
                     ),
                     Padding(
-                      padding:  EdgeInsets.only(
-                        top: ResponsiveHelper.responsiveHeight(context, 10,),
+                      padding: EdgeInsets.only(
+                        top: ResponsiveHelper.responsiveHeight(
+                          context,
+                          10,
+                        ),
                       ),
                       child: RandomColorsContainer(),
                     ),

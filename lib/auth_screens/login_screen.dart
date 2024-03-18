@@ -50,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen>
 
   @override
   void dispose() {
-     animationController.dispose();
+    animationController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -250,17 +250,22 @@ class _LoginScreenState extends State<LoginScreen>
                           ),
                         ),
                         if (_isLoading)
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: SizedBox(
-                              height: 0.5,
-                              child: LinearProgressIndicator(
-                                backgroundColor: Colors.transparent,
-                                valueColor:
-                                    AlwaysStoppedAnimation(Colors.white),
-                              ),
-                            ),
-                          ),
+                          CircularProgress(
+                            isMini: true,
+                            // indicatorColor: Colors.white,
+                            indicatorColor: Colors.grey[800] ?? Colors.grey,
+                          )
+                        // Align(
+                        //   alignment: Alignment.bottomCenter,
+                        //   child: SizedBox(
+                        //     height: 0.5,
+                        //     child: LinearProgressIndicator(
+                        //       backgroundColor: Colors.transparent,
+                        //       valueColor:
+                        //           AlwaysStoppedAnimation(Colors.white),
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),

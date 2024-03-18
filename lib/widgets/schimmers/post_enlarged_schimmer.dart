@@ -1,10 +1,8 @@
 import 'package:bars/utilities/exports.dart';
 
 class PostSchimmerSkeleton extends StatelessWidget {
- 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       color: Color(0xFF1a1a1a),
       child: Center(
@@ -23,13 +21,11 @@ class PostSchimmerSkeleton extends StatelessWidget {
             ),
             CircularProgress(
               isMini: true,
-              indicatorColor: Colors.grey[800]!,
+              indicatorColor: Colors.grey[800] ?? Colors.grey,
             )
           ],
         ),
       ),
     );
-
-   
   }
 }

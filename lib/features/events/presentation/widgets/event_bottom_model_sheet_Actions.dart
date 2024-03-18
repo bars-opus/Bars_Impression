@@ -191,6 +191,59 @@ class _EventBottomModalSheetActionsState
     );
   }
 
+  void _showBottomSheetContactOrganizer(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          height: ResponsiveHelper.responsiveHeight(context, 700),
+          decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(30)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Icon(
+                Icons.horizontal_rule,
+                color: Theme.of(context).secondaryHeaderColor,
+                size: ResponsiveHelper.responsiveHeight(context, 30.0),
+              ),
+              Container(
+                width: double.infinity,
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      DisclaimerWidget(
+                        title: 'Call Organizer',
+                        subTitle:
+                            'These are the contacts provided by this event\'s organizers. While we make efforts to gather the contact information, we cannot guarantee that these are the exact and correct contacts. Therefore, we advise you to conduct additional research and verify these contact details  independently.',
+                        icon: Icons.call,
+                      ),
+                      const SizedBox(height: 40),
+                      EventOrganizerContactWidget(
+                        portfolios: widget.event.contacts,
+                        edit: false,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     bool _isAuthor =
@@ -224,7 +277,8 @@ class _EventBottomModalSheetActionsState
                                     context,
                                     EditEventScreen(
                                       currentUserId: widget.currentUserId,
-                                      event: widget.event, isCompleted: widget.eventHasEnded,
+                                      event: widget.event,
+                                      isCompleted: widget.eventHasEnded,
                                     ),
                                   );
                                 }
@@ -333,7 +387,7 @@ class _EventBottomModalSheetActionsState
               ],
             ),
             const SizedBox(
-              height: 20,
+              height: 10,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -375,11 +429,14 @@ class _EventBottomModalSheetActionsState
                 ),
               ],
             ),
+            const SizedBox(
+              height: 10,
+            ),
             _isAuthor
                 ? SizedBox.shrink()
                 : BottomModelSheetListTileActionWidget(
                     colorCode: '',
-                    icon: Icons.person_outline_outlined,
+                    icon: Icons.account_circle_outlined,
                     onPressed: () {
                       _navigateToPage(
                           context,
@@ -389,35 +446,71 @@ class _EventBottomModalSheetActionsState
                             userId: widget.event.authorId,
                           ));
                     },
-                    text: 'Show organizer',
+                    text: 'See publisher',
                   ),
-            const SizedBox(
-              height: 20,
-            ),
-            BottomModelSheetListTileActionWidget(
-              colorCode: 'Red',
-              icon: Icons.flag_outlined,
-              onPressed: () {
-                _navigateToPage(
-                    context,
-                    ReportContentPage(
-                      contentId: widget.event.id,
-                      parentContentId: widget.event.id,
-                      repotedAuthorId: widget.event.authorId,
-                      contentType: 'event',
-                    ));
-              },
-              text: 'Report',
-            ),
             BottomModelSheetListTileActionWidget(
               colorCode: '',
-              icon: Icons.feedback_outlined,
+              icon: Icons.call_outlined,
               onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => SuggestionBox()));
+                _showBottomSheetContactOrganizer(context);
               },
-              text: 'Suggestion',
+              text: 'Call organizer',
             ),
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                BottomModelSheetIconActionWidget(
+                  color: Colors.red,
+                  icon: Icons.flag_outlined,
+                  onPressed: () {
+                    _navigateToPage(
+                        context,
+                        ReportContentPage(
+                          contentId: widget.event.id,
+                          parentContentId: widget.event.id,
+                          repotedAuthorId: widget.event.authorId,
+                          contentType: 'event',
+                        ));
+                  },
+                  text: 'Report',
+                ),
+                BottomModelSheetIconActionWidget(
+                  icon: Icons.feedback_outlined,
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => SuggestionBox()));
+                  },
+                  text: 'Suggestion',
+                ),
+              ],
+            ),
+            // BottomModelSheetListTileActionWidget(
+            //   colorCode: 'Red',
+            //   icon: Icons.flag_outlined,
+            //   onPressed: () {
+            // _navigateToPage(
+            //     context,
+            //     ReportContentPage(
+            //       contentId: widget.event.id,
+            //       parentContentId: widget.event.id,
+            //       repotedAuthorId: widget.event.authorId,
+            //       contentType: 'event',
+            //     ));
+            //   },
+            //   text: 'Report',
+            // ),
+            // BottomModelSheetListTileActionWidget(
+            //   colorCode: '',
+            //   icon: Icons.feedback_outlined,
+            //   onPressed: () {
+            // Navigator.push(context,
+            //     MaterialPageRoute(builder: (_) => SuggestionBox()));
+            //   },
+            //   text: 'Suggestion',
+            // ),
           ],
         ),
       ),

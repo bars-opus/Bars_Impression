@@ -27,17 +27,19 @@ class DatabaseService {
     double randomId = Random().nextDouble();
 
     batch.set(userAuthorRef, {
-      'userId': signedInHandler.uid,
-      'name': signedInHandler.displayName ?? name,
+      'bio': '',
+      'disableChat': false,
+      'disabledAccount': false,
       'dynamicLink': '',
       'lastActiveDate': Timestamp.fromDate(DateTime.now()),
-      'userName': '',
-      'profileImageUrl': '',
-      'bio': '',
+      'name': signedInHandler.displayName ?? name,
+      'privateAccount': false,
       'profileHandle': 'Fan',
-      'verified': false,
-      'disabledAccount': false,
+      'profileImageUrl': '',
       'reportConfirmed': false,
+      'userId': signedInHandler.uid,
+      'userName': '',
+      'verified': false,
     });
 
     batch.set(userLocationSettingsRef, {
@@ -98,6 +100,8 @@ class DatabaseService {
       'professionalImageUrls': [],
       'subAccountType': [],
       'priceTags': [],
+      'disableAdvice': false,
+      'hideAdvice': false,
     });
 
     // Commit the batch
@@ -338,35 +342,47 @@ class DatabaseService {
   }) async {
     WriteBatch batch = FirebaseFirestore.instance.batch();
 
-    for (var user in users) {
-      // String messageId = Uuid().v4();
-      // Create a unique chatId for each user
+    // Prepare a list to hold all the futures for fetching unique chat IDs.
+    List<Future<String>> chatIdFutures = [];
 
-      final uniqueChatId = await usersAuthorRef
+    for (var user in users) {
+      var future = usersAuthorRef
           .doc(currentUserId)
           .collection('new_chats')
           .doc(user.userId)
           .get()
-          .then((snapshot) => snapshot.data()?['messageId'] ?? '');
+          .then((snapshot) => snapshot.data()?['messageId'] as String? ?? '');
+      chatIdFutures.add(future);
+    }
+    // Await all the futures to complete and collect all the unique chat IDs.
+    List<String> uniqueChatIds = await Future.wait(chatIdFutures);
+
+    // Now that we have all unique chat IDs, we can proceed with batch updates.
+
+    for (int i = 0; i < users.length; i++) {
+      var user = users[i];
+      var uniqueChatId = uniqueChatIds[i];
+
+      // Ensure that the uniqueChatId is not an empty string
+      if (uniqueChatId.isEmpty) {
+        // Handle the case where the uniqueChatId is not found
+        continue;
+      }
 
       final conversationRef =
           messageRef.doc(uniqueChatId).collection('conversation');
 
-      // final newChat = {
-      //   'messageId': messageId,
-      //   'lastMessage': message.content,
-      //   'messageInitiator': message.senderId,
-      //   'restrictChat': false,
-      //   'muteMessage': false,
-      //   'firstMessage': message.content,
-      //   'mediaType': '',
-      //   'timestamp': FieldValue.serverTimestamp(),
-      //   'seen': uniqueChatId,
-      //   'fromUserId': message.senderId,
-      //   'toUserId': user.userId, // Use user's id from the loop
-      //   'newMessageTimestamp': FieldValue.serverTimestamp(),
-      //   'clientTimestamp': Timestamp.fromDate(DateTime.now()),
-      // };
+      // for (var user in users) {
+
+      //   final uniqueChatId = await usersAuthorRef
+      //       .doc(currentUserId)
+      //       .collection('new_chats')
+      //       .doc(user.userId)
+      //       .get()
+      //       .then((snapshot) => snapshot.data()?['messageId'] ?? '');
+
+      //   final conversationRef =
+      //       messageRef.doc(uniqueChatId).collection('conversation');
 
       final updatedSenderChat = {
         'lastMessage':
@@ -384,7 +400,6 @@ class DatabaseService {
             : message.content,
         'mediaType': '',
         'seen': false,
-        // 'seen': currentUserId == message.senderId ? true : false,
         'newMessageTimestamp': FieldValue.serverTimestamp(),
         'clientTimestamp': Timestamp.fromDate(DateTime.now()),
       };
@@ -414,14 +429,6 @@ class DatabaseService {
           .collection('new_chats')
           .doc(user.userId); // Use user's id from the loop
 
-      // chatId.isEmpty
-      //     ? batch.set(
-      //         senderChatRef,
-      //         newChat,
-      //         SetOptions(merge: true),
-      //       )
-      //     :
-
       batch.update(senderChatRef, updatedSenderChat);
 
       // Add or update the chat in the receiver's new_chats collection
@@ -429,14 +436,6 @@ class DatabaseService {
           .doc(user.userId)
           .collection('new_chats')
           .doc(currentUserId);
-      // newChat['seen'] = false; // The receiver hasn't seen the message
-      // chatId.isEmpty
-      //     ? batch.set(
-      //         receiverChatRef,
-      //         newChat,
-      //         SetOptions(merge: true),
-      //       )
-      //     :
 
       batch.update(receiverChatRef, updatedReceiverChat);
     }
@@ -445,6 +444,103 @@ class DatabaseService {
     return batch.commit();
   }
 
+//   static Future<void> shareBroadcastChatMessage({
+//     required ChatMessage message,
+//     // required String chatId,
+//     required String currentUserId,
+//     required String contentSharing,
+//     required List<AccountHolderAuthor> users,
+//   }) async {
+//     WriteBatch batch = FirebaseFirestore.instance.batch();
+
+//     for (var user in users) {
+
+//       final uniqueChatId = await usersAuthorRef
+//           .doc(currentUserId)
+//           .collection('new_chats')
+//           .doc(user.userId)
+//           .get()
+//           .then((snapshot) => snapshot.data()?['messageId'] ?? '');
+
+//       final conversationRef =
+//           messageRef.doc(uniqueChatId).collection('conversation');
+
+//       final updatedSenderChat = {
+//         'lastMessage':
+//             message.content.isEmpty ? 'sent $contentSharing' : message.content,
+//         'mediaType': '',
+//         'seen': true,
+//         // 'seen': currentUserId == message.senderId ? true : false,
+//         'newMessageTimestamp': FieldValue.serverTimestamp(),
+//         'clientTimestamp': Timestamp.fromDate(DateTime.now()),
+//       };
+
+//       final updatedReceiverChat = {
+//         'lastMessage': message.content.isEmpty
+//             ? 'received $contentSharing'
+//             : message.content,
+//         'mediaType': '',
+//         'seen': false,
+//         'newMessageTimestamp': FieldValue.serverTimestamp(),
+//         'clientTimestamp': Timestamp.fromDate(DateTime.now()),
+//       };
+
+//       // Add the message to the conversation collection
+//       batch.set(conversationRef.doc(), {
+//         'senderId': message.senderId,
+//         'receiverId': user.userId,
+//         'content': message.content,
+//         'timestamp': FieldValue.serverTimestamp(),
+//         'isRead': message.isRead,
+//         'isSent': message.isSent,
+//         'isLiked': message.isLiked,
+//         'sendContent':
+//             message.sendContent == null ? null : message.sendContent!.toMap(),
+//         'replyToMessage': message.replyToMessage == null
+//             ? null
+//             : message.replyToMessage!.toMap(),
+//         'attachments': message.attachments
+//             .map((attachments) => attachments.toJson())
+//             .toList(),
+//       });
+
+// // Add or update the chat in the sender's new_chats collection
+//       final senderChatRef = usersAuthorRef
+//           .doc(currentUserId)
+//           .collection('new_chats')
+//           .doc(user.userId); // Use user's id from the loop
+
+//       batch.update(senderChatRef, updatedSenderChat);
+
+//       // Add or update the chat in the receiver's new_chats collection
+//       final receiverChatRef = usersAuthorRef
+//           .doc(user.userId)
+//           .collection('new_chats')
+//           .doc(currentUserId);
+
+//       batch.update(receiverChatRef, updatedReceiverChat);
+//     }
+
+//     // Commit the batch
+//     return batch.commit();
+//   }
+
+// /
+// /
+// /
+// /
+// /
+// /
+// /
+// /
+// /
+
+// /
+// /
+// /
+// /
+// /
+// /
 //   static Future<void> shareBroadcastChatMessage({
 //     required ChatMessage message,
 //     required String chatId,
@@ -933,6 +1029,7 @@ class DatabaseService {
       'theme': event.theme,
       'startDate': event.startDate,
       'address': event.address,
+      'contacts': event.contacts.map((contact) => contact.toString()),
       'schedule': event.schedule.map((schedule) => schedule.toJson()).toList(),
       'ticket': event.ticket.map((ticket) => ticket.toJson()).toList(),
       'taggedPeople': event.taggedPeople
@@ -1901,7 +1998,7 @@ class DatabaseService {
       String eventType, DateTime currentDate) async {
     QuerySnapshot feedEventSnapShot = await allEventsRef
         .where('type', isEqualTo: eventType)
-        // .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
         // .where('showOnExplorePage', isEqualTo: true)
         .get();
     return feedEventSnapShot.docs.length - 1;
@@ -2648,7 +2745,7 @@ class DatabaseService {
     }).asStream();
   }
 
-  static Stream<int> numAllEventInvites(String eventId, String answer) {
+  static Stream<int> numAllAnsweredEventInvites(String eventId, String answer) {
     // Check if eventId is null or empty
     if (eventId.isEmpty || eventId.trim() == '') {
       print("Error: eventId is null or empty.");
@@ -2660,6 +2757,22 @@ class DatabaseService {
         .doc(eventId)
         .collection('eventInvite')
         .where('answer', isEqualTo: answer)
+        .where('refundRequestStatus', isEqualTo: '')
+        .snapshots()
+        .map((documentSnapshot) => documentSnapshot.docs.length);
+  }
+
+  static Stream<int> numAllEventInvites(String eventId, String answer) {
+    // Check if eventId is null or empty
+    if (eventId.isEmpty || eventId.trim() == '') {
+      print("Error: eventId is null or empty.");
+      // Return an empty stream or handle the error as appropriate for your app
+      return Stream.empty();
+    }
+
+    return sentEventIviteRef
+        .doc(eventId)
+        .collection('eventInvite')
         .snapshots()
         .map((documentSnapshot) => documentSnapshot.docs.length);
   }
@@ -2675,6 +2788,7 @@ class DatabaseService {
     Stream<QuerySnapshot> stream = newEventTicketOrderRef
         .doc(eventId)
         .collection('eventInvite')
+        .where('refundRequestStatus', isEqualTo: '')
         .snapshots();
 
     return stream.map((QuerySnapshot querySnapshot) {
@@ -3090,6 +3204,7 @@ class DatabaseService {
         'isTicketPass': isTicketPass,
         'generatedMessage': generatedMessage,
         'answer': '',
+        'eventTitle': event.title.toUpperCase(),
         'timestamp': FieldValue.serverTimestamp(),
         'eventTimestamp': event.startDate,
       });
@@ -3106,6 +3221,7 @@ class DatabaseService {
         'isTicketPass': isTicketPass,
         'generatedMessage': generatedMessage,
         'answer': '',
+        'eventTitle': event.title.toUpperCase(),
         'timestamp': FieldValue.serverTimestamp(),
         'eventTimestamp': event.startDate,
       });

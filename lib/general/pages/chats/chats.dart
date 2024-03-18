@@ -376,6 +376,12 @@ class _ChatsState extends State<Chats>
 
         // chatsBox.put(chatId, updatedChat);
       }
+      //handle document deletiion
+
+      else {
+        // Chat document has been deleted, remove it from Hive
+        chatsBox.delete(chatId);
+      }
     }, onError: (error) => print("Listen failed: $error"));
 
     _chatSubscriptions.add(subscription);
@@ -405,10 +411,10 @@ class _ChatsState extends State<Chats>
       // If the user data is not in the box, fetch it from the database and save it to the box
       // try {
       final author = await DatabaseService.getUserWithId(chatUserId);
-      print(author!.userName);
+      // print(author!.userName);
 
       if (author != null) usersBox.put(chatUserId, author);
-      print(author!.userName);
+      // print(author!.userName);
       return author;
       // } catch (e) {
 
@@ -500,10 +506,16 @@ class _ChatsState extends State<Chats>
                 builder: (BuildContext context,
                     AsyncSnapshot<AccountHolderAuthor?> authorSnapshot) {
                   if (authorSnapshot.hasError) {
-                    return const Text('Error loading chat room');
+                    return const Text('Error loading user chat');
                   }
+
                   if (!authorSnapshot.hasData) {
-                    return _loadingSkeleton(); // return a loading spinner or some other widget
+                    return Padding(
+                      padding: EdgeInsets.only(
+                          bottom:
+                              ResponsiveHelper.responsiveHeight(context, 10)),
+                      child: _loadingSkeleton(true, chat.id),
+                    );
                   }
                   final author = authorSnapshot.data;
                   // limitRooms(); // Ensure these functions are defined and manage your data as expected
@@ -537,11 +549,167 @@ class _ChatsState extends State<Chats>
     );
   }
 
-  _loadingSkeleton() {
+  // Future<void> deleteConversation(String chatId) async {
+  //   try {
+  //     // Attempt to delete all messages in the conversation from Firestore.
+  //     final CollectionReference chatRef =
+  //         messageRef.doc(chatId).collection('conversation');
+  //     final QuerySnapshot chatSnapshot = await chatRef.get();
+  //     for (var doc in chatSnapshot.docs) {
+  //       await doc.reference.delete();
+  //     }
+  //     // Consider some feedback mechanism or state update here after successful deletion
+  //   } catch (e) {
+  //     // Handle errors for Firestore operations.
+  //     print('Error deleting conversation from Firestore: $e');
+  //     // Consider some user feedback mechanism here in case of failure
+  //   }
+  // }
+
+  Future<void> deleteConversation(String chatId) async {
+    try {
+      // Attempt to delete all messages in the conversation from Firestore.
+      final CollectionReference chatRef =
+          messageRef.doc(chatId).collection('conversation');
+      final QuerySnapshot chatSnapshot = await chatRef.get();
+
+      // Create a list of Futures for deletion operations.
+      List<Future<void>> deletionFutures = [];
+
+      for (var doc in chatSnapshot.docs) {
+        // If the document has attachments, schedule them for deletion.
+        if (doc['attachments'] != null) {
+          List<dynamic> attachments = doc['attachments'];
+          for (var attachment in attachments) {
+            if (attachment['mediaUrl'] != null &&
+                attachment['mediaUrl'].isNotEmpty) {
+              // Schedule each attachment for deletion.
+              deletionFutures.add(FirebaseStorage.instance
+                  .refFromURL(attachment['mediaUrl'])
+                  .delete()
+                  .catchError((e) {
+                print('Error deleting attachment from Firebase Storage: $e');
+              }));
+            }
+          }
+        }
+        // Schedule the message document for deletion.
+        deletionFutures.add(doc.reference.delete().catchError((e) {
+          print('Error deleting message from Firestore: $e');
+        }));
+      }
+
+      // Wait for all scheduled deletion operations to complete.
+      await Future.wait(deletionFutures);
+      // Consider some feedback mechanism or state update here after successful deletion.
+    } catch (e) {
+      // Handle errors for Firestore operations.
+      print('Error deleting conversation from Firestore: $e');
+      // Consider some user feedback mechanism here in case of failure.
+    }
+  }
+
+  _deleteChat(String userId) async {
+    Chat? chat =
+        await DatabaseService.getChatMesssage(widget.currentUserId, userId);
+    if (chat != null) {
+      await deleteConversation(chat.messageId);
+    }
+
+    DocumentSnapshot doc = await usersAuthorRef
+        .doc(widget.currentUserId)
+        .collection('new_chats')
+        .doc(userId)
+        .get();
+    if (doc.exists) {
+      await doc.reference.delete();
+    }
+
+    // Delete the chat from Hive
+    final chatsBox = Hive.box<Chat>('chats');
+    await chatsBox
+        .delete(chat.id); // use the chat ID as the key to delete the chat
+
+    // Provide feedback to the user
+    mySnackBar(context, 'Chat deleted successfully');
+
+    // Consider additional UI updates or navigation aftxer deleting the chat.
+    // For example, you might need to update the UI to reflect the chat has been deleted.
+    setState(() {
+      // Your logic to update the UI after deleting the chat
+    });
+  }
+
+  // _deleteChat(String userId) async {
+  //   Chat? chat =
+  //       await DatabaseService.getChatMesssage(widget.currentUserId, userId);
+  //   if (chat != null) {
+  //     await deleteConversation(chat.messageId);
+  //   }
+
+  //   DocumentSnapshot doc = await usersAuthorRef
+  //       .doc(widget.currentUserId)
+  //       .collection('new_chats')
+  //       .doc(userId)
+  //       .get();
+  //   if (doc.exists) {
+  //     await doc.reference.delete();
+  //   }
+
+  //   mySnackBar(context, 'Chat deleted successfully');
+  //   // Consider additional UI updates or navigation after deleting the chat.
+  // }
+
+  void _showBottomSheetDeledDeletedChatUser(
+      BuildContext context, String userId) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return ConfirmationPrompt(
+          buttonText: 'Delete chat',
+          onPressed: () async {
+            Navigator.pop(context);
+            try {
+              // Call recursive function to delete documents in chunks
+              await _deleteChat(userId);
+              // _activities.clear();
+            } catch (e) {
+              _showBottomSheetErrorMessage('Error deleting chat ');
+            }
+          },
+          title: 'This user has deleted this account',
+          subTitle:
+              'You cannot chat with or view the chat of a user whose account has been deleted',
+        );
+      },
+    );
+  }
+
+  void _showBottomSheetErrorMessage(String errorTitle) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return DisplayErrorHandler(
+          buttonText: 'Ok',
+          onPressed: () async {
+            Navigator.pop(context);
+          },
+          title: errorTitle,
+          subTitle: 'Check your internet connection and try again.',
+        );
+      },
+    );
+  }
+
+  _loadingSkeleton(bool deleted, String userId) {
     return ListTile(
         leading: CircleAvatar(
           radius: 20.0,
-          backgroundColor: Colors.blue,
+          backgroundColor: deleted ? Colors.black : Colors.blue,
         ),
         title: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -550,11 +718,13 @@ class _ChatsState extends State<Chats>
             Padding(
               padding: const EdgeInsets.only(right: 12.0),
               child: Text(
-                'Loading...',
+                deleted ? 'User deleted' : 'Loading...',
                 style: TextStyle(
+                  fontWeight: deleted ? FontWeight.normal : FontWeight.bold,
                   fontSize: ResponsiveHelper.responsiveFontSize(
                     context,
-                    ResponsiveHelper.responsiveFontSize(context, 14.0),
+                    ResponsiveHelper.responsiveFontSize(
+                        context, deleted ? 12 : 14.0),
                   ),
                   color: Theme.of(context).secondaryHeaderColor,
                 ),
@@ -565,7 +735,11 @@ class _ChatsState extends State<Chats>
             ),
           ],
         ),
-        onTap: () {});
+        onTap: deleted
+            ? () {
+                _showBottomSheetDeledDeletedChatUser(context, userId);
+              }
+            : () {});
   }
 
   // Define this in your State class
@@ -594,11 +768,19 @@ class _ChatsState extends State<Chats>
         .listen((snapshot) {
       try {
         if (snapshot.exists) {
+          // Document exists, update the local Hive box
           TicketIdModel updatedTicketId = TicketIdModel.fromDoc(snapshot);
           ticketIdsBox.put(ticketIdKey, updatedTicketId);
-          // print(
-          //     "Updated Hive box for $ticketIdKey with data: ${updatedTicketId.toJson()}");
+        } else {
+          // Document does not exist, remove the entry from the Hive box
+          ticketIdsBox.delete(ticketIdKey);
         }
+        // if (snapshot.exists) {
+        //   TicketIdModel updatedTicketId = TicketIdModel.fromDoc(snapshot);
+        //   ticketIdsBox.put(ticketIdKey, updatedTicketId);
+        //   // print(
+        //   //     "Updated Hive box for $ticketIdKey with data: ${updatedTicketId.toJson()}");
+        // }
       } catch (e) {
         print("Error updating Hive box for $ticketIdKey: $e");
       }
@@ -707,10 +889,11 @@ class _ChatsState extends State<Chats>
               builder: (BuildContext context,
                   AsyncSnapshot<EventRoom?> roomSnapshot) {
                 if (roomSnapshot.hasError) {
-                  return const Text('Error loading chat room');
+                  return const Text('Error loading event room');
                 }
                 if (!roomSnapshot.hasData) {
-                  return _loadingSkeleton(); // return a loading spinner or some other widget
+                  return _loadingSkeleton(false,
+                      ''); // return a loading spinner or some other widget
                 }
                 final room = roomSnapshot.data;
                 // limitRooms(); // Ensure these functions are defined and manage your data as expected

@@ -271,17 +271,18 @@ class _ActivityWidgetState extends State<ActivityWidget> {
       return;
     }
 
-    AccountHolderAuthor? user = await DatabaseService.getUserWithId(authorId);
+    // AccountHolderAuthor? user = await DatabaseService.getUserWithId(authorId);
     _navigateToPage(
       context,
       UserAdviceScreen(
-          updateBlockStatus: () {
-            setState(() {});
-          },
-          user: user!,
-          currentUserId: widget.currentUserId,
-          userId: activity.authorId!,
-          userName: activity.authorName),
+        updateBlockStatus: () {
+          setState(() {});
+        },
+        // user: user!,
+        currentUserId: widget.currentUserId,
+        userId: activity.authorId!,
+        userName: activity.authorName, disableAdvice: false, hideAdvice: false,
+      ),
     );
   }
 
@@ -372,7 +373,7 @@ class _ActivityWidgetState extends State<ActivityWidget> {
             ),
           ),
           TextSpan(
-            text: activity.comment != null ? ' ${activity.comment}' : '',
+            text: activity.comment != null ? '${activity.comment}' : '',
             style: TextStyle(
               fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
               fontWeight: _isSeen ? FontWeight.normal : FontWeight.bold,

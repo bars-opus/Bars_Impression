@@ -33,6 +33,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
 
   int _refundProcessedCount = 0;
   bool _isLoading = false;
+  bool _eventHasEnded = false;
 
   // final _messageController = TextEditingController();
   // ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
@@ -44,17 +45,30 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
     _setUpEventInvites('Accepted');
     _setUpEventInvites('Rejected');
     _setUpEventInvites('');
+    _setUpEventInvites('Sent');
+
     _setUpEventExpectedAttendees(true);
     _setUpEventExpectedAttendees(false);
     _setRefundCount('pending');
     _setRefundCount('processed');
     _setExpectedPeople();
 
-    someFunction();
+    sumFunction();
+    _countDown();
     // _messageController.addListener(_onAskTextChanged);
   }
 
-  void someFunction() async {
+  void _countDown() async {
+    if (EventHasStarted.hasEventEnded(widget.event.clossingDay.toDate())) {
+      if (mounted) {
+        setState(() {
+          _eventHasEnded = true;
+        });
+      }
+    }
+  }
+
+  void sumFunction() async {
     double totalSum = await getTotalSum();
     setState(() {
       totalSales = totalSum;
@@ -71,6 +85,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
     QuerySnapshot querySnapshot = await newEventTicketOrderRef
         .doc(widget.event.id)
         .collection('eventInvite')
+        .where('refundRequestStatus', isEqualTo: '')
         .get();
 
     // Map the documents to TicketOrderModel instances
@@ -121,20 +136,31 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
   }
 
   _setUpEventInvites(String answer) async {
-    DatabaseService.numAllEventInvites(widget.event.id, answer)
-        .listen((inviteCount) {
-      if (mounted) {
-        setState(() {
-          answer.startsWith('Accepted')
-              ? _invitationsAccepted = inviteCount
-              : answer.startsWith('Rejected')
-                  ? _invitationsRejected = inviteCount
-                  : answer.startsWith('')
-                      ? _invitationsAnunswered = inviteCount
-                      : _invitationsSent = inviteCount;
-        });
-      }
-    });
+    answer.startsWith('Sent')
+        ? DatabaseService.numAllEventInvites(widget.event.id, answer)
+            .listen((inviteCount) {
+            if (mounted) {
+              setState(() {
+                _invitationsSent = inviteCount;
+              });
+            }
+          })
+        : DatabaseService.numAllAnsweredEventInvites(widget.event.id, answer)
+            .listen((inviteCount) {
+            if (mounted) {
+              setState(() {
+                answer.startsWith('Accepted')
+                    ? _invitationsAccepted = inviteCount
+                    : answer.startsWith('Rejected')
+                        ? _invitationsRejected = inviteCount
+                        : answer.startsWith('')
+                            ? _invitationsAnunswered = inviteCount
+                            : answer.startsWith('Sent')
+                                ? _invitationsSent = inviteCount
+                                : _invitationsSent = inviteCount;
+              });
+            }
+          });
   }
 
   _setRefundCount(String status) async {
@@ -194,11 +220,14 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
   }
 
   _inviteButton(double width, String buttonText, VoidCallback onPressed) {
-    Color _paletteDark = widget.palette == null
-        ? Colors.blue
-        : widget.palette!.darkMutedColor == null
-            ? Color(0xFF1a1a1a)
-            : widget.palette!.darkMutedColor!.color;
+    Color _paletteDark =
+        Utils.getPaletteDarkMutedColor(widget.palette, Colors.blue);
+
+    // Color _paletteDark = widget.palette == null
+    //     ? Colors.blue
+    //     : widget.palette!.darkMutedColor == null
+    //         ? Color(0xFF1a1a1a)
+    //         : widget.palette!.darkMutedColor!.color;
     return Container(
       width: ResponsiveHelper.responsiveWidth(context, width),
       child: ElevatedButton(
@@ -291,11 +320,13 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
   }
 
   _invitationTable() {
-    Color _paletteDark = widget.palette == null
-        ? Colors.blue
-        : widget.palette!.darkMutedColor == null
-            ? Color(0xFF1a1a1a)
-            : widget.palette!.darkMutedColor!.color;
+     Color _paletteDark =
+        Utils.getPaletteDarkMutedColor(widget.palette, Colors.blue);
+    // Color _paletteDark = widget.palette == null
+    //     ? Colors.blue
+    //     : widget.palette!.darkMutedColor == null
+    //         ? Color(0xFF1a1a1a)
+    //         : widget.palette!.darkMutedColor!.color;
     var _tableTitleStyle = TextStyle(
         color: _paletteDark,
         fontWeight: FontWeight.bold,
@@ -326,9 +357,10 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
             children: [
               TableRow(children: [
                 _tableText(
-                    _invitationsAccepted +
-                        _invitationsAnunswered +
-                        _invitationsRejected,
+                    _invitationsSent,
+                    // _invitationsAccepted +
+                    //     _invitationsAnunswered +
+                    //     _invitationsRejected,
                     '\nInvitations\nsent',
                     EventAttendeesInvitedScreeen(
                       letShowAppBar: true,
@@ -377,11 +409,13 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
   }
 
   _refundTable() {
-    Color _paletteDark = widget.palette == null
-        ? Colors.blue
-        : widget.palette!.darkMutedColor == null
-            ? Color(0xFF1a1a1a)
-            : widget.palette!.darkMutedColor!.color;
+     Color _paletteDark =
+        Utils.getPaletteDarkMutedColor(widget.palette, Colors.blue);
+    // Color _paletteDark = widget.palette == null
+    //     ? Colors.blue
+    //     : widget.palette!.darkMutedColor == null
+    //         ? Color(0xFF1a1a1a)
+    //         : widget.palette!.darkMutedColor!.color;
     var _tableTitleStyle = TextStyle(
         color: _paletteDark,
         fontWeight: FontWeight.bold,
@@ -425,12 +459,12 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
   }
 
   void _showBottomInvitationMessage() {
-    Color _paletteDark = widget.palette == null
-        ? Color(0xFF1a1a1a)
-        : widget.palette!.darkMutedColor == null
-            ? Color(0xFF1a1a1a)
-            : widget.palette!.darkMutedColor!.color;
-    var _size = MediaQuery.of(context).size;
+    // Color _paletteDark = widget.palette == null
+    //     ? Color(0xFF1a1a1a)
+    //     : widget.palette!.darkMutedColor == null
+    //         ? Color(0xFF1a1a1a)
+    //         : widget.palette!.darkMutedColor!.color;
+    // var _size = MediaQuery.of(context).size;
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -452,40 +486,46 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
         widget.event.rate.trim().replaceAll('\n', ' ').split("|");
     return Column(
       children: [
-        if (!widget.event.isFree)
-          RichText(
-            textScaleFactor:
-                MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5),
-            text: TextSpan(
-              children: [
-                TextSpan(
-                    text:
-                        '${currencyPartition.isEmpty ? '' : currencyPartition.length > 0 ? currencyPartition[1] : ''}\n',
-                    style: TextStyle(
-                      fontSize:
-                          ResponsiveHelper.responsiveFontSize(context, 14.0),
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    )),
-                TextSpan(
-                    text: totalSales.toString(),
-                    style: TextStyle(
-                      fontSize:
-                          ResponsiveHelper.responsiveFontSize(context, 50.0),
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    )),
-                TextSpan(
-                    text: '\nTotal sales',
-                    style: TextStyle(
-                      fontSize:
-                          ResponsiveHelper.responsiveFontSize(context, 14.0),
-                      color: Colors.black,
-                    )),
-              ],
-            ),
-            textAlign: TextAlign.center,
+        RichText(
+          textScaleFactor:
+              MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5),
+          text: TextSpan(
+            children: [
+              TextSpan(
+                  text:
+                      '${currencyPartition.isEmpty ? '' : currencyPartition.length > 0 ? currencyPartition[1] : ''}\n',
+                  style: TextStyle(
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 14.0),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  )),
+              TextSpan(
+                  text: totalSales.toString(),
+                  style: TextStyle(
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 50.0),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  )),
+              TextSpan(
+                  text: '\nTotal sales',
+                  style: TextStyle(
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 14.0),
+                    color: Colors.black,
+                  )),
+            ],
           ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(
+          height: 50,
+        ),
+        if (_eventHasEnded)
+          _inviteButton(300, 'Request payout', () {
+            _showBottomSheetRequestPayouts();
+          })
       ],
     );
   }
@@ -577,6 +617,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
       subaccountId: widget.event.subaccountId,
       transferRecepientId: widget.event.transferRecepientId,
       eventTitle: widget.event.title,
+      clossingDay: widget.event.clossingDay,
     );
 
     await DatabaseService.requestPayout(widget.event, payout, _provider.user!);
@@ -611,13 +652,14 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
       builder: (BuildContext context) {
         return ConfirmationPrompt(
           height: 300,
-          buttonText: 'Refund request confirmation',
+          buttonText: 'Request payout',
           onPressed: () async {
             Navigator.pop(context);
-            //  _submitRequeste();
+            _submitRequest();
           },
           title: 'Are you sure you want to request for a payout?',
-          subTitle: 'Please be informed that request can only be made once.',
+          subTitle:
+              'Please be informed that payout request can only be made once.',
         );
       },
     );
@@ -894,13 +936,19 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
     var _provider = Provider.of<UserData>(context, listen: false);
 
     final width = MediaQuery.of(context).size.width;
-    Color _paletteDark = widget.palette == null
-        ? Color(0xFF1a1a1a)
-        : widget.palette!.darkMutedColor == null
-            ? Color(0xFF1a1a1a)
-            : widget.palette!.darkMutedColor!.color;
+     Color _paletteDark =
+        Utils.getPaletteDarkMutedColor(widget.palette, Color(0xFF1a1a1a));
+    // Color _paletteDark = widget.palette == null
+    //     ? Color(0xFF1a1a1a)
+    //     : widget.palette!.darkMutedColor == null
+    //         ? Color(0xFF1a1a1a)
+    //         : widget.palette!.darkMutedColor!.color;
     bool isGhanaian = _provider.userLocationPreference!.country == 'Ghana' ||
         _provider.userLocationPreference!.currency == 'Ghana Cedi | GHS';
+
+    bool _showFunds = !widget.event.isFree &&
+        !widget.event.isCashPayment &&
+        widget.event.ticketSite.isEmpty;
     return Scaffold(
       backgroundColor: _paletteDark,
       appBar: AppBar(
@@ -1068,16 +1116,15 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                     const SizedBox(
                       height: 50,
                     ),
-                    _currentSaleReport(),
-                    const SizedBox(
-                      height: 50,
-                    ),
-                    _inviteButton(300, 'Request payout', () {
-                      _showBottomSheetRequestPayouts();
-                    }),
-                    _inviteButton(300, 'Send Invite', () {
-                      _showBottomInvitationMessage();
-                    }),
+                    _showFunds
+                        ? _currentSaleReport()
+                        : const SizedBox(
+                            height: 50,
+                          ),
+                    if (!_eventHasEnded)
+                      _inviteButton(300, 'Send Invite', () {
+                        _showBottomInvitationMessage();
+                      }),
                     const SizedBox(height: 5),
                     Container(
                       width: width,

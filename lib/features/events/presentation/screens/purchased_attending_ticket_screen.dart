@@ -420,8 +420,7 @@ class _PurchasedAttendingTicketScreenState
       transactionId: widget.ticketOrder.transactionId,
       eventAuthorId: widget.event.authorId,
       idempotencyKey: '',
-            eventTitle: widget.event.title,
-
+      eventTitle: widget.event.title,
     );
 
     await DatabaseService.requestRefund(widget.event, refund, _provider.user!);
@@ -457,7 +456,7 @@ class _PurchasedAttendingTicketScreenState
                   widget.ticketOrder.tickets.isEmpty ||
                   widget.event.isCashPayment
               ? 'Cancel attendance'
-              : 'Refund request confirmation',
+              : 'Request refund',
           onPressed: () async {
             Navigator.pop(context);
             widget.event.isFree ||
@@ -1227,7 +1226,7 @@ class _PurchasedAttendingTicketScreenState
           if (!_eventHasStarted)
             if (widget.ticketOrder.refundRequestStatus.isEmpty)
               if (widget.ticketOrder.isInvited || widget.ticketOrder.total != 0)
-        _refundButton(),
+                _refundButton(),
         const SizedBox(
           height: 100,
         ),

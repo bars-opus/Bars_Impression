@@ -122,39 +122,74 @@ class _InviteContainerWidgetState extends State<InviteContainerWidget> {
                       color: Theme.of(context).secondaryHeaderColor,
                       size: ResponsiveHelper.responsiveHeight(context, 25.0),
                     ),
-              title: RichText(
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: 'CORDIALLY INVITED  ',
-                      style: Theme.of(context).textTheme.bodyLarge,
+              title: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.invite.eventTitle!.toUpperCase(),
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'CORDIALLY INVITED  ',
+                        style: TextStyle(
+                            fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 12.0),
+                            color: Colors.blue,
+                            fontWeight: FontWeight.normal),
+                      ),
+                      Text(
+                        widget.invite.answer,
+                        style: TextStyle(
+                            fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 12.0),
+                            color: widget.invite.answer.startsWith('Accepted')
+                                ? Colors.blue
+                                : Colors.red),
+                      ),
+                    ],
+                  ),
+                  RichText(
+                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    text: TextSpan(
+                      children: [
+                        // TextSpan(
+                        //   text: 'CORDIALLY INVITED  ',
+                        //   style: TextStyle(
+                        //       fontSize: ResponsiveHelper.responsiveFontSize(
+                        //           context, 12.0),
+                        //       color: Colors.blue),
+                        // ),
+                        // TextSpan(
+                        //   text: widget.invite.answer,
+                        //   style: TextStyle(
+                        //       fontSize: ResponsiveHelper.responsiveFontSize(
+                        //           context, 12.0),
+                        //       color: widget.invite.answer.startsWith('Accepted')
+                        //           ? Colors.blue
+                        //           : Colors.red),
+                        // ),
+                        TextSpan(
+                          text: '${widget.invite.generatedMessage}',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
                     ),
-                    TextSpan(
-                      text: widget.invite.answer,
-                      style: TextStyle(
-                          fontSize: ResponsiveHelper.responsiveFontSize(
-                              context, 12.0),
-                          color: widget.invite.answer.startsWith('Accepted')
-                              ? Colors.blue
-                              : Colors.red),
-                    ),
-                    TextSpan(
-                      text: '\n${widget.invite.generatedMessage}',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ],
-                ),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.start,
+                    maxLines: 4,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.start,
+                  ),
+                ],
               ),
-              subtitle: Text(
-                MyDateFormat.toDate(
-                  widget.invite.eventTimestamp!.toDate(),
-                ),
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
+              // subtitle: Text(
+              //   MyDateFormat.toDate(
+              //     widget.invite.eventTimestamp!.toDate(),
+              //   ),
+              //   style: Theme.of(context).textTheme.bodyMedium,
+              // ),
             ),
           ),
         ),

@@ -31,10 +31,8 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
           _isRefunded ? TextDecoration.lineThrough : TextDecoration.none,
     );
 
-    var _textStyle = TextStyle(
-      fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-      color: Colors.grey,
-    );
+    String orderUmberSubstring =
+        Utils.safeSubstring(ticketOrder.orderNumber, 0, 4);
 
     void _navigateToPage(Widget page) {
       Navigator.push(
@@ -46,15 +44,18 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
     final List<String> currencyPartition =
         event.rate.trim().replaceAll('\n', '').split("|");
 
-    Color _palleteColor = palette == null
-        ? Colors.blue
-        : palette.vibrantColor == null
-            ? Colors.blue
-            : palette.vibrantColor!.color;
+    Color _palleteColor = Utils.getPaletteVibrantColor(palette, Colors.blue);
+    // Color _palleteColor = palette == null
+    //     ? Colors.blue
+    //     : palette.vibrantColor == null
+    //         ? Colors.blue
+    //         : palette.vibrantColor!.color;
 
     // Create a list of TicketInfo widgets from the ticket list
     List<Widget> purchaseTicket =
         finalPurchasingTicketList.map((finalPurchasintgTicket) {
+      String transactionIdSubstring =
+          Utils.safeSubstring(finalPurchasintgTicket.transactionId, 0, 4);
       return GestureDetector(
         onTap: _isRefunded
             ? () {}
@@ -141,9 +142,11 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
                                     .transactionId.isNotEmpty &&
                                 finalPurchasintgTicket.transactionId.length > 4)
                               TextSpan(
-                                text: finalPurchasintgTicket.transactionId
-                                    .substring(0, 4)
-                                    .toUpperCase(),
+                                text: transactionIdSubstring,
+
+                                //  finalPurchasintgTicket.transactionId
+                                //     .substring(0, 4)
+                                //     .toUpperCase(),
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
 
@@ -208,10 +211,11 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
                   child: Column(
                     children: [
                       SalesReceiptWidget(
-                        isRefunded: _isRefunded,
-                        lable: 'Order number',
-                        value: ticketOrder.orderNumber.substring(0, 4),
-                      ),
+                          isRefunded: _isRefunded,
+                          lable: 'Order number',
+                          value: orderUmberSubstring
+                          // ticketOrder.orderNumber.substring(0, 4),
+                          ),
                       SalesReceiptWidget(
                         isRefunded: _isRefunded,
                         lable: 'Ticket group',

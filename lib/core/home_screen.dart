@@ -33,17 +33,24 @@ class HomeScreenState extends State<HomeScreen> {
       initDynamicLinks();
     });
 
+    // updateProfessionalContacts2();
+    // _updateMistakFields();
+
+    // updateProfessionalContacts();
+    // _deleteFields();
+    // _createFieldMultiples();
+
     // https://links.barsopus.com/barsImpression/VAuu
 
-    _newLink();
+    // _newLink();
 
-    // _createFields();
+    // _createFieldMultiples();
 
     // initializeData();
 
     // _createFields();
 
-    // _updateFields();
+    // _updateMistakFields();
     // _createFields();
     // _newUserProfessionalData();
     // _newUserProfessional();
@@ -52,11 +59,174 @@ class HomeScreenState extends State<HomeScreen> {
     // _newUserAuthor();
   }
 
+  _updateMistakFields() async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference userProfessionalCollection =
+        firestore.collection('user_professsional');
+
+    // Start a new batch
+    WriteBatch batch = firestore.batch();
+
+    QuerySnapshot querySnapshot = await userProfessionalCollection.get();
+    querySnapshot.docs.forEach((doc) {
+      Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
+
+      // Only proceed if data is not null
+      if (data != null) {
+        // Check if "subaccount_id" field exists
+        if (data.containsKey('contacts')) {
+          // Get the value of "subaccount_id"
+          // String? subaccountId = data['contacts'];
+
+          // // Remove the old "subaccount_id" field
+          // data.remove('subaccount_id');
+
+          // // Set the new "subaccountId" field with the value
+          data['contacts'] = [];
+
+          // Add the updated data to the batch
+          batch.set(doc.reference, data);
+        }
+      }
+    });
+
+    // Commit the batch
+    await batch.commit();
+  }
+
+  void updateProfessionalContacts2() async {
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+    final QuerySnapshot professionalSnapshot =
+        await _firestore.collection('user_professsional').get();
+
+    for (var professionalDoc in professionalSnapshot.docs) {
+      final String userId = professionalDoc.id;
+      final DocumentSnapshot userProfessionalDoc = professionalDoc;
+      final Map<String, dynamic>? professionalData =
+          userProfessionalDoc.data() as Map<String, dynamic>?;
+
+      // Check if contacts is empty or field does not exist
+      if (professionalData != null &&
+          (professionalData['contacts'] == null ||
+              professionalData['contacts'].isEmpty)) {
+        final DocumentSnapshot userDoc =
+            await _firestore.collection('users').doc(userId).get();
+
+        if (userDoc.exists) {
+          final Map<String, dynamic>? userData =
+              userDoc.data() as Map<String, dynamic>?;
+
+          final String email = userData?['email'] ?? '';
+
+          // Create the email PortfolioContactModel
+          final emailContactModel = PortfolioContactModel(
+            id: UniqueKey().toString(),
+            email: email,
+            number:
+                '', // Assuming '0' is the default value for the number field.
+          );
+
+          // Update the user_professional document with the new contact information
+          await _firestore.collection('user_professsional').doc(userId).update({
+            'contacts': FieldValue.arrayUnion([emailContactModel.toJson()])
+          });
+        }
+      }
+    }
+  }
+
+  void updateProfessionalContacts() async {
+    final _firestore = FirebaseFirestore.instance;
+
+    final professionalSnapshot =
+        await _firestore.collection('user_professsional').get();
+
+    for (var professionalDoc in professionalSnapshot.docs) {
+      final userId = professionalDoc.id;
+      final userDoc = await _firestore.collection('users').doc(userId).get();
+
+      if (userDoc.exists) {
+        final userData = userDoc.data();
+
+        final String email = userData?['email'] ?? '';
+        // final String contactString = userData?['contacts'] ?? '';
+        // int contactNumber;
+
+        // try {
+        //   contactNumber = int.parse(contactString);
+        // } catch (e) {
+        //   // If the contact is not a number, you might want to log this information or handle it.
+        //   contactNumber =
+        //       0; // Or any default/fallback value you consider appropriate.
+        // }
+
+        // For the email PortfolioContactModel
+        final emailContactModel = PortfolioContactModel(
+          id: UniqueKey().toString(),
+          email: email,
+          number: '', // Assuming '0' is the default value for the number field.
+        );
+
+        // // For the number PortfolioContactModel
+        // final numberContactModel = PortfolioContactModel(
+        //   id: UniqueKey().toString(),
+        //   email:
+        //       '', // Assuming empty string is the default value for the email field.
+        //   number: contactNumber,
+        // );
+
+        // Update the user_professional document with the new contact information
+        await _firestore.collection('user_professsional').doc(userId).update({
+          'contacts': FieldValue.arrayUnion([
+            emailContactModel.toJson(),
+            // numberContactModel.toJson(),
+          ])
+        });
+      }
+    }
+  }
+
+  // _eventCopy() async {
+  //   final _firestore = FirebaseFirestore.instance;
+  //   CollectionReference targetRef = _firestore.collection('new_eventChatRooms');
+  //   CollectionReference sourceRef = _firestore.collection('new_allEvents');
+
+  //   // Get documents from source collection
+  //   QuerySnapshot sourceSnapshot = await sourceRef.get();
+
+  //   // Initialize Firestore batch
+  //   WriteBatch batch = _firestore.batch();
+
+  //   for (var sourceDoc in sourceSnapshot.docs) {
+  //     Map<String, dynamic>? data = sourceDoc.data() as Map<String, dynamic>?;
+  //     if (data != null) {
+  //       print('Data for document ${sourceDoc.id}: $data');
+
+  //       var someFields = {
+  //         'linkedEventId': sourceDoc.id, // Use sourceDoc.id directly
+  //         'imageUrl': data.containsKey('imageUrl') ? data['imageUrl'] : null,
+  //         'timestamp': data.containsKey('timestamp') ? data['timestamp'] : null,
+  //         'title': data.containsKey('title') ? data['title'] : null,
+  //       };
+
+  //       print('Fields to be copied: $someFields');
+
+  //       // Create a new document in targetRef with the same ID as sourceDoc
+  //       batch.set(targetRef.doc(sourceDoc.id), someFields);
+  //     } else {
+  //       print('No data for document ${sourceDoc.id}');
+  //     }
+  //   }
+
+  //   await batch.commit();
+  // }
+
   // Future<void> initializeData() async {
   //   final _firestore = FirebaseFirestore.instance;
   //   CollectionReference sourceRef =
   //       _firestore.collection('user_general_settings');
-  //   CollectionReference targetRef = _firestore.collection('new_followers');
+  //   CollectionReference targetRef = _firestore.collection('new_followers');o
 
   //   // Get documents from the source collection
   //   QuerySnapshot sourceSnapshot = await sourceRef.get();
@@ -242,10 +412,78 @@ class HomeScreenState extends State<HomeScreen> {
     await batch.commit();
   }
 
+  _deleteFields() async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference userProfessionalCollection =
+        firestore.collection('user_author');
+
+    // Start a new batch
+    WriteBatch batch = firestore.batch();
+
+    QuerySnapshot querySnapshot = await userProfessionalCollection.get();
+    for (var doc in querySnapshot.docs) {
+      // Prepare the updates with FieldValue.delete()
+      Map<String, dynamic> updates = {};
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+      // Check if the fields exist before deletion
+      if (data.containsKey('disableAdvice')) {
+        updates['disableAdvice'] = FieldValue.delete();
+      }
+      if (data.containsKey('hideAdvice')) {
+        updates['hideAdvice'] = FieldValue.delete();
+      }
+
+      // Only update if there are fields to delete
+      if (updates.isNotEmpty) {
+        batch.update(doc.reference, updates);
+      }
+    }
+
+    // Commit the batch
+    await batch.commit();
+  }
+
+  _createFieldMultiples() async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference userProfessionalCollection =
+        firestore.collection('user_author');
+
+    // Start a new batch
+    WriteBatch batch = firestore.batch();
+
+    QuerySnapshot querySnapshot = await userProfessionalCollection.get();
+    querySnapshot.docs.forEach((doc) {
+      Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
+
+      // Only proceed if data is not null
+      if (data != null) {
+        // Initialize updateData as Map<String, dynamic>
+        Map<String, dynamic> updateData = {};
+        if (!data.containsKey('disableChat')) {
+          // Add "disableChat" field if it does not exist
+          updateData['disableChat'] = false;
+        }
+        // if (!data.containsKey('hideAdvice')) {
+        //   // Add "hideAdvice" field if it does not exist
+        //   updateData['hideAdvice'] = false;
+        // }
+
+        // If there are fields to update, add the update to the batch
+        if (updateData.isNotEmpty) {
+          batch.update(doc.reference, updateData);
+        }
+      }
+    });
+
+    // Commit the batch
+    await batch.commit();
+  }
+
   _createFields() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference userProfessionalCollection =
-        firestore.collection('user_location_settings');
+        firestore.collection('user_author');
 
     // Start a new batch
     WriteBatch batch = firestore.batch();
@@ -260,9 +498,9 @@ class HomeScreenState extends State<HomeScreen> {
       // Only proceed if data is not null
       if (data != null) {
         // Check if "subaccount_id" field exists
-        if (!data.containsKey('transferRecepientId')) {
+        if (!data.containsKey('disableChat')) {
           // Create the "subaccount_id" field without overwriting existing fields
-          data['transferRecepientId'] = '';
+          data['disableChat'] = false;
           batch.set(doc.reference, data);
         }
       }

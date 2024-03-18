@@ -79,11 +79,13 @@ class _SendInviteMessageState extends State<SendInviteMessage> {
 
   @override
   Widget build(BuildContext context) {
-    Color _paletteDark = widget.palette == null
-        ? Color(0xFF1a1a1a)
-        : widget.palette!.darkMutedColor == null
-            ? Color(0xFF1a1a1a)
-            : widget.palette!.darkMutedColor!.color;
+ Color _paletteDark =
+        Utils.getPaletteDarkMutedColor(widget.palette, Color(0xFF1a1a1a));
+    // Color _paletteDark = widget.palette == null
+    //     ? Color(0xFF1a1a1a)
+    //     : widget.palette!.darkMutedColor == null
+    //         ? Color(0xFF1a1a1a)
+    //         : widget.palette!.darkMutedColor!.color;
     return ValueListenableBuilder(
         valueListenable: _isTypingNotifier,
         builder: (BuildContext context, bool isTyping, Widget? child) {

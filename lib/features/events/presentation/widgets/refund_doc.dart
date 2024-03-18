@@ -1,7 +1,4 @@
 import 'package:bars/utilities/exports.dart';
-import 'package:bars/utilities/webview_url.dart';
-import 'package:bars/widgets/ticket_purchasing_process_icon.dart';
-import 'package:flutter/material.dart';
 
 class RefundDoc extends StatelessWidget {
   final VoidCallback refundOnPressed;

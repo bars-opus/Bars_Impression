@@ -266,16 +266,24 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
     }
   }
 
+
+ 
+
 // This function generates the ticket display widget.
 // It includes elements such as the event date, generated message, and check-in number.
 // The date is displayed in a large font, and the generated message and check-in instructions are presented in smaller fonts.
 // The ShakeTransition widget wraps the date, which makes the date shake for 2 seconds, providing a special visual effect.
   _ticketdisplay() {
-    Color _palleteColor = widget.palette == null
-        ? Colors.grey
-        : widget.palette.vibrantColor == null
-            ? Colors.grey
-            : widget.palette.vibrantColor!.color;
+    // Color _palleteColor = widget.palette == null
+    //     ? Colors.grey
+    //     : widget.palette.vibrantColor == null
+    //         ? Colors.grey
+    //         : widget.palette.vibrantColor!.color;
+
+
+    Color _palleteColor =
+        Utils.getPaletteVibrantColor(widget.palette, Colors.grey);
+    // Color _palleteColor = getPaletteColor(widget.palette, Colors.blue);
 
     final width = MediaQuery.of(context).size.width;
     final List<String> datePartition = widget.event.startDate == null

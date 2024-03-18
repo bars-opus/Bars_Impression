@@ -205,7 +205,7 @@ class _InviteSearchScreenState extends State<InviteSearchScreen>
                       ),
                     ),
                     TextSpan(
-                      text: 'wait\n',
+                      text: 'Wait\n',
                       style: TextStyle(
                         fontSize:
                             ResponsiveHelper.responsiveFontSize(context, 20.0),

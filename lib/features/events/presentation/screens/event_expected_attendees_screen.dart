@@ -80,7 +80,7 @@ class _EventExpectedAttendeesScreenState
       QuerySnapshot inviteSnapShot = await newEventTicketOrderRef
           .doc(widget.event.id)
           .collection('eventInvite')
-          // .limit(limit) // Uncomment and set the limit if needed
+          .where('refundRequestStatus', isEqualTo: '')
           .get();
 
       // Filter users based on validation status within the 'tickets' array
@@ -139,6 +139,7 @@ class _EventExpectedAttendeesScreenState
     QuerySnapshot inviteSnapShot = await newEventTicketOrderRef
         .doc(widget.event.id)
         .collection('eventInvite')
+        .where('refundRequestStatus', isEqualTo: '')
         // .limit(limit)
         .get();
     List<TicketOrderModel> users = inviteSnapShot.docs
@@ -165,6 +166,11 @@ class _EventExpectedAttendeesScreenState
 
   _buildUserTile(TicketOrderModel attendee) {
     var _provider = Provider.of<UserData>(context, listen: false);
+
+    String ordernumberSubstring = Utils.safeSubstring(attendee.orderId, 0, 4);
+
+
+
 
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -221,29 +227,31 @@ class _EventExpectedAttendeesScreenState
                             )),
                       if (widget.fromDashboard)
                         TextSpan(
-                            text: "${attendee.orderId.substring(0, 4)}",
+                            text: ordernumberSubstring,
+                            // "${attendee.orderId.substring(0, 4)}",
                             style: TextStyle(
                               fontSize: ResponsiveHelper.responsiveFontSize(
                                   context, 12.0),
                               color: Colors.blue,
                             )),
-                      if (widget.fromDashboard)
-                        TextSpan(
-                            text: "\nEntracne id:         ",
-                            style: TextStyle(
-                              fontSize: ResponsiveHelper.responsiveFontSize(
-                                  context, 12.0),
-                              color: Colors.grey,
-                            )),
-                      if (widget.fromDashboard)
-                        if (attendee.orderId.isNotEmpty)
-                          TextSpan(
-                              text: "${attendee.orderId.substring(0, 4)}",
-                              style: TextStyle(
-                                fontSize: ResponsiveHelper.responsiveFontSize(
-                                    context, 12.0),
-                                color: Colors.blue,
-                              )),
+                      // if (widget.fromDashboard)
+                      //   TextSpan(
+                      //       text: "\nEntracne id:         ",
+                      //       style: TextStyle(
+                      //         fontSize: ResponsiveHelper.responsiveFontSize(
+                      //             context, 12.0),
+                      //         color: Colors.grey,
+                      //       )),
+                      // if (widget.fromDashboard)
+                      //   if (attendee.orderId.isNotEmpty)
+                      //     TextSpan(
+                      //         text: attendee.orderId.
+                      //         // "${attendee.orderId.substring(0, 4)}",
+                      //         style: TextStyle(
+                      //           fontSize: ResponsiveHelper.responsiveFontSize(
+                      //               context, 12.0),
+                      //           color: Colors.blue,
+                      //         )),
                     ])),
                 subtitle: Divider(
                   color: Colors.grey,

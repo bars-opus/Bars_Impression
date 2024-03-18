@@ -7,16 +7,20 @@ class EditProfileInfo extends StatelessWidget {
   final Color color;
   final Color iconColor;
 
-final Color blackOWhiteTextColor;
+  final Color blackOWhiteTextColor;
 
+  final bool showMore;
+  final VoidCallback? moreOnPressed;
 
   EditProfileInfo({
     required this.editTitle,
     required this.info,
     required this.icon,
     this.color = Colors.blue,
-     this.blackOWhiteTextColor = Colors.white,
+    this.blackOWhiteTextColor = Colors.white,
     this.iconColor = Colors.white,
+    this.showMore = false,
+    this.moreOnPressed,
   });
 
   @override
@@ -55,13 +59,35 @@ final Color blackOWhiteTextColor;
         const SizedBox(
           height: 20.0,
         ),
-        Text(
-          info,
-          style: TextStyle(
-            color: color == Colors.blue
-                ? Theme.of(context).secondaryHeaderColor
-                : blackOWhiteTextColor,
-            fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+        GestureDetector(
+          onTap: showMore ? moreOnPressed : () {},
+          child: RichText(
+            textScaleFactor:
+                MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5),
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: info,
+                  style: TextStyle(
+                    color: color == Colors.blue
+                        ? Theme.of(context).secondaryHeaderColor
+                        : blackOWhiteTextColor,
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 14.0),
+                  ),
+                ),
+                if (showMore)
+                  TextSpan(
+                    text: ' more',
+                    style: TextStyle(
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 14.0),
+                      color: Colors.blue,
+                    ),
+                  ),
+              ],
+            ),
+            textAlign: TextAlign.start,
           ),
         ),
         const SizedBox(

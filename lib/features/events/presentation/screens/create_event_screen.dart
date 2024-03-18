@@ -46,6 +46,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
   String _type = '';
   ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
   bool _isLoading = false;
+  final _contactsFormKey = GlobalKey<FormState>();
 
   final _addPersonFormKey = GlobalKey<FormState>();
 
@@ -59,6 +60,8 @@ class _CreateEventScreenState extends State<CreateEventScreen>
   final _priceController = TextEditingController();
   final _scheduleTitleController = TextEditingController();
   final _schedulePerfomerController = TextEditingController();
+
+  final _contactController = TextEditingController();
 
   final _groupController = TextEditingController();
   final _accessLevelController = TextEditingController();
@@ -142,6 +145,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     _tagNameController.dispose();
     _ticketTypeController.dispose();
     _scheduleTitleController.dispose();
+    _contactController.dispose();
     _schedulePerfomerController.dispose();
     _groupController.dispose();
     _accessLevelController.dispose();
@@ -304,6 +308,28 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     selectedSponsorOrPartnerValue = '';
     _users = null;
     _tagNameController.clear();
+  }
+
+  void _addContacts() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    // final externalProfileLink = _taggedUserExternalLink;
+
+    // String commonId = Uuid().v4();
+    // final taggedEvenPeople = SchedulePeopleModel(
+    //   id: commonId,
+    //   name: name,
+    //   verifiedTag: false,
+    //   externalProfileLink: externalProfileLink,
+    //   internalProfileLink: internalProfileLink,
+    // );
+
+    //Add tagged person to taggedPeopleList
+    _provider.setEventOrganizerContacts(_contactController.text.trim());
+
+    //Reset tagged people variable
+
+    _contactController.clear();
   }
 
   // Helper methods
@@ -474,6 +500,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       subaccountId: _provider.userLocationPreference!.subaccountId!,
       transferRecepientId:
           _provider.userLocationPreference!.transferRecepientId!,
+      contacts: _provider.eventOrganizerContacts,
     );
 
     await DatabaseService.createEvent(event);
@@ -529,6 +556,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       subaccountId: _provider.userLocationPreference!.subaccountId!,
       transferRecepientId:
           _provider.userLocationPreference!.transferRecepientId!,
+      contacts: _provider.eventOrganizerContacts,
     );
 
     try {
@@ -566,14 +594,14 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return ConfirmationPrompt(
-          height: 300,
+          height: 350,
           buttonText: 'Delete event',
           onPressed: widget.event == null
               ? () {
                   mySnackBar(context, 'event not found');
                 }
               : () async {
-                  Navigator.pop(context);
+                  // Navigator.pop(context);
                   try {
                     Navigator.pop(context);
                     // _showBottomSheetLoading();
@@ -1292,7 +1320,9 @@ class _CreateEventScreenState extends State<CreateEventScreen>
         ? Theme.of(context).textTheme.titleSmall
         : TextStyle(
             fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
-            color: Colors.black,
+            color: labelText == 'Contact'
+                ? Theme.of(context).secondaryHeaderColor
+                : Colors.black,
           );
     var labelStyle = TextStyle(
         fontSize:
@@ -2678,6 +2708,164 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     );
   }
 
+  void _showBottomContact(
+    List<String> contacts,
+  ) {
+    TextEditingController controller = _contactController;
+    double sheetHeightFraction = 1.3;
+
+    var _size = MediaQuery.of(context).size;
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+            return AnimatedBuilder(
+                animation: controller, // Use the controller as the Listenable
+                builder: (BuildContext context, Widget? child) {
+                  return Form(
+                    key: _contactsFormKey,
+                    child: Container(
+                      height: _size.height.toDouble() / sheetHeightFraction,
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColorLight,
+                          borderRadius: BorderRadius.circular(30)),
+                      child: Scaffold(
+                        backgroundColor: Colors.transparent,
+                        body: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: ListView(
+                            children: [
+                              contacts.length < 6 && controller.text.length > 0
+                                  ? Align(
+                                      alignment: Alignment.centerRight,
+                                      child: MiniCircularProgressButton(
+                                        onPressed: () {
+                                          _addContacts();
+                                        },
+                                        text: "Add",
+                                        color: Colors.blue,
+                                      ),
+                                    )
+                                  : GestureDetector(
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text(
+                                        'Done',
+                                        style: TextStyle(
+                                            fontSize: ResponsiveHelper
+                                                .responsiveFontSize(
+                                                    context, 14.0),
+                                            color: Colors.blue,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                              if (contacts.length > 5 &&
+                                  controller.text.length > 0)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 30.0),
+                                  child: Text(
+                                    'You cannot add more than six ',
+                                    style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              const SizedBox(
+                                height: 30,
+                              ),
+                              _ticketFiled(
+                                false,
+                                true,
+                                'Contact',
+                                'Phone numbers',
+                                _contactController,
+                                TextInputType.numberWithOptions(decimal: true),
+                                (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Program title cannot be empty';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                });
+          });
+        });
+  }
+
+  _eventOrganizerContacts() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    var _style = TextStyle(
+        color: Colors.white,
+        fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
+        fontWeight: FontWeight.bold);
+    return _pageWidget(
+      newWidget: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _eventProcessNumber(
+                '10. ',
+                'Contacts',
+              ),
+              MiniCircularProgressButton(
+                  onPressed: _validate,
+                  text: widget.isEditting
+                      ? 'Next'
+                      : _provider.isPrivate
+                          ? "Skip"
+                          : "Next"),
+            ],
+          ),
+          DirectionWidgetWhite(
+            text:
+                'Kindly provide a phone number for potential attendees and partners to get in touch with you.',
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(
+                height: 30,
+              ),
+              PickOptionWidget(
+                  dropDown: true,
+                  title: 'Add contact',
+                  onPressed: () {
+                    _showBottomContact(_provider.eventOrganizerContacts);
+                  }),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(_selectedNameToAdd, style: _style),
+            ],
+          ),
+          const SizedBox(height: 20.0),
+          Divider(
+            color: Colors.white,
+          ),
+          const SizedBox(height: 20.0),
+          EventOrganizerContactWidget(
+            portfolios: _provider.eventOrganizerContacts,
+            edit: true,
+          ),
+        ],
+      ),
+    );
+  }
+
 // enter main event information: title, theme, etc.
   _validateTextToxicity() async {
     var _provider = Provider.of<UserData>(context, listen: false);
@@ -2969,7 +3157,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _eventProcessNumber(
-                '10. ',
+                '11. ',
                 'Previous\nEvent.(optional)',
               ),
               // notGhana && _provider.ticketSite.isEmpty
@@ -3030,7 +3218,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _eventProcessNumber(
-                '11. ',
+                '12. ',
                 'Terms and Conditions.\n(optional)',
               ),
               _provider.isLoading
@@ -3168,8 +3356,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         ShakeTransition(
-          curve: Curves.easeInOut,
-          duration: const Duration(milliseconds: 600),
+          duration: const Duration(seconds: 2),
           child: Icon(
             Icons.check,
             color: Colors.white,
@@ -3264,6 +3451,9 @@ class _CreateEventScreenState extends State<CreateEventScreen>
 
                           //event main information(title, theme, etc.)
                           _eventMainInformation(),
+
+                          //event optional additional
+                          _eventOrganizerContacts(),
 
                           //event optional additional
                           _eventPreviousEvent(),

@@ -102,6 +102,8 @@ class UserData extends ChangeNotifier {
 
   List<String> _professionalImages = [];
 
+  List<String> _eventOrganizerContacts = [];
+
   late String _workRequestoverView;
 
   late String _changeNewUserName;
@@ -312,6 +314,7 @@ class UserData extends ChangeNotifier {
     _skills = [];
     _genreTages = [];
     _professionalImages = [];
+    _eventOrganizerContacts = [];
 
     _workRequestGenre = [];
     _workRequesttype = [];
@@ -503,6 +506,7 @@ class UserData extends ChangeNotifier {
   List<CollaboratedPeople> get collaboratedPeople => _collaboratedPeople;
 
   List<String> get professionalImages => _professionalImages;
+  List<String> get eventOrganizerContacts => _eventOrganizerContacts;
 
   List<String> get workRequestGenre => _workRequestGenre;
 
@@ -1032,6 +1036,17 @@ class UserData extends ChangeNotifier {
     _professionalImages = professionalImages;
     notifyListeners();
   }
+
+  void setEventOrganizerContacts(String eventOrganizerContacts) {
+    // _workRequesttype.clear();
+    _eventOrganizerContacts.add(eventOrganizerContacts);
+    notifyListeners();
+  }
+
+  // void setEventOrganizerContacts(List<String> eventOrganizerContacts) {
+  //   _eventOrganizerContacts = eventOrganizerContacts;
+  //   notifyListeners();
+  // }
 
   void setWorkRequestGenre(String workRequestGenre) {
     _workRequestGenre.add(workRequestGenre);

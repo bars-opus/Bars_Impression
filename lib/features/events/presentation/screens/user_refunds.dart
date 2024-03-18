@@ -269,6 +269,7 @@ class _UserRefundsState extends State<UserRefunds>
 
     // commit the deletions
     await batch.commit();
+    _refundList.clear();
 
     // call the function recursively to delete the next batch
     return deleteActivityDocsInBatches();
@@ -383,6 +384,14 @@ class _UserRefundsState extends State<UserRefunds>
                                     ),
                                     TextSpan(
                                       text: invite.city,
+                                      style: _textStyle2,
+                                    ),
+                                    TextSpan(
+                                      text: '\nId:                         ',
+                                      style: _textStyle,
+                                    ),
+                                    TextSpan(
+                                      text: invite.id,
                                       style: _textStyle2,
                                     ),
                                   ],

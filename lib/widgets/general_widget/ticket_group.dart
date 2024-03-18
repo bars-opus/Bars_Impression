@@ -1,7 +1,6 @@
 import 'package:bars/features/events/services/paystack_ticket_payment.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:bars/widgets/general_widget/ticket_group_widget.dart';
-import 'package:bars/widgets/general_widget/ticket_group_widget.dart';
 import 'package:bars/widgets/general_widget/ticket_purchase_summary_widget.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/scheduler.dart';

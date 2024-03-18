@@ -7,8 +7,10 @@ class UserAdviceScreen extends StatefulWidget {
   final String currentUserId;
   final bool? isBlocked;
   final bool? isBlocking;
+  final bool? hideAdvice;
+  final bool? disableAdvice;
   final VoidCallback updateBlockStatus;
-  var user;
+  // var user;
 
   UserAdviceScreen({
     required this.userId,
@@ -17,7 +19,9 @@ class UserAdviceScreen extends StatefulWidget {
     required this.updateBlockStatus,
     this.isBlocked,
     this.isBlocking,
-    required this.user,
+    required this.hideAdvice,
+    required this.disableAdvice,
+    // required this.user,
   });
 
   @override
@@ -162,7 +166,7 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
   ) {
     return DisplayAdviceAndReply(
       advice: userAdvice,
-      user: widget.user,
+      // user: widget.user,
       userId: widget.userId,
     );
 
@@ -235,6 +239,20 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
     );
   }
 
+  Widget _buildHideAdice(BuildContext context) {
+    return Expanded(
+      child: Center(
+        child: NoContents(
+          icon: (Icons.lock),
+          title: 'Hidden advice.',
+          subTitle: widget.userId == widget.currentUserId
+              ? 'Display your advice so that other users can read it and contribute additional insights.'
+              : '${widget.userName} has chosen to keep the advices hidden for private purposes..',
+        ),
+      ),
+    );
+  }
+
   Widget _buildContentContainer(BuildContext context, AsyncSnapshot snapshot) {
     return Padding(
       padding: const EdgeInsets.only(top: 5.0),
@@ -259,6 +277,7 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool _isAuthor = widget.userId == widget.currentUserId;
     return Scaffold(
       backgroundColor: Theme.of(context).cardColor,
       body: GestureDetector(
@@ -271,10 +290,13 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
               TicketPurchasingIcon(
                 title: '',
               ),
-              Expanded(
-                child: _buildStreamBuilder(context),
-              ),
-              if (!_isBlockingUser && !_isBlockedUser) _buildAskTF(),
+              widget.hideAdvice! && !_isAuthor
+                  ? _buildHideAdice(context)
+                  : Expanded(
+                      child: _buildStreamBuilder(context),
+                    ),
+              if (!_isBlockingUser && !_isBlockedUser)
+                if (!widget.disableAdvice!) _buildAskTF(),
               const SizedBox(height: 30),
             ],
           ),

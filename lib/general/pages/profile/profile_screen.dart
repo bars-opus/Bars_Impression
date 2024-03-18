@@ -317,7 +317,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   // }
 
   _setUpEvents() async {
-    try {
+    // try {
       QuerySnapshot eventFeedSnapShot = await eventsRef
           .doc(widget.userId)
           .collection('userEvents')
@@ -340,11 +340,11 @@ class _ProfileScreenState extends State<ProfileScreen>
       }
 
       return eventList;
-    } catch (e) {
-      print('Error fetching initial invites: $e');
-      // Handle the error appropriately.
-      return [];
-    }
+    // } catch (e) {
+    //   print('Error fetching initial invites: $e');
+    //   // Handle the error appropriately.
+    //   return [];
+    // }
   }
 
   Set<String> addedEventIds = Set<String>();
@@ -2298,7 +2298,9 @@ class _ProfileScreenState extends State<ProfileScreen>
               updateBlockStatus: () {
                 setState(() {});
               },
-              user: user,
+              disableAdvice: false,
+              hideAdvice: false,
+              // user: user,
             ),
           ),
         );
@@ -2393,6 +2395,205 @@ class _ProfileScreenState extends State<ProfileScreen>
               )),
         );
       },
+    );
+  }
+
+  void _showBottomSheetEnableBooking(BuildContext context, String userId) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return ConfirmationPrompt(
+          buttonText: 'Enable booking',
+          onPressed: () async {
+            Navigator.pop(context);
+            try {
+              // Call recursive function to delete documents in chunks
+
+              WriteBatch batch = FirebaseFirestore.instance.batch();
+
+              batch.update(
+                usersGeneralSettingsRef.doc(userId),
+                {
+                  'disableBooking': false,
+                },
+              );
+
+              batch.update(
+                userProfessionalRef.doc(userId),
+                {
+                  'noBooking': false,
+                },
+              );
+              try {
+                batch.commit();
+              } catch (error) {
+                // Handle the error appropriately
+              }
+
+              // // _refundList.clear();
+            } catch (e) {
+              _showBottomSheetErrorMessage('Error enabling bookinh ');
+            }
+          },
+          title: 'Are you sure you want to enable booking?',
+          subTitle: '',
+        );
+      },
+    );
+  }
+
+  void _showBottomSheetNoBooking(
+      BuildContext context, UserProfessionalModel _user) async {
+    bool _isAuthor = _user.id == widget.currentUserId;
+
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return Container(
+          height: MediaQuery.of(context).size.height.toDouble() / 1.2,
+          decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(30)),
+          child: Padding(
+              padding: const EdgeInsets.only(top: 30.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  NoContents(
+                      title: 'No Booking',
+                      subTitle: _isAuthor
+                          ? 'Enable bookings to be discovered on the creative page and get booked for work on projects.'
+                          : '${_user.userName} is not availbe to work at this moment.',
+                      icon: Icons.work_off_rounded),
+                  SizedBox(
+                    height: ResponsiveHelper.responsiveHeight(context, 30),
+                  ),
+                  _isAuthor
+                      ? BlueOutlineButton(
+                          buttonText: 'Enable booking.',
+                          onPressed: () {
+                            Navigator.pop(context);
+                            _showBottomSheetEnableBooking(context, _user.id);
+                          },
+                        )
+                      : const SizedBox.shrink(),
+                ],
+              )),
+        );
+      },
+    );
+  }
+
+  _chatButton(AccountHolderAuthor user) {
+    bool _isAuthor = user.userId == widget.currentUserId;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 0.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _button(_isLoading ? 'loading...' : 'Portfolio', () async {
+            if (_isLoading) return;
+
+            _isLoading = true;
+            try {
+              UserProfessionalModel? _user =
+                  await DatabaseService.getUserProfessionalWithId(
+                user.userId!,
+              );
+
+              if (_user != null) {
+                _user.professionalImageUrls.isEmpty && _user.skills.isEmpty
+                    ? _showBottomSheetNoPortolio(context, _user)
+                    : _user.noBooking
+                        ? _showBottomSheetNoBooking(context, _user)
+                        : navigateToPage(
+                            context,
+                            DiscographyWidget(
+                              currentUserId: widget.currentUserId,
+                              userIndex: 0,
+                              userPortfolio: _user,
+                            ),
+                          );
+              } else {}
+            } catch (e) {
+              _showBottomSheetErrorMessage(e);
+            } finally {
+              _isLoading = false;
+            }
+          }, 175, 'Left'),
+          const SizedBox(
+            width: 1,
+          ),
+          // _button(
+          //     user.userId == widget.currentUserId ? 'Edit' : 'Message',
+          //     () {
+          //   user.userId == widget.currentUserId
+          // ? navigateToPage(
+          //     context,
+          //     EditProfileScreen(
+          //       user: user,
+          //     ),
+          //   )
+          //       : _bottomModalSheetMessage(user);
+          //   // Navigator.push(
+          //   //     context,
+          //   //     MaterialPageRoute(
+          //   //       builder: (_) => EditProfileScreen(
+          //   //         user: user,
+          //   //       ),
+          //   //     ));
+          // }, width / 3.6, 'None'),
+          // const SizedBox(
+          //   width: 1,
+          // ),
+
+          _button(
+              _isAuthor
+                  ? 'Advice'
+                  : _isLoadingChat
+                      ? 'loading...'
+                      : 'Message',
+              _isAuthor
+                  ? () {
+                      _showBottomSheetAdvice(context, user);
+                    }
+                  : () async {
+                      if (_isLoadingChat) return;
+
+                      _isLoadingChat = true;
+                      try {
+                        Chat? _chat = await DatabaseService.getUserChatWithId(
+                          widget.currentUserId,
+                          widget.userId,
+                        );
+
+                        _bottomModalSheetMessage(
+                          context,
+                          user,
+                          _chat,
+                        );
+                      } catch (e) {
+                      } finally {
+                        _isLoadingChat = false;
+                      }
+                    },
+
+              // () {
+
+              //     _showBottomSheetAdvice(context, user);
+              //   }
+              // : () {
+              //     _bottomModalSheetMessage(user);
+              //   },
+              175,
+              'Right'),
+        ],
+      ),
     );
   }
 
@@ -2560,110 +2761,12 @@ class _ProfileScreenState extends State<ProfileScreen>
               // const SizedBox(
               //   height: 10,
               // ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _button(_isLoading ? 'loading...' : 'Portfolio', () async {
-                      if (_isLoading) return;
 
-                      _isLoading = true;
-                      try {
-                        UserProfessionalModel? _user =
-                            await DatabaseService.getUserProfessionalWithId(
-                          user.userId!,
-                        );
-
-                        if (_user != null) {
-                          _user.professionalImageUrls.isEmpty &&
-                                  _user.skills.isEmpty
-                              ? _showBottomSheetNoPortolio(context, _user)
-                              : navigateToPage(
-                                  context,
-                                  DiscographyWidget(
-                                    currentUserId: widget.currentUserId,
-                                    userIndex: 0,
-                                    userPortfolio: _user,
-                                  ),
-                                );
-                        } else {}
-                      } catch (e) {
-                        _showBottomSheetErrorMessage(e);
-                      } finally {
-                        _isLoading = false;
-                      }
-                    }, 175, 'Left'),
-                    const SizedBox(
-                      width: 1,
-                    ),
-                    // _button(
-                    //     user.userId == widget.currentUserId ? 'Edit' : 'Message',
-                    //     () {
-                    //   user.userId == widget.currentUserId
-                    // ? navigateToPage(
-                    //     context,
-                    //     EditProfileScreen(
-                    //       user: user,
-                    //     ),
-                    //   )
-                    //       : _bottomModalSheetMessage(user);
-                    //   // Navigator.push(
-                    //   //     context,
-                    //   //     MaterialPageRoute(
-                    //   //       builder: (_) => EditProfileScreen(
-                    //   //         user: user,
-                    //   //       ),
-                    //   //     ));
-                    // }, width / 3.6, 'None'),
-                    // const SizedBox(
-                    //   width: 1,
-                    // ),
-
-                    _button(
-                        _isAuthor
-                            ? 'Advice'
-                            : _isLoadingChat
-                                ? 'loading...'
-                                : 'Message',
-                        _isAuthor
-                            ? () {
-                                _showBottomSheetAdvice(context, user);
-                              }
-                            : () async {
-                                if (_isLoadingChat) return;
-
-                                _isLoadingChat = true;
-                                try {
-                                  Chat? _chat =
-                                      await DatabaseService.getUserChatWithId(
-                                    widget.currentUserId,
-                                    widget.userId,
-                                  );
-
-                                  _bottomModalSheetMessage(
-                                    context,
-                                    user,
-                                    _chat,
-                                  );
-                                } catch (e) {
-                                } finally {
-                                  _isLoadingChat = false;
-                                }
-                              },
-
-                        // () {
-
-                        //     _showBottomSheetAdvice(context, user);
-                        //   }
-                        // : () {
-                        //     _bottomModalSheetMessage(user);
-                        //   },
-                        175,
-                        'Right'),
-                  ],
-                ),
-              ),
+              user.privateAccount!
+                  ? _isFollowing
+                      ? _chatButton(user)
+                      : SizedBox.shrink()
+                  : _chatButton(user),
               const SizedBox(
                 height: 20,
               ),
@@ -3037,55 +3140,70 @@ class _ProfileScreenState extends State<ProfileScreen>
               ),
               bottom: PreferredSize(
                 preferredSize: Size.fromHeight(kToolbarHeight),
-                child: Container(
-                  color: Theme.of(context).primaryColorLight,
-                  child: Listener(
-                    onPointerMove: (event) {
-                      final offset = event.delta.dx;
-                      final index = _tabController.index;
-                      //Check if we are in the first or last page of TabView and the notifier is false
-                      if (((offset > 0 && index == 0) ||
-                              (offset < 0 && index == 2 - 1)) &&
-                          !_physycsNotifier.value) {
-                        _physycsNotifier.value = true;
-                      }
-                    },
-                    onPointerUp: (_) => _physycsNotifier.value = false,
-                    child: ValueListenableBuilder<bool>(
-                        valueListenable: _physycsNotifier,
-                        builder: (_, value, __) {
-                          return TabBar(
-                            controller: _tabController,
-                            labelColor: Theme.of(context).secondaryHeaderColor,
-                            indicatorSize: TabBarIndicatorSize.label,
-                            indicatorColor: Colors.blue,
-                            unselectedLabelColor: Colors.grey,
-                            isScrollable: true,
-                            indicatorWeight: 2.0,
-                            tabs: <Widget>[
-                              _tabIcon(
-                                  Icons.event_outlined, selectedTabIndex == 0),
-                              _tabIcon(FontAwesomeIcons.idBadge,
-                                  selectedTabIndex == 1),
-                            ],
-                          );
-                        }),
-                  ),
-                ),
+                child: user.privateAccount! && !_isAuthor
+                    ? SizedBox.shrink()
+                    : Container(
+                        color: Theme.of(context).primaryColorLight,
+                        child: Listener(
+                          onPointerMove: (event) {
+                            final offset = event.delta.dx;
+                            final index = _tabController.index;
+                            //Check if we are in the first or last page of TabView and the notifier is false
+                            if (((offset > 0 && index == 0) ||
+                                    (offset < 0 && index == 2 - 1)) &&
+                                !_physycsNotifier.value) {
+                              _physycsNotifier.value = true;
+                            }
+                          },
+                          onPointerUp: (_) => _physycsNotifier.value = false,
+                          child: ValueListenableBuilder<bool>(
+                              valueListenable: _physycsNotifier,
+                              builder: (_, value, __) {
+                                return TabBar(
+                                  controller: _tabController,
+                                  labelColor:
+                                      Theme.of(context).secondaryHeaderColor,
+                                  indicatorSize: TabBarIndicatorSize.label,
+                                  indicatorColor: Colors.blue,
+                                  unselectedLabelColor: Colors.grey,
+                                  isScrollable: true,
+                                  indicatorWeight: 2.0,
+                                  tabs: <Widget>[
+                                    _tabIcon(Icons.event_outlined,
+                                        selectedTabIndex == 0),
+                                    _tabIcon(FontAwesomeIcons.idBadge,
+                                        selectedTabIndex == 1),
+                                  ],
+                                );
+                              }),
+                        ),
+                      ),
               ),
             ),
           ];
         },
-        body: Material(
-          color: Theme.of(context).primaryColorLight,
-          child: TabBarView(
-            controller: _tabController,
-            children: <Widget>[
-              _eventDisplay(_isAuthor, user.userName!),
-              _inviteDisplay(_isAuthor, user.userName!),
-            ],
-          ),
-        ),
+        body: user.privateAccount! && !_isAuthor
+            ? Container(
+                color: Theme.of(context).primaryColorLight,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 80.0),
+                  child: NoContents(
+                      title: 'Private account',
+                      subTitle:
+                          'This account is private. Follow to see the content.',
+                      icon: Icons.lock_outline_rounded),
+                ),
+              )
+            : Material(
+                color: Theme.of(context).primaryColorLight,
+                child: TabBarView(
+                  controller: _tabController,
+                  children: <Widget>[
+                    _eventDisplay(_isAuthor, user.userName!),
+                    _inviteDisplay(_isAuthor, user.userName!),
+                  ],
+                ),
+              ),
       ),
     );
     // CustomScrollView(

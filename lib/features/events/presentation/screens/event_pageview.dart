@@ -80,6 +80,8 @@ class _EventPageViewState extends State<EventPageView> {
     _currentPageIndex = widget.pageIndex; // Ensure this is initialized
     _pageController2.addListener(_onPageChanged);
     _timer = Timer(Duration(seconds: 0), () {});
+
+    _filteredEvents = widget.eventList;
   }
 
   @override
@@ -407,9 +409,11 @@ class _EventPageViewState extends State<EventPageView> {
                           types: eventType,
                           event: widget.event,
                           currentUserId: widget.currentUserId,
-                          eventList: _filteredEvents.isEmpty
-                              ? widget.eventList
-                              : _filteredEvents,
+                          eventList: _filteredEvents,
+
+                          //  _filteredEvents.isEmpty
+                          //     ? widget.eventList
+                          //     : _filteredEvents,
                           eventSnapshot: _filteredEventSnapshot.isEmpty
                               ? widget.eventSnapshot
                               : _filteredEventSnapshot,

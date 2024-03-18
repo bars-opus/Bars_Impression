@@ -7,7 +7,7 @@ class UserSettingsGeneralModel {
   final bool? hideAdvice;
   final bool? disableBooking;
   final bool? disabledAccount;
-  final bool? isEmailVerified;
+final bool? isEmailVerified;
   final bool? disableEventSuggestionNotification;
   final bool? muteEventSuggestionNotification;
   final String? androidNotificationToken;

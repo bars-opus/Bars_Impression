@@ -73,6 +73,7 @@ class _EventAttendeesInvitedScreeenState
         .doc(widget.event.id)
         .collection('eventInvite')
         .where('answer', isEqualTo: widget.answer)
+        .where('refundRequestStatus', isEqualTo: '')
         .limit(limit)
         .get();
     List<InviteModel> users =
@@ -93,6 +94,7 @@ class _EventAttendeesInvitedScreeenState
     QuerySnapshot inviteSnapShot = await sentEventIviteRef
         .doc(widget.event.id)
         .collection('eventInvite')
+
         // .where('invited', isEqualTo: true)
         .limit(limit)
         .get();
@@ -117,6 +119,7 @@ class _EventAttendeesInvitedScreeenState
         .doc(widget.event.id)
         .collection('eventInvite')
         .where('answer', isEqualTo: widget.answer)
+        .where('refundRequestStatus', isEqualTo: '')
         .limit(limit)
         .startAfterDocument(_inviteSnapshot.last)
         .get();
@@ -141,6 +144,7 @@ class _EventAttendeesInvitedScreeenState
     QuerySnapshot inviteSnapShot = await sentEventIviteRef
         .doc(widget.event.id)
         .collection('eventInvite')
+
         // .where('invited', isEqualTo: true)
         .limit(limit)
         .startAfterDocument(_inviteSnapshot.last)

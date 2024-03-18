@@ -162,8 +162,9 @@ class _CreativesScreenState extends State<CreativesScreen>
   }) async {
     int newLimit = widget.seeMoreFrom.isNotEmpty ? 15 : limit;
 
-    var query = userProfessionalRef.where('profileHandle',
-        isEqualTo: widget.profileHandle);
+    var query = userProfessionalRef
+        .where('profileHandle', isEqualTo: widget.profileHandle)
+        .where('noBooking', isEqualTo: false);
 
     if (city != null) {
       query = query.where('city', isEqualTo: city);
@@ -180,100 +181,100 @@ class _CreativesScreenState extends State<CreativesScreen>
 
     // Now order by randomId
     query = query.orderBy('randomId');
-    try {
-      QuerySnapshot userFeedSnapShot = await query
-          .where('randomId', isGreaterThanOrEqualTo: randomValue)
-          .limit(newLimit)
+    // try {
+    QuerySnapshot userFeedSnapShot = await query
+        .where('randomId', isGreaterThanOrEqualTo: randomValue)
+        .limit(newLimit)
+        .get();
+
+    if (userFeedSnapShot.docs.length < newLimit) {
+      int remainingLimit = newLimit - userFeedSnapShot.docs.length;
+      QuerySnapshot additionalSnapshot = await query
+          .where('randomId', isLessThan: randomValue)
+          .limit(remainingLimit)
           .get();
-
-      if (userFeedSnapShot.docs.length < newLimit) {
-        int remainingLimit = newLimit - userFeedSnapShot.docs.length;
-        QuerySnapshot additionalSnapshot = await query
-            .where('randomId', isLessThan: randomValue)
-            .limit(remainingLimit)
-            .get();
-        userFeedSnapShot.docs.addAll(additionalSnapshot.docs);
-      }
-
-      List<UserProfessionalModel> users = userFeedSnapShot.docs
-          .map((doc) => UserProfessionalModel.fromDoc(doc))
-          .toList();
-
-      List<UserProfessionalModel> uniqueEvents = [];
-      if (from.startsWith('City')) {
-        for (var event in users) {
-          if (addedCityCountryUserIds.add(event.id)) {
-            uniqueEvents.add(event);
-          }
-        }
-      } else if (from.startsWith('Country')) {
-        for (var event in users) {
-          if (addedCityCountryUserIds.add(event.id)) {
-            uniqueEvents.add(event);
-          }
-        }
-      } else if (from.startsWith('Continent')) {
-        for (var event in users) {
-          if (addedCityCountryUserIds.add(event.id)) {
-            uniqueEvents.add(event);
-          }
-        }
-      } else {
-        for (var event in users) {
-          if (addedUserIds.add(event.id)) {
-            uniqueEvents.add(event);
-          }
-        }
-      }
-
-      List<UserProfessionalModel>? newUsersCity;
-      List<UserProfessionalModel>? newUsersCountry;
-      List<UserProfessionalModel>? newUsersContinent;
-      List<UserProfessionalModel>? newUsersAll;
-
-      if (from.startsWith('Country')) {
-        _usersCountrySnapshot.addAll((userFeedSnapShot.docs));
-      }
-      if (from.startsWith('City')) {
-        _usersCitySnapshot.addAll((userFeedSnapShot.docs));
-      }
-      if (from.startsWith('Continent')) {
-        _usersContinentSnapshot.addAll((userFeedSnapShot.docs));
-      }
-      if (isAll) {
-        _usersAllSnapshot.addAll((userFeedSnapShot.docs));
-      }
-
-      if (widget.seeMoreFrom.isNotEmpty || widget.liveCity.isNotEmpty) {
-        newUsersAll = uniqueEvents;
-        // print(newUsersAll.length.toString() + 'length');
-      } else {
-        if (country != null && city != null) {
-          newUsersCity = uniqueEvents;
-        } else if (country != null) {
-          newUsersCountry = uniqueEvents;
-        } else if (continent != null) {
-          newUsersContinent = uniqueEvents;
-        } else {
-          newUsersAll = uniqueEvents;
-        }
-      }
-
-      if (mounted) {
-        setState(() {
-          _usersCity = newUsersCity ?? _usersCity;
-          _usersCountry = newUsersCountry ?? _usersCountry;
-          _usersContinent = newUsersContinent ?? _usersContinent;
-          _usersAll = newUsersAll ?? _usersAll;
-        });
-      }
-
-      return users;
-    } catch (e) {
-      _showBottomSheetErrorMessage();
-      // Consider what you want to do in case of error. Here, we return an empty list
-      return [];
+      userFeedSnapShot.docs.addAll(additionalSnapshot.docs);
     }
+
+    List<UserProfessionalModel> users = userFeedSnapShot.docs
+        .map((doc) => UserProfessionalModel.fromDoc(doc))
+        .toList();
+
+    List<UserProfessionalModel> uniqueEvents = [];
+    if (from.startsWith('City')) {
+      for (var event in users) {
+        if (addedCityCountryUserIds.add(event.id)) {
+          uniqueEvents.add(event);
+        }
+      }
+    } else if (from.startsWith('Country')) {
+      for (var event in users) {
+        if (addedCityCountryUserIds.add(event.id)) {
+          uniqueEvents.add(event);
+        }
+      }
+    } else if (from.startsWith('Continent')) {
+      for (var event in users) {
+        if (addedCityCountryUserIds.add(event.id)) {
+          uniqueEvents.add(event);
+        }
+      }
+    } else {
+      for (var event in users) {
+        if (addedUserIds.add(event.id)) {
+          uniqueEvents.add(event);
+        }
+      }
+    }
+
+    List<UserProfessionalModel>? newUsersCity;
+    List<UserProfessionalModel>? newUsersCountry;
+    List<UserProfessionalModel>? newUsersContinent;
+    List<UserProfessionalModel>? newUsersAll;
+
+    if (from.startsWith('Country')) {
+      _usersCountrySnapshot.addAll((userFeedSnapShot.docs));
+    }
+    if (from.startsWith('City')) {
+      _usersCitySnapshot.addAll((userFeedSnapShot.docs));
+    }
+    if (from.startsWith('Continent')) {
+      _usersContinentSnapshot.addAll((userFeedSnapShot.docs));
+    }
+    if (isAll) {
+      _usersAllSnapshot.addAll((userFeedSnapShot.docs));
+    }
+
+    if (widget.seeMoreFrom.isNotEmpty || widget.liveCity.isNotEmpty) {
+      newUsersAll = uniqueEvents;
+      // print(newUsersAll.length.toString() + 'length');
+    } else {
+      if (country != null && city != null) {
+        newUsersCity = uniqueEvents;
+      } else if (country != null) {
+        newUsersCountry = uniqueEvents;
+      } else if (continent != null) {
+        newUsersContinent = uniqueEvents;
+      } else {
+        newUsersAll = uniqueEvents;
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        _usersCity = newUsersCity ?? _usersCity;
+        _usersCountry = newUsersCountry ?? _usersCountry;
+        _usersContinent = newUsersContinent ?? _usersContinent;
+        _usersAll = newUsersAll ?? _usersAll;
+      });
+    }
+
+    return users;
+    // } catch (e) {
+    //   _showBottomSheetErrorMessage();
+    //   // Consider what you want to do in case of error. Here, we return an empty list
+    //   return [];
+    // }
   }
 
   void _showBottomSheetErrorMessage() {

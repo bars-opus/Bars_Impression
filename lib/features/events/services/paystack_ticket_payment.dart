@@ -1,5 +1,6 @@
 import 'package:bars/utilities/exports.dart';
 import 'package:uuid/uuid.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 class MakePayment {
   BuildContext context;
@@ -99,6 +100,36 @@ class MakePayment {
       return PaymentResult(success: false, reference: '');
     }
   }
+
+// // Inside your MakePayment class or related payment service
+// Future<void> initializeTransaction() async {
+//   try {
+//     final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('initializeTransaction');
+//     final response = await callable.call(<String, dynamic>{
+//       'email': email,
+//       'amount': price,
+
+//        // Amount in GHC, ensure to multiply by 100 to convert to kobo if needed
+//     });
+
+//     // Handle the response
+//     if (response.data['status'] == true) {
+//       // Initialization successful, redirect user to Paystack payment page
+//       final String authorizationUrl = response.data['authorizationUrl'];
+//       if (await canLaunch(authorizationUrl)) {
+//         await launch(authorizationUrl);
+//       } else {
+//         throw 'Could not launch Paystack authorization URL';
+//       }
+//     } else {
+//       // Initialization failed
+//       _showBottomSheetErrorMessage('Failed to initialize payment.');
+//     }
+//   } catch (e) {
+//     // Error handling
+//     _showBottomSheetErrorMessage(e.toString());
+//   }
+// }
 
   // Future<void> saveTokenToServer(String token) async {}
   String _getReference() {

@@ -149,7 +149,7 @@ export 'package:share/share.dart';
 export 'package:maps_launcher/maps_launcher.dart';
 export 'package:palette_generator/palette_generator.dart';
 // export 'package:syncfusion_flutter_calendar/calendar.dart';
-export 'package:random_color/random_color.dart';
+// export 'package:random_color/random_color.dart';
 export 'package:image_picker/image_picker.dart';
 export 'package:bars/features/creatives/presentation/screens/creatives_screen.dart';
 
@@ -331,3 +331,7 @@ export 'package:bars/widgets/info/cant_fetch_private_event.dart';
 export 'package:bars/general/pages/profile/create/event_date_info.dart';
 export 'package:bars/general/pages/discover/fetching_location.dart';
 export 'package:bars/features/events/models/event_payout_model.dart';
+export 'package:bars/features/events/presentation/screens/user_payouts.dart';
+export 'package:bars/general/pages/profile/edit/event_contact_widget.dart';
+export 'package:bars/utilities/color_and_text_checker.dart';
+export 'package:bars/features/events/presentation/widgets/more_about_accoun_types_doc.dart';

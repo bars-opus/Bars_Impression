@@ -10,6 +10,9 @@ class UserProfessionalModel {
   final String terms;
   final String overview;
   final bool noBooking;
+ final bool? disableAdvice;
+  final bool? hideAdvice;
+
   final String city;
   final String country;
   final String continent;
@@ -55,6 +58,8 @@ class UserProfessionalModel {
     required this.dynamicLink,
     required this.randomId,
     required this.currency,
+    required this.disableAdvice,
+    required this.hideAdvice,
   });
 
   factory UserProfessionalModel.fromDoc(DocumentSnapshot doc) {
@@ -73,6 +78,8 @@ class UserProfessionalModel {
       continent: doc['continent'] ?? '',
       randomId: doc['randomId'] ?? 0.0,
       noBooking: doc['noBooking'] ?? false,
+       disableAdvice: doc['disableAdvice'] ?? false,
+      hideAdvice: doc['hideAdvice'] ?? false,
       company: List<PortfolioCompanyModel>.from(doc['company']
               ?.map((company) => PortfolioCompanyModel.fromJson(company)) ??
           []),
@@ -122,6 +129,8 @@ class UserProfessionalModel {
       currency: json['currency'],
       continent: json['continent'],
       noBooking: json['noBooking'],
+        disableAdvice: json['disableAdvice'],
+      hideAdvice: json['hideAdvice'],
       company: (json['company'] as List<dynamic>)
           .map((company) => PortfolioCompanyModel.fromJson(company))
           .toList(),
@@ -175,6 +184,8 @@ class UserProfessionalModel {
       'randomId': randomId,
       'currency': currency,
       'noBooking': noBooking,
+      'disableAdvice': disableAdvice,
+      'hideAdvice': hideAdvice,
       'company': company.map((company) => company.toJson()).toList(),
       'collaborations': collaborations
           .map((collaborations) => collaborations.toJson())

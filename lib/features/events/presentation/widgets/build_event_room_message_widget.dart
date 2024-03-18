@@ -162,15 +162,20 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
     );
   }
 
+
   Widget _buildMessageTile(EventRoomMessageModel message,
       List<MessageAttachment> messageAttatchment) {
     final width = MediaQuery.of(context).size.width;
 
-    Color _palleteColor = widget.palette == null
-        ? Colors.blue
-        : widget.palette.dominantColor == null
-            ? Colors.blue
-            : widget.palette.dominantColor!.color;
+    // Color _palleteColor = widget.palette == null
+    //     ? Colors.blue
+    //     : widget.palette.dominantColor == null
+    //         ? Colors.blue
+    //         : widget.palette.dominantColor!.color;
+
+    // Color _palleteColor = getPaletteColor(widget.palette, Colors.blue);
+     Color _palleteColor =
+        Utils.getPaletteDominantColor(widget.palette, Colors.blue);
 
     Color dominantColor = _palleteColor;
     double luminance = dominantColor.computeLuminance();

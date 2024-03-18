@@ -161,6 +161,45 @@ function alertAdminSubAccountIdFFailure( userId,  response) {
 
 
 
+exports.onInitiatePaystackPayment = functions.https.onCall(async (data, context) => {
+  // Ensure the user is authenticated
+  if (!context.auth) {
+    throw new functions.https.HttpsError('unauthenticated', 'Only authenticated users can make payments.');
+  }
+
+  const { email, amount, currency, phone, provider } = data;
+  const PAYSTACK_SECRET_KEY =functions.config().paystack.secret_key; // Set this in your Firebase config
+
+  try {
+    const response = await axios({
+      method: 'post',
+      url: 'https://api.paystack.co/transaction/initialize',
+      headers: {
+        Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      data: {
+        email,
+        amount: amount * 100, // Amount in kobo
+        currency: 'GHS',
+        mobile_money: {
+          phone,
+          provider,
+        },
+      },
+    });
+
+    return response.data.data; // Contains authorization_url and access_code
+  } catch (error) {
+    console.error(error);
+    throw new functions.https.HttpsError('internal', 'Unable to initiate payment.');
+  }
+});
+
+
+
+
+
 exports.verifyPaystackPayment = functions.https.onCall(async (data, context) => {
   // Ensure the user is authenticated
   if (!context.auth) {
@@ -217,6 +256,24 @@ function alertAdminPaymentVerificationFailure( eventId,  response) {
     .then(() => console.log('Logged error with additional details'))
     .catch(error => console.error('Error logging error:', error));
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -302,131 +359,173 @@ async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
   throw new Error(`All ${maxRetries} retries failed for event ${eventDoc.id}`);
 }
 
-exports.distributeEventFunds = functions.pubsub.schedule('every 24 hours').onRun(async (context) => {
-  const db = admin.firestore();
-  
-  // Assume this is where you fetch events from Firestore
-  const eventsSnapshot = await db.collection('allFundsPayoutRequest')
-    .where('clossingDay', '<=', admin.firestore.Timestamp.now())
-    .where('status', '==', 'pending')
-    .get();
 
-  for (const eventDoc of eventsSnapshot.docs) {
-    const eventData = eventDoc.data();
-    const eventId = eventDoc.data().eventId;
+
+
+
+  exports.distributeEventFunds = functions.firestore
+  .document('/allFundsPayoutRequest/{requestId}')
+  .onCreate(async (snapshot, context) => {
+
+
+    const db = admin.firestore();
+    const eventDoc =snapshot.data();
+    const eventId = eventDoc.eventId;
 
     const idempotencyKey = `${eventId}_${new Date().toISOString().slice(0, 10)}`;
-  
     const idempotencyDocRef = db.collection('fundsDistributedSuccessIdempotencyKeys').doc(idempotencyKey);
-    const eventDocRef = eventDoc.ref;
-  
+    const eventDocRef = snapshot.ref;
+
     try {
       // Start a transaction
-       // eslint-disable-next-line no-await-in-loop
       await db.runTransaction(async (transaction) => {
         // Check for idempotency inside the transaction
+        // eslint-disable-next-line no-await-in-loop
         const idempotencyDoc = await transaction.get(idempotencyDocRef);
         if (idempotencyDoc.exists) {
           // Skip this event as it has already been processed
           return;
         }
-  
+
         // Attempt to create the transfer with retries
-         // eslint-disable-next-line no-await-in-loop
-        const response = await createTransferWithRetry(db, eventDoc);
-  
+       // eslint-disable-next-line no-await-in-loop
+        const response = await createTransferWithRetry(db, snapshot);
+
         // If the transfer is successful, mark the event as processed and store the idempotency key
-        transaction.update(eventDocRef, { fundsDistributed: true });
+        transaction.update(eventDocRef, { status: 'processed', idempotencyKey: idempotencyKey });
         transaction.set(idempotencyDocRef, {
           transferResponse: response, // Assume the API response has a data field
           created: admin.firestore.FieldValue.serverTimestamp()
         });
       });
 
-           // eslint-disable-next-line no-await-in-loop
-           await alertAdminFundsDistributedSuccess(db, eventId, eventData.transferRecepientId,idempotencyKey, eventData.subaccountId,  eventData.eventAuthorId,);
+      // Alert admin of successful distribution
+       alertAdminFundsDistributedSuccess(db, eventId, eventDoc.transferRecepientId, idempotencyKey, eventDoc.subaccountId, eventDoc.eventAuthorId);
 
-      
-      const userId = eventData.eventAuthorId;
-      const userRef = firestore.doc(`user_general_settings/${userId}`);
+      // Send notification if user has a token
+      const userData = (await db.doc(`user_general_settings/${eventDoc.eventAuthorId}`).get()).data();
+      if (userData && userData.androidNotificationToken) {
         // eslint-disable-next-line no-await-in-loop
-      const userDoc = await userRef.get(); // eslint-disable-next-line no-await-in-loop
-
-      if (!userDoc.exists) {
-        console.log(`User settings not found for user ${userId}`);
-        // continue;
-      }
-
-      const userData = userDoc.data();
-      const androidNotificationToken = userData.androidNotificationToken;
-
-      if (androidNotificationToken) {
-        try {
-            // eslint-disable-next-line no-await-in-loop
-            await sendFundDistributedNotification(androidNotificationToken, userId, eventId, eventData.eventAuthorId, eventData.eventTitle); // eslint-disable-next-line no-await-in-loop
-        } catch (error) {
-          console.error(`Error sending  funds distributed notification:`, error);
-        }
+        await sendFundDistributedNotification(userData.androidNotificationToken, eventDoc.eventAuthorId, eventId, eventDoc.eventAuthorId, eventDoc.eventTitle);
       } else {
-        console.log(`No notification token for user ${userId} or notifications are muted.`);
+        console.log(`No notification token for user ${eventDoc.eventAuthorId} or notifications are muted.`);
       }
-
-
-      // const userId = eventData.authorId;
-      // const userData = userDoc.data();
-      // const androidNotificationToken = userData.androidNotificationToken;
-
-      // if (androidNotificationToken) {
-      //   try {
-      //       // eslint-disable-next-line no-await-in-loop
-      //     await sendFundDistributedNotification(androidNotificationToken, userId, eventId, eventData.authorId, eventData.title); // eslint-disable-next-line no-await-in-loop
-      //   } catch (error) {
-      //     console.error(`Error sending  funds distributed notification:`, error);
-      //   }
-      // } else {
-      //   console.log(`No notification token for user ${userId} or notifications are muted.`);
-      // }
-
-    
-    
     } catch (error) {
-      if (error.response && error.response.data) {
-        if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          console.error(error.response.data);
-          console.error(error.response.status);
-          console.error(error.response.headers);
-      }
-        console.error(`Attempt ${retryCount + 1} for event ${eventId} failed:`, error.response.data);
+      console.error(`Error processing fund distribution for event ${eventId}:`, error);
+      // Alert admin of error
+       alertAdminDistributeFundsError(db, eventId, eventDoc.transferRecepientId, eventDoc.subaccountId, error.message, eventDoc.eventAuthorId);
+    }
+  });
+
+// exports.distributeEventFunds = functions.pubsub.schedule('every 5 minutes').onRun(async (context) => {
+//   const db = admin.firestore();
+  
+//   // Assume this is where you fetch events from Firestore
+//   const eventsSnapshot = await db.collection('allFundsPayoutRequest')
+//     // .where('clossingDay', '<=', admin.firestore.Timestamp.now())
+//     .where('status', '==', 'pending')
+//     .get();
+
+//   for (const eventDoc of eventsSnapshot.docs) {
+//     const eventData = eventDoc.data();
+//     const eventId = eventDoc.data().eventId;
+
+//     const idempotencyKey = `${eventId}_${new Date().toISOString().slice(0, 10)}`;
+  
+//     const idempotencyDocRef = db.collection('fundsDistributedSuccessIdempotencyKeys').doc(idempotencyKey);
+//     const eventDocRef = eventDoc.ref;
+  
+//     try {
+//       // Start a transaction
+//        // eslint-disable-next-line no-await-in-loop
+//       await db.runTransaction(async (transaction) => {
+//         // Check for idempotency inside the transaction
+//         const idempotencyDoc = await transaction.get(idempotencyDocRef);
+//         if (idempotencyDoc.exists) {
+//           // Skip this event as it has already been processed
+//           return;
+//         }
+  
+//         // Attempt to create the transfer with retries
+//          // eslint-disable-next-line no-await-in-loop
+//         // const response = await createTransferWithRetry(db, eventDoc);
+  
+//         // If the transfer is successful, mark the event as processed and store the idempotency key
+//         transaction.update(eventDocRef, { status: 'proccessed', idempotencyKey: idempotencyKey });
+//         transaction.set(idempotencyDocRef, {
+//           transferResponse: 'successful', // Assume the API response has a data field
+//           created: admin.firestore.FieldValue.serverTimestamp()
+//         });
+//       });
+
+//            // eslint-disable-next-line no-await-in-loop
+//            await alertAdminFundsDistributedSuccess(db, eventId, eventData.transferRecepientId,idempotencyKey, eventData.subaccountId,  eventData.eventAuthorId,);
+      
+//       const userId = eventData.eventAuthorId;
+//       const userRef = firestore.doc(`user_general_settings/${userId}`);
+//         // eslint-disable-next-line no-await-in-loop
+//       const userDoc = await userRef.get(); // eslint-disable-next-line no-await-in-loop
+
+//       if (!userDoc.exists) {
+//         console.log(`User settings not found for user ${userId}`);
+//         // continue;
+//       }
+
+//       const userData = userDoc.data();
+//       const androidNotificationToken = userData.androidNotificationToken;
+
+//       if (androidNotificationToken) {
+//         try {
+//             // eslint-disable-next-line no-await-in-loop
+//             await sendFundDistributedNotification(androidNotificationToken, userId, eventId, eventData.eventAuthorId, eventData.eventTitle); // eslint-disable-next-line no-await-in-loop
+//         } catch (error) {
+//           console.error(`Error sending  funds distributed notification:`, error);
+//         }
+//       } else {
+//         console.log(`No notification token for user ${userId} or notifications are muted.`);
+//       }
     
-        if (error.response.data.code === 'insufficient_balance') {
-          // Handle insufficient balance error specifically
-            // eslint-disable-next-line no-await-in-loop
-          await alertAdminDistributeFundsError(
-            db, 
-            eventId,
-            eventData.transferRecepientId, 
-            eventData.subaccountId, 
-            "Insufficient balance for transfer", 
-            eventData.eventAuthorId
-          );
-          // Break out of the loop since retrying won't resolve insufficient funds
-          break;
-        }
-      } else {
-        // Handle other errors
-           // If the transaction fails, log the error and alert the admin
-      console.error(`Transaction failed for event ${eventId}:`, error);
-      // eslint-disable-next-line no-await-in-loop
-        await alertAdminDistributeFundsError(db, eventId, eventData.transferRecepientId, eventData.subaccountId, `Transaction failed for event:${ eventData.eventTitle} \n ${error}:`, eventData.eventAuthorId, );
-        console.error(`Attempt ${retryCount + 1} for event ${eventDoc.id} failed with an unknown error:`, error);
-      }
+    
+//     } catch (error) {
+//       if (error.response && error.response.data) {
+//         transaction.update(eventDocRef, { status: 'error' });
+//         if (error.response) {
+//           // The request was made and the server responded with a status code
+//           // that falls out of the range of 2xx
+//           console.error(error.response.data);
+//           console.error(error.response.status);
+//           console.error(error.response.headers);
+//       }
+//         console.error(`Attempt ${retryCount + 1} for event ${eventId} failed:`, error.response.data);
+    
+//         if (error.response.data.code === 'insufficient_balance') {
+//           // Handle insufficient balance error specifically
+//             // eslint-disable-next-line no-await-in-loop
+//           await alertAdminDistributeFundsError(
+//             db, 
+//             eventId,
+//             eventData.transferRecepientId, 
+//             eventData.subaccountId, 
+//             "Insufficient balance for transfer", 
+//             eventData.eventAuthorId
+//           );
+//           // Break out of the loop since retrying won't resolve insufficient funds
+//           break;
+//         }
+//       } else {
+//         transaction.update(eventDocRef, { status: 'error' });
+//         // Handle other errors
+//            // If the transaction fails, log the error and alert the admin
+//       console.error(`Transaction failed for event ${eventId}:`, error);
+//       // eslint-disable-next-line no-await-in-loop
+//         await alertAdminDistributeFundsError(db, eventId, eventData.transferRecepientId, eventData.subaccountId, `Transaction failed for event:${ eventData.eventTitle} \n ${error}:`, eventData.eventAuthorId, );
+//         console.error(`Attempt ${retryCount + 1} for event ${eventDoc.id} failed with an unknown error:`, error);
+//       }
      
    
-    }
-  }
-});
+//     }
+//   }
+// });
 
 function getDocumentPath() {
   const now = new Date();
@@ -438,7 +537,7 @@ function getDocumentPath() {
 }
 
 async function sendFundDistributedNotification(androidNotificationToken, userId, eventId, eventAuthorId, eventTitle) {
-  const title = 'Funds distributed for event' ;
+  const title = 'Funds payout for event' ;
   const body = eventTitle;
   
   let message = {
@@ -2136,16 +2235,28 @@ exports.onCreateNewActivity = functions.firestore
   const usersRef = admin.firestore().doc(`user_general_settings/${userId}`);
   const doc = await usersRef.get();
   const androidNotificationToken = doc.data().androidNotificationToken;
+  const disableEventSuggestionNotification = doc.data().disableEventSuggestionNotification;
+  const muteEventSuggestionNotification = doc.data().muteEventSuggestionNotification;
+
   let title;
   let body;
+  
 
   if(androidNotificationToken){
-    sendNotification(androidNotificationToken, createdActivityItem)
+  if(createdActivityItem.type  === 'newEventInNearYou' && disableEventSuggestionNotification ){
+
+    console.log('disbled notification for event suggestion');
+  
+  }else{
+    await sendNotification(androidNotificationToken, createdActivityItem, muteEventSuggestionNotification)
+    }
+
+
   } else {
     console.log('no notification token');
   }
 
-   async function sendNotification(androidNotificationToken, createdActivityItem) {
+   async function sendNotification(androidNotificationToken, createdActivityItem, muteEventSuggestionNotification ) {
     switch (createdActivityItem.type){
       case 'newEventInNearYou':
         title = createdActivityItem.authorName;
@@ -2175,24 +2286,57 @@ exports.onCreateNewActivity = functions.firestore
     body  = createdActivityItem.comment;
 
 
-    const message = {notification: {body: body, title: title},
+    let message = {
+      notification: { body: body, title: title },
       data: {
         recipient: userId,
         contentType: createdActivityItem.type,
         contentId: createdActivityItem.postId,
         eventAuthorId: createdActivityItem.authorProfileHandle,
-        // title: title,
-        // body: body,
       },
-      token: androidNotificationToken,
-      apns: {
-        payload: {
-          aps: {
-            sound: 'default',
-          },
-        },
+      token: androidNotificationToken
+  };
+
+ 
+  // Set up a base APNS payload
+let apnsPayload = {
+  payload: {
+      aps: {
+          // This sound setting can be adjusted or customized as necessary
+          sound: 'default',
       },
-    };
+  },
+};
+
+// If the notification is of type 'newEventInNearYou' and is not muted, add the APNS payload
+if (createdActivityItem.type === 'newEventInNearYou' && !muteEventSuggestionNotification) {
+message.apns = apnsPayload;
+} else if (createdActivityItem.type !== 'newEventInNearYou') {
+// For all other notification types, always add the APNS payload
+message.apns = apnsPayload;
+}
+ 
+
+
+    // const message = {notification: {body: body, title: title},
+    //   data: {
+        // recipient: userId,
+        // contentType: createdActivityItem.type,
+        // contentId: createdActivityItem.postId,
+        // eventAuthorId: createdActivityItem.authorProfileHandle,
+    //     // title: title,
+    //     // body: body,
+    //   },
+    //   token: androidNotificationToken,
+    
+      // apns: {
+      //   payload: {
+      //     aps: {
+      //       sound: 'default',
+      //     },
+      //   },
+      // },
+    // };
     
     // const message = {
     //   notification: {body: body, title: title},

@@ -270,6 +270,7 @@ class _UserPayoutsState extends State<UserPayouts>
 
     // commit the deletions
     await batch.commit();
+    _payoutList.clear();
 
     // call the function recursively to delete the next batch
     return deleteActivityDocsInBatches();
@@ -344,7 +345,15 @@ class _UserPayoutsState extends State<UserPayouts>
                                 text: TextSpan(
                                   children: [
                                     TextSpan(
-                                      text: 'Status:                  ',
+                                      text: '\nEvent:                   ',
+                                      style: _textStyle,
+                                    ),
+                                    TextSpan(
+                                      text: invite.eventTitle,
+                                      style: _textStyle2,
+                                    ),
+                                    TextSpan(
+                                      text: '\nStatus:                  ',
                                       style: _textStyle,
                                     ),
                                     TextSpan(
@@ -371,11 +380,11 @@ class _UserPayoutsState extends State<UserPayouts>
                                       style: _textStyle2,
                                     ),
                                     TextSpan(
-                                      text: '\nEvent:                     ',
+                                      text: '\nId:                         ',
                                       style: _textStyle,
                                     ),
                                     TextSpan(
-                                      text: invite.eventTitle,
+                                      text: invite.id,
                                       style: _textStyle2,
                                     ),
                                   ],
@@ -432,7 +441,7 @@ class _UserPayoutsState extends State<UserPayouts>
                   centerTitle: false,
                   backgroundColor: Theme.of(context).primaryColorLight,
                   title: Text(
-                    'Ticket refunds',
+                    'Ticket sales payout',
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   actions: [
@@ -476,10 +485,10 @@ class _UserPayoutsState extends State<UserPayouts>
                           ? Expanded(
                               child: Center(
                               child: NoContents(
-                                icon: (Icons.payment_outlined),
-                                title: 'No refunds,',
+                                icon: (MdiIcons.transfer),
+                                title: 'No payouts,',
                                 subTitle:
-                                    'All your refund requests would be displayed here.',
+                                    'All your ticket sales payouts would appear here.',
                               ),
                             ))
                           : Expanded(

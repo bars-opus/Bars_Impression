@@ -22,7 +22,7 @@ class SendToChats extends StatefulWidget {
 }
 
 class _SendToChatsState extends State<SendToChats> {
-  int limit = 10;
+  int limit = 30;
   String query = "";
 
   Map<String, bool> userSelection = {};
@@ -112,26 +112,6 @@ class _SendToChatsState extends State<SendToChats> {
     _provider.setMessageImage(null);
     _messageController.clear();
   }
-
-  // Future<AccountHolderAuthor?> _setUpProfileUser(String userId) async {
-  //   // final usersBox = Hive.box<AccountHolderAuthor>('accountHolderAuthor');
-  //   // if (usersBox.containsKey(chatUserId)) {
-  //   //   // // If the user data is already in the box, use it
-  //   //   return usersBox.get(chatUserId);
-  //   // } else {
-  //   //   // If the user data is not in the box, fetch it from the database and save it to the box
-  //   //   // try {
-  //   final author = await DatabaseService.getUserWithId(userId);
-  //   print(author!.userName);
-
-  //   // if (author != null) usersBox.put(chatUserId, author);
-  //   // print(author!.userName);
-  //   // return author;
-  //   // // } catch (e) {
-
-  //   // // }
-  //   // }
-  // }
 
   _loadingSkeleton() {
     return ListTile(
@@ -229,16 +209,6 @@ class _SendToChatsState extends State<SendToChats> {
                           );
                         },
                       );
-
-                      // GetAuthor(
-                      //   chats: chats,
-                      //   lastMessage: lastMessage,
-                      //   seen: seen,
-                      //   userId: userId,
-                      //   // selectedUsersList: selectedUsersList,
-                      //   userSelection: userSelection,
-                      //   updateParent: updateListState,
-                      // );
                     },
                     childCount: snapshot.data.docs.length,
                   ),
@@ -444,47 +414,7 @@ class _GetAuthorState extends State<GetAuthor>
     widget.userSelection[widget.userId] = false;
   }
 
-  // Future<void> _setUpProfileUser() async {
-  //   AccountHolderAuthor? profileUser =
-  //       await DatabaseService.getUserWithId(widget.userId);
-  //   if (mounted) {
-  //     setState(() {
-  //       _author = profileUser;
-  //     });
-  //   }
-  // }
-
-  // _loadingSkeleton() {
-  //   return ListTile(
-  //       leading: CircleAvatar(
-  //         radius: 20.0,
-  //         backgroundColor: Colors.blue,
-  //       ),
-  //       title: Column(
-  //         mainAxisAlignment: MainAxisAlignment.start,
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: <Widget>[
-  //           Padding(
-  //             padding: const EdgeInsets.only(right: 12.0),
-  //             child: Text(
-  //               'Loading...',
-  //               style: TextStyle(
-  //                 fontSize: ResponsiveHelper.responsiveFontSize(context, 14),
-  //                 color: Theme.of(context).secondaryHeaderColor,
-  //               ),
-  //             ),
-  //           ),
-  //           const SizedBox(
-  //             height: 2.0,
-  //           ),
-  //         ],
-  //       ),
-  //       onTap: () {});
-  // }
-
   _display() {
-    var _provider = Provider.of<UserData>(context, listen: false);
-
     return Container(
       color: widget.userSelection[widget.author.userId]!
           ? Colors.blue.withOpacity(.1)

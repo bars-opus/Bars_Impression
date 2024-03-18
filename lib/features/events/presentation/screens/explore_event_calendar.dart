@@ -16,8 +16,7 @@ class _ExploreEventCalendarState extends State<ExploreEventCalendar> {
   final _eventAllSnapshot = <DocumentSnapshot>[];
 
   DateTime _focusedDay = DateTime.now();
-  // DateTime firstDay = DateTime(2023);
-  // DateTime lastDay = DateTime(2024);
+
   DateTime _currentDate = DateTime.now();
   DateTime _firstDayOfNextMonth =
       DateTime(DateTime.now().year, DateTime.now().month + 2, 1);
@@ -143,51 +142,6 @@ class _ExploreEventCalendarState extends State<ExploreEventCalendar> {
     }
   }
 
-  // Future<List<Event>> _fetchEvents(
-  //     {required int limit,
-  //     String? country,
-  //     String? city,
-  //     required DateTime currentDate,
-  //     required DateTime firstDayOfNextMonth}) async {
-  //   Query<Map<String, dynamic>> query = allEventsRef;
-
-  //   if (country != null) {
-  //     query = query.where('country', isEqualTo: country);
-  //   }
-  //   if (city != null) {
-  //     query = query.where('city', isEqualTo: city);
-  //   }
-
-  //   // query = query.where('startDate', isLessThanOrEqualTo: firstDayOfNextMonth);
-  //   List<Event> uniqueEvents = [];
-
-  //   try {
-  //     QuerySnapshot eventFeedSnapShot = await query
-  //         // .where('startDate', isGreaterThanOrEqualTo: currentDate)
-  //         // .orderBy('startDate', descending: false)
-  //         .orderBy(FieldPath.documentId)
-  //         .limit(limit)
-  //         .get();
-
-  //     List<Event> events =
-  //         eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
-
-  //     if (_eventAllSnapshot.isEmpty) {
-  //       _eventAllSnapshot.addAll(eventFeedSnapShot.docs);
-  //     }
-  //     for (var event in events) {
-  //       if (addedEventIds.add(event.id)) {
-  //         uniqueEvents.add(event);
-  //       }
-  //     }
-
-  //     return events;
-  //   } catch (e) {
-  //     print('Failed to fetch events: $e');
-  //     return [];
-  //   }
-  // }
-
   Future<List<Event>> _fetchMoreEvents({
     required int limit,
     String? country,
@@ -233,49 +187,6 @@ class _ExploreEventCalendarState extends State<ExploreEventCalendar> {
     }
   }
 
-  // Future<List<Event>> _fetchMoreEvents({
-  //   required int limit,
-  //   String? country,
-  //   String? city,
-  //   required DateTime currentDate,
-  //   required DateTime firstDayOfNextMonth,
-  // }) async {
-  //   Query<Map<String, dynamic>> query = allEventsRef;
-
-  //   if (country != null) {
-  //     query = query.where('country', isEqualTo: country);
-  //   }
-  //   if (city != null) {
-  //     query = query.where('city', isEqualTo: city);
-  //   }
-
-  //   query = query.where('startDate', isLessThanOrEqualTo: firstDayOfNextMonth);
-
-  //   // If there are already loaded documents, start after the last one
-  //   if (_eventAllSnapshot.isNotEmpty) {
-  //     query = query.startAfterDocument(_eventAllSnapshot.last);
-  //   }
-
-  //   // try {
-  //   QuerySnapshot eventFeedSnapShot = await query
-  //       // .where('startDate', isGreaterThanOrEqualTo: currentDate)
-  //       // .orderBy('startDate', descending: false) // Add this line
-  //       .orderBy(FieldPath.documentId)
-  //       .limit(limit)
-  //       .get();
-
-  //   List<Event> events =
-  //       eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
-
-  //   // Add new snapshots to the existing list
-  //   _eventAllSnapshot.addAll(eventFeedSnapShot.docs);
-
-  //   return events;
-  //   // } catch (e) {
-  //   //   print('Failed to fetch events: $e');
-  //   //   return [];
-  //   // }
-  // }
 
   Map<DateTime, List<Event>> convertToMap(List<Event> events) {
     Map<DateTime, List<Event>> eventMap = {};

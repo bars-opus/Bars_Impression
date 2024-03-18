@@ -66,8 +66,9 @@ class _DiscographyPagesState extends State<DiscographyPages> {
     String? country,
     String? city,
   }) async {
-    var query =
-        userProfessionalRef.where('profileHandle', isEqualTo: widget.types);
+    var query = userProfessionalRef
+        .where('profileHandle', isEqualTo: widget.types)
+        .where('noBooking', isEqualTo: false);
 
     if (country != null) {
       query = query.where('country', isEqualTo: country);
@@ -86,7 +87,7 @@ class _DiscographyPagesState extends State<DiscographyPages> {
           .limit(2)
           .get();
 
-           if (eventFeedSnapShot.docs.length < 2) {
+      if (eventFeedSnapShot.docs.length < 2) {
         int remainingLimit = 2 - eventFeedSnapShot.docs.length;
         QuerySnapshot additionalSnapshot = await query
             .startAfterDocument(userSnapshot.last)
@@ -101,8 +102,6 @@ class _DiscographyPagesState extends State<DiscographyPages> {
       List<UserProfessionalModel> users = eventFeedSnapShot.docs
           .map((doc) => UserProfessionalModel.fromDoc(doc))
           .toList();
-
-     
 
 // Add new user to existing list
       userList.addAll(users);

@@ -14,6 +14,7 @@ class Event {
   List<TicketOrderModel> ticketOrder;
   List<TaggedEventPeopleModel> taggedPeople;
   List<EventOffer> offers;
+  List<String> contacts;
   final String termsAndConditions;
   final String type;
   final String category;
@@ -61,6 +62,7 @@ class Event {
     this.ticketOrder = const [],
     this.taggedPeople = const [],
     this.offers = const [],
+     this.contacts = const [],
     required this.termsAndConditions,
     required this.type,
     required this.category,
@@ -90,9 +92,7 @@ class Event {
     required this.dynamicLink,
     required this.fundsDistributed,
     required this.subaccountId,
-     required this.transferRecepientId,
-
-    
+    required this.transferRecepientId,
   });
 
   factory Event.fromDoc(DocumentSnapshot doc) {
@@ -103,7 +103,7 @@ class Event {
       dynamicLink: doc['dynamicLink'] ?? '',
       subaccountId: doc['subaccountId'] ?? '',
       transferRecepientId: doc['transferRecepientId'] ?? '',
-
+      contacts: List<String>.from(doc['contacts'] ?? []),
       startDate: doc['startDate'] ??
           Timestamp.fromDate(
             DateTime.now(),
@@ -166,6 +166,9 @@ class Event {
       subaccountId: map['subaccountId'] ?? '',
       theme: map['theme'] ?? '',
       dynamicLink: map['dynamicLink'] ?? '',
+      contacts: (map['contacts'] as List<dynamic>)
+          .map((accountType) => accountType as String)
+          .toList(),
       startDate: map['startDate'] ?? Timestamp.fromDate(DateTime.now()),
       address: map['address'] ?? '',
       imageUrl: map['imageUrl'] ?? '',
@@ -229,10 +232,7 @@ class Event {
       clossingDay: map['clossingDay'] ?? Timestamp.fromDate(DateTime.now()),
       blurHash: map['blurHash'] ?? '',
       authorName: map['authorName'] ?? '',
-
       transferRecepientId: map['transferRecepientId'] ?? '',
-
-      
     );
   }
 
@@ -248,6 +248,7 @@ class Event {
       'dynamicLink': dynamicLink,
       'isTicketed': isTicketed,
       'maxAttendees': maxAttendees,
+      'contacts': contacts,
       'schedule': schedule.map((schedule) => schedule.toJson()).toList(),
       'ticket': ticket.map((ticket) => ticket.toJson()).toList(),
       'ticketOrder':
@@ -283,8 +284,6 @@ class Event {
       'fundsDistributed': false,
       'clossingDay': clossingDay,
       'transferRecepientId': transferRecepientId,
-
-      
     };
   }
 }

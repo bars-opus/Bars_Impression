@@ -75,7 +75,7 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
           title: 'Are you sure you want to delete this ticket? ',
           subTitle:
               'Deleting it will result in the loss of access to this event, and deleted tickets cannot be refunded."',
-        );
+        ); 
       },
     );
   }

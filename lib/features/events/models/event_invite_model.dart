@@ -10,6 +10,7 @@ class InviteModel {
   final bool isTicketPass;
   final Timestamp? timestamp;
   final Timestamp? eventTimestamp;
+  final String? eventTitle;
 
   InviteModel({
     required this.answer,
@@ -21,12 +22,14 @@ class InviteModel {
     required this.timestamp,
     required this.inviterMessage,
     required this.isTicketPass,
+    required this.eventTitle,
   });
 
   factory InviteModel.fromDoc(DocumentSnapshot doc) {
     return InviteModel(
       eventId: doc['eventId']!,
       answer: doc['answer'] ?? '',
+      eventTitle: doc['eventTitle'] ?? '',
       generatedMessage: doc['generatedMessage'] ?? '',
       inviterMessage: doc['inviterMessage'] ?? '',
       inviteeId: doc['inviteeId'] ?? '',
@@ -47,6 +50,7 @@ class InviteModel {
     return InviteModel(
       eventId: json['eventId']!,
       answer: json['answer']!,
+      eventTitle: json['eventTitle']!,
       generatedMessage: json['generatedMessage']!,
       inviterMessage: json['inviterMessage']!,
       isTicketPass: json['isTicketPass']!,
@@ -65,6 +69,7 @@ class InviteModel {
     return {
       'eventId': eventId,
       'answer': answer,
+      'eventTitle': eventTitle,
       'generatedMessage': generatedMessage,
       'inviterMessage': inviterMessage,
       'isTicketPass': isTicketPass,

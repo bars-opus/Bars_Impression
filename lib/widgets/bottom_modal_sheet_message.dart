@@ -40,6 +40,7 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
   final FocusNode _focusNode = FocusNode();
   bool _isBlockedUser = false;
   bool _isBlockingUser = false;
+  bool _disableChat = false;
   late var _user;
 
   // late Future<Box> box;
@@ -52,9 +53,10 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
     _user = widget.user ?? widget.userAuthor ?? widget.userPortfolio;
     _isBlockedUser = widget.isBlocked ?? false;
     _isBlockingUser = widget.isBlocking ?? false;
-
     widget.isBlocked ?? _setupIsBlocked();
     widget.isBlocking ?? _setupIsBlocking();
+
+    widget.userPortfolio == null ? _setDisabled() : _setFetchedDisabled();
 
     // widget.chatLoaded ?? _setupIsBlocking();
 
@@ -71,6 +73,23 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
     widget.chatLoaded == null ? () {} : _updateChatSeen();
     _timer = Timer.periodic(
         Duration(hours: 24), (_) => expireOldMessages(Duration(days: 30)));
+  }
+
+  _setDisabled() {
+    _disableChat = widget.user != null
+        ? widget.user!.disableChat!
+        : widget.userAuthor != null
+            ? widget.userAuthor!.disableChat!
+            : false;
+  }
+
+  _setFetchedDisabled() async {
+    AccountHolderAuthor? newuser =
+        await DatabaseService.getUserWithId(widget.userId);
+
+    setState(() {
+      _disableChat = newuser!.disableChat!;
+    });
   }
 
   void _updateChatSeen() {
@@ -612,10 +631,10 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
   ) {
     var _provider = Provider.of<UserData>(context, listen: false);
 
-    bool readyToSend =
-        _provider.messageImage != null || controller.text.trim().length > 0
-            ? true
-            : false;
+    bool readyToSend = _provider.messageImage != null ||
+            controller.text.trim().length > 0 
+        ? true
+        : false;
     return Material(
       elevation: 10,
       borderRadius: BorderRadius.circular(30),
@@ -1019,6 +1038,7 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
   Widget build(BuildContext context) {
     bool _restricitedChat =
         widget.chatLoaded == null ? false : widget.chatLoaded!.restrictChat;
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -1047,7 +1067,8 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
                   ? _future()
                   : _getMessages(widget.chatLoaded!),
               if (!_isBlockingUser && !_isBlockedUser)
-                if (!_restricitedChat) _commentField()
+                if (!_restricitedChat)
+                  if (!_disableChat) _commentField()
             ],
           ),
         ),

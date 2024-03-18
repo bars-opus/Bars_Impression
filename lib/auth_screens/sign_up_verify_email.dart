@@ -49,7 +49,6 @@ class _SignpsScreenVerifyEmailState extends State<SignpsScreenVerifyEmail>
     animationController.forward();
   }
 
-
   _isVerifiedUSer() async {
     final _auth = FirebaseAuth.instance;
     final user = _auth.currentUser;
@@ -132,7 +131,7 @@ class _SignpsScreenVerifyEmailState extends State<SignpsScreenVerifyEmail>
 
   @override
   void dispose() {
-     animationController.dispose();
+    animationController.dispose();
     if (timer != null) {
       timer!.cancel();
     }
@@ -204,14 +203,19 @@ class _SignpsScreenVerifyEmailState extends State<SignpsScreenVerifyEmail>
                             ),
                           ),
                           _isLoading
-                              ? SizedBox(
-                                  height: 0.5,
-                                  child: LinearProgressIndicator(
-                                    backgroundColor: Colors.transparent,
-                                    valueColor:
-                                        AlwaysStoppedAnimation(Colors.white),
-                                  ),
+                              ? CircularProgress(
+                                  isMini: true,
+                                  indicatorColor:
+                                      Colors.grey[800] ?? Colors.grey,
                                 )
+                              // SizedBox(
+                              //     height: 0.5,
+                              //     child: LinearProgressIndicator(
+                              //       backgroundColor: Colors.transparent,
+                              //       valueColor:
+                              //           AlwaysStoppedAnimation(Colors.white),
+                              //     ),
+                              //   )
                               : const SizedBox.shrink()
                         ],
                       ),

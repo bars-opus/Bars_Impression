@@ -820,12 +820,12 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
   }
 
   void _showBottomInvitationMessage() {
-    Color _paletteDark = widget.palette == null
-        ? Color(0xFF1a1a1a)
-        : widget.palette!.darkMutedColor == null
-            ? Color(0xFF1a1a1a)
-            : widget.palette!.darkMutedColor!.color;
-    var _size = MediaQuery.of(context).size;
+    // Color _paletteDark = widget.palette == null
+    //     ? Color(0xFF1a1a1a)
+    //     : widget.palette!.darkMutedColor == null
+    //         ? Color(0xFF1a1a1a)
+    //         : widget.palette!.darkMutedColor!.color;
+    // var _size = MediaQuery.of(context).size;
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -2051,7 +2051,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
         elevation: 0,
         backgroundColor: Colors.transparent,
         title: Text(
-          _displayImage ? 'Tagged people' : widget.event.type,
+          _displayImage ? 'Tagged people' : '',
           // widget.event.city + '   /     ' + widget.event.country,
           style: TextStyle(
             fontWeight: FontWeight.bold,

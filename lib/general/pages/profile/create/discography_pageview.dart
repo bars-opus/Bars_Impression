@@ -38,14 +38,12 @@ class DiscographyPageView extends StatefulWidget {
 
 class _DiscographyPageViewState extends State<DiscographyPageView> {
   late PageController _pageController2;
-  // bool _showAllPosts = true;
   List<UserProfessionalModel> _filteredUsers = [];
   final _filteredUserSnapshot = <DocumentSnapshot>[];
 
   double page = 0.0;
   int limit = 2;
-  // bool _hasNext = true;
-  // bool _isFetchingEvent = false;
+
   int _currentPageIndex = 0;
   int _feedCount = 0;
   bool _isSnackbarShown = false;
@@ -59,7 +57,7 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
     _pageController2 = PageController(
       initialPage: widget.pageIndex,
     );
-    // _filteredUsers = widget.userList;
+    _filteredUsers = widget.userList;
     _pageController2.addListener(_onPageChanged);
     _timer = Timer(Duration(seconds: 0), () {});
   }
@@ -76,9 +74,10 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
         });
       }
     });
+
     int pageIndex = _pageController2.page!.round();
     if (_currentPageIndex != pageIndex) {
-      _updatePosts(pageIndex);
+      _updateUsers(pageIndex);
       _currentPageIndex = pageIndex;
     }
   }
@@ -117,29 +116,25 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
     4: 'Music_Video_Director',
     5: 'Content_creator',
     6: 'Photographer',
-    7: 'Record_Label',
-    8: 'Brand_Influencer',
-    9: 'Event_organiser',
-    10: 'Band',
-    11: 'Instrumentalist',
-    12: 'Cover_Art_Designer',
-    13: 'Makeup_Artist',
-    14: 'Video_Vixen',
-    15: 'Blogger',
-    16: 'MC(Host)',
-    17: 'Choire',
-    18: 'Battle_Rapper',
-    19: 'Fan',
+    7: 'Caterers',
+    8: 'Sound_and_Light',
+    9: 'Decorator',
+    10: 'Record_Label',
+    11: 'Brand_Influencer',
+    12: 'Event_organiser',
+    13: 'Band',
+    14: 'Instrumentalist',
+    15: 'Cover_Art_Designer',
+    16: 'Makeup_Artist',
+    17: 'Video_Vixen',
+    18: 'Blogger',
+    19: 'MC(Host)',
+    20: 'Choir',
+    21: 'Battle_Rapper',
+    22: 'Fan',
   };
 
   void _updateUsers(int pageIndex) async {
-    HapticFeedback.lightImpact();
-    if (eventTypes.containsKey(pageIndex)) {
-      _updating(pageIndex, eventTypes[pageIndex]!);
-    }
-  }
-
-  void _updatePosts(int pageIndex) async {
     HapticFeedback.lightImpact();
     if (eventTypes.containsKey(pageIndex)) {
       _updating(pageIndex, eventTypes[pageIndex]!);
@@ -150,13 +145,15 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
     _setUpFeedCount(type);
     if (mounted) {
       setState(() {
-        pageIndex = _pageController2.page?.round() ?? 0;
+        _currentPageIndex = pageIndex;
+        _filteredUsers.clear();
+        _filteredUserSnapshot.clear();
+        _loading = true;
         _isSnackbarShown = true;
         _isSnackbarType = type;
       });
     }
-    _filteredUsers.clear();
-    _filteredUserSnapshot.clear();
+
     widget.liveCity.isNotEmpty
         ? _setupUsers(
             type: type,
@@ -214,7 +211,9 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
       _loading = true;
     });
 
-    var query = userProfessionalRef.where('profileHandle', isEqualTo: type);
+    var query = userProfessionalRef
+        .where('profileHandle', isEqualTo: type)
+        .where('noBooking', isEqualTo: false);
 
     if (city != null) {
       query = query.where('city', isEqualTo: city);
@@ -226,10 +225,6 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
     if (continent != null) {
       query = query.where('continent', isEqualTo: continent);
     }
-
-    // if (sortNumberOfDays != 0) {
-    //   query = query.where('startDate', isLessThanOrEqualTo: endDate);
-    // }
 
     final randomValue = Random().nextDouble();
 
@@ -259,7 +254,6 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
           _loading = false;
         });
       }
-      // You might want to return null or an empty list in case of error
       return [];
     }
   }
@@ -308,7 +302,7 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
           PageView(
             controller: _pageController2,
             onPageChanged: _updateUsers,
-            children: List.generate(20, (index) {
+            children: List.generate(23, (index) {
               String eventType = '';
               int tabIndex = 0;
               switch (index) {
@@ -341,62 +335,72 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
                   tabIndex = 6;
                   break;
                 case 7:
-                  eventType = 'Record_Label';
+                  eventType = 'Caterers';
                   tabIndex = 7;
                   break;
                 case 8:
-                  eventType = 'Brand_Influencer';
+                  eventType = 'Sound_and_Light';
                   tabIndex = 8;
                   break;
                 case 9:
-                  eventType = 'Event_organiser';
+                  eventType = 'Decorator';
                   tabIndex = 9;
                   break;
                 case 10:
-                  eventType = 'Band';
+                  eventType = 'Record_Label';
                   tabIndex = 10;
                   break;
                 case 11:
-                  eventType = 'Instrumentalist';
+                  eventType = 'Brand_Influencer';
                   tabIndex = 11;
                   break;
                 case 12:
-                  eventType = 'Cover_Art_Designer';
+                  eventType = 'Event_organiser';
                   tabIndex = 12;
                   break;
                 case 13:
-                  eventType = 'Makeup_Artist';
+                  eventType = 'Band';
                   tabIndex = 13;
                   break;
                 case 14:
-                  eventType = 'Video_Vixen';
+                  eventType = 'Instrumentalist';
                   tabIndex = 14;
                   break;
                 case 15:
-                  eventType = 'Blogger';
+                  eventType = 'Cover_Art_Designer';
                   tabIndex = 15;
                   break;
                 case 16:
-                  eventType = 'MC(Host)';
+                  eventType = 'Makeup_Artist';
                   tabIndex = 16;
                   break;
                 case 17:
-                  eventType = 'Choire';
+                  eventType = 'Video_Vixen';
                   tabIndex = 17;
                   break;
                 case 18:
-                  eventType = 'Battle_Rapper';
+                  eventType = 'Blogger';
                   tabIndex = 18;
                   break;
                 case 19:
-                  eventType = 'Fan';
+                  eventType = 'MC(Host)';
                   tabIndex = 19;
+                  break;
+                case 20:
+                  eventType = 'Choir';
+                  tabIndex = 20;
+                  break;
+                case 21:
+                  eventType = 'Battle_Rapper';
+                  tabIndex = 21;
+                  break;
+                case 22:
+                  eventType = 'Fan';
+                  tabIndex = 22;
                   break;
               }
               return _loading
-                  ? CircularProgress(
-                      isMini: false,
-                    )
+                  ? CircularProgress(isMini: false)
                   : _feedCount.isNegative
                       ? _noUsers(eventType)
                       : eventType.startsWith('Fan')
@@ -411,24 +415,18 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
                               currentUserId: widget.currentUserId,
                               userIndex: widget.userIndex,
                               user: widget.user,
-                              userList: _filteredUsers.isEmpty
-                                  ? widget.userList
-                                  : _filteredUsers,
-                              // eventType == 'All'
+                              userList: _filteredUsers,
+
+                              //  _filteredUsers.isEmpty
                               //     ? widget.userList
-                              //     : _filteredUsers
-                              //         .where((post) =>
-                              //             post.profileHandle == eventType)
-                              //         .toList(),
+                              //     : _filteredUsers,
                               userSnapshot: _filteredUsers.isEmpty
                                   ? widget.userSnapshot
                                   : _filteredUserSnapshot,
                               liveCity: widget.liveCity,
                               liveCountry: widget.liveCountry,
-                              // seeMoreFrom: widget.seeMoreFrom,
-                              isFrom: widget.isFrom
-                              // widget.userSnapshot,
-                              );
+                              isFrom: widget.isFrom,
+                            );
             }),
           ),
           Positioned(

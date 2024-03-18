@@ -41,79 +41,7 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
   void initState() {
     super.initState();
     _isValidated = widget.ticket.validated;
-    stopInit();
-  }
-
-  void listenForTicketValidation() async {
-    DocumentReference orderDocRef = newUserTicketOrderRef
-        .doc(widget.ticketOrder.userOrderId)
-        .collection('eventInvite')
-        .doc(widget.event.id);
-
-    _ticketSubscription = orderDocRef.snapshots().listen((snapshot) {
-      if (snapshot.exists) {
-        TicketOrderModel order = TicketOrderModel.fromDoc(snapshot);
-
-        // Find the specific ticket that has been updated
-        var updatedTicket = order.tickets.firstWhere(
-          (ticket) => ticket.entranceId == widget.ticket.entranceId,
-          // orElse: () =>
-        );
-
-        if (updatedTicket != null) {
-          // Check if the specific field 'validated' has changed to true
-          if (updatedTicket.validated) {
-            // The ticket has been validated, call the function to handle this event
-            if (!init) onTicketValidated();
-          }
-        }
-      } else {
-        // // Handle the case where the order document does not exist
-        // onOrderNotFound();
-      }
-    }, onError: (error) {
-      // Handle any errors that occur with the listener
-      print("Error listening to ticket validation: $error");
-    });
-  }
-
-  void stopInit() {
-    DateTime now = DateTime.now();
-    DateTime eventDate = widget.ticket.eventTicketDate.toDate();
-    DateTime oneDayBeforeEvent = eventDate.subtract(Duration(days: 1));
-    DateTime oneDayAfterEvent = eventDate.add(Duration(days: 2));
-
-    if (now.isAfter(oneDayBeforeEvent) && now.isBefore(oneDayAfterEvent)) {
-      listenForTicketValidation();
-    }
-    init = false;
-  }
-
-  void onTicketValidated() {
-    if (mounted) {
-      setState(() {
-        _isScanning = true;
-      });
-    }
-    _setShowDelayInfo();
-  }
-
-  void _setShowDelayInfo() {
-    if (_isScanning) {
-      // Cancel the existing timer if it's still running
-      _delayTimer?.cancel();
-
-      // Create a new timer
-      _delayTimer = Timer(const Duration(seconds: 2), () {
-        if (mounted) {
-          setState(() {
-            _isScanning = false;
-            _isValidated = true;
-          });
-        }
-        HapticFeedback.lightImpact();
-      });
-    }
+    // stopInit();
   }
 
   @override
@@ -216,13 +144,21 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
 
   @override
   Widget build(BuildContext context) {
-    Color _palleteColor = widget.palette == null
-        ? Colors.blue
-        : widget.palette.vibrantColor == null
-            ? Colors.blue
-            : widget.palette.vibrantColor!.color;
+    // Color _palleteColor = widget.palette == null
+    //     ? Colors.blue
+    //     : widget.palette.vibrantColor == null
+    //         ? Colors.blue
+    //         : widget.palette.vibrantColor!.color;
 
+    Color _palleteColor =
+        Utils.getPaletteVibrantColor(widget.palette, Colors.blue);
     final width = MediaQuery.of(context).size.width;
+
+    String entranceIdSubstring =
+        Utils.safeSubstring(widget.ticket.entranceId, 0, 4);
+
+    String orderIdSubstring =
+        Utils.safeSubstring(widget.ticketOrder.orderNumber, 0, 4);
 
     bool _isRefunded = widget.ticketOrder.refundRequestStatus == 'processed';
     var _textStyle2 = TextStyle(
@@ -350,7 +286,8 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
                     top: 30.0,
                   ),
                   child: Text(
-                    widget.ticket.entranceId.substring(0, 4),
+                    entranceIdSubstring,
+                    // widget.ticket.entranceId.substring(0, 4),
                     style: TextStyle(
                         fontSize:
                             ResponsiveHelper.responsiveFontSize(context, 30.0),
@@ -375,7 +312,8 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
                           width: 110,
                           isRefunded: _isRefunded,
                           lable: 'Check-in number',
-                          value: widget.ticket.entranceId.substring(0, 4),
+                          value: entranceIdSubstring,
+                          // widget.ticket.entranceId.substring(0, 4),
                         ),
                       SalesReceiptWidget(
                         width: 110,
@@ -428,7 +366,9 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
                         width: 110,
                         isRefunded: _isRefunded,
                         lable: 'Order number',
-                        value: widget.ticketOrder.orderNumber.substring(0, 4),
+                        value: orderIdSubstring,
+
+                        //  widget.ticketOrder.orderNumber.substring(0, 4),
                       ),
                       SalesReceiptWidget(
                         width: 110,
@@ -502,7 +442,7 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
                               if (widget.ticket.entranceId.isNotEmpty)
                                 TextSpan(
                                   text:
-                                      'Your check-in number, also known as your attendee number, is ${widget.ticket.entranceId.substring(0, 4)}. This number is generated for you automatically. As the event organizer, your ticket is free and already validated.\n\nTo validate attendees, use the ticket scanner on your ',
+                                      'Your check-in number, also known as your attendee number, is $orderIdSubstring. This number is generated for you automatically. As the event organizer, your ticket is free and already validated.\n\nTo validate attendees, use the ticket scanner on your ',
                                   style: TextStyle(
                                     color:
                                         Theme.of(context).secondaryHeaderColor,
@@ -535,7 +475,7 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
                     : Text(
                         widget.ticket.entranceId.isNotEmpty
                             ? ''
-                            : 'Your check-in number, also known as your attendee number, is ${widget.ticket.entranceId.substring(0, 4)}. This number will be validated at the entrance of this event before you can enter. Once this ticket has been validated, the color of the barcode on the ticket will change, and a blue verified badge is placed at the top right corner of the ticket.  Enjoy attending this event and have a great time!',
+                            : 'Your check-in number, also known as your attendee number, is $orderIdSubstring. This number will be validated at the entrance of this event before you can enter. Once this ticket has been validated, the color of the barcode on the ticket will change, and a blue verified badge is placed at the top right corner of the ticket.  Enjoy attending this event and have a great time!',
                         style: TextStyle(
                           color: Theme.of(context).secondaryHeaderColor,
                           fontSize: ResponsiveHelper.responsiveFontSize(

@@ -513,7 +513,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-          height: ResponsiveHelper.responsiveHeight(context, 650),
+          height: ResponsiveHelper.responsiveHeight(context, 700),
           decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(30)),
@@ -577,7 +577,9 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
               updateBlockStatus: () {
                 setState(() {});
               },
-              user: widget.userPortfolio,
+              // user: widget.userPortfolio,
+              disableAdvice: widget.userPortfolio.disableAdvice,
+              hideAdvice: widget.userPortfolio.hideAdvice,
             ),
           ),
         );

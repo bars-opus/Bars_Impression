@@ -21,7 +21,7 @@ class _UserBottomModalSheetActionsState
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-          height: ResponsiveHelper.responsiveHeight(context, 650),
+          height: ResponsiveHelper.responsiveHeight(context, 700),
           decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(30)),
@@ -115,7 +115,9 @@ class _UserBottomModalSheetActionsState
               userId: widget.user.id,
               userName: widget.user.userName,
               currentUserId: widget.currentUserId,
-              user: widget.user,
+              disableAdvice: widget.user.disableAdvice,
+              hideAdvice: widget.user.hideAdvice,
+              // user: widget.user,
             ),
           ),
         );
@@ -127,7 +129,7 @@ class _UserBottomModalSheetActionsState
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: ResponsiveHelper.responsiveHeight(context, 650.0),
+      height: ResponsiveHelper.responsiveHeight(context, 600.0),
       decoration: BoxDecoration(
           color: Theme.of(context).primaryColorLight,
           borderRadius: BorderRadius.circular(30)),
@@ -209,7 +211,7 @@ class _UserBottomModalSheetActionsState
             //   ),
             // ),
             const SizedBox(
-              height: 20,
+              height: 10,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -252,7 +254,7 @@ class _UserBottomModalSheetActionsState
               ],
             ),
             const SizedBox(
-              height: 20,
+              height: 10,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -320,32 +322,60 @@ class _UserBottomModalSheetActionsState
               text: 'Bar code',
             ),
             const SizedBox(
-              height: 20,
+              height: 10,
             ),
-            BottomModelSheetListTileActionWidget(
-              colorCode: 'Red',
-              icon: Icons.flag_outlined,
-              onPressed: () {
-                _navigateToPage(
-                    context,
-                    ReportContentPage(
-                      contentId: widget.user.id,
-                      contentType: widget.user.userName,
-                      parentContentId: widget.user.id,
-                      repotedAuthorId: widget.user.id,
-                    ));
-              },
-              text: 'Report',
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                BottomModelSheetIconActionWidget(
+                  color: Colors.red,
+                  icon: Icons.flag_outlined,
+                  onPressed: () {
+                    _navigateToPage(
+                        context,
+                        ReportContentPage(
+                          contentId: widget.user.id,
+                          contentType: widget.user.userName,
+                          parentContentId: widget.user.id,
+                          repotedAuthorId: widget.user.id,
+                        ));
+                  },
+                  text: 'Report',
+                ),
+                BottomModelSheetIconActionWidget(
+                  icon: Icons.feedback_outlined,
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => SuggestionBox()));
+                  },
+                  text: 'Suggestion',
+                ),
+              ],
             ),
-            BottomModelSheetListTileActionWidget(
-              colorCode: '',
-              icon: Icons.feedback_outlined,
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => SuggestionBox()));
-              },
-              text: 'Suggestion',
-            ),
+            // BottomModelSheetListTileActionWidget(
+            //   colorCode: 'Red',
+            //   icon: Icons.flag_outlined,
+            //   onPressed: () {
+            // _navigateToPage(
+            //     context,
+            //     ReportContentPage(
+            //       contentId: widget.user.id,
+            //       contentType: widget.user.userName,
+            //       parentContentId: widget.user.id,
+            //       repotedAuthorId: widget.user.id,
+            //     ));
+            //   },
+            //   text: 'Report',
+            // ),
+            // BottomModelSheetListTileActionWidget(
+            //   colorCode: '',
+            //   icon: Icons.feedback_outlined,
+            //   onPressed: () {
+            //     Navigator.push(context,
+            //         MaterialPageRoute(builder: (_) => SuggestionBox()));
+            //   },
+            //   text: 'Suggestion',
+            // ),
           ],
         ),
       ),

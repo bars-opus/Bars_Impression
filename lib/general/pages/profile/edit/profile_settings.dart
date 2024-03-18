@@ -489,7 +489,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                       _isLoadingGeneralSettins = false;
                     }
                   },
-                  subTitle: "Accounts you have blocked.",
+                  subTitle: "Customize your notification.",
                   icon: Icons.arrow_forward_ios_outlined,
                 ),
                 Divider(
@@ -518,7 +518,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                   onPressed: () {
                     _navigateToPage(
                       context,
-                      UserRefunds(
+                      UserPayouts(
                         currentUserId: widget.user.userId!,
                       ),
                     );
@@ -554,7 +554,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                           user: widget.user,
                         ));
                   },
-                  subTitle: "Delete your user account",
+                  subTitle: "Delete your account",
                   icon: Icons.delete_outline,
                 ),
               ],

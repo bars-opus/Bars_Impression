@@ -630,15 +630,22 @@ class _EventRoomScreenState extends State<EventRoomScreen>
     );
   }
 
+
+
+
   @override
   Widget build(BuildContext context) {
     var _provider = Provider.of<UserData>(context, listen: false);
     final double width = MediaQuery.of(context).size.width;
-    Color _palleteColor = widget.palette == null
-        ? Colors.blue
-        : widget.palette.dominantColor == null
-            ? Colors.blue
-            : widget.palette.dominantColor!.color;
+    // Color _palleteColor = widget.palette == null
+    //     ? Colors.blue
+    //     : widget.palette.dominantColor == null
+    //         ? Colors.blue
+    //         : widget.palette.dominantColor!.color;
+
+
+ Color _palleteColor =
+        Utils.getPaletteDominantColor(widget.palette, Colors.blue);
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Material(

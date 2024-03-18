@@ -197,6 +197,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       userId: _provider.user!.userId,
       userName: _provider.user!.userName,
       verified: _provider.user!.verified,
+      privateAccount: _provider.user!.privateAccount,
+      disableChat: _provider.user!.disableChat,
     );
 
     // Put the new object back into the box with the same key

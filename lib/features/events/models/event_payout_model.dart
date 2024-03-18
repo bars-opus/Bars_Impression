@@ -12,7 +12,7 @@ class EventPayoutModel {
   final String idempotencyKey;
 
   // String reason;
-  // Timestamp approvedTimestamp;
+  Timestamp clossingDay;
   final Timestamp timestamp;
 
   EventPayoutModel({
@@ -22,7 +22,7 @@ class EventPayoutModel {
     required this.subaccountId,
     // required this.reason,
     // required this.city,
-    // required this.approvedTimestamp,
+    required this.clossingDay,
     required this.timestamp,
     required this.transferRecepientId,
     required this.eventTitle,
@@ -46,10 +46,10 @@ class EventPayoutModel {
           Timestamp.fromDate(
             DateTime.now(),
           ),
-      // approvedTimestamp: doc['approvedTimestamp'] ??
-      //     Timestamp.fromDate(
-      //       DateTime.now(),
-      //     ),
+      clossingDay: doc['clossingDay'] ??
+          Timestamp.fromDate(
+            DateTime.now(),
+          ),
     );
   }
 
@@ -65,7 +65,7 @@ class EventPayoutModel {
       subaccountId: json['subaccountId'],
       eventAuthorId: json['eventAuthorId'],
       // reason: json['reason'],
-      // approvedTimestamp: json['approvedTimestamp'],
+      clossingDay: json['clossingDay'],
       timestamp: json['timestamp'],
     );
   }
@@ -82,7 +82,7 @@ class EventPayoutModel {
       'idempotencyKey': idempotencyKey,
       // 'city': city,
       // 'reason': reason,
-      // 'approvedTimestamp': approvedTimestamp,
+      'clossingDay': clossingDay,
       'timestamp': timestamp,
     };
   }

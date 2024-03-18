@@ -23,12 +23,14 @@ class AccountHolderAuthor {
   final String? dynamicLink;
   @HiveField(9)
   final bool? disabledAccount;
-
   @HiveField(10)
   final bool? reportConfirmed;
-
-   @HiveField(11)
+  @HiveField(11)
   final Timestamp? lastActiveDate;
+  @HiveField(12)
+  final bool? privateAccount;
+    @HiveField(13)
+  final bool? disableChat;
 
   AccountHolderAuthor({
     required this.userId,
@@ -40,8 +42,10 @@ class AccountHolderAuthor {
     required this.name,
     required this.dynamicLink,
     required this.disabledAccount,
-    required this.reportConfirmed,    required this.lastActiveDate,
-
+    required this.reportConfirmed,
+    required this.lastActiveDate,
+    required this.privateAccount,
+     required this.disableChat,
   });
 
   factory AccountHolderAuthor.fromDoc(DocumentSnapshot doc) {
@@ -55,8 +59,13 @@ class AccountHolderAuthor {
       verified: doc['verified'] ?? false,
       disabledAccount: doc['disabledAccount'] ?? false,
       reportConfirmed: doc['reportConfirmed'] ?? false,
+      privateAccount: doc['privateAccount'] ?? false,
+            disableChat: doc['disableChat'] ?? false,
+
+      
       name: doc['name'] ?? '',
-       lastActiveDate: doc['lastActiveDate'] ?? Timestamp.fromDate(DateTime.now()),
+      lastActiveDate:
+          doc['lastActiveDate'] ?? Timestamp.fromDate(DateTime.now()),
     );
   }
 
@@ -66,7 +75,8 @@ class AccountHolderAuthor {
       userId: doc.id,
       name: data['name'] ?? '',
       dynamicLink: data['dynamicLink'] ?? '',
-      lastActiveDate: doc['lastActiveDate'] ?? Timestamp.fromDate(DateTime.now()),
+      lastActiveDate:
+          doc['lastActiveDate'] ?? Timestamp.fromDate(DateTime.now()),
 
       userName: data['userName'] ?? '',
       profileImageUrl: data['profileImageUrl'],
@@ -75,10 +85,11 @@ class AccountHolderAuthor {
       verified: data['verified'] ?? false,
       disabledAccount: data['disabledAccount'] ?? false,
       reportConfirmed: data['reportConfirmed'] ?? false,
-      // disableChat: data['disableChat'] ?? false,
+      privateAccount: data['privateAccount'] ?? false,
+        disableChat: data['disableChat'] ?? false,
+      
       // other fields...
     );
   }
-
-  
 }
+
