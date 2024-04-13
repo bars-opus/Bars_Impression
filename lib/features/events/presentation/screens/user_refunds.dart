@@ -239,7 +239,7 @@ class _UserRefundsState extends State<UserRefunds>
               _showBottomSheetErrorMessage('Error clearing notifications ');
             }
           },
-          title: 'Are you sure you want to clear your refund  request',
+          title: 'Are you sure you want to clear your refund  request?',
           subTitle: '',
         );
       },
@@ -275,21 +275,9 @@ class _UserRefundsState extends State<UserRefunds>
     return deleteActivityDocsInBatches();
   }
 
-  void _navigateToPage(Widget page) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => page),
-    );
-  }
-
   _buildActivityBuilder(
     List<RefundModel> _refundList,
   ) {
-    var _textStyle = TextStyle(
-      fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-      color: Colors.grey,
-    );
-
     return Scrollbar(
       child: CustomScrollView(
         // controller: _hideButtonController,
@@ -298,115 +286,11 @@ class _UserRefundsState extends State<UserRefunds>
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                RefundModel invite = _refundList[index];
-                bool _isRefunded = invite.status == 'processed';
-                bool _isLoading = false;
-                var _textStyle2 = TextStyle(
-                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-                  color: Theme.of(context).secondaryHeaderColor,
-                  decoration: _isRefunded
-                      ? TextDecoration.lineThrough
-                      : TextDecoration.none,
-                );
+                RefundModel refund = _refundList[index];
 
-                return GestureDetector(
-                  onTap: () async {
-                    _isLoading = true;
-                    try {
-                      Event? event =
-                          await DatabaseService.getEventWithId(invite.eventId);
-
-                      if (event != null) {
-                        _navigateToPage(EventEnlargedScreen(
-                          currentUserId: widget.currentUserId,
-                          event: event,
-                          type: event.type,
-                        ));
-                      } else {
-                        _showBottomSheetErrorMessage('Failed to fetch event.');
-                      }
-                    } catch (e) {
-                      _showBottomSheetErrorMessage('Failed to fetch event');
-                    } finally {
-                      _isLoading = false;
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: RichText(
-                                textScaleFactor:
-                                    MediaQuery.of(context).textScaleFactor,
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: 'Status:                  ',
-                                      style: _textStyle,
-                                    ),
-                                    TextSpan(
-                                      text: invite.status,
-                                      style: TextStyle(
-                                        fontSize:
-                                            ResponsiveHelper.responsiveFontSize(
-                                                context, 14.0),
-                                        color: invite.status == 'pending'
-                                            ? Colors.red
-                                            : Colors.blue,
-                                        decoration: _isRefunded
-                                            ? TextDecoration.lineThrough
-                                            : TextDecoration.none,
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text: '\nApproved time:    ',
-                                      style: _textStyle,
-                                    ),
-                                    TextSpan(
-                                      text: MyDateFormat.toDate(
-                                          invite.approvedTimestamp.toDate()),
-                                      style: _textStyle2,
-                                    ),
-                                    TextSpan(
-                                      text: '\nReason:                 ',
-                                      style: _textStyle,
-                                    ),
-                                    TextSpan(
-                                      text: invite.reason,
-                                      style: _textStyle2,
-                                    ),
-                                    TextSpan(
-                                      text: '\nCity:                     ',
-                                      style: _textStyle,
-                                    ),
-                                    TextSpan(
-                                      text: invite.city,
-                                      style: _textStyle2,
-                                    ),
-                                    TextSpan(
-                                      text: '\nId:                         ',
-                                      style: _textStyle,
-                                    ),
-                                    TextSpan(
-                                      text: invite.id,
-                                      style: _textStyle2,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Divider()
-                      ],
-                    ),
-                  ),
+                return RefundWidget(
+                  currentRefund: refund,
+                  currentUserId: widget.currentUserId,
                 );
               },
               childCount: _refundList.length,

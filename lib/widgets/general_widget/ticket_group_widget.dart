@@ -52,8 +52,11 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
   }
 
   _removeTicket(TicketModel removingTicket) async {
-    widget.groupTickets
-        .removeWhere((ticket) => ticket.price == removingTicket.price);
+    widget.groupTickets.removeWhere((ticket) =>
+        ticket.price == removingTicket.price &&
+        ticket.type == removingTicket.type &&
+        ticket.group == removingTicket.group &&
+        ticket.eventTicketDate == removingTicket.eventTicketDate);
   }
 
 // Helper function to get date only from DateTime
@@ -247,7 +250,8 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
                       color: widget.isEditing || widget.onInvite
                           ? Colors.white
                           : Theme.of(context).secondaryHeaderColor,
-                      fontSize:  ResponsiveHelper.responsiveFontSize(context, 20),
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 20),
                       fontWeight: FontWeight.bold),
                 ),
               ),

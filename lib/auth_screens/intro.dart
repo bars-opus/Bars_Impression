@@ -19,7 +19,33 @@ class _IntroState extends State<Intro> {
     );
   }
 
- 
+  void _createEventDoc(
+    BuildContext context,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return CreateEventDoc();
+      },
+    );
+  }
+
+  void _createWorkRequestDoc(
+    BuildContext context,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return CreateWorkRequestDoc(
+          fromWelcome: true,
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,28 +114,37 @@ class _IntroState extends State<Intro> {
                             ShakeTransition(
                               axis: Axis.vertical,
                               child: WelcomeInfo(
-                                  title: 'Attend, meet and experience',
-                                  subTitle:
-                                      "Explore events happening around you and have fun attending them, while making new friends. Unforgettable experiences to your fingertips. ",
-                                  icon: Icons.event_outlined
-                                  ),
+                                title: 'In all aspects, You are covered',
+                                subTitle:
+                                    "From birthdays to weddings, parties to concerts, we simplifies every aspect. Unforgettable experience at your fingertips. ",
+                                icon: Icons.event_outlined,
+                                showMore: true,
+                                moreOnpressed: () {
+                                  _createEventDoc(context);
+                                },
+                              ),
                             ),
                             ShakeTransition(
                               axis: Axis.vertical,
                               child: WelcomeInfo(
-                                title: 'Book Creatives',
+                                moreOnpressed: () {
+                                  _createWorkRequestDoc(context);
+                                },
+                                title: 'Book creatives',
                                 subTitle:
-                                    "Connect with the finest music creatives in your area, and book them to perform at your events or collaborate on your projects. Discover and be discovered.  ",
-                                icon: Icons.people_outline,
+                                    "Explore and engage with a diverse pool of talented creatives from various backgrounds. Book them to perform at your events or collaborate on your projects. \nBe creative with creatives.  ",
+                                icon: Icons.call_outlined, showMore: true,
                                 // _iconData(Icons.people_outline),
                               ),
                             ),
                             ShakeTransition(
                               child: WelcomeInfo(
-                                title: 'Stay Connected',
+                                moreOnpressed: () {},
+                                title: 'Stay connected',
                                 subTitle:
                                     "Stay connected with the friends you've made at events and continue expanding your network for endless opportunities.",
-                                icon: Icons.person_outlined,
+                                icon: Icons.people_outline,
+                                showMore: false,
                               ),
                             ),
                           ],
@@ -119,13 +154,17 @@ class _IntroState extends State<Intro> {
                     SizedBox(
                       height: ResponsiveHelper.responsiveHeight(context, 30),
                     ),
-                    BlueOutlineButton(buttonText: 'Get Started', onPressed: () {  Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => WelcomeScreen(),
-                                ),
-                              ); },),
-                   
+                    BlueOutlineButton(
+                      buttonText: 'Get Started',
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => WelcomeScreen(),
+                          ),
+                        );
+                      },
+                    ),
                     SizedBox(
                       height: ResponsiveHelper.responsiveHeight(context, 60),
                     )

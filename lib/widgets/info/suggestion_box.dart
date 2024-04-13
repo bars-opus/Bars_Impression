@@ -27,7 +27,7 @@ class _SuggestionBoxState extends State<SuggestionBox> {
         id: '',
       );
       try {
-        DatabaseService.createSuggestion(suggestion);
+     await   DatabaseService.createSuggestion(suggestion);
         Navigator.pop(context);
         mySnackBar(context, 'Thank You\nSuggestion submitted successfully.');
       } catch (e) {

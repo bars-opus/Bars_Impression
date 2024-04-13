@@ -58,7 +58,9 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
           Utils.safeSubstring(finalPurchasintgTicket.transactionId, 0, 4);
       return GestureDetector(
         onTap: _isRefunded
-            ? () {}
+            ? () {
+                mySnackBar(context, 'You cannot access a refunded ticket.');
+              }
             : () {
                 _navigateToPage(
                   EventsAttendingTicketScreen(
@@ -72,7 +74,7 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
                 );
               },
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 2),
           child: Container(
             padding: const EdgeInsets.all(
               20.0,

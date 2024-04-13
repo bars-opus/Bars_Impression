@@ -1,7 +1,6 @@
 import 'package:bars/utilities/exports.dart';
 
-Future<void> reverseGeocoding( UserData provider, String address) async {
-
+Future<void> reverseGeocoding(UserData provider, String address) async {
   try {
     List<Location> results = await locationFromAddress(address);
 
@@ -17,14 +16,11 @@ Future<void> reverseGeocoding( UserData provider, String address) async {
         Placemark firstPlacemark = placemarks.first;
         print(
             'City: ${firstPlacemark.locality}, Country: ${firstPlacemark.country}');
-        provider.setCity(firstPlacemark.locality!);
-        provider.setCountry(firstPlacemark.country!);
+        provider.setCity(firstPlacemark.locality!.trim());
+        provider.setCountry(firstPlacemark.country!.trim());
       }
     }
-  } catch (e) {
-
-  }
-
+  } catch (e) {}
 
   if (provider.city.isEmpty) {
     // Fallback to string parsing
@@ -35,8 +31,8 @@ Future<void> reverseGeocoding( UserData provider, String address) async {
       String city = parts.length > 3 && stateOrProvince.length <= 2
           ? parts[parts.length - 3].trim()
           : parts[parts.length - 2].trim();
-      provider.setCity(city);
-      provider.setCountry(country);
+      provider.setCity(city.trim());
+      provider.setCountry(country.trim());
       provider.setCouldntDecodeCity(true);
     }
   }

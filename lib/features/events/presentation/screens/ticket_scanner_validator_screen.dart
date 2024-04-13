@@ -80,12 +80,12 @@ class _TicketScannerValidatorScreenState
         // Get the order document reference
         DocumentReference orderDocRef = newEventTicketOrderRef
             .doc(event.id)
-            .collection('eventInvite')
+            .collection('ticketOrders')
             .doc(ticketOrderUserId);
 
         DocumentReference userOrderDocRef = newUserTicketOrderRef
             .doc(ticketOrderUserId)
-            .collection('eventInvite')
+            .collection('ticketOrders')
             .doc(event.id);
 
         // Read the order document
@@ -124,8 +124,10 @@ class _TicketScannerValidatorScreenState
             }
 
             if (ticket.validated) {
+              Map<String, dynamic> updatedTicket = Map.from(ticket.toJson());
+              updatedTicket['lastTimeScanned'] =
+                  Timestamp.fromDate(DateTime.now());
               throw Exception('Ticket has already been validated.');
-              
             }
 
             // Update the validated status of the ticket
@@ -133,6 +135,8 @@ class _TicketScannerValidatorScreenState
             // Create a new map with the updated 'validated' field
             Map<String, dynamic> updatedTicket = Map.from(ticket.toJson());
             updatedTicket['validated'] = true;
+            updatedTicket['lastTimeScanned'] =
+                Timestamp.fromDate(DateTime.now());
             return updatedTicket;
           }
           return ticket.toJson(); // Unchanged ticket

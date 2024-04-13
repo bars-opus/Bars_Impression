@@ -107,7 +107,10 @@ class PortfolioContactWidget extends StatelessWidget {
     return Container(
       height: ResponsiveHelper.responsiveHeight(context, 250.0),
       child: ListView(
-          physics: const AlwaysScrollableScrollPhysics(), children: forumViews),
+          physics: edit
+              ? NeverScrollableScrollPhysics()
+              : AlwaysScrollableScrollPhysics(),
+          children: forumViews),
     );
   }
 

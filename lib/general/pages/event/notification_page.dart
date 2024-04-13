@@ -66,33 +66,33 @@ class _NotificationPageState extends State<NotificationPage>
 // _lastActivityDocument will be null and the query will fetch the first set of activities again.
 
   _setupActivities() async {
-    // try {
-    QuerySnapshot ticketOrderSnapShot = await activitiesRef
-        .doc(widget.currentUserId)
-        .collection('userActivities')
-        .orderBy('timestamp', descending: true)
-        .limit(10)
-        .get();
-    List<Activity> ticketOrder =
-        ticketOrderSnapShot.docs.map((doc) => Activity.fromDoc(doc)).toList();
-    if (ticketOrderSnapShot.docs.isNotEmpty) {
-      _lastActivityDocument = ticketOrderSnapShot.docs.last;
-    }
-    if (mounted) {
-      setState(() {
-        _activities = ticketOrder;
-        _isLoading = false;
-      });
-    }
-    if (ticketOrderSnapShot.docs.length < 10) {
-      _hasNext = false; // No more documents to load
-    }
+    try {
+      QuerySnapshot ticketOrderSnapShot = await activitiesRef
+          .doc(widget.currentUserId)
+          .collection('userActivities')
+          .orderBy('timestamp', descending: true)
+          .limit(10)
+          .get();
+      List<Activity> ticketOrder =
+          ticketOrderSnapShot.docs.map((doc) => Activity.fromDoc(doc)).toList();
+      if (ticketOrderSnapShot.docs.isNotEmpty) {
+        _lastActivityDocument = ticketOrderSnapShot.docs.last;
+      }
+      if (mounted) {
+        setState(() {
+          _activities = ticketOrder;
+          _isLoading = false;
+        });
+      }
+      if (ticketOrderSnapShot.docs.length < 10) {
+        _hasNext = false; // No more documents to load
+      }
 
-    return ticketOrder;
-    // } catch (e) {
-    //   print('Error fetching initial invites: $e');
-    //   return [];
-    // }
+      return ticketOrder;
+    } catch (e) {
+      print('Error fetching initial invites: $e');
+      return [];
+    }
   }
 
   _loadMoreActivities() async {
@@ -418,7 +418,7 @@ class _NotificationPageState extends State<NotificationPage>
       'Sorted By: $title',
       style: TextStyle(
           color: Theme.of(context).primaryColorLight,
-          fontSize:  ResponsiveHelper.responsiveFontSize( context, 12),
+          fontSize: ResponsiveHelper.responsiveFontSize(context, 12),
           fontWeight: FontWeight.normal),
     );
   }

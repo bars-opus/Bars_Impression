@@ -332,7 +332,7 @@ class _EventDisplayWidgetState extends State<EventDisplayWidget> {
                             color: Theme.of(context).secondaryHeaderColor,
                             clossingDay: DateTime.now(),
                             startDate: widget.event.startDate.toDate(),
-                             eventHasEnded: _eventHasEnded,
+                            eventHasEnded: _eventHasEnded,
                             eventHasStarted: _eventHasStarted,
                           ),
                           if (widget.event.isPrivate)

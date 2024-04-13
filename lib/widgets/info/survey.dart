@@ -53,7 +53,7 @@ class _FeatureSurveyState extends State<FeatureSurvey> {
         id: '',
       );
       try {
-        DatabaseService.createSurvey(survey);
+       await DatabaseService.createSurvey(survey);
         Navigator.pop(context);
         mySnackBar(context, 'Thank You\nSurvey submitted successfully.');
       } catch (e) {

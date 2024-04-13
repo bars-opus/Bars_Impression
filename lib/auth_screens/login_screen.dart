@@ -118,10 +118,10 @@ class _LoginScreenState extends State<LoginScreen>
           : error;
 
       _showBottomSheetErrorMessage(result);
-
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted)
+        setState(() {
+          _isLoading = false;
+        });
     }
   }
 

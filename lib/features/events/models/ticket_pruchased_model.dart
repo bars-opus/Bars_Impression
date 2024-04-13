@@ -13,6 +13,8 @@ class TicketPurchasedModel {
   bool validated;
   final String transactionId;
   final Timestamp eventTicketDate;
+  final Timestamp lastTimeScanned;
+
   int row;
   int seat;
 
@@ -28,6 +30,7 @@ class TicketPurchasedModel {
     required this.row,
     required this.seat,
     required this.eventTicketDate,
+    required this.lastTimeScanned,
     required this.entranceId,
     required this.transactionId,
     required this.idempotencyKey,
@@ -51,6 +54,10 @@ class TicketPurchasedModel {
           Timestamp.fromDate(
             DateTime.now(),
           ),
+      lastTimeScanned: json['lastTimeScanned'] ??
+          Timestamp.fromDate(
+            DateTime.now(),
+          ),
       entranceId: json['entranceId'] ?? '',
     );
   }
@@ -71,6 +78,7 @@ class TicketPurchasedModel {
       'seat': seat,
       'entranceId': entranceId,
       'eventTicketDate': eventTicketDate,
+      'lastTimeScanned': lastTimeScanned,
     };
   }
 
@@ -84,6 +92,7 @@ class TicketPurchasedModel {
     required int seat,
     required String refundRequestStatus,
     required String idempotencyKey,
+    required Timestamp lastTimeScanned,
   }) {
     return TicketPurchasedModel(
       id: ticketModel.id,
@@ -99,6 +108,7 @@ class TicketPurchasedModel {
       row: row,
       seat: seat,
       eventTicketDate: ticketModel.eventTicketDate,
+      lastTimeScanned: lastTimeScanned,
       entranceId: entranceId,
     );
   }

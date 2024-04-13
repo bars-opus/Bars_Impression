@@ -11,10 +11,13 @@ class TaggedPeopleGroup extends StatelessWidget {
   });
 
   void _removeTaggedEventPeople(
+    BuildContext context,
     TaggedEventPeopleModel removingTaggedEventPeople,
   ) {
-    groupTaggedEventPeopleGroup.removeWhere(
-        (taggedPerson) => taggedPerson.id == removingTaggedEventPeople.id);
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    _provider.taggedEventPeople.removeWhere(
+        (taggedPerson) => taggedPerson.name == removingTaggedEventPeople.name);
   }
 
   void _showBottomTaggedPersonExternalLink(
@@ -79,6 +82,7 @@ class TaggedPeopleGroup extends StatelessWidget {
                               ),
                               onPressed: () {
                                 _removeTaggedEventPeople(
+                                  context,
                                   taggedPerson,
                                 );
                               })

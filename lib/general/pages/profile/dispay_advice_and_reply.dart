@@ -30,17 +30,6 @@ class _DisplayAdviceAndReplyState extends State<DisplayAdviceAndReply> {
     _commentController.addListener(_onAskTextChanged);
   }
 
-  // _setUpRepliedCommentCount() async {
-  //   DatabaseService.numRepliedAsks(widget.userId, widget.advice.id)
-  //       .listen((repliedComment) {
-  //     if (mounted) {
-  //       setState(() {
-  //         _repliedComment = repliedComment;
-  //       });
-  //     }
-  //   });
-  // }
-
   @override
   void dispose() {
     _commentController.dispose();

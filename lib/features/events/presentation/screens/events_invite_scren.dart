@@ -31,6 +31,7 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
   @override
   void initState() {
     super.initState();
+
     _setUpEventExpectedAttendees();
     _countDown();
   }
@@ -153,18 +154,20 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
       List<TicketPurchasedModel> pasTicket = [];
       if (isAccepted) {
         TicketPurchasedModel order = TicketPurchasedModel(
-            entranceId: commonId,
-            eventTicketDate: widget.event.startDate,
-            group: '',
-            id: '',
-            price: 0,
-            refundRequestStatus: '',
-            idempotencyKey: '',
-            seat: 0,
-            row: 0,
-            type: 'Free Pass',
-            validated: false,
-            transactionId: '');
+          entranceId: commonId,
+          eventTicketDate: widget.event.startDate,
+          group: '',
+          id: '',
+          price: 0,
+          refundRequestStatus: '',
+          idempotencyKey: '',
+          seat: 0,
+          row: 0,
+          type: 'Free Pass',
+          validated: false,
+          transactionId: '',
+          lastTimeScanned: Timestamp.fromDate(DateTime.now()),
+        );
 
         pasTicket.add(order);
 
@@ -232,7 +235,7 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
       // entranceId: '',
       eventId: widget.event.id,
       eventImageUrl: widget.event.imageUrl,
-      eventTimestamp: widget.event.timestamp,
+      eventTimestamp: widget.event.startDate,
       isInvited: true,
       timestamp: Timestamp.now(),
       orderNumber: commonId,
@@ -241,10 +244,11 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
       eventTitle: widget.event.title,
       purchaseReferenceId: purchaseReferenceId, refundRequestStatus: '',
       transactionId: transactionId, idempotencyKey: '',
+      isPaymentVerified: false, paymentProvider: '',
       //  refundRequestStatus: '',
     );
 
-    widget.event.ticketOrder.add(order);
+    // widget.event.ticketOrder.add(order);
     DatabaseService.purchaseTicketBatch(
       ticketOrder: order,
       batch: batch,
@@ -266,9 +270,6 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
     }
   }
 
-
- 
-
 // This function generates the ticket display widget.
 // It includes elements such as the event date, generated message, and check-in number.
 // The date is displayed in a large font, and the generated message and check-in instructions are presented in smaller fonts.
@@ -279,7 +280,6 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
     //     : widget.palette.vibrantColor == null
     //         ? Colors.grey
     //         : widget.palette.vibrantColor!.color;
-
 
     Color _palleteColor =
         Utils.getPaletteVibrantColor(widget.palette, Colors.grey);
@@ -298,6 +298,13 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
       fontSize: ResponsiveHelper.responsiveFontSize(context, 150.0),
       color: _palleteColor,
       fontWeight: FontWeight.bold,
+      // shadows: [
+      //   Shadow(
+      //     color: Colors.black.withOpacity(.2),
+      //     offset: Offset(8, 8),
+      //     blurRadius: 4,
+      //   ),
+      // ],
     );
     return new Material(
       color: Colors.transparent,

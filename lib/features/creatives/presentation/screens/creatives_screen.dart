@@ -160,9 +160,11 @@ class _CreativesScreenState extends State<CreativesScreen>
     required bool isAll,
     required String from,
   }) async {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
     int newLimit = widget.seeMoreFrom.isNotEmpty ? 15 : limit;
 
-    var query = userProfessionalRef
+    var query = userProfessionalRef.where('showOnExplorePage', isEqualTo: true)
         .where('profileHandle', isEqualTo: widget.profileHandle)
         .where('noBooking', isEqualTo: false);
 
@@ -181,100 +183,102 @@ class _CreativesScreenState extends State<CreativesScreen>
 
     // Now order by randomId
     query = query.orderBy('randomId');
-    // try {
-    QuerySnapshot userFeedSnapShot = await query
-        .where('randomId', isGreaterThanOrEqualTo: randomValue)
-        .limit(newLimit)
-        .get();
-
-    if (userFeedSnapShot.docs.length < newLimit) {
-      int remainingLimit = newLimit - userFeedSnapShot.docs.length;
-      QuerySnapshot additionalSnapshot = await query
-          .where('randomId', isLessThan: randomValue)
-          .limit(remainingLimit)
+    try {
+      QuerySnapshot userFeedSnapShot = await query
+          .where('randomId', isGreaterThanOrEqualTo: randomValue)
+          .limit(newLimit)
           .get();
-      userFeedSnapShot.docs.addAll(additionalSnapshot.docs);
-    }
 
-    List<UserProfessionalModel> users = userFeedSnapShot.docs
-        .map((doc) => UserProfessionalModel.fromDoc(doc))
-        .toList();
-
-    List<UserProfessionalModel> uniqueEvents = [];
-    if (from.startsWith('City')) {
-      for (var event in users) {
-        if (addedCityCountryUserIds.add(event.id)) {
-          uniqueEvents.add(event);
-        }
+      if (userFeedSnapShot.docs.length < newLimit) {
+        int remainingLimit = newLimit - userFeedSnapShot.docs.length;
+        QuerySnapshot additionalSnapshot = await query
+            .where('randomId', isLessThan: randomValue)
+            .limit(remainingLimit)
+            .get();
+        userFeedSnapShot.docs.addAll(additionalSnapshot.docs);
       }
-    } else if (from.startsWith('Country')) {
-      for (var event in users) {
-        if (addedCityCountryUserIds.add(event.id)) {
-          uniqueEvents.add(event);
-        }
-      }
-    } else if (from.startsWith('Continent')) {
-      for (var event in users) {
-        if (addedCityCountryUserIds.add(event.id)) {
-          uniqueEvents.add(event);
-        }
-      }
-    } else {
-      for (var event in users) {
-        if (addedUserIds.add(event.id)) {
-          uniqueEvents.add(event);
-        }
-      }
-    }
 
-    List<UserProfessionalModel>? newUsersCity;
-    List<UserProfessionalModel>? newUsersCountry;
-    List<UserProfessionalModel>? newUsersContinent;
-    List<UserProfessionalModel>? newUsersAll;
+      List<UserProfessionalModel> users = userFeedSnapShot.docs
+          .map((doc) => UserProfessionalModel.fromDoc(doc))
+          .toList();
 
-    if (from.startsWith('Country')) {
-      _usersCountrySnapshot.addAll((userFeedSnapShot.docs));
-    }
-    if (from.startsWith('City')) {
-      _usersCitySnapshot.addAll((userFeedSnapShot.docs));
-    }
-    if (from.startsWith('Continent')) {
-      _usersContinentSnapshot.addAll((userFeedSnapShot.docs));
-    }
-    if (isAll) {
-      _usersAllSnapshot.addAll((userFeedSnapShot.docs));
-    }
-
-    if (widget.seeMoreFrom.isNotEmpty || widget.liveCity.isNotEmpty) {
-      newUsersAll = uniqueEvents;
-      // print(newUsersAll.length.toString() + 'length');
-    } else {
-      if (country != null && city != null) {
-        newUsersCity = uniqueEvents;
-      } else if (country != null) {
-        newUsersCountry = uniqueEvents;
-      } else if (continent != null) {
-        newUsersContinent = uniqueEvents;
+      List<UserProfessionalModel> uniqueEvents = [];
+      if (from.startsWith('City')) {
+        for (var event in users) {
+          if (addedCityCountryUserIds.add(event.id)) {
+            uniqueEvents.add(event);
+          }
+        }
+      } else if (from.startsWith('Country')) {
+        for (var event in users) {
+          if (addedCityCountryUserIds.add(event.id)) {
+            uniqueEvents.add(event);
+          }
+        }
+      } else if (from.startsWith('Continent')) {
+        for (var event in users) {
+          if (addedCityCountryUserIds.add(event.id)) {
+            uniqueEvents.add(event);
+          }
+        }
       } else {
-        newUsersAll = uniqueEvents;
+        for (var event in users) {
+          if (addedUserIds.add(event.id)) {
+            uniqueEvents.add(event);
+          }
+        }
       }
-    }
 
-    if (mounted) {
-      setState(() {
-        _usersCity = newUsersCity ?? _usersCity;
-        _usersCountry = newUsersCountry ?? _usersCountry;
-        _usersContinent = newUsersContinent ?? _usersContinent;
-        _usersAll = newUsersAll ?? _usersAll;
-      });
-    }
+      List<UserProfessionalModel>? newUsersCity;
+      List<UserProfessionalModel>? newUsersCountry;
+      List<UserProfessionalModel>? newUsersContinent;
+      List<UserProfessionalModel>? newUsersAll;
 
-    return users;
-    // } catch (e) {
-    //   _showBottomSheetErrorMessage();
-    //   // Consider what you want to do in case of error. Here, we return an empty list
-    //   return [];
-    // }
+      if (from.startsWith('Country')) {
+        _usersCountrySnapshot.addAll((userFeedSnapShot.docs));
+      }
+      if (from.startsWith('City')) {
+        _usersCitySnapshot.addAll((userFeedSnapShot.docs));
+      }
+      if (from.startsWith('Continent')) {
+        _usersContinentSnapshot.addAll((userFeedSnapShot.docs));
+      }
+      if (isAll) {
+        _usersAllSnapshot.addAll((userFeedSnapShot.docs));
+      }
+
+      if (widget.seeMoreFrom.isNotEmpty || widget.liveCity.isNotEmpty) {
+        newUsersAll = uniqueEvents;
+        // print(newUsersAll.length.toString() + 'length');
+      } else {
+        if (country != null && city != null) {
+          newUsersCity = uniqueEvents;
+        } else if (country != null) {
+          newUsersCountry = uniqueEvents;
+        } else if (continent != null) {
+          newUsersContinent = uniqueEvents;
+        } else {
+          newUsersAll = _provider.userLocationPreference!.city!.isEmpty
+              ? users
+              : uniqueEvents;
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          _usersCity = newUsersCity ?? _usersCity;
+          _usersCountry = newUsersCountry ?? _usersCountry;
+          _usersContinent = newUsersContinent ?? _usersContinent;
+          _usersAll = newUsersAll ?? _usersAll;
+        });
+      }
+
+      return users;
+    } catch (e) {
+      _showBottomSheetErrorMessage();
+      // Consider what you want to do in case of error. Here, we return an empty list
+      return [];
+    }
   }
 
   void _showBottomSheetErrorMessage() {
@@ -338,7 +342,7 @@ class _CreativesScreenState extends State<CreativesScreen>
     String? continent,
   }) async {
     try {
-      var query = userProfessionalRef.where('profileHandle',
+      var query = userProfessionalRef.where('showOnExplorePage', isEqualTo: true).where('profileHandle',
           isEqualTo: widget.profileHandle);
 
       if (country != null) {
@@ -506,28 +510,6 @@ class _CreativesScreenState extends State<CreativesScreen>
               SizedBox(
                 height: 5.0,
               ),
-              // RichText(
-              //     textScaleFactor: MediaQuery.of(context).textScaleFactor,
-              //     text: TextSpan(children: [
-              //       TextSpan(
-              //         text: 'bio: ',
-              //         style: TextStyle(
-              //           fontSize:
-              //               ResponsiveHelper.responsiveFontSize(context, 12),
-              //           color: Colors.grey,
-              //           fontWeight: FontWeight.bold,
-              //         ),
-              //       ),
-              //       TextSpan(
-              //         text: user,
-              //         style: TextStyle(
-              //           fontSize:
-              //               ResponsiveHelper.responsiveFontSize(context, 12),
-              //           color: Colors.grey,
-              //           fontWeight: FontWeight.bold,
-              //         ),
-              //       ),
-              //     ])),
             ],
           ),
           onTap: () => Navigator.push(

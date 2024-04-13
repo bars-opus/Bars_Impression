@@ -46,7 +46,7 @@ class _ReportContentSubmissionState extends State<ReportContentSubmission> {
       comment: _comment,
     );
     try {
-      DatabaseService.createReportContent(reportContent);
+      await DatabaseService.createReportContent(reportContent);
       editContentReport(reportContent);
       Navigator.pop(context);
       mySnackBar(context, 'Thank You\nReport submitted successfully.');
@@ -64,7 +64,6 @@ class _ReportContentSubmissionState extends State<ReportContentSubmission> {
   }
 
   editContentReport(ReportContents reportContent) {
-
     reportContent.contentType.contains('Mood punched')
         ? postsRef
             .doc(reportContent.repotedAuthorId)
@@ -130,7 +129,6 @@ class _ReportContentSubmissionState extends State<ReportContentSubmission> {
                                         'report': reportContent.reportType,
                                       })
                                     : usersGeneralSettingsRef
-                                        
                                         .doc(reportContent.repotedAuthorId)
                                         .update({
                                         'report': reportContent.reportType,

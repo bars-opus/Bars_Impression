@@ -9,7 +9,7 @@ final storageRef = FirebaseStorage.instance.ref();
 
 final usersLocationSettingsRef =
     _firestore.collection('user_location_settings');
-    
+
 final usersGeneralSettingsRef = _firestore.collection('user_general_settings');
 
 final userProfessionalRef = _firestore.collection('user_professsional');
@@ -29,10 +29,12 @@ final testingRef = _firestore.collection('testing');
 
 //
 final eventsRef = _firestore.collection('new_events');
+final userIssueComplaintRef = _firestore.collection('userIssueComplaint');
+
 final deletdEventsRef = _firestore.collection('all_deleted_events');
 
 final allRefundRequestsRef = _firestore.collection('allRefundRequests');
-// final eventRefundRequestsRef = _firestore.collection('eventRefundRequests');
+final eventRefundRequestsRef = _firestore.collection('eventRefundRequests');
 
 final eventsChatRoomsRef = _firestore.collection('new_eventChatRooms');
 
@@ -56,6 +58,7 @@ final eventFeedsRef = _firestore.collection('new_eventFeeds');
 
 final followersRef = _firestore.collection('new_followers');
 final followingRef = _firestore.collection('new_following');
+final followRequestsRef = _firestore.collection('new_followRequests');
 
 // final possitveRatedRef = _firestore.collection('possitiveRated');
 // final possitiveRatingRef = _firestore.collection('possitiveRating');
@@ -93,7 +96,6 @@ final sentEventIviteRef = _firestore.collection('new_sentEventInvite');
 // final userIviteRef = _firestore.collection('new_usersInvite');
 final userRefundRequestsRef = _firestore.collection('userRefundRequests');
 final userPayoutRequestRef = _firestore.collection('userPayoutRequests');
-
 
 final userInvitesRef = _firestore.collection('userInvites');
 

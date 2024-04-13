@@ -102,7 +102,7 @@ class _DiscoverUserState extends State<DiscoverUser>
           ),
           Text(
             style: Theme.of(context).textTheme.bodySmall,
-            'Music_Video_Director',
+            'Videographer',
           ),
           Text(
             style: Theme.of(context).textTheme.bodySmall,
@@ -146,7 +146,7 @@ class _DiscoverUserState extends State<DiscoverUser>
           ),
           Text(
             style: Theme.of(context).textTheme.bodySmall,
-            'Cover_Art_Designer',
+            'Graphic_Designer',
           ),
           Text(
             style: Theme.of(context).textTheme.bodySmall,
@@ -220,7 +220,7 @@ class _DiscoverUserState extends State<DiscoverUser>
                     tabIndex = 3;
                     break;
                   case 4:
-                    eventType = 'Music_Video_Director';
+                    eventType = 'Videographer';
                     tabIndex = 4;
                     break;
                   case 5:
@@ -264,7 +264,7 @@ class _DiscoverUserState extends State<DiscoverUser>
                     tabIndex = 14;
                     break;
                   case 15:
-                    eventType = 'Cover_Art_Designer';
+                    eventType = 'Graphic_Designer';
                     tabIndex = 15;
                     break;
                   case 16:
@@ -343,7 +343,7 @@ class _DiscoverUserState extends State<DiscoverUser>
                                       : _tabController.index == 3
                                           ? 'All Dancer'
                                           : _tabController.index == 4
-                                              ? 'All Music_Video_Director'
+                                              ? 'All Videographer'
                                               : _tabController.index == 5
                                                   ? 'All Content_creator'
                                                   : _tabController.index == 6
@@ -373,7 +373,7 @@ class _DiscoverUserState extends State<DiscoverUser>
                                                                                   : _tabController.index == 14
                                                                                       ? 'All Instrumentalist'
                                                                                       : _tabController.index == 15
-                                                                                          ? 'All Cover_Art_Designer'
+                                                                                          ? 'All Graphic_Designer'
                                                                                           : _tabController.index == 16
                                                                                               ? 'All Makeup_Artist'
                                                                                               : _tabController.index == 17
@@ -392,62 +392,6 @@ class _DiscoverUserState extends State<DiscoverUser>
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                       )
-                    // Padding(
-                    //     padding: const EdgeInsets.all(30.0),
-                    //     child: Text(
-                    //       // 'Dsicover creatives',
-                    //       _tabController.index == 0
-                    //           ? 'All Artists'
-                    //           : _tabController.index == 1
-                    //               ? 'All Producers'
-                    //               : _tabController.index == 2
-                    //                   ? 'All DJ'
-                    //                   : _tabController.index == 3
-                    //                       ? 'All Dancer'
-                    //                       : _tabController.index == 4
-                    //                           ? 'All Music_Video_Director'
-                    //                           : _tabController.index == 5
-                    //                               ? 'All Content_creator'
-                    //                               : _tabController.index == 6
-                    //                                   ? 'All Photographer'
-                    //                                   : _tabController.index ==
-                    //                                           7
-                    //                                       ? 'All Record_Label'
-                    //                                       : _tabController
-                    //                                                   .index ==
-                    //                                               8
-                    //                                           ? 'All Brand_Influencer'
-                    //                                           : _tabController
-                    //                                                       .index ==
-                    //                                                   9
-                    //                                               ? 'All Event_organiser'
-                    //                                               : _tabController
-                    //                                                           .index ==
-                    //                                                       10
-                    //                                                   ? 'All Band'
-                    //                                                   : _tabController.index ==
-                    //                                                           11
-                    //                                                       ? 'All Instrumentalist'
-                    //                                                       : _tabController.index == 12
-                    //                                                           ? 'All Cover_Art_Designer'
-                    //                                                           : _tabController.index == 13
-                    //                                                               ? 'AllMakeup_Artists'
-                    //                                                               : _tabController.index == 14
-                    //                                                                   ? 'All Video_Vixens'
-                    //                                                                   : _tabController.index == 15
-                    //                                                                       ? 'All Bloggers'
-                    //                                                                       : _tabController.index == 16
-                    //                                                                           ? 'All MC(Host)s'
-                    //                                                                           : _tabController.index == 17
-                    //                                                                               ? 'All Choire'
-                    //                                                                               : _tabController.index == 18
-                    //                                                                                   ? 'Battle_Rapper'
-                    //                                                                                   : _tabController.index == 19
-                    //                                                                                       ? 'All Fans'
-                    //                                                                                       : '',
-                    //       style: Theme.of(context).textTheme.titleMedium,
-                    //     ),
-                    //   )
                     : Container(
                         height: ResponsiveHelper.responsiveHeight(context, 100),
                         child: SingleChildScrollView(

@@ -14,6 +14,8 @@ class ActivityWidget extends StatefulWidget {
 
 class _ActivityWidgetState extends State<ActivityWidget> {
   bool _isLoading = false;
+  bool _isFollowRequestRejected = false;
+  bool _isFollowRequestAccepted = false;
 
   _submit(Activity activity) async {
     try {
@@ -27,11 +29,15 @@ class _ActivityWidgetState extends State<ActivityWidget> {
 
       activity.seen = true;
     } catch (e) {
-      _showBottomSheetErrorMessage('Request failed');
+      _showBottomSheetErrorMessage(
+          'Request failed', 'Check your internet connection and try again.');
     }
   }
 
-  void _showBottomSheetErrorMessage(String errorTitle) {
+  void _showBottomSheetErrorMessage(
+    String errorTitle,
+    String body,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -43,7 +49,7 @@ class _ActivityWidgetState extends State<ActivityWidget> {
             Navigator.pop(context);
           },
           title: errorTitle,
-          subTitle: 'Check your internet connection and try again.',
+          subTitle: body,
         );
       },
     );
@@ -124,6 +130,30 @@ class _ActivityWidgetState extends State<ActivityWidget> {
         });
   }
 
+  _getEvent(TicketOrderModel ticketOrder) async {
+    Event? _event = await DatabaseService.getUserEventWithId(
+        ticketOrder.eventId, ticketOrder.eventAuthorId);
+
+    if (_event != null) {
+      PaletteGenerator _paletteGenerator =
+          await PaletteGenerator.fromImageProvider(
+        CachedNetworkImageProvider(_event.imageUrl),
+        size: Size(1110, 150),
+        maximumColorCount: 20,
+      );
+
+      _navigateToPage(
+          context,
+          PurchasedAttendingTicketScreen(
+            ticketOrder: ticketOrder,
+            event: _event,
+            currentUserId: widget.currentUserId,
+            justPurchased: '',
+            palette: _paletteGenerator,
+          ));
+    }
+  }
+
   Future<void> _getActivityTicketOrder(Activity activity) async {
     var postId = activity.postId;
     if (postId == null) {
@@ -134,9 +164,12 @@ class _ActivityWidgetState extends State<ActivityWidget> {
         await DatabaseService.getUserTicketOrderWithId(
             postId, widget.currentUserId);
     if (ticketOrder != null) {
-      _showBottomDeletedEvent(context, ticketOrder);
+      ticketOrder.isDeleted
+          ? _showBottomDeletedEvent(context, ticketOrder)
+          : _getEvent(ticketOrder);
     } else {
-      _showBottomSheetErrorMessage('Failed to fetch ticket order.');
+      _showBottomSheetErrorMessage('Failed to fetch ticket order.',
+          'Check your internet connection and try again.');
     }
   }
 
@@ -153,7 +186,7 @@ class _ActivityWidgetState extends State<ActivityWidget> {
         await _getActivityEvent(activity);
         break;
       case NotificationActivityType.eventUpdate:
-        await _getActivityEvent(activity);
+        await _getActivityTicketOrder(activity);
         break;
 
       case NotificationActivityType.refundRequested:
@@ -230,10 +263,15 @@ class _ActivityWidgetState extends State<ActivityWidget> {
           ),
         );
       } else {
-        _showBottomSheetErrorMessage('Failed to fetch event.');
+        _showBottomSheetErrorMessage('Event not found.',
+            'This event might have been deleted or cancelled');
+        // _showBottomSheetErrorMessage('Failed to fetch event.',
+        //     'Check your internet connection and try again.');
       }
     } else {
-      _showBottomSheetErrorMessage('Failed to fetch event.');
+      _showBottomSheetErrorMessage('Invitation not found.', '');
+      // _showBottomSheetErrorMessage('Failed to fetch event.',
+      //     'Check your internet connection and try again.');
     }
   }
 
@@ -250,18 +288,23 @@ class _ActivityWidgetState extends State<ActivityWidget> {
       return;
     }
 
-    Event? event = await DatabaseService.getEventWithId(postId);
+    Event? event = await DatabaseService.getUserEventWithId(
+        postId, activity.helperFielId!);
     if (event != null) {
-      _navigateToPage(
-        context,
-        EventEnlargedScreen(
-          currentUserId: widget.currentUserId,
-          event: event,
-          type: event.type,
-        ),
-      );
+      event.isPrivate
+          ? _showBottomSheetPrivateEventMessage()
+          : _navigateToPage(
+              context,
+              EventEnlargedScreen(
+                currentUserId: widget.currentUserId,
+                event: event,
+                type: event.type,
+              ),
+            );
     } else {
-      _showBottomSheetPrivateEventMessage();
+      _showBottomSheetErrorMessage('Event not found.',
+          'This event might have been deleted or cancelled');
+      // _getActivityTicketOrder(activity);
     }
   }
 
@@ -353,7 +396,7 @@ class _ActivityWidgetState extends State<ActivityWidget> {
         color = activity.comment != null ? Colors.blueGrey : Colors.pink;
         break;
       case NotificationActivityType.follow:
-        text = "follows you:";
+        text = "";
         color = Colors.blue;
         break;
       default:
@@ -460,7 +503,115 @@ class _ActivityWidgetState extends State<ActivityWidget> {
             color: Colors.grey));
   }
 
+  Widget _followRequestRespond(Activity activity) {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    return Container(
+      width: ResponsiveHelper.responsiveHeight(context, 100),
+      height: ResponsiveHelper.responsiveHeight(context, 70),
+      child: _isLoading
+          ? SizedBox(
+              height: ResponsiveHelper.responsiveHeight(context, 10.0),
+              width: ResponsiveHelper.responsiveHeight(context, 10.0),
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
+              ),
+            )
+          : _isFollowRequestRejected || _isFollowRequestAccepted
+              ? Text(
+                  _isFollowRequestAccepted ? 'Accepted' : 'Rejected',
+                  style: TextStyle(
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 12),
+                      color:
+                          _isFollowRequestAccepted ? Colors.blue : Colors.red,
+                      fontWeight: FontWeight.bold),
+                )
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () async {
+                        setState(() {
+                          _isLoading = true;
+                        });
+
+                        await DatabaseService.acceptFollowRequest(
+                          currentUserId: widget.currentUserId,
+                          requesterUserId: activity.authorId!,
+                          activityId: activity.id!,
+                          currentUser: _provider.user!,
+                        );
+
+                        if (mounted) {
+                          setState(() {
+                            _isLoading = false;
+                            _isFollowRequestAccepted = true;
+                          });
+                        }
+                      },
+                      child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            color:
+                                Theme.of(context).primaryColor.withOpacity(.4),
+                          ),
+                          padding: const EdgeInsetsDirectional.symmetric(
+                              vertical: 5, horizontal: 20),
+                          child: Text(
+                            'Accept',
+                            style: TextStyle(
+                                fontSize: ResponsiveHelper.responsiveFontSize(
+                                    context, 12),
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold),
+                          )),
+                    ),
+                    GestureDetector(
+                      onTap: () async {
+                        setState(() {
+                          _isLoading = true;
+                        });
+
+                        await DatabaseService.rejectFollowRequest(
+                          currentUserId: widget.currentUserId,
+                          userId: activity.authorId!,
+                          activityId: activity.id!,
+                        );
+
+                        if (mounted) {
+                          setState(() {
+                            _isLoading = false;
+                            _isFollowRequestRejected = true;
+                          });
+                        }
+                      },
+                      child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            color:
+                                Theme.of(context).primaryColor.withOpacity(.4),
+                          ),
+                          padding: const EdgeInsetsDirectional.symmetric(
+                              vertical: 5, horizontal: 20),
+                          child: Text(
+                            ' Reject',
+                            style: TextStyle(
+                                fontSize: ResponsiveHelper.responsiveFontSize(
+                                    context, 12),
+                                color: Colors.grey,
+                                fontWeight: FontWeight.bold),
+                          )),
+                    ),
+                  ],
+                ),
+    );
+  }
+
   Widget _buildTrailing(Activity activity, bool isSeen) {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
     return _isLoading
         ? SizedBox(
             height: ResponsiveHelper.responsiveHeight(context, 10.0),
@@ -469,26 +620,33 @@ class _ActivityWidgetState extends State<ActivityWidget> {
               strokeWidth: 3,
             ),
           )
-        : activity.type == NotificationActivityType.follow ||
-                activity.postImageUrl!.isEmpty
-            ? SizedBox.shrink()
-            : Container(
-                width: ResponsiveHelper.responsiveHeight(context, 90),
-                height: ResponsiveHelper.responsiveHeight(context, 40),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    _buildUnseenIndicator(activity, isSeen),
-                    _buildLikeButton(activity, isSeen),
-                    CachedNetworkImage(
-                      imageUrl: activity.postImageUrl ?? '',
-                      height: ResponsiveHelper.responsiveHeight(context, 40.0),
-                      width: ResponsiveHelper.responsiveHeight(context, 40.0),
-                      fit: BoxFit.cover,
+        : activity.type == NotificationActivityType.follow &&
+                _provider.user!.privateAccount!
+            ? _followRequestRespond(activity)
+            : activity.type == NotificationActivityType.follow ||
+                    activity.postImageUrl!.isEmpty
+                ? SizedBox.shrink()
+                : Container(
+                    width: ResponsiveHelper.responsiveHeight(context, 90),
+                    height: ResponsiveHelper.responsiveHeight(context, 40),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        _buildUnseenIndicator(activity, isSeen),
+                        _buildLikeButton(activity, isSeen),
+                        // if(activity.postImageUrl != null)
+
+                        CachedNetworkImage(
+                          imageUrl: activity.postImageUrl ?? '',
+                          height:
+                              ResponsiveHelper.responsiveHeight(context, 40.0),
+                          width:
+                              ResponsiveHelper.responsiveHeight(context, 40.0),
+                          fit: BoxFit.cover,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              );
+                  );
   }
 
   Widget _buildUnseenIndicator(Activity activity, bool isSeen) {
@@ -569,6 +727,8 @@ class _ActivityWidgetState extends State<ActivityWidget> {
                                 NotificationActivityType.newEventInNearYou ||
                             widget.activity.type ==
                                 NotificationActivityType.inviteRecieved ||
+                            widget.activity.type ==
+                                NotificationActivityType.eventDeleted ||
                             widget.activity.type ==
                                 NotificationActivityType.eventUpdate
                         ? _iconContiner(widget.activity)

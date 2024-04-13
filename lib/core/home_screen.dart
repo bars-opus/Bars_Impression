@@ -1,12 +1,13 @@
 import 'dart:math';
 
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:bars/general/pages/chats/chats.dart';
 
 import 'package:bars/utilities/exports.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
-
 import 'package:store_redirect/store_redirect.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,7 +21,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  final int _updateAppVersion = Platform.isIOS ? 17 : 17;
+  final int _updateAppVersion = Platform.isIOS ? 20 : 20;
   String notificationMsg = '';
 
   @override
@@ -31,33 +32,105 @@ class HomeScreenState extends State<HomeScreen> {
       _setUpactivityCount();
       _configureNotification();
       initDynamicLinks();
+      // showAnalytics();
     });
-
-    // updateProfessionalContacts2();
-    // _updateMistakFields();
-
-    // updateProfessionalContacts();
-    // _deleteFields();
-    // _createFieldMultiples();
-
-    // https://links.barsopus.com/barsImpression/VAuu
-
-    // _newLink();
-
-    // _createFieldMultiples();
-
-    // initializeData();
-
-    // _createFields();
-
-    // _updateMistakFields();
-    // _createFields();
-    // _newUserProfessionalData();
-    // _newUserProfessional();
-    // _newUserAuthorSettings();
-    // _newUserAuthorLocation();
-    // _newUserAuthor();
   }
+
+  // showAnalytics() async {
+  //   // Check the tracking authorization status
+  //   final TrackingStatus status =
+  //       await AppTrackingTransparency.trackingAuthorizationStatus;
+
+  //   // If the authorization status has not been determined, show the bottom sheet
+  //   if (status == TrackingStatus.notDetermined) {
+  //     showTrackingExplanationBottomSheet(context);
+  //   } else {
+  //     // Otherwise, proceed with initializing Firebase Analytics
+  //     initFirebaseAnalytics(status);
+  //   }
+  // }
+
+  // Future<void> initFirebaseAnalytics(TrackingStatus status) async {
+  //   FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+
+  //   // If the authorization status is not determined, request authorization
+  //   if (status == TrackingStatus.notDetermined) {
+  //     status = await AppTrackingTransparency.requestTrackingAuthorization();
+  //   }
+
+  //   // Use the updated status after the request authorization
+  //   if (status == TrackingStatus.authorized) {
+  //     // User has authorized tracking
+  //     await analytics.setAnalyticsCollectionEnabled(true);
+
+  //     // // Log an event to signify that analytics has started
+  //     // await analytics.logEvent(
+  //     //   name: 'analytics_enabled',
+  //     //   parameters: <String, dynamic>{
+  //     //     'enabled': true,
+  //     //   },
+  //     // );
+  //   } else {
+  //     // If the user has denied tracking or it is restricted/disallowed for some reason,
+  //     // you might want to disable analytics collection or handle this case accordingly
+  //     await analytics.setAnalyticsCollectionEnabled(false);
+  //   }
+  // }
+
+  // Future<void> showTrackingExplanationBottomSheet(BuildContext context) async {
+  //   await showModalBottomSheet(
+  //     backgroundColor: Colors.transparent,
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return Container(
+  //         padding: EdgeInsets.all(26),
+  //         decoration: BoxDecoration(
+  //           color: Color(0xFF1a1a1a),
+  //           borderRadius: BorderRadius.circular(30),
+  //         ),
+
+  //         height: ResponsiveHelper.responsiveHeight(
+  //             context, 500), // Adjust the height as needed
+  //         child: Column(
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           mainAxisAlignment: MainAxisAlignment.center,
+  //           children: <Widget>[
+  //             Text(
+  //               'Help Improve\nBars Impression',
+  //               style: TextStyle(
+  //                   fontSize: ResponsiveHelper.responsiveFontSize(context, 20),
+  //                   fontWeight: FontWeight.bold,
+  //                   color: Colors.white),
+  //             ),
+  //             const SizedBox(height: 16),
+  //             Text(
+  //               'Allowing tracking helps us to improve the app by understanding how it is used. which leads to better features and performance improvements. Your privacy is important to us\n\n- We only collect anonymous usage statistics and performance data.\n\n- We never sell your data or use it for any purpose other than improving Bars Impression\n\n- You can change your decision at any time in the app settings.\n\n\nThank you for helping us make Bars Impression better for everyone!',
+  //               style: TextStyle(
+  //                   fontSize: ResponsiveHelper.responsiveFontSize(context, 14),
+  //                   color: Colors.white),
+  //             ),
+  //             const SizedBox(height: 20),
+  //             // Spacer(),
+  //             Center(
+  //               child: MiniCircularProgressButton(
+  //                 text: 'Continue',
+  //                 onPressed: () {
+  //                   // Close the bottom sheet and request tracking permission
+  //                   Navigator.pop(context);
+  //                   AppTrackingTransparency.requestTrackingAuthorization().then(
+  //                     (status) {
+  //                       initFirebaseAnalytics(status);
+  //                     },
+  //                   );
+  //                 },
+  //               ),
+  //             )
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   _updateMistakFields() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -480,10 +553,40 @@ class HomeScreenState extends State<HomeScreen> {
     await batch.commit();
   }
 
-  _createFields() async {
+  _updateOldFields() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference userProfessionalCollection =
         firestore.collection('user_author');
+
+// Start a new batch
+    WriteBatch batch = firestore.batch();
+// final Random random = Random();
+
+// print(' dd  ' + random.nextDouble().toString());
+
+    QuerySnapshot querySnapshot = await userProfessionalCollection.get();
+    querySnapshot.docs.forEach((doc) {
+      Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
+
+      // Only proceed if data is not null
+      if (data != null) {
+        if (!data.containsKey('profileHandle')) {
+          if (data['profileHandle'] == 'Music_Video_Director') {
+            data['profileHandle'] = 'Videographer';
+            batch.update(doc.reference, data);
+          }
+        }
+      }
+    });
+
+// Commit the batch
+    await batch.commit();
+  }
+
+  _createFields() async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference userProfessionalCollection =
+        firestore.collection('user_professsional');
 
     // Start a new batch
     WriteBatch batch = firestore.batch();
@@ -498,9 +601,9 @@ class HomeScreenState extends State<HomeScreen> {
       // Only proceed if data is not null
       if (data != null) {
         // Check if "subaccount_id" field exists
-        if (!data.containsKey('disableChat')) {
+        if (!data.containsKey('improvemenSuggestion')) {
           // Create the "subaccount_id" field without overwriting existing fields
-          data['disableChat'] = false;
+          data['improvemenSuggestion'] = '';
           batch.set(doc.reference, data);
         }
       }
@@ -2176,6 +2279,7 @@ class HomeScreenState extends State<HomeScreen> {
         // String? recipient = message.data['recipient'];
         String? contentType = message.data['contentType'];
         String? contentId = message.data['contentId'];
+        String? authorId = message.data['authorId'];
         String? eventAuthorId = message.data['eventAuthorId'];
 
         // String? title = message.data['title'];
@@ -2221,80 +2325,89 @@ class HomeScreenState extends State<HomeScreen> {
               // contentType.endsWith('ask')
               ? _navigateToPage(
                   context, NotificationPage(currentUserId: currentUserId))
-              : contentType.endsWith('follow') ||
-                      contentType.endsWith('ticketPurchased')
+              : contentType.endsWith('follow')
                   ? _navigateToPage(
                       context,
                       ProfileScreen(
                         currentUserId:
                             Provider.of<UserData>(context, listen: false)
                                 .currentUserId!,
-                        userId: contentId,
+                        userId: authorId!,
                         user: null,
                       ))
-                  : contentType.endsWith('message')
+                  : contentType.endsWith('ticketPurchased')
                       ? _navigateToPage(
                           context,
-                          ViewSentContent(
-                            contentId: contentId,
-                            contentType: 'message',
-                            eventAuthorId: '',
-                          ),
-                        )
-                      : contentType.endsWith('eventRoom')
+                          ProfileScreen(
+                            currentUserId:
+                                Provider.of<UserData>(context, listen: false)
+                                    .currentUserId!,
+                            userId: authorId!,
+                            user: null,
+                          ))
+                      : contentType.endsWith('message')
                           ? _navigateToPage(
                               context,
                               ViewSentContent(
                                 contentId: contentId,
-                                contentType: 'eventRoom',
+                                contentType: 'message',
                                 eventAuthorId: '',
                               ),
                             )
-                          : contentType.endsWith('eventDeleted')
+                          : contentType.endsWith('eventRoom')
                               ? _navigateToPage(
                                   context,
                                   ViewSentContent(
                                     contentId: contentId,
-                                    contentType: 'eventDeleted',
+                                    contentType: 'eventRoom',
                                     eventAuthorId: '',
                                   ),
                                 )
-                              : contentType.endsWith('refundProcessed')
+                              : contentType.endsWith('eventDeleted')
                                   ? _navigateToPage(
                                       context,
                                       ViewSentContent(
                                         contentId: contentId,
-                                        contentType: 'refundProcessed',
-                                        eventAuthorId: eventAuthorId!,
+                                        contentType: 'eventDeleted',
+                                        eventAuthorId: '',
                                       ),
                                     )
-                                  : _navigateToPage(
-                                      context,
-                                      ViewSentContent(
-                                        contentId: contentId,
-                                        contentType: contentType
-                                                .endsWith('FundsDistributed')
-                                            ? 'Event'
-                                            : contentType.endsWith(
-                                                    'newEventInNearYou')
+                                  : contentType.endsWith('refundProcessed')
+                                      ? _navigateToPage(
+                                          context,
+                                          ViewSentContent(
+                                            contentId: contentId,
+                                            contentType: 'refundProcessed',
+                                            eventAuthorId: eventAuthorId!,
+                                          ),
+                                        )
+                                      : _navigateToPage(
+                                          context,
+                                          ViewSentContent(
+                                            contentId: contentId,
+                                            contentType: contentType.endsWith(
+                                                    'FundsDistributed')
                                                 ? 'Event'
-                                                : contentType
-                                                        .endsWith('eventUpdate')
+                                                : contentType.endsWith(
+                                                        'newEventInNearYou')
                                                     ? 'Event'
                                                     : contentType.endsWith(
-                                                            'eventReminder')
+                                                            'eventUpdate')
                                                         ? 'Event'
                                                         : contentType.endsWith(
-                                                                'refundRequested')
+                                                                'eventReminder')
                                                             ? 'Event'
-                                                            : contentType
-                                                                    .startsWith(
-                                                                        'inviteRecieved')
-                                                                ? 'InviteRecieved'
-                                                                : '',
-                                        eventAuthorId: eventAuthorId!,
-                                      ),
-                                    );
+                                                            : contentType.endsWith(
+                                                                    'refundRequested')
+                                                                ? 'Event'
+                                                                : contentType
+                                                                        .startsWith(
+                                                                            'inviteRecieved')
+                                                                    ? 'InviteRecieved'
+                                                                    : '',
+                                            eventAuthorId: eventAuthorId!,
+                                          ),
+                                        );
         }
         // }
       }
@@ -2469,8 +2582,7 @@ class _HomeMobileState extends State<HomeMobile>
         : widget.updateApp.updateVersionAndroid;
     _version = version!;
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      _setUpInvites();
-
+      await _setUpInvites();
       _setShowDelayInfo();
     });
   }
@@ -2507,8 +2619,6 @@ class _HomeMobileState extends State<HomeMobile>
             .doc(currentUserId)
             .collection('eventInvite')
             .where('answer', isEqualTo: '')
-            // .where('startDate', isGreaterThanOrEqualTo: currentDate)
-            // .orderBy('eventTimestamp', descending: true)
             .where('eventTimestamp', isGreaterThanOrEqualTo: currentDate)
             .where('eventTimestamp', isLessThanOrEqualTo: sortDate)
             .orderBy('eventTimestamp')
@@ -2520,8 +2630,6 @@ class _HomeMobileState extends State<HomeMobile>
             .doc(currentUserId)
             .collection('eventInvite')
             .where('answer', isEqualTo: '')
-            // .where('startDate', isGreaterThanOrEqualTo: currentDate)
-            // .orderBy('eventTimestamp', descending: true)
             .where('eventTimestamp', isGreaterThanOrEqualTo: currentDate)
             .where('eventTimestamp', isLessThanOrEqualTo: sortDate)
             .orderBy('eventTimestamp')
@@ -2936,7 +3044,8 @@ class _HomeMobileState extends State<HomeMobile>
                             ),
                             SingleChildScrollView(
                               child: Container(
-                                height: 400,
+                                height: ResponsiveHelper.responsiveHeight(
+                                    context, 400),
                                 child: ListView.builder(
                                   itemCount: _inviteList.length,
                                   itemBuilder: (context, index) {
@@ -2957,25 +3066,25 @@ class _HomeMobileState extends State<HomeMobile>
               ),
               Positioned(
                 bottom: 1,
-                child: Padding(
-                  padding: EdgeInsets.only(
-                      bottom: ResponsiveHelper.responsiveHeight(
-                          context, _inviteList.length < 1 ? 100 : 70)),
-                  child: AnimatedContainer(
-                    curve: Curves.easeInOut,
-                    duration: Duration(milliseconds: 800),
-                    height: dontShowActivityCount ? 0.0 : 40,
-                    width: dontShowActivityCount ? 1 : 150,
-                    decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(5)),
-                    child: Center(
-                      child: SingleChildScrollView(
-                        child: GestureDetector(
-                          onTap: () {
-                            _navigateToPage(
-                                NotificationPage(currentUserId: currentUserId));
-                          },
+                child: GestureDetector(
+                  onTap: () {
+                    _navigateToPage(
+                        NotificationPage(currentUserId: currentUserId));
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                        bottom: ResponsiveHelper.responsiveHeight(
+                            context, _inviteList.length < 1 ? 100 : 70)),
+                    child: AnimatedContainer(
+                      curve: Curves.easeInOut,
+                      duration: Duration(milliseconds: 800),
+                      height: dontShowActivityCount ? 0.0 : 40,
+                      width: dontShowActivityCount ? 1 : 150,
+                      decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(5)),
+                      child: Center(
+                        child: SingleChildScrollView(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,

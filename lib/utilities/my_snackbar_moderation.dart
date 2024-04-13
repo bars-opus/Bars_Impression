@@ -16,37 +16,44 @@ void mySnackBarModeration(BuildContext context, String message) {
               Icons.info_outline_rounded,
               color: Colors.grey.withOpacity(.3),
             ),
-            title: RichText(
-              textScaleFactor:
-                  MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5),
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                      text:
-                      message,
-                          
-                      style: TextStyle(
-                        fontSize:
-                            ResponsiveHelper.responsiveFontSize(context, 14.0),
-                        color: Colors.white,
-                      )),
-                  TextSpan(
-                      text: 'our community guidelines ',
-                      style: TextStyle(
-                        fontSize:
-                            ResponsiveHelper.responsiveFontSize(context, 14.0),
-                        color: Colors.blue,
-                      )),
-                  TextSpan(
-                      text: 'and avoid using offensive or sensitive language.',
-                      style: TextStyle(
-                        fontSize:
-                            ResponsiveHelper.responsiveFontSize(context, 14.0),
-                        color: Colors.white,
-                      )),
-                ],
+            title: GestureDetector(
+              onTap: () async {
+                if (!await launchUrl(
+                    Uri.parse('https://www.barsopus.com/terms-of-use'))) {
+                  throw 'Could not launch link';
+                }
+              },
+              child: RichText(
+                textScaleFactor:
+                    MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5),
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                        text: message,
+                        style: TextStyle(
+                          fontSize: ResponsiveHelper.responsiveFontSize(
+                              context, 14.0),
+                          color: Colors.white,
+                        )),
+                    TextSpan(
+                        text: 'our community guidelines ',
+                        style: TextStyle(
+                          fontSize: ResponsiveHelper.responsiveFontSize(
+                              context, 14.0),
+                          color: Colors.blue,
+                        )),
+                    TextSpan(
+                        text:
+                            'and avoid using offensive or sensitive language.',
+                        style: TextStyle(
+                          fontSize: ResponsiveHelper.responsiveFontSize(
+                              context, 14.0),
+                          color: Colors.white,
+                        )),
+                  ],
+                ),
+                textAlign: TextAlign.start,
               ),
-              textAlign: TextAlign.start,
             ),
           ),
         )),

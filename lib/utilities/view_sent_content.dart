@@ -290,6 +290,8 @@ class _ViewSentContentState extends State<ViewSentContent> {
                                   TicketOrderModel _ticketOrder =
                                       snapshot.data![0];
                                   Event? event = snapshot.data![1];
+                                      RefundModel? newRefund;
+
                                   return FutureBuilder<PaletteGenerator>(
                                     future: _generatePalette(event!.imageUrl),
                                     builder: (BuildContext context,
@@ -319,6 +321,7 @@ class _ViewSentContentState extends State<ViewSentContent> {
                                         currentUserId: _provider.currentUserId!,
                                         justPurchased: '',
                                         palette: _palette,
+                                        
                                       );
                                     },
                                   );

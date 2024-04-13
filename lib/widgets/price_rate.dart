@@ -41,16 +41,18 @@ class PriceRateWidget extends StatelessWidget {
             title: RichText(
                 textScaleFactor: MediaQuery.of(context).textScaleFactor,
                 text: TextSpan(children: [
-                  TextSpan(
-                    text:
-                        '${currencyPartition.isEmpty ? '' : currencyPartition.length > 0 ? currencyPartition[1] : ''} ${price.price.toString()}',
-                    style: TextStyle(
-                      fontSize:
-                          ResponsiveHelper.responsiveFontSize(context, 18.0),
-                      color: Theme.of(context).secondaryHeaderColor,
-                      fontWeight: FontWeight.bold,
+                  if (currencyPartition.isNotEmpty &&
+                      currencyPartition.length > 1)
+                    TextSpan(
+                      text:
+                          '${currencyPartition.isEmpty ? '' : currencyPartition.length > 0 ? currencyPartition[1] : ''} ${price.price.toString()}',
+                      style: TextStyle(
+                        fontSize:
+                            ResponsiveHelper.responsiveFontSize(context, 18.0),
+                        color: Theme.of(context).secondaryHeaderColor,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
                   TextSpan(
                     text: "\n${price.name}",
                     style: TextStyle(

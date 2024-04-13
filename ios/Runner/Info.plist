@@ -69,15 +69,15 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>share photos, punch your mood and change avatar</string>
+	<string>Share photos, create events and change profile pictures</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>To help us suggest music creatives living in your city for you</string>
+	<string>To help us suggest events and creatives living in your city for you</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>To help us suggest music creatives living in your city for you</string>
+	<string>To help us suggest events and creatives living in your city for you</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app needs access to location when open.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>share photos, punch your mood and change avatar</string>
+	<string>Share photos, create events and change profile pictures</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

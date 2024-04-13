@@ -9,14 +9,13 @@ enum NotificationActivityType {
   inviteRecieved,
   ticketPurchased,
   follow,
+  // followRequest,
   eventUpdate,
   eventReminder,
   refundRequested,
-    refundProcessed,
+  refundProcessed,
 
   eventDeleted
-  
-
 }
 
 class Activity {
@@ -27,6 +26,8 @@ class Activity {
   final String? comment;
   bool? seen;
   final String? authorId;
+  final String? helperFielId;
+
   final String authorName;
   final String authorProfileHandle;
   final String authorProfileImageUrl;
@@ -46,12 +47,14 @@ class Activity {
     required this.authorProfileHandle,
     required this.authorProfileImageUrl,
     required this.authorVerification,
+    required this.helperFielId,
   });
 
   factory Activity.fromDoc(DocumentSnapshot doc) {
     return Activity(
       id: doc.id,
       authorId: doc['authorId'] ?? '',
+      helperFielId: doc['helperFielId'] ?? '',
       type: _parseActivityType(doc['type']),
       postId: doc['postId'] ?? '',
       seen: doc['seen'] ?? false,
@@ -88,12 +91,12 @@ class Activity {
         return NotificationActivityType.eventReminder;
       case 'refundRequested':
         return NotificationActivityType.refundRequested;
-         case 'eventDeleted':
+      case 'eventDeleted':
         return NotificationActivityType.eventDeleted;
-
-   case 'refundProcessed':
+      case 'refundProcessed':
         return NotificationActivityType.refundProcessed;
-        
+      // case 'followRequest':
+      //   return NotificationActivityType.followRequest;
       default:
         return NotificationActivityType.eventUpdate;
     }

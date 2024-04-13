@@ -39,6 +39,7 @@ class _EditEventScreenState extends State<EditEventScreen> {
       _provider.setStartDate(widget.event.startDate);
       _provider.setClossingDay(widget.event.clossingDay);
       _provider.setCountry(widget.event.country);
+      _provider.setCity(widget.event.city);
       _provider.setDressCode(widget.event.dressCode);
       _provider.setTicketSite(widget.event.ticketSite);
       _provider.setPreviousEvent(widget.event.previousEvent);

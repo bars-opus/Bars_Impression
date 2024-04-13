@@ -725,10 +725,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           tag: widget.user.userId!,
                           child: Icon(
                             Icons.qr_code,
-                            color: Theme.of(context).secondaryHeaderColor,
+                            color: Colors.blue,
                             size:
-                                ResponsiveHelper.responsiveHeight(context, 40),
+                                ResponsiveHelper.responsiveHeight(context, 30),
                           )),
+                    ),
+                    const SizedBox(
+                      height: 50.0,
                     ),
                     _closeWidget(),
                     const SizedBox(
@@ -737,6 +740,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ],
                 )),
             _suggestionWidget(),
+            const SizedBox(
+              height: 20.0,
+            ),
+            GestureDetector(
+              onTap: () {
+                _navigateToPage(
+                    context,
+                    CompainAnIssue(
+                      parentContentId: widget.user.userId!,
+                      authorId: widget.user.userId!,
+                      complainContentId: widget.user.userId!,
+                      complainType: 'Account',
+                      parentContentAuthorId: widget.user.userId!,
+                    ));
+              },
+              child: Text(
+                'Complain an issue.',
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+                ),
+                textAlign: TextAlign.start,
+              ),
+            ),
             const SizedBox(height: 40),
           ],
         ),

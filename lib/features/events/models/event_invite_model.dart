@@ -11,6 +11,8 @@ class InviteModel {
   final Timestamp? timestamp;
   final Timestamp? eventTimestamp;
   final String? eventTitle;
+  final String refundRequestStatus;
+  final bool isDeleted;
 
   InviteModel({
     required this.answer,
@@ -23,6 +25,8 @@ class InviteModel {
     required this.inviterMessage,
     required this.isTicketPass,
     required this.eventTitle,
+    required this.refundRequestStatus,
+    required this.isDeleted,
   });
 
   factory InviteModel.fromDoc(DocumentSnapshot doc) {
@@ -34,7 +38,9 @@ class InviteModel {
       inviterMessage: doc['inviterMessage'] ?? '',
       inviteeId: doc['inviteeId'] ?? '',
       inviterId: doc['inviterId'] ?? '',
+      refundRequestStatus: doc['refundRequestStatus'] ?? '',
       isTicketPass: doc['isTicketPass'] ?? false,
+      isDeleted: doc['isDeleted'] ?? false,
       eventTimestamp: doc['eventTimestamp'] ??
           Timestamp.fromDate(
             DateTime.now(),
@@ -53,9 +59,11 @@ class InviteModel {
       eventTitle: json['eventTitle']!,
       generatedMessage: json['generatedMessage']!,
       inviterMessage: json['inviterMessage']!,
+      refundRequestStatus: json['refundRequestStatus']!,
       isTicketPass: json['isTicketPass']!,
       inviteeId: json['inviteeId']!,
       inviterId: json['inviterId']!,
+      isDeleted: json['isDeleted'] ?? false,
       timestamp: json['timestamp'] != null
           ? Timestamp.fromMillisecondsSinceEpoch(json['timestamp'])
           : null,
@@ -70,12 +78,14 @@ class InviteModel {
       'eventId': eventId,
       'answer': answer,
       'eventTitle': eventTitle,
+      'refundRequestStatus': refundRequestStatus,
       'generatedMessage': generatedMessage,
       'inviterMessage': inviterMessage,
       'isTicketPass': isTicketPass,
       'inviteeId': inviteeId,
       'inviterId': inviterId,
       'timestamp': timestamp,
+      'isDeleted': isDeleted,
       'eventTimestamp': eventTimestamp,
     };
   }

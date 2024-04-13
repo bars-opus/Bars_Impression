@@ -113,7 +113,7 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
     1: 'Producer',
     2: 'DJ',
     3: 'Dancer',
-    4: 'Music_Video_Director',
+    4: 'Videographer',
     5: 'Content_creator',
     6: 'Photographer',
     7: 'Caterers',
@@ -124,7 +124,7 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
     12: 'Event_organiser',
     13: 'Band',
     14: 'Instrumentalist',
-    15: 'Cover_Art_Designer',
+    15: 'Graphic_Designer',
     16: 'Makeup_Artist',
     17: 'Video_Vixen',
     18: 'Blogger',
@@ -212,6 +212,7 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
     });
 
     var query = userProfessionalRef
+    .where('showOnExplorePage', isEqualTo: true)
         .where('profileHandle', isEqualTo: type)
         .where('noBooking', isEqualTo: false);
 
@@ -323,7 +324,7 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
                   tabIndex = 3;
                   break;
                 case 4:
-                  eventType = 'Music_Video_Director';
+                  eventType = 'Videographer';
                   tabIndex = 4;
                   break;
                 case 5:
@@ -367,7 +368,7 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
                   tabIndex = 14;
                   break;
                 case 15:
-                  eventType = 'Cover_Art_Designer';
+                  eventType = 'Graphic_Designer';
                   tabIndex = 15;
                   break;
                 case 16:

@@ -1,11 +1,27 @@
 import 'package:bars/utilities/exports.dart';
 
-class EventDeletedMessageWidget extends StatelessWidget {
+class EventDeletedMessageWidget extends StatefulWidget {
   final TicketOrderModel ticketOrder;
   final String currentUserId;
 
   const EventDeletedMessageWidget(
       {super.key, required this.ticketOrder, required this.currentUserId});
+
+  @override
+  State<EventDeletedMessageWidget> createState() =>
+      _EventDeletedMessageWidgetState();
+}
+
+class _EventDeletedMessageWidgetState extends State<EventDeletedMessageWidget> {
+  RefundModel? refund;
+
+  @override
+  void initState() {
+    super.initState();
+    // _generatePalette();
+
+    if (widget.ticketOrder.refundRequestStatus.isNotEmpty) _getRefund();
+  }
 
   Future<void> _sendMail(String email, BuildContext context) async {
     String url = 'mailto:$email';
@@ -20,14 +36,89 @@ class EventDeletedMessageWidget extends StatelessWidget {
     }
   }
 
+  _getRefund() async {
+    RefundModel? newRefund = await DatabaseService.getRefundWithId(
+        widget.currentUserId, widget.ticketOrder.eventId);
+
+    setState(() {
+      refund = newRefund;
+    });
+  }
+
+  _alreadyRefunded() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 30.0, horizontal: 10),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 30.0,
+            ),
+            alignment: Alignment.centerLeft,
+            width: double.infinity,
+            height: ResponsiveHelper.responsiveFontSize(context, 40.0),
+            // padding:
+            //     const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10),
+            decoration: BoxDecoration(
+              color: Colors.red,
+            ),
+            // width: width,
+            child: Text(
+              'Refund processed  ',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+                color: Colors.white,
+              ),
+            ),
+          ),
+          // if (refund != null)
+          AnimatedContainer(
+            duration: const Duration(seconds: 2),
+            height: refund == null
+                ? 0.0
+                : ResponsiveHelper.responsiveHeight(context, 350),
+            width: double.infinity,
+            curve: Curves.linearToEaseOut,
+            padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10),
+            decoration: BoxDecoration(
+                color: Theme.of(context).primaryColorLight,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(.2),
+                    offset: Offset(2, 2),
+                    blurRadius: 5.0,
+                    spreadRadius: 4.0,
+                  )
+                ]),
+            child: refund != null
+                ? SingleChildScrollView(
+                    physics: NeverScrollableScrollPhysics(),
+                    child: RefundWidget(
+                      currentRefund: refund!,
+                      currentUserId: widget.currentUserId,
+                    ),
+                  )
+                : SizedBox.shrink(),
+          ),
+          const SizedBox(
+            height: 2,
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     double total =
-        ticketOrder.tickets.fold(0, (acc, ticket) => acc + ticket.price);
+        widget.ticketOrder.tickets.fold(0, (acc, ticket) => acc + ticket.price);
     return Container(
         height: ResponsiveHelper.responsiveHeight(context, 700.0),
         decoration: BoxDecoration(
-            color: Theme.of(context).primaryColorLight,
+            color: Theme.of(context).primaryColor,
             borderRadius: BorderRadius.circular(30)),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 30),
@@ -58,20 +149,20 @@ class EventDeletedMessageWidget extends StatelessWidget {
                 text: TextSpan(
                   children: [
                     TextSpan(
-                      text: ticketOrder.eventTitle,
+                      text: widget.ticketOrder.eventTitle,
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
 
                     TextSpan(
                       text:
-                          "\n\nWe regret to inform you that this event has been canceled by the organizer. We understand the inconvenience this may cause and sincerely apologize.",
+                          "\n\nWe regret to inform you that this event ${widget.ticketOrder.eventTitle}, has been canceled by the organizer. We understand the inconvenience this may cause and sincerely apologize.",
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
 
                     if (total != 0)
                       TextSpan(
                         text:
-                            "\n\n Your ticket price of \$${total.toStringAsFixed(2)} will be fully refunded within 14 business days.",
+                            "\n\n Your ticket price of ${total.toStringAsFixed(2)} will be fully refunded within 14 business days.",
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
 
@@ -79,14 +170,17 @@ class EventDeletedMessageWidget extends StatelessWidget {
                   ],
                 ),
               ),
+              SizedBox(height: ResponsiveHelper.responsiveHeight(context, 30)),
+              if (widget.ticketOrder.refundRequestStatus == 'processed')
+                _alreadyRefunded(),
               GestureDetector(
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (_) => ProfileScreen(
-                              currentUserId: currentUserId,
-                              userId: ticketOrder.eventAuthorId,
+                              currentUserId: widget.currentUserId,
+                              userId: widget.ticketOrder.eventAuthorId,
                               user: null,
                             )),
                   );
@@ -106,7 +200,7 @@ class EventDeletedMessageWidget extends StatelessWidget {
                       ),
 
                       TextSpan(
-                        text: ticketOrder.canlcellationReason,
+                        text: widget.ticketOrder.canlcellationReason,
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       TextSpan(
@@ -137,20 +231,21 @@ class EventDeletedMessageWidget extends StatelessWidget {
                         text: "support@barsopus.com.",
                         style: TextStyle(fontSize: 14, color: Colors.blue),
                       ),
-                      TextSpan(
-                        text: "\n\nYour order Id .",
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      TextSpan(
-                        text: "\n${ticketOrder.orderId}",
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
+                      // TextSpan(
+                      //   text: "\n\nYour order Id .",
+                      //   style: Theme.of(context).textTheme.bodyMedium,
+                      // ),
+                      // TextSpan(
+                      //   text: "\n${widget.ticketOrder.orderId}",
+                      //   style: Theme.of(context).textTheme.bodyLarge,
+                      // ),
 
                       // Include any additional information or links here
                     ],
                   ),
                 ),
               ),
+
               // Include buttons for contacting support or accessing FAQs
               const SizedBox(height: 60),
             ],

@@ -71,7 +71,8 @@ class CreateContent extends StatelessWidget {
                                 context,
                                 CreateEventScreen(
                                   isEditting: false,
-                                  event: null, isCompleted: false,
+                                  event: null,
+                                  isCompleted: false,
                                 ));
                       }
                     : () {},

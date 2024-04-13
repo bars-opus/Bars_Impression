@@ -1,4 +1,6 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:bars/widgets/general_widget/loading_chats.dart';
+import 'package:bars/widgets/general_widget/loading_chats.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -514,10 +516,20 @@ class _ChatsState extends State<Chats>
                       padding: EdgeInsets.only(
                           bottom:
                               ResponsiveHelper.responsiveHeight(context, 10)),
+                      child: _loadingSkeleton(
+                          authorSnapshot.data == null ? true : false, chat.id),
+                    );
+                  }
+
+                  AccountHolderAuthor? author = authorSnapshot.data;
+                  if (author == null) {
+                    return Padding(
+                      padding: EdgeInsets.only(
+                          bottom:
+                              ResponsiveHelper.responsiveHeight(context, 10)),
                       child: _loadingSkeleton(true, chat.id),
                     );
                   }
-                  final author = authorSnapshot.data;
                   // limitRooms(); // Ensure these functions are defined and manage your data as expected
                   // limitTicketIds(); // Ensure these functions are defined and manage your data as expected
                   return ValueListenableBuilder(
@@ -706,40 +718,50 @@ class _ChatsState extends State<Chats>
   }
 
   _loadingSkeleton(bool deleted, String userId) {
-    return ListTile(
-        leading: CircleAvatar(
-          radius: 20.0,
-          backgroundColor: deleted ? Colors.black : Colors.blue,
-        ),
-        title: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(right: 12.0),
-              child: Text(
-                deleted ? 'User deleted' : 'Loading...',
-                style: TextStyle(
-                  fontWeight: deleted ? FontWeight.normal : FontWeight.bold,
-                  fontSize: ResponsiveHelper.responsiveFontSize(
-                    context,
-                    ResponsiveHelper.responsiveFontSize(
-                        context, deleted ? 12 : 14.0),
-                  ),
-                  color: Theme.of(context).secondaryHeaderColor,
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 2.0,
-            ),
-          ],
-        ),
-        onTap: deleted
-            ? () {
-                _showBottomSheetDeledDeletedChatUser(context, userId);
-              }
-            : () {});
+    return LoadingChats(
+      deleted: deleted,
+      userId: userId,
+      onPressed: deleted
+          ? () {
+              _showBottomSheetDeledDeletedChatUser(context, userId);
+            }
+          : () {},
+    );
+
+    // ListTile(
+    //     leading: CircleAvatar(
+    //       radius: 20.0,
+    //       backgroundColor: deleted ? Colors.black : Colors.blue,
+    //     ),
+    //     title: Column(
+    //       mainAxisAlignment: MainAxisAlignment.start,
+    //       crossAxisAlignment: CrossAxisAlignment.start,
+    //       children: <Widget>[
+    //         Padding(
+    //           padding: const EdgeInsets.only(right: 12.0),
+    //           child: Text(
+    //             deleted ? 'User deleted' : 'Loading...',
+    //             style: TextStyle(
+    //               fontWeight: deleted ? FontWeight.normal : FontWeight.bold,
+    //               fontSize: ResponsiveHelper.responsiveFontSize(
+    //                 context,
+    //                 ResponsiveHelper.responsiveFontSize(
+    //                     context, deleted ? 12 : 14.0),
+    //               ),
+    //               color: Theme.of(context).secondaryHeaderColor,
+    //             ),
+    //           ),
+    //         ),
+    //         const SizedBox(
+    //           height: 2.0,
+    //         ),
+    //       ],
+    //     ),
+    //     onTap: deleted
+    //         ? () {
+    //             _showBottomSheetDeledDeletedChatUser(context, userId);
+    //           }
+    //         : () {});
   }
 
   // Define this in your State class
@@ -762,7 +784,7 @@ class _ChatsState extends State<Chats>
 
     var subscription = userTicketIdRef
         .doc(widget.currentUserId)
-        .collection('eventInvite')
+        .collection('tickedIds')
         .doc(ticketIdKey)
         .snapshots()
         .listen((snapshot) {
@@ -818,7 +840,7 @@ class _ChatsState extends State<Chats>
     return StreamBuilder<QuerySnapshot>(
       stream: userTicketIdRef
           .doc(widget.currentUserId)
-          .collection('eventInvite')
+          .collection('tickedIds')
           .orderBy('timestamp', descending: true)
           .snapshots(),
       builder:
@@ -896,6 +918,7 @@ class _ChatsState extends State<Chats>
                       ''); // return a loading spinner or some other widget
                 }
                 final room = roomSnapshot.data;
+
                 // limitRooms(); // Ensure these functions are defined and manage your data as expected
                 // limitTicketIds(); // Ensure these functions are defined and manage your data as expected
                 return ValueListenableBuilder(
@@ -1078,33 +1101,33 @@ class _GetAuthorState extends State<GetAuthor>
   //   }
   // }
 
-  _loadingSkeleton() {
-    return ListTile(
-        leading: CircleAvatar(
-          radius: 20.0,
-          backgroundColor: Colors.blue,
-        ),
-        title: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(right: 12.0),
-              child: Text(
-                'Loading...',
-                style: TextStyle(
-                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-                  color: Theme.of(context).secondaryHeaderColor,
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 2.0,
-            ),
-          ],
-        ),
-        onTap: () {});
-  }
+  // _loadingSkeleton() {
+  //   return ListTile(
+  //       leading: CircleAvatar(
+  //         radius: 20.0,
+  //         backgroundColor: Colors.blue,
+  //       ),
+  //       title: Column(
+  //         mainAxisAlignment: MainAxisAlignment.start,
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: <Widget>[
+  //           Padding(
+  //             padding: const EdgeInsets.only(right: 12.0),
+  //             child: Text(
+  //               'Loading...',
+  //               style: TextStyle(
+  //                 fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+  //                 color: Theme.of(context).secondaryHeaderColor,
+  //               ),
+  //             ),
+  //           ),
+  //           const SizedBox(
+  //             height: 2.0,
+  //           ),
+  //         ],
+  //       ),
+  //       onTap: () {});
+  // }
 
   bool get wantKeepAlive => true;
 
@@ -1237,7 +1260,7 @@ class _DisplayState extends State<Display> {
                     try {
                       userTicketIdRef
                           .doc(_provider.currentUserId)
-                          .collection('eventInvite')
+                          .collection('tickedIds')
                           .doc(widget.room!.linkedEventId)
                           .update({'muteNotification': !muteEvent});
                       mySnackBar(
@@ -1253,7 +1276,7 @@ class _DisplayState extends State<Display> {
                     try {
                       userTicketIdRef
                           .doc(_provider.currentUserId)
-                          .collection('eventInvite')
+                          .collection('tickedIds')
                           .doc(widget.room!.linkedEventId)
                           .get()
                           .then((doc) {

@@ -44,21 +44,6 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
 
   final _overViewController = TextEditingController();
   ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
-  // late Timer _timer;
-
-//   Duration duration = Duration(hours: 2, minutes: 30);
-// int totalMinutes = duration.inMinutes;
-
-// int totalMinutes = 150;
-// Duration duration = Duration(minutes: totalMinutes);
-
-  // List<Page> map<Page>(List list, Function handler) {
-  //   List<Page> result = [];
-  //   for (var i = 0; i < list.length; i++) {
-  //     result.add(handler(i, list[i]));
-  //   }
-  //   return result;
-  // }
 
   PageController _pageController2 = PageController(
     initialPage: 0,
@@ -227,41 +212,6 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
     }
   }
 
-  // void _onAskTextChanged2() {
-  //   if (_overViewController.text.isNotEmpty) {
-  //     _isTypingNotifier.value = true;
-  //   } else {
-  //     _isTypingNotifier.value = false;
-  //   }
-  // }
-
-  // void _showCurrencyPicker() {
-  //   showCurrencyPicker(
-  //     theme: CurrencyPickerThemeData(
-  //       backgroundColor: Theme.of(context).primaryColor,
-  //       flagSize: 25,
-  //       titleTextStyle: TextStyle(
-  //         fontSize: ResponsiveHelper.responsiveFontSize(context, 17.0),
-  //       ),
-  //       subtitleTextStyle: TextStyle(
-  //           fontSize: ResponsiveHelper.responsiveFontSize(context, 15.0),
-  //           color: Colors.blue),
-  //       bottomSheetHeight: MediaQuery.of(context).size.height / 1.2,
-  //     ),
-  //     context: context,
-  //     showFlag: true,
-  //     showSearchField: true,
-  //     showCurrencyName: true,
-  //     showCurrencyCode: true,
-  //     onSelect: (Currency currency) {
-  //       Provider.of<UserData>(context, listen: false)
-  //           .setCurrency('${currency.name}, ${currency.code} |');
-  //       // animateToPage(1);
-  //     },
-  //     favorite: ['USD'],
-  //   );
-  // }
-
   @override
   void dispose() {
     super.dispose();
@@ -270,36 +220,6 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
     _pageController2.removeListener(_listenScroll);
     _pageController2.dispose();
   }
-
-  // void _add(String from, GlobalKey<FormState> _formKey) {
-  //   var _provider = Provider.of<UserData>(context, listen: false);
-  //   _provider.workRequesttype.cast();
-  //   if (_formKey.currentState!.validate()) {
-  //     switch (from.split(' ')[0]) {
-  //       case 'types':
-  //         _provider.setWorkRequestType(selectedTypes);
-  //         Navigator.pop(context);
-  //         break;
-  //       case 'location':
-  //         _provider.setWorkRequestAvailableLocations(_textController.text);
-  //         break;
-  //       case 'genre':
-  //         _provider.setWorkRequestGenre(_textController.text);
-  //         break;
-
-  //       case 'price':
-  //         _provider.setWorkRequestPrice(double.parse(_textController.text));
-  //         break;
-
-  //       default:
-  //     }
-
-  //     selectedTypes.clear();
-  //     _textController.clear();
-  //   }
-  // }
-
-  // scrollToPost();
 
   void _listenScroll() {
     if (mounted) {
@@ -317,144 +237,77 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
     );
   }
 
-// _submit() async{
+  // _submit() async {
+  //   if (!_isLoading) {
+  //     var _provider = context.read<UserData>();
+  //     Future<T> retry<T>(Future<T> Function() function,
+  //         {int retries = 3}) async {
+  //       for (int i = 0; i < retries; i++) {
+  //         try {
+  //           if (i > 0) {
+  //             await Future.delayed(Duration(
+  //                 seconds: i * 2)); // The delay increases with each retry
+  //           }
+  //           return await function();
+  //         } catch (e) {
+  //           // print('Attempt $i failed with error: $e, retrying...');
+  //         }
+  //       }
+  //       throw Exception('Failed after $retries attempts');
+  //     }
+  //     // other parts remain the same...
 
-// if ( !_isLoading) {
-//       var _provider = Provider.of<UserData>(context, listen: false);
-//       _isLoading = true;
-//       // // _loadingModalFuture =
+  //     final timestamp = Timestamp.fromDate(DateTime.now());
 
-//       // Retry helper function
-//       Future<T> retry<T>(Future<T> Function() function,
-//           {int retries = 3}) async {
-//         for (int i = 0; i < retries; i++) {
-//           try {
-//             return await function();
-//           } catch (e) {
-//             // print('Attempt $i failed with error: $e, retrying...');
-//           }
-//         }
-//         throw Exception('Failed after $retries attempts');
-//       }
+  //     final newUserWorkRequestRef = userWorkRequestRef
+  //         .doc(widget.currentUserId)
+  //         .collection('workRequests')
+  //         .doc();
 
-  //    final user_WorkRequestRef =
-  //     userWorkRequestRef.doc(widget.currentUserId).collection('workRequests').doc();
+  //     final allNewWorkRequestRef = allWorkRequestRef.doc();
 
-  //      final all_WorkRequestRef =
-  //     allWorkRequestRef.doc(widget.currentUserId).collection('workRequests').doc();
+  //     final batch = FirebaseFirestore.instance.batch();
 
-  // final batch = FirebaseFirestore.instance.batch();
-//     batch.set(user_WorkRequestRef, {
-//       'userId': widget.currentUserId,
-//       'isEvent': true,
-//       'overView':_provider.workRequestoverView,
-//       'genre': _provider.workRequestGenre,
-//       'type': _provider.workRequesttype,
-//       'availableLocations':_provider.workRequestAvailableLocations,
-//       'timestamp': Timestamp.fromDate(DateTime.now()),
-//       'price': _provider.workRequestPrice,
-//       'currency': _provider.currency,
-//     });
+  //     String commonId = Uuid().v4();
 
-//     batch.set(all_WorkRequestRef, {
-  // 'userId': widget.currentUserId,
-  // 'isEvent': true,
-  // 'overView':_provider.workRequestoverView,
-  // 'genre': _provider.workRequestGenre,
-  // 'type': _provider.workRequesttype,
-  // 'availableLocations':_provider.workRequestAvailableLocations,
-  // 'timestamp': Timestamp.fromDate(DateTime.now()),
-  // 'price': _provider.workRequestPrice,
-  // 'currency': _provider.currency,
-//     });
+  //     batch.set(newUserWorkRequestRef, {
+  //       'id': commonId,
+  //       'userId': widget.currentUserId,
+  //       'isEvent': true,
+  //       'overView': _overViewController.text,
+  //       'genre': _provider.workRequestGenre,
+  //       'type': _provider.workRequesttype,
+  //       'availableLocations': _provider.workRequestAvailableLocations,
+  //       'price': _provider.workRequestPrice,
+  //       'currency': _provider.currency,
+  //       'timestamp': timestamp,
+  //     });
 
-//       try {
-//         await retry(() => batch.commit()
+  //     batch.set(allNewWorkRequestRef, {
+  //       'id': commonId,
+  //       'userId': widget.currentUserId,
+  //       'isEvent': true,
+  //       'overView': _overViewController.text,
+  //       'genre': _provider.workRequestGenre,
+  //       'type': _provider.workRequesttype,
+  //       'availableLocations': _provider.workRequestAvailableLocations,
+  //       'price': _provider.workRequestPrice,
+  //       'currency': _provider.currency,
+  //       'timestamp': timestamp,
+  //     });
 
-//         );
-
-//       Navigator.pop(context);    mySnackBar(context, "created succesfully");
-
-//       } catch (e) {
-//         _showBottomSheetErrorMessage('', e);
-//       }
-//       finally {
-//     _isLoading = false;
-//       }
-//     }
-// }
-
-  _submit() async {
-    if (!_isLoading) {
-      var _provider = context.read<UserData>();
-      Future<T> retry<T>(Future<T> Function() function,
-          {int retries = 3}) async {
-        for (int i = 0; i < retries; i++) {
-          try {
-            if (i > 0) {
-              await Future.delayed(Duration(
-                  seconds: i * 2)); // The delay increases with each retry
-            }
-            return await function();
-          } catch (e) {
-            // print('Attempt $i failed with error: $e, retrying...');
-          }
-        }
-        throw Exception('Failed after $retries attempts');
-      }
-      // other parts remain the same...
-
-      final timestamp = Timestamp.fromDate(DateTime.now());
-
-      final newUserWorkRequestRef = userWorkRequestRef
-          .doc(widget.currentUserId)
-          .collection('workRequests')
-          .doc();
-
-      final allNewWorkRequestRef = allWorkRequestRef.doc();
-
-      final batch = FirebaseFirestore.instance.batch();
-
-      String commonId = Uuid().v4();
-
-      batch.set(newUserWorkRequestRef, {
-        'id': commonId,
-        'userId': widget.currentUserId,
-        'isEvent': true,
-        'overView': _overViewController.text,
-        'genre': _provider.workRequestGenre,
-        'type': _provider.workRequesttype,
-        'availableLocations': _provider.workRequestAvailableLocations,
-        'price': _provider.workRequestPrice,
-        'currency': _provider.currency,
-        'timestamp': timestamp,
-      });
-
-      batch.set(allNewWorkRequestRef, {
-        'id': commonId,
-        'userId': widget.currentUserId,
-        'isEvent': true,
-        'overView': _overViewController.text,
-        'genre': _provider.workRequestGenre,
-        'type': _provider.workRequesttype,
-        'availableLocations': _provider.workRequestAvailableLocations,
-        'price': _provider.workRequestPrice,
-        'currency': _provider.currency,
-        'timestamp': timestamp,
-      });
-
-      try {
-        await retry(() => Future.delayed(Duration(seconds: 1), batch.commit));
-        Navigator.pop(context);
-        mySnackBar(context, "created succesfully");
-        _clearCreateWork();
-      } catch (e) {
-        _showBottomSheetErrorMessage('', e);
-      } finally {
-        _isLoading = false;
-      }
-    }
-  }
+  //     try {
+  //       await retry(() => Future.delayed(Duration(seconds: 1), batch.commit));
+  //       Navigator.pop(context);
+  //       mySnackBar(context, "created succesfully");
+  //       _clearCreateWork();
+  //     } catch (e) {
+  //       _showBottomSheetErrorMessage('', e);
+  //     } finally {
+  //       _isLoading = false;
+  //     }
+  //   }
+  // }
 
   void _showBottomSheetErrorMessage(String from, Object e) {
     String error = e.toString();
@@ -487,7 +340,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
     _provider.workRequesttype.clear();
     _provider.setWorkRequestPrice(0.0);
     _provider.setWorkRequestoverView('');
-    _provider.setCurrency('');
+    // _provider.setCurrency('');
 
     _provider.setWorkRequestisEvent(false);
   }
@@ -721,44 +574,6 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
         ));
   }
 
-  // // Radio buttons to select the event vategory
-  // static const values = <String>[
-  //   "Parties",
-  //   "Music_concerts",
-  //   "Festivals",
-  //   "Club_nights",
-  //   "Pub_events",
-  //   "Games/Sports",
-  //   "Religious",
-  //   "Business",
-  //   "Others",
-  // ];
-
-  // Widget buildRadios() => Theme(
-  //       data: Theme.of(context).copyWith(
-  //         unselectedWidgetColor: Colors.grey,
-  //       ),
-  //       child: Column(
-  //           children: values.map((value) {
-  //         var _provider = Provider.of<UserData>(context, listen: false);
-
-  //         final selected = this.selectedValue == value;
-  //         final color = selected ? Colors.blue : Colors.grey;
-
-  //         return RadioListTile<String>(
-  //             value: value,
-  //             groupValue: selectedValue,
-  //             title: Text(
-  //               value,
-  //               style: TextStyle(color: color, fontSize: 14),
-  //             ),
-  //             activeColor: Colors.blue,
-  //             onChanged: (value) {
-  //               _provider.setCategory(this.selectedValue = value!);
-  //             });
-  //       }).toList()),
-  //     );
-
   static const values = <String>[
     "Parties",
     "Music_concerts",
@@ -773,342 +588,6 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
   Map<String, bool> checkboxes = {
     for (var value in values) value: false,
   };
-
-  // void _showBottomSheetWorkRequest(
-  //   String type,
-  //   bool main,
-  // ) {
-  //   // genre
-
-  //   TextEditingController _controller;
-  //   GlobalKey<FormState> _formkey;
-  //   switch (type.split(' ')[0]) {
-  //     case 'types':
-  //       _controller = _textController;
-  //       _formkey = _typeFormKey;
-
-  //       break;
-  //     case 'location':
-  //       _controller = _textController;
-  //       _formkey = _locationFormKey;
-  //       break;
-
-  //     case 'genre':
-  //       _controller = _textController;
-  //       _formkey = _genreFormKey;
-  //       break;
-
-  //     case 'currency':
-  //       _controller = _textController;
-  //       _formkey = _genreFormKey;
-  //       break;
-
-  //     case 'price':
-  //       _controller = _textController;
-  //       _formkey = _priceFormKey;
-
-  //       break;
-
-  //     case 'overview':
-  //       _controller = _overViewController;
-  //       _formkey = _overViewFormKey;
-
-  //       break;
-
-  //     default:
-  //       _controller = _overViewController;
-  //       _formkey = _overViewFormKey;
-  //   }
-
-  //   double height = MediaQuery.of(context).size.height.toDouble();
-  //   showModalBottomSheet(
-  //     context: context,
-  //     isScrollControlled: true,
-  //     backgroundColor: Colors.transparent,
-  //     builder: (BuildContext context) {
-  //       return StatefulBuilder(
-  //           builder: (BuildContext context, StateSetter setState) {
-  //         return ValueListenableBuilder(
-  //             valueListenable: _isTypingNotifier,
-  //             builder: (BuildContext context, bool isTyping, Widget? child) {
-  //               var _provider = Provider.of<UserData>(context);
-
-  //               bool _isFilled = _overViewController.text.isNotEmpty &&
-  //                   _provider.workRequesttype.isNotEmpty &&
-  //                   _provider.workRequestGenre.isNotEmpty &&
-  //                   _provider.currency.isNotEmpty &&
-  //                   _provider.workRequestPrice != 0.0 &&
-  //                   _provider.workRequestAvailableLocations.isNotEmpty;
-
-  //               Widget _widgetStringListTypes =
-  //                   StringListWidget(stringValues: _provider.workRequesttype);
-  //               Widget _widgetStringListGenre =
-  //                   StringListWidget(stringValues: _provider.workRequestGenre);
-  //               Widget _widgetStringListLocations = StringListWidget(
-  //                   stringValues: _provider.workRequestAvailableLocations);
-  //               Widget _widgetStringListCurrency = Padding(
-  //                 padding: const EdgeInsets.only(bottom: 30.0),
-  //                 child: Align(
-  //                   alignment: Alignment.centerLeft,
-  //                   child: Text(
-  //                     _provider.currency.toString(),
-  //                     style: Theme.of(context).textTheme.bodyLarge,
-  //                   ),
-  //                 ),
-  //               );
-  //               Widget _widgetStringListPrice = Align(
-  //                 alignment: Alignment.centerLeft,
-  //                 child: Text(
-  //                   _provider.workRequestPrice.toString(),
-  //                   style: Theme.of(context).textTheme.titleMedium,
-  //                 ),
-  //               );
-
-  //               Widget buildCheckboxes() {
-  //                 return Theme(
-  //                   data: Theme.of(context).copyWith(
-  //                     unselectedWidgetColor: Colors.grey,
-  //                   ),
-  //                   child: Column(
-  //                     children: checkboxes.entries.map((entry) {
-  //                       final color = entry.value ? Colors.blue : Colors.grey;
-
-  //                       return CheckboxListTile(
-  //                         title: Text(
-  //                           entry.key,
-  //                           style: TextStyle(
-  //                             color: color,
-  //                             fontSize: ResponsiveHelper.responsiveFontSize(
-  //                                 context, 14.0),
-  //                           ),
-  //                         ),
-  //                         value: entry.value,
-  //                         activeColor: Colors.blue,
-  //                         onChanged: (bool? newValue) {
-  //                           if (mounted) {
-  //                             setState(() {
-  //                               checkboxes[entry.key] = newValue!;
-  //                             });
-  //                           }
-  //                           if (newValue == true) {
-  //                             if (!selectedTypes.contains(entry.key)) {
-  //                               selectedTypes.add(entry.key);
-  //                             }
-  //                           } else {
-  //                             selectedTypes.remove(entry.key);
-  //                             _provider.workRequesttype.remove(entry.key);
-  //                           }
-  //                         },
-  //                       );
-  //                     }).toList(),
-  //                   ),
-  //                 );
-  //               }
-
-  //               return GestureDetector(
-  //                 onTap: () => FocusScope.of(context).unfocus(),
-  //                 child: Form(
-  //                   key: _formkey,
-  //                   child: Container(
-  //                     height: main ? height / 1.2 : height / 1.2 - 20,
-  //                     decoration: BoxDecoration(
-  //                         color: Theme.of(context).primaryColorLight,
-  //                         borderRadius: BorderRadius.circular(30)),
-  //                     child: Padding(
-  //                       padding: const EdgeInsets.all(20.0),
-  //                       child: ListView(
-  //                         children: [
-  //                           // if (main)
-  //                           ListTile(
-  //                             leading: IconButton(
-  //                               icon: Icon(
-  //                                 Icons.close,
-  //                                 size: ResponsiveHelper.responsiveHeight(
-  //                                     context, 25),
-  //                               ),
-  //                               onPressed: () {
-  //                                 Navigator.pop(context);
-  //                               },
-  //                               color: Theme.of(context).secondaryHeaderColor,
-  //                             ),
-  //                             trailing: !main
-  //                                 ? _controller.text.isNotEmpty ||
-  //                                         selectedTypes.isNotEmpty
-  //                                     ? MiniCircularProgressButton(
-  //                                         onPressed: () {
-  //                                           _add(type, _formkey);
-  //                                         },
-  //                                         text: "Add",
-  //                                         color: Colors.blue,
-  //                                       )
-  //                                     : GestureDetector(
-  //                                         onTap: () {
-  //                                           Navigator.pop(context);
-  //                                         },
-  //                                         child: Text(
-  //                                           'Done',
-  //                                           style: TextStyle(
-  //                                               color: Colors.blue,
-  //                                               fontWeight: FontWeight.bold),
-  //                                         ),
-  //                                       )
-  //                                 : _isFilled
-  //                                     ? MiniCircularProgressButton(
-  //                                         onPressed: _submit,
-  //                                         text: 'Create request',
-  //                                         color: Colors.blue,
-  //                                       )
-  //                                     : null,
-  //                           ),
-
-  //                           // _widget,
-
-  //                           type.startsWith('types')
-  //                               ? buildCheckboxes()
-  //                               : type.startsWith('location')
-  //                                   ? _textField(
-  //                                       'location',
-  //                                       'location',
-  //                                       true,
-  //                                       _textController,
-  //                                       (value) {
-  //                                         if (mounted) {
-  //                                           setState(() {});
-  //                                         }
-  //                                       },
-  //                                       // !isEmail,
-  //                                       false,
-  //                                     )
-  //                                   : type.startsWith('genre')
-  //                                       ? _textField(
-  //                                           'genre',
-  //                                           'genre',
-  //                                           true,
-  //                                           _textController,
-  //                                           (value) {
-  //                                             if (mounted) {
-  //                                               setState(() {});
-  //                                             }
-  //                                           },
-  //                                           // !isEmail,
-  //                                           false,
-  //                                         )
-  //                                       : type.startsWith('currency')
-  //                                           ? _textField(
-  //                                               'currency',
-  //                                               'currency',
-  //                                               true,
-  //                                               _textController,
-  //                                               (value) {
-  //                                                 if (mounted) {
-  //                                                   setState(() {});
-  //                                                 }
-  //                                               },
-  //                                               // !isEmail,
-  //                                               false,
-  //                                             )
-  //                                           : type.startsWith('price')
-  //                                               ? _textField(
-  //                                                   'price',
-  //                                                   'price',
-  //                                                   true,
-  //                                                   _textController,
-  //                                                   (value) {
-  //                                                     if (mounted) {
-  //                                                       setState(() {});
-  //                                                     }
-  //                                                   },
-  //                                                   // !isEmail,
-  //                                                   true,
-  //                                                 )
-  //                                               : _textField(
-  //                                                   'Overview',
-  //                                                   'Overview',
-  //                                                   false,
-  //                                                   _overViewController,
-  //                                                   (value) {
-  //                                                     if (mounted) {
-  //                                                       setState(() {});
-  //                                                     }
-  //                                                   },
-  //                                                   // !isEmail,
-  //                                                   false,
-  //                                                 ),
-
-  //                           const SizedBox(
-  //                             height: 30,
-  //                           ),
-  //                           if (main)
-  //                             Column(
-  //                               children: [
-  //                                 PickOptionWidget(
-  //                                     title: 'types',
-  //                                     onPressed: () {
-  //                                       _showBottomSheetWorkRequest(
-  //                                         'types',
-  //                                         false,
-  //                                       );
-  //                                     },
-  //                                     dropDown: true),
-  //                                 _widgetStringListTypes,
-  //                                 PickOptionWidget(
-  //                                     title: 'genre',
-  //                                     onPressed: () {
-  //                                       _showBottomSheetWorkRequest(
-  //                                         'genre',
-  //                                         false,
-  //                                       );
-  //                                     },
-  //                                     dropDown: true),
-  //                                 _widgetStringListGenre,
-  //                                 PickOptionWidget(
-  //                                     title: 'location',
-  //                                     onPressed: () {
-  //                                       _showBottomSheetWorkRequest(
-  //                                         'location',
-  //                                         false,
-  //                                       );
-  //                                     },
-  //                                     dropDown: true),
-  //                                 _widgetStringListLocations,
-  //                                 PickOptionWidget(
-  //                                     title: 'currency',
-  //                                     onPressed: () {
-  //                                       _showCurrencyPicker();
-  //                                     },
-  //                                     dropDown: true),
-  //                                 _widgetStringListCurrency,
-  //                                 PickOptionWidget(
-  //                                     title: 'price',
-  //                                     onPressed: () {
-  //                                       _showBottomSheetWorkRequest(
-  //                                         'price',
-  //                                         false,
-  //                                       );
-  //                                     },
-  //                                     dropDown: true),
-  //                                 _widgetStringListPrice,
-  //                                 const SizedBox(
-  //                                   height: 30,
-  //                                 ),
-  //                               ],
-  //                             ),
-
-  //                           Text(
-  //                             "Each creatives discography exhibit the neccesssary information to connect and collaborate with that creatives. This information provided are freely given out by this user to the creative world of Bars Impression. Creatives are grouped based on their skilss and expertise as provided by them and you can browse throguth creatives by tapping on the floating action button to go to the next creative of simmilar expertise or you can scroll left or right horizontally to change the expertise category you are browsing creatives in. ",
-  //                             style: Theme.of(context).textTheme.bodySmall,
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ),
-  //               );
-  //             });
-  //       });
-  //     },
-  //   );
-  // }
 
   _messageButton(String text, VoidCallback onPressed, bool isBooking) {
     final width = MediaQuery.of(context).size.width;
@@ -1711,6 +1190,9 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                       },
                       false,
                     ),
+                  const SizedBox(
+                    height: 20,
+                  ),
                   GestureDetector(
                     onTap: () {
                       _navigateToPage(

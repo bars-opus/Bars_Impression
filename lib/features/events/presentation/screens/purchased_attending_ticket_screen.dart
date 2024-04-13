@@ -1,5 +1,4 @@
 import 'package:bars/utilities/exports.dart';
-import 'package:bars/widgets/general_widget/purchase_ticket_summary_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
@@ -35,6 +34,8 @@ class _PurchasedAttendingTicketScreenState
   final _messageController = TextEditingController();
   ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
 
+  RefundModel? refund;
+
   @override
   void initState() {
     super.initState();
@@ -43,6 +44,16 @@ class _PurchasedAttendingTicketScreenState
 
     _setUpEventExpectedAttendees();
     _countDown();
+    if (widget.ticketOrder.refundRequestStatus.isNotEmpty) _getRefund();
+  }
+
+  _getRefund() async {
+    RefundModel? newRefund = await DatabaseService.getRefundWithId(
+        widget.currentUserId, widget.event.id);
+
+    setState(() {
+      refund = newRefund;
+    });
   }
 
   void _countDown() async {
@@ -240,6 +251,25 @@ class _PurchasedAttendingTicketScreenState
 // calendar and schedules, and the event room.
 // Visual styling: Like the previous widget, it is styled using a BoxDecoration with a light primary color background and a box shadow.
 
+  _toRoom() async {
+    EventRoom? room = await DatabaseService.getEventRoomWithId(widget.event.id);
+    TicketIdModel? ticketId = await DatabaseService.getTicketIdWithId(
+        widget.event.id, widget.currentUserId);
+
+    if (room != null) {
+      _navigateToPage(
+          context,
+          EventRoomScreen(
+            currentUserId: widget.currentUserId,
+            room: room,
+            palette: widget.palette,
+            ticketId: ticketId!,
+          ));
+    } else {
+      _showBottomSheetErrorMessage();
+    }
+  }
+
   _ticketSummaryInfo() {
     final width = MediaQuery.of(context).size.width;
     var _provider = Provider.of<UserData>(context, listen: false);
@@ -302,8 +332,10 @@ class _PurchasedAttendingTicketScreenState
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         TextSpan(
+                          // ? 'Free ticket generated succesfully'
+                          // :
                           text:
-                              'Thank you for purchasing the tickets to attend ${widget.event.title}. We are delighted to officially welcome you as an attendee to this event. Enjoy and have a fantastic time!',
+                              'Thank you for ${widget.event.isFree || widget.event.isCashPayment ? 'generating' : 'purchasing'} the tickets to attend ${widget.event.title}. We are delighted to officially welcome you as an attendee to this event. Enjoy and have a fantastic time!',
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ],
@@ -330,24 +362,77 @@ class _PurchasedAttendingTicketScreenState
                             '\nWe prioritize providing an exceptional attendee experience that will enhance your participation in this event. We are thrilled to support you throughout your attendance. As an attendee, you have access to a comprehensive set of resources to assist you in attending and networking with other participants',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
-                      TextSpan(
-                        text: '\n\nCalendar and schedules.',
-                        style: Theme.of(context).textTheme.bodyLarge,
+                    ],
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    _navigateToPage(
+                      context,
+                      TicketAndCalendarFeedScreen(
+                        showPopArrow: true,
+                        currentUserId: widget.currentUserId,
                       ),
-                      TextSpan(
-                        text:
-                            '\nYou can find this feature as the fourth icon named "Tickets" on the navigation bar of your home screen when you first launch the app. It allows you to stay organized by keeping track of the dates of your events. This page also conveniently displays your tickets for upcoming events, ensuring easy access',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      TextSpan(
-                        text: '\n\nEvent Room',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                      TextSpan(
-                        text:
-                            '\nAn event room fosters networking and interaction among attendees of a specific event. You can find this feature as the fifth icon named "Chats" on the navigation bar of your home screen when you first launch the app. The event room is located on the second tab of the chat page, labeled "Rooms". It creates a dedicated group for all event attendees to chat and connect with each other.',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
+                    );
+                  },
+                  child: RichText(
+                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '\n\nCalendar and schedules.',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        TextSpan(
+                          text:
+                              '\nYou can find this feature as the fourth icon named "Tickets" on the navigation bar of your home screen when you first launch the app. It allows you to stay organized by keeping track of the dates of your events. This page also conveniently displays your tickets for upcoming events, ensuring easy access',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        TextSpan(
+                          text: '\nView calendar.',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 12.0),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    _toRoom();
+                  },
+                  child: RichText(
+                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '\n\nEvent Room',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        TextSpan(
+                          text:
+                              '\nAn event room fosters networking and interaction among attendees of a specific event. You can find this feature as the fifth icon named "Chats" on the navigation bar of your home screen when you first launch the app. The event room is located on the second tab of the chat page, labeled "Rooms". It creates a dedicated group for all event attendees to chat and connect with each other.',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        TextSpan(
+                          text: '\nAccess room.',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 12.0),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                RichText(
+                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  text: TextSpan(
+                    children: [
                       TextSpan(
                         text: '\n\nReminders',
                         style: Theme.of(context).textTheme.bodyLarge,
@@ -357,6 +442,28 @@ class _PurchasedAttendingTicketScreenState
                             '\nSeven days prior to this event, we will send you daily reminders to ensure that you don\'t forget about this event.',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
+                    ],
+                  ),
+                ),
+                RichText(
+                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: '\n\nNote\n',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      TextSpan(
+                        text:
+                            '\We will notify you of any updates or changes made to this event to ensure that you are well-informed of any modifications to the event information.',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      if (!widget.event.isFree)
+                        TextSpan(
+                          text:
+                              '\n\nIn the event of a cancellation prior to the event date, you will be eligible for a refund for your ticket purchase.',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
                     ],
                   ),
                 ),
@@ -408,6 +515,8 @@ class _PurchasedAttendingTicketScreenState
     String commonId = Uuid().v4();
 
     RefundModel refund = RefundModel(
+      amount: widget.ticketOrder.total,
+      expectedDate: '',
       id: commonId,
       eventId: widget.event.id,
       status: 'pending',
@@ -801,7 +910,7 @@ class _PurchasedAttendingTicketScreenState
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
         child: Text(
-          'You have already purchased a ticket for this event. Please note that only one ticket per event is allowed',
+          'You have already purchased a ticket for this event. Please note that only one order per event is allowed',
           style: TextStyle(
             color: Colors.white,
             fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
@@ -939,6 +1048,70 @@ class _PurchasedAttendingTicketScreenState
     );
   }
 
+  _alreadyRefunded() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 20),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 30.0,
+            ),
+            alignment: Alignment.centerLeft,
+            width: double.infinity,
+            height: ResponsiveHelper.responsiveFontSize(context, 40.0),
+            // padding:
+            //     const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10),
+            decoration: BoxDecoration(color: Colors.red, boxShadow: []),
+            // width: width,
+            child: Text(
+              'Refund processed  ',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+                color: Colors.white,
+              ),
+            ),
+          ),
+          // if (refund != null)
+          AnimatedContainer(
+            duration: const Duration(seconds: 2),
+            height: refund == null
+                ? 0.0
+                : ResponsiveHelper.responsiveHeight(context, 350),
+            width: double.infinity,
+            curve: Curves.linearToEaseOut,
+            padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10),
+            decoration: BoxDecoration(
+                color: Theme.of(context).primaryColorLight,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    offset: Offset(10, 10),
+                    blurRadius: 10.0,
+                    spreadRadius: 4.0,
+                  )
+                ]),
+            child: refund != null
+                ? SingleChildScrollView(
+                    physics: NeverScrollableScrollPhysics(),
+                    child: RefundWidget(
+                      currentRefund: refund!,
+                      currentUserId: widget.currentUserId,
+                    ),
+                  )
+                : SizedBox.shrink(),
+          ),
+          const SizedBox(
+            height: 2,
+          ),
+        ],
+      ),
+    );
+  }
+
   _ticket() {
     var _provider = Provider.of<UserData>(context, listen: false);
 
@@ -1007,65 +1180,7 @@ class _PurchasedAttendingTicketScreenState
                 ),
               )
             : widget.ticketOrder.refundRequestStatus == 'processed'
-                ? Padding(
-                    padding: const EdgeInsets.only(
-                        bottom: 10.0, left: 20, right: 20),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 20.0, horizontal: 10),
-                      decoration: BoxDecoration(color: Colors.red, boxShadow: [
-                        BoxShadow(
-                          color: Colors.black26,
-                          offset: Offset(10, 10),
-                          blurRadius: 10.0,
-                          spreadRadius: 4.0,
-                        )
-                      ]),
-                      // width: width,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Refund processed  ',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: ResponsiveHelper.responsiveFontSize(
-                                  context, 14.0),
-                              color: Colors.white,
-                            ),
-                          ),
-                          // Container(
-                          //   width:
-                          //       ResponsiveHelper.responsiveHeight(context, 120),
-                          //   height:
-                          //       ResponsiveHelper.responsiveHeight(context, 30),
-                          //   child: Row(
-                          //     mainAxisAlignment: MainAxisAlignment.end,
-                          //     children: [
-                          //       Text(
-                          //         'view details ',
-                          //         style: TextStyle(
-                          //           fontWeight: FontWeight.bold,
-                          //           fontSize:
-                          //               ResponsiveHelper.responsiveFontSize(
-                          //                   context, 14.0),
-                          //           color: Colors.white,
-                          //         ),
-                          //       ),
-                          //       Icon(
-                          //         color: Colors.white,
-                          //         Icons.arrow_forward_ios_outlined,
-                          //         size: ResponsiveHelper.responsiveFontSize(
-                          //             context, 20),
-                          //       ),
-                          //     ],
-                          //   ),
-                          // ),
-                        ],
-                      ),
-                    ),
-                  )
+                ? _alreadyRefunded()
                 : SizedBox.shrink(),
 
         // TicketEnlargedWidget(
@@ -1082,101 +1197,10 @@ class _PurchasedAttendingTicketScreenState
         // ),
         // // _ticketdisplay(),
         isAuthor
-            ? GestureDetector(
-                onTap: () {
-                  _navigateToPage(
-                      context,
-                      EventDashboardScreen(
-                        currentUserId: widget.currentUserId,
-                        event: widget.event,
-                        palette: widget.palette,
-                      ));
-                },
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 20.0,
-                    ),
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColorLight,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black26,
-                            offset: Offset(10, 10),
-                            blurRadius: 10.0,
-                            spreadRadius: 4.0,
-                          )
-                        ]),
-                    // width: width,
-                    child: Column(
-                      children: [
-                        ListTile(
-                          // onTap: () {
-                          //   _navigateToPage(
-                          //       context,
-                          //       TicketScannerValidatorScreen(
-                          //         event: widget.event,
-                          //         palette: widget.palette,
-                          //         from:
-                          //             widget.event.isPrivate ? 'Accepted' : '',
-                          //       ));
-                          // },
-                          leading: ShakeTransition(
-                            duration: const Duration(seconds: 2),
-                            child: Icon(
-                              color: Colors.blue,
-                              Icons.dashboard,
-                              size: ResponsiveHelper.responsiveFontSize(
-                                  context, 40),
-                            ),
-                          ),
-                          trailing: Icon(
-                            Icons.arrow_forward_ios,
-                            color: Colors.blue,
-                            size: ResponsiveHelper.responsiveHeight(
-                                context, 18.0),
-                          ),
-                          title: Text(
-                            "Tap to access your dashboard",
-                            style: TextStyle(
-                              fontSize: ResponsiveHelper.responsiveFontSize(
-                                  context, 12.0),
-                              color: Colors.blue,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Divider(
-                          color: Colors.grey,
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20.0,
-                          ),
-                          child: Text(
-                            'You can manage this event through your dashboard, accessible here. If you have purchased tickets for events not created by you, those tickets will be displayed here rather than the dashboard access.',
-                            style: TextStyle(
-                              color: Theme.of(context).secondaryHeaderColor,
-                              fontSize: ResponsiveHelper.responsiveFontSize(
-                                  context, 12.0),
-                            ),
-                            textAlign: TextAlign.start,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+            ? AccessDashBoardWidget(
+                currentUserId: widget.currentUserId,
+                event: widget.event,
+                palette: widget.palette,
               )
             : PurchaseTicketSummaryWidget(
                 finalPurchasingTicketList: widget.ticketOrder.tickets,
@@ -1225,8 +1249,7 @@ class _PurchasedAttendingTicketScreenState
         if (widget.currentUserId != widget.event.authorId)
           if (!_eventHasStarted)
             if (widget.ticketOrder.refundRequestStatus.isEmpty)
-              if (widget.ticketOrder.isInvited || widget.ticketOrder.total != 0)
-                _refundButton(),
+              if (widget.ticketOrder.total != 0) _refundButton(),
         const SizedBox(
           height: 100,
         ),
@@ -1280,11 +1303,49 @@ class _PurchasedAttendingTicketScreenState
                   textAlign: TextAlign.start,
                 ),
               ),
+              const SizedBox(
+                height: 100,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                child: Divider(
+                  thickness: .2,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(
+                height: 25,
+              ),
+              Center(
+                child: GestureDetector(
+                  onTap: () {
+                    _navigateToPage(
+                        context,
+                        CompainAnIssue(
+                          parentContentId: widget.ticketOrder.eventId,
+                          authorId: widget.currentUserId,
+                          complainContentId: widget.ticketOrder.orderId,
+                          complainType: 'TicketOrder',
+                          parentContentAuthorId:
+                              widget.ticketOrder.eventAuthorId,
+                        ));
+                  },
+                  child: Text(
+                    '\nComplaint an issue.',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 12.0),
+                    ),
+                    textAlign: TextAlign.start,
+                  ),
+                ),
+              ),
             ],
           ),
 
         const SizedBox(
-          height: 100,
+          height: 25,
         ),
       ],
     );

@@ -130,35 +130,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
       _showBottomSheetErrorMessage('Failed to deactivate account', result);
       // Handle the error appropriately
     }
-    // try {
-    //   usersAuthorRef
-    //       .doc(
-    //     widget.user.userId,
-    //   )
-    //       .update({
-    //     'disabledAccount': true,
-    //   });
-
-    // } catch (e) {
-
-    //   String error = e.toString();
-    //   String result = error.contains(']')
-    //       ? error.substring(error.lastIndexOf(']') + 1)
-    //       : error;
-    //   _showBottomSheetErrorMessage('Failed to delete account', result);
-
-    // }
   }
-
-  // Future<void> _deleteDocuments(String collectionPath, String userId) async {
-  //   final querySnapshot = await FirebaseFirestore.instance
-  //       .collection(collectionPath)
-  //       .where('userId', isEqualTo: userId)
-  //       .get();
-  //   for (var docSnapshot in querySnapshot.docs) {
-  //     await docSnapshot.reference.delete();
-  //   }
-  // }
 
   Future<void> _deleteStorageFolder(String folderPath) async {
     ListResult listResult =
@@ -167,60 +139,6 @@ class _DeleteAccountState extends State<DeleteAccount> {
       await item.delete();
     }
   }
-
-  // Future<void> deleteSentInvite(String currentUserId) async {
-  //   QuerySnapshot snapshot = await sentEventIviteRef
-  //       .where('inviteeId', isEqualTo: currentUserId)
-  //       .get();
-
-  //   WriteBatch batch = FirebaseFirestore.instance.batch();
-
-  //   snapshot.docs.forEach((doc) {
-  //     batch.delete(doc.reference);
-  //   });
-
-  //   await batch.commit();
-  // }
-
-  // Future<void> deleteAdvice(String currentUserId) async {
-  //   QuerySnapshot snapshot =
-  //       await userAdviceRef.where('authorId', isEqualTo: currentUserId).get();
-
-  //   WriteBatch batch = FirebaseFirestore.instance.batch();
-
-  //   snapshot.docs.forEach((doc) {
-  //     batch.delete(doc.reference);
-  //   });
-
-  //   await batch.commit();
-  // }
-
-  // Future<void> deleteEventAsks(String currentUserId) async {
-  //   QuerySnapshot snapshot =
-  //       await asksRef.where('authorId', isEqualTo: currentUserId).get();
-
-  //   WriteBatch batch = FirebaseFirestore.instance.batch();
-
-  //   snapshot.docs.forEach((doc) {
-  //     batch.delete(doc.reference);
-  //   });
-
-  //   await batch.commit();
-  // }
-
-  // Future<void> deleteChatrRoomMessages(String currentUserId) async {
-  //   QuerySnapshot snapshot = await eventsChatRoomsConverstionRef
-  //       .where('senderId', isEqualTo: currentUserId)
-  //       .get();
-
-  //   WriteBatch batch = FirebaseFirestore.instance.batch();
-
-  //   snapshot.docs.forEach((doc) {
-  //     batch.delete(doc.reference);
-  //   });
-
-  //   await batch.commit();
-  // }
 
   Future<void> deleteChatRoom(String currentUserId) async {
     QuerySnapshot snapshot = await eventsChatRoomsRef
@@ -235,33 +153,6 @@ class _DeleteAccountState extends State<DeleteAccount> {
 
     await batch.commit();
   }
-
-  // Future<void> deleteNewEventTicketOrder(String currentUserId) async {
-  //   QuerySnapshot snapshot = await newEventTicketOrderRef
-  //       .where('userOrderId', isEqualTo: currentUserId)
-  //       .get();
-
-  //   WriteBatch batch = FirebaseFirestore.instance.batch();
-
-  //   snapshot.docs.forEach((doc) {
-  //     batch.delete(doc.reference);
-  //   });
-
-  //   await batch.commit();
-  // }
-
-  // Future<void> deleteAllEvents(String currentUserId) async {
-  //   QuerySnapshot snapshot =
-  //       await allEventsRef.where('authorId', isEqualTo: currentUserId).get();
-
-  //   WriteBatch batch = FirebaseFirestore.instance.batch();
-
-  //   snapshot.docs.forEach((doc) {
-  //     batch.delete(doc.reference);
-  //   });
-
-  //   await batch.commit();
-  // }
 
   Future<void> deleteAllSenderMessages(String currentUserId) async {
     QuerySnapshot snapshot =
@@ -288,19 +179,6 @@ class _DeleteAccountState extends State<DeleteAccount> {
 
     await batch.commit();
   }
-
-  // Future<void> deleteFollowers(String currentUserId) async {
-  //   QuerySnapshot snapshot =
-  //       await followersRef.where('userId', isEqualTo: currentUserId).get();
-
-  //   WriteBatch batch = FirebaseFirestore.instance.batch();
-
-  //   snapshot.docs.forEach((doc) {
-  //     batch.delete(doc.reference);
-  //   });
-
-  //   await batch.commit();
-  // }
 
   void _reauthenticate() async {
     FocusScope.of(context).unfocus();
@@ -361,6 +239,27 @@ class _DeleteAccountState extends State<DeleteAccount> {
     }
   }
 
+  Future<void> batchDeleteCollection(QuerySnapshot snapshot) async {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    List<DocumentSnapshot> docSnapshots = snapshot.docs;
+    int processedCount = 0;
+
+    for (var doc in docSnapshots) {
+      batch.delete(doc.reference);
+      processedCount++;
+
+      // If we reach the limit of the batch, or if there are no more documents to process,
+      // commit the batch and start a new one.
+      if (processedCount == 500 || processedCount == docSnapshots.length) {
+        await batch.commit();
+        // Create a new batch
+        batch = FirebaseFirestore.instance.batch();
+        // Reset the counter
+        processedCount = 0;
+      }
+    }
+  }
+
   void _deleteAccount(BuildContext context) async {
     var _provider = Provider.of<UserData>(context, listen: false);
 
@@ -376,8 +275,8 @@ class _DeleteAccountState extends State<DeleteAccount> {
 
     // Define all storage paths
     List<String> storagePaths = [
-      'images/events/$currentUserId',
-      'images/messageImage/$currentUserId',
+      'images/new_events/$currentUserId',
+      'images/new_messageImage/$currentUserId',
       'images/users/$currentUserId',
       'images/professionalPicture1/$currentUserId',
       'images/professionalPicture2/$currentUserId',
@@ -413,7 +312,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
       await doc.reference.delete();
     }
 
-    // Delete user user_workRequest
+    // Delete user user_folowers
     final CollectionReference userFollower = FirebaseFirestore.instance
         .collection('new_followers')
         .doc(currentUserId)
@@ -423,11 +322,21 @@ class _DeleteAccountState extends State<DeleteAccount> {
       await doc.reference.delete();
     }
 
+    // Delete user user_folowing
+    final CollectionReference userFollowing = FirebaseFirestore.instance
+        .collection('new_following')
+        .doc(currentUserId)
+        .collection('userFollowing');
+    final QuerySnapshot userFollowingSnapshot = await userFollowing.get();
+    for (var doc in userFollowingSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
     // Delete user newUsersInvite
     final CollectionReference newUsersInvite = FirebaseFirestore.instance
-        .collection('new_usersInvite')
+        .collection('userInvites')
         .doc(currentUserId)
-        .collection('userEventFeed');
+        .collection('eventInvite');
     final QuerySnapshot newUsersInviteSnapshot = await newUsersInvite.get();
     for (var doc in newUsersInviteSnapshot.docs) {
       await doc.reference.delete();
@@ -457,7 +366,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
     final CollectionReference newUserTicketOrder = FirebaseFirestore.instance
         .collection('new_userTicketOrder')
         .doc(currentUserId)
-        .collection('eventInvite');
+        .collection('ticketOrders');
     final QuerySnapshot newUserTicketOrderSnapshot =
         await newUserTicketOrder.get();
     for (var doc in newUserTicketOrderSnapshot.docs) {
@@ -468,9 +377,31 @@ class _DeleteAccountState extends State<DeleteAccount> {
     final CollectionReference newTicketId = FirebaseFirestore.instance
         .collection('new_ticketId')
         .doc(currentUserId)
-        .collection('eventInvite');
+        .collection('tickedIds');
     final QuerySnapshot newTicketIdSnapshot = await newTicketId.get();
     for (var doc in newTicketIdSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete user payouts
+    final CollectionReference userPayoutRequests = FirebaseFirestore.instance
+        .collection('userPayoutRequests')
+        .doc(currentUserId)
+        .collection('payoutRequests');
+    final QuerySnapshot userPayoutRequestsSnapshot =
+        await userPayoutRequests.get();
+    for (var doc in userPayoutRequestsSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete user refunds
+    final CollectionReference userRefundRequests = FirebaseFirestore.instance
+        .collection('userRefundRequests')
+        .doc(currentUserId)
+        .collection('refundRequests');
+    final QuerySnapshot userRefundRequestsSnapshot =
+        await userRefundRequests.get();
+    for (var doc in userRefundRequestsSnapshot.docs) {
       await doc.reference.delete();
     }
 
@@ -490,12 +421,6 @@ class _DeleteAccountState extends State<DeleteAccount> {
         .doc(userName)
         .delete();
 
-    // Delete user user_author
-    await FirebaseFirestore.instance
-        .collection('user_author')
-        .doc(currentUserId)
-        .delete();
-
     // Delete user user_location_settings
     await FirebaseFirestore.instance
         .collection('user_location_settings')
@@ -513,6 +438,23 @@ class _DeleteAccountState extends State<DeleteAccount> {
         .collection('user_general_settings')
         .doc(currentUserId)
         .delete();
+
+    // Delete user chats
+    final CollectionReference userChats = FirebaseFirestore.instance
+        .collection('user_author')
+        .doc(currentUserId)
+        .collection('new_chats');
+    final QuerySnapshot userChatsSnapshot = await userChats.get();
+    for (var doc in userChatsSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete user user_author
+    await FirebaseFirestore.instance
+        .collection('user_author')
+        .doc(currentUserId)
+        .delete();
+
     await _auth.currentUser!.delete();
     await _deleteHive();
 
@@ -548,58 +490,6 @@ class _DeleteAccountState extends State<DeleteAccount> {
     await _clearBox<UserSettingsLoadingPreferenceModel>(
         'accountLocationPreference');
   }
-
-  // _deleteHive() async {
-  //   if (Hive.isBoxOpen('chatMessages')) {
-  //     final box = Hive.box<ChatMessage>('chatMessages');
-  //     await box.clear();
-  //   } else {
-  //     final box = await Hive.openBox<ChatMessage>('chatMessages');
-  //     await box.clear();
-  //   }
-
-  //   if (Hive.isBoxOpen('accountHolderAuthor')) {
-  //     final box = Hive.box<AccountHolderAuthor>('accountHolderAuthor');
-  //     await box.clear();
-  //   } else {
-  //     final box =
-  //         await Hive.openBox<AccountHolderAuthor>('accountHolderAuthor');
-  //     await box.clear();
-  //   }
-  //   if (Hive.isBoxOpen('chats')) {
-  //     final box = Hive.box<Chat>('chats');
-  //     await box.clear();
-  //   } else {
-  //     final box = await Hive.openBox<Chat>('chats');
-  //     await box.clear();
-  //   }
-
-  //   if (Hive.isBoxOpen('ticketIds')) {
-  //     final box = Hive.box<TicketIdModel>('ticketIds');
-  //     await box.clear();
-  //   } else {
-  //     final box = await Hive.openBox<TicketIdModel>('ticketIds');
-  //     await box.clear();
-  //   }
-
-  //   if (Hive.isBoxOpen('currentUser')) {
-  //     final box = Hive.box<AccountHolderAuthor>('currentUser');
-  //     await box.clear();
-  //   } else {
-  //     final box = await Hive.openBox<AccountHolderAuthor>('currentUser');
-  //     await box.clear();
-  //   }
-
-  //   if (Hive.isBoxOpen('accountLocationPreference')) {
-  //     final box = Hive.box<UserSettingsLoadingPreferenceModel>(
-  //         'accountLocationPreference');
-  //     await box.clear();
-  //   } else {
-  //     final box = await Hive.openBox<UserSettingsLoadingPreferenceModel>(
-  //         'accountLocationPreference');
-  //     await box.clear();
-  //   }
-  // }
 
   Future<void> reauthenticateWithApple(BuildContext context) async {
     User? user = FirebaseAuth.instance.currentUser;

@@ -67,6 +67,7 @@ class _DiscographyPagesState extends State<DiscographyPages> {
     String? city,
   }) async {
     var query = userProfessionalRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('profileHandle', isEqualTo: widget.types)
         .where('noBooking', isEqualTo: false);
 

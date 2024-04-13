@@ -80,7 +80,7 @@ class _EventRoomScreenState extends State<EventRoomScreen>
     batch.update(
       userTicketIdRef
           .doc(widget.currentUserId)
-          .collection('eventInvite')
+          .collection('tickedIds')
           .doc(widget.ticketId.eventId),
       {'isSeen': true},
     );

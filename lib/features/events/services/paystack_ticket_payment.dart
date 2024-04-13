@@ -101,35 +101,27 @@ class MakePayment {
     }
   }
 
-// // Inside your MakePayment class or related payment service
-// Future<void> initializeTransaction() async {
-//   try {
-//     final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('initializeTransaction');
-//     final response = await callable.call(<String, dynamic>{
-//       'email': email,
-//       'amount': price,
+  Future<void> initiatePaystackPayment(String email, int amount) async {
+    final HttpsCallable callable =
+        FirebaseFunctions.instance.httpsCallable('initiatePaystackPayment');
+    try {
+      final HttpsCallableResult result = await callable.call(<String, dynamic>{
+        'email': email,
+        'amount': amount,
+      });
 
-//        // Amount in GHC, ensure to multiply by 100 to convert to kobo if needed
-//     });
+      final String authorizationUrl = result.data['authorizationUrl'];
 
-//     // Handle the response
-//     if (response.data['status'] == true) {
-//       // Initialization successful, redirect user to Paystack payment page
-//       final String authorizationUrl = response.data['authorizationUrl'];
-//       if (await canLaunch(authorizationUrl)) {
-//         await launch(authorizationUrl);
-//       } else {
-//         throw 'Could not launch Paystack authorization URL';
-//       }
-//     } else {
-//       // Initialization failed
-//       _showBottomSheetErrorMessage('Failed to initialize payment.');
-//     }
-//   } catch (e) {
-//     // Error handling
-//     _showBottomSheetErrorMessage(e.toString());
-//   }
-// }
+      if (await canLaunch(authorizationUrl)) {
+        await launch(authorizationUrl);
+      } else {
+        throw 'Could not launch $authorizationUrl';
+      }
+    } on FirebaseFunctionsException catch (e) {
+      // Handle the error from the Cloud Function
+      throw Exception('Error initiating payment: ${e.message}');
+    }
+  }
 
   // Future<void> saveTokenToServer(String token) async {}
   String _getReference() {

@@ -299,107 +299,11 @@ class _UserPayoutsState extends State<UserPayouts>
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                EventPayoutModel invite = _payoutList[index];
-                bool _isRefunded = invite.status == 'processed';
-                bool _isLoading = false;
-                var _textStyle2 = TextStyle(
-                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-                  color: Theme.of(context).secondaryHeaderColor,
-                  decoration: _isRefunded
-                      ? TextDecoration.lineThrough
-                      : TextDecoration.none,
-                );
+                EventPayoutModel payout = _payoutList[index];
 
-                return GestureDetector(
-                  onTap: () async {
-                    _isLoading = true;
-                    try {
-                      Event? event =
-                          await DatabaseService.getEventWithId(invite.eventId);
-
-                      if (event != null) {
-                        _navigateToPage(EventEnlargedScreen(
-                          currentUserId: widget.currentUserId,
-                          event: event,
-                          type: event.type,
-                        ));
-                      } else {
-                        _showBottomSheetErrorMessage('Failed to fetch event.');
-                      }
-                    } catch (e) {
-                      _showBottomSheetErrorMessage('Failed to fetch event');
-                    } finally {
-                      _isLoading = false;
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: RichText(
-                                textScaleFactor:
-                                    MediaQuery.of(context).textScaleFactor,
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: '\nEvent:                   ',
-                                      style: _textStyle,
-                                    ),
-                                    TextSpan(
-                                      text: invite.eventTitle,
-                                      style: _textStyle2,
-                                    ),
-                                    TextSpan(
-                                      text: '\nStatus:                  ',
-                                      style: _textStyle,
-                                    ),
-                                    TextSpan(
-                                      text: invite.status,
-                                      style: TextStyle(
-                                        fontSize:
-                                            ResponsiveHelper.responsiveFontSize(
-                                                context, 14.0),
-                                        color: invite.status == 'pending'
-                                            ? Colors.red
-                                            : Colors.blue,
-                                        decoration: _isRefunded
-                                            ? TextDecoration.lineThrough
-                                            : TextDecoration.none,
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text: '\nApproved time:    ',
-                                      style: _textStyle,
-                                    ),
-                                    TextSpan(
-                                      text: MyDateFormat.toDate(
-                                          invite.timestamp.toDate()),
-                                      style: _textStyle2,
-                                    ),
-                                    TextSpan(
-                                      text: '\nId:                         ',
-                                      style: _textStyle,
-                                    ),
-                                    TextSpan(
-                                      text: invite.id,
-                                      style: _textStyle2,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Divider()
-                      ],
-                    ),
-                  ),
+                return PayoutWidget(
+                  currentUserId: widget.currentUserId,
+                  payout: payout,
                 );
               },
               childCount: _payoutList.length,

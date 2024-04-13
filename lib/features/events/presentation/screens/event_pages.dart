@@ -76,8 +76,8 @@ class _EventPagesState extends State<EventPages> {
     final endDate = currentDate.add(Duration(days: sortNumberOfDays));
 
     var query = widget.types.startsWith('All')
-        ? allEventsRef
-        : allEventsRef.where('type', isEqualTo: widget.types);
+        ? allEventsRef.where('showOnExplorePage', isEqualTo:true)
+        : allEventsRef.where('showOnExplorePage', isEqualTo:true).where('type', isEqualTo: widget.types);
 
     if (country != null) {
       query = query.where('country', isEqualTo: country);

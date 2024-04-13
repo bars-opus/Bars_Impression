@@ -41,7 +41,154 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
   void initState() {
     super.initState();
     _isValidated = widget.ticket.validated;
-    // stopInit();
+    startListeningForValidationIfInDateRange();
+  }
+
+  // void listenForTicketValidation() async {
+  //   DocumentReference orderDocRef = newEventTicketOrderRef
+  //       .doc(widget.event.id)
+  //       .collection('ticketOrders')
+  //       .doc(widget.ticketOrder.userOrderId);
+
+  //   _ticketSubscription = orderDocRef.snapshots().listen((snapshot) {
+  //     if (snapshot.exists) {
+  //       TicketOrderModel order = TicketOrderModel.fromDoc(snapshot);
+
+  //       // Find the specific ticket that has been updated
+  //       TicketPurchasedModel? updatedTicket = order.tickets.firstWhere(
+  //         (ticket) => ticket.entranceId == widget.ticket.entranceId,
+  //         // orElse: () =>  null,
+  //         // This is acceptable because updatedTicket is nullable
+  //       );
+
+  //       if (updatedTicket != null) {
+  //         // If the ticket's lastScannedTime is recent, we can assume a scan is in progress.
+  //         DateTime now = DateTime.now();
+  //         Duration timeSinceLastScan =
+  //             now.difference(updatedTicket.lastTimeScanned.toDate());
+  //         if (timeSinceLastScan < Duration(seconds: 10)) {
+  //           // for example, if less than 10 seconds ago
+  //           setState(() {
+  //             _isScanning = true;
+  //           });
+  //         }
+  //       }
+
+  //       if (updatedTicket != null && updatedTicket.validated) {
+  //         // Check if the specific field 'validated' has changed to true
+  //         if (updatedTicket.validated) {
+  //           // The ticket has been validated, call the function to handle this event
+  //           if (!init) onTicketValidated(updatedTicket.validated);
+  //         }
+  //       }
+  //     } else {
+  //       // // Handle the case where the order document does not exist
+  //       // onOrderNotFound();
+  //     }
+  //   }, onError: (error) {
+  //     // Handle any errors that occur with the listener
+  //     print("Error listening to ticket validation: $error");
+  //   });
+  // }
+
+  void listenForTicketValidation() {
+    DocumentReference orderDocRef = newEventTicketOrderRef
+        .doc(widget.event.id)
+        .collection('ticketOrders')
+        .doc(widget.ticketOrder.userOrderId);
+
+    _ticketSubscription = orderDocRef.snapshots().listen((snapshot) {
+      if (snapshot.exists) {
+        TicketOrderModel order = TicketOrderModel.fromDoc(snapshot);
+
+        // Find the specific ticket that has been updated.
+        TicketPurchasedModel? updatedTicket = order.tickets.firstWhere(
+          (ticket) => ticket.entranceId == widget.ticket.entranceId,
+          // orElse: () => null, // This is acceptable because updatedTicket is nullable.
+        );
+
+        if (updatedTicket != null) {
+          // If the ticket's lastScannedTime is recent, we can assume a scan is in progress.
+          DateTime now = DateTime.now();
+          if (updatedTicket.lastTimeScanned != null) {
+            Duration timeSinceLastScan =
+                now.difference(updatedTicket.lastTimeScanned.toDate());
+            if (timeSinceLastScan < Duration(seconds: 10)) {
+              // If less than 10 seconds ago, assume scanning is in progress.
+              setState(() {
+                _isScanning = true;
+              });
+              // Use a delay to give time for the scanning indicator to show.
+              Future.delayed(Duration(seconds: 2), () {
+                // After a delay, check the validation state and update UI accordingly.
+                checkAndUpdateValidationState(updatedTicket.validated);
+              });
+            } else {
+              // If the last scanned time is not recent, just update the validation state.
+              checkAndUpdateValidationState(updatedTicket.validated);
+            }
+          }
+        }
+      } else {
+        // Handle the case where the order document does not exist.
+        // onOrderNotFound();
+      }
+    }, onError: (error) {
+      // Handle any errors that occur with the listener.
+      // print("Error listening to ticket validation: $error");
+    });
+  }
+
+  void checkAndUpdateValidationState(bool isValidated) {
+    if (mounted) {
+      setState(() {
+        _isScanning = false; // Scanning is complete, hide the indicator.
+        _isValidated = isValidated; // Update the validation state.
+      });
+    }
+  }
+
+  void startListeningForValidationIfInDateRange() {
+    // DateTime now = DateTime.now();
+    DateTime now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day);
+
+    DateTime eventDate = widget.ticket.eventTicketDate.toDate();
+    DateTime oneDayBeforeEvent = eventDate.subtract(Duration(days: 2));
+    DateTime oneDayAfterEvent = eventDate.add(Duration(days: 1));
+
+    if (today.isAfter(oneDayBeforeEvent) && today.isBefore(oneDayAfterEvent)) {
+      listenForTicketValidation();
+    }
+    init = false;
+  }
+
+  void onTicketValidated(bool _isValidated) {
+    if (mounted) {
+      setState(() {
+        _isScanning = _isValidated;
+      });
+    }
+    _setShowDelayInfo();
+  }
+
+  void _setShowDelayInfo() {
+    if (_isScanning) {
+      // Cancel the existing timer if it's still running
+      _delayTimer?.cancel();
+
+      // Create a new timer
+
+      _delayTimer = Timer(const Duration(seconds: 2), () {
+        if (mounted) {
+          setState(() {
+            _isScanning = false;
+            _isValidated = true;
+          });
+        }
+        HapticFeedback.lightImpact();
+      });
+    }
   }
 
   @override
@@ -473,7 +620,7 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
                         ),
                       )
                     : Text(
-                        widget.ticket.entranceId.isNotEmpty
+                        widget.ticket.entranceId.isEmpty
                             ? ''
                             : 'Your check-in number, also known as your attendee number, is $orderIdSubstring. This number will be validated at the entrance of this event before you can enter. Once this ticket has been validated, the color of the barcode on the ticket will change, and a blue verified badge is placed at the top right corner of the ticket.  Enjoy attending this event and have a great time!',
                         style: TextStyle(

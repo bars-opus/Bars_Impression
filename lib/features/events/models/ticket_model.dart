@@ -44,6 +44,21 @@ class TicketModel {
     );
   }
 
+  factory TicketModel.fromJsonSharedPref(Map<String, dynamic> json) {
+    return TicketModel(
+      id: json['id'],
+      price: (json['price'] as num).toDouble(),
+      isSoldOut: json['isSoldOut'] ?? false,
+      type: json['type'],
+      group: json['group'],
+      accessLevel: json['accessLevel'] ?? 'General',
+      maxOder: json['maxOder'],
+      maxSeatsPerRow: json['maxSeatsPerRow'],
+      eventTicketDate:
+          Timestamp.fromMillisecondsSinceEpoch(json['eventTicketDate'] as int),
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -56,7 +71,9 @@ class TicketModel {
       'maxOder': maxOder,
 
       'maxSeatsPerRow': maxSeatsPerRow,
-      'eventTicketDate': eventTicketDate,
+      'eventTicketDate': eventTicketDate.millisecondsSinceEpoch,
+
+      // 'eventTicketDate': eventTicketDate,
     };
   }
 }

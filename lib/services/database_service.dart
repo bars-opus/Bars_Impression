@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:bars/utilities/exports.dart';
+import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 class DatabaseService {
@@ -68,6 +69,7 @@ class DatabaseService {
       'preferredEventTypes': [],
       'preferredCreatives': [],
       'report': '',
+      'reportConfirmedReason': '',
       'disableNewCreativeNotifications': false,
       'disableWorkVacancyNotifications': false,
       'muteWorkVacancyNotifications': false,
@@ -102,6 +104,8 @@ class DatabaseService {
       'priceTags': [],
       'disableAdvice': false,
       'hideAdvice': false,
+      'improvemenSuggestion': '',
+      'showOnExplorePage': true,
     });
 
     // Commit the batch
@@ -141,6 +145,13 @@ class DatabaseService {
     });
   }
 
+  static Future<bool> isUsernameTaken(String newUsername) async {
+    final QuerySnapshot result =
+        await usersAuthorRef.where('userName', isEqualTo: newUsername).get();
+
+    return result.docs.isNotEmpty;
+  }
+
   static Future<QuerySnapshot> searchUsers(String name) {
     String trimedName = name.toUpperCase().trim();
     // String formattedName = trimedName.replaceAll(RegExp(r'[^\w\s#@]'), '');
@@ -165,7 +176,7 @@ class DatabaseService {
 
     Future<QuerySnapshot> tickets = newUserTicketOrderRef
         .doc(currentUserId)
-        .collection('eventInvite')
+        .collection('ticketOrders')
         .orderBy(
             'eventTitle') // Replace 'name' with the field you want to order your documents by
         .startAt([trimedName])
@@ -238,13 +249,13 @@ class DatabaseService {
 
     final usersDocs = await newEventTicketOrderRef
         .doc(eventId)
-        .collection('eventInvite')
+        .collection('ticketOrders')
         .get();
 
     for (var doc in usersDocs.docs) {
       String userId = doc.id;
       final conversationRef =
-          userTicketIdRef.doc(userId).collection('eventInvite').doc(eventId);
+          userTicketIdRef.doc(userId).collection('tickedIds').doc(eventId);
 
       userId == currentUserId
           ? batch.update(
@@ -932,7 +943,7 @@ class DatabaseService {
     // Add addUserTicketIdRef to the transaction
     final userTicketIdDocRef = userTicketIdRef
         .doc(event.authorId)
-        .collection('eventInvite')
+        .collection('tickedIds')
         .doc(event.id);
 
     batch.set(userTicketIdDocRef, {
@@ -966,12 +977,12 @@ class DatabaseService {
 
     final eventInviteDocRef = newEventTicketOrderRef
         .doc(event.id)
-        .collection('eventInvite')
+        .collection('ticketOrders')
         .doc(event.authorId);
 
     final userInviteDocRef = newUserTicketOrderRef
         .doc(event.authorId)
-        .collection('eventInvite')
+        .collection('ticketOrders')
         .doc(event.id);
 
     // Add addUserTicketIdRef to the transaction
@@ -983,42 +994,45 @@ class DatabaseService {
     await batch.commit();
 
     // Fetch users in the same city
-    QuerySnapshot querySnapshot = await usersLocationSettingsRef
-        .where('city', isEqualTo: event.city)
-        .where('country', isEqualTo: event.country)
-        .get();
+    if (!event.isPrivate) {
+      QuerySnapshot querySnapshot = await usersLocationSettingsRef
+          .where('city', isEqualTo: event.city)
+          .where('country', isEqualTo: event.country)
+          .get();
 
-    // Prepare the batch for user activities
-    WriteBatch activitiesBatch = FirebaseFirestore.instance.batch();
+      // Prepare the batch for user activities
+      WriteBatch activitiesBatch = FirebaseFirestore.instance.batch();
 
-    // Loop over the users and create an activity document for each one
-    for (var doc in querySnapshot.docs) {
-      // Get the user's ID
-      String userId = doc.id;
+      // Loop over the users and create an activity document for each one
+      for (var doc in querySnapshot.docs) {
+        // Get the user's ID
+        String userId = doc.id;
 
-      // Create the activity document
-      if (userId != event.authorId) {
-        DocumentReference userActivityRef =
-            activitiesRef.doc(userId).collection('userActivities').doc();
-        activitiesBatch.set(userActivityRef, {
-          'authorId': event.authorId,
-          'postId': event.id,
-          'seen': false,
-          'type': 'newEventInNearYou',
-          'postImageUrl': event.imageUrl,
-          'comment': MyDateFormat.toDate(event.startDate.toDate()) +
-              '\n${event.title}',
-          'timestamp': Timestamp.fromDate(DateTime.now()),
-          'authorProfileImageUrl': '',
-          'authorName': 'New event in ${event.city}',
-          'authorProfileHandle': event.authorId,
-          'authorVerification': false
-        });
+        // Create the activity document
+        if (userId != event.authorId) {
+          DocumentReference userActivityRef =
+              activitiesRef.doc(userId).collection('userActivities').doc();
+          activitiesBatch.set(userActivityRef, {
+            'helperFielId': event.authorId,
+            'authorId': event.authorId,
+            'postId': event.id,
+            'seen': false,
+            'type': 'newEventInNearYou',
+            'postImageUrl': event.imageUrl,
+            'comment': MyDateFormat.toDate(event.startDate.toDate()) +
+                '\n${event.title}',
+            'timestamp': Timestamp.fromDate(DateTime.now()),
+            'authorProfileImageUrl': '',
+            'authorName': 'New event in ${event.city}',
+            'authorProfileHandle': event.authorId,
+            'authorVerification': false
+          });
+        }
       }
+      await activitiesBatch.commit();
     }
 
     // Commit the batch
-    await activitiesBatch.commit();
   }
 
   static Future<void> editEvent(Event event) async {
@@ -1076,7 +1090,7 @@ class DatabaseService {
 
     Query query = newEventTicketOrderRef
         .doc(event.id)
-        .collection('eventInvite')
+        .collection('ticketOrders')
         .orderBy(FieldPath.documentId)
         .limit(batchSize);
 
@@ -1098,7 +1112,7 @@ class DatabaseService {
         // Update the user's invites
         DocumentReference userInvitesRef = newUserTicketOrderRef
             .doc(userId)
-            .collection('eventInvite')
+            .collection('ticketOrders')
             .doc(event.id);
         batch.update(userInvitesRef, {
           'eventTimestamp': event.startDate,
@@ -1108,7 +1122,7 @@ class DatabaseService {
         // Update the event invites
         DocumentReference newEventsTicketOrderRef = newEventTicketOrderRef
             .doc(event.id)
-            .collection('eventInvite')
+            .collection('ticketOrders')
             .doc(userId);
         batch.update(newEventsTicketOrderRef, {
           'eventTimestamp': event.startDate,
@@ -1122,6 +1136,7 @@ class DatabaseService {
           DocumentReference userActivityRef =
               activitiesRef.doc(userId).collection('userActivities').doc();
           batch.set(userActivityRef, {
+            'helperFielId': event.authorId,
             'authorId': event.authorId,
             'postId': event.id,
             'seen': false,
@@ -1159,150 +1174,343 @@ class DatabaseService {
   static Future<void> deleteEvent(
       Event event, String reason, bool isCompleted) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
+    WriteBatch batch = firestore.batch();
+    int batchSize = 0;
+    // try {
+    // Singular operations to delete the event and related data
+    DocumentReference eventRef =
+        eventsRef.doc(event.authorId).collection('userEvents').doc(event.id);
+    batch.delete(eventRef);
+    batchSize++;
 
-    await firestore.runTransaction((transaction) async {
-      // Reference to the event in 'eventsRef' to be deleted
-      DocumentReference eventRef =
-          eventsRef.doc(event.authorId).collection('userEvents').doc(event.id);
-      transaction.delete(eventRef);
+    if (!event.isPrivate) {
+      DocumentReference allEventRef = allEventsRef.doc(event.id);
+      batch.delete(allEventRef);
+      batchSize++;
+    }
 
-      if (!event.isPrivate) {
-        // Reference to the event in 'allEventsRef' to be deleted
-        DocumentReference allEventRef = allEventsRef.doc(event.id);
-        transaction.delete(allEventRef);
-      }
+    DocumentReference chatRoomRef = eventsChatRoomsRef.doc(event.id);
+    batch.delete(chatRoomRef);
+    batchSize++;
 
-      // Reference to the event's chat room in 'eventsChatRoomsRef' to be deleted
-      DocumentReference chatRoomRef = eventsChatRoomsRef.doc(event.id);
-      transaction.delete(chatRoomRef);
+    DocumentReference userTicketIdDocRef = userTicketIdRef
+        .doc(event.authorId)
+        .collection('tickedIds')
+        .doc(event.id);
+    batch.delete(userTicketIdDocRef);
+    batchSize++;
 
-      // Reference to the user's ticket ID in 'userTicketIdRef' to be deleted
-      DocumentReference userTicketIdDocRef = userTicketIdRef
-          .doc(event.authorId)
-          .collection('eventInvite')
-          .doc(event.id);
-      transaction.delete(userTicketIdDocRef);
+    DocumentReference deletedEventRef = deletdEventsRef.doc(event.id);
+    batch.set(deletedEventRef, event.toJson());
+    batchSize++;
 
-      // Move event data to a 'deletedEventsRef' for record-keeping
-      DocumentReference deletedEventRef = deletdEventsRef.doc(event.id);
-      transaction.set(deletedEventRef, event.toJson());
+    if (!event.isFree && event.ticket.isEmpty) {
+      final CollectionReference eventRefundRequests =
+          FirebaseFirestore.instance.collection('eventRefundRequests');
 
-      // Get all event invites and mark them as deleted
-      QuerySnapshot eventInvitesSnapshot = await newEventTicketOrderRef
-          .doc(event.id)
-          .collection('eventInvite')
-          .get();
+      // Get the documents you want to delete.
+      final QuerySnapshot eventRefundRequestsSnapshot =
+          await eventRefundRequests.get();
 
-      for (var doc in eventInvitesSnapshot.docs) {
-        String userId = doc.id;
-        String commonId = Uuid().v4();
-        Map<String, dynamic> inviteData = doc.data() as Map<String, dynamic>;
+      for (var doc in eventRefundRequestsSnapshot.docs) {
+        batch
+            .delete(doc.reference); // Use the reference to delete the document.
+        batchSize++;
 
-        // Assuming 'transactionId' is a field in the invite document
-        String transactionId = inviteData['transactionId'] ?? '';
-
-        String orderId = inviteData['orderId'] ?? '';
-
-        // Update the user's invites
-        DocumentReference userInvitesRef = newUserTicketOrderRef
-            .doc(userId)
-            .collection('eventInvite')
-            .doc(event.id);
-        transaction.update(
-          userInvitesRef,
-          {
-            'isDeleted': true,
-            'canlcellationReason': reason,
-            'eventAuthorId': event.authorId
-          },
-        );
-
-        DocumentReference eventInvitesSnapshot = newEventTicketOrderRef
-            .doc(event.id)
-            .collection('eventInvite')
-            .doc(userId);
-
-        transaction.delete(
-          eventInvitesSnapshot,
-        );
-
-        DocumentReference userTicketIdDocRef =
-            userTicketIdRef.doc(userId).collection('eventInvite').doc(event.id);
-
-        transaction.delete(
-          userTicketIdDocRef,
-        );
-
-        if (userId != event.authorId && !event.isFree && !isCompleted) {
-          RefundModel refund = RefundModel(
-            id: commonId,
-            eventId: event.id,
-            status: 'pending',
-            timestamp: Timestamp.fromDate(DateTime.now()),
-            userRequestId: userId,
-            approvedTimestamp: Timestamp.fromDate(DateTime.now()),
-            reason: reason,
-            idempotencyKey: '',
-            city: '',
-            transactionId: transactionId,
-            orderId: orderId,
-            eventAuthorId: event.authorId,
-            eventTitle: event.title,
-          );
-
-          DocumentReference allRefundRequestRef = FirebaseFirestore.instance
-              .collection('allRefundRequestsEventDeleted')
-              .doc(refund.id);
-
-          DocumentReference userRefundRequestRef = FirebaseFirestore.instance
-              .collection('userRefundRequests')
-              .doc(userId)
-              .collection('refundRequests')
-              .doc(refund.id);
-
-          Map<String, dynamic> refundData = refund.toJson();
-
-          transaction.set(allRefundRequestRef, refundData);
-
-          transaction.set(userRefundRequestRef, refundData);
-        }
-        // // Update the event invites
-
-        // If user is not the author, add user activity for event deletion
-        if (userId != event.authorId && !isCompleted) {
-          DocumentReference userActivityRef =
-              activitiesRef.doc(userId).collection('userActivities').doc();
-          transaction.set(userActivityRef, {
-            'authorId': event.authorId,
-            'postId': event.authorId,
-            'seen': false,
-            'type': 'eventDeleted',
-            'postImageUrl': '',
-            'comment': event.title,
-            'timestamp': Timestamp.fromDate(DateTime.now()),
-            'authorProfileImageUrl': '',
-            'authorName': 'Event deleted',
-            'authorProfileHandle': '',
-            'authorVerification': false
-          });
+        // Commit the batch if it reaches the limit of 500 operations
+        if (batchSize >= 500) {
+          await batch.commit(); // Commit the batch.
+          batch = firestore.batch(); // Start a new batch.
+          batchSize = 0; // Reset the batch size counter.
         }
       }
-
-      // Continue with the rest of the transaction as needed...
-    }).catchError((error) {
-      throw Exception('Transaction failed: $error');
-    });
-
-    // Delete the image from Firebase Storage if necessary
-    if (event.imageUrl.isNotEmpty) {
-      try {
-        await FirebaseStorage.instance.refFromURL(event.imageUrl).delete();
-      } catch (e) {
-        // Handle errors for Firebase Storage
-        throw e; // Rethrow the error to be handled further up if necessary
+      // Commit any remaining operations in the batch after processing all documents.
+      if (batchSize > 0) {
+        await batch.commit();
+        batchSize = 0; // Reset the batch size after the commit.
       }
     }
+
+    // Get all event invites and perform batch operations
+    QuerySnapshot eventInvitesSnapshot = await newEventTicketOrderRef
+        .doc(event.id)
+        .collection('ticketOrders')
+        .where('refundRequestStatus', isEqualTo: '')
+        .get();
+
+    for (var doc in eventInvitesSnapshot.docs) {
+      String userId = doc.id;
+      String commonId = Uuid().v4();
+      Map<String, dynamic> inviteData = doc.data() as Map<String, dynamic>;
+
+      String transactionId = inviteData['transactionId'] ?? '';
+
+      String orderId = inviteData['orderId'] ?? '';
+
+      DocumentReference inviteRef = doc.reference;
+      batch.delete(inviteRef);
+      batchSize++;
+
+      // // Update the event invites
+      DocumentReference newEventsTicketOrderRef = newUserTicketOrderRef
+          .doc(userId)
+          .collection('ticketOrders')
+          .doc(event.id);
+      batch.update(newEventsTicketOrderRef, {
+        'isDeleted': true,
+        'canlcellationReason': reason,
+      });
+      batchSize++;
+
+      // Check if the document exists before updating
+      DocumentReference newUserInvitesRef =
+          userInvitesRef.doc(userId).collection('eventInvite').doc(event.id);
+      DocumentSnapshot inviteSnapshot = await newUserInvitesRef.get();
+
+      if (inviteSnapshot.exists) {
+        batch.update(newUserInvitesRef, {
+          'isDeleted': true,
+        });
+        batchSize++;
+      }
+
+      DocumentReference userTicketIdDocRef =
+          userTicketIdRef.doc(userId).collection('tickedIds').doc(event.id);
+      batch.delete(
+        userTicketIdDocRef,
+      );
+      batchSize++;
+
+      // Additional operations based on conditions
+      if (userId != event.authorId && !event.isFree && !isCompleted) {
+        // Assume two operations for refund processing: one delete and one set
+        RefundModel refund = RefundModel(
+          id: commonId,
+          eventId: event.id,
+          status: 'pending',
+          timestamp: Timestamp.fromDate(DateTime.now()),
+          userRequestId: userId,
+          approvedTimestamp: Timestamp.fromDate(DateTime.now()),
+          reason: reason,
+          idempotencyKey: '',
+          city: '',
+          amount: 0,
+          expectedDate: '',
+          transactionId: transactionId,
+          orderId: orderId,
+          eventAuthorId: event.authorId,
+          eventTitle: event.title,
+        );
+
+        DocumentReference allRefundRequestRef = FirebaseFirestore.instance
+            .collection('allRefundRequestsEventDeleted')
+            .doc(refund.id);
+
+        DocumentReference userRefundRequestRef = FirebaseFirestore.instance
+            .collection('userRefundRequests')
+            .doc(userId)
+            .collection('refundRequests')
+            .doc(event.id);
+
+        Map<String, dynamic> refundData = refund.toJson();
+
+        batch.set(allRefundRequestRef, refundData);
+        batch.set(userRefundRequestRef, refundData);
+        batchSize += 2;
+      }
+
+      if (userId != event.authorId && !isCompleted) {
+        // Assume one operation for user activity logging
+        DocumentReference userActivityRef =
+            activitiesRef.doc(userId).collection('userActivities').doc();
+        batch.set(userActivityRef, {
+          'helperFielId': event.authorId,
+          'authorId': event.authorId,
+          'postId': event.id,
+          'seen': false,
+          'type': 'eventDeleted',
+          'postImageUrl': '',
+          'comment': event.title,
+          'timestamp': Timestamp.fromDate(DateTime.now()),
+          'authorProfileImageUrl': '',
+          'authorName': 'Event deleted',
+          'authorProfileHandle': '',
+          'authorVerification': false
+        });
+
+        batchSize++;
+      }
+
+      // Commit the batch if it reaches the limit of 500 operations
+      if (batchSize >= 500) {
+        await batch.commit();
+        batch = firestore.batch();
+        batchSize = 0;
+      }
+    }
+    // Commit any remaining operations
+    if (batchSize > 0) {
+      await batch.commit();
+    }
+    if (event.imageUrl.isNotEmpty) {
+      await FirebaseStorage.instance.refFromURL(event.imageUrl).delete();
+    }
+    // } catch (e) {
+    //   throw (e);
+    //   // Handle batch commit errors
+    //   // Consider how to handle the error, e.g., retry mechanism or user notification
+    // }
   }
+
+  // static Future<void> deleteEvent(
+  //     Event event, String reason, bool isCompleted) async {
+  //   FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  //   await firestore.runTransaction((transaction) async {
+  //     // Reference to the event in 'eventsRef' to be deleted
+  //     DocumentReference eventRef =
+  //         eventsRef.doc(event.authorId).collection('userEvents').doc(event.id);
+  //     transaction.delete(eventRef);
+
+  //     if (!event.isPrivate) {
+  //       // Reference to the event in 'allEventsRef' to be deleted
+  //       DocumentReference allEventRef = allEventsRef.doc(event.id);
+  //       transaction.delete(allEventRef);
+  //     }
+
+  //     // Reference to the event's chat room in 'eventsChatRoomsRef' to be deleted
+  //     DocumentReference chatRoomRef = eventsChatRoomsRef.doc(event.id);
+  //     transaction.delete(chatRoomRef);
+
+  //     // Reference to the user's ticket ID in 'userTicketIdRef' to be deleted
+  //     DocumentReference userTicketIdDocRef = userTicketIdRef
+  //         .doc(event.authorId)
+  //         .collection('eventInvite')
+  //         .doc(event.id);
+  //     transaction.delete(userTicketIdDocRef);
+
+  //     // Move event data to a 'deletedEventsRef' for record-keeping
+  //     DocumentReference deletedEventRef = deletdEventsRef.doc(event.id);
+  //     transaction.set(deletedEventRef, event.toJson());
+
+  //     // Get all event invites and mark them as deleted
+  //     QuerySnapshot eventInvitesSnapshot = await newEventTicketOrderRef
+  //         .doc(event.id)
+  //         .collection('eventInvite')
+  //         .get();
+
+  //     for (var doc in eventInvitesSnapshot.docs) {
+  // String userId = doc.id;
+  // String commonId = Uuid().v4();
+  // Map<String, dynamic> inviteData = doc.data() as Map<String, dynamic>;
+
+  //       // Assuming 'transactionId' is a field in the invite document
+  // String transactionId = inviteData['transactionId'] ?? '';
+
+  // String orderId = inviteData['orderId'] ?? '';
+
+  // // Update the user's invites
+  // DocumentReference userInvitesRef = newUserTicketOrderRef
+  //     .doc(userId)
+  //     .collection('eventInvite')
+  //     .doc(event.id);
+  // transaction.update(
+  //   userInvitesRef,
+  //   {
+  // 'isDeleted': true,
+  // 'canlcellationReason': reason,
+  // 'eventAuthorId': event.authorId
+  //   },
+  // );
+
+  //       DocumentReference eventInvitesSnapshot = newEventTicketOrderRef
+  //           .doc(event.id)
+  //           .collection('eventInvite')
+  //           .doc(userId);
+
+  //       transaction.delete(
+  //         eventInvitesSnapshot,
+  //       );
+
+  // DocumentReference userTicketIdDocRef =
+  //     userTicketIdRef.doc(userId).collection('eventInvite').doc(event.id);
+
+  // transaction.delete(
+  //   userTicketIdDocRef,
+  // );
+
+  //       if (userId != event.authorId && !event.isFree && !isCompleted) {
+  // RefundModel refund = RefundModel(
+  //   id: commonId,
+  //   eventId: event.id,
+  //   status: 'pending',
+  //   timestamp: Timestamp.fromDate(DateTime.now()),
+  //   userRequestId: userId,
+  //   approvedTimestamp: Timestamp.fromDate(DateTime.now()),
+  //   reason: reason,
+  //   idempotencyKey: '',
+  //   city: '',
+  //   amount: 0,
+  //   expectedDate: '',
+  //   transactionId: transactionId,
+  //   orderId: orderId,
+  //   eventAuthorId: event.authorId,
+  //   eventTitle: event.title,
+  // );
+
+  // DocumentReference allRefundRequestRef = FirebaseFirestore.instance
+  //     .collection('allRefundRequestsEventDeleted')
+  //     .doc(refund.id);
+
+  // DocumentReference userRefundRequestRef = FirebaseFirestore.instance
+  //     .collection('userRefundRequests')
+  //     .doc(userId)
+  //     .collection('refundRequests')
+  //     .doc(refund.id);
+
+  // Map<String, dynamic> refundData = refund.toJson();
+
+  // transaction.set(allRefundRequestRef, refundData);
+
+  // transaction.set(userRefundRequestRef, refundData);
+  //       }
+  //       // // Update the event invites
+
+  //       // If user is not the author, add user activity for event deletion
+  //       if (userId != event.authorId && !isCompleted) {
+  //   DocumentReference userActivityRef =
+  //       activitiesRef.doc(userId).collection('userActivities').doc();
+  //   transaction.set(userActivityRef, {
+  //     'authorId': event.authorId,
+  //     'postId': event.authorId,
+  //     'seen': false,
+  //     'type': 'eventDeleted',
+  //     'postImageUrl': '',
+  //     'comment': event.title,
+  //     'timestamp': Timestamp.fromDate(DateTime.now()),
+  //     'authorProfileImageUrl': '',
+  //     'authorName': 'Event deleted',
+  //     'authorProfileHandle': '',
+  //     'authorVerification': false
+  //   });
+  // }
+  //     }
+
+  //     // Continue with the rest of the transaction as needed...
+  //   }).catchError((error) {
+  //     throw Exception('Transaction failed: $error');
+  //   });
+
+  //   // Delete the image from Firebase Storage if necessary
+  //   if (event.imageUrl.isNotEmpty) {
+  //     try {
+  //       await FirebaseStorage.instance.refFromURL(event.imageUrl).delete();
+  //     } catch (e) {
+  //       // Handle errors for Firebase Storage
+  //       throw e; // Rethrow the error to be handled further up if necessary
+  //     }
+  //   }
+  // }
 
 //   static Future<void> deleteEvent(Event event) async {
 //   FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -1379,14 +1587,14 @@ class DatabaseService {
 //   });
 
 //   // Delete the image from Firebase Storage if necessary
-//   if (event.imageUrl.isNotEmpty) {
-//     try {
-//       await FirebaseStorage.instance.refFromURL(event.imageUrl).delete();
-//     } catch (e) {
-//       // Handle errors for Firebase Storage
-//       throw e; // Rethrow the error to be handled further up if necessary
-//     }
-//   }
+  // if (event.imageUrl.isNotEmpty) {
+  //   try {
+  //     await FirebaseStorage.instance.refFromURL(event.imageUrl).delete();
+  //   } catch (e) {
+  //     // Handle errors for Firebase Storage
+  //     throw e; // Rethrow the error to be handled further up if necessary
+  //   }
+  // }
 // }
 
   // static Future<void> deleteEvent(Event event) async {
@@ -1622,12 +1830,12 @@ class DatabaseService {
 
     final eventInviteDocRef = newEventTicketOrderRef
         .doc(event.id)
-        .collection('eventInvite')
+        .collection('ticketOrders')
         .doc(currentUser.userId);
 
     final userInviteDocRef = newUserTicketOrderRef
         .doc(currentUser.userId)
-        .collection('eventInvite')
+        .collection('ticketOrders')
         .doc(event.id);
 
     batch.update(eventInviteDocRef, {
@@ -1660,6 +1868,17 @@ class DatabaseService {
     await batch.commit();
   }
 
+  static deleteRefundRequestData(RefundModel refund) {
+    // Add the complaint request to the appropriate collection
+
+    FirebaseFirestore.instance
+        .collection('userRefundRequests')
+        .doc(refund.userRequestId)
+        .collection('refundRequests')
+        .doc(refund.eventId)
+        .delete();
+  }
+
   static Future<void> requestPayout(Event event, EventPayoutModel payout,
       AccountHolderAuthor currentUser) async {
     // Create a toJson method inside Event class to serialize the object into a map
@@ -1682,22 +1901,33 @@ class DatabaseService {
     batch.set(allPayoutRequestRef, payoutData);
     batch.set(userPayoutRequestRef, payoutData);
 
-    DocumentReference eventRef =
-        eventsRef.doc(event.authorId).collection('userEvents').doc(event.id);
-    batch.update(eventRef, {
-      'fundsDistributed': true,
-    });
-    if (!event.isPrivate) {
-      // Add the event to 'allEventsRef'
-      DocumentReference allEventRef = allEventsRef.doc(event.id);
-      // FirebaseFirestore.instance.collection('new_allEvents').doc(event.id);
-      batch.update(allEventRef, {
-        'fundsDistributed': true,
-      });
-    }
+    // DocumentReference eventRef =
+    //     eventsRef.doc(event.authorId).collection('userEvents').doc(event.id);
+    // batch.update(eventRef, {
+    //   'fundsRequested': true,
+    // });
+    // if (!event.isPrivate) {
+    //   // Add the event to 'allEventsRef'
+    //   DocumentReference allEventRef = allEventsRef.doc(event.id);
+    //   // FirebaseFirestore.instance.collection('new_allEvents').doc(event.id);
+    //   batch.update(allEventRef, {
+    //     'fundsRequested': true,
+    //   });
+    // }
 
     // Commit the batch
     await batch.commit();
+  }
+
+  static deletePayoutData(EventPayoutModel payout, String currentUserId) {
+    // Add the complaint request to the appropriate collection
+
+    FirebaseFirestore.instance
+        .collection('userPayoutRequests')
+        .doc(currentUserId)
+        .collection('payoutRequests')
+        .doc(payout.eventId)
+        .delete();
   }
 
   static void requestVerification(Verification verification) {
@@ -1721,7 +1951,7 @@ class DatabaseService {
     });
   }
 
-  static void createSuggestion(Suggestion suggestion) {
+  static createSuggestion(Suggestion suggestion) {
     suggestionsRef.add({
       'suggesttion': suggestion.suggesttion,
       'authorId': suggestion.authorId,
@@ -1729,7 +1959,7 @@ class DatabaseService {
     });
   }
 
-  static void createSurvey(Survey survey) {
+  static createSurvey(Survey survey) {
     surveysRef.add({
       'lessHelpfulFeature': survey.lessHelpfulFeature,
       'mostHelpfulFeature': survey.mostHelpfulFeature,
@@ -1741,7 +1971,7 @@ class DatabaseService {
     });
   }
 
-  static void createReportContent(ReportContents reportContents) {
+  static createReportContent(ReportContents reportContents) {
     reportContentsRef.add({
       'contentId': reportContents.contentId,
       'contentType': reportContents.contentType,
@@ -1753,6 +1983,138 @@ class DatabaseService {
       'timestamp': reportContents.timestamp,
       'comment': reportContents.comment,
     });
+  }
+
+  static Future<ComplaintIssueModel?> getComplaintWithId(
+    String userId,
+    String complaintId,
+  ) async {
+    try {
+      DocumentSnapshot userDocSnapshot = await userIssueComplaintRef
+          .doc(userId)
+          .collection('issueComplaint')
+          .doc(complaintId)
+          .get();
+
+      if (userDocSnapshot.exists) {
+        return ComplaintIssueModel.fromDoc(userDocSnapshot);
+      } else {
+        return null; // return null if document does not exist
+      }
+    } catch (e) {
+      print(e);
+      return null; // return null if an error occurs
+    }
+  }
+
+  static Future<RefundModel?> getRefundWithId(
+    String userId,
+    String eventId,
+  ) async {
+    try {
+      DocumentSnapshot userDocSnapshot = await userRefundRequestsRef
+          .doc(userId)
+          .collection('refundRequests')
+          .doc(eventId)
+          .get();
+
+      if (userDocSnapshot.exists) {
+        return RefundModel.fromDoc(userDocSnapshot);
+      } else {
+        return null; // return null if document does not exist
+      }
+    } catch (e) {
+      print(e);
+      return null; // return null if an error occurs
+    }
+  }
+
+  static Future<EventPayoutModel?> getUserPayoutWithId(
+    String userId,
+    String eventId,
+  ) async {
+    try {
+      DocumentSnapshot userDocSnapshot = await userPayoutRequestRef
+          .doc(userId)
+          .collection('payoutRequests')
+          .doc(eventId)
+          .get();
+
+      if (userDocSnapshot.exists) {
+        return EventPayoutModel.fromDoc(userDocSnapshot);
+      } else {
+        return null; // return null if document does not exist
+      }
+    } catch (e) {
+      print(e);
+      return null; // return null if an error occurs
+    }
+  }
+
+  static createComplainIssue(ComplaintIssueModel complaint) {
+    Map<String, dynamic> complaintData = complaint.toJson();
+
+    // Prepare the batch
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    DateTime now = DateTime.now();
+    final currentDate = DateTime(now.year, now.month, now.day);
+    String monthName = DateFormat('MMMM').format(currentDate);
+
+    // Add the complaint request to the appropriate collection
+    DocumentReference allComplaintRequestRef = FirebaseFirestore.instance
+        .collection('allComplaintRequests')
+        .doc(currentDate.year.toString())
+        .collection(monthName)
+        .doc(getWeekOfMonth(currentDate).toString())
+        .collection(complaint.complainType)
+        .doc(complaint.complainContentId);
+
+    DocumentReference userIssueComplaint = FirebaseFirestore.instance
+        .collection('userIssueComplaint')
+        .doc(complaint.authorId)
+        .collection('issueComplaint')
+        .doc(complaint.complainContentId);
+
+    batch.set(allComplaintRequestRef, complaintData);
+    batch.set(userIssueComplaint, complaintData);
+
+    // Commit the batch
+    batch.commit();
+  }
+
+  static deleteComplainIssue(ComplaintIssueModel complaint) {
+    // Prepare the batch
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    DateTime now = complaint.timestamp.toDate();
+    final currentDate = DateTime(now.year, now.month, now.day);
+    String monthName = DateFormat('MMMM').format(currentDate);
+
+    // Add the complaint request to the appropriate collection
+    DocumentReference allComplaintRequestRef = FirebaseFirestore.instance
+        .collection('allComplaintRequests')
+        .doc(currentDate.year.toString())
+        .collection(monthName)
+        .doc(getWeekOfMonth(currentDate).toString())
+        .collection(complaint.complainType)
+        .doc(complaint.complainContentId);
+
+    DocumentReference userIssueComplaint = FirebaseFirestore.instance
+        .collection('userIssueComplaint')
+        .doc(complaint.authorId)
+        .collection('issueComplaint')
+        .doc(complaint.complainContentId);
+
+    batch.delete(allComplaintRequestRef);
+    batch.delete(userIssueComplaint);
+
+    // Commit the batch
+    batch.commit();
+  }
+
+  static int getWeekOfMonth(DateTime dateTime) {
+    int daysInWeek = 7;
+    int daysPassed = dateTime.day + dateTime.weekday - 1;
+    return ((daysPassed - 1) / daysInWeek).ceil();
   }
 
   static void followUser(
@@ -1786,7 +2148,7 @@ class DatabaseService {
     addActivityItem(
       user: currentUser,
       event: null,
-      comment: "${user.userName} Started following you",
+      comment: "Started following you",
       followerUser: user,
       post: null,
       type: NotificationActivityType.follow,
@@ -1819,6 +2181,179 @@ class DatabaseService {
         doc.reference.delete();
       }
     });
+  }
+
+  static void sendFollowRequest({
+    required String currentUserId,
+    required AccountHolderAuthor privateUser,
+    required AccountHolderAuthor currentUser,
+  }) {
+    // Create a follow request for the private user to accept or reject
+    followRequestsRef
+        .doc(privateUser.userId)
+        .collection('receivedFollowRequests')
+        .doc(currentUserId)
+        .set({
+      'userId': currentUserId,
+      'timestamp': FieldValue.serverTimestamp(), // To order requests
+    });
+
+    addActivityItem(
+      user: currentUser,
+      event: null,
+      comment: "Requested to follow you.",
+      followerUser: privateUser,
+      post: null,
+      type: NotificationActivityType.follow,
+      advicedUserId: '',
+    );
+  }
+
+  static acceptFollowRequest({
+    required String currentUserId,
+    required String requesterUserId,
+    required String activityId,
+    required AccountHolderAuthor currentUser,
+  }) async {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    DocumentReference followersDocRef = followersRef
+        .doc(currentUserId)
+        .collection('userFollowers')
+        .doc(requesterUserId);
+
+    DocumentReference followingDocRef = followingRef
+        .doc(requesterUserId)
+        .collection('userFollowing')
+        .doc(currentUserId);
+
+    DocumentReference followRequestDocRef = followRequestsRef
+        .doc(currentUserId)
+        .collection('receivedFollowRequests')
+        .doc(requesterUserId);
+
+    DocumentReference activityRef = activitiesRef
+        .doc(currentUserId)
+        .collection('userActivities')
+        .doc(activityId);
+
+    DocumentReference requesterRef = activitiesRef
+        .doc(requesterUserId)
+        .collection('userActivities')
+        .doc(activityId);
+
+    // Add the requester to current user's followers collection
+    batch.set(followersDocRef, {
+      'userId': requesterUserId,
+    });
+
+    // Add the current user to the requester's following collection
+    batch.set(followingDocRef, {
+      'userId': currentUserId,
+    });
+
+    // Delete the follow request
+    batch.delete(followRequestDocRef);
+    batch.delete(activityRef);
+
+    batch.set(requesterRef, {
+      'helperFielId': '',
+      'activityId': activityId,
+      'authorId': currentUser.userId,
+      'postId': currentUser.userId,
+      'seen': false,
+      'type':
+          'follow', // Assuming 'NotificationActivityType.follow' is the correct value
+      'postImageUrl': currentUser.profileImageUrl,
+      'comment': "Accepted your follow request.",
+      'timestamp': Timestamp.fromDate(DateTime.now()),
+      'authorProfileImageUrl': currentUser.profileImageUrl,
+      'authorName': currentUser.userName,
+      'authorProfileHandle': currentUser.profileHandle,
+      'authorVerification': currentUser.verified,
+    });
+
+    // Commit the batch
+    await batch.commit();
+  }
+
+  // static void acceptFollowRequest({
+  //   required String currentUserId,
+  //   required String requesterUserId,
+  // }) async {
+  //   // Upon accepting, add the requester to current user's followers collection
+  //   followersRef
+  //       .doc(currentUserId)
+  //       .collection('userFollowers')
+  //       .doc(requesterUserId)
+  //       .set({
+  //     'userId': requesterUserId,
+  //   });
+
+  //   // Also add the current user to the requester's following collection
+  //   followingRef
+  //       .doc(requesterUserId)
+  //       .collection('userFollowing')
+  //       .doc(currentUserId)
+  //       .set({
+  //     'userId': currentUserId,
+  //   });
+
+  //   // Delete the follow request
+  //   followRequestsRef
+  //       .doc(currentUserId)
+  //       .collection('receivedFollowRequests')
+  //       .doc(requesterUserId)
+  //       .delete();
+  // }
+
+  static void cancelFollowRequest({
+    required String currentUserId,
+    required String requesterUserId,
+  }) async {
+    // Simply delete the follow request
+    followRequestsRef
+        .doc(currentUserId)
+        .collection('receivedFollowRequests')
+        .doc(requesterUserId)
+        .delete();
+  }
+
+  static rejectFollowRequest({
+    required String currentUserId,
+    required String userId,
+    required String activityId,
+  }) async {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    DocumentReference followRequestDocRef = followRequestsRef
+        .doc(currentUserId)
+        .collection('receivedFollowRequests')
+        .doc(userId);
+
+    DocumentReference activityDocRef = activitiesRef
+        .doc(currentUserId)
+        .collection('userActivities')
+        .doc(activityId);
+
+    // Queue the deletion of the follow request
+    batch.delete(followRequestDocRef);
+
+    // Queue the deletion of the activity
+    batch.delete(activityDocRef);
+
+    // Commit the batch to atomically execute the delete operations
+    await batch.commit();
+  }
+
+  static Future<bool> isFollowingRequested(
+      {required String currentUserId, required String userId}) async {
+    DocumentSnapshot followingDoc = await followRequestsRef
+        .doc(userId)
+        .collection('receivedFollowRequests')
+        .doc(currentUserId)
+        .get();
+    return followingDoc.exists;
   }
 
   static Future<bool> isFollowingUser(
@@ -1997,6 +2532,7 @@ class DatabaseService {
   static Future<int> numEventsTypes(
       String eventType, DateTime currentDate) async {
     QuerySnapshot feedEventSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('type', isEqualTo: eventType)
         .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
         // .where('showOnExplorePage', isEqualTo: true)
@@ -2006,6 +2542,7 @@ class DatabaseService {
 
   static Future<int> numEventsAll(DateTime currentDate) async {
     QuerySnapshot feedEventSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
         // .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
 
@@ -2019,6 +2556,7 @@ class DatabaseService {
       DateTime currentDate, int sortNumberOfDays) async {
     final endDate = currentDate.add(Duration(days: sortNumberOfDays));
     QuerySnapshot feedEventSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('clossingDay', isLessThanOrEqualTo: endDate)
         // .where('clossingDay', isLessThanOrEqualTo: endDate)
 
@@ -2032,6 +2570,7 @@ class DatabaseService {
       String eventType, DateTime currentDate, int sortNumberOfDays) async {
     final endDate = currentDate.add(Duration(days: sortNumberOfDays));
     QuerySnapshot feedEventSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('type', isEqualTo: eventType)
         .where('clossingDay', isLessThanOrEqualTo: endDate)
         // .where('clossingDay', isLessThanOrEqualTo: endDate)
@@ -2043,6 +2582,7 @@ class DatabaseService {
   static Future<int> numEventsAllLiveLocation(
       String liveCity, String liveCountry, DateTime currentDate) async {
     QuerySnapshot feedEventSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
         .where('city', isEqualTo: liveCity)
         .where('country', isEqualTo: liveCountry)
@@ -2056,6 +2596,7 @@ class DatabaseService {
   static Future<int> numEventsTypesLiveLocation(String eventType,
       String liveCity, String liveCountry, DateTime currentDate) async {
     QuerySnapshot feedEventSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
         .where('type', isEqualTo: eventType)
         .where('city', isEqualTo: liveCity)
@@ -2260,7 +2801,7 @@ class DatabaseService {
     try {
       DocumentSnapshot userDocSnapshot = await newEventTicketOrderRef
           .doc(order.eventId)
-          .collection('eventInvite')
+          .collection('ticketOrders')
           .doc(order.userOrderId)
           .get();
       if (userDocSnapshot.exists) {
@@ -2279,7 +2820,7 @@ class DatabaseService {
     try {
       DocumentSnapshot userDocSnapshot = await newUserTicketOrderRef
           .doc(userId)
-          .collection('eventInvite')
+          .collection('ticketOrders')
           .doc(eventId)
           .get();
       if (userDocSnapshot.exists) {
@@ -2332,7 +2873,7 @@ class DatabaseService {
       String eventId, String currentUserId) async {
     DocumentSnapshot userDocSnapshot = await newUserTicketOrderRef
         .doc(currentUserId)
-        .collection('eventInvite')
+        .collection('ticketOrders')
         .doc(eventId)
         .get();
     if (userDocSnapshot.exists) {
@@ -2361,7 +2902,7 @@ class DatabaseService {
     try {
       DocumentSnapshot userDocSnapshot = await userTicketIdRef
           .doc(currentUserId)
-          .collection('eventInvite')
+          .collection('tickedIds')
           .doc(eventId)
           .get();
       if (userDocSnapshot.exists) {
@@ -2732,7 +3273,7 @@ class DatabaseService {
     }
     return newEventTicketOrderRef
         .doc(eventId)
-        .collection('eventInvite')
+        .collection('ticketOrders')
         .where('refundRequestStatus', isEqualTo: status)
         .get()
         .then((querySnapshot) {
@@ -2787,7 +3328,7 @@ class DatabaseService {
     // Create a stream of snapshots for the entire eventInvite collection
     Stream<QuerySnapshot> stream = newEventTicketOrderRef
         .doc(eventId)
-        .collection('eventInvite')
+        .collection('ticketOrders')
         .where('refundRequestStatus', isEqualTo: '')
         .snapshots();
 
@@ -2821,7 +3362,8 @@ class DatabaseService {
     }
     return newEventTicketOrderRef
         .doc(eventId)
-        .collection('eventInvite')
+        .collection('ticketOrders')
+        .where('refundRequestStatus', isEqualTo: '')
         .get()
         .then((querySnapshot) {
       if (querySnapshot.size > 0) {
@@ -2838,7 +3380,8 @@ class DatabaseService {
   ) {
     return newEventTicketOrderRef
         .doc(eventId)
-        .collection('eventInvite')
+        .collection('ticketOrders')
+        .where('refundRequestStatus', isEqualTo: '')
         .get()
         .then((querySnapshot) {
       if (querySnapshot.size > 0) {
@@ -2853,7 +3396,7 @@ class DatabaseService {
   static Future<int> numUsersTickets(String userId) async {
     QuerySnapshot feedSnapShot = await newUserTicketOrderRef
         .doc(userId)
-        .collection('eventInvite')
+        .collection('ticketOrders')
         // .where('profileHandle', isEqualTo: profileHandle)
         // .where('showOnExplorePage', isEqualTo: true)
         .get();
@@ -2867,7 +3410,7 @@ class DatabaseService {
   }) async {
     DocumentReference ticketOrderDocRef = newUserTicketOrderRef
         .doc(userOrderId)
-        .collection('eventInvite')
+        .collection('ticketOrders')
         .doc(eventId);
 
     DocumentSnapshot ticketOrderDoc = await transaction.get(ticketOrderDocRef);
@@ -2884,7 +3427,7 @@ class DatabaseService {
 
     newEventTicketOrderRef
         .doc(eventId)
-        .collection('eventInvite')
+        .collection('ticketOrders')
         .doc(userOrderId)
         .update({
       'tickets': FieldValue.arrayUnion(
@@ -2893,7 +3436,7 @@ class DatabaseService {
 
     newUserTicketOrderRef
         .doc(userOrderId)
-        .collection('eventInvite')
+        .collection('ticketOrders')
         .doc(eventId)
         .update({
       'tickets': FieldValue.arrayUnion(
@@ -2905,7 +3448,7 @@ class DatabaseService {
       {required String eventId, required String userId}) async {
     DocumentSnapshot ticketDoc = await newEventTicketOrderRef
         .doc(eventId)
-        .collection('eventInvite')
+        .collection('ticketOrders')
         .doc(userId)
         .get();
     return ticketDoc.exists;
@@ -2954,12 +3497,12 @@ class DatabaseService {
   }) {
     final eventInviteDocRef = newEventTicketOrderRef
         .doc(ticketOrder.eventId)
-        .collection('eventInvite')
+        .collection('ticketOrders')
         .doc(ticketOrder.userOrderId);
 
     final userInviteDocRef = newUserTicketOrderRef
         .doc(ticketOrder.userOrderId)
-        .collection('eventInvite')
+        .collection('ticketOrders')
         .doc(ticketOrder.eventId);
 
     Map<String, dynamic> ticketOrderData = ticketOrder.toJson();
@@ -2970,7 +3513,7 @@ class DatabaseService {
     // Add addUserTicketIdRef to the batch
     final userTicketIdDocRef = userTicketIdRef
         .doc(ticketOrder.userOrderId)
-        .collection('eventInvite')
+        .collection('tickedIds')
         .doc(ticketOrder.eventId);
 
     batch.set(userTicketIdDocRef, {
@@ -2990,12 +3533,13 @@ class DatabaseService {
 
     // Add activity creation to the batch
     batch.set(activityDocRef, {
-      'authorId': ticketOrder.userOrderId,
+      'helperFielId': eventAuthorId,
+      'authorId': user.userId,
       'postId': ticketOrder.eventId,
       'seen': false,
       'type': 'ticketPurchased',
       'postImageUrl': ticketOrder.eventImageUrl,
-      'comment': 'Purchased a ticket for: \n${ticketOrder.eventTitle}',
+      'comment': 'Generated a ticket for: \n${ticketOrder.eventTitle}',
       'timestamp':
           FieldValue.serverTimestamp(), // Use server timestamp for consistency
       'authorProfileImageUrl':
@@ -3012,15 +3556,16 @@ class DatabaseService {
     required AccountHolderAuthor user,
     required String purchaseReferenceId,
     required String eventAuthorId,
+    required bool isEventFree,
   }) async {
     final eventInviteDocRef = newEventTicketOrderRef
         .doc(ticketOrder.eventId)
-        .collection('eventInvite')
+        .collection('ticketOrders')
         .doc(ticketOrder.userOrderId);
 
     final userInviteDocRef = newUserTicketOrderRef
         .doc(ticketOrder.userOrderId)
-        .collection('eventInvite')
+        .collection('ticketOrders')
         .doc(ticketOrder.eventId);
 
     Map<String, dynamic> ticketOrderData = ticketOrder.toJson();
@@ -3031,7 +3576,7 @@ class DatabaseService {
     // Add userTicketIdRef to the transaction
     final userTicketIdDocRef = userTicketIdRef
         .doc(ticketOrder.userOrderId)
-        .collection('eventInvite')
+        .collection('tickedIds')
         .doc(ticketOrder.eventId);
 
     transaction.set(userTicketIdDocRef, {
@@ -3050,12 +3595,15 @@ class DatabaseService {
         .doc(); // Create a new document reference with a generated ID
 
     transaction.set(activityDocRef, {
-      'authorId': ticketOrder.userOrderId,
+      'helperFielId': eventAuthorId,
+      'authorId': user.userId,
       'postId': ticketOrder.eventId,
       'seen': false,
       'type': 'ticketPurchased',
       'postImageUrl': ticketOrder.eventImageUrl,
-      'comment': 'Purchased a ticket for: \n${ticketOrder.eventTitle}',
+      'comment': isEventFree
+          ? 'Generated a ticket for: \n${ticketOrder.eventTitle}'
+          : 'Purchased a ticket for: \n${ticketOrder.eventTitle}',
       'timestamp': FieldValue.serverTimestamp(), // Use server timestamp
       'authorProfileImageUrl': user.profileImageUrl,
       'authorName': user.userName,
@@ -3069,7 +3617,7 @@ class DatabaseService {
   }) async {
     newEventTicketOrderRef
         .doc(ticketOrder.eventId)
-        .collection('eventInvite')
+        .collection('ticketOrders')
         .doc(ticketOrder.userOrderId)
         .get()
         .then((doc) {
@@ -3080,7 +3628,7 @@ class DatabaseService {
 
     newUserTicketOrderRef
         .doc(ticketOrder.userOrderId)
-        .collection('eventInvite')
+        .collection('ticketOrders')
         .doc(ticketOrder.eventId)
         .get()
         .then((doc) {
@@ -3091,7 +3639,7 @@ class DatabaseService {
 
     userTicketIdRef
         .doc(ticketOrder.userOrderId)
-        .collection('eventInvite')
+        .collection('tickedIds')
         .doc(ticketOrder.eventId)
         .get()
         .then((doc) {
@@ -3192,39 +3740,62 @@ class DatabaseService {
     WriteBatch batch = FirebaseFirestore.instance.batch();
 
     for (var user in users) {
+      InviteModel invite = InviteModel(
+        eventId: event.id,
+        timestamp: Timestamp.fromDate(DateTime.now()),
+        eventTitle: event.title.toUpperCase(),
+        answer: '',
+        eventTimestamp: event.startDate,
+        generatedMessage: generatedMessage,
+        inviteeId: user.userId!,
+        inviterId: currentUser.userId!,
+        inviterMessage: message,
+        isTicketPass: isTicketPass,
+        refundRequestStatus: '',
+        isDeleted: false,
+      );
+      Map<String, dynamic> inviteData = invite.toJson();
+
       DocumentReference newEventTicketOrderRef = sentEventIviteRef
           .doc(event.id)
           .collection('eventInvite')
           .doc(user.userId);
-      batch.set(newEventTicketOrderRef, {
-        'eventId': event.id,
-        'inviteeId': user.userId,
-        'inviterId': currentUser.userId,
-        'inviterMessage': message,
-        'isTicketPass': isTicketPass,
-        'generatedMessage': generatedMessage,
-        'answer': '',
-        'eventTitle': event.title.toUpperCase(),
-        'timestamp': FieldValue.serverTimestamp(),
-        'eventTimestamp': event.startDate,
-      });
+      batch.set(newEventTicketOrderRef, inviteData
+
+          //  {
+          //   'eventId': event.id,
+          //   'inviteeId': user.userId,
+          //   'inviterId': currentUser.userId,
+          //   'inviterMessage': message,
+          //   'isTicketPass': isTicketPass,
+          //   'generatedMessage': generatedMessage,
+          //   'answer': '',
+          //   'eventTitle': event.title.toUpperCase(),
+          //   'timestamp': FieldValue.serverTimestamp(),
+          //   'eventTimestamp': event.startDate,
+          // }
+
+          );
 
       DocumentReference userInviteRef = userInvitesRef
           .doc(user.userId)
           .collection('eventInvite')
           .doc(event.id);
-      batch.set(userInviteRef, {
-        'eventId': event.id,
-        'inviteeId': user.userId,
-        'inviterId': currentUser.userId,
-        'inviterMessage': message,
-        'isTicketPass': isTicketPass,
-        'generatedMessage': generatedMessage,
-        'answer': '',
-        'eventTitle': event.title.toUpperCase(),
-        'timestamp': FieldValue.serverTimestamp(),
-        'eventTimestamp': event.startDate,
-      });
+      batch.set(userInviteRef, inviteData
+          //  {
+          //   'eventId': event.id,
+          //   'inviteeId': user.userId,
+          //   'inviterId': currentUser.userId,
+          //   'inviterMessage': message,
+          //   'isTicketPass': isTicketPass,
+          //   'generatedMessage': generatedMessage,
+          //   'answer': '',
+          //   'eventTitle': event.title.toUpperCase(),
+          //   'timestamp': FieldValue.serverTimestamp(),
+          //   'eventTimestamp': event.startDate,
+          // }
+
+          );
 
       // This should also be included in the batch operation
       DocumentReference userActivityRef = activitiesRef
@@ -3232,6 +3803,7 @@ class DatabaseService {
           .collection('userActivities')
           .doc(); // Create a new document with a generated ID
       batch.set(userActivityRef, {
+        'helperFielId': event.authorId,
         'authorId': event.authorId,
         'postId': event.id,
         'seen': false,
@@ -3380,6 +3952,7 @@ class DatabaseService {
     // if (user.id != post.authorId) {
     post != null
         ? activitiesRef.doc(post.authorId).collection('userActivities').add({
+            'helperFielId': '',
             'authorId': user.userId,
             'postId': post.id,
             'seen': false,
@@ -3397,6 +3970,7 @@ class DatabaseService {
                 .doc(event.authorId)
                 .collection('userActivities')
                 .add({
+                'helperFielId': '',
                 'authorId': user.userId,
                 'postId': event.id,
                 'seen': false,
@@ -3414,8 +3988,9 @@ class DatabaseService {
                     .doc(followerUser.userId)
                     .collection('userActivities')
                     .add({
+                    'helperFielId': '',
                     'authorId': user.userId,
-                    'postId': followerUser.userId,
+                    'postId': user.userId,
                     'seen': false,
                     'type': type.toString().split('.').last,
                     'postImageUrl': followerUser.profileImageUrl,
@@ -3431,6 +4006,7 @@ class DatabaseService {
                         .doc(advicedUserId)
                         .collection('userActivities')
                         .add({
+                        'helperFielId': '',
                         'authorId': user.userId,
                         'postId': followerUser.userId,
                         'seen': false,
@@ -3618,10 +4194,9 @@ class DatabaseService {
         socialMetaTagParameters: SocialMetaTagParameters(
           imageUrl: linkUrl,
           title: title,
-          description: title,
+          description: subtitle,
         ),
         link: Uri.parse(urilink),
-        // 'https://links.barsopus.com/barsImpression',
         uriPrefix: 'https://links.barsopus.com/barsImpression',
         androidParameters:
             AndroidParameters(packageName: 'com.barsOpus.barsImpression'),

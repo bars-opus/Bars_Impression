@@ -614,85 +614,87 @@ class _EventsAttendingTicketScreenState
   // }
 
   // Method to create event
-  _submitRequeste() async {
-    if (!_isLoading) {
-      _isLoading = true;
-      try {
-        RefundModel refund = await _createRefund();
+  // _submitRequeste() async {
+  //   if (!_isLoading) {
+  //     _isLoading = true;
+  //     try {
+  //       RefundModel refund = await _createRefund();
 
-        _isLoading = false;
-        // if (mounted) {
-        //   _navigateToPage(
-        //       context,
-        //       EventEnlargedScreen(
-        //         justCreated: true,
-        //         currentUserId: _provider.currentUserId!,
-        //         event: event,
-        //         type: event.type,
-        //         palette: _paletteGenerator,
-        //       ));
+  //       _isLoading = false;
+  //       // if (mounted) {
+  //       //   _navigateToPage(
+  //       //       context,
+  //       //       EventEnlargedScreen(
+  //       //         justCreated: true,
+  //       //         currentUserId: _provider.currentUserId!,
+  //       //         event: event,
+  //       //         type: event.type,
+  //       //         palette: _paletteGenerator,
+  //       //       ));
 
-        mySnackBar(context, 'Your refund request was successful.');
-        // }
-      } catch (e) {
-        // _handleError(e, false);
-        _isLoading = false;
-        _showBottomSheetErrorMessage();
-      }
-    }
-  }
+  //       mySnackBar(context, 'Your refund request was successful.');
+  //       // }
+  //     } catch (e) {
+  //       // _handleError(e, false);
+  //       _isLoading = false;
+  //       _showBottomSheetErrorMessage();
+  //     }
+  //   }
+  // }
 
-  Future<RefundModel> _createRefund() async {
-    var _provider = Provider.of<UserData>(context, listen: false);
+  // Future<RefundModel> _createRefund() async {
+  //   var _provider = Provider.of<UserData>(context, listen: false);
 
-    // Calculate the total cost of the order
+  //   // Calculate the total cost of the order
 
-    String commonId = Uuid().v4();
+  //   String commonId = Uuid().v4();
 
-    RefundModel refund = RefundModel(
-      id: commonId,
-      eventId: widget.event.id,
-      timestamp: Timestamp.fromDate(DateTime.now()),
-      userRequestId: _provider.user!.userId!,
-      approvedTimestamp: Timestamp.fromDate(DateTime.now()),
-      reason: '',
-      orderId: widget.ticketOrder.orderId,
-      city: _provider.userLocationPreference!.city!,
-      idempotencyKey: '',
-      status: 'pending',
-      transactionId: widget.ticketOrder.transactionId,
-      eventAuthorId: widget.event.authorId,
-      eventTitle: widget.event.title,
-    );
+  //   RefundModel refund = RefundModel(
+  //     id: commonId,
+  //     eventId: widget.event.id,
+  //     timestamp: Timestamp.fromDate(DateTime.now()),
+  //     userRequestId: _provider.user!.userId!,
+  //     approvedTimestamp: Timestamp.fromDate(DateTime.now()),
+  //     reason: '',
+  //     orderId: widget.ticketOrder.orderId,
+  //     city: _provider.userLocationPreference!.city!,
+  //     idempotencyKey: '',
+  //     status: 'pending',
+  //     transactionId: widget.ticketOrder.transactionId,
+  //     eventAuthorId: widget.event.authorId,
+  //     eventTitle: widget.event.title,
+  //     amount: widget.ticketOrder.total,
+  //     expectedDate: '',
+  //   );
 
-    await DatabaseService.requestRefund(widget.event, refund, _provider.user!);
+  //   await DatabaseService.requestRefund(widget.event, refund, _provider.user!);
 
-    return refund;
-  }
+  //   return refund;
+  // }
 
-  void _showBottomSheetConfirmRefund(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return ConfirmationPrompt(
-          buttonText: widget.event.isFree || widget.ticketOrder.tickets.isEmpty
-              ? 'Cancel attendance'
-              : 'Refund request confirmation',
-          onPressed: () async {
-            Navigator.pop(context);
-            _submitRequeste();
-          },
-          title: widget.event.isFree || widget.ticketOrder.tickets.isEmpty
-              ? 'Are you sure you cancel attendance?'
-              : 'Are you sure you want to request for a refund?',
-          subTitle:
-              'Please be informed that your ticket for this event would be revoked and you would lose access to this event\'s room.',
-        );
-      },
-    );
-  }
+  // void _showBottomSheetConfirmRefund(BuildContext context) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (BuildContext context) {
+  //       return ConfirmationPrompt(
+  //         buttonText: widget.event.isFree || widget.ticketOrder.tickets.isEmpty
+  //             ? 'Cancel attendance'
+  //             : 'Refund request confirmation',
+  //         onPressed: () async {
+  //           Navigator.pop(context);
+  //           _submitRequeste();
+  //         },
+  //         title: widget.event.isFree || widget.ticketOrder.tickets.isEmpty
+  //             ? 'Are you sure you cancel attendance?'
+  //             : 'Are you sure you want to request for a refund?',
+  //         subTitle:
+  //             'Please be informed that your ticket for this event would be revoked and you would lose access to this event\'s room.',
+  //       );
+  //     },
+  //   );
+  // }
 
   // void _showBottomSheetRefund() {
   //   showModalBottomSheet(
@@ -1085,9 +1087,14 @@ class _EventsAttendingTicketScreenState
 
         if (widget.currentUserId != widget.event.authorId)
           // if (!_eventHasEnded) _refundButton(),
+
           const SizedBox(
             height: 100,
           ),
+
+        const SizedBox(
+          height: 100,
+        ),
         IconButton(
           icon: Icon(Icons.close),
           iconSize: 30.0,
@@ -1096,6 +1103,35 @@ class _EventsAttendingTicketScreenState
         ),
         const SizedBox(
           height: 100,
+        ),
+        Divider(
+          color: Colors.white,
+        ),
+        const SizedBox(
+          height: 25,
+        ),
+        Center(
+          child: GestureDetector(
+            onTap: () {
+              _navigateToPage(
+                  context,
+                  CompainAnIssue(
+                    parentContentId: widget.ticketOrder.eventId,
+                    authorId: widget.currentUserId,
+                    complainContentId: widget.ticketOrder.orderId,
+                    complainType: 'TicketOrder',
+                    parentContentAuthorId: widget.ticketOrder.eventAuthorId,
+                  ));
+            },
+            child: Text(
+              '\nComplain an issue.',
+              style: TextStyle(
+                color: Colors.blue,
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+              ),
+              textAlign: TextAlign.start,
+            ),
+          ),
         ),
       ],
     );
@@ -1116,13 +1152,19 @@ class _EventsAttendingTicketScreenState
           padding: EdgeInsets.only(
               top: ResponsiveHelper.responsiveHeight(context, 120)),
           child: _seeAllSchedules
-              ? ScheduleGroup(
-                  ticketEventDate: null,
-                  from: '',
-                  schedules: scheduleOptions,
-                  isEditing: false,
-                  eventOrganiserId: widget.event.authorId,
-                  currentUserId: widget.currentUserId,
+              ? ShakeTransition(
+                  // axis: Axis.vertical,
+                  curve: Curves.linearToEaseOut,
+                  offset: -100,
+                  duration: const Duration(seconds: 1),
+                  child: ScheduleGroup(
+                    ticketEventDate: null,
+                    from: '',
+                    schedules: scheduleOptions,
+                    isEditing: false,
+                    eventOrganiserId: widget.event.authorId,
+                    currentUserId: widget.currentUserId,
+                  ),
                 )
               : ScheduleGroup(
                   ticketEventDate: widget.ticket.eventTicketDate,

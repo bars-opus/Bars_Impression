@@ -5,10 +5,15 @@ class WelcomeInfo extends StatelessWidget {
   final String subTitle;
   final IconData icon;
 
+  final bool showMore;
+  final VoidCallback moreOnpressed;
+
   WelcomeInfo({
     required this.subTitle,
     required this.title,
     required this.icon,
+    required this.showMore,
+     required this.moreOnpressed,
   });
 
   @override
@@ -18,7 +23,6 @@ class WelcomeInfo extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-       
         Icon(
           icon,
           color: Colors.grey,
@@ -26,28 +30,41 @@ class WelcomeInfo extends StatelessWidget {
         ),
         Container(
           width: width,
-          child: RichText(
-            textScaleFactor: MediaQuery.of(context).textScaleFactor,
-            text: TextSpan(
-              children: [
-                TextSpan(
-                    text: title + '\n',
+          child: GestureDetector
+          
+          (
+onTap:  moreOnpressed,            child: RichText(
+              textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                      text: title + '\n',
+                      style: TextStyle(
+                        fontSize:
+                            ResponsiveHelper.responsiveFontSize(context, 20.0),
+                        color: Colors.white,
+                      )),
+                  TextSpan(
+                    text: subTitle,
                     style: TextStyle(
                       fontSize:
-                          ResponsiveHelper.responsiveFontSize(context, 20.0),
-                      color: Colors.white,
-                    )),
-                TextSpan(
-                  text: subTitle,
-                  style: TextStyle(
-                    fontSize:
-                        ResponsiveHelper.responsiveFontSize(context, 14.0),
-                    color: Colors.grey,
+                          ResponsiveHelper.responsiveFontSize(context, 14.0),
+                      color: Colors.grey,
+                    ),
                   ),
-                ),
-              ],
+                  if (showMore)
+                    TextSpan(
+                      text: '\nLearn more',
+                      style: TextStyle(
+                        fontSize:
+                            ResponsiveHelper.responsiveFontSize(context, 12.0),
+                        color: Colors.blue,
+                      ),
+                    ),
+                ],
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
           ),
         ),
         Padding(

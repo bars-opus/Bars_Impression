@@ -3,12 +3,14 @@ import 'package:bars/utilities/exports.dart';
 class EventsFeedAttendingWidget extends StatefulWidget {
   final TicketOrderModel ticketOrder;
   final String currentUserId;
+  final bool disableMoreVert;
   final List<TicketOrderModel> ticketList;
 
   const EventsFeedAttendingWidget({
     required this.ticketOrder,
     required this.currentUserId,
     required this.ticketList,
+    this.disableMoreVert = false,
   });
 
   @override
@@ -75,7 +77,7 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
           title: 'Are you sure you want to delete this ticket? ',
           subTitle:
               'Deleting it will result in the loss of access to this event, and deleted tickets cannot be refunded."',
-        ); 
+        );
       },
     );
   }
@@ -87,7 +89,7 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-            height: ResponsiveHelper.responsiveHeight(context, 350.0),
+            height: ResponsiveHelper.responsiveHeight(context, 370.0),
             decoration: BoxDecoration(
                 color: Theme.of(context).primaryColorLight,
                 borderRadius: BorderRadius.circular(30)),
@@ -105,7 +107,8 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                   ),
                 ),
                 Container(
-                  height: ResponsiveHelper.responsiveHeight(context, 300.0),
+                  height: ResponsiveHelper.responsiveHeight(context, 250.0),
+                  // color: Colors.red,
                   child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 30.0, vertical: 2),
@@ -212,6 +215,29 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                         ),
                       ])),
                 ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      _navigateToPage(CompainAnIssue(
+                        parentContentId: widget.ticketOrder.eventId,
+                        authorId: widget.currentUserId,
+                        complainContentId: widget.ticketOrder.orderId,
+                        complainType: 'TicketOrder',
+                        parentContentAuthorId: widget.ticketOrder.eventAuthorId,
+                      ));
+                    },
+                    child: Text(
+                      'Complain an issue.',
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontSize:
+                            ResponsiveHelper.responsiveFontSize(context, 12.0),
+                      ),
+                      textAlign: TextAlign.start,
+                    ),
+                  ),
+                ),
               ],
             ));
       },
@@ -266,14 +292,15 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                           size: 20.0,
                         ),
                       // : SizedBox.shrink(),
-                      IconButton(
-                          onPressed: () {
-                            _showBottomSheetMore(context);
-                          },
-                          icon: Icon(
-                            Icons.more_vert,
-                            color: Theme.of(context).secondaryHeaderColor,
-                          )),
+                      if (!widget.disableMoreVert)
+                        IconButton(
+                            onPressed: () {
+                              _showBottomSheetMore(context);
+                            },
+                            icon: Icon(
+                              Icons.more_vert,
+                              color: Theme.of(context).secondaryHeaderColor,
+                            )),
                     ],
                   ),
                 ),
@@ -327,7 +354,7 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
           ),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
                 widget.ticketOrder.eventTitle.toUpperCase(),

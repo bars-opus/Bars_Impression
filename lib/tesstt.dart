@@ -1,3 +1,364 @@
+import 'package:timeago/timeago.dart';
+
+// I am trying to implement paystack payment with mobile money in my flutter firebase app, using
+// the paystack API and cloudfunctions, i have already implemented paying with only card but i am
+// changeing to implement mobile money to and card to give user more options, since i have already implemented with
+// with card and its working i already have a working verifyPayment cloud fucntion that works but not included
+// in this code but called in this code. i want use to analyse this whole implementation and flow to see if it 
+// is correctly implemented.
+
+
+//   void _initiatePayment(BuildContext context) async {
+//     // try {
+//     // Assuming you have the email and amount to charge
+//     int price = 5;
+//     String email = "haroldenam@gmail.com"; // User's email
+//     int amount = price; // Amount in kobo
+
+//     final HttpsCallable callable = FirebaseFunctions.instance
+//         .httpsCallable('initiatePaystackMobileMoneyPayment');
+
+//     // Call the function to initiate the payment
+//     final HttpsCallableResult result = await callable.call(<String, dynamic>{
+//       'email': email,
+//       'amount': amount * 100, // Assuming this is the correct amount in kobo
+//       'reference': _getReference(),
+//     });
+
+//     // Extract the authorization URL from the results
+//     final String authorizationUrl = result.data['authorizationUrl'];
+
+//     // Navigate to the payment screen with the authorization URL
+//     await navigateToPaymentScreen(context, authorizationUrl);
+//     // } catch (e) {
+//     //   // Handle errors, such as showing an error message to the user
+//     //   print(e);
+//     // }
+//   }
+
+
+// Future<void> navigateToPaymentScreen(
+//       BuildContext context, String authorizationUrl) async {
+//     var _provider = Provider.of<UserData>(context, listen: false);
+
+//     // final bool? result =
+
+//     double totalPrice = _provider.ticketList
+//         .fold(0.0, (double sum, TicketModel ticket) => sum + ticket.price);
+//     PaymentResult paymentResult = await Navigator.push(
+//       context,
+//       MaterialPageRoute(
+//         builder: (context) =>
+//             PaystackPaymentScreen(authorizationUrl: authorizationUrl),
+//       ),
+//     );
+
+//     // If the initial Paystack payment is successful, verify it server-side
+//     if (paymentResult.success) {
+//       // _provider.setIsLoading(true); // Start the loading indicator
+//       final HttpsCallable callable =
+//           FirebaseFunctions.instance.httpsCallable('verifyPaystackPayment');
+//       try {
+//         final verificationResult = await callable.call(<String, dynamic>{
+//           'reference': paymentResult.reference,
+//           'eventId': widget.event!.id,
+//           'amount': totalPrice.toInt() *
+//               100, // Assuming this is the correct amount in kobo
+//         });
+
+//         // If server-side verification is successful, generate tickets
+//         if (verificationResult.data['success']) {
+//           await _processingToGenerate(
+//               verificationResult, paymentResult, true, 'Paystack');
+//         } else {
+//           await _processingToGenerate(
+//               verificationResult, paymentResult, false, 'Paystack');
+//           await _logVerificationErroData(paymentResult,
+//               'Couldn\'t verify your ticket payment', true, totalPrice);
+//           _showBottomSheetErrorMessage(
+//               context, 'Couldn\'t verify your ticket payment');
+//         }
+//       } catch (e) {
+//         // Handle errors from calling the Cloud Function
+//         // Log the error and notify the user
+//         String error = e.toString();
+//         String result = error.contains(']')
+//             ? error.substring(error.lastIndexOf(']') + 1)
+//             : error;
+//         _logVerificationErroData(paymentResult, result, false, totalPrice);
+
+//         Navigator.pop(context);
+//         _showBottomSheetErrorMessage(
+//             context,
+//             'Your payment is under review. Please '
+//             'note your reference number: ${paymentResult.reference}. Our support team will contact you shortly.');
+//       }
+//       // finally {
+//       //   _provider
+//       //       .setIsLoading(false); // Stop the loading indicator no matter what
+//       // }
+//     } else {
+//       _showBottomSheetErrorMessage(
+//           context, 'Couldn\'t pay for the ticket, please try again.');
+//     }
+//   }
+
+//   String _getReference() {
+//     String commonId = Uuid().v4();
+//     String platform;
+//     if (Platform.isIOS) {
+//       platform = 'iOS';
+//     } else {
+//       platform = 'Android';
+//     }
+//     return 'ChargedFrom${platform}_$commonId';
+//   }
+
+
+
+// class PaystackPaymentScreen extends StatefulWidget {
+//   final String authorizationUrl;
+
+//   const PaystackPaymentScreen({Key? key, required this.authorizationUrl})
+//       : super(key: key);
+
+//   @override
+//   _PaystackPaymentScreenState createState() => _PaystackPaymentScreenState();
+// }
+
+// class _PaystackPaymentScreenState extends State<PaystackPaymentScreen> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         iconTheme: IconThemeData(
+//           color: Colors.black,
+//         ),
+//         automaticallyImplyLeading: true,
+//         elevation: 0,
+//         backgroundColor: Colors.white,
+//         title: Text('Complete payment',
+//             style: TextStyle(
+//                 color: Colors.black,
+//                 fontSize: 16,
+//                 fontWeight: FontWeight.bold)),
+//         centerTitle: true,
+//       ),
+//       body: WebView(
+//         initialUrl: widget.authorizationUrl,
+//         javascriptMode: JavascriptMode.unrestricted,
+//         navigationDelegate: (NavigationRequest request) {
+//           if (request.url.contains("callback_url_identifier")) {
+//             // Replace with your callback URL identifier
+//             // Extract the payment reference from the URL if necessary
+//             Uri uri = Uri.parse(request.url);
+//             String? reference = uri.queryParameters['reference'];
+
+//             // Handle successful payment and close the WebView
+//             if (reference != null) {
+//               // Handle successful payment and close the WebView
+//               Navigator.pop(
+//                   context,
+//                   PaymentResult(
+//                       reference: reference,
+//                       success: true)); // Pass back the payment reference
+//               return NavigationDecision.prevent;
+//             } else {
+//               // Handle the case where the payment reference is not found
+//               // You might want to show an error or log this case
+//             }
+           
+//           }
+//           return NavigationDecision.navigate;
+//         },
+//         onPageStarted: (String url) {
+//           // Perform actions when page starts loading
+//         },
+//         onPageFinished: (String url) {
+//           // Perform actions when page finishes loading
+//         },
+//         onWebResourceError: (WebResourceError error) {
+//           // Handle errors
+//         },
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+// exports.initiatePaystackMobileMoneyPayment = functions.https.onCall(async (data, context) => {
+//   // Ensure the user is authenticated
+//   if (!context.auth) {
+//     throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated to initiate payment.');
+//   }
+
+//   const email = data.email; // Customer's email
+//   const amount = data.amount; // Amount in kobo
+//   const reference = data.reference; // Amount in kobo
+//   const PAYSTACK_SECRET_KEY = functions.config().paystack.secret_key; // Securely stored Paystack secret key
+
+//   try {
+//     const initTransactionURL = 'https://api.paystack.co/transaction/initialize';
+//     const response = await axios.post(initTransactionURL, {
+//       email: email,
+//       amount: amount,
+//       reference: reference,
+//       currency: "GHS",
+//       // Add other parameters like callback_url, channels (e.g., ['card', 'bank', 'ussd', 'qr', 'mobilemoney', 'banktransfer']), etc.
+//     }, {
+//       headers: { Authorization: `Bearer ${PAYSTACK_SECRET_KEY}` },
+//     });
+
+//     const transactionData = response.data.data;
+
+//     // Return the authorization URL to the client to complete the payment
+//     return { authorizationUrl: transactionData.authorization_url };
+//   } catch (error) {
+//     // Handle errors
+//     console.error('Payment initiation error:', error);
+//     // Return a sanitized error message to the client
+//     throw new functions.https.HttpsError('unknown', 'Payment initiation failed. Please try again later.');
+//   }
+// });
+
+
+
+
+// async function processRefund(refundRequestDoc) {
+//   const db = admin.firestore();
+
+//   const refundData = refundRequestDoc.data();
+//   const transactionId = refundData.transactionId;
+//   const eventId = refundData.eventId;
+//   const refundAmount = Math.floor(refundData.amount * 0.80); // 80% of the original amount
+//   const idempotencyKey = `refund_${transactionId}`;
+
+//   const payload = {
+//     transaction: transactionId,
+//     amount: refundAmount
+//   };
+
+//   const headers = {
+//     'Authorization': `Bearer ${functions.config().paystack.secret_key}`,
+//     'Content-Type': 'application/json'
+//   };
+
+//   let retryCount = 0;
+//   let delay = 1000; // 1 second initial delay
+//   const maxRetries = 3;
+//   const MAX_DELAY = 30000; // Maximum delay for exponential backoff, e.g., 30 seconds
+
+//   while (retryCount < maxRetries) {
+//     try {
+//        // eslint-disable-next-line no-await-in-loop
+//       const response = await axios.post('https://api.paystack.co/refund', payload, { headers });
+
+//       if (response.data.status) {
+         
+//          amount = response.data.amount/100;
+//          expectedDate = response.data.expected_at;
+//          // eslint-disable-next-line no-await-in-loop
+//         await db.runTransaction(async (transaction) => {
+//           const refundRequestRef = refundRequestDoc.ref;
+//           const idempotencyDocRef = db.collection('refundSuccessIdempotencyKeys').doc(idempotencyKey);
+//           const eventDocRef = db.collection('new_eventTicketOrder').doc(refundData.eventId).collection('eventInvite').doc(refundData.userRequestId);
+//           const userDocRef = db.collection('new_userTicketOrder').doc(refundData.userRequestId).collection('eventInvite').doc(refundData.eventId);
+//           const userTicketIdRef = db.collection('new_ticketId').doc(refundData.userRequestId).collection('eventInvite').doc(refundData.eventId);
+//           const userRefundRequestRef = db.collection('userRefundRequests').doc(refundData.userRequestId).collection('refundRequests').doc(refundData.eventId);
+//           const eventRefundRequestRef = db.collection('eventRefundRequests').doc(refundData.eventId).collection('refundRequests').doc(refundData.userRequestId);
+//           const idempotencyDocSnapshot = await transaction.get(idempotencyDocRef);
+
+//           if (!idempotencyDocSnapshot.exists) {
+//             transaction.update(refundRequestRef, { status: 'processed', idempotencyKey: idempotencyKey,  amount:  amount, expectedDate: expectedDate  });
+//             transaction.update(eventDocRef, { refundRequestStatus: 'processed', idempotencyKey: idempotencyKey  });
+//             transaction.update(userDocRef, { refundRequestStatus: 'processed', idempotencyKey: idempotencyKey  });
+//             transaction.update(userRefundRequestRef, { status: 'processed', idempotencyKey: idempotencyKey, amount:  amount, expectedDate: expectedDate  });
+//             transaction.update(eventRefundRequestRef, { status: 'processed', idempotencyKey: idempotencyKey, amount:  amount, expectedDate: expectedDate  });
+//             transaction.delete(userTicketIdRef);
+//             transaction.set(idempotencyDocRef, {
+//               refundResponse: response.data,
+//               created: admin.firestore.FieldValue.serverTimestamp()
+//             });
+
+//             const userId = refundData.userRequestId;
+//             const userRef = firestore.doc(`user_general_settings/${userId}`);
+//               // eslint-disable-next-line no-await-in-loop
+//             const userDoc = await userRef.get(); // eslint-disable-next-line no-await-in-loop
+  
+//             if (!userDoc.exists) {
+//               console.log(`User settings not found for user ${userId}`);
+//               // continue;
+//             }
+  
+//             const userData = userDoc.data();
+//             const androidNotificationToken = userData.androidNotificationToken;
+  
+//             if (androidNotificationToken) {
+//               try {
+//                   // eslint-disable-next-line no-await-in-loop
+//                 await sendRefundNotification(androidNotificationToken, userId, refundData.eventId, refundData.eventAuthorId, refundData.eventTitle ); // eslint-disable-next-line no-await-in-loop
+//               } catch (error) {
+//                 console.error(`Error sending seding refund notification:`, error);
+//               }
+//             } else {
+//               console.log(`No notification token for user ${userId} or notifications are muted.`);
+//             }
+
+//           } else {
+//                // eslint-disable-next-line no-await-in-loop
+//             await alertAdminRefundFailure(db, eventId, transactionId, response.data, refundData.userRequestId, refundData.orderId,);
+//             console.log(`Refund already processed for transaction ID: ${transactionId}`);
+//             return;
+//           }
+//         });
+//          // eslint-disable-next-line no-await-in-loop
+//          await alertAdminRefundSuccess(db, eventId, transactionId, idempotencyKey, refundData.userRequestId, refundData.orderId,);
+//         console.log(`Refund processed for transaction ID: ${transactionId}`);
+//         return;
+//       } else {
+//           // eslint-disable-next-line no-await-in-loop
+//         await alertAdminRefundFailure(db, eventId, transactionId, response.data, refundData.userRequestId, refundData.orderId,);
+//         throw new Error('Refund failed with a non-success status');
+//       }
+//     } catch (error) {
+//       console.error(`Attempt ${retryCount + 1} for refund ${transactionId} failed:`, error);
+
+//       if (!isRetryableError(error)) {
+//          // eslint-disable-next-line no-await-in-loop
+//         await refundRequestDoc.ref.update({ status: 'error' });
+//          // eslint-disable-next-line no-await-in-loop
+//         await alertAdminRefundFailure(db, eventId, transactionId, error.message);
+//         throw error; // Non-retryable error, rethrow error
+//       }
+
+//       if (retryCount === maxRetries - 1) {
+//          // eslint-disable-next-line no-await-in-loop
+//         await alertAdminRefundFailure(db, eventId, transactionId, `Max retry attempts reached. Last error: ${error.message}`, refundData.userRequestId, refundData.orderId,);
+//       }
+
+//       // Exponential backoff with a maximum delay cap
+//       delay = Math.min(delay * 2, MAX_DELAY);
+//       console.log(`Retryable error encountered for refund ${transactionId}. Retrying after ${delay}ms...`);
+//        // eslint-disable-next-line no-await-in-loop
+//       await new Promise(resolve => setTimeout(resolve, delay));
+//       retryCount++;
+//     }
+//   }
+
+//   if (retryCount >= maxRetries) {
+//      // eslint-disable-next-line no-await-in-loop
+//     await refundRequestDoc.ref.update({ status: 'failed' });
+//      // eslint-disable-next-line no-await-in-loop
+//     await alertAdminRefundFailure(db, eventId, transactionId, 'All retry attempts failed', refundData.userRequestId, refundData.orderId, );
+//     throw new Error(`All retry attempts failed for refund ${transactionId}`);
+//   }
+// }
+
+
+
+
 
 // void _submitForm(BuildContext context) async {
 //     FirebaseFunctions functions = FirebaseFunctions.instance;

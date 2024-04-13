@@ -13,8 +13,12 @@ class TicketOrderModel {
   final String purchaseReferenceId;
   final String transactionId;
   final String refundRequestStatus;
+  final bool isPaymentVerified;
+  final String paymentProvider;
+
   final String idempotencyKey;
   final bool isDeleted;
+
   final String canlcellationReason;
   final String eventAuthorId;
   final Timestamp? timestamp;
@@ -39,6 +43,8 @@ class TicketOrderModel {
     required this.refundRequestStatus,
     required this.idempotencyKey,
     required this.transactionId,
+    required this.isPaymentVerified,
+    required this.paymentProvider,
   });
 
   factory TicketOrderModel.fromDoc(DocumentSnapshot doc) {
@@ -66,6 +72,8 @@ class TicketOrderModel {
       purchaseReferenceId: data['purchaseReferenceId'] ?? '',
       isInvited: data['isInvited'] ?? false,
       isDeleted: data['isDeleted'] ?? false,
+      paymentProvider: data['paymentProvider'] ?? '',
+      isPaymentVerified: data['isPaymentVerified'] ?? false,
 
       orderNumber: data['orderNumber'] ?? '',
       tickets: (data['tickets'] as List<dynamic>?)
@@ -86,7 +94,8 @@ class TicketOrderModel {
       eventId: json['eventId']!,
       canlcellationReason: json['canlcellationReason']!,
       eventAuthorId: json['eventAuthorId']!,
-
+      isPaymentVerified: json['isPaymentVerified'] ?? false,
+      paymentProvider: json['paymentProvider'] ?? '',
       // validated: json['validated'] ?? false,
       timestamp: json['timestamp'] != null
           ? Timestamp.fromMillisecondsSinceEpoch(json['timestamp'])
@@ -126,6 +135,8 @@ class TicketOrderModel {
       'eventAuthorId': eventAuthorId,
 
       'isDeleted': isDeleted,
+      'paymentProvider': paymentProvider,
+      'isPaymentVerified': isPaymentVerified,
       'transactionId': transactionId,
       'timestamp': timestamp,
       'eventTimestamp': eventTimestamp,

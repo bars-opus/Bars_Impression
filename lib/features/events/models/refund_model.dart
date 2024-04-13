@@ -12,6 +12,9 @@ class RefundModel {
   final String transactionId;
   final String eventAuthorId;
   final String idempotencyKey;
+  final String expectedDate;
+
+  final double amount;
 
   String reason;
   Timestamp approvedTimestamp;
@@ -31,6 +34,8 @@ class RefundModel {
     required this.eventTitle,
     required this.eventAuthorId,
     required this.idempotencyKey,
+    required this.amount,
+    required this.expectedDate,
   });
 
   factory RefundModel.fromDoc(DocumentSnapshot doc) {
@@ -39,12 +44,14 @@ class RefundModel {
       city: doc['city'] ?? '',
       reason: doc['reason'] ?? '',
       status: doc['status'] ?? '',
+      expectedDate: doc['expectedDate'] ?? '',
       idempotencyKey: doc['idempotencyKey'] ?? '',
       transactionId: doc['transactionId'] ?? '',
       eventTitle: doc['eventTitle'] ?? '',
       orderId: doc['orderId'] ?? '',
       userRequestId: doc['userRequestId'] ?? '',
       eventAuthorId: doc['eventAuthorId'] ?? '',
+      amount: (doc['amount'] as num?)?.toDouble() ?? 0.0,
       id: doc['id'] ?? '',
       timestamp: doc['timestamp'] ??
           Timestamp.fromDate(
@@ -67,11 +74,13 @@ class RefundModel {
       orderId: json['orderId'],
       idempotencyKey: json['idempotencyKey'],
       city: json['city'],
+      expectedDate: json['expectedDate'],
       userRequestId: json['userRequestId'],
       eventAuthorId: json['eventAuthorId'],
       reason: json['reason'],
       approvedTimestamp: json['approvedTimestamp'],
       timestamp: json['timestamp'],
+      amount: json['amount'] ?? 0.0,
     );
   }
 
@@ -87,6 +96,8 @@ class RefundModel {
       'eventAuthorId': eventAuthorId,
       'idempotencyKey': idempotencyKey,
       'city': city,
+      'expectedDate': expectedDate,
+      'amount': amount,
       'reason': reason,
       'approvedTimestamp': approvedTimestamp,
       'timestamp': timestamp,

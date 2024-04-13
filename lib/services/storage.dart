@@ -92,7 +92,7 @@ class StorageService {
     File? image = await compressImage(postId, imageFile);
     String currentUserId = FirebaseAuth.instance.currentUser!.uid;
     UploadTask uploadTask = storageRef
-        .child('images/posts/$currentUserId/post_$postId.jpg')
+        .child('images/new_posts/$currentUserId/post_$postId.jpg')
         .putFile(image!);
     String downloadUrl = await (await uploadTask).ref.getDownloadURL();
     return downloadUrl;
@@ -103,7 +103,7 @@ class StorageService {
     File? image = await compressImage(eventId, imageFile);
     String currentUserId = FirebaseAuth.instance.currentUser!.uid;
     UploadTask uploadTask = storageRef
-        .child('images/events/$currentUserId/event_$eventId.jpg')
+        .child('images/new_events/$currentUserId/event_$eventId.jpg')
         .putFile(image!);
     String downloadUrl = await (await uploadTask).ref.getDownloadURL();
     return downloadUrl;
@@ -114,7 +114,8 @@ class StorageService {
     File? image = await compressImage(messageId, imageFile);
     String currentUserId = FirebaseAuth.instance.currentUser!.uid;
     UploadTask uploadTask = storageRef
-        .child('images/messageImage/$currentUserId/message_$messageId.jpg')
+        .child(
+            'images/new_messageImage/$currentUserId/new_message_$messageId.jpg')
         .putFile(image!);
     String downloadUrl = await (await uploadTask).ref.getDownloadURL();
     return downloadUrl;
@@ -126,7 +127,8 @@ class StorageService {
     File? image = await compressImage(messageId, imageFile);
     // String currentUserId = FirebaseAuth.instance.currentUser!.uid;
     UploadTask uploadTask = storageRef
-        .child('images/eventRoonMessageImage/$eventId/message_$messageId.jpg')
+        .child(
+            'images/new_eventRoonMessageImage/$eventId/message_$messageId.jpg')
         .putFile(image!);
     String downloadUrl = await (await uploadTask).ref.getDownloadURL();
     return downloadUrl;
@@ -149,7 +151,7 @@ class StorageService {
     String currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
     UploadTask uploadTask = storageRef
-        .child('images/validate/$currentUserId/post_$gvId.jpg')
+        .child('images/validate/$currentUserId/new_post_$gvId.jpg')
         .putFile(image!);
     String downloadUrl = await (await uploadTask).ref.getDownloadURL();
     return downloadUrl;

@@ -75,6 +75,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     _provider.setNoBooking(widget.user.noBooking);
     _provider.setOverview(widget.user.overview);
     _provider.setTermsAndConditions(widget.user.terms);
+    _provider.setCurrency(widget.user.currency);
 
     // Add user awards
     List<PortfolioModel> awards = widget.user.awards;
@@ -189,11 +190,11 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     var _provider = Provider.of<UserData>(context, listen: false);
     if (_contactsFormKey.currentState!.validate()) {
       final portfolio = PortfolioContactModel(
-        id: UniqueKey().toString(),
-        email: isEmail ? _nameController.text : '',
-        number: _linkController.text
-        // number: !isEmail ? int.parse(_linkController.text) : 0,
-      );
+          id: UniqueKey().toString(),
+          email: isEmail ? _nameController.text : '',
+          number: _linkController.text
+          // number: !isEmail ? int.parse(_linkController.text) : 0,
+          );
 
       // adds ticket to ticket list
       _provider.setBookingContacts(portfolio);

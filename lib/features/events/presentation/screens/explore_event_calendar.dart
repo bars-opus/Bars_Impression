@@ -187,7 +187,6 @@ class _ExploreEventCalendarState extends State<ExploreEventCalendar> {
     }
   }
 
-
   Map<DateTime, List<Event>> convertToMap(List<Event> events) {
     Map<DateTime, List<Event>> eventMap = {};
     for (Event event in events) {

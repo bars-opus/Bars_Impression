@@ -16,6 +16,8 @@ class CreateWork extends StatefulWidget {
 class _CreateWorkState extends State<CreateWork> {
   final _textController = TextEditingController();
   bool _isLoading = true;
+  bool _isSubmitting = false;
+
   final _priceFormKey = GlobalKey<FormState>();
   final _typeFormKey = GlobalKey<FormState>();
   final _locationFormKey = GlobalKey<FormState>();
@@ -155,9 +157,9 @@ class _CreateWorkState extends State<CreateWork> {
   }
 
   _submit() async {
-    if (!_isLoading) {
+    if (!_isSubmitting) {
       setState(() {
-        _isLoading = true;
+        _isSubmitting = true;
       });
       var _provider = context.read<UserData>();
       Future<T> retry<T>(Future<T> Function() function,
@@ -221,13 +223,13 @@ class _CreateWorkState extends State<CreateWork> {
 
       try {
         await retry(() => Future.delayed(Duration(seconds: 1), batch.commit));
-        Navigator.pop(context);
-        mySnackBar(context, "created succesfully");
         _clearCreateWork();
+        mySnackBar(context, "created succesfully");
+        Navigator.pop(context);
       } catch (e) {
         _showBottomSheetErrorMessage('', e);
       } finally {
-        _isLoading = false;
+        _isSubmitting = false;
       }
     }
   }
@@ -264,7 +266,7 @@ class _CreateWorkState extends State<CreateWork> {
     _provider.setWorkRequestPrice(0.0);
     _provider.setWorkRequestoverView('');
     _provider.setCurrency('');
-
+    if (_provider.searchResults != null) _provider.searchResults!.clear();
     _provider.setWorkRequestisEvent(false);
   }
 
@@ -350,9 +352,11 @@ class _CreateWorkState extends State<CreateWork> {
   }
 
   _clearSearch() {
+    var _provider = Provider.of<UserData>(context, listen: false);
     WidgetsBinding.instance
         .addPostFrameCallback((_) => _addressSearchController.clear());
-    Provider.of<UserData>(context, listen: false).addressSearchResults = [];
+    _provider.addressSearchResults = [];
+    if (_provider.searchResults != null) _provider.searchResults!.clear();
   }
 
   void _showBottomVenue() {
@@ -393,11 +397,15 @@ class _CreateWorkState extends State<CreateWork> {
                         });
                       }),
                 ),
-                Text(
-                  '        Select your address from the list below',
-                  style: TextStyle(
-                    fontSize:
-                        ResponsiveHelper.responsiveFontSize(context, 14.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0, vertical: 10),
+                  child: Text(
+                    'Please select your preferred city from the list below to offer your services.',
+                    style: TextStyle(
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 12.0),
+                    ),
                   ),
                 ),
                 if (Provider.of<UserData>(
@@ -434,6 +442,7 @@ class _CreateWorkState extends State<CreateWork> {
                                                   _provider
                                                       .searchResults![index]
                                                       .description);
+
                                           // _provider.setAddress(_provider
                                           //     .addressSearchResults![index]
                                           //     .description);
@@ -462,20 +471,26 @@ class _CreateWorkState extends State<CreateWork> {
   ) {
     TextEditingController _controller;
     GlobalKey<FormState> _formkey;
+    String _info = '';
     switch (type.split(' ')[0]) {
       case 'types':
         _controller = _textController;
         _formkey = _typeFormKey;
+        _info =
+            'Please select the type of event for which you would like to offer your services.';
 
         break;
       case 'location':
         _controller = _textController;
         _formkey = _locationFormKey;
+        _info =
+            'Please select your preferred city from the list below to offer your services.';
         break;
 
       case 'genre':
         _controller = _textController;
         _formkey = _genreFormKey;
+        _info = 'Please enter the genre or type of services you offer.';
         break;
 
       case 'currency':
@@ -486,6 +501,8 @@ class _CreateWorkState extends State<CreateWork> {
       case 'price':
         _controller = _textController;
         _formkey = _priceFormKey;
+        _info =
+            'Please provide the price that potential clients would pay to book your services.';
 
         break;
 
@@ -545,43 +562,56 @@ class _CreateWorkState extends State<CreateWork> {
                 );
 
                 Widget buildCheckboxes() {
-                  return Theme(
-                    data: Theme.of(context).copyWith(
-                      unselectedWidgetColor: Colors.grey,
-                    ),
-                    child: Column(
-                      children: checkboxes.entries.map((entry) {
-                        final color = entry.value ? Colors.blue : Colors.grey;
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20.0, vertical: 10),
+                        child: Text(
+                          _info,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ),
+                      Theme(
+                        data: Theme.of(context).copyWith(
+                          unselectedWidgetColor: Colors.grey,
+                        ),
+                        child: Column(
+                          children: checkboxes.entries.map((entry) {
+                            final color =
+                                entry.value ? Colors.blue : Colors.grey;
 
-                        return CheckboxListTile(
-                          title: Text(
-                            entry.key,
-                            style: TextStyle(
-                              color: color,
-                              fontSize: ResponsiveHelper.responsiveFontSize(
-                                  context, 14.0),
-                            ),
-                          ),
-                          value: entry.value,
-                          activeColor: Colors.blue,
-                          onChanged: (bool? newValue) {
-                            if (mounted) {
-                              setState(() {
-                                checkboxes[entry.key] = newValue!;
-                              });
-                            }
-                            if (newValue == true) {
-                              if (!selectedTypes.contains(entry.key)) {
-                                selectedTypes.add(entry.key);
-                              }
-                            } else {
-                              selectedTypes.remove(entry.key);
-                              _provider.workRequesttype.remove(entry.key);
-                            }
-                          },
-                        );
-                      }).toList(),
-                    ),
+                            return CheckboxListTile(
+                              title: Text(
+                                entry.key,
+                                style: TextStyle(
+                                  color: color,
+                                  fontSize: ResponsiveHelper.responsiveFontSize(
+                                      context, 14.0),
+                                ),
+                              ),
+                              value: entry.value,
+                              activeColor: Colors.blue,
+                              onChanged: (bool? newValue) {
+                                if (mounted) {
+                                  setState(() {
+                                    checkboxes[entry.key] = newValue!;
+                                  });
+                                }
+                                if (newValue == true) {
+                                  if (!selectedTypes.contains(entry.key)) {
+                                    selectedTypes.add(entry.key);
+                                  }
+                                } else {
+                                  selectedTypes.remove(entry.key);
+                                  _provider.workRequesttype.remove(entry.key);
+                                }
+                              },
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ],
                   );
                 }
 
@@ -766,7 +796,13 @@ class _CreateWorkState extends State<CreateWork> {
                                   ),
                                 ],
                               ),
-
+                            Text(
+                              _info,
+                              style: TextStyle(
+                                fontSize: ResponsiveHelper.responsiveFontSize(
+                                    context, 12.0),
+                              ),
+                            ),
                             // Text(
                             //   "Each creatives discography exhibit the neccesssary information to connect and collaborate with that creatives. This information provided are freely given out by this user to the creative world of Bars Impression. Creatives are grouped based on their skilss and expertise as provided by them and you can browse throguth creatives by tapping on the floating action button to go to the next creative of simmilar expertise or you can scroll left or right horizontally to change the expertise category you are browsing creatives in. ",
                             //   style: Theme.of(context).textTheme.bodySmall,
@@ -817,6 +853,13 @@ class _CreateWorkState extends State<CreateWork> {
     );
   }
 
+  _loading() {
+    return LinearProgressIndicator(
+      backgroundColor: Colors.transparent,
+      minHeight: 2,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var _provider = Provider.of<UserData>(context);
@@ -855,11 +898,7 @@ class _CreateWorkState extends State<CreateWork> {
     return EditProfileScaffold(
       title: 'Create Work request',
       widget: _isLoading
-          ? Center(
-              child: LinearProgressIndicator(
-              backgroundColor: Colors.transparent,
-              minHeight: 2,
-            ))
+          ? Center(child: _loading())
           : _userPortfolio != null
               ? Padding(
                   padding: const EdgeInsets.all(20.0),
@@ -868,20 +907,25 @@ class _CreateWorkState extends State<CreateWork> {
                       ? _noPortfolio()
                       : Column(
                           children: [
-                            _isFilled
+                            _isSubmitting
                                 ? Padding(
                                     padding:
                                         const EdgeInsets.only(bottom: 30.0),
-                                    child: Align(
-                                      alignment: Alignment.centerRight,
-                                      child: MiniCircularProgressButton(
-                                        onPressed: _submit,
-                                        text: 'Create',
-                                        color: Colors.blue,
-                                      ),
-                                    ),
-                                  )
-                                : SizedBox.shrink(),
+                                    child: _loading())
+                                : _isFilled
+                                    ? Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 30.0),
+                                        child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: MiniCircularProgressButton(
+                                            onPressed: _submit,
+                                            text: 'Create',
+                                            color: Colors.blue,
+                                          ),
+                                        ),
+                                      )
+                                    : SizedBox.shrink(),
                             _textField(
                               'Overview',
                               'Overview',

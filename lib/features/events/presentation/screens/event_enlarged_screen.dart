@@ -1,5 +1,5 @@
 import 'package:bars/utilities/exports.dart';
-import 'package:flutter/scheduler.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
 
 class EventEnlargedScreen extends StatefulWidget {
@@ -1479,6 +1479,82 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
     );
   }
 
+  _validateAttempt() async {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    var _usercountry = _provider.userLocationPreference!.country;
+
+    bool isGhanaian = _usercountry == 'Ghana' ||
+        _provider.userLocationPreference!.currency == 'Ghana Cedi | GHS';
+
+    if (!isGhanaian) {
+      _showBottomSheetErrorMessage(
+          'This event is currently unavailable in $_usercountry.', '');
+    } else if (widget.event.termsAndConditions.isNotEmpty) {
+      _showBottomSheetTermsAndConditions();
+    } else {
+      if (widget.event.ticketSite.isNotEmpty) {
+        _showBottomSheetExternalLink();
+      } else {
+        var connectivityResult = await Connectivity().checkConnectivity();
+        if (connectivityResult == ConnectivityResult.none) {
+          // No internet connection
+          _showBottomSheetErrorMessage('No Internet',
+              'No internet connection available. Please connect to the internet and try again.');
+          return;
+        } else {
+          _attendMethod();
+        }
+      }
+    }
+  }
+
+  void _showBottomSheetTicketDoc() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Container(
+            height: ResponsiveHelper.responsiveHeight(context, 700),
+            decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(30)),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: ListView(
+                children: [
+                  TicketPurchasingIcon(
+                    title: '',
+                  ),
+                  const SizedBox(height: 40),
+                  RichText(
+                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Private Event.',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        TextSpan(
+                          text:
+                              "\n\nThis event is exclusive and access to event tickets is restricted to a select group of individuals.",
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 60),
+                ],
+              ),
+            ),
+          );
+        });
+      },
+    );
+  }
+
   void _showBottomEditLocation(
     BuildContext context,
   ) {
@@ -1548,8 +1624,8 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
     );
     var _usercountry = _provider.userLocationPreference!.country;
 
-    bool isGhanaian = _usercountry == 'Ghana' ||
-        _provider.userLocationPreference!.currency == 'Ghana Cedi | GHS';
+    // bool isGhanaian = _usercountry == 'Ghana' ||
+    //     _provider.userLocationPreference!.currency == 'Ghana Cedi | GHS';
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -1818,23 +1894,27 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                     ),
                     onPressed: _usercountry!.isEmpty
                         ? () {
-                            _showBottomEditLocation(context);
+                            widget.event.isFree
+                                ? _attendMethod()
+                                : _showBottomEditLocation(context);
                           }
-                        : !isGhanaian
-                            ? () {
-                                _showBottomSheetErrorMessage(
-                                    'This event is currently unavailable in your $_usercountry.',
-                                    '');
-                              }
-                            : widget.event.termsAndConditions.isNotEmpty
-                                ? () {
-                                    _showBottomSheetTermsAndConditions();
-                                  }
-                                : () async {
-                                    widget.event.ticketSite.isNotEmpty
-                                        ? _showBottomSheetExternalLink()
-                                        : _attendMethod();
-                                  },
+                        : _validateAttempt,
+                    //
+                    // !isGhanaian
+                    //         ? () {
+                    //             _showBottomSheetErrorMessage(
+                    //                 'This event is currently unavailable in your $_usercountry.',
+                    //                 '');
+                    //           }
+                    //         : widget.event.termsAndConditions.isNotEmpty
+                    //             ? () {
+                    //                 _showBottomSheetTermsAndConditions();
+                    //               }
+                    //             : () async {
+                    //                 widget.event.ticketSite.isNotEmpty
+                    //                     ? _showBottomSheetExternalLink()
+                    //                     : _attendMethod();
+                    //               },
                   ),
                 )),
         SizedBox(
@@ -1949,55 +2029,74 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
           SizedBox(
             height: ResponsiveHelper.responsiveWidth(context, 20.0),
           ),
-        if (!_isAuthor || _eventHasEnded)
+        // if (!_isAuthor || _eventHasEnded)
+        if (!widget.event.isPrivate && !_isAuthor)
+          if (!_eventHasEnded)
+            GestureDetector(
+              onTap: _eventHasEnded
+                  ? () {}
+                  : () {
+                      _usercountry!.isEmpty
+                          ? widget.event.isFree
+                              ? _attendMethod()
+                              : _showBottomEditLocation(context)
+                          : _validateAttempt();
+                      // if (!widget.event.isPrivate && !_isAuthor)
+                      //   widget.event.ticketSite.isNotEmpty
+                      //       ? _showBottomSheetExternalLink()
+                      //       : _attendMethod();
+                    },
+              child: _eventHasEnded
+                  ? SizedBox.shrink()
+                  : _checkingTicketAvailability
+                      ? SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 3,
+                          ),
+                        )
+                      : RichText(
+                          textScaleFactor:
+                              MediaQuery.of(context).textScaleFactor,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: widget.event.isFree
+                                    ? ''
+                                    : "${widget.event.rate}:\n",
+                                style: TextStyle(
+                                  fontSize: ResponsiveHelper.responsiveFontSize(
+                                      context, 12.0),
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              TextSpan(
+                                text: widget.event.isFree
+                                    ? 'Free'
+                                    : _fristTickePrice.toString(),
+                                style: TextStyle(
+                                  fontSize: ResponsiveHelper.responsiveFontSize(
+                                      context, 30.0),
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+            ),
+        if (widget.event.isPrivate && !_isAuthor)
           GestureDetector(
-            onTap: _eventHasEnded
-                ? () {}
-                : () {
-                    if (!widget.event.isPrivate && !_isAuthor)
-                      widget.event.ticketSite.isNotEmpty
-                          ? _showBottomSheetExternalLink()
-                          : _attendMethod();
-                  },
-            child: _eventHasEnded
-                ? SizedBox.shrink()
-                : _checkingTicketAvailability
-                    ? SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 3,
-                        ),
-                      )
-                    : RichText(
-                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: widget.event.isFree
-                                  ? ''
-                                  : "${widget.event.rate}:\n",
-                              style: TextStyle(
-                                fontSize: ResponsiveHelper.responsiveFontSize(
-                                    context, 12.0),
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            TextSpan(
-                              text: widget.event.isFree
-                                  ? 'Free'
-                                  : _fristTickePrice.toString(),
-                              style: TextStyle(
-                                fontSize: ResponsiveHelper.responsiveFontSize(
-                                    context, 30.0),
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
+            onTap: () {
+              _showBottomSheetTicketDoc();
+            },
+            child: Icon(
+              Icons.lock,
+              color: Colors.white,
+              size: ResponsiveHelper.responsiveHeight(context, 30.0),
+            ),
           ),
         if (_isAuthor && _eventHasEnded)
           Text(

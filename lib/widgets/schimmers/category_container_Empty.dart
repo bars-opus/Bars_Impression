@@ -54,8 +54,7 @@ class CategoryContainerEmpty extends StatelessWidget {
     return Column(
       children: [
         Container(
-          constraints: BoxConstraints(
-              ),
+          constraints: BoxConstraints(),
           decoration: BoxDecoration(
             color: Theme.of(context).primaryColorLight,
             borderRadius: BorderRadius.circular(0),
@@ -104,14 +103,16 @@ class CategoryContainerEmpty extends StatelessWidget {
                             style: Theme.of(context).textTheme.displayMedium,
                           ),
                           TextSpan(
-                            text: "$containerSubTitle ",
+                            text: "$containerSubTitle",
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           TextSpan(
                             text: noLocation ? "Tap to enter location " : '',
                             style: TextStyle(
-                              fontSize: noLocation ?  ResponsiveHelper.responsiveFontSize(
-                              context, 12.0) : 0,
+                              fontSize: noLocation
+                                  ? ResponsiveHelper.responsiveFontSize(
+                                      context, 12.0)
+                                  : 0,
                               color: Colors.blue,
                             ),
                           )
@@ -121,7 +122,6 @@ class CategoryContainerEmpty extends StatelessWidget {
             ),
           ),
         ),
-      
       ],
     );
   }

@@ -273,7 +273,6 @@ class UserData extends ChangeNotifier {
     _shortcutBool = false;
     _loadingThisWeekEvent = true;
     _isLoading = false;
-    _isLoading = false;
     _chatCount = 0;
     _workRequestoverView = '';
 

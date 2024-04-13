@@ -6,7 +6,7 @@ class ExpandEventBarcodeScreen extends StatelessWidget {
 
   ExpandEventBarcodeScreen({
     required this.event,
-      this.justCreated = false,
+    this.justCreated = false,
   });
 
   @override
@@ -55,7 +55,7 @@ class ExpandEventBarcodeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Hero(
-                tag: justCreated?  "new ${event.id}" : event.id,
+                tag: justCreated ? "new ${event.id}" : event.id,
                 child: QrImageView(
                   version: QrVersions.auto,
                   eyeStyle: QrEyeStyle(
@@ -74,39 +74,42 @@ class ExpandEventBarcodeScreen extends StatelessWidget {
               const SizedBox(
                 height: 30,
               ),
-              RichText(
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: 'SCAN',
-                      style: TextStyle(
-                        fontSize:
-                            ResponsiveHelper.responsiveFontSize(context, 40.0),
-                        color: Colors.white,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: RichText(
+                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'SCAN',
+                        style: TextStyle(
+                          fontSize: ResponsiveHelper.responsiveFontSize(
+                              context, 40.0),
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    TextSpan(
-                      text: "\nTo get event\n",
-                      style: TextStyle(
-                        fontSize:
-                            ResponsiveHelper.responsiveFontSize(context, 18.0),
-                        color: Colors.white,
+                      TextSpan(
+                        text: "\nTo get event\n",
+                        style: TextStyle(
+                          fontSize: ResponsiveHelper.responsiveFontSize(
+                              context, 18.0),
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    TextSpan(
-                      text: _provider.currentUserId == event.authorId
-                          ? "\nYou can take a picture of this barcode, print it out, and stick it somewhere. This way, people can scan it to access the event."
-                          : "\nScan the QR code with your phone camera or a QR code scanner app to access this event.",
-                      style: TextStyle(
-                        fontSize:
-                            ResponsiveHelper.responsiveFontSize(context, 14.0),
-                        color: Colors.white,
-                      ),
-                    )
-                  ],
+                      TextSpan(
+                        text: _provider.currentUserId == event.authorId
+                            ? "\nTake a screenshot of the barcode and place it at your desired location. Potential attendees can then scan the barcode to gain access to the event. It\'s a hassle-free way to promote the event."
+                            : "\nScan the QR code with your phone camera or a QR code scanner app to access this event.",
+                        style: TextStyle(
+                          fontSize: ResponsiveHelper.responsiveFontSize(
+                              context, 14.0),
+                          color: Colors.white,
+                        ),
+                      )
+                    ],
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
               Padding(
                 padding: const EdgeInsets.all(30.0),

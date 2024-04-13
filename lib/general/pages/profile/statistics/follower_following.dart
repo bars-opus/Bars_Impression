@@ -1,13 +1,14 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:bars/widgets/general_widget/loading_chats.dart';
 
 class FollowerFollowing extends StatefulWidget {
   static final id = 'FollowerFollowing';
-  final String currentUserId;
+  final String userId;
   final int followerCount;
   final int followingCount;
   final String follower;
   FollowerFollowing({
-    required this.currentUserId,
+    required this.userId,
     required this.followerCount,
     required this.followingCount,
     required this.follower,
@@ -68,7 +69,7 @@ class _FollowerFollowingState extends State<FollowerFollowing>
 
   _setUpFollower() async {
     QuerySnapshot userSnapShot = await followersRef
-        .doc(widget.currentUserId)
+        .doc(widget.userId)
         .collection('userFollowers')
         .limit(limit)
         .get();
@@ -89,7 +90,7 @@ class _FollowerFollowingState extends State<FollowerFollowing>
     if (_isFectchingUser) return;
     _isFectchingUser = true;
     QuerySnapshot userSnapShot = await followersRef
-        .doc(widget.currentUserId)
+        .doc(widget.userId)
         .collection('userFollowers')
         .limit(limit)
         .startAfterDocument(_userSnapshot.last)
@@ -111,7 +112,7 @@ class _FollowerFollowingState extends State<FollowerFollowing>
 
   _setUpFollowing() async {
     QuerySnapshot userSnapShot = await followingRef
-        .doc(widget.currentUserId)
+        .doc(widget.userId)
         .collection('userFollowing')
         .limit(limit)
         .get();
@@ -132,7 +133,7 @@ class _FollowerFollowingState extends State<FollowerFollowing>
     if (_isFectchingUser) return;
     _isFectchingUser = true;
     QuerySnapshot userSnapShot = await followingRef
-        .doc(widget.currentUserId)
+        .doc(widget.userId)
         .collection('userFollowing')
         .limit(limit)
         .startAfterDocument(_userSnapshot.last)
@@ -180,19 +181,57 @@ class _FollowerFollowingState extends State<FollowerFollowing>
                 return FutureBuilder(
                   future: DatabaseService.getUserWithId(user.id),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    if (!snapshot.hasData) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      // While waiting for the future to resolve, show the skeleton.
                       return FollowerUserSchimmerSkeleton();
+                    } else if (snapshot.hasError) {
+                      // If the future completes with an error, handle it appropriately.
+                      debugPrint('Error: ${snapshot.error}');
+                      return Text('Something went wrong');
+                    } else if (!snapshot.hasData) {
+                      return Material(
+                        color: Colors.transparent,
+                        child: LoadingChats(
+                          deleted: true,
+                          userId: user.id,
+                          onPressed: () {},
+                        ),
+                      );
+                      // No error, but there's also no data. This might indicate a null user.
+                      // debugPrint(
+                      //     'No data available for user with id: ${user.id}');
+                      // return SizedBox.shrink();
+                    } else {
+                      // Data is available.
+                      AccountHolderAuthor? _user = snapshot.data;
+                      debugPrint('User data: $_user');
+                      return _user == null
+                          ? LoadingChats(
+                              deleted: true,
+                              userId: user.id,
+                              onPressed: () {},
+                            )
+                          : widget.userId == _user.userId
+                              ? SizedBox.shrink()
+                              : _buildUserTile(_user);
                     }
-                    AccountHolderAuthor _user = snapshot.data;
-                    return
-
-                        //  user.userId == _user.userId
-                        //     ? const SizedBox.shrink()
-                        //     :
-
-                        _buildUserTile(_user);
                   },
                 );
+
+                // FutureBuilder(
+                //   future: DatabaseService.getUserWithId(user.id),
+                //   builder: (BuildContext context, AsyncSnapshot snapshot) {
+                //     if (!snapshot.hasData) {
+                //       return FollowerUserSchimmerSkeleton();
+                //     }
+                //     AccountHolderAuthor? _user = snapshot.data;
+                //     return _user == null
+                //         ? SizedBox.shrink()
+                //         : widget.userId == _user.userId
+                //             ? const SizedBox.shrink()
+                //             : _buildUserTile(_user);
+                //   },
+                // );
               },
               childCount: _userList.length,
             ),

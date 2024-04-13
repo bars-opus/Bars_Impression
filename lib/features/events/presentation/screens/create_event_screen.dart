@@ -3,6 +3,7 @@ import 'package:bars/widgets/create/schedule_people_group.dart';
 
 import 'package:blurhash/blurhash.dart';
 import 'package:bars/utilities/exports.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:currency_picker/currency_picker.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:uuid/uuid.dart';
@@ -107,17 +108,22 @@ class _CreateEventScreenState extends State<CreateEventScreen>
 
   List<String> crew = [
     'Audio Manager',
+    'Caterers',
     'Decorations Coordinator',
     'Entertainment Coordinator',
     'Event Coordinator',
     'Food and Beverage Coordinator',
+    'Lightening',
     'Marketing Manager',
     'Production Manager',
+    'Photographer',
     'Publicity Coordinator',
     'Security Manager',
+    'Sounds',
     'Ticketing Manager',
     'Transportation Manager',
-    'Venue Manager',
+    'Venue',
+    'Videographer',
     'Visual Technician',
     'Volunteer Coordinator',
     'Others',
@@ -276,23 +282,21 @@ class _CreateEventScreenState extends State<CreateEventScreen>
   }
 
   void _addSchedulePeople(
-    String name,
-    String internalProfileLink,
-  ) {
+      String name, String internalProfileLink, String taggedUserExternalLink) {
     var _provider = Provider.of<UserData>(context, listen: false);
     // final name = _selectedNameToAdd;
     // final role = _selectedRole;
     // final taggedType = _taggedType;
     // final internalProfileLink =
     //     Provider.of<UserData>(context, listen: false).artist;
-    final externalProfileLink = _taggedUserExternalLink;
+    // final externalProfileLink = _taggedUserExternalLink;
 
     String commonId = Uuid().v4();
     final taggedEvenPeople = SchedulePeopleModel(
       id: commonId,
       name: name,
       verifiedTag: false,
-      externalProfileLink: externalProfileLink,
+      externalProfileLink: taggedUserExternalLink,
       internalProfileLink: internalProfileLink,
     );
 
@@ -325,11 +329,13 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     // );
 
     //Add tagged person to taggedPeopleList
-    _provider.setEventOrganizerContacts(_contactController.text.trim());
+    if (_contactsFormKey.currentState!.validate()) {
+      _provider.setEventOrganizerContacts(_contactController.text.trim());
 
-    //Reset tagged people variable
+      //Reset tagged people variable
 
-    _contactController.clear();
+      _contactController.clear();
+    }
   }
 
   // Helper methods
@@ -459,16 +465,16 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     Event event = Event(
       blurHash: blurHash,
       imageUrl: imageUrl,
-      offers: [],
+      // offers: [],
       type: _provider.category.isEmpty ? 'Others' : _provider.category,
       title: _provider.title,
       rate: _provider.currency,
       ticket: _provider.ticket,
       schedule: _provider.schedule,
       taggedPeople: _provider.taggedEventPeople,
-      ticketOrder: [],
+      // ticketOrder: [],
       venue: _provider.venue,
-      isTicketed: true,
+      // isTicketed: true,
       startDate: _provider.startDate,
       time: '',
       theme: _provider.theme,
@@ -489,7 +495,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       id: commonId,
       isFree: _provider.isFree,
       isCashPayment: _provider.isCashPayment,
-      showOnExplorePage: false,
+      showOnExplorePage: true,
       fundsDistributed: false,
       showToFollowers: _provider.showToFollowers,
       clossingDay: _provider.startDate,
@@ -500,7 +506,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       subaccountId: _provider.userLocationPreference!.subaccountId!,
       transferRecepientId:
           _provider.userLocationPreference!.transferRecepientId!,
-      contacts: _provider.eventOrganizerContacts,
+      contacts: _provider.eventOrganizerContacts, improvemenSuggestion: '',
     );
 
     await DatabaseService.createEvent(event);
@@ -515,16 +521,16 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     Event event = Event(
       blurHash: widget.event!.blurHash,
       imageUrl: widget.event!.imageUrl,
-      offers: [],
+      // offers: [],
       type: _provider.category.isEmpty ? 'Others' : _provider.category,
       title: _provider.title,
       rate: _provider.currency,
       ticket: _provider.ticket,
       schedule: _provider.schedule,
       taggedPeople: _provider.taggedEventPeople,
-      ticketOrder: [],
+      // ticketOrder: [],
       venue: _provider.venue,
-      isTicketed: true,
+      // isTicketed: true,
       startDate: _provider.startDate,
       time: '',
       theme: _provider.theme,
@@ -545,7 +551,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       id: widget.event!.id,
       isFree: _provider.isFree,
       isCashPayment: _provider.isCashPayment,
-      showOnExplorePage: false,
+      showOnExplorePage: true,
       fundsDistributed: false,
       showToFollowers: _provider.bool6,
       clossingDay: _provider.clossingDay,
@@ -556,7 +562,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       subaccountId: _provider.userLocationPreference!.subaccountId!,
       transferRecepientId:
           _provider.userLocationPreference!.transferRecepientId!,
-      contacts: _provider.eventOrganizerContacts,
+      contacts: _provider.eventOrganizerContacts, improvemenSuggestion: '',
     );
 
     try {
@@ -603,9 +609,8 @@ class _CreateEventScreenState extends State<CreateEventScreen>
               : () async {
                   // Navigator.pop(context);
                   try {
-                    Navigator.pop(context);
-                    // _showBottomSheetLoading();
-                    Navigator.pop(context);
+                    _showBottomSheetLoading();
+
                     await DatabaseService.deleteEvent(
                         widget.event!,
                         _cancellationRasonController.text.trim(),
@@ -613,12 +618,14 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                     await _setNull(_provider);
 
                     Navigator.pop(context);
+                    Navigator.pop(context);
+                    Navigator.pop(context);
 
                     mySnackBar(context, 'Event deleted succesfully');
                   } catch (e) {
                     Navigator.pop(context);
                     _showBottomSheetErrorMessage(
-                        'Error clearing notifications ');
+                        'Error deleting notifications ');
                   }
                 },
           title: 'Are you sure you want to Delete this event?',
@@ -738,7 +745,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     provider.setIsVirtual(false);
     provider.setIsPrivate(false);
     provider.setIsFree(false);
-
+    provider.addressSearchResults = [];
     provider.setCouldntDecodeCity(false);
     Navigator.pop(context);
   }
@@ -1434,15 +1441,15 @@ class _CreateEventScreenState extends State<CreateEventScreen>
               TextInputType.multiline,
               () {},
             ),
-            _ticketFiled(
-              true,
-              false,
-              'Ticket max order',
-              'Maximu ticket order',
-              _maxOrderController,
-              TextInputType.number,
-              () {},
-            ),
+            // _ticketFiled(
+            //   true,
+            //   false,
+            //   'Ticket max order',
+            //   'Maximu ticket order',
+            //   _maxOrderController,
+            //   TextInputType.number,
+            //   () {},
+            // ),
             // _ticketFiled(
             //   'Seating row',
             //   'Number of seating rows',
@@ -1696,8 +1703,11 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                                       onPressed: isGhanaOrCurrencyGHS &&
                                               shouldNavigate
                                           ? () {
-                                              _navigateToPage(context,
-                                                  CreateSubaccountForm());
+                                              _navigateToPage(
+                                                  context,
+                                                  CreateSubaccountForm(
+                                                    isEditing: false,
+                                                  ));
                                             }
                                           : widget.isEditting
                                               ? () {
@@ -1913,8 +1923,26 @@ class _CreateEventScreenState extends State<CreateEventScreen>
               ));
   }
 
-  _buildUserTile(AccountHolderAuthor user, bool isSchedule) {
+  _addPeopleFunction(AccountHolderAuthor user, bool isSchedule) {
     var _provider = Provider.of<UserData>(context, listen: false);
+    return isSchedule
+        ? () {
+            _addSchedulePeople(user.userName!, user.userId!, '');
+            Navigator.pop(context);
+          }
+        : () {
+            _provider.setArtist(user.userId!);
+            if (mounted) {
+              setState(() {
+                _selectedNameToAdd = user.userName!;
+              });
+            }
+
+            Navigator.pop(context);
+          };
+  }
+
+  _buildUserTile(AccountHolderAuthor user, bool isSchedule) {
     return SearchUserTile(
         verified: user.verified!,
         userName: user.userName!.toUpperCase(),
@@ -1922,21 +1950,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
         // company: user.company!,
         profileImageUrl: user.profileImageUrl!,
         bio: user.bio!,
-        onPressed: isSchedule
-            ? () {
-                _addSchedulePeople(user.userName!, user.userId!);
-                Navigator.pop(context);
-              }
-            : () {
-                _provider.setArtist(user.userId!);
-                if (mounted) {
-                  setState(() {
-                    _selectedNameToAdd = user.userName!;
-                  });
-                }
-
-                Navigator.pop(context);
-              });
+        onPressed: _addPeopleFunction(user, isSchedule));
   }
 
   void _showBottomTaggedPeople(bool isSchedule) {
@@ -1990,18 +2004,18 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                       const SizedBox(
                         height: 30,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: Text(
-                          'This user can remove or verify this tag, When this user verifies this tagg a black checkmark would be added to this tag.',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey,
-                            fontSize: ResponsiveHelper.responsiveFontSize(
-                                context, 12.0),
-                          ),
-                        ),
-                      ),
+                      // Padding(
+                      //   padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      //   child: Text(
+                      //     'This user can remove or verify this tag, When this user verifies this tagg a black checkmark would be added to this tag.',
+                      //     style: TextStyle(
+                      //       fontWeight: FontWeight.bold,
+                      //       color: Colors.grey,
+                      //       fontSize: ResponsiveHelper.responsiveFontSize(
+                      //           context, 12.0),
+                      //     ),
+                      //   ),
+                      // ),
                       if (_users != null)
                         Text('        Select a person from the list below'),
                       if (_users != null)
@@ -2091,14 +2105,23 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                                   alignment: Alignment.centerRight,
                                   child: _adDateTimeButton(
                                     '  Add  ',
-                                    () {
-                                      if (_addPersonFormKey.currentState!
-                                          .validate()) {
-                                        _addSchedulePeople(
-                                            _selectedNameToAdd, '');
-                                        Navigator.pop(context);
-                                      }
-                                    },
+                                    !isSchedule
+                                        ? () {
+                                            Navigator.pop(context);
+                                          }
+                                        : () {
+                                            if (_addPersonFormKey.currentState!
+                                                .validate())
+                                              _addSchedulePeople(
+                                                _selectedNameToAdd,
+                                                '',
+                                                _taggedUserExternalLink,
+                                              );
+                                            // _addSchedulePeople(
+                                            //     _selectedNameToAdd, '');
+                                            Navigator.pop(context);
+                                            // }
+                                          },
                                   ),
                                 ),
                           ContentFieldBlack(
@@ -2359,7 +2382,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                 ),
                 DirectionWidgetWhite(
                   text:
-                      'You can provide a structured timeline for attendees, staff, and participants to know when each segment of the event will occur. The program lineup refers to the sequence or order in which different elements of the event will be presented or performed.',
+                      'You should provide a structured timeline for attendees, staff, and participants to know when each segment of the event will occur. The program lineup refers to the sequence or order in which different elements of the event will be presented or performed.',
                 ),
                 const SizedBox(height: 10.0),
                 _scheduleTitleController.text.isEmpty ||
@@ -2397,13 +2420,13 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                         onStartDateChanged: (DateTime newDate) {
                           _scheduleStartTime = newDate;
                         },
+                        onStartTimeChanged: (DateTime newDate) {
+                          _scheduleStartTime = newDate;
+                        },
                         onEndDateChanged: (DateTime newDate) {
                           _scheduleEndTime = newDate;
                         },
                         onEndTimeChanged: (DateTime newDate) {
-                          _scheduleStartTime = newDate;
-                        },
-                        onStartTimeChanged: (DateTime newDate) {
                           _scheduleEndTime = newDate;
                         },
                         date: false,
@@ -2740,7 +2763,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                             children: [
                               contacts.length < 6 && controller.text.length > 0
                                   ? Align(
-                                      alignment: Alignment.centerRight,
+                                      alignment: Alignment.topRight,
                                       child: MiniCircularProgressButton(
                                         onPressed: () {
                                           _addContacts();
@@ -2749,18 +2772,21 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                                         color: Colors.blue,
                                       ),
                                     )
-                                  : GestureDetector(
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text(
-                                        'Done',
-                                        style: TextStyle(
-                                            fontSize: ResponsiveHelper
-                                                .responsiveFontSize(
-                                                    context, 14.0),
-                                            color: Colors.blue,
-                                            fontWeight: FontWeight.bold),
+                                  : Align(
+                                      alignment: Alignment.topRight,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: Text(
+                                          'Done',
+                                          style: TextStyle(
+                                              fontSize: ResponsiveHelper
+                                                  .responsiveFontSize(
+                                                      context, 14.0),
+                                              color: Colors.blue,
+                                              fontWeight: FontWeight.bold),
+                                        ),
                                       ),
                                     ),
                               if (contacts.length > 5 &&
@@ -2785,11 +2811,20 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                                 _contactController,
                                 TextInputType.numberWithOptions(decimal: true),
                                 (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Program title cannot be empty';
-                                  }
-                                  return null;
+                                  String pattern =
+                                      r'^(\+\d{1,3}[- ]?)?\d{1,4}[- ]?(\d{1,3}[- ]?){1,2}\d{1,9}(\ x\d{1,4})?$';
+                                  RegExp regex = new RegExp(pattern);
+                                  if (!regex.hasMatch(value!))
+                                    return 'Enter a valid phone number';
+                                  else
+                                    return null;
                                 },
+                                // (value) {
+                                //   if (value == null || value.isEmpty) {
+                                //     return 'Program title cannot be empty';
+                                //   }
+                                //   return null;
+                                // },
                               ),
                             ],
                           ),
@@ -2821,13 +2856,14 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                 '10. ',
                 'Contacts',
               ),
-              MiniCircularProgressButton(
-                  onPressed: _validate,
-                  text: widget.isEditting
-                      ? 'Next'
-                      : _provider.isPrivate
-                          ? "Skip"
-                          : "Next"),
+              if (_provider.eventOrganizerContacts.isNotEmpty)
+                MiniCircularProgressButton(
+                    onPressed: _validate,
+                    text: widget.isEditting
+                        ? 'Next'
+                        : _provider.isPrivate
+                            ? "Skip"
+                            : "Next"),
             ],
           ),
           DirectionWidgetWhite(
@@ -3075,7 +3111,8 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                           labelText: 'City',
                           hintText: "City of event",
                           initialValue: _provider.city.toString(),
-                          onSavedText: (input) => _provider.setCity(input),
+                          onSavedText: (input) =>
+                              _provider.setCity(input.trim()),
                           onValidateText: (input) => input.trim().length < 1
                               ? "Enter the city of event"
                               : null,
@@ -3086,7 +3123,8 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                           labelText: 'Country',
                           hintText: "Country of event",
                           initialValue: _provider.country.toString(),
-                          onSavedText: (input) => _provider.setCountry(input),
+                          onSavedText: (input) =>
+                              _provider.setCountry(input.trim()),
                           onValidateText: (input) => input.trim().length < 1
                               ? "Enter the country of event"
                               : null,
@@ -3225,7 +3263,15 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                   ? const SizedBox.shrink()
                   : MiniCircularProgressButton(
                       color: Colors.blue,
-                      onPressed: () {
+                      onPressed: () async {
+                        var connectivityResult =
+                            await Connectivity().checkConnectivity();
+                        if (connectivityResult == ConnectivityResult.none) {
+                          // No internet connection
+                          _showBottomSheetErrorMessage(
+                              'No internet connection available. Please connect to the internet and try again.');
+                          return;
+                        }
                         widget.isEditting ? _editEvent() : _submitCreate();
                       },
                       text: widget.isEditting ? 'Save' : "Create",
@@ -3397,74 +3443,93 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       context,
     );
 
+    void _createEventDoc(
+      BuildContext context,
+    ) {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext context) {
+          return CreateWorkRequestDoc(
+            fromWelcome: false,
+          );
+        },
+      );
+    }
+
     return Stack(
       alignment: FractionalOffset.center,
       children: [
         DisplayCreateImage(
           isEvent: true,
         ),
-        widget.isCompleted
-            ? _completed()
-            : _provider.eventImage == null && !widget.isEditting
-                ? CreateSelectImageWidget(
-                    isEditting: widget.isEditting,
-                    feature: 'Punch',
-                    selectImageInfo:
-                        '\nSelect a background image for your event. The image selected should not contain any text and should be of good pixel quality. The image selected should align with the context of your event. The right image can significantly enhance the atmosphere and engagement of your event. ',
-                    featureInfo: '',
-                    isEvent: true,
-                  )
-                : SafeArea(
-                    child: PageView(
-                        controller: _pageController,
-                        physics: const NeverScrollableScrollPhysics(),
-                        onPageChanged: (int index) {
-                          _provider.setInt1(index);
-                        },
-                        children: [
-                          //setting section (private, virtual, etc)
-                          _eventSettingSection(),
+        // widget.isCompleted
+        //     ? _completed()
+        //     :
+        _provider.eventImage == null && !widget.isEditting
+            ? CreateSelectImageWidget(
+                onPressed: () {
+                  _createEventDoc(context);
+                },
+                isEditting: widget.isEditting,
+                feature: 'Punch',
+                selectImageInfo:
+                    '\nSelect a background image for your event. The image selected should not contain any text and should be of good pixel quality. The image selected should align with the context of your event. The right image can significantly enhance the atmosphere and engagement of your event. ',
+                featureInfo: '',
+                isEvent: true,
+              )
+            : SafeArea(
+                child: PageView(
+                    controller: _pageController,
+                    physics: const NeverScrollableScrollPhysics(),
+                    onPageChanged: (int index) {
+                      _provider.setInt1(index);
+                    },
+                    children: [
+                      //setting section (private, virtual, etc)
+                      _eventSettingSection(),
 
-                          //select category, festiva, albums, etc.
-                          _eventCategorySection(),
+                      //select category, festiva, albums, etc.
+                      _eventCategorySection(),
 
-                          //pick date for event
-                          _eventPickDateSection(),
+                      //pick date for event
+                      _eventPickDateSection(),
 
-                          //pick time for event
-                          _eventPickTimeScheduleSection(),
+                      //pick time for event
+                      _eventPickTimeScheduleSection(),
 
-                          //rate section (feee)
-                          _eventRateSection(),
+                      //rate section (feee)
+                      _eventRateSection(),
 
-                          // //select clossing date and page for start editting.
-                          // _eventClossingDateStartEditing(),
+                      // //select clossing date and page for start editting.
+                      // _eventClossingDateStartEditing(),
 
-                          //event section for picking address and venue.
-                          _eventAdressSection(),
+                      //event section for picking address and venue.
+                      _eventAdressSection(),
 
-                          //event people performing and appearing
-                          _eventPeopleSection(false),
+                      //event people performing and appearing
+                      _eventPeopleSection(false),
 
-                          //event sponsors and partners
-                          _eventPeopleSection(true),
+                      //event sponsors and partners
+                      _eventPeopleSection(true),
 
-                          //event main information(title, theme, etc.)
-                          _eventMainInformation(),
+                      //event main information(title, theme, etc.)
+                      _eventMainInformation(),
 
-                          //event optional additional
-                          _eventOrganizerContacts(),
+                      //event optional additional
+                      _eventOrganizerContacts(),
 
-                          //event optional additional
-                          _eventPreviousEvent(),
+                      //event optional additional
+                      _eventPreviousEvent(),
 
-                          //event terms and conditions
-                          _eventTermsAndConditions(),
+                      //event terms and conditions
+                      _eventTermsAndConditions(),
 
-                          //loading --- creating event
-                          _loadingWidget(),
-                        ]),
-                  ),
+                      //loading --- creating event
+                      _loadingWidget(),
+                    ]),
+              ),
         Positioned(top: 50, left: 10, child: _popButton()),
         if (_provider.eventImage != null &&
             !widget.isEditting &&

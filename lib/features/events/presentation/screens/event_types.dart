@@ -264,6 +264,7 @@ class _EventTypesState extends State<EventTypes>
     int sortNumberOfDays = 0,
   }) async {
     sortNumberOfDays = widget.sortNumberOfDays;
+    var _provider = Provider.of<UserData>(context, listen: false);
 
     // Calculate current and end date based on sortNumberOfDays
     final currentDate = DateTime(now.year, now.month, now.day);
@@ -278,8 +279,10 @@ class _EventTypesState extends State<EventTypes>
 
     // Construct Firestore query based on widget.types, country, city, and sortNumberOfDays
     var query = widget.types.isEmpty
-        ? allEventsRef
-        : allEventsRef.where('type', isEqualTo: widget.types);
+        ? allEventsRef.where('showOnExplorePage', isEqualTo: true)
+        : allEventsRef
+            .where('showOnExplorePage', isEqualTo: true)
+            .where('type', isEqualTo: widget.types);
     if (country != null) query = query.where('country', isEqualTo: country);
     if (city != null) query = query.where('city', isEqualTo: city);
 
@@ -346,7 +349,10 @@ class _EventTypesState extends State<EventTypes>
             } else if (country != null) {
               _eventsCountry = uniqueEvents;
             } else {
-              _eventsAll = uniqueEvents;
+              _eventsAll = _provider.userLocationPreference!.city!.isEmpty
+                  ? events
+                  : uniqueEvents;
+              // uniqueEvents;
             }
           }
         });
@@ -489,8 +495,10 @@ class _EventTypesState extends State<EventTypes>
     final sortDate = currentDate.add(Duration(days: sortNumberOfDays));
 
     Query<Map<String, dynamic>> query = widget.types.isEmpty
-        ? allEventsRef
-        : allEventsRef.where('type', isEqualTo: widget.types);
+        ? allEventsRef.where('showOnExplorePage', isEqualTo: true)
+        : allEventsRef
+            .where('showOnExplorePage', isEqualTo: true)
+            .where('type', isEqualTo: widget.types);
 
     // Refine the query based on the provided country and city
     if (country != null) {
@@ -643,8 +651,10 @@ class _EventTypesState extends State<EventTypes>
     final endDate = currentDate.add(Duration(days: sortNumberOfDays));
 
     var query = widget.types.isEmpty
-        ? allEventsRef
-        : allEventsRef.where('type', isEqualTo: widget.types);
+        ? allEventsRef.where('showOnExplorePage', isEqualTo: true)
+        : allEventsRef
+            .where('showOnExplorePage', isEqualTo: true)
+            .where('type', isEqualTo: widget.types);
 
     if (country != null) {
       query = query.where('country', isEqualTo: country);

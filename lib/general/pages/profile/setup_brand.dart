@@ -90,9 +90,11 @@ class _SetUpBrandState extends State<SetUpBrand> {
     await _firestore.runTransaction((transaction) async {
       DocumentSnapshot usernameDoc = await transaction
           .get(_firestore.collection('usernames').doc(username));
+      bool isTaken = await DatabaseService.isUsernameTaken(username);
 
-      if (usernameDoc.exists) {
-        throw Exception('Username is not unique');
+      if (isTaken || usernameDoc.exists) {
+        throw Exception(
+            'The username you entered is already taken. Please choose a different username.');
       }
 
       // Create the username document
@@ -139,9 +141,11 @@ class _SetUpBrandState extends State<SetUpBrand> {
 
       DocumentSnapshot newUsernameDoc = await transaction
           .get(_firestore.collection('usernames').doc(newUsername));
+      bool isTaken = await DatabaseService.isUsernameTaken(newUsername);
 
-      if (newUsernameDoc.exists) {
-        throw Exception('New username is not unique');
+      if (isTaken || newUsernameDoc.exists) {
+        throw Exception(
+            'The username you entered is already taken. Please choose a different username.');
       }
 
       // Create the new username document
@@ -384,11 +388,11 @@ class _SetUpBrandState extends State<SetUpBrand> {
       try {
         if (_userNameCreated) {
           await changeUsername(_changeUserName.toUpperCase(),
-              _controller.text.toUpperCase(), _provider.currentUserId!);
+              _controller.text.trim().toUpperCase(), _provider.currentUserId!);
           mySnackBar(context, 'Username changed successfully');
         } else {
-          print('  bgbgb' + _provider.currentUserId!);
-          await createUser(_controller.text, _provider.currentUserId!);
+          // print('  bgbgb' + _provider.currentUserId!);
+          await createUser(_controller.text.trim(), _provider.currentUserId!);
           mySnackBar(context, 'Username set successfully');
         }
       } catch (e) {
@@ -607,25 +611,51 @@ class _SetUpBrandState extends State<SetUpBrand> {
 
   static const values = <String>[
     "Artist",
-    "Producer",
-    "DJ",
-    "Dancer",
-    "Music_Video_Director",
-    "Content_creator",
-    "Photographer",
-    "Record_Label",
-    "Brand_Influencer",
-    "Event_organiser",
     "Band",
-    "Instrumentalist",
-    "Cover_Art_Designer",
-    "Makeup_Artist",
-    "Video_Vixen",
-    "Blogger",
-    "MC(Host)",
-    "Choire",
     "Battle_Rapper",
+    "Blogger",
+    "Brand_Influencer",
+    'Caterers',
+    "Choire",
+    "Content_creator",
+    // "Cover_Art_Designer",
+    "Dancer",
+    'Decorator',
+    "DJ",
+    "Event_organiser",
+    "Graphic_Designer",
+    "Instrumentalist",
+    "Makeup_Artist",
+    "MC(Host)",
+    "Videographer",
+    "Photographer",
+    "Producer",
+    'Sound_and_Light',
+
+    "Record_Label",
+    "Video_Vixen",
     "Fan",
+
+    // "Artist",
+    // "Producer",
+    // "DJ",
+    // "Dancer",
+    // "Music_Video_Director",
+    // "Content_creator",
+    // "Photographer",
+    // "Record_Label",
+    // "Brand_Influencer",
+    // "Event_organiser",
+    // "Band",
+    // "Instrumentalist",
+    // "Cover_Art_Designer",
+    // "Makeup_Artist",
+    // "Video_Vixen",
+    // "Blogger",
+    // "MC(Host)",
+    // "Choire",
+    // "Battle_Rapper",
+    // "Fan",
   ];
 
   Widget buildRadios() => Theme(
@@ -953,24 +983,26 @@ class _SetUpBrandState extends State<SetUpBrand> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _loadingToNext(),
-              Align(
-                  alignment: Alignment.centerRight,
-                  child: MiniCircularProgressButton(
-                    color: Colors.blue,
-                    text: _provider.bio.isNotEmpty || _profileImage != null
-                        ? 'Save'
-                        : 'Skip',
-                    onPressed: _provider.bio.isNotEmpty || _profileImage != null
-                        ? () {
-                            _validateTextToxicityBio(user);
-                          }
-                        : () {
-                            Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(
-                                    builder: (context) => ConfigPage()),
-                                (Route<dynamic> route) => false);
-                          },
-                  )),
+              if (!_provider.isLoading)
+                Align(
+                    alignment: Alignment.centerRight,
+                    child: MiniCircularProgressButton(
+                      color: Colors.blue,
+                      text: _provider.bio.isNotEmpty || _profileImage != null
+                          ? 'Save'
+                          : 'Skip',
+                      onPressed:
+                          _provider.bio.isNotEmpty || _profileImage != null
+                              ? () {
+                                  _validateTextToxicityBio(user);
+                                }
+                              : () {
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                      MaterialPageRoute(
+                                          builder: (context) => ConfigPage()),
+                                      (Route<dynamic> route) => false);
+                                },
+                    )),
               _directionWidget(
                 'Set\nPhoto',
                 'Choose a brand picture that represents your identity. Utilize the bio text field to share more about yourself, allowing others to get to know you better.',

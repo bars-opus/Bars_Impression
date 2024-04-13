@@ -151,13 +151,36 @@ class EventSheduleCalendar extends StatelessWidget {
                               context: context,
                               builder: (context) {
                                 return AlertDialog(
-                                    backgroundColor:
-                                        Theme.of(context).primaryColor,
-                                    title: Text(
-                                      MyDateFormat.toDate(selectedDay),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium,
+                                    backgroundColor: Colors.transparent,
+                                    title: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        IconButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            icon: Icon(
+                                              Icons.close,
+                                              color: Colors.white,
+                                              // size: ResponsiveHelper.responsiveFontSize(context, 20),
+                                            )),
+                                        Container(
+                                          width:
+                                              ResponsiveHelper.responsiveHeight(
+                                                  context, 170),
+                                          child: Text(
+                                            MyDateFormat.toDate(selectedDay),
+                                            style: TextStyle(
+                                              fontSize: ResponsiveHelper
+                                                  .responsiveFontSize(
+                                                      context, 16.0),
+                                              color: Colors.white,
+                                            ),
+                                            textAlign: TextAlign.right,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                     content: Container(
                                       height: ResponsiveHelper.responsiveHeight(

@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class EventBottomModalSheetActions extends StatefulWidget {
   final Event event;
@@ -244,10 +245,184 @@ class _EventBottomModalSheetActionsState
     );
   }
 
+  void _showBottomEditLocation(
+    BuildContext context,
+  ) {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    var _userLocation = _provider.userLocationPreference;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return ConfirmationPrompt(
+          height: 400,
+          buttonText: 'set up city',
+          onPressed: () async {
+            Navigator.pop(context);
+            _navigateToPage(
+                context,
+                EditProfileSelectLocation(
+                  user: _userLocation!,
+                  notFromEditProfile: true,
+                ));
+          },
+          title: 'Set up your city',
+          subTitle:
+              'To proceed with purchasing a ticket, we kindly ask you to provide your country information. This allows us to handle ticket processing appropriately, as the process may vary depending on different countries. Please note that specifying your city is sufficient, and there is no need to provide your precise location or community details.',
+        );
+      },
+    );
+  }
+
+  void _showBottomSheetTermsAndConditions() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Container(
+            height: MediaQuery.of(context).size.height.toDouble() / 1.2,
+            decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(30)),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: ListView(
+                children: [
+                  // const SizedBox(
+                  //   height: 30,
+                  // ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TicketPurchasingIcon(
+                        title: '',
+                      ),
+                      _checkingTicketAvailability
+                          ? SizedBox(
+                              height: ResponsiveHelper.responsiveHeight(
+                                  context, 10.0),
+                              width: ResponsiveHelper.responsiveHeight(
+                                  context, 10.0),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 3,
+                              ),
+                            )
+                          : MiniCircularProgressButton(
+                              color: Colors.blue,
+                              text: 'Continue',
+                              onPressed: widget.event.ticketSite.isNotEmpty
+                                  ? () {
+                                      Navigator.pop(context);
+                                      _showBottomSheetExternalLink();
+                                    }
+                                  : () async {
+                                      if (mounted) {
+                                        setState(() {
+                                          _checkingTicketAvailability = true;
+                                        });
+                                      }
+                                      await _attendMethod(context);
+                                      if (mounted) {
+                                        setState(() {
+                                          _checkingTicketAvailability = false;
+                                        });
+                                      }
+                                    })
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  RichText(
+                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Terms and Conditions',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        TextSpan(
+                          text: "\n\n${widget.event.termsAndConditions}",
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+      },
+    );
+  }
+
+  void _showBottomSheetErrorMessage(String title, String subTitle) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return DisplayErrorHandler(
+          buttonText: 'Ok',
+          onPressed: () async {
+            Navigator.pop(context);
+          },
+          title: title,
+          subTitle: subTitle,
+        );
+      },
+    );
+  }
+
+  _validateAttempt() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    var _usercountry = _provider.userLocationPreference!.country;
+
+    bool isGhanaian = _usercountry == 'Ghana' ||
+        _provider.userLocationPreference!.currency == 'Ghana Cedi | GHS';
+    return !isGhanaian
+        ? () {
+            _showBottomSheetErrorMessage(
+                'This event is currently unavailable in $_usercountry.', '');
+          }
+        : widget.event.termsAndConditions.isNotEmpty
+            ? () {
+                _showBottomSheetTermsAndConditions();
+              }
+            : () async {
+                if (widget.event.ticketSite.isNotEmpty) {
+                  _showBottomSheetExternalLink();
+                } else {
+                  var connectivityResult =
+                      await Connectivity().checkConnectivity();
+                  if (connectivityResult == ConnectivityResult.none) {
+                    // No internet connection
+                    _showBottomSheetErrorMessage('No Internet',
+                        'No internet connection available. Please connect to the internet and try again.');
+                    return;
+                  } else {
+                    _attendMethod(context);
+                  }
+                }
+                // widget.event.ticketSite.isNotEmpty
+                //     ? _showBottomSheetExternalLink()
+                //     : _attendMethod(context);
+              };
+  }
+
   @override
   Widget build(BuildContext context) {
+    var _provider = Provider.of<UserData>(
+      context,
+    );
     bool _isAuthor =
         widget.currentUserId == widget.event.authorId ? true : false;
+
+    var _usercountry = _provider.userLocationPreference!.country;
+
     return Container(
       height: ResponsiveHelper.responsiveHeight(context, 650.0),
       decoration: BoxDecoration(
@@ -282,14 +457,21 @@ class _EventBottomModalSheetActionsState
                                     ),
                                   );
                                 }
-                              : widget.event.ticketSite.isNotEmpty
+                              : _usercountry!.isEmpty
                                   ? () {
-                                      Navigator.pop(context);
-                                      _showBottomSheetExternalLink();
+                                      widget.event.isFree
+                                          ? _attendMethod(context)
+                                          : _showBottomEditLocation(context);
                                     }
-                                  : () {
-                                      _attendMethod(context);
-                                    },
+                                  : _validateAttempt(),
+                          // widget.event.ticketSite.isNotEmpty
+                          //     ? () {
+                          //         Navigator.pop(context);
+                          //         _showBottomSheetExternalLink();
+                          //       }
+                          //     : () {
+                          //         _attendMethod(context);
+                          //       },
                           child: _checkingTicketAvailability
                               ? SizedBox(
                                   height: 20,

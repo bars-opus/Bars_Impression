@@ -28,7 +28,7 @@ class TextModerator {
           'PROFANITY': {},
           'THREAT': {},
           'SEXUALLY_EXPLICIT': {},
-          'FLIRTATION': {}, // Add other attributes here as needed
+          // 'FLIRTATION': {}, // Add other attributes here as needed
         }
       }),
     );

@@ -79,7 +79,7 @@ class _EventExpectedAttendeesScreenState
     try {
       QuerySnapshot inviteSnapShot = await newEventTicketOrderRef
           .doc(widget.event.id)
-          .collection('eventInvite')
+          .collection('ticketOrders')
           .where('refundRequestStatus', isEqualTo: '')
           .get();
 
@@ -138,7 +138,7 @@ class _EventExpectedAttendeesScreenState
   _setUpPeopleAttending() async {
     QuerySnapshot inviteSnapShot = await newEventTicketOrderRef
         .doc(widget.event.id)
-        .collection('eventInvite')
+        .collection('ticketOrders')
         .where('refundRequestStatus', isEqualTo: '')
         // .limit(limit)
         .get();

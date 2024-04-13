@@ -1,3 +1,4 @@
+import 'package:bars/features/events/presentation/screens/event_refunds.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
@@ -35,6 +36,8 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
   bool _isLoading = false;
   bool _eventHasEnded = false;
 
+  EventPayoutModel? fundPayout;
+
   // final _messageController = TextEditingController();
   // ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
   double totalSales = 0;
@@ -55,7 +58,17 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
 
     sumFunction();
     _countDown();
+    if (widget.event.fundsDistributed) _getFundsPayout();
     // _messageController.addListener(_onAskTextChanged);
+  }
+
+  _getFundsPayout() async {
+    EventPayoutModel? newFundPayout = await DatabaseService.getUserPayoutWithId(
+        widget.currentUserId, widget.event.id);
+
+    setState(() {
+      fundPayout = newFundPayout;
+    });
   }
 
   void _countDown() async {
@@ -84,7 +97,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
     // Fetch the query snapshot from Firestore
     QuerySnapshot querySnapshot = await newEventTicketOrderRef
         .doc(widget.event.id)
-        .collection('eventInvite')
+        .collection('ticketOrders')
         .where('refundRequestStatus', isEqualTo: '')
         .get();
 
@@ -288,39 +301,43 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
     );
   }
 
-  _refundTableText(
-    int count,
-    String title,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
-      child: RichText(
-        textScaleFactor: MediaQuery.of(context).textScaleFactor,
-        text: TextSpan(
-          children: [
-            TextSpan(
-              text: NumberFormat.compact().format(count),
-              style: TextStyle(
-                fontSize: ResponsiveHelper.responsiveFontSize(context, 20.0),
-                color: Colors.grey,
-              ),
-            ),
-            TextSpan(
-              text: title,
-              style: TextStyle(
-                fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-                color: Colors.grey,
-              ),
-            ),
-          ],
-        ),
-        textAlign: TextAlign.center,
-      ),
-    );
-  }
+  // _refundTableText(
+  //   int count,
+  //   String title,
+  //   Widget page,
+  // ) {
+  //   return GestureDetector(
+  //     onTap: () => _navigateToPage(context, page),
+  //     child: Padding(
+  //       padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
+  //       child: RichText(
+  //         textScaleFactor: MediaQuery.of(context).textScaleFactor,
+  //         text: TextSpan(
+  //           children: [
+  //             TextSpan(
+  //               text: NumberFormat.compact().format(count),
+  //               style: TextStyle(
+  //                 fontSize: ResponsiveHelper.responsiveFontSize(context, 20.0),
+  //                 color: Colors.grey,
+  //               ),
+  //             ),
+  //             TextSpan(
+  //               text: title,
+  //               style: TextStyle(
+  //                 fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+  //                 color: Colors.grey,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //         textAlign: TextAlign.center,
+  //       ),
+  //     ),
+  //   );
+  // }
 
   _invitationTable() {
-     Color _paletteDark =
+    Color _paletteDark =
         Utils.getPaletteDarkMutedColor(widget.palette, Colors.blue);
     // Color _paletteDark = widget.palette == null
     //     ? Colors.blue
@@ -409,7 +426,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
   }
 
   _refundTable() {
-     Color _paletteDark =
+    Color _paletteDark =
         Utils.getPaletteDarkMutedColor(widget.palette, Colors.blue);
     // Color _paletteDark = widget.palette == null
     //     ? Colors.blue
@@ -439,14 +456,20 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
             ),
             children: [
               TableRow(children: [
-                _refundTableText(
-                  _refundRequestedCount,
-                  '\nRefund\nrequested',
-                ),
-                _refundTableText(
-                  _refundProcessedCount,
-                  '\nRefund\nprocessed',
-                ),
+                _tableText(
+                    _refundRequestedCount,
+                    '\nRefund\nrequested',
+                    EventRefunds(
+                      eventId: widget.event.id,
+                      status: 'pending',
+                    )),
+                _tableText(
+                    _refundProcessedCount,
+                    '\nRefund\nprocessed',
+                    EventRefunds(
+                      eventId: widget.event.id,
+                      status: 'processed',
+                    )),
               ]),
             ],
           ),
@@ -522,9 +545,9 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
         const SizedBox(
           height: 50,
         ),
-        if (_eventHasEnded)
+        if (_eventHasEnded || !widget.event.fundsDistributed)
           _inviteButton(300, 'Request payout', () {
-            _showBottomSheetRequestPayouts();
+            _showBottomSheetRequestPayouts(true);
           })
       ],
     );
@@ -568,19 +591,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
     );
   }
 
-  Future<void> _sendMail(String email, BuildContext context) async {
-    String url = 'mailto:$email';
-    if (await canLaunchUrl(
-      Uri.parse(url),
-    )) {
-      await (launchUrl(
-        Uri.parse(url),
-      ));
-    } else {
-      mySnackBar(context, 'Could not launch mail');
-    }
-  }
-
   // Method to create event
   _submitRequest() async {
     if (!_isLoading) {
@@ -618,6 +628,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
       transferRecepientId: widget.event.transferRecepientId,
       eventTitle: widget.event.title,
       clossingDay: widget.event.clossingDay,
+      total: 0,
     );
 
     await DatabaseService.requestPayout(widget.event, payout, _provider.user!);
@@ -665,7 +676,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
     );
   }
 
-  void _showBottomSheetRequestPayouts() {
+  void _showBottomSheetRequestPayouts(bool isRequesting) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -686,67 +697,20 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                     title: '',
                   ),
                   // const SizedBox(height: 40),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: MiniCircularProgressButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _showBottomSheetConfirmRefund();
-                      },
-                      text: "Continue",
-                      color: Colors.blue,
-                    ),
-                  ),
-                  RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: 'Request\nTicket Payouts',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        TextSpan(
-                          text:
-                              '\n\nCongratulations on successfully completing ${widget.event!.title}. We are delighted to see that you have reached this significant milestone. Completing such an event is a commendable achievement, and we appreciate your dedication.',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        TextSpan(
-                          text:
-                              '\n\nWe understand that you are ready to receive the payouts for your ticket sales. It is important for you to have a clear understanding of how the payout system functions. While most payouts are instant, occasional network issues and other factors may contribute to slight delays in the payout. Typically, payouts are processed within 3 days after your request. Please note that Bars Impression applies a 10% commission on the payment amount to cover maintenance and other operational costs associated with managing the event process.',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        TextSpan(
-                          text:
-                              '\n\nKindly ensure that you have completed your event and are fully prepared to receive your funds before submitting a payout request. Please remember that payout requests can only be made once. The funds will be transferred to the bank account linked to the event at the time of its creation.',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      _sendMail('support@barsopus.com', context);
-                    },
-                    child: RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text:
-                                '\n\nIf you have any further questions or need assistance, please don\'t hesitate to reach out to our ',
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          TextSpan(
-                            text: 'support team.',
-                            style: TextStyle(
-                                color: Colors.blue,
-                                fontSize: ResponsiveHelper.responsiveFontSize(
-                                    context, 14)),
-                          ),
-                        ],
+                  if (isRequesting)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: MiniCircularProgressButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          _showBottomSheetConfirmRefund();
+                        },
+                        text: "Continue",
+                        color: Colors.blue,
                       ),
                     ),
+                  PayoutDoc(
+                    eventTitle: widget.event.title,
                   ),
                   const SizedBox(height: 60),
                 ],
@@ -931,12 +895,137 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
     );
   }
 
+  _fundsAlreadyPaidOut() {
+    final width = MediaQuery.of(context).size.width;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(5.0),
+                  topLeft: Radius.circular(5.0),
+                ),
+                color: Colors.green[600],
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    offset: Offset(10, 10),
+                    blurRadius: 10.0,
+                    spreadRadius: 4.0,
+                  )
+                ]),
+            alignment: Alignment.centerLeft,
+            width: double.infinity,
+            height: ResponsiveHelper.responsiveFontSize(context, 40.0),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Text(
+                'Funds distributed  ',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          AnimatedContainer(
+            duration: const Duration(seconds: 2),
+            height: fundPayout == null
+                ? 0.0
+                : ResponsiveHelper.responsiveHeight(context, 270),
+            width: double.infinity,
+            curve: Curves.linearToEaseOut,
+            padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10),
+            decoration: BoxDecoration(color: Colors.white, boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                offset: Offset(10, 10),
+                blurRadius: 10.0,
+                spreadRadius: 4.0,
+              )
+            ]),
+            child: fundPayout != null
+                ? SingleChildScrollView(
+                    physics: NeverScrollableScrollPhysics(),
+                    child: Column(
+                      children: [
+                        PayoutWidget(
+                          payout: fundPayout!,
+                          currentUserId: widget.currentUserId,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              _showBottomSheetRequestPayouts(false);
+                            },
+                            child: ShakeTransition(
+                              axis: Axis.vertical,
+                              curve: Curves.linearToEaseOut,
+                              duration: const Duration(seconds: 3),
+                              child: Text(
+                                'Learn more.',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: ResponsiveHelper.responsiveFontSize(
+                                      context, 12.0),
+                                ),
+                                textAlign: TextAlign.start,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : SizedBox.shrink(),
+          ),
+
+          // if (fundPayout != null)
+          //   Container(
+          //     width: width,
+          //     decoration: BoxDecoration(
+          //         borderRadius: BorderRadius.only(
+          //           bottomLeft: Radius.circular(5.0),
+          //           bottomRight: Radius.circular(5.0),
+          //         ),
+          //         color: Colors.white,
+          //         boxShadow: [
+          //           BoxShadow(
+          //             color: Colors.black26,
+          //             offset: Offset(10, 10),
+          //             blurRadius: 10.0,
+          //             spreadRadius: 4.0,
+          //           )
+          //         ]),
+          //     child: Column(
+          //       crossAxisAlignment: CrossAxisAlignment.start,
+          //       children: [
+          //         PayoutWidget(
+          //           payout: fundPayout!,
+          //           currentUserId: widget.currentUserId,
+          //         ),
+
+          //   ],
+          // ),
+          // ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var _provider = Provider.of<UserData>(context, listen: false);
 
     final width = MediaQuery.of(context).size.width;
-     Color _paletteDark =
+    Color _paletteDark =
         Utils.getPaletteDarkMutedColor(widget.palette, Color(0xFF1a1a1a));
     // Color _paletteDark = widget.palette == null
     //     ? Color(0xFF1a1a1a)
@@ -971,6 +1060,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                   icon: Icons.event_available,
                 ),
               ),
+              if (widget.event.fundsDistributed) _fundsAlreadyPaidOut(),
               _container(
                 Column(
                   children: [
@@ -1116,11 +1206,8 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                     const SizedBox(
                       height: 50,
                     ),
-                    _showFunds
-                        ? _currentSaleReport()
-                        : const SizedBox(
-                            height: 50,
-                          ),
+                    if (_showFunds)
+                      if (_expectedPeople > 1) _currentSaleReport(),
                     if (!_eventHasEnded)
                       _inviteButton(300, 'Send Invite', () {
                         _showBottomInvitationMessage();
@@ -1250,7 +1337,36 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                     ),
                     const SizedBox(
                       height: 50,
-                    )
+                    ),
+                    if (widget.event.improvemenSuggestion.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Container(
+                          padding: const EdgeInsets.all(10.0),
+                          width: width,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(
+                              5.0,
+                            ),
+                            color: Colors.blue,
+                          ),
+                          child: ListTile(
+                            leading: Icon(
+                              Icons.info_outline,
+                              color: Colors.white,
+                            ),
+                            title: Text(
+                              widget.event.improvemenSuggestion,
+                              style: TextStyle(
+                                fontSize: ResponsiveHelper.responsiveFontSize(
+                                    context, 12.0),
+                                color: Colors.white,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -1267,7 +1383,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                 ),
               ),
               const SizedBox(
-                height: 100,
+                height: 50,
               ),
               GestureDetector(
                 onTap: () {},
@@ -1317,7 +1433,40 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                   ),
                 ),
               const SizedBox(
-                height: 100,
+                height: 50,
+              ),
+              Divider(
+                color: Colors.white,
+              ),
+              const SizedBox(
+                height: 25,
+              ),
+              Center(
+                child: GestureDetector(
+                  onTap: () {
+                    _navigateToPage(
+                        context,
+                        CompainAnIssue(
+                          parentContentId: widget.event.id,
+                          authorId: widget.currentUserId,
+                          complainContentId: widget.event.id,
+                          complainType: 'Event',
+                          parentContentAuthorId: widget.event.authorId,
+                        ));
+                  },
+                  child: Text(
+                    '\nComplain an issue.',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 12.0),
+                    ),
+                    textAlign: TextAlign.start,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 25,
               ),
             ],
           ),

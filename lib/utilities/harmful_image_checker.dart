@@ -8,7 +8,8 @@ class HarmfulContentChecker {
     Map<String, dynamic>? analysisResult = await visionHelper.safeSearchDetect(image.path);
     if (analysisResult != null) {
       final safeSearch = analysisResult['responses'][0]['safeSearchAnnotation'];
-      if (safeSearch['adult'] == 'LIKELY' ||
+      if (
+        // safeSearch['adult'] == 'LIKELY' ||
           safeSearch['adult'] == 'VERY_LIKELY' ||
           safeSearch['spoof'] == 'LIKELY' ||
           safeSearch['spoof'] == 'VERY_LIKELY' ||
@@ -16,7 +17,7 @@ class HarmfulContentChecker {
           safeSearch['medical'] == 'VERY_LIKELY' ||
           safeSearch['violence'] == 'LIKELY' ||
           safeSearch['violence'] == 'VERY_LIKELY' ||
-          safeSearch['racy'] == 'LIKELY' ||
+          // safeSearch['racy'] == 'LIKELY' ||
           safeSearch['racy'] == 'VERY_LIKELY') {
         return true;
       }

@@ -21,11 +21,11 @@ class _AuthCreateUserCredentialsState extends State<AuthCreateUserCredentials> {
   signUpUser(
       // BuildContext context,
       ) async {
-    mySnackBar(context, 'Registering account\nPlease wait...');
-
     final signedInHandler = FirebaseAuth.instance.currentUser!;
     // ignore: unnecessary_null_comparison
     if (signedInHandler != null) {
+      mySnackBar(context, 'Registering account\nPlease wait...');
+
       try {
         await DatabaseService.createUserProfileInFirestore(signedInHandler,
             Provider.of<UserData>(context, listen: false).name);
@@ -41,7 +41,7 @@ class _AuthCreateUserCredentialsState extends State<AuthCreateUserCredentials> {
         String result = error.contains(']')
             ? error.substring(error.lastIndexOf(']') + 1)
             : error;
-        mySnackBar(context, result);
+        if (mounted) mySnackBar(context, result);
       }
     }
   }

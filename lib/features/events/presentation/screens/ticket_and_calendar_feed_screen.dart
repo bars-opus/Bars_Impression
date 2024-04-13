@@ -3,8 +3,10 @@ import 'package:bars/utilities/exports.dart';
 class TicketAndCalendarFeedScreen extends StatefulWidget {
   static final id = 'TicketAndCalendarFeedScreen';
   final String currentUserId;
+  final bool showPopArrow;
   TicketAndCalendarFeedScreen({
     required this.currentUserId,
+    this.showPopArrow = false,
   });
 
   @override
@@ -71,9 +73,9 @@ class _TicketAndCalendarFeedScreenState
     try {
       QuerySnapshot ticketOrderSnapShot = await newUserTicketOrderRef
           .doc(widget.currentUserId)
-          .collection('eventInvite')
+          .collection('ticketOrders')
           .orderBy('eventTimestamp', descending: true)
-          .limit(10)
+          .limit(30)
           .get();
 
       List<TicketOrderModel> ticketOrders = ticketOrderSnapShot.docs
@@ -122,7 +124,7 @@ class _TicketAndCalendarFeedScreenState
     try {
       QuerySnapshot postFeedSnapShot = await newUserTicketOrderRef
           .doc(widget.currentUserId)
-          .collection('eventInvite')
+          .collection('ticketOrders')
           .orderBy('eventTimestamp', descending: true) // Keep consistent order
           .startAfterDocument(_lastTicketOrderDocument!)
           .limit(limit)
@@ -170,11 +172,26 @@ class _TicketAndCalendarFeedScreenState
     final tomorrow = today.add(Duration(days: 1));
 
     // Function to determine the sort weight, considering only the date part
+    // int sortWeight(DateTime eventDate) {
+    //   final eventDay = DateTime(eventDate.year, eventDate.month, eventDate.day);
+    //   if (eventDay.isAtSameMomentAs(today)) {
+    //     return 0; // Today's events
+    //   } else if (eventDay.isAtSameMomentAs(tomorrow)) {
+    //     return 1; // Tomorrow's events
+    //   } else {
+    //     return 2; // Future events
+    //   }
+    // }
+
     int sortWeight(DateTime eventDate) {
       final eventDay = DateTime(eventDate.year, eventDate.month, eventDate.day);
-      if (eventDay.isAtSameMomentAs(today)) {
+      if (eventDay.year == today.year &&
+          eventDay.month == today.month &&
+          eventDay.day == today.day) {
         return 0; // Today's events
-      } else if (eventDay.isAtSameMomentAs(tomorrow)) {
+      } else if (eventDay.year == tomorrow.year &&
+          eventDay.month == tomorrow.month &&
+          eventDay.day == tomorrow.day) {
         return 1; // Tomorrow's events
       } else {
         return 2; // Future events
@@ -204,7 +221,6 @@ class _TicketAndCalendarFeedScreenState
 
     return ticketOrders;
   }
-  
 
   void _showBottomSheetErrorMessage(String errorTitle) {
     showModalBottomSheet(
@@ -351,35 +367,38 @@ class _TicketAndCalendarFeedScreenState
           HapticFeedback.mediumImpact();
           showModalBottomSheet(
             context: context,
+            isDismissible: false,
+            enableDrag: false,
             isScrollControlled: true,
             backgroundColor: Colors.black.withOpacity(.6),
             builder: (BuildContext context) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: ListView(
-                  children: [
-                    SizedBox(
-                      height: ResponsiveHelper.responsiveHeight(context, 100),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          height:
-                              ResponsiveHelper.responsiveHeight(context, 40),
-                          width: ResponsiveHelper.responsiveHeight(context, 40),
-                          child: IconButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              icon: Icon(
-                                Icons.close,
-                                color: Colors.white,
-                                size: ResponsiveHelper.responsiveHeight(
-                                    context, 30),
-                              )),
-                        ),
-                        Expanded(
+              return ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  SizedBox(
+                    height: ResponsiveHelper.responsiveHeight(context, 100),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        height: ResponsiveHelper.responsiveHeight(context, 40),
+                        width: ResponsiveHelper.responsiveHeight(context, 40),
+                        child: IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: Icon(
+                              Icons.close,
+                              color: Colors.white,
+                              size: ResponsiveHelper.responsiveHeight(
+                                  context, 30),
+                            )),
+                      ),
+                      Container(
+                        width: ResponsiveHelper.responsiveHeight(context, 150),
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 20.0),
                           child: Text(
                             MyDateFormat.toDate(selectedDay),
                             style: TextStyle(
@@ -390,38 +409,164 @@ class _TicketAndCalendarFeedScreenState
                             textAlign: TextAlign.end,
                           ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    if (selectedEvents.isNotEmpty)
-                      Container(
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColorLight,
-                            borderRadius: BorderRadius.circular(20)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: selectedEvents
-                                .map(
-                                  (ticket) => Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 2.0),
-                                    child: EventsFeedAttendingWidget(
-                                      ticketOrder: ticket,
-                                      currentUserId: widget.currentUserId,
-                                      ticketList: _ticketOrder,
-                                    ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: ResponsiveHelper.responsiveHeight(context, 100),
+                  ),
+                  if (selectedEvents.isNotEmpty)
+                    // selectedEvents.length > 1
+                    //     ? ShakeTransition(
+                    //         axis: Axis.vertical,
+                    //         child: Container(
+                    //             height: ResponsiveHelper.responsiveHeight(
+                    //                 context, 130),
+
+                    //             // The Padding widget is no longer needed because the PageView.builder handles the padding.
+                    //             child: PerpectiveListView(
+                    //               onTapFrontItem: (int value) {},
+                    //               visualizedItem: selectedEvents.length,
+                    //               initialIndex: selectedEvents.length - 1,
+                    //               extentItem:
+                    //                   MediaQuery.of(context).size.height * .10,
+                    //               // backItemsShadowColor: Colors.black,
+                    //               padding: const EdgeInsets.all(10),
+                    //               onChangeItem: (int value) {
+                    //                 HapticFeedback.lightImpact();
+                    //               },
+
+                    //               selectedEvents: selectedEvents,
+                    //               currentUserId: widget.currentUserId,
+                    //               children: List.generate(selectedEvents.length,
+                    //                   (index) {
+                    //                 final ticket = selectedEvents[index];
+                    //                 bool isAuthor = widget.currentUserId ==
+                    //                     ticket.eventAuthorId;
+                    //                 return Container(
+                    //                   decoration: BoxDecoration(
+                    //                       color: Theme.of(context).cardColor,
+                    //                       borderRadius:
+                    //                           BorderRadius.circular(10)),
+                    //                   padding: const EdgeInsets.only(top: 20),
+                    //                   child: EventsFeedAttendingWidget(
+                    //                     ticketOrder: ticket,
+                    //                     currentUserId: widget.currentUserId,
+                    //                     ticketList: _ticketOrder,
+                    //                     disableMoreVert: true,
+                    //                   ),
+                    //                 );
+                    //                 // Container(
+                    //                 //   decoration: BoxDecoration(
+                    //                 //       color: Theme.of(context).cardColor,
+                    //                 //       borderRadius: BorderRadius.circular(10)),
+                    //                 //   child: Column(
+                    //                 //     children: [
+                    //                 //       const SizedBox(
+                    //                 //         height: 20,
+                    //                 //       ),
+                    //                 //       EventsFeedAttendingWidget(
+                    //                 //         ticketOrder: ticket,
+                    //                 //         currentUserId: widget.currentUserId,
+                    //                 //         ticketList: _ticketOrder,
+                    //                 //       ),
+                    //                 //       // ListTile(
+                    //                 //       //   leading: Container(
+                    //                 //       //       height: 50,
+                    //                 //       //       width: 50,
+                    //                 //       //       decoration: BoxDecoration(
+                    //                 //       //         color: Colors.blue,
+                    //                 //       //         image: DecorationImage(
+                    //                 //       //           image: CachedNetworkImageProvider(
+                    //                 //       //               ticket.eventImageUrl),
+                    //                 //       //           fit: BoxFit.cover,
+                    //                 //       //         ),
+                    //                 //       //       )),
+                    //                 //       //   trailing: isAuthor
+                    //                 //       //       ? const SizedBox.shrink()
+                    //                 //       //       : Icon(
+                    //                 //       //           Icons.qr_code,
+                    //                 //       //           color: Colors.blue,
+                    //                 //       //           size: ResponsiveHelper
+                    //                 //       //               .responsiveHeight(
+                    //                 //       //                   context, 18.0),
+                    //                 //       //         ),
+                    //                 //       //   title: isAuthor
+                    //                 //       //       ? Text(
+                    //                 //       //           "Tap to access your dashboard",
+                    //                 //       //           style: TextStyle(
+                    //                 //       //             fontSize: ResponsiveHelper
+                    //                 //       //                 .responsiveFontSize(
+                    //                 //       //                     context, 12.0),
+                    //                 //       //             color: Colors.blue,
+                    //                 //       //           ),
+                    //                 //       //         )
+                    //                 //       //       : RichText(
+                    //                 //       //           textScaleFactor:
+                    //                 //       //               MediaQuery.of(context)
+                    //                 //       //                   .textScaleFactor
+                    //                 //       //                   .clamp(0.5, 1.5),
+                    //                 //       //           text: TextSpan(
+                    //                 //       //             children: [
+                    //                 //       //               TextSpan(
+                    //                 //       //                   text: "Your ticket",
+                    //                 //       //                   style: TextStyle(
+                    //                 //       //                     fontWeight:
+                    //                 //       //                         FontWeight.bold,
+                    //                 //       //                     fontSize: ResponsiveHelper
+                    //                 //       //                         .responsiveFontSize(
+                    //                 //       //                             context, 12.0),
+                    //                 //       //                     color: Colors.blue,
+                    //                 //       //                   )),
+                    //                 //       //               if (ticket.isInvited)
+                    //                 //       //                 TextSpan(
+                    //                 //       //                   text:
+                    //                 //       //                       '\nCordially invited.',
+                    //                 //       //                   style: TextStyle(
+                    //                 //       //                     fontSize: ResponsiveHelper
+                    //                 //       //                         .responsiveFontSize(
+                    //                 //       //                             context, 12.0),
+                    //                 //       //                     color: Colors.grey,
+                    //                 //       //                   ),
+                    //                 //       //                 ),
+                    //                 //       //             ],
+                    //                 //       //           ),
+                    //                 //       //           textAlign: TextAlign.start,
+                    //                 //       //         ),
+                    //                 //       // )
+                    //                 //     ],
+                    //                 //   ),
+                    //                 // );
+                    //               }),
+                    //             )),
+                    //       )
+                    //     :
+
+                    Container(
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColorLight,
+                          borderRadius: BorderRadius.circular(20)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: selectedEvents
+                              .map(
+                                (ticket) => Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 2.0),
+                                  child: EventsFeedAttendingWidget(
+                                    ticketOrder: ticket,
+                                    currentUserId: widget.currentUserId,
+                                    ticketList: _ticketOrder,
                                   ),
-                                )
-                                .toList(),
-                          ),
+                                ),
+                              )
+                              .toList(),
                         ),
                       ),
-                  ],
-                ),
+                    ),
+                ],
               );
             },
           );
@@ -467,12 +612,14 @@ class _TicketAndCalendarFeedScreenState
                 top: 20,
                 child: IconButton(
                     onPressed: () {
-                      _navigateToPage(SearchTicket(
-                        currentUserId: widget.currentUserId,
-                      ));
+                      widget.showPopArrow
+                          ? Navigator.pop(context)
+                          : _navigateToPage(SearchTicket(
+                              currentUserId: widget.currentUserId,
+                            ));
                     },
                     icon: Icon(
-                      Icons.search,
+                      widget.showPopArrow ? Icons.close : Icons.search,
                       size: ResponsiveHelper.responsiveHeight(context, 25),
                       color: Theme.of(context).secondaryHeaderColor,
                     )),

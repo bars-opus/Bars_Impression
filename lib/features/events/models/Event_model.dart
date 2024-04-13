@@ -7,13 +7,13 @@ class Event {
   final Timestamp startDate;
   final String address;
   final String imageUrl;
-  final bool isTicketed;
-  final int maxAttendees;
+  // final bool isTicketed;
+  // final int maxAttendees;
   List<Schedule> schedule;
   List<TicketModel> ticket;
-  List<TicketOrderModel> ticketOrder;
+  // List<TicketOrderModel> ticketOrder;
   List<TaggedEventPeopleModel> taggedPeople;
-  List<EventOffer> offers;
+  // List<EventOffer> offers;
   List<String> contacts;
   final String termsAndConditions;
   final String type;
@@ -34,6 +34,8 @@ class Event {
   final String reportConfirmed;
   final String blurHash;
   final String ticketSite;
+  final String improvemenSuggestion;
+
   final Timestamp clossingDay;
   final bool isVirtual;
   final bool isFree;
@@ -55,14 +57,14 @@ class Event {
     required this.startDate,
     required this.address,
     required this.imageUrl,
-    this.isTicketed = false,
-    this.maxAttendees = 0,
+    // this.isTicketed = false,
+    // this.maxAttendees = 0,
     this.schedule = const [],
     this.ticket = const [],
-    this.ticketOrder = const [],
+    // this.ticketOrder = const [],
     this.taggedPeople = const [],
-    this.offers = const [],
-     this.contacts = const [],
+    // this.offers = const [],
+    this.contacts = const [],
     required this.termsAndConditions,
     required this.type,
     required this.category,
@@ -78,6 +80,7 @@ class Event {
     required this.triller,
     required this.city,
     required this.country,
+    required this.improvemenSuggestion,
     required this.virtualVenue,
     required this.ticketSite,
     required this.isVirtual,
@@ -103,6 +106,8 @@ class Event {
       dynamicLink: doc['dynamicLink'] ?? '',
       subaccountId: doc['subaccountId'] ?? '',
       transferRecepientId: doc['transferRecepientId'] ?? '',
+      improvemenSuggestion: doc['improvemenSuggestion'] ?? '',
+
       contacts: List<String>.from(doc['contacts'] ?? []),
       startDate: doc['startDate'] ??
           Timestamp.fromDate(
@@ -110,22 +115,22 @@ class Event {
           ),
       address: doc['address'] ?? '',
       imageUrl: doc['imageUrl'] ?? '',
-      isTicketed: doc['isTicketed'] ?? false,
-      maxAttendees: doc['maxAttendees'] ?? 0,
+      // isTicketed: doc['isTicketed'] ?? false,
+      // maxAttendees: doc['maxAttendees'] ?? 0,
       schedule: List<Schedule>.from(
           doc['schedule']?.map((schedule) => Schedule.fromJson(schedule)) ??
               []),
       ticket: List<TicketModel>.from(
           doc['ticket']?.map((ticket) => TicketModel.fromJson(ticket)) ?? []),
-      ticketOrder: List<TicketOrderModel>.from(doc['ticketOrder']
-              ?.map((ticketOrder) => TicketOrderModel.fromJson(ticketOrder)) ??
-          []),
+      // ticketOrder: List<TicketOrderModel>.from(doc['ticketOrder']
+      //         ?.map((ticketOrder) => TicketOrderModel.fromJson(ticketOrder)) ??
+      //     []),
       taggedPeople: List<TaggedEventPeopleModel>.from(doc['taggedPeople']?.map(
               (taggedPeople) =>
                   TaggedEventPeopleModel.fromJson(taggedPeople)) ??
           []),
-      offers: List<EventOffer>.from(
-          doc['offers']?.map((offers) => EventOffer.fromJson(offers)) ?? []),
+      // offers: List<EventOffer>.from(
+      //     doc['offers']?.map((offers) => EventOffer.fromJson(offers)) ?? []),
       type: doc['type'] ?? "",
       termsAndConditions: doc['termsAndConditions'] ?? "",
       category: doc['category'] ?? "",
@@ -148,7 +153,7 @@ class Event {
       isFree: doc['isFree'] ?? false,
       isCashPayment: doc['isCashPayment'] ?? false,
       showToFollowers: doc['showToFollowers'] ?? false,
-      showOnExplorePage: doc['showOnExplorePage'] ?? false,
+      showOnExplorePage: doc['showOnExplorePage'] ?? true,
       fundsDistributed: doc['fundsDistributed'] ?? false,
       clossingDay: doc['clossingDay'] ??
           Timestamp.fromDate(
@@ -166,14 +171,16 @@ class Event {
       subaccountId: map['subaccountId'] ?? '',
       theme: map['theme'] ?? '',
       dynamicLink: map['dynamicLink'] ?? '',
+      improvemenSuggestion: map['improvemenSuggestion'] ?? '',
+
       contacts: (map['contacts'] as List<dynamic>)
           .map((accountType) => accountType as String)
           .toList(),
       startDate: map['startDate'] ?? Timestamp.fromDate(DateTime.now()),
       address: map['address'] ?? '',
       imageUrl: map['imageUrl'] ?? '',
-      isTicketed: map['isTicketed'] ?? false,
-      maxAttendees: map['maxAttendees'] ?? 0,
+      // isTicketed: map['isTicketed'] ?? false,
+      // maxAttendees: map['maxAttendees'] ?? 0,
       schedule: List<Schedule>.from(
         (map['schedule'] as List<dynamic>?)
                 ?.map((schedule) => Schedule.fromJson(schedule))
@@ -186,12 +193,12 @@ class Event {
                 ?.toList() ??
             [],
       ),
-      ticketOrder: List<TicketOrderModel>.from(
-        (map['ticketOrder'] as List<dynamic>?)
-                ?.map((ticketOrder) => TicketOrderModel.fromJson(ticketOrder))
-                ?.toList() ??
-            [],
-      ),
+      // ticketOrder: List<TicketOrderModel>.from(
+      //   (map['ticketOrder'] as List<dynamic>?)
+      //           ?.map((ticketOrder) => TicketOrderModel.fromJson(ticketOrder))
+      //           ?.toList() ??
+      //       [],
+      // ),
       taggedPeople: List<TaggedEventPeopleModel>.from(
         (map['taggedPeople'] as List<dynamic>?)
                 ?.map((taggedPeople) =>
@@ -199,12 +206,12 @@ class Event {
                 ?.toList() ??
             [],
       ),
-      offers: List<EventOffer>.from(
-        (map['offers'] as List<dynamic>?)
-                ?.map((offers) => EventOffer.fromJson(offers))
-                ?.toList() ??
-            [],
-      ),
+      // offers: List<EventOffer>.from(
+      //   (map['offers'] as List<dynamic>?)
+      //           ?.map((offers) => EventOffer.fromJson(offers))
+      //           ?.toList() ??
+      //       [],
+      // ),
       type: map['type'] ?? '',
       termsAndConditions: map['termsAndConditions'] ?? '',
       category: map['category'] ?? '',
@@ -227,7 +234,7 @@ class Event {
       isFree: map['isFree'] ?? false,
       isCashPayment: map['isCashPayment'] ?? false,
       showToFollowers: map['showToFollowers'] ?? false,
-      showOnExplorePage: map['showOnExplorePage'] ?? false,
+      showOnExplorePage: map['showOnExplorePage'] ?? true,
       fundsDistributed: map['fundsDistributed'] ?? false,
       clossingDay: map['clossingDay'] ?? Timestamp.fromDate(DateTime.now()),
       blurHash: map['blurHash'] ?? '',
@@ -246,16 +253,18 @@ class Event {
       'address': address,
       'imageUrl': imageUrl,
       'dynamicLink': dynamicLink,
-      'isTicketed': isTicketed,
-      'maxAttendees': maxAttendees,
+      'improvemenSuggestion': improvemenSuggestion,
+
+      // 'isTicketed': isTicketed,
+      // 'maxAttendees': maxAttendees,
       'contacts': contacts,
       'schedule': schedule.map((schedule) => schedule.toJson()).toList(),
       'ticket': ticket.map((ticket) => ticket.toJson()).toList(),
-      'ticketOrder':
-          ticketOrder.map((ticketOrder) => ticketOrder.toJson()).toList(),
+      // 'ticketOrder':
+      //     ticketOrder.map((ticketOrder) => ticketOrder.toJson()).toList(),
       'taggedPeople':
           taggedPeople.map((taggedPeople) => taggedPeople.toJson()).toList(),
-      'offers': offers.map((offers) => offers.toJson()).toList(),
+      // 'offers': offers.map((offers) => offers.toJson()).toList(),
       'termsAndConditions': termsAndConditions,
       'authorName': authorName,
       'type': type,
@@ -280,7 +289,7 @@ class Event {
       'isFree': isFree,
       'isCashPayment': isCashPayment,
       'showToFollowers': showToFollowers,
-      'showOnExplorePage': false,
+      'showOnExplorePage': true,
       'fundsDistributed': false,
       'clossingDay': clossingDay,
       'transferRecepientId': transferRecepientId,

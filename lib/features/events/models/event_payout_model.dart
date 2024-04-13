@@ -10,6 +10,7 @@ class EventPayoutModel {
   final String transferRecepientId;
   final String eventAuthorId;
   final String idempotencyKey;
+  final double total;
 
   // String reason;
   Timestamp clossingDay;
@@ -20,6 +21,8 @@ class EventPayoutModel {
     required this.eventId,
     required this.status,
     required this.subaccountId,
+    required this.total,
+
     // required this.reason,
     // required this.city,
     required this.clossingDay,
@@ -41,6 +44,7 @@ class EventPayoutModel {
       eventTitle: doc['eventTitle'] ?? '',
       subaccountId: doc['subaccountId'] ?? '',
       eventAuthorId: doc['eventAuthorId'] ?? '',
+      total: (doc['total'] as num?)?.toDouble() ?? 0.0,
       id: doc['id'] ?? '',
       timestamp: doc['timestamp'] ??
           Timestamp.fromDate(
@@ -67,6 +71,7 @@ class EventPayoutModel {
       // reason: json['reason'],
       clossingDay: json['clossingDay'],
       timestamp: json['timestamp'],
+      total: json['total'] ?? 0.0,
     );
   }
 
@@ -80,6 +85,7 @@ class EventPayoutModel {
       'subaccountId': subaccountId,
       'eventAuthorId': eventAuthorId,
       'idempotencyKey': idempotencyKey,
+      'total': total,
       // 'city': city,
       // 'reason': reason,
       'clossingDay': clossingDay,

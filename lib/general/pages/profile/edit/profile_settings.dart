@@ -64,61 +64,6 @@ class _ProfileSettingsState extends State<ProfileSettings> {
       await _clearBox<UserSettingsLoadingPreferenceModel>(
           'accountLocationPreference');
 
-      // if (Hive.isBoxOpen('chatMessages')) {
-      //   final box = Hive.box<ChatMessage>('chatMessages');
-      //   await box.clear();
-      // } else {
-      //   final box = await Hive.openBox<ChatMessage>('chatMessages');
-      //   await box.clear();
-      // }
-
-      // if (Hive.isBoxOpen('chats')) {
-      //   final box = Hive.box<Chat>('chats');
-      //   await box.clear();
-      // } else {
-      //   final box = await Hive.openBox<Chat>('chats');
-      //   await box.clear();
-      // }
-
-      // if (Hive.isBoxOpen('ticketIds')) {
-      //   final box = Hive.box<TicketIdModel>('ticketIds');
-      //   await box.clear();
-      // } else {
-      //   final box = await Hive.openBox<TicketIdModel>('ticketIds');
-      //   await box.clear();
-      // }
-
-      // if (Hive.isBoxOpen('accountHolderAuthor')) {
-      //   final box = Hive.box<AccountHolderAuthor>('accountHolderAuthor');
-      //   await box.clear();
-      // } else {
-      //   final box =
-      //       await Hive.openBox<AccountHolderAuthor>('accountHolderAuthor');
-      //   await box.clear();
-      // }
-
-      // if (Hive.isBoxOpen('currentUser')) {
-      //   final box = Hive.box<AccountHolderAuthor>('currentUser');
-      //   await box.clear();
-      // } else {
-      //   final box = await Hive.openBox<AccountHolderAuthor>('currentUser');
-      //   await box.clear();
-      // }
-
-      // if (Hive.isBoxOpen('accountLocationPreference')) {
-      //   final box = Hive.box<UserSettingsLoadingPreferenceModel>(
-      //       'accountLocationPreference');
-      //   await box.clear();
-      // } else {
-      //   final box = await Hive.openBox<UserSettingsLoadingPreferenceModel>(
-      //       'accountLocationPreference');
-      //   await box.clear();
-      // }
-
-      // usersGeneralSettingsRef.doc(widget.user.userId).update({
-      //   'androidNotificationToken': '',
-      // });
-
       await _auth.signOut();
       _provider.setUser(null);
       _provider.setUserGeneralSettings(null);
@@ -172,7 +117,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
     showAboutDialog(
         context: context,
         applicationName: 'Bars Impression',
-        applicationVersion: 'Version 1.3.5',
+        applicationVersion: 'Version 2.0.0',
         applicationIcon: Container(
           width: 40,
           height: 40,
@@ -188,7 +133,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                 text: TextSpan(
                   children: [
                     TextSpan(
-                        text: "Version Release Date: January 2024\n",
+                        text: "Version Release Date: April 2024\n",
                         style: TextStyle(
                           fontSize: ResponsiveHelper.responsiveFontSize(
                               context, 14.0),
@@ -531,6 +476,24 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                 ),
                 IntroInfo(
                   titleColor: Theme.of(context).secondaryHeaderColor,
+                  title: 'Update Payout',
+                  onPressed: () {
+                    _navigateToPage(
+                      context,
+                      CreateSubaccountForm(
+                        isEditing: true,
+                      ),
+                    );
+                  },
+                  subTitle:
+                      "Update payout information for receiving event ticket sales.",
+                  icon: Icons.arrow_forward_ios_outlined,
+                ),
+                Divider(
+                  color: Colors.grey,
+                ),
+                IntroInfo(
+                  titleColor: Theme.of(context).secondaryHeaderColor,
                   title: 'Blocked Accounts',
                   onPressed: () {
                     _navigateToPage(
@@ -539,6 +502,23 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                     );
                   },
                   subTitle: "Accounts you have blocked.",
+                  icon: Icons.arrow_forward_ios_outlined,
+                ),
+                Divider(
+                  color: Colors.grey,
+                ),
+                IntroInfo(
+                  titleColor: Theme.of(context).secondaryHeaderColor,
+                  title: 'Complaints',
+                  onPressed: () {
+                    _navigateToPage(
+                      context,
+                      UserComplaints(
+                        currentUserId: widget.user.userId!,
+                      ),
+                    );
+                  },
+                  subTitle: "Your issue complaints to Bars Impression.",
                   icon: Icons.arrow_forward_ios_outlined,
                 ),
                 Divider(
@@ -669,12 +649,6 @@ class _ProfileSettingsState extends State<ProfileSettings> {
               if (!await launchUrl(Uri.parse('https://www.barsopus.com/'))) {
                 throw 'Could not launch link';
               }
-              // _navigateToPage(
-              //     context,
-              //     MyWebView(
-              //       url: 'https://www.barsopus.com/',
-              //       title: '',
-              //     ));
             },
             child: Text(
               '          BARS IMPRESSION',

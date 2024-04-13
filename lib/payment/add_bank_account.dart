@@ -6,6 +6,10 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class CreateSubaccountForm extends StatefulWidget {
+  final bool isEditing;
+
+  const CreateSubaccountForm({super.key, required this.isEditing});
+
   @override
   _CreateSubaccountFormState createState() => _CreateSubaccountFormState();
 }
@@ -85,7 +89,132 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
           subaccountData,
         );
 
-        print('Full result data: ${result.data}');
+        // print('Full result data: ${result.data}');
+
+        var subaccountId = result.data['subaccount_id'];
+        var transferRecepient = result.data['recipient_code'];
+
+        // print('Result data: $result.data);
+
+        if (subaccountId != null && _user != null) {
+          try {
+            await usersLocationSettingsRef.doc(_user.userId).update({
+              'subaccountId': subaccountId.toString(),
+              'transferRecepientId': transferRecepient.toString(),
+            });
+
+            Navigator.pop(context);
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content:
+                  Text('Subaccount created, continue with your event process.'),
+            ));
+            _updateAuthorHive(subaccountId.toString(), transferRecepient);
+          } catch (e) {
+            if (mounted) {
+              setState(() {
+                _isLoading = false;
+              });
+            }
+
+            // Log the error or use a debugger to inspect the error
+            // print('Error updating Firestore with subaccount ID: $e');
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Failed to update subaccount information'),
+            ));
+          }
+        } else {
+          if (mounted) {
+            setState(() {
+              _isLoading = false;
+            });
+          }
+
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Received invalid subaccount data'),
+          ));
+        }
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      } on FirebaseFunctionsException catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Failed to create subaccount: ${e.message}'),
+        ));
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('An unexpected error occurred'),
+        ));
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      } finally {
+        // Use finally to ensure _isLoading is set to false in both success and error scenarios
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
+    }
+  }
+
+  void _submitFormEdit(BuildContext context) async {
+    FirebaseFunctions functions = FirebaseFunctions.instance;
+    var createSubaccountCallable = functions.httpsCallable(
+      'updateSubaccount',
+    );
+
+    var _user =
+        Provider.of<UserData>(context, listen: false).userLocationPreference;
+
+    if (_formKey.currentState!.validate() && !_isLoading) {
+      _formKey.currentState!.save();
+
+      if (mounted) {
+        setState(() {
+          _isLoading = true;
+        });
+      }
+
+      final bankCode = _selectedBankCode;
+
+      if (bankCode == null || bankCode.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Please select a bank'),
+        ));
+        return;
+      }
+
+      // Ensure you collect the percentage charge properly
+      final percentageCharge = 10; // Replace with your method/logic
+
+      final subaccountData = {
+        'business_name': _bussinessNameController.text.trim(),
+        'bank_code': bankCode,
+        'account_number': _accountNumber.text.trim(),
+        'percentage_charge': percentageCharge,
+        'currency': _user!.currency,
+        'userId': _user.userId,
+        'oldSubaccountId': _user.subaccountId,
+        'oldTransferRecepientId': _user.transferRecepientId,
+      };
+
+      try {
+        final HttpsCallableResult<dynamic> result =
+            await createSubaccountCallable.call(
+          subaccountData,
+        );
+
+        // print('Full result data: ${result.data}');
 
         var subaccountId = result.data['subaccount_id'];
         var transferRecepient = result.data['recipient_code'];
@@ -228,7 +357,7 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
       final filteredBanks = banks.where((bank) {
         return !excludedBankNames.contains(bank['name']);
       }).toList();
-      print(filteredBanks);
+      // print(filteredBanks);
       return filteredBanks;
     } else {
       throw Exception('Failed to load banks from Paystack');
@@ -259,90 +388,80 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
   //   }
   // }
 
-  _saveButotn(VoidCallback onPressed, String text) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 700),
-      width: double.infinity,
-      height: 35,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blue,
-          elevation: 0.0,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-        ),
-        onPressed: onPressed,
-        child: Padding(
-          padding: EdgeInsets.all(
-            ResponsiveHelper.responsiveFontSize(context, 8.0),
-          ),
-          child: Text(
-            text,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  // _saveButotn(VoidCallback onPressed, String text) {
+  //   return AnimatedContainer(
+  //     duration: const Duration(milliseconds: 700),
+  //     width: double.infinity,
+  //     height: 35,
+  //     child: ElevatedButton(
+  //       style: ElevatedButton.styleFrom(
+  //         backgroundColor: Colors.blue,
+  //         elevation: 0.0,
+  //         foregroundColor: Colors.white,
+  //         shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(10.0),
+  //         ),
+  //       ),
+  //       onPressed: onPressed,
+  //       child: Padding(
+  //         padding: EdgeInsets.all(
+  //           ResponsiveHelper.responsiveFontSize(context, 8.0),
+  //         ),
+  //         child: Text(
+  //           text,
+  //           style: TextStyle(
+  //             color: Colors.white,
+  //             fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+  //             fontWeight: FontWeight.bold,
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   _selectBank() {
-    return Theme(
-      data: Theme.of(context).copyWith(
-        canvasColor: Theme.of(context).cardColor,
+    //  Theme.of(context).textTheme.titleSmall;
+    // var labelStyle = TextStyle(
+    //     color: Colors.white,
+    //     fontSize: ResponsiveHelper.responsiveFontSize(context, 14));
+    // Theme.of(context).textTheme.bodyMedium;
+
+    return DropdownButtonFormField(
+      isExpanded: true,
+      elevation: 0,
+      dropdownColor: Colors.white,
+      // style: labelStyle,
+      decoration: InputDecoration(
+        enabledBorder: UnderlineInputBorder(
+            borderSide: new BorderSide(color: Colors.grey)),
       ),
-      child: DropdownButtonFormField(
-        isExpanded: true,
-        hint: Text(
-          'Select Bank',
-          style: Theme.of(context).textTheme.bodyMedium,
-          overflow: TextOverflow.ellipsis,
-        ),
-        value: _selectedBankCode,
-        onChanged: (newValue) {
-          setState(() {
-            _selectedBankCode = newValue as String?;
-          });
-        },
-        items: _banks.map((bank) {
-          return DropdownMenuItem(
-            child: Text(
-              bank['name'],
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            value: bank['code'],
-          );
-        }).toList(),
+      hint: Text(
+        'Select Bank',
+        style: TextStyle(
+            color: Colors.grey,
+            fontWeight: FontWeight.bold,
+            fontSize: ResponsiveHelper.responsiveFontSize(context, 14)),
+        overflow: TextOverflow.ellipsis,
       ),
+      value: _selectedBankCode,
+      onChanged: (newValue) {
+        setState(() {
+          _selectedBankCode = newValue as String?;
+        });
+      },
+      items: _banks.map((bank) {
+        return DropdownMenuItem(
+          child: Text(
+            bank['name'],
+            style: TextStyle(
+                color: Colors.black,
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 14)),
+          ),
+          value: bank['code'],
+        );
+      }).toList(),
     );
-    //  DropdownButtonFormField(
-    //   isExpanded: true,
-    //   hint: Text(
-    //     'Select Bank',
-    //     style: Theme.of(context).textTheme.bodyMedium,
-    //     overflow: TextOverflow.ellipsis,
-    //   ),
-    //   value: _selectedBankCode,
-    //   onChanged: (newValue) {
-    //     setState(() {
-    //       _selectedBankCode = newValue as String?;
-    //     });
-    //   },
-    //   items: _banks.map((bank) {
-    //     return DropdownMenuItem(
-    //       child: Text(
-    //         bank['name'],
-    //         style: TextStyle(color: Colors.black),
-    //       ),
-    //       value: bank['code'],
-    //     );
-    //   }).toList(),
-    // );
   }
 
   _ticketFiled(
@@ -352,8 +471,14 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
     TextInputType textInputType,
     final Function onValidateText,
   ) {
-    var style = Theme.of(context).textTheme.titleSmall;
-    var labelStyle = Theme.of(context).textTheme.bodyMedium;
+    var style = TextStyle(
+        color: Colors.black,
+        fontSize: ResponsiveHelper.responsiveFontSize(context, 12));
+    //  Theme.of(context).textTheme.titleSmall;
+    var labelStyle = TextStyle(
+        color: Colors.grey,
+        fontSize: ResponsiveHelper.responsiveFontSize(context, 14));
+    // Theme.of(context).textTheme.bodyMedium;
 
     var hintStyle = TextStyle(
         fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
@@ -374,12 +499,14 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
     );
   }
 
-  animateToPage(int index) {
+  animateToPage(int index) async {
     _pageController2.animateToPage(
-      Provider.of<UserData>(context, listen: false).int1 + index,
+      index,
       duration: Duration(milliseconds: 800),
       curve: Curves.easeInOut,
     );
+
+    Provider.of<UserData>(context, listen: false).setInt1(index);
   }
 
   Future<void> _sendMail(String email, BuildContext context) async {
@@ -395,17 +522,34 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
     }
   }
 
+  // Color(0xFF374594),
+  // Color(0xFFBFE4EC),
+
   @override
   Widget build(BuildContext context) {
+    var _provider = Provider.of<UserData>(
+      context,
+    );
+
+    var bodyLarge = TextStyle(
+        color: Color(0xFF1a1a1a),
+        fontSize: ResponsiveHelper.responsiveFontSize(context, 18));
+
+    //  Theme.of(context).textTheme.bodyLarge;
+    //  Theme.of(context).textTheme.titleSmall;
+    var bodyMedium = TextStyle(
+        color: Color(0xFF1a1a1a),
+        fontSize: ResponsiveHelper.responsiveFontSize(context, 12));
+
     return Scaffold(
-      backgroundColor: Theme.of(context).primaryColorLight,
+      backgroundColor: Color(0xFF1a1a1a),
       appBar: AppBar(
         iconTheme: IconThemeData(
-          color: Theme.of(context).secondaryHeaderColor,
+          color: _provider.int1 == 1 ? Colors.white : Colors.black,
         ),
         automaticallyImplyLeading: true,
         elevation: 0,
-        backgroundColor: Theme.of(context).primaryColorLight,
+        backgroundColor: _provider.int1 == 1 ? Color(0xFF1a1a1a) : Colors.white,
         centerTitle: true,
       ),
       body: GestureDetector(
@@ -416,170 +560,306 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
           controller: _pageController2,
           physics: AlwaysScrollableScrollPhysics(),
           children: [
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: ListView(
-                children: <Widget>[
-                  RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: 'Payout \nAccount Information',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        TextSpan(
-                          text:
-                              "\n\nTo ensure you receive your earnings from ticket sales promptly, we require your bank account details. Your payouts will be processed securely through Paystack, a trusted payment platform that adheres to the highest levels of security compliance.",
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        TextSpan(
-                          text: "\n\nDirect Deposits.",
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        TextSpan(
-                          text:
-                              "\n\nYour earnings from ticket sales will be securely deposited into the bank account you provide.",
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        TextSpan(
-                          text: "\n\nPrivacy.",
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        TextSpan(
-                          text:
-                              "\n\nWe take your privacy seriously. Your bank details are encrypted and safely transmitted to our payment processors.",
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        TextSpan(
-                          text: "\n\nSecurity.",
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        TextSpan(
-                          text:
-                              "\n\nBars Impression partners with leading financial institutions for secure processing.",
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        TextSpan(
-                          text:
-                              "\n\nWe will issue your payout approximately 48 hours after the closing date of your event. Once the payout has been processed, you should receive the funds within 24 hours. ",
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ],
+            Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                  height: ResponsiveHelper.responsiveHeight(context, 700),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(30.0),
+                      bottomRight: Radius.circular(30.0),
                     ),
+                    // BorderRadius.circular(30),
+                    color:
+                        _provider.int1 == 1 ? Color(0xFF1a1a1a) : Colors.white,
                   ),
-                  GestureDetector(
-                    onTap: () async {
-                      if (!await launchUrl(
-                          Uri.parse('https://www.barsopus.com/terms-of-use'))) {
-                        throw 'Could not launch link';
-                      }
-                    },
-                    child: RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text:
-                                "\n\nBy entering your bank account details, you agree to Bars Impression's ",
-                            style: Theme.of(context).textTheme.bodyMedium,
+                  child: ListView(
+                    children: <Widget>[
+                      Center(
+                        child: ShakeTransition(
+                          child: Icon(
+                            MdiIcons.transfer,
+                            color: Color(0xFF1a1a1a),
+                            size:
+                                ResponsiveHelper.responsiveHeight(context, 30),
                           ),
-                          TextSpan(
-                            text: "Terms of Service ",
-                            style: TextStyle(
-                              color: Colors.blue,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Center(
+                        child: Text(
+                          'Ticket sales payout\naccount information',
+                          style: TextStyle(
+                              color: Color(0xFF1a1a1a),
                               fontSize: ResponsiveHelper.responsiveFontSize(
-                                  context, 14.0),
+                                  context, 18)),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 30.0),
+                        child: Center(
+                          child: ShakeTransition(
+                            child: Container(
+                              width: 100,
+                              height: 1,
+                              color: Colors.blue,
                             ),
                           ),
-                          TextSpan(
-                            text:
-                                "and acknowledge that this information is necessary for receiving your hosting payouts.",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      _sendMail('support@barsopus.com', context);
-                    },
-                    child: RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text:
-                                "\n\nShould you have any questions or require further clarification, please feel free to reach out to our support team at .",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          TextSpan(
-                            text: "support@barsopus.com.",
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontSize: ResponsiveHelper.responsiveFontSize(
-                                  context, 14.0),
+                      RichText(
+                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                        text: TextSpan(
+                          children: [
+                            // TextSpan(
+                            //   text: '\nPayout Account \nInformation',
+                            //   style: Theme.of(context).textTheme.titleLarge,
+                            // ),
+                            TextSpan(
+                              text:
+                                  "\nTo ensure you receive your earnings from ticket sales promptly, we require your bank account details. Your payouts will be processed securely through Paystack, a trusted payment platform that adheres to the highest levels of security compliance.",
+                              style: bodyMedium,
                             ),
-                          ),
-                        ],
+                            TextSpan(
+                              text: "\n\nDirect Deposits.",
+                              style: bodyLarge,
+                            ),
+                            TextSpan(
+                              text:
+                                  "\nYour earnings from ticket sales will be securely deposited into the bank account you provide.",
+                              style: bodyMedium,
+                            ),
+                            TextSpan(
+                              text: "\n\nPrivacy.",
+                              style: bodyLarge,
+                            ),
+                            TextSpan(
+                              text:
+                                  "\nWe take your privacy seriously. Your bank details are encrypted and safely transmitted to our payment processors.",
+                              style: bodyMedium,
+                            ),
+                            TextSpan(
+                              text: "\n\nSecurity.",
+                              style: bodyLarge,
+                            ),
+                            TextSpan(
+                              text:
+                                  "\nBars Impression partners with leading financial institutions for secure processing.",
+                              style: bodyMedium,
+                            ),
+
+                            TextSpan(
+                              text:
+                                  "\n\nWe will process your payout approximately 48 hours after the closing date of your event. Once the payout has been processed, you should receive the funds within 24 hours. \n\nYou must request the payout yourself. A 'Request Payout' button will appear on your event dashboard after the closing day of your event. You can use this button to request the payout",
+                              style: bodyMedium,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                      GestureDetector(
+                        onTap: () async {
+                          if (!await launchUrl(Uri.parse(
+                              'https://www.barsopus.com/terms-of-use'))) {
+                            throw 'Could not launch link';
+                          }
+                        },
+                        child: RichText(
+                          textScaleFactor:
+                              MediaQuery.of(context).textScaleFactor,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text:
+                                    "\n\nBy entering your bank account details, you agree to Bars Impression's ",
+                                style: bodyMedium,
+                              ),
+                              TextSpan(
+                                text: "Terms of Service ",
+                                style: TextStyle(
+                                  color: _provider.int1 == 1
+                                      ? Color(0xFF1a1a1a)
+                                      : Colors.blue,
+                                  fontSize: ResponsiveHelper.responsiveFontSize(
+                                      context, 12.0),
+                                ),
+                              ),
+                              TextSpan(
+                                text:
+                                    "and acknowledge that this information is necessary for receiving your hosting payouts.",
+                                style: bodyMedium,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                          _sendMail('support@barsopus.com', context);
+                        },
+                        child: RichText(
+                          textScaleFactor:
+                              MediaQuery.of(context).textScaleFactor,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text:
+                                    "\nShould you have any questions or require further clarification, please feel free to reach out to our support team at .",
+                                style: bodyMedium,
+                              ),
+                              TextSpan(
+                                text: "support@barsopus.com.",
+                                style: TextStyle(
+                                  color: _provider.int1 == 1
+                                      ? Color(0xFF1a1a1a)
+                                      : Colors.blue,
+                                  fontSize: ResponsiveHelper.responsiveFontSize(
+                                      context, 12.0),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 60),
+
+                      Center(
+                        child: MiniCircularProgressButton(
+                            color: Colors.blue,
+                            text: 'Continue',
+                            onPressed: () {
+                              animateToPage(1);
+                            }),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+
+                      // _saveButotn(() {
+                      //   animateToPage(1);
+                      //   // _submitForm(context);
+                      // }, 'Continue'),
+                    ],
                   ),
-                  const SizedBox(height: 30),
-                  if (!_isLoading)
-                    _saveButotn(() {
-                      animateToPage(1);
-                      // _submitForm(context);
-                    }, 'Continue'),
-                  const SizedBox(
-                    height: 80,
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
             Form(
               key: _formKey,
               child: Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: const EdgeInsets.all(40.0),
                 child: ListView(
                   children: <Widget>[
-                    EditProfileInfo(
-                      editTitle: 'Payout \nDetails',
-                      info: '',
-                      icon: Icons.payment_outlined,
-                    ),
-                    const SizedBox(height: 30),
-                    Container(
-                      decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(0)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'Please ensure that you add a bank account denominated in Ghanaian Cedis (GHS) for payout purposes. Our payment providers do not support payouts to foreign accounts, so it is important that your account is in Ghanaian Cedis and not in foreign currencies.',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: ResponsiveHelper.responsiveHeight(
-                                  context, 12)),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      child: Column(
-                        children: [
-                          // const SizedBox(
-                          //   height: 30,
-                          // ),
+                    // Container(
+                    //   decoration: BoxDecoration(
+                    //       color: Colors.red,
+                    //       borderRadius: BorderRadius.circular(0)),
+                    //   child: Padding(
+                    //     padding: const EdgeInsets.all(8.0),
+                    //     child: Text(
+                    //       'Please ensure that you add a bank account denominated in Ghanaian Cedis (GHS) for payout purposes. Our payment providers do not support payouts to foreign accounts, so it is important that your account is in Ghanaian Cedis and not in foreign currencies.',
+                    //       style: TextStyle(
+                    //           color: Colors.white,
+                    //           fontSize: ResponsiveHelper.responsiveHeight(
+                    //               context, 12)),
+                    //     ),
+                    //   ),
+                    // ),
+                    if (!_isLoading)
+                      ShakeTransition(
+                        curve: Curves.easeOutBack,
+                        duration: const Duration(seconds: 2),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
 
-                          Padding(
-                            padding: const EdgeInsets.all(10.0),
+                            // BorderRadius.only(
+                            //   // bottomLeft: Radius.circular(30.0),
+                            //   topRight: Radius.circular(10.0),
+                            // ),
+                            color: Color(0xFFf2f2f2),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(30.0),
                             child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Icon(
+                                      MdiIcons.transfer,
+                                      color: Color(0xFF1a1a1a),
+                                      size: ResponsiveHelper.responsiveHeight(
+                                          context, 30),
+                                    ),
+                                    const SizedBox(
+                                      width: 20,
+                                    ),
+                                    Text(
+                                      _isLoading
+                                          ? 'processing...'
+                                          : widget.isEditing
+                                              ? 'Edit \nPayout Account'
+                                              : 'Add \nPayout Account',
+                                      style: TextStyle(
+                                          color: _isLoading
+                                              ? Colors.blue
+                                              : Color(0xFF1a1a1a),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: ResponsiveHelper
+                                              .responsiveFontSize(context, 14)),
+                                    ),
+                                  ],
+                                ),
+                                // const SizedBox(height: 60),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                Divider(
+                                  color: Colors.grey,
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                ShakeTransition(
+                                  curve: Curves.easeOutBack,
+                                  duration: const Duration(seconds: 3),
+                                  child: Text(
+                                    'Only GHS acccount.',
+                                    style: TextStyle(
+                                        color: Colors.blue,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize:
+                                            ResponsiveHelper.responsiveHeight(
+                                                context, 16)),
+                                  ),
+                                ),
+                                Text(
+                                  '\nPlease ensure that you add a bank account denominated in Ghanaian Cedis (GHS) for payout purposes. Our payment providers do not support payouts to foreign accounts, so it is important that your account is in Ghanaian Cedis and not in foreign currencies.',
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize:
+                                          ResponsiveHelper.responsiveHeight(
+                                              context, 12)),
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                Divider(
+                                  color: Colors.grey,
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
                                 _selectBank(),
                                 _ticketFiled(
                                   'Account number',
@@ -593,40 +873,116 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
                                 ),
                                 _ticketFiled(
                                   'Business name',
-                                  "The name of the business or individual for whom the account is being created.",
+                                  "The name of the business or individual.",
                                   _bussinessNameController,
                                   TextInputType.text,
                                   (input) => input!.trim().length < 1
                                       ? 'Enter a valid bank name'
                                       : null,
                                 ),
-                                // const SizedBox(
-                                //   height: 60,
-                                // ),
+                                const SizedBox(
+                                  height: 50,
+                                ),
                               ],
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                    if (_isLoading)
-                      SizedBox(
-                        height: 2,
-                        child: LinearProgressIndicator(
-                          backgroundColor: Theme.of(context).primaryColor,
-                          valueColor: AlwaysStoppedAnimation(Colors.blue),
                         ),
                       ),
                     const SizedBox(
+                      height: 30,
+                    ),
+                    if (_accountNumber.text.trim().isNotEmpty &&
+                        _bussinessNameController.text.trim().isNotEmpty &&
+                        _selectedBankCode != null)
+                      _isLoading
+                          ? Center(
+                              child: SizedBox(
+                                height: ResponsiveHelper.responsiveHeight(
+                                    context, 20.0),
+                                width: ResponsiveHelper.responsiveHeight(
+                                    context, 20.0),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                ),
+                              ),
+                            )
+                          : Center(
+                              child: MiniCircularProgressButton(
+                                  color: Colors.blue,
+                                  text: 'Submit',
+                                  onPressed: () {
+                                    widget.isEditing
+                                        ? _submitFormEdit(context)
+                                        : _submitForm(context);
+                                  }),
+                            ),
+                    // Container(
+                    //   decoration: BoxDecoration(
+                    //     borderRadius: BorderRadius.only(
+                    //       bottomLeft: Radius.circular(10.0),
+                    //       // bottomRight: Radius.circular(30.0),
+                    //     ),
+                    //     color: Colors.transparent,
+                    //   ),
+                    //   child: Padding(
+                    //     padding: const EdgeInsets.all(10.0),
+                    //     child: Column(
+                    //       crossAxisAlignment: CrossAxisAlignment.start,
+                    //       children: [
+                    //         const SizedBox(
+                    //           height: 30,
+                    //         ),
+
+                    //         _selectBank(),
+                    //         _ticketFiled(
+                    //           'Account number',
+                    //           "00000000000000",
+                    //           _accountNumber,
+                    //           TextInputType.numberWithOptions(decimal: true),
+                    //           (input) => input!.trim().length < 10
+                    //               ? 'Please enter a valid bank account number'
+                    //               : null,
+                    //         ),
+                    //         _ticketFiled(
+                    //           'Business name',
+                    //           "The name of the business or individual.",
+                    //           _bussinessNameController,
+                    //           TextInputType.text,
+                    //           (input) => input!.trim().length < 1
+                    //               ? 'Enter a valid bank name'
+                    //               : null,
+                    //         ),
+                    //         const SizedBox(
+                    //           height: 30,
+                    //         ),
+                    //         // const SizedBox(
+                    //         //   height: 60,
+                    //         // ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
+
+                    // if (_isLoading)
+                    // SizedBox(
+                    //   height: 2,
+                    //   child: LinearProgressIndicator(
+                    //     backgroundColor: Theme.of(context).primaryColor,
+                    //     valueColor: AlwaysStoppedAnimation(Colors.blue),
+                    //   ),
+                    // ),
+                    const SizedBox(
                       height: 60,
                     ),
-                    if (!_isLoading)
-                      _saveButotn(() {
-                        _submitForm(context);
-                      }, 'Submit'),
-                    const SizedBox(
-                      height: 80,
-                    ),
+                    // if (!_isLoading)
+                    //   _saveButotn(() {
+                    //     widget.isEditing
+                    //         ? _submitFormEdit(context)
+                    //         : _submitForm(context);
+                    //   }, 'Submit'),
+                    // const SizedBox(
+                    //   height: 80,
+                    // ),
                   ],
                 ),
               ),

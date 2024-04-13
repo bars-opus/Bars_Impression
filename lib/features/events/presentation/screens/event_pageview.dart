@@ -177,7 +177,9 @@ class _EventPageViewState extends State<EventPageView> {
       // if (_showAllPosts) {
       //   _showAllPosts = false;
       // Clear existing events and snapshots
-      _filteredEvents.clear();
+      // _filteredEvents.clear();
+      _filteredEvents =
+          widget.eventList.where((event) => event.type == type).toList();
       _filteredEventSnapshot.clear();
       widget.liveCity.isNotEmpty
           ? _setupEvents(
@@ -229,6 +231,8 @@ class _EventPageViewState extends State<EventPageView> {
           );
   }
 
+  Set<String> addedEventIds = Set<String>();
+
   Future<List<Event>> _setupEvents({
     required String type,
     String? country,
@@ -245,8 +249,10 @@ class _EventPageViewState extends State<EventPageView> {
     final endDate = currentDate.add(Duration(days: sortNumberOfDays));
 
     var query = (type.startsWith('All'))
-        ? allEventsRef
-        : allEventsRef.where('type', isEqualTo: type);
+        ? allEventsRef.where('showOnExplorePage', isEqualTo: true)
+        : allEventsRef
+            .where('showOnExplorePage', isEqualTo: true)
+            .where('type', isEqualTo: type);
 
     if (country != null) {
       query = query.where('country', isEqualTo: country);
@@ -270,9 +276,18 @@ class _EventPageViewState extends State<EventPageView> {
       List<Event> events =
           eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
 
+      List<Event> uniqueEvents = [];
+
+      for (var event in events) {
+        if (addedEventIds.add(event.id)) {
+          uniqueEvents.add(event);
+        }
+      }
+
       if (mounted) {
         setState(() {
           _filteredEvents = events;
+          // _filteredEvents.addAll(uniqueEvents);
           _filteredEventSnapshot.addAll((eventFeedSnapShot.docs));
           _loading = false;
         });
