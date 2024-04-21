@@ -212,6 +212,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 if (_provider.userLocationPreference == null ||
                     _provider.userLocationPreference != _setting) {
                   _provider.setUserLocationPreference(_setting!);
+                  print("cccc" +
+                      _provider.userLocationPreference!.transferRecepientId
+                          .toString());
                 }
                 if (!_provider.isLoading) {
                   _provider.setIsLoading(false);
@@ -274,6 +277,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                       _provider.setUserLocationPreference(_setting);
                       accountLocationPreferenceBox.put(
                           _setting.userId, _setting);
+                      // print("hgjhg" +
+                      //     _provider.userLocationPreference!.transferRecepientId
+                      //         .toString());
                     }
                   });
 

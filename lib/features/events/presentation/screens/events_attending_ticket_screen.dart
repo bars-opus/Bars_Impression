@@ -1344,7 +1344,6 @@ class _EventsAttendingTicketScreenState
               child: PageView(
                 //  controller: _pageController,
                 onPageChanged: (int index) {
-                  // HapticFeedback.lightImpact();
                   setState(() {
                     _index = index;
                   });

@@ -127,11 +127,10 @@ class CreateSelectImageWidget extends StatelessWidget {
                   onPressed: () async {
                     ImageSafetyHandler imageSafetyHandler =
                         ImageSafetyHandler();
-                    await   imageSafetyHandler.handleImage(
+                    await imageSafetyHandler.handleImage(
                       context,
                     );
                   },
-                  
                 )),
           ),
         _provider.isLoading
@@ -146,11 +145,14 @@ class CreateSelectImageWidget extends StatelessWidget {
             : GestureDetector(
                 onTap: onPressed,
                 child: ShakeTransition(
-                  child: CreateInfoWidget(
-                    isEditting: isEditting,
-                    feature: feature,
-                    featureInfo: featureInfo,
-                    selectImageInfo: selectImageInfo,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: CreateInfoWidget(
+                      isEditting: isEditting,
+                      feature: feature,
+                      featureInfo: featureInfo,
+                      selectImageInfo: selectImageInfo,
+                    ),
                   ),
                 ),
               )

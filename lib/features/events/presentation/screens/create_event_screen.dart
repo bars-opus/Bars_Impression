@@ -195,6 +195,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       type: type,
       price: _provider.isFree ? 0 : price,
       maxOder: maxOrder,
+      salesCount: 0,
       group: group,
       accessLevel: accessLevel,
       // isRefundable: false,
@@ -1006,28 +1007,38 @@ class _CreateEventScreenState extends State<CreateEventScreen>
 
     if (!_provider.isCashPayment) {
       options.add(_buildSettingSwitchWithDivider(
-          'Free event',
-          'A free event without a ticket or gate fee (rate free).',
+          _provider.isFree ? 'Free' : 'Not free',
+          _provider.isFree
+              ? 'This is a free event with no ticket or gate fee.(Change back to paid)'
+              : 'This is a paid event with a ticket or gate fee. (Change to free)',
           _provider.isFree,
           _provider.setIsFree));
     }
     if (!_provider.isFree) {
       options.add(_buildSettingSwitchWithDivider(
-          'Cash payment',
-          'Cash in hand mode of payment for ticket or gate fee?',
+          _provider.isCashPayment ? 'Only cash payment' : 'Online Payment',
+          _provider.isCashPayment
+              ? 'Only cash is accepted as a payment method for tickets or gate fees'
+              : 'Card and mobile money as a payment method for tickets or gate fees',
           _provider.isCashPayment,
           _provider.setIsCashPayment));
     }
     options.add(_buildSettingSwitchWithDivider(
-        'Private event',
-        'You can create a private event and invite only specific people, or you can create a general event where anybody can attend.',
+        _provider.isPrivate ? 'Private event' : 'Not private event',
+        _provider.isPrivate
+            ? 'You are creating a private event. When creating a private event, you have the option to send invitations only to specific individuals who are intended to attend. This means that the event is not open to the general public, and access is restricted to those who have received and accepted an invitation.(Change back to public)'
+            : 'You are creating a public (general) event where anybody can attend.(Change to private)',
         _provider.isPrivate,
         _provider.setIsPrivate));
 
     if (_provider.isPrivate) {
       options.add(_buildSettingSwitchWithDivider(
-          'Show to followers',
-          'You followers can see this private event. This means only poeple you send invites to and followers and can attend.',
+          _provider.showToFollowers
+              ? 'Show to followers'
+              : 'Don\'t show to followers',
+          _provider.showToFollowers
+              ? 'Exclusive event where access is granted to both invited attendees and followers.'
+              : 'Your followers cannot see this private event. This means only the people you send invites to can attend.',
           _provider.showToFollowers,
           _provider.setshowToFollowers));
     }
@@ -1333,7 +1344,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
           );
     var labelStyle = TextStyle(
         fontSize:
-            ResponsiveHelper.responsiveFontSize(context, isTicket ? 18.0 : 14),
+            ResponsiveHelper.responsiveFontSize(context, isTicket ? 16.0 : 14),
         color: isTicket ? Colors.blue : Colors.black);
     var hintStyle = TextStyle(
         fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
@@ -1372,13 +1383,15 @@ class _CreateEventScreenState extends State<CreateEventScreen>
           children: [
             if (_provider.isFree)
               Text(
-                'Since this ticket is free, you do not need to add a price, the price would be automatically set to 0. But you can add the neccey information below, or continue to add ticket.',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey,
-                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-                ),
-              ),
+                  'Since this ticket is free, the price will automatically be set to 0. You do not need to add a price. However, you may provide the necessary information below.".',
+                  style: Theme.of(context).textTheme.bodyMedium
+
+                  //  TextStyle(
+                  //   // fontWeight: FontWeight.bold,
+                  //   color: Colors.grey,
+                  //   fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+                  // ),
+                  ),
             if (!_provider.isFree)
               Container(
                   child: Padding(
@@ -1409,47 +1422,63 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                   fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
                   fontWeight: FontWeight.normal),
             ),
-            _ticketFiled(
-              true,
-              false,
-              'Ticket type',
-              'eg. Regular, Vip, VVip',
-              _ticketTypeController,
-              TextInputType.text,
-              (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a type for the ticket';
-                }
-                return null;
-              },
+            const SizedBox(height: 5),
+            Container(
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(.2),
+                  borderRadius: BorderRadius.circular(5)),
+              child: Column(
+                children: [
+                  _ticketFiled(
+                    true,
+                    false,
+                    'Ticket Group, ',
+                    'Early bird, Family tickets, Couples tickets,',
+                    _groupController,
+                    TextInputType.text,
+                    () {},
+                  ),
+                  _ticketFiled(
+                    true,
+                    false,
+                    'Ticket type',
+                    'eg. Regular, Vip, VVip',
+                    _ticketTypeController,
+                    TextInputType.text,
+                    (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a type for the ticket';
+                      }
+                      return null;
+                    },
+                  ),
+                  _ticketFiled(
+                    true,
+                    false,
+                    'Ticket access level',
+                    'Extra benefits (Meet & greet, free food)',
+                    _accessLevelController,
+                    TextInputType.multiline,
+                    () {},
+                  ),
+                  _ticketFiled(
+                    true,
+                    false,
+                    'Ticket max order',
+                    'Maximu ticket order',
+                    _maxOrderController,
+                    TextInputType.number,
+                    () {},
+                  ),
+                  const SizedBox(height: 10),
+                ],
+              ),
             ),
-            _ticketFiled(
-              true,
-              false,
-              'Ticket Group, ',
-              'Early bird, Family tickets, Couples tickets,',
-              _groupController,
-              TextInputType.text,
-              () {},
-            ),
-            _ticketFiled(
-              true,
-              false,
-              'Ticket access level',
-              'Extra benefits (Meet & greet, free food)',
-              _accessLevelController,
-              TextInputType.multiline,
-              () {},
-            ),
-            // _ticketFiled(
-            //   true,
-            //   false,
-            //   'Ticket max order',
-            //   'Maximu ticket order',
-            //   _maxOrderController,
-            //   TextInputType.number,
-            //   () {},
-            // ),
+            const SizedBox(height: 20),
+            Text(
+                'The ticket maximum order (max order) refers to the maximum number of tickets that can be sold for a particular ticket type. It allows to monitor if a ticket has reached its capacity (sold out) or is still available for purchase. ',
+                style: Theme.of(context).textTheme.bodySmall),
             // _ticketFiled(
             //   'Seating row',
             //   'Number of seating rows',
@@ -1813,26 +1842,37 @@ class _CreateEventScreenState extends State<CreateEventScreen>
           title: ListTile(
             trailing: _priceController.text.isEmpty && !_provider.isFree
                 ? SizedBox.shrink()
-                : GestureDetector(
-                    onTap: () {
+                : MiniCircularProgressButton(
+                    color: Colors.blue,
+                    text: 'Add',
+                    onPressed: () {
                       _addTicket();
                       Navigator.pop(context);
                     },
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.circular(100)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text('  Add  ',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: ResponsiveHelper.responsiveFontSize(
-                                  context, 14.0),
-                            )),
-                      ),
-                    ),
                   ),
+
+            //  GestureDetector(
+            //     onTap: () {
+            //       _addTicket();
+            //       Navigator.pop(context);
+            //     },
+            //     child:
+
+            //      Container(
+            //       decoration: BoxDecoration(
+            //           color: Colors.blue,
+            //           borderRadius: BorderRadius.circular(100)),
+            //       child: Padding(
+            //         padding: const EdgeInsets.all(8.0),
+            //         child: Text('  Add  ',
+            //             style: TextStyle(
+            //               color: Colors.white,
+            //               fontSize: ResponsiveHelper.responsiveFontSize(
+            //                   context, 14.0),
+            //             )),
+            //       ),
+            //     ),
+            //   ),
             title: Text(
               'Create Ticket',
               style: Theme.of(context).textTheme.titleSmall,
@@ -2361,7 +2401,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                   children: [
                     _eventProcessNumber(
                       '4. ',
-                      'Time schedules',
+                      'Program lineup\n(Time schedules)',
                     ),
                     _provider.schedule.isEmpty
                         ? SizedBox.shrink()
@@ -2552,7 +2592,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
           DirectionWidgetWhite(
             text: _provider.isVirtual
                 ? 'Enter the host link of the event. It will help other users virtually join the event if they are interested. '
-                : 'Enter the  venue of the event.The venue refers to the specific physical location where the event will take place. It could be an event center, auditorium, stadium, church, house, club, or another suitable space. ',
+                : 'Please enter the venue for the event. The venue refers to the specific physical location where the event will take place. It could be an event center, auditorium, stadium, church, house, club, or any other suitable space. ',
           ),
           SizedBox(height: 10),
           _provider.isVirtual
@@ -2571,7 +2611,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                   child: ContentFieldBlack(
                     labelText: "Event venue",
                     hintText:
-                        "This can be an event center name, an auditoruim, a staduim, a church,",
+                        "This could be an event center name, an auditorium, a stadium, or a church.",
                     initialValue: _provider.venue,
                     onSavedText: (input) => _provider.setVenue(input),
                     onValidateText: (_) {},
@@ -2582,7 +2622,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
           ),
           _provider.address.isEmpty
               ? _pickVenueText('+  Add Address to venue',
-                  'This is the direction to the venue, this makes it easy for attendees to attend your event. Make sure you select the correct address from the list suggested. It will help other attendees navigate to the venue if they are interested.',
+                  'Please provide the venue address accurately. It will assist attendees in finding the event venue (location).',
                   () {
                   _showBottomVenue(
                     'Adrress',
@@ -3464,72 +3504,71 @@ class _CreateEventScreenState extends State<CreateEventScreen>
         DisplayCreateImage(
           isEvent: true,
         ),
-        // widget.isCompleted
-        //     ? _completed()
-        //     :
-        _provider.eventImage == null && !widget.isEditting
-            ? CreateSelectImageWidget(
-                onPressed: () {
-                  _createEventDoc(context);
-                },
-                isEditting: widget.isEditting,
-                feature: 'Punch',
-                selectImageInfo:
-                    '\nSelect a background image for your event. The image selected should not contain any text and should be of good pixel quality. The image selected should align with the context of your event. The right image can significantly enhance the atmosphere and engagement of your event. ',
-                featureInfo: '',
-                isEvent: true,
-              )
-            : SafeArea(
-                child: PageView(
-                    controller: _pageController,
-                    physics: const NeverScrollableScrollPhysics(),
-                    onPageChanged: (int index) {
-                      _provider.setInt1(index);
+        widget.isCompleted
+            ? _completed()
+            : _provider.eventImage == null && !widget.isEditting
+                ? CreateSelectImageWidget(
+                    onPressed: () {
+                      _createEventDoc(context);
                     },
-                    children: [
-                      //setting section (private, virtual, etc)
-                      _eventSettingSection(),
+                    isEditting: widget.isEditting,
+                    feature: 'Punch',
+                    selectImageInfo:
+                        '\nSelect a background image for your event. The image selected should not contain any text and should be of good pixel quality. The image selected should align with the context of your event. The right image can significantly enhance the atmosphere and engagement of your event. ',
+                    featureInfo: '',
+                    isEvent: true,
+                  )
+                : SafeArea(
+                    child: PageView(
+                        controller: _pageController,
+                        physics: const NeverScrollableScrollPhysics(),
+                        onPageChanged: (int index) {
+                          _provider.setInt1(index);
+                        },
+                        children: [
+                          //setting section (private, virtual, etc)
+                          _eventSettingSection(),
 
-                      //select category, festiva, albums, etc.
-                      _eventCategorySection(),
+                          //select category, festiva, albums, etc.
+                          _eventCategorySection(),
 
-                      //pick date for event
-                      _eventPickDateSection(),
+                          //pick date for event
+                          _eventPickDateSection(),
 
-                      //pick time for event
-                      _eventPickTimeScheduleSection(),
+                          //pick time for event
+                          _eventPickTimeScheduleSection(),
 
-                      //rate section (feee)
-                      _eventRateSection(),
+                          //rate section (feee)
+                          _eventRateSection(),
 
-                      // //select clossing date and page for start editting.
-                      // _eventClossingDateStartEditing(),
+                          // //select clossing date and page for start editting.
+                          // _eventClossingDateStartEditing(),
 
-                      //event section for picking address and venue.
-                      _eventAdressSection(),
+                          //event section for picking address and venue.
+                          _eventAdressSection(),
 
-                      //event people performing and appearing
-                      _eventPeopleSection(false),
+                          //event people performing and appearing
+                          _eventPeopleSection(false),
 
-                      //event sponsors and partners
-                      _eventPeopleSection(true),
+                          //event sponsors and partners
+                          _eventPeopleSection(true),
 
-                      //event main information(title, theme, etc.)
-                      _eventMainInformation(),
+                          //event main information(title, theme, etc.)
+                          _eventMainInformation(),
 
-                      //event optional additional
-                      _eventOrganizerContacts(),
+                          //event optional additional
+                          _eventOrganizerContacts(),
 
-                      //event optional additional
-                      _eventPreviousEvent(),
+                          //event optional additional
+                          _eventPreviousEvent(),
 
-                      //event terms and conditions
-                      _eventTermsAndConditions(),
+                          //event terms and conditions
+                          _eventTermsAndConditions(),
 
-                      //loading --- creating event
-                      _loadingWidget(),
-                    ]),
-              ),
+                          //loading --- creating event
+                          _loadingWidget(),
+                        ]),
+                  ),
         Positioned(top: 50, left: 10, child: _popButton()),
         if (_provider.eventImage != null &&
             !widget.isEditting &&

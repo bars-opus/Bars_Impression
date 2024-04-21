@@ -538,7 +538,7 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
           title: isAccepted
               ? 'Are you sure you want to accept this invitation?'
               : 'Are you sure you want to reject this invitation?',
-          subTitle: 'Please make sure you don\'t miss any appointment',
+          subTitle: '',
         );
       },
     );

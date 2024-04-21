@@ -105,10 +105,11 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
 
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content:
-                  Text('Subaccount created, continue with your event process.'),
+              content: Text(
+                  'Payout account created, continue with your event process.'),
             ));
-            _updateAuthorHive(subaccountId.toString(), transferRecepient);
+            _updateAuthorHive(
+                subaccountId.toString(), transferRecepient.toString());
           } catch (e) {
             if (mounted) {
               setState(() {
@@ -119,7 +120,7 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
             // Log the error or use a debugger to inspect the error
             // print('Error updating Firestore with subaccount ID: $e');
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text('Failed to update subaccount information'),
+              content: Text('Failed to create payout account'),
             ));
           }
         } else {
@@ -194,6 +195,9 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
         return;
       }
 
+      print(_user!.subaccountId.toString() +
+          '    ' +
+          _user.transferRecepientId.toString());
       // Ensure you collect the percentage charge properly
       final percentageCharge = 10; // Replace with your method/logic
 
@@ -219,7 +223,8 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
         var subaccountId = result.data['subaccount_id'];
         var transferRecepient = result.data['recipient_code'];
 
-        // print('Result data: $result.data);
+        print('Result data: $result.data');
+        print('Result data: $result');
 
         if (subaccountId != null && _user != null) {
           try {
@@ -230,21 +235,22 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
 
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content:
-                  Text('Subaccount created, continue with your event process.'),
+              content: Text('Payout account updated.'),
             ));
-            _updateAuthorHive(subaccountId.toString(), transferRecepient);
+            _updateAuthorHive(
+                subaccountId.toString(), transferRecepient.toString());
           } catch (e) {
             if (mounted) {
               setState(() {
                 _isLoading = false;
               });
             }
+            // print(e);
 
             // Log the error or use a debugger to inspect the error
             // print('Error updating Firestore with subaccount ID: $e');
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text('Failed to update subaccount information'),
+              content: Text('Failed to update payout account'),
             ));
           }
         } else {
@@ -427,40 +433,46 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
     //     fontSize: ResponsiveHelper.responsiveFontSize(context, 14));
     // Theme.of(context).textTheme.bodyMedium;
 
-    return DropdownButtonFormField(
-      isExpanded: true,
-      elevation: 0,
-      dropdownColor: Colors.white,
-      // style: labelStyle,
-      decoration: InputDecoration(
-        enabledBorder: UnderlineInputBorder(
-            borderSide: new BorderSide(color: Colors.grey)),
+    return ShakeTransition(
+      curve: Curves.easeOutBack,
+      duration: const Duration(seconds: 2),
+      axis: Axis.vertical,
+      offset: -140,
+      child: DropdownButtonFormField(
+        isExpanded: true,
+        elevation: 0,
+        dropdownColor: Colors.white,
+        // style: labelStyle,
+        decoration: InputDecoration(
+          enabledBorder: UnderlineInputBorder(
+              borderSide: new BorderSide(color: Colors.grey)),
+        ),
+        hint: Text(
+          'Select Bank',
+          style: TextStyle(
+              color: Colors.grey,
+              fontWeight: FontWeight.bold,
+              fontSize: ResponsiveHelper.responsiveFontSize(context, 14)),
+          overflow: TextOverflow.ellipsis,
+        ),
+        value: _selectedBankCode,
+        onChanged: (newValue) {
+          setState(() {
+            _selectedBankCode = newValue as String?;
+          });
+        },
+        items: _banks.map((bank) {
+          return DropdownMenuItem(
+            child: Text(
+              bank['name'],
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14)),
+            ),
+            value: bank['code'],
+          );
+        }).toList(),
       ),
-      hint: Text(
-        'Select Bank',
-        style: TextStyle(
-            color: Colors.grey,
-            fontWeight: FontWeight.bold,
-            fontSize: ResponsiveHelper.responsiveFontSize(context, 14)),
-        overflow: TextOverflow.ellipsis,
-      ),
-      value: _selectedBankCode,
-      onChanged: (newValue) {
-        setState(() {
-          _selectedBankCode = newValue as String?;
-        });
-      },
-      items: _banks.map((bank) {
-        return DropdownMenuItem(
-          child: Text(
-            bank['name'],
-            style: TextStyle(
-                color: Colors.black,
-                fontSize: ResponsiveHelper.responsiveFontSize(context, 14)),
-          ),
-          value: bank['code'],
-        );
-      }).toList(),
     );
   }
 
@@ -484,29 +496,36 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
         fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
         fontWeight: FontWeight.normal,
         color: Colors.grey);
-    return TextFormField(
-      controller: controler,
-      keyboardAppearance: MediaQuery.of(context).platformBrightness,
-      style: style,
-      keyboardType: textInputType,
-      decoration: InputDecoration(
-        labelText: labelText,
-        hintText: hintText,
-        labelStyle: labelStyle,
-        hintStyle: hintStyle,
+    return ShakeTransition(
+      curve: Curves.easeOutBack,
+      duration: const Duration(seconds: 2),
+      axis: Axis.vertical,
+      offset: -140,
+      child: TextFormField(
+        controller: controler,
+        keyboardAppearance: MediaQuery.of(context).platformBrightness,
+        style: style,
+        keyboardType: textInputType,
+        decoration: InputDecoration(
+          labelText: labelText,
+          hintText: hintText,
+          labelStyle: labelStyle,
+          hintStyle: hintStyle,
+        ),
+        validator: (string) => onValidateText(string),
       ),
-      validator: (string) => onValidateText(string),
     );
   }
 
   animateToPage(int index) async {
     _pageController2.animateToPage(
       index,
-      duration: Duration(milliseconds: 800),
+      duration: Duration(milliseconds: 900),
       curve: Curves.easeInOut,
     );
 
     Provider.of<UserData>(context, listen: false).setInt1(index);
+    // print(index);
   }
 
   Future<void> _sendMail(String email, BuildContext context) async {
@@ -532,24 +551,32 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
     );
 
     var bodyLarge = TextStyle(
-        color: Color(0xFF1a1a1a),
-        fontSize: ResponsiveHelper.responsiveFontSize(context, 18));
+      color: _provider.int1 == 1 ? Color(0xFF1a1a1a) : Colors.white,
+      fontSize: ResponsiveHelper.responsiveFontSize(context, 16),
+      fontWeight: FontWeight.bold,
+    );
 
     //  Theme.of(context).textTheme.bodyLarge;
     //  Theme.of(context).textTheme.titleSmall;
     var bodyMedium = TextStyle(
-        color: Color(0xFF1a1a1a),
-        fontSize: ResponsiveHelper.responsiveFontSize(context, 12));
+        color: _provider.int1 == 1 ? Color(0xFF1a1a1a) : Colors.white,
+        fontSize: ResponsiveHelper.responsiveFontSize(context, 14));
+
+    double _progress =
+        _pageController2.hasClients ? _pageController2.page ?? 0 : 0;
+
+    var _user =
+        Provider.of<UserData>(context, listen: false).userLocationPreference;
 
     return Scaffold(
       backgroundColor: Color(0xFF1a1a1a),
       appBar: AppBar(
         iconTheme: IconThemeData(
-          color: _provider.int1 == 1 ? Colors.white : Colors.black,
+          color: Colors.white,
         ),
         automaticallyImplyLeading: true,
         elevation: 0,
-        backgroundColor: _provider.int1 == 1 ? Color(0xFF1a1a1a) : Colors.white,
+        backgroundColor: Color(0xFF1a1a1a),
         centerTitle: true,
       ),
       body: GestureDetector(
@@ -558,56 +585,61 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
         },
         child: PageView(
           controller: _pageController2,
-          physics: AlwaysScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           children: [
             Column(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                // const SizedBox(
+                //   height: 20,
+                // ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                  padding: const EdgeInsets.all(10.0),
                   height: ResponsiveHelper.responsiveHeight(context, 700),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(30.0),
-                      bottomRight: Radius.circular(30.0),
-                    ),
-                    // BorderRadius.circular(30),
-                    color:
-                        _provider.int1 == 1 ? Color(0xFF1a1a1a) : Colors.white,
-                  ),
+                  // decoration: BoxDecoration(
+                  //   borderRadius: BorderRadius.only(
+                  //     topLeft: Radius.circular(30.0),
+                  //     topRight: Radius.circular(30.0),
+                  //   ),
+                  //   // BorderRadius.circular(30),
+                  // color: _provider.int1 == 1
+                  //     ? Color(0xFF1a1a1a)
+                  //       : Color(0xFF1a1a1a),
+                  // ),
                   child: ListView(
                     children: <Widget>[
+                      // const SizedBox(height: 60),
                       Center(
-                        child: ShakeTransition(
-                          child: Icon(
-                            MdiIcons.transfer,
-                            color: Color(0xFF1a1a1a),
-                            size:
-                                ResponsiveHelper.responsiveHeight(context, 30),
-                          ),
+                        child: Icon(
+                          MdiIcons.transfer,
+                          color: Colors.white,
+                          size: ResponsiveHelper.responsiveHeight(context, 40),
                         ),
                       ),
                       const SizedBox(
-                        height: 10,
+                        height: 5,
                       ),
                       Center(
-                        child: Text(
-                          'Ticket sales payout\naccount information',
-                          style: TextStyle(
-                              color: Color(0xFF1a1a1a),
-                              fontSize: ResponsiveHelper.responsiveFontSize(
-                                  context, 18)),
-                          textAlign: TextAlign.center,
+                        child: ShakeTransition(
+                          child: Text(
+                            'Payout account information\nfor ticket sales',
+                            style: TextStyle(
+                                fontSize: ResponsiveHelper.responsiveFontSize(
+                                    context, 20),
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ),
+                      // const SizedBox(height: 20),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 30.0),
                         child: Center(
-                          child: ShakeTransition(
-                            child: Container(
-                              width: 100,
-                              height: 1,
-                              color: Colors.blue,
-                            ),
+                          child: Container(
+                            width: 50,
+                            height: 1,
+                            color: Colors.blue,
                           ),
                         ),
                       ),
@@ -621,7 +653,7 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
                             // ),
                             TextSpan(
                               text:
-                                  "\nTo ensure you receive your earnings from ticket sales promptly, we require your bank account details. Your payouts will be processed securely through Paystack, a trusted payment platform that adheres to the highest levels of security compliance.",
+                                  "To ensure you receive your earnings from ticket sales promptly, we require your bank account details. Your payouts will be processed securely through Paystack, a trusted payment platform that adheres to the highest levels of security compliance.",
                               style: bodyMedium,
                             ),
                             TextSpan(
@@ -684,7 +716,7 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
                                       ? Color(0xFF1a1a1a)
                                       : Colors.blue,
                                   fontSize: ResponsiveHelper.responsiveFontSize(
-                                      context, 12.0),
+                                      context, 14.0),
                                 ),
                               ),
                               TextSpan(
@@ -718,7 +750,7 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
                                       ? Color(0xFF1a1a1a)
                                       : Colors.blue,
                                   fontSize: ResponsiveHelper.responsiveFontSize(
-                                      context, 12.0),
+                                      context, 14.0),
                                 ),
                               ),
                             ],
@@ -726,14 +758,17 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
                         ),
                       ),
                       const SizedBox(height: 60),
-
                       Center(
-                        child: MiniCircularProgressButton(
-                            color: Colors.blue,
-                            text: 'Continue',
-                            onPressed: () {
-                              animateToPage(1);
-                            }),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 600),
+                          height: _provider.int1 == 1 ? 0 : 40,
+                          child: MiniCircularProgressButton(
+                              // color: Colors.blue,
+                              text: 'Continue',
+                              onPressed: () {
+                                animateToPage(1);
+                              }),
+                        ),
                       ),
                       const SizedBox(
                         height: 20,
@@ -769,81 +804,91 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
                     //     ),
                     //   ),
                     // ),
-                    if (!_isLoading)
-                      ShakeTransition(
-                        curve: Curves.easeOutBack,
-                        duration: const Duration(seconds: 2),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30),
+                    // if (_isLoading)
+                    AnimatedContainer(
+                      duration: const Duration(seconds: 1),
+                      height: 0 + _progress * 600,
+                      // _provider.int1 == 1 ? 600 : 0,
+                      curve: Curves.linearToEaseOut,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
 
-                            // BorderRadius.only(
-                            //   // bottomLeft: Radius.circular(30.0),
-                            //   topRight: Radius.circular(10.0),
-                            // ),
-                            color: Color(0xFFf2f2f2),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(30.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Icon(
-                                      MdiIcons.transfer,
-                                      color: Color(0xFF1a1a1a),
-                                      size: ResponsiveHelper.responsiveHeight(
-                                          context, 30),
-                                    ),
-                                    const SizedBox(
-                                      width: 20,
-                                    ),
-                                    Text(
-                                      _isLoading
-                                          ? 'processing...'
-                                          : widget.isEditing
-                                              ? 'Edit \nPayout Account'
-                                              : 'Add \nPayout Account',
-                                      style: TextStyle(
-                                          color: _isLoading
-                                              ? Colors.blue
-                                              : Color(0xFF1a1a1a),
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: ResponsiveHelper
-                                              .responsiveFontSize(context, 14)),
-                                    ),
-                                  ],
-                                ),
-                                // const SizedBox(height: 60),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                Divider(
-                                  color: Colors.grey,
-                                ),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                ShakeTransition(
-                                  curve: Curves.easeOutBack,
-                                  duration: const Duration(seconds: 3),
-                                  child: Text(
-                                    'Only GHS acccount.',
+                        // BorderRadius.only(
+                        //   // bottomLeft: Radius.circular(30.0),
+                        //   topRight: Radius.circular(10.0),
+                        // ),
+                        color: Color(0xFFf2f2f2),
+                      ),
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.all(30.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    MdiIcons.transfer,
+                                    color: Color(0xFF1a1a1a),
+                                    size: ResponsiveHelper.responsiveHeight(
+                                        context, 30),
+                                  ),
+                                  const SizedBox(
+                                    width: 20,
+                                  ),
+                                  Text(
+                                    _isLoading
+                                        ? 'processing...'
+                                        : widget.isEditing
+                                            ? 'Edit \nPayout Account'
+                                            : 'Add \nPayout Account',
                                     style: TextStyle(
-                                        color: Colors.blue,
+                                        color: _isLoading
+                                            ? Colors.blue
+                                            : Color(0xFF1a1a1a),
                                         fontWeight: FontWeight.bold,
                                         fontSize:
-                                            ResponsiveHelper.responsiveHeight(
-                                                context, 16)),
+                                            ResponsiveHelper.responsiveFontSize(
+                                                context, 14)),
                                   ),
+                                ],
+                              ),
+                              // const SizedBox(height: 60),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Divider(
+                                color: Colors.grey,
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              ShakeTransition(
+                                curve: Curves.easeOutBack,
+                                duration: const Duration(seconds: 1),
+                                axis: Axis.vertical,
+                                offset: -140,
+                                child: Text(
+                                  'Only GHS acccount.',
+                                  style: TextStyle(
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize:
+                                          ResponsiveHelper.responsiveHeight(
+                                              context, 16)),
                                 ),
-                                Text(
+                              ),
+                              ShakeTransition(
+                                curve: Curves.easeOutBack,
+                                axis: Axis.vertical,
+                                offset: -140,
+                                duration: const Duration(seconds: 2),
+                                child: Text(
                                   '\nPlease ensure that you add a bank account denominated in Ghanaian Cedis (GHS) for payout purposes. Our payment providers do not support payouts to foreign accounts, so it is important that your account is in Ghanaian Cedis and not in foreign currencies.',
                                   style: TextStyle(
                                       color: Colors.black,
@@ -851,43 +896,43 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
                                           ResponsiveHelper.responsiveHeight(
                                               context, 12)),
                                 ),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                Divider(
-                                  color: Colors.grey,
-                                ),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                _selectBank(),
-                                _ticketFiled(
-                                  'Account number',
-                                  "00000000000000",
-                                  _accountNumber,
-                                  TextInputType.numberWithOptions(
-                                      decimal: true),
-                                  (input) => input!.trim().length < 10
-                                      ? 'Please enter a valid bank account number'
-                                      : null,
-                                ),
-                                _ticketFiled(
-                                  'Business name',
-                                  "The name of the business or individual.",
-                                  _bussinessNameController,
-                                  TextInputType.text,
-                                  (input) => input!.trim().length < 1
-                                      ? 'Enter a valid bank name'
-                                      : null,
-                                ),
-                                const SizedBox(
-                                  height: 50,
-                                ),
-                              ],
-                            ),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Divider(
+                                color: Colors.grey,
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              _selectBank(),
+                              _ticketFiled(
+                                'Account number',
+                                "00000000000000",
+                                _accountNumber,
+                                TextInputType.numberWithOptions(decimal: true),
+                                (input) => input!.trim().length < 10
+                                    ? 'Please enter a valid bank account number'
+                                    : null,
+                              ),
+                              _ticketFiled(
+                                'Business name',
+                                "The name of the business or individual.",
+                                _bussinessNameController,
+                                TextInputType.text,
+                                (input) => input!.trim().length < 1
+                                    ? 'Enter a valid bank name'
+                                    : null,
+                              ),
+                              const SizedBox(
+                                height: 50,
+                              ),
+                            ],
                           ),
                         ),
                       ),
+                    ),
                     const SizedBox(
                       height: 30,
                     ),
@@ -911,9 +956,13 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
                                   color: Colors.blue,
                                   text: 'Submit',
                                   onPressed: () {
-                                    widget.isEditing
-                                        ? _submitFormEdit(context)
-                                        : _submitForm(context);
+                                    // widget.isEditing ||
+                                    //         _user!
+                                    //             .transferRecepientId!.isNotEmpty
+                                    //     ? _submitFormEdit(context)
+                                    //     :
+
+                                    _submitForm(context);
                                   }),
                             ),
                     // Container(

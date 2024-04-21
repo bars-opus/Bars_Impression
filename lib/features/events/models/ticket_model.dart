@@ -4,24 +4,24 @@ class TicketModel {
   String id;
   double price;
   bool isSoldOut;
-  // bool isRefundable;
   String type;
   String group;
   String accessLevel;
   final Timestamp eventTicketDate;
   int maxOder; // new property for the number of available tickets
+  int salesCount; // new property for the number of available tickets
   int maxSeatsPerRow; // New property for the seat number
 
   TicketModel({
     required this.id,
     required this.price,
-    // this.isRefundable = false,
     this.isSoldOut = false,
     required this.type,
     required this.group,
     this.accessLevel = 'General',
     required this.maxOder,
     required this.maxSeatsPerRow,
+    required this.salesCount,
     required this.eventTicketDate,
   });
 
@@ -35,6 +35,7 @@ class TicketModel {
       group: json['group'],
       accessLevel: json['accessLevel'] ?? 'General',
       maxOder: json['maxOder'],
+      salesCount: json['salesCount'],
 
       maxSeatsPerRow: json['maxSeatsPerRow'],
       eventTicketDate: json['eventTicketDate'] ??
@@ -53,9 +54,10 @@ class TicketModel {
       group: json['group'],
       accessLevel: json['accessLevel'] ?? 'General',
       maxOder: json['maxOder'],
+      salesCount: json['salesCount'],
       maxSeatsPerRow: json['maxSeatsPerRow'],
       eventTicketDate:
-          Timestamp.fromMillisecondsSinceEpoch(json['eventTicketDate'] as int),
+          Timestamp.fromMillisecondsSinceEpoch(json['eventTicketDate'] ),
     );
   }
 
@@ -69,6 +71,26 @@ class TicketModel {
       'group': group,
       'accessLevel': accessLevel,
       'maxOder': maxOder,
+      'salesCount': salesCount,
+
+      'maxSeatsPerRow': maxSeatsPerRow,
+      // 'eventTicketDate': eventTicketDate.millisecondsSinceEpoch,
+
+      'eventTicketDate': eventTicketDate,
+    };
+  }
+
+  Map<String, dynamic> toJsonSharedPref() {
+    return {
+      'id': id,
+      'price': price,
+      'isSoldOut': isSoldOut,
+      // 'isRefundable': isRefundable,
+      'type': type,
+      'group': group,
+      'accessLevel': accessLevel,
+      'maxOder': maxOder,
+      'salesCount': salesCount,
 
       'maxSeatsPerRow': maxSeatsPerRow,
       'eventTicketDate': eventTicketDate.millisecondsSinceEpoch,

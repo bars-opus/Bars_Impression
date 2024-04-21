@@ -41,7 +41,7 @@ class ConfirmationPrompt extends StatelessWidget {
               Text(
                 subTitle,
                 style: Theme.of(context).textTheme.bodyMedium,
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.start,
               ),
               const SizedBox(
                 height: 20,

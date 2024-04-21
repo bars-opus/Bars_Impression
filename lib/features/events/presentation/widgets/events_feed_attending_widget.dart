@@ -57,6 +57,7 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return ConfirmationPrompt(
+          height: 300,
           buttonText: 'Delete tickets',
           onPressed: () async {
             Navigator.pop(context);
@@ -76,7 +77,7 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
           },
           title: 'Are you sure you want to delete this ticket? ',
           subTitle:
-              'Deleting it will result in the loss of access to this event, and deleted tickets cannot be refunded."',
+              'Deleting this ticket will result in the loss of access to this event and it\'s room. Deleted tickets would be refunded."',
         );
       },
     );

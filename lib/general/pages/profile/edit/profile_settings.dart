@@ -117,7 +117,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
     showAboutDialog(
         context: context,
         applicationName: 'Bars Impression',
-        applicationVersion: 'Version 2.0.0',
+        applicationVersion: 'Version 2.0.1',
         applicationIcon: Container(
           width: 40,
           height: 40,
@@ -471,24 +471,24 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                   subTitle: "Payout for event ticket sales.",
                   icon: Icons.arrow_forward_ios_outlined,
                 ),
-                Divider(
-                  color: Colors.grey,
-                ),
-                IntroInfo(
-                  titleColor: Theme.of(context).secondaryHeaderColor,
-                  title: 'Update Payout',
-                  onPressed: () {
-                    _navigateToPage(
-                      context,
-                      CreateSubaccountForm(
-                        isEditing: true,
-                      ),
-                    );
-                  },
-                  subTitle:
-                      "Update payout information for receiving event ticket sales.",
-                  icon: Icons.arrow_forward_ios_outlined,
-                ),
+                // Divider(
+                //   color: Colors.grey,
+                // ),
+                // IntroInfo(
+                //   titleColor: Theme.of(context).secondaryHeaderColor,
+                //   title: 'Update Payout',
+                //   onPressed: () {
+                //     _navigateToPage(
+                //       context,
+                //       CreateSubaccountForm(
+                //         isEditing: true,
+                //       ),
+                //     );
+                //   },
+                //   subTitle:
+                //       "Update payout information for receiving event ticket sales.",
+                //   icon: Icons.arrow_forward_ios_outlined,
+                // ),
                 Divider(
                   color: Colors.grey,
                 ),

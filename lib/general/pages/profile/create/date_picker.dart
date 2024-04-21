@@ -181,14 +181,14 @@ class _DatePickerState extends State<DatePicker> {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-            height: _size.height / 1.5,
+            height: ResponsiveHelper.responsiveWidth(context, 520),
             decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(30)),
             child: Padding(
-              padding: const EdgeInsets.only(top: 30.0),
+              padding: const EdgeInsets.all(5.0),
               child: DoubleOptionTabview(
-                height: _size.width + 20,
+                height: ResponsiveHelper.responsiveWidth(context, 350),
                 initalTab: from.startsWith('Start') ? 0 : 1,
                 tabText1: 'Start Date',
                 tabText2: 'End Date',
@@ -297,7 +297,8 @@ class _DatePickerState extends State<DatePicker> {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-            height: _size.height / 1.5,
+            height: ResponsiveHelper.responsiveWidth(context, 550),
+            // _size.height / 1.5,
             decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(30)),
@@ -305,7 +306,7 @@ class _DatePickerState extends State<DatePicker> {
               padding: const EdgeInsets.only(top: 30.0),
               child: DoubleOptionTabview(
                 lightColor: false,
-                height: _size.width + 20,
+                height: ResponsiveHelper.responsiveWidth(context, 350),
                 initalTab: from.startsWith('Start') ? 0 : 1,
                 tabText1: 'Start Time',
                 tabText2: 'End Time',

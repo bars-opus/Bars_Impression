@@ -4,7 +4,7 @@ class TicketPurchasedModel {
   final String id;
   final String entranceId;
   double price;
-  bool isSold;
+  // bool isSold;
   String refundRequestStatus;
   String idempotencyKey;
   String type;
@@ -22,7 +22,7 @@ class TicketPurchasedModel {
     required this.id,
     required this.price,
     required this.refundRequestStatus,
-    this.isSold = false,
+    // this.isSold = false,
     required this.validated,
     required this.type,
     required this.group,
@@ -40,7 +40,7 @@ class TicketPurchasedModel {
     return TicketPurchasedModel(
       id: json['id'],
       price: json['price'].toDouble(),
-      isSold: json['isSold'] ?? false,
+      // isSold: json['isSold'] ?? false,
       refundRequestStatus: json['refundRequestStatus'] ?? '',
       idempotencyKey: json['idempotencyKey'] ?? '',
       transactionId: json['transactionId'] ?? '',
@@ -66,7 +66,7 @@ class TicketPurchasedModel {
     return {
       'id': id,
       'price': price,
-      'isSold': isSold,
+      // 'isSold': isSold,
       'transactionId': transactionId,
       'refundRequestStatus': refundRequestStatus,
       'idempotencyKey': idempotencyKey,
@@ -97,7 +97,7 @@ class TicketPurchasedModel {
     return TicketPurchasedModel(
       id: ticketModel.id,
       price: ticketModel.price,
-      isSold: ticketModel.isSoldOut,
+      // isSold: ticketModel.isSoldOut,
       refundRequestStatus: refundRequestStatus,
       idempotencyKey: idempotencyKey,
       validated: validated,

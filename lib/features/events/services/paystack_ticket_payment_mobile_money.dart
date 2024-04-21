@@ -16,6 +16,7 @@ class _PaystackPaymentScreenState extends State<PaystackPaymentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         iconTheme: IconThemeData(
           color: Colors.black,

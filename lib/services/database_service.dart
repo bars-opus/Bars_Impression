@@ -3494,7 +3494,7 @@ class DatabaseService {
     required AccountHolderAuthor user,
     required String eventAuthorId,
     required String purchaseReferenceId,
-  }) {
+  }) async {
     final eventInviteDocRef = newEventTicketOrderRef
         .doc(ticketOrder.eventId)
         .collection('ticketOrders')
@@ -3557,6 +3557,10 @@ class DatabaseService {
     required String purchaseReferenceId,
     required String eventAuthorId,
     required bool isEventFree,
+    required bool isEventPrivate,
+    required List<String> purchasedTicketIds,
+    required bool dontUpdateTicketSales,
+    required String inviteReply,
   }) async {
     final eventInviteDocRef = newEventTicketOrderRef
         .doc(ticketOrder.eventId)
@@ -3567,6 +3571,31 @@ class DatabaseService {
         .doc(ticketOrder.userOrderId)
         .collection('ticketOrders')
         .doc(ticketOrder.eventId);
+
+    DocumentReference eventRef = eventsRef
+        .doc(eventAuthorId)
+        .collection('userEvents')
+        .doc(ticketOrder.eventId);
+    DocumentReference? allEventRef =
+        isEventPrivate ? null : allEventsRef.doc(ticketOrder.eventId);
+
+    DocumentSnapshot eventSnapshot = await transaction.get(eventRef);
+    DocumentSnapshot? allEventSnapshot =
+        allEventRef != null ? await transaction.get(allEventRef) : null;
+
+    DocumentReference? eventInviteRef = inviteReply.isEmpty
+        ? null
+        : sentEventIviteRef
+            .doc(ticketOrder.eventId)
+            .collection('eventInvite')
+            .doc(ticketOrder.userOrderId);
+
+    DocumentReference? userInviteRef = inviteReply.isEmpty
+        ? null
+        : userInvitesRef
+            .doc(ticketOrder.userOrderId)
+            .collection('eventInvite')
+            .doc(ticketOrder.eventId);
 
     Map<String, dynamic> ticketOrderData = ticketOrder.toJson();
 
@@ -3587,6 +3616,28 @@ class DatabaseService {
       'lastMessage': '',
       'timestamp': FieldValue.serverTimestamp(),
     });
+
+    if (!dontUpdateTicketSales) {
+      await updateTicketSales(
+        transaction,
+        isEventPrivate,
+        ticketOrder.eventId,
+        eventAuthorId,
+        purchasedTicketIds,
+        eventSnapshot,
+        allEventSnapshot,
+        eventRef,
+        allEventRef,
+      );
+    }
+
+    if (inviteReply.isNotEmpty)
+      answerEventInviteTransaction(
+        transaction: transaction,
+        answer: inviteReply,
+        eventInviteRef: eventInviteRef,
+        userInviteRef: userInviteRef,
+      );
 
     // Now add the activity within the transaction
     DocumentReference activityDocRef = activitiesRef
@@ -3611,6 +3662,206 @@ class DatabaseService {
       'authorVerification': user.verified,
     });
   }
+
+  static Future<void> updateTicketSales(
+    Transaction transaction,
+    bool isEventPrivate,
+    String eventId,
+    String authorId,
+    List<String> purchasedTicketIds,
+    DocumentSnapshot eventSnapshot,
+    DocumentSnapshot? allEventSnapshot,
+    DocumentReference eventRef,
+    DocumentReference? allEventRef,
+  ) async {
+    if (!eventSnapshot.exists) {
+      throw Exception("Event snapshot does not exist.");
+    }
+
+    Map<String, dynamic>? eventData =
+        eventSnapshot.data() as Map<String, dynamic>?;
+    List<TicketModel> ticketsFromUserEvents = eventData == null ||
+            eventData['ticket'] == null
+        ? []
+        : List<TicketModel>.from(eventData['ticket'].map(
+            (item) => TicketModel.fromJson(Map<String, dynamic>.from(item))));
+
+    List<TicketModel> ticketsFromAllEvents = [];
+    if (allEventSnapshot != null && allEventSnapshot.exists) {
+      Map<String, dynamic>? allEventData =
+          allEventSnapshot.data() as Map<String, dynamic>?;
+      ticketsFromAllEvents = allEventData == null ||
+              allEventData['ticket'] == null
+          ? []
+          : List<TicketModel>.from(allEventData['ticket'].map(
+              (item) => TicketModel.fromJson(Map<String, dynamic>.from(item))));
+    }
+    purchasedTicketIds.forEach((purchasedTicketId) {
+      ticketsFromUserEvents.forEach((ticket) {
+        if (ticket.id == purchasedTicketId && ticket.maxOder > 0) {
+          ticket.salesCount += 1;
+          ticket.isSoldOut = ticket.salesCount >= ticket.maxOder;
+        }
+      });
+
+      if (allEventSnapshot != null) {
+        ticketsFromAllEvents.forEach((ticket) {
+          if (ticket.id == purchasedTicketId && ticket.maxOder > 0) {
+            ticket.salesCount += 1;
+            ticket.isSoldOut = ticket.salesCount >= ticket.maxOder;
+          }
+        });
+      }
+    });
+
+    if (ticketsFromUserEvents.isNotEmpty) {
+      transaction.update(eventRef, {
+        'ticket':
+            ticketsFromUserEvents.map((ticket) => ticket.toJson()).toList()
+      });
+    }
+
+    if (allEventSnapshot != null && ticketsFromAllEvents.isNotEmpty) {
+      transaction.update(allEventRef!, {
+        'ticket': ticketsFromAllEvents.map((ticket) => ticket.toJson()).toList()
+      });
+    }
+  }
+
+  // Future<void> updateTicketSales(bool isEventPrivate, String eventId,
+  //     String authorId, List<String> purchasedTicketIds) async {
+  //   final FirebaseFirestore db = FirebaseFirestore.instance;
+
+  //   DocumentReference eventRef =
+  //       eventsRef.doc(authorId).collection('userEvents').doc(eventId);
+  //   DocumentReference? allEventRef =
+  //       isEventPrivate ? null : allEventsRef.doc(eventId);
+
+  //   return db.runTransaction((transaction) async {
+  //     DocumentSnapshot eventSnapshot = await transaction.get(eventRef);
+  //     DocumentSnapshot? allEventSnapshot =
+  //         allEventRef != null ? await transaction.get(allEventRef) : null;
+
+  //     // Explicitly cast the data to Map<String, dynamic>
+  //     Map<String, dynamic>? eventData =
+  //         eventSnapshot.data() as Map<String, dynamic>?;
+  //     Map<String, dynamic>? allEventData =
+  //         allEventSnapshot?.data() as Map<String, dynamic>?;
+
+  //     // Extract tickets, handling possible null data
+  //     List<TicketModel> ticketsFromUserEvents = eventData == null ||
+  //             eventData['ticket'] == null
+  //         ? []
+  //         : List<TicketModel>.from(eventData['ticket'].map(
+  //             (item) => TicketModel.fromJson(Map<String, dynamic>.from(item))));
+  //     List<TicketModel> ticketsFromAllEvents = allEventData == null ||
+  //             allEventData['ticket'] == null
+  //         ? []
+  //         : List<TicketModel>.from(allEventData['ticket'].map(
+  //             (item) => TicketModel.fromJson(Map<String, dynamic>.from(item))));
+
+  //     // Update the sales count and sold-out status for each ticket purchased
+  //     purchasedTicketIds.forEach((purchasedTicketId) {
+  //       ticketsFromUserEvents.forEach((ticket) {
+  //         if (ticket.id == purchasedTicketId) {
+  //           ticket.salesCount += 1;
+  //           ticket.isSoldOut = ticket.salesCount >= ticket.maxOder;
+  //         }
+  //       });
+
+  //       if (allEventRef != null) {
+  //         ticketsFromAllEvents.forEach((ticket) {
+  //           if (ticket.id == purchasedTicketId) {
+  //             ticket.salesCount += 1;
+  //             ticket.isSoldOut = ticket.salesCount >= ticket.maxOder;
+  //           }
+  //         });
+  //       }
+  //     });
+
+  //     // Serialize the updated tickets back to maps
+  //     List<Map<String, dynamic>> updatedTicketsUserEvents =
+  //         ticketsFromUserEvents.map((ticket) => ticket.toJson()).toList();
+  //     transaction.update(eventRef, {'ticket': updatedTicketsUserEvents});
+
+  //     if (allEventRef != null) {
+  //       List<Map<String, dynamic>> updatedTicketsAllEvents =
+  //           ticketsFromAllEvents.map((ticket) => ticket.toJson()).toList();
+  //       transaction.update(allEventRef, {'ticket': updatedTicketsAllEvents});
+  //     }
+  //   });
+  // }
+
+  Future<bool> checkTicketAvailability(
+      String authorId, String eventId, String ticketId) async {
+    // try {
+    // Retrieve the event document from Firestore
+    DocumentSnapshot eventSnapshot = await eventsRef
+        .doc(authorId)
+        .collection('userEvents')
+        .doc(eventId)
+        .get();
+
+    if (!eventSnapshot.exists) {
+      return false; // Event does not exist
+    }
+
+    // Deserialize the data into an Event object
+    Event event = Event.fromJson(eventSnapshot.data() as Map<String, dynamic>);
+
+    // Iterate through the tickets to find the specific ticket
+    for (TicketModel ticket in event.ticket) {
+      if (ticket.id == ticketId) {
+        return !ticket.isSoldOut; // Return true if the ticket is not sold out
+      }
+    }
+
+    return false; // Ticket not found or sold out
+    // } catch (e) {
+    //   print('Error checking ticket availability: $e');
+    //   return false; // In case of error, assume ticket is not available
+    // }
+  }
+
+  // Future<bool> updateIsSoldAndTicketSalesCount(
+  //     String authorId, String eventId, String ticketId) async {
+  //   DocumentReference eventRef =
+  //       eventsRef.doc(authorId).collection('userEvents').doc(eventId);
+
+  //   return FirebaseFirestore.instance.runTransaction((transaction) async {
+  //     DocumentSnapshot eventSnapshot = await transaction.get(eventRef);
+
+  //     if (!eventSnapshot.exists) {
+  //       throw Exception("Event does not exist!");
+  //     }
+
+  //     Event event =
+  //         Event.fromJson(eventSnapshot.data() as Map<String, dynamic>);
+  //     int ticketIndex = event.ticket.indexWhere((t) => t.id == ticketId);
+  //     if (ticketIndex == -1) {
+  //       return false; // Ticket not found
+  //     }
+
+  //     TicketModel ticket = event.ticket[ticketIndex];
+  //     if (ticket.salesCount >= ticket.maxOder) {
+  //       return false; // Ticket sales have reached max order, cannot sell anymore
+  //     }
+
+  //     // Update the sales count and check if it reaches max order
+  //     ticket.salesCount += 1;
+  //     ticket.isSoldOut = ticket.salesCount >= ticket.maxOder;
+
+  //     // Update the event document with modified ticket
+  //     event.ticket[ticketIndex] = ticket;
+  //     transaction.update(
+  //         eventRef, {'ticket': event.ticket.map((t) => t.toJson()).toList()});
+
+  //     return true; // Ticket purchase successful
+  //   }).catchError((error) {
+  //     print("Failed to purchase ticket: $error");
+  //     return false;
+  //   });
+  // }
 
   static Future<void> deleteTicket({
     required TicketOrderModel ticketOrder,
@@ -3706,25 +3957,17 @@ class DatabaseService {
 
   static Future<void> answerEventInviteTransaction({
     required Transaction transaction,
-    required Event event,
+    // required String eventId,
     required String answer,
-    required AccountHolderAuthor currentUser,
+    required DocumentReference? eventInviteRef,
+    required DocumentReference? userInviteRef,
+    // required String  currentUserId,
   }) async {
-    DocumentReference newEventTicketOrderRef = sentEventIviteRef
-        .doc(event.id)
-        .collection('eventInvite')
-        .doc(currentUser.userId);
-
-    transaction.update(newEventTicketOrderRef, {
+    transaction.update(eventInviteRef!, {
       'answer': answer,
     });
 
-    DocumentReference userInviteRef = userInvitesRef
-        .doc(currentUser.userId)
-        .collection('eventInvite')
-        .doc(event.id);
-
-    transaction.update(userInviteRef, {
+    transaction.update(userInviteRef!, {
       'answer': answer,
     });
   }

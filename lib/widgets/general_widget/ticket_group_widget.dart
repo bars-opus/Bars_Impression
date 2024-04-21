@@ -7,6 +7,8 @@ class TicketGoupWidget extends StatefulWidget {
   final bool onInvite;
   final bool isFree;
   final String currency;
+  final String eventId;
+  final String eventAuthorId;
 
   const TicketGoupWidget({
     super.key,
@@ -15,6 +17,8 @@ class TicketGoupWidget extends StatefulWidget {
     required this.isEditing,
     this.onInvite = false,
     required this.isFree,
+    required this.eventId,
+    required this.eventAuthorId,
   });
 
   @override
@@ -23,6 +27,7 @@ class TicketGoupWidget extends StatefulWidget {
 
 class _TicketGoupWidgetState extends State<TicketGoupWidget> {
   Map<String, bool> selectedTickets = {};
+  Map<String, bool> checkingAvailability = {};
 
   @override
   void initState() {
@@ -64,6 +69,24 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
     return DateTime(dateTime.year, dateTime.month, dateTime.day);
   }
 
+  void _showBottomSheetErrorMessage(BuildContext context, String error) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return DisplayErrorHandler(
+          buttonText: 'Ok',
+          onPressed: () async {
+            Navigator.pop(context);
+          },
+          title: 'Sold Out',
+          subTitle: error,
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final List<String> currencyPartition =
@@ -103,6 +126,9 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
           List<Widget> ticketWidgets = tickets.map((ticket) {
             bool isSelected = selectedTickets[ticket.id] ?? false;
             Color textColor = isSelected ? Colors.white : Colors.black;
+            int availableSlot = ticket.maxOder - ticket.salesCount;
+            // bool checkingTicketAvailability = false;
+
             // ... your ListTile or other widget for each ticket ...
             // Placeholder for ticket widget
             return Padding(
@@ -113,112 +139,242 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: ListTile(
-                      // onTap: widget.isEditing
-                      //     ? () {}
-                      //     : () {
-                      //         HapticFeedback.lightImpact();
-                      //         _provider.setTicketList(ticket);
-                      //         // // Navigator.pop;
-                      //         // _showBottomSheetAttend(
-                      //         //    widget. groupTickets, widget. groupTickets.indexOf(ticket));
-                      //       },
+                    padding: const EdgeInsets.all(20.0),
+                    child:
 
-                      title: RichText(
-                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "Type:              ",
-                              style: TextStyle(
-                                fontSize: ResponsiveHelper.responsiveFontSize(
-                                    context, 14.0),
-                                color: textColor,
+                        // ListTile(
+
+                        //   subtitle:
+
+                        Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SalesReceiptWidget(
+                                isTicket: true,
+                                color: Colors.black,
+                                width: 100,
+                                isRefunded: false,
+                                lable: 'Type',
+                                value: ticket.type.toUpperCase(),
                               ),
-                            ),
-                            TextSpan(
-                              text: ticket.type.toUpperCase(),
-                              style: TextStyle(
-                                fontSize: ResponsiveHelper.responsiveFontSize(
-                                    context, 18.0),
-                                color: textColor,
+                              SalesReceiptWidget(
+                                isTicket: true,
+                                color: Colors.black,
+                                width: 100,
+                                isRefunded: false,
+                                lable: 'Acess level',
+                                value: ticket.accessLevel,
                               ),
-                            )
-                          ],
+                              if (ticket.maxOder != 0)
+                                SalesReceiptWidget(
+                                  isTicket: true,
+                                  color: Colors.black,
+                                  width: 100,
+                                  isRefunded: false,
+                                  lable: 'Max order',
+                                  value: ticket.maxOder.toString(),
+                                ),
+                              if (ticket.maxOder != 0)
+                                SalesReceiptWidget(
+                                  isTicket: true,
+                                  color: Colors.black,
+                                  width: 100,
+                                  isRefunded: false,
+                                  lable: 'Available slot',
+                                  value: availableSlot.toString(),
+                                ),
+                              // RichText(
+                              //   textScaleFactor:
+                              //       MediaQuery.of(context).textScaleFactor,
+                              //   text: TextSpan(
+                              //     children: [
+                              //       TextSpan(
+                              //         children: [
+                              //           TextSpan(
+                              //             text: "Type:                 ",
+                              //             style: TextStyle(
+                              //               fontSize: ResponsiveHelper
+                              //                   .responsiveFontSize(
+                              //                       context, 14.0),
+                              //               color: textColor,
+                              //             ),
+                              //           ),
+                              //           TextSpan(
+                              //             text: ticket.type.toUpperCase(),
+                              //             style: TextStyle(
+                              //               fontSize: ResponsiveHelper
+                              //                   .responsiveFontSize(
+                              //                       context, 16.0),
+                              //               fontWeight: FontWeight.bold,
+                              //               color: textColor,
+                              //             ),
+                              //           )
+                              //         ],
+                              //       ),
+                              //       TextSpan(
+                              //         text: "\nAcess level:      ",
+                              //         style: TextStyle(
+                              //           fontSize:
+                              //               ResponsiveHelper.responsiveFontSize(
+                              //                   context, 14.0),
+                              //           color: textColor,
+                              //         ),
+                              //       ),
+                              //       TextSpan(
+                              //           text: ticket.accessLevel,
+                              //           style: TextStyle(
+                              //             fontSize: ResponsiveHelper
+                              //                 .responsiveFontSize(
+                              //                     context, 16.0),
+                              //             color: textColor,
+                              //           )),
+                              //       if (ticket.maxOder != 0)
+                              //         TextSpan(
+                              //           text: "\nMax order:        ",
+                              //           style: TextStyle(
+                              //             fontSize: ResponsiveHelper
+                              //                 .responsiveFontSize(
+                              //                     context, 14.0),
+                              //             color: textColor,
+                              //           ),
+                              //         ),
+                              //       if (ticket.maxOder != 0)
+                              //         TextSpan(
+                              //             text: ticket.maxOder.toString(),
+                              //             style: TextStyle(
+                              //               fontSize: ResponsiveHelper
+                              //                   .responsiveFontSize(
+                              //                       context, 16.0),
+                              //               color: textColor,
+                              //             )),
+                              //       if (ticket.maxOder != 0)
+                              //         TextSpan(
+                              //           text: "\nAvailable slot:   ",
+                              //           style: TextStyle(
+                              //             fontSize: ResponsiveHelper
+                              //                 .responsiveFontSize(
+                              //                     context, 14.0),
+                              //             color: textColor,
+                              //           ),
+                              //         ),
+                              //       if (ticket.maxOder != 0)
+                              //         TextSpan(
+                              //             text: availableSlot.toString(),
+                              //             style: TextStyle(
+                              //               fontSize: ResponsiveHelper
+                              //                   .responsiveFontSize(
+                              //                       context, 16.0),
+                              //               color: textColor,
+                              //             ))
+                              //     ],
+                              //   ),
+                              //   overflow: TextOverflow.ellipsis,
+                              // ),
+                              // Divider()
+                            ],
+                          ),
                         ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-
-                      //  Text(
-                      //   ticket.type,
-                      //   style: Theme.of(context).textTheme.bodyMedium,
-                      // ),
-                      subtitle: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          RichText(
-                            textScaleFactor:
-                                MediaQuery.of(context).textScaleFactor,
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: "Acess level:   ",
-                                  style: TextStyle(
+                        ticket.isSoldOut
+                            ? Text(
+                                'Sold out',
+                                style: TextStyle(
                                     fontSize:
                                         ResponsiveHelper.responsiveFontSize(
-                                            context, 14.0),
-                                    color: textColor,
-                                  ),
-                                ),
-                                TextSpan(
-                                    text: ticket.accessLevel,
-                                    style: TextStyle(
-                                      fontSize:
-                                          ResponsiveHelper.responsiveFontSize(
-                                              context, 16.0),
-                                      color: textColor,
-                                    ))
-                              ],
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Divider()
-                        ],
-                      ),
-                      trailing: Wrap(
-                        children: [
-                          Text(
-                            widget.isFree
-                                ? 'Free'
-                                : '${currencyPartition.isEmpty ? '' : currencyPartition.length > 0 ? currencyPartition[1] : ''} ${ticket.price}',
-                            style: TextStyle(
-                                fontSize: ResponsiveHelper.responsiveFontSize(
-                                    context, 18.0),
-                                color: textColor,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          if (!widget.isEditing)
-                            Checkbox(
-                              checkColor: Colors.blue,
-                              activeColor: Colors.white,
-                              value: selectedTickets[ticket.id],
-                              onChanged: (bool? value) {
-                                HapticFeedback.lightImpact();
-                                _toggleTicket(ticket);
-                              },
-                            ),
-                          if (widget.isEditing)
-                            GestureDetector(
-                                onTap: () => _removeTicket(ticket),
-                                child: Icon(
-                                  Icons.remove,
-                                  color: Colors.red,
-                                )),
-                        ],
-                      ),
+                                            context, 18.0),
+                                    color: Colors.orange[900],
+                                    fontWeight: FontWeight.bold),
+                              )
+                            : Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  if (checkingAvailability[ticket.id] ==
+                                          false ||
+                                      checkingAvailability[ticket.id] == null)
+                                    Text(
+                                      widget.isFree
+                                          ? 'Free'
+                                          : '${currencyPartition.isEmpty ? '' : currencyPartition.length > 0 ? currencyPartition[1] : ''} ${ticket.price}',
+                                      style: TextStyle(
+                                          fontSize: ResponsiveHelper
+                                              .responsiveFontSize(
+                                                  context, 18.0),
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  if (!widget.isEditing)
+                                    checkingAvailability[ticket.id] == true
+                                        ? SizedBox(
+                                            height: ResponsiveHelper
+                                                .responsiveHeight(
+                                                    context, 10.0),
+                                            width: ResponsiveHelper
+                                                .responsiveHeight(
+                                                    context, 10.0),
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 3,
+                                            ),
+                                          )
+                                        : Checkbox(
+                                            checkColor: Colors.blue,
+                                            activeColor: Colors.white,
+                                            side:
+                                                BorderSide(color: Colors.black),
+                                            value: selectedTickets[ticket.id],
+                                            onChanged: (bool? value) async {
+                                              var ticketSelected =
+                                                  selectedTickets[ticket.id] ??
+                                                      false;
+
+                                              HapticFeedback.lightImpact();
+                                              if (ticket.maxOder != 0 &&
+                                                  !ticketSelected) {
+                                                checkingAvailability[
+                                                    ticket.id] = true;
+                                                // checkingTicketAvailability = true;
+                                                bool available =
+                                                    await DatabaseService()
+                                                        .checkTicketAvailability(
+                                                            widget
+                                                                .eventAuthorId,
+                                                            widget.eventId,
+                                                            ticket.id);
+                                                checkingAvailability[
+                                                    ticket.id] = false;
+                                                // checkingTicketAvailability =
+                                                //     false;
+                                                if (!available) {
+                                                  _showBottomSheetErrorMessage(
+                                                      context,
+                                                      "Sorry, this ticket just got sold out.\nKindly select another ticket option");
+                                                  return;
+                                                }
+
+                                                _toggleTicket(ticket);
+                                              } else {
+                                                _toggleTicket(ticket);
+                                              }
+                                            },
+                                          ),
+                                  if (widget.isEditing)
+                                    GestureDetector(
+                                        onTap: () => _removeTicket(ticket),
+                                        child: Icon(
+                                          Icons.remove,
+                                          color: Colors.red,
+                                        )),
+                                ],
+                              ),
+                      ],
                     ),
+                    // trailing:
+                    // ),
                   )),
             );
           }).toList();
@@ -402,40 +558,40 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
 //             .toList();
 
 //         // Return a Card widget for the group, containing a ListView of the tickets
-        // return Padding(
-        //   padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0),
-        //   child: Container(
-        //     decoration: BoxDecoration(
-        //       color: Theme.of(context).primaryColorLight,
-        //       borderRadius: BorderRadius.circular(5),
-        //     ),
-        //     child: Column(
-        //       children: <Widget>[
-        //         ListTile(
-        //           title: Text(
-        //             groupName.toUpperCase(),
-        //             style: Theme.of(context).textTheme.displayMedium,
-        //           ),
-        //         ),
-        //         Container(
-        //           decoration: BoxDecoration(
-        //               color: Colors.blue[50],
-        //               borderRadius: BorderRadius.only(
-        //                   bottomRight: Radius.circular(5.0),
-        //                   bottomLeft: Radius.circular(5.0))),
-        //           child: ListView.builder(
-        //             physics: const NeverScrollableScrollPhysics(),
-        //             shrinkWrap: true,
-        //             itemCount: ticketWidgets.length,
-        //             itemBuilder: (BuildContext context, int ticketIndex) {
-        //               return ticketWidgets[ticketIndex];
-        //             },
-        //           ),
-        //         ),
-        //       ],
-        //     ),
-        //   ),
-        // );
+// return Padding(
+//   padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0),
+//   child: Container(
+//     decoration: BoxDecoration(
+//       color: Theme.of(context).primaryColorLight,
+//       borderRadius: BorderRadius.circular(5),
+//     ),
+//     child: Column(
+//       children: <Widget>[
+//         ListTile(
+//           title: Text(
+//             groupName.toUpperCase(),
+//             style: Theme.of(context).textTheme.displayMedium,
+//           ),
+//         ),
+//         Container(
+//           decoration: BoxDecoration(
+//               color: Colors.blue[50],
+//               borderRadius: BorderRadius.only(
+//                   bottomRight: Radius.circular(5.0),
+//                   bottomLeft: Radius.circular(5.0))),
+//           child: ListView.builder(
+//             physics: const NeverScrollableScrollPhysics(),
+//             shrinkWrap: true,
+//             itemCount: ticketWidgets.length,
+//             itemBuilder: (BuildContext context, int ticketIndex) {
+//               return ticketWidgets[ticketIndex];
+//             },
+//           ),
+//         ),
+//       ],
+//     ),
+//   ),
+// );
 //       },
 //     );
 //   }

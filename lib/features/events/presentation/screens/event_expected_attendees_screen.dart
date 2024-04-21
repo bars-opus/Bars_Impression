@@ -96,6 +96,8 @@ class _EventExpectedAttendeesScreenState
       // Cast away the nulls to get a non-nullable list
       List<TicketOrderModel> users = List<TicketOrderModel>.from(filteredUsers);
 
+      
+
       _inviteSnapshot.addAll(inviteSnapShot.docs);
       if (mounted) {
         print(users.length.toString());

@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:app_tracking_transparency/app_tracking_transparency.dart';
+// import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:bars/general/pages/chats/chats.dart';
 
 import 'package:bars/utilities/exports.dart';
@@ -21,7 +21,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  final int _updateAppVersion = Platform.isIOS ? 20 : 20;
+  final int _updateAppVersion = Platform.isIOS ? 21 : 21;
   String notificationMsg = '';
 
   @override
@@ -32,8 +32,8 @@ class HomeScreenState extends State<HomeScreen> {
       _setUpactivityCount();
       _configureNotification();
       initDynamicLinks();
-      // showAnalytics();
     });
+    // if (Platform.isIOS) showAnalytics();
   }
 
   // showAnalytics() async {
@@ -79,9 +79,25 @@ class HomeScreenState extends State<HomeScreen> {
 
   // Future<void> showTrackingExplanationBottomSheet(BuildContext context) async {
   //   await showModalBottomSheet(
+  //     isDismissible: false,
+  //     enableDrag: false,
+  //     isScrollControlled: true,
   //     backgroundColor: Colors.transparent,
   //     context: context,
   //     builder: (BuildContext context) {
+  //       var bodyMeduim = TextStyle(
+  //           fontSize: ResponsiveHelper.responsiveFontSize(
+  //             context,
+  //             14,
+  //           ),
+  //           color: Colors.white);
+  //       var bodyLarge = TextStyle(
+  //           fontSize: ResponsiveHelper.responsiveFontSize(
+  //             context,
+  //             16,
+  //           ),
+  //           fontWeight: FontWeight.bold,
+  //           color: Colors.white);
   //       return Container(
   //         padding: EdgeInsets.all(26),
   //         decoration: BoxDecoration(
@@ -92,38 +108,66 @@ class HomeScreenState extends State<HomeScreen> {
   //         height: ResponsiveHelper.responsiveHeight(
   //             context, 500), // Adjust the height as needed
   //         child: Column(
-  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           crossAxisAlignment: CrossAxisAlignment.center,
   //           mainAxisAlignment: MainAxisAlignment.center,
   //           children: <Widget>[
-  //             Text(
-  //               'Help Improve\nBars Impression',
-  //               style: TextStyle(
-  //                   fontSize: ResponsiveHelper.responsiveFontSize(context, 20),
-  //                   fontWeight: FontWeight.bold,
-  //                   color: Colors.white),
+  //             Icon(
+  //               Icons.data_exploration_outlined,
+  //               color: Colors.white,
+  //               size: ResponsiveHelper.responsiveHeight(context, 40.0),
   //             ),
-  //             const SizedBox(height: 16),
-  //             Text(
-  //               'Allowing tracking helps us to improve the app by understanding how it is used. which leads to better features and performance improvements. Your privacy is important to us\n\n- We only collect anonymous usage statistics and performance data.\n\n- We never sell your data or use it for any purpose other than improving Bars Impression\n\n- You can change your decision at any time in the app settings.\n\n\nThank you for helping us make Bars Impression better for everyone!',
-  //               style: TextStyle(
-  //                   fontSize: ResponsiveHelper.responsiveFontSize(context, 14),
-  //                   color: Colors.white),
+  //             const SizedBox(height: 5),
+  //             ShakeTransition(
+  //               child: Text(
+  //                 'Help Improve\nBars Impression',
+  //                 style: TextStyle(
+  //                     fontSize:
+  //                         ResponsiveHelper.responsiveFontSize(context, 20),
+  //                     fontWeight: FontWeight.bold,
+  //                     color: Colors.white),
+  //               ),
   //             ),
   //             const SizedBox(height: 20),
-  //             // Spacer(),
-  //             Center(
-  //               child: MiniCircularProgressButton(
-  //                 text: 'Continue',
-  //                 onPressed: () {
-  //                   // Close the bottom sheet and request tracking permission
-  //                   Navigator.pop(context);
-  //                   AppTrackingTransparency.requestTrackingAuthorization().then(
-  //                     (status) {
-  //                       initFirebaseAnalytics(status);
-  //                     },
-  //                   );
-  //                 },
+  //             RichText(
+  //               textScaleFactor: MediaQuery.of(context).textScaleFactor,
+  //               text: TextSpan(
+  //                 children: [
+  //                   TextSpan(
+  //                     text:
+  //                         "Allowing tracking helps us to improve the app by understanding how it is used. which leads to better features and performance improvements.",
+  //                     style: bodyMeduim,
+  //                   ),
+  //                   TextSpan(
+  //                     text: "\n\nYour privacy is important to us.",
+  //                     style: bodyLarge,
+  //                   ),
+  //                   TextSpan(
+  //                     text:
+  //                         "\n - We only collect anonymous usage statistics and performance data.\n- We never sell your data or use it for any purpose other than improving Bars Impression.\n- You can change your decision at any time in the app settings.\n\nThank you for helping us make Bars Impression better for everyone!.",
+  //                     style: bodyMeduim,
+  //                   ),
+  //                 ],
   //               ),
+  //             ),
+  //             // Text(
+  //             //   ' \n\n',
+  //             //   style: TextStyle(
+  //             //       fontSize: ResponsiveHelper.responsiveFontSize(context, 14),
+  //             //       color: Colors.white),
+  //             // ),
+  //             const SizedBox(height: 30),
+  //             // Spacer(),
+  //             MiniCircularProgressButton(
+  //               text: 'Continue',
+  //               onPressed: () {
+  //                 // Close the bottom sheet and request tracking permission
+  //                 Navigator.pop(context);
+  //                 AppTrackingTransparency.requestTrackingAuthorization().then(
+  //                   (status) {
+  //                     initFirebaseAnalytics(status);
+  //                   },
+  //                 );
+  //               },
   //             )
   //           ],
   //         ),

@@ -720,7 +720,7 @@ class _ChatsState extends State<Chats>
   _loadingSkeleton(bool deleted, String userId) {
     return LoadingChats(
       deleted: deleted,
-      userId: userId,
+      // userId: userId,
       onPressed: deleted
           ? () {
               _showBottomSheetDeledDeletedChatUser(context, userId);

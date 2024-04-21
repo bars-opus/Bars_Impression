@@ -164,7 +164,8 @@ class _CreativesScreenState extends State<CreativesScreen>
 
     int newLimit = widget.seeMoreFrom.isNotEmpty ? 15 : limit;
 
-    var query = userProfessionalRef.where('showOnExplorePage', isEqualTo: true)
+    var query = userProfessionalRef
+        .where('showOnExplorePage', isEqualTo: true)
         .where('profileHandle', isEqualTo: widget.profileHandle)
         .where('noBooking', isEqualTo: false);
 
@@ -342,8 +343,9 @@ class _CreativesScreenState extends State<CreativesScreen>
     String? continent,
   }) async {
     try {
-      var query = userProfessionalRef.where('showOnExplorePage', isEqualTo: true).where('profileHandle',
-          isEqualTo: widget.profileHandle);
+      var query = userProfessionalRef
+          .where('showOnExplorePage', isEqualTo: true)
+          .where('profileHandle', isEqualTo: widget.profileHandle);
 
       if (country != null) {
         query = query.where('country', isEqualTo: country);

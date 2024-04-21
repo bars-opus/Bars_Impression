@@ -7,27 +7,32 @@ class ImageSafetyHandler {
     var _provider = Provider.of<UserData>(context, listen: false);
     HapticFeedback.heavyImpact();
 
-    final file = await PickCropImage.pickedMedia(cropImage: _cropImage);
-    if (file == null) return;
+    try {
+      final file = await PickCropImage.pickedMedia(cropImage: _cropImage);
+      if (file == null) return;
 
-    _provider.setIsLoading(true);
-    // final isHarmful = await _checkForHarmfulContent(context, file as File);
-      bool isHarmful = await HarmfulContentChecker.checkForHarmfulContent(context, file as File);
+      _provider.setIsLoading(true);
+      // final isHarmful = await _checkForHarmfulContent(context, file as File);
+      bool isHarmful = await HarmfulContentChecker.checkForHarmfulContent(
+          context, file as File);
 
-    if (isHarmful) {
-      _provider.setIsLoading(false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-              'Harmful content detected. Please choose a different image.'),
-          duration: Duration(seconds: 3),
-        ),
-      );
-    } else {
-      _provider.setIsLoading(false);
-      // isEvent ?
-      _provider.setEventImage(file);
-      //  : _provider.setPostImage(file);
+      if (isHarmful) {
+        _provider.setIsLoading(false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'Harmful content detected. Please choose a different image.'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      } else {
+        _provider.setIsLoading(false);
+        // isEvent ?
+        _provider.setEventImage(file);
+        //  : _provider.setPostImage(file);
+      }
+    } catch (e) {
+      mySnackBar(context, 'Image not selected');
     }
   }
 

@@ -182,11 +182,11 @@ async function updateTransferRecipient(data, PAYSTACK_SECRET_KEY) {
 
   try {
     const response = await axios.put(`https://api.paystack.co/transferrecipient/${data.oldTransferRecepientId}`, {
-      type: "ghipss", // Adjust type as per your requirements
+      // type: "ghipss", // Adjust type as per your requirements
       name: data.business_name,
-      account_number: data.account_number,
-      bank_code: data.bank_code,
-      currency: 'GHS',
+      // account_number: data.account_number,
+      // bank_code: data.bank_code,
+      // currency: 'GHS',
     }, {
       headers: {
         Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
@@ -195,7 +195,7 @@ async function updateTransferRecipient(data, PAYSTACK_SECRET_KEY) {
     });
 
     // Check if the status is true and the data object contains the recipient_code
-    if (response.data.status && response.data.data && response.data.data.recipient_code) {
+    if (response.data.status ) {
       return response.data.data.recipient_code;
     } else {
       // Provide more detailed error informationy

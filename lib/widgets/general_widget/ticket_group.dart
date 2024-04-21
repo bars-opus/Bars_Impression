@@ -154,13 +154,13 @@ class _TicketGroupState extends State<TicketGroup> {
         if (!existingOrder) {
           String commonId = Uuid().v4();
 
-          Future<void> sendInvites() =>
-              DatabaseService.answerEventInviteTransaction(
-                transaction: transaction,
-                event: widget.event!,
-                answer: widget.inviteReply,
-                currentUser: _user!,
-              );
+          // Future<void> sendInvites() =>
+          //     DatabaseService.answerEventInviteTransaction(
+          //       transaction: transaction,
+          //       event: widget.event!,
+          //       answer: widget.inviteReply,
+          //       currentUser: _user!,
+          //     );
 
           Future<TicketOrderModel> createTicketOrder() => _createTicketOrder(
                 transactionId,
@@ -172,9 +172,9 @@ class _TicketGroupState extends State<TicketGroup> {
                 paymentProvider,
               );
 
-          if (widget.inviteReply.isNotEmpty) {
-            await retry(() => sendInvites(), retries: 3);
-          }
+          // if (widget.inviteReply.isNotEmpty) {
+          //   await retry(() => sendInvites(), retries: 3);
+          // }
 
           TicketOrderModel order =
               await retry(() => createTicketOrder(), retries: 3);
@@ -190,6 +190,7 @@ class _TicketGroupState extends State<TicketGroup> {
           }
 
           // Navigator.pop(context);
+          await removeTickets();
           Navigator.pop(context);
           PaletteGenerator _paletteGenerator =
               await PaletteGenerator.fromImageProvider(
@@ -197,9 +198,7 @@ class _TicketGroupState extends State<TicketGroup> {
             size: Size(1110, 150),
             maximumColorCount: 20,
           );
-
-          await removeTickets();
-
+          // HapticFeedback.lightImpact();
           _navigateToPage(
             context,
             PurchasedAttendingTicketScreen(
@@ -220,6 +219,7 @@ class _TicketGroupState extends State<TicketGroup> {
             Navigator.pop(context);
             // await Future.delayed(Duration(milliseconds: 700));
             Navigator.pop(context);
+
             // await Future.delayed(Duration(milliseconds: 700));
           }
           if (widget.event!.termsAndConditions.isNotEmpty) {
@@ -296,14 +296,24 @@ class _TicketGroupState extends State<TicketGroup> {
       transactionId: transactionId, isDeleted: false,
     );
 
+    List<String> ticketIds = _finalTicket.map((ticket) => ticket.id).toList();
+
+    bool dontUpdateTicketSales =
+        _finalTicket.every((ticket) => ticket.maxOder == 0);
+
     // widget.event!.ticketOrder.add(order);
+
     await DatabaseService.purchaseTicketTransaction(
         transaction: transaction,
         ticketOrder: order,
         user: _user!,
         purchaseReferenceId: purchaseReferenceId,
         eventAuthorId: widget.event!.authorId,
-        isEventFree: widget.event!.isFree);
+        isEventFree: widget.event!.isFree,
+        isEventPrivate: widget.event!.isPrivate,
+        purchasedTicketIds: ticketIds,
+        dontUpdateTicketSales: dontUpdateTicketSales,
+        inviteReply: widget.inviteReply);
 
     return order;
   }
@@ -339,7 +349,7 @@ class _TicketGroupState extends State<TicketGroup> {
   }
 
   _logVerificationErroData(PaymentResult paymentResult, String result,
-      bool ticketGenerated, double totalPrice, String reference) {
+      bool ticketGenerated, int totalPrice, String reference) {
     var _provider = Provider.of<UserData>(context, listen: false);
     String id = Uuid().v4();
     DateTime now = DateTime.now();
@@ -402,11 +412,16 @@ class _TicketGroupState extends State<TicketGroup> {
   }
 
   void _initiatePayment(BuildContext context) async {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
     // try {
     // Assuming you have the email and amount to charge
-    int price = 3;
-    String email = "chiqqinPrince@gmail.com"; // User's email
-    int amount = price; // Amount in kobo
+    // int price = 3;
+    double totalPrice = _provider.ticketList
+        .fold(0.0, (double sum, TicketModel ticket) => sum + ticket.price);
+    String email = FirebaseAuth.instance.currentUser!.email!;
+    //  "supportbarsopus@gmail.com"; // User's email
+    int amount = totalPrice.toInt(); // Amount in kobo
 
     final HttpsCallable callable = FirebaseFunctions.instance
         .httpsCallable('initiatePaystackMobileMoneyPayment');
@@ -428,7 +443,8 @@ class _TicketGroupState extends State<TicketGroup> {
 
     // Navigate to the payment screen with the authorization URL
     if (success) {
-      await navigateToPaymentScreen(context, authorizationUrl, reference);
+      await navigateToPaymentScreen(
+          context, authorizationUrl, reference, amount);
     } else {
       // Handle error
       _showBottomSheetErrorMessage(
@@ -458,14 +474,9 @@ class _TicketGroupState extends State<TicketGroup> {
     return 'ChargedFrom${platform}_$commonId';
   }
 
-  Future<void> navigateToPaymentScreen(
-      BuildContext context, String authorizationUrl, String reference) async {
-    var _provider = Provider.of<UserData>(context, listen: false);
-
+  Future<void> navigateToPaymentScreen(BuildContext context,
+      String authorizationUrl, String reference, int totalPrice) async {
     // final bool? result =
-
-    double totalPrice = _provider.ticketList
-        .fold(0.0, (double sum, TicketModel ticket) => sum + ticket.price);
 
     PaymentResult? paymentResult = await Navigator.push(
       context,
@@ -494,7 +505,7 @@ class _TicketGroupState extends State<TicketGroup> {
           'reference': reference,
           //  paymentResult.reference,
           'eventId': widget.event!.id,
-          'amount': 3 * 100,
+          'amount': totalPrice.toInt() * 100,
 
           //  totalPrice.toInt() *
           //     100, // Assuming this is the correct amount in kobo
@@ -503,9 +514,11 @@ class _TicketGroupState extends State<TicketGroup> {
         // If server-side verification is successful, generate tickets
         if (verificationResult.data['success']) {
           Navigator.pop(context);
+          Navigator.pop(context);
           await _processingToGenerate(
               verificationResult, paymentResult, true, 'Paystack');
         } else {
+          Navigator.pop(context);
           Navigator.pop(context);
           await _processingToGenerate(
               verificationResult, paymentResult, false, 'Paystack');
@@ -551,7 +564,7 @@ class _TicketGroupState extends State<TicketGroup> {
       builder: (BuildContext context) {
         return ConfirmationPrompt(
           height:
-              widget.event!.isFree || widget.event!.isCashPayment ? 300 : 320,
+              widget.event!.isFree || widget.event!.isCashPayment ? 300 : 350,
           buttonText: widget.event!.isFree || widget.event!.isCashPayment
               ? 'Generate Ticket'
               : 'Purchase Ticket',
@@ -571,12 +584,11 @@ class _TicketGroupState extends State<TicketGroup> {
             } else {
               // Check the condition of the event being free or cash payment
               if (widget.event!.isFree || widget.event!.isCashPayment) {
-                HapticFeedback.lightImpact();
+                // HapticFeedback.lightImpact();
                 Navigator.pop(context);
                 _generateTickets('', '', false, '');
               } else {
                 _showBottomSheetLoading('Initializing payment');
-
                 _initiatePayment(context);
 
                 // _payForTicket();
@@ -590,7 +602,9 @@ class _TicketGroupState extends State<TicketGroup> {
               ? 'By purchasing or generating a ticket to this event, you have accepted the terms and conditions that govern this event as provided by the event organizer.'
               : widget.event!.isCashPayment
                   ? 'The payment method for this ticket is cash. Therefore, you will be required to pay for the ticket at the event venue. For further clarification or more information, please contact the event organizer'
-                  : '',
+                  : widget.event!.isFree
+                      ? ''
+                      : 'Please avoid interrupting any processing, loading, or countdown indicators during the payment process. Kindly wait for the process to finish on its own.',
         );
       },
     );
@@ -816,8 +830,8 @@ class _TicketGroupState extends State<TicketGroup> {
   Future<void> saveTickets(List<TicketModel> tickets) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
-      String serializedData =
-          jsonEncode(tickets.map((ticket) => ticket.toJson()).toList());
+      String serializedData = jsonEncode(
+          tickets.map((ticket) => ticket.toJsonSharedPref()).toList());
       await prefs.setString('savedTickets', serializedData);
     } catch (e) {
       print("Error saving tickets: $e");
@@ -856,6 +870,10 @@ class _TicketGroupState extends State<TicketGroup> {
                     ? _provider.currency
                     : widget.event!.rate,
                 isFree: widget.event == null ? false : widget.event!.isFree,
+                eventId: widget.event == null ? '' : widget.event!.id,
+                eventAuthorId: widget.event == null
+                    ? widget.currentUserId
+                    : widget.event!.authorId,
               ),
             )),
         if (_provider.ticketList.isNotEmpty)
@@ -874,6 +892,8 @@ class _TicketGroupState extends State<TicketGroup> {
                     // Proceed with navigation or next steps
                   } catch (e) {
                     print("Failed to save tickets: $e");
+                    _provider.ticketList.clear();
+                    Navigator.pop(context);
                     _showBottomSheetErrorMessage(
                         context, "Error preparing tickets. Please try again.");
                     return;

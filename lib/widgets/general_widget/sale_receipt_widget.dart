@@ -7,19 +7,22 @@ class SalesReceiptWidget extends StatelessWidget {
   final bool isRefunded;
   final Color? color;
   final int? width;
+  final bool isTicket;
   const SalesReceiptWidget(
       {super.key,
       required this.lable,
       required this.value,
       required this.isRefunded,
       this.color,
+      this.isTicket = false,
       this.width});
 
   @override
   Widget build(BuildContext context) {
     var _textStyle = TextStyle(
-      fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-      color: Colors.grey,
+      fontSize:
+          ResponsiveHelper.responsiveFontSize(context, isTicket ? 14 : 12.0),
+      color: isTicket ? Colors.black : Colors.grey,
     );
 
     var _textStyle2 = TextStyle(
