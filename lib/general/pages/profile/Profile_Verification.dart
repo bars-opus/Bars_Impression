@@ -188,7 +188,8 @@ class _ProfileVerificationState extends State<ProfileVerification> {
             groupValue: selectedGovIdType,
             title: Text(
               govIdType,
-              style: TextStyle(color: color, fontSize: 14),
+              style: TextStyle(color: color, fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 14),),
             ),
             activeColor: Colors.blue,
             onChanged: (govIdType) => setState(
@@ -1010,7 +1011,8 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                 Text(
                                   'Provide a link to a stable Wikipedia article about you',
                                   style: TextStyle(
-                                      color: Colors.grey, fontSize: 12),
+                                      color: Colors.grey, fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 12),),
                                   textAlign: TextAlign.start,
                                 ),
                                 const SizedBox(
@@ -1029,7 +1031,8 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                 Text(
                                   'Provide news articles that are about or reference yourself multiple times in the article. These articles must be from recognized news organizations and cannot be blog or self-published content.',
                                   style: TextStyle(
-                                      color: Colors.grey, fontSize: 12),
+                                      color: Colors.grey, fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 12),),
                                   textAlign: TextAlign.start,
                                 ),
                                 const SizedBox(
@@ -1090,7 +1093,8 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                 Text(
                                   'Provide a link to any of your social media accounts that are in the public interest.',
                                   style: TextStyle(
-                                      color: Colors.grey, fontSize: 12),
+                                      color: Colors.grey, fontSize:  ResponsiveHelper.responsiveFontSize(
+                                context, 12),),
                                   textAlign: TextAlign.start,
                                 ),
                                 ContentFieldBlack(
@@ -1106,7 +1110,8 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                                 Text(
                                   'You can provide an additional link to confirm your notability.',
                                   style: TextStyle(
-                                      color: Colors.grey, fontSize: 12),
+                                      color: Colors.grey, fontSize:  ResponsiveHelper.responsiveFontSize(
+                                context, 12),),
                                   textAlign: TextAlign.start,
                                 ),
                                 Center(

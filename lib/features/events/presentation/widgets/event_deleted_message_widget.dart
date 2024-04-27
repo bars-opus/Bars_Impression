@@ -205,7 +205,10 @@ class _EventDeletedMessageWidgetState extends State<EventDeletedMessageWidget> {
                       ),
                       TextSpan(
                         text: "\nContact oragnizer here.",
-                        style: TextStyle(fontSize: 14, color: Colors.blue),
+                        style: TextStyle(
+                            fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 14),
+                            color: Colors.blue),
                       ),
 
                       // Include any additional information or links here
@@ -229,7 +232,10 @@ class _EventDeletedMessageWidgetState extends State<EventDeletedMessageWidget> {
                       ),
                       TextSpan(
                         text: "support@barsopus.com.",
-                        style: TextStyle(fontSize: 14, color: Colors.blue),
+                        style: TextStyle(
+                            fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 14),
+                            color: Colors.blue),
                       ),
                       // TextSpan(
                       //   text: "\n\nYour order Id .",

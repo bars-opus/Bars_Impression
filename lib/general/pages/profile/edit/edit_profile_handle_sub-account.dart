@@ -211,7 +211,8 @@ class _EditProfileHandleSubAccountState
                             makeupArtist +
                             brandInfluencer +
                             mC,
-                        style: TextStyle(fontSize: 12, color: Colors.blue),
+                        style: TextStyle(fontSize:  ResponsiveHelper.responsiveFontSize(
+                                context, 12), color: Colors.blue),
                       ),
                       const SizedBox(
                         height: 10,
@@ -462,7 +463,8 @@ class _EditProfileHandleSubAccountState
       title: Text(
         title,
         style:
-            TextStyle(fontSize: 14, color: isTaped ? Colors.blue : Colors.grey),
+            TextStyle(fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 14), color: isTaped ? Colors.blue : Colors.grey),
       ),
       trailing: Icon(
           color: isTaped ? Colors.blue : Colors.grey,

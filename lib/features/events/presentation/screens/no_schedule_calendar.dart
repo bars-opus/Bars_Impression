@@ -29,7 +29,8 @@ class NoScheduleCalendar extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 30.0, right: 30),
                   child: Text(
                     'ask a question here',
-                    style: TextStyle(color: Colors.blue, fontSize: 14),
+                    style: TextStyle(color: Colors.blue, fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 14),),
                     textAlign: TextAlign.center,
                   ),
                 ),

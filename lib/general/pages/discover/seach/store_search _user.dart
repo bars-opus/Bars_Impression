@@ -74,7 +74,8 @@ class _StoreSearchUsersState extends State<StoreSearchUsers> {
                                       text: '\nCheck username and try again.'),
                                 ],
                                 style:
-                                    TextStyle(fontSize: 14, color: Colors.grey),
+                                    TextStyle(fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 14), color: Colors.grey),
                               )),
                         );
                       }

@@ -285,7 +285,7 @@ class EventBuilderWidget extends StatelessWidget {
                           )),
                       TextSpan(
                         text: isFree
-                            ? '\nDiscover free ${typeSpecific.toLowerCase()} happening in ${user.country!.isEmpty ? 'your country' : 'user.country'} and make unforgettable memories. Join the excitement and experience the vibrant culture firsthand.'
+                            ? '\nDiscover free ${typeSpecific.toLowerCase()} happening in ${user.country!.isEmpty ? 'your country' : user.country} and make unforgettable memories. Join the excitement and experience the vibrant culture firsthand.'
                             : '\nLet\'s create unforgettable memories and forge lifelong friendships. Explore, attend, and experience every moment of the exciting ${typeSpecific.toLowerCase()} awaiting you this week',
                         style: Theme.of(context).textTheme.bodyMedium,
                       )

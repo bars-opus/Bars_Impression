@@ -986,7 +986,8 @@ class _PurchasedAttendingTicketScreenState
                           ),
                           TextSpan(
                             text: 'refund policy document  ',
-                            style: TextStyle(color: Colors.blue, fontSize: 14),
+                            style: TextStyle(color: Colors.blue, fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 14),),
                           ),
                           TextSpan(
                             text:
@@ -1010,7 +1011,8 @@ class _PurchasedAttendingTicketScreenState
                         children: [
                           TextSpan(
                             text: 'Read more about the ticket system.',
-                            style: TextStyle(color: Colors.blue, fontSize: 14),
+                            style: TextStyle(color: Colors.blue, fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 14),),
                           ),
                         ],
                       ),
@@ -1032,7 +1034,8 @@ class _PurchasedAttendingTicketScreenState
                           ),
                           TextSpan(
                             text: 'support team.',
-                            style: TextStyle(color: Colors.blue, fontSize: 14),
+                            style: TextStyle(color: Colors.blue, fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 14),),
                           ),
                         ],
                       ),

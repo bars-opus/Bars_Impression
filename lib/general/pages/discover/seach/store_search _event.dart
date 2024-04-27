@@ -60,7 +60,8 @@ class _StoreSearchEventsState extends State<StoreSearchEvents> {
                                     color: Colors.blueGrey)),
                             TextSpan(text: '\nCheck title and try again.'),
                           ],
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                          style: TextStyle(fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 14), color: Colors.grey),
                         )),
                       );
                     }

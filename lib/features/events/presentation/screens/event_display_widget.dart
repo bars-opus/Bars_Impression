@@ -37,6 +37,7 @@ class EventDisplayWidget extends StatefulWidget {
 class _EventDisplayWidgetState extends State<EventDisplayWidget> {
   bool _eventHasStarted = false;
   bool _eventHasEnded = false;
+  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -148,40 +149,45 @@ class _EventDisplayWidgetState extends State<EventDisplayWidget> {
       },
       isAuthor: isAuthor,
       child: GestureDetector(
-        onTap: () async {
-          int eventIndex =
-              widget.eventList.indexWhere((p) => p.id == widget.event.id);
-          await Future.delayed(Duration(milliseconds: 300));
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => widget.eventPagesOnly
-                      ? EventPages(
-                          types: 'All',
-                          event: widget.event,
-                          currentUserId: widget.currentUserId,
-                          eventList: widget.eventList,
-                          eventSnapshot: widget.eventSnapshot,
-                          eventIndex: eventIndex,
-                          liveCity: widget.liveCity,
-                          liveCountry: widget.liveCountry,
-                          sortNumberOfDays: widget.sortNumberOfDays,
-                          isFrom: widget.isFrom,
-                        )
-                      : EventPageView(
-                          event: widget.event,
-                          currentUserId: widget.currentUserId,
-                          eventList: widget.eventList,
-                          eventSnapshot: widget.eventSnapshot,
-                          eventIndex: eventIndex,
-                          pageIndex: widget.pageIndex,
-                          key: ValueKey('EventPageView1'),
-                          liveCity: widget.liveCity,
-                          liveCountry: widget.liveCountry,
-                          sortNumberOfDays: widget.sortNumberOfDays,
-                          isFrom: widget.isFrom,
-                        )));
-        },
+        onTap: _isNavigating
+            ? () {}
+            : () async {
+                _isNavigating = true;
+
+                int eventIndex =
+                    widget.eventList.indexWhere((p) => p.id == widget.event.id);
+                await Future.delayed(Duration(milliseconds: 300));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => widget.eventPagesOnly
+                            ? EventPages(
+                                types: 'All',
+                                event: widget.event,
+                                currentUserId: widget.currentUserId,
+                                eventList: widget.eventList,
+                                eventSnapshot: widget.eventSnapshot,
+                                eventIndex: eventIndex,
+                                liveCity: widget.liveCity,
+                                liveCountry: widget.liveCountry,
+                                sortNumberOfDays: widget.sortNumberOfDays,
+                                isFrom: widget.isFrom,
+                              )
+                            : EventPageView(
+                                event: widget.event,
+                                currentUserId: widget.currentUserId,
+                                eventList: widget.eventList,
+                                eventSnapshot: widget.eventSnapshot,
+                                eventIndex: eventIndex,
+                                pageIndex: widget.pageIndex,
+                                key: ValueKey('EventPageView1'),
+                                liveCity: widget.liveCity,
+                                liveCountry: widget.liveCountry,
+                                sortNumberOfDays: widget.sortNumberOfDays,
+                                isFrom: widget.isFrom,
+                              )));
+                _isNavigating = false;
+              },
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),

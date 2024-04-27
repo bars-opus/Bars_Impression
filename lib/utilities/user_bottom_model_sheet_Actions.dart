@@ -203,7 +203,8 @@ class _UserBottomModalSheetActionsState
             //             style: Theme.of(context).textTheme.bodyMedium),
             //         TextSpan(
             //           text: "\n${user.profileHandle}",
-            //           style: TextStyle(color: Colors.blue, fontSize: 12),
+            //           style: TextStyle(color: Colors.blue, fontSize:  ResponsiveHelper.responsiveFontSize(
+                                // context, 12),),
             //         )
             //       ],
             //     ),

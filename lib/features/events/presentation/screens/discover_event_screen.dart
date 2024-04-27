@@ -48,9 +48,9 @@ class _DiscoverEventScreenState extends State<DiscoverEventScreen>
         length: 10, initialIndex: widget.liveLocationIntialPage, vsync: this);
     _tabController.addListener(() {
       // Check if the animation is completed. This indicates that tab has fully changed
-      if (!_tabController.indexIsChanging) {
-        HapticFeedback.mediumImpact();
-      }
+      // if (!_tabController.indexIsChanging) {
+      //   HapticFeedback.mediumImpact();
+      // }
     });
     _hideButtonController = ScrollController();
     // _pageController = PageController(

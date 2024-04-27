@@ -627,7 +627,7 @@ class _TicketAndCalendarFeedScreenState
             ],
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
             child: GestureDetector(
               onTap: () {
                 HapticFeedback.lightImpact();
@@ -639,14 +639,14 @@ class _TicketAndCalendarFeedScreenState
                   children: [
                     TextSpan(
                       text:
-                          'The calendar above allows you to stay organized by keeping track of the dates of your events (Tickets). To explore events for specific dates, tap ',
+                          'The calendar above allows you to stay organized by keeping track of the dates of your tickets (events). To explore other events for specific dates, ',
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                     TextSpan(
-                      text: "Explore events by date.",
+                      text: "tap here.",
                       style: TextStyle(
                         fontSize:
-                            ResponsiveHelper.responsiveFontSize(context, 14.0),
+                            ResponsiveHelper.responsiveFontSize(context, 12.0),
                         color: Colors.blue,
                       ),
                     )

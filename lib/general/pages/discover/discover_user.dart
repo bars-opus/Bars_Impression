@@ -39,10 +39,10 @@ class _DiscoverUserState extends State<DiscoverUser>
         length: 23, initialIndex: widget.liveLocationIntialPage, vsync: this);
     _tabController.addListener(() {
       // Check if the animation is completed. This indicates that tab has fully changed
-      if (!_tabController.indexIsChanging) {
-        // Generate a light haptic feedback
-        HapticFeedback.mediumImpact();
-      }
+      // if (!_tabController.indexIsChanging) {
+      //   // Generate a light haptic feedback
+      //   HapticFeedback.mediumImpact();
+      // }
     });
   }
 

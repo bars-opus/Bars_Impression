@@ -215,7 +215,8 @@ class _SubAccountsState extends State<SubAccounts> {
                     ),
                     // Text(
                     //   widget.user.subAccountType!,
-                    //   style: TextStyle(fontSize: 12, color: Colors.blue),
+                    //   style: TextStyle(fontSize:  ResponsiveHelper.responsiveFontSize(
+                    // context, 12), color: Colors.blue),
                     // ),
                     Center(
                       child: Padding(

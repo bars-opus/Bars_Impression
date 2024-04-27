@@ -265,7 +265,7 @@ class _ExploreEventCalendarState extends State<ExploreEventCalendar> {
           ),
           TicketPurchasingIcon(
             // icon: Icons.schedule_outlined,
-            title: loading ? 'Loading...' : ' Explore \nevents by date',
+            title: '',
           ),
           // const SizedBox(
           //   height: 30,
@@ -465,15 +465,14 @@ class _ExploreEventCalendarState extends State<ExploreEventCalendar> {
                         height: 30,
                       ),
                       Text(
-                        'Key.',
-                        style: TextStyle(
-                          fontSize: ResponsiveHelper.responsiveFontSize(
-                              context, 16.0),
-                          color: Theme.of(context).secondaryHeaderColor,
-                        ),
+                        'Explore events by dates',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      const SizedBox(
+                        height: 10,
                       ),
                       Text(
-                        'Dfferent colors represent different event locations for you to easily identify diesired events.',
+                        'The use of different colors in the event calendar represents various event locations.',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                       _userLocationSettings!.city!.isEmpty

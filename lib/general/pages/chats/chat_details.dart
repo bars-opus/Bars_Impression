@@ -155,7 +155,8 @@ class _ChatDetailsState extends State<ChatDetails> {
             ),
             subtitle: Text(
               widget.user.profileHandle!,
-              style: TextStyle(color: Colors.blue, fontSize: 12),
+              style: TextStyle(color: Colors.blue, fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 12),),
               overflow: TextOverflow.ellipsis,
             ),
           ),

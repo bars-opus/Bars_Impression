@@ -2619,6 +2619,15 @@ class _HomeMobileState extends State<HomeMobile>
     _pageController = PageController(
       initialPage: _currentTab,
     );
+    _pageController.addListener(() {
+      // Check if the scroll position indicates that the page has finished scrolling
+      if ((_pageController.position.pixels %
+              _pageController.position.viewportDimension) ==
+          0) {
+        triggerHapticFeedback(); // Trigger haptic feedback when the page finishes scrolling
+      }
+    });
+
     // _setUpInvitsCount();
 
     int? version = Platform.isIOS
@@ -2631,6 +2640,9 @@ class _HomeMobileState extends State<HomeMobile>
     });
   }
 
+  void triggerHapticFeedback() {
+    HapticFeedback.mediumImpact(); // Use the desired haptic feedback method
+  }
   // _setUpInvitsCount() async {
   //   final String currentUserId =
   //       Provider.of<UserData>(context, listen: false).currentUserId!;
@@ -2903,6 +2915,8 @@ class _HomeMobileState extends State<HomeMobile>
                             setState(() {
                               _currentTab = index;
                             });
+
+                            HapticFeedback.mediumImpact();
                           },
                         ),
                       ),
