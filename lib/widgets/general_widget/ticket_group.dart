@@ -773,7 +773,9 @@ class _TicketGroupState extends State<TicketGroup> {
                 const SizedBox(
                   height: 40,
                 ),
-                TicketPurchaseSummaryWidget(),
+                ShakeTransition(
+                    axis: Axis.vertical, child: TicketPurchaseSummaryWidget()),
+                // TicketPurchaseSummaryWidget(),
                 const SizedBox(
                   height: 10,
                 ),

@@ -704,8 +704,8 @@ class _CreateEventScreenState extends State<CreateEventScreen>
   //       isScrollControlled: true,
   //       backgroundColor: Colors.transparent,
   //       builder: (BuildContext context) {
-  //         return StatefulBuilder(
-  //             builder: (BuildContext context, StateSetter setState) {
+  // return StatefulBuilder(
+  //     builder: (BuildContext context, StateSetter setState) {
   //           return ValueListenableBuilder(
   //               valueListenable: _isTypingNotifier,
   //               builder: (BuildContext context, bool isTyping, Widget? child) {
@@ -713,7 +713,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
   //               });
   //         });
   //       });åß
-  // }
+  //
 
 // To reset all event variables in ordert to be able to create a new event
   _setNull(UserData provider) {
@@ -723,7 +723,6 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     provider.setTitle('');
     provider.setTheme('');
     provider.setImageUrl('');
-    provider.setVenue('');
     provider.setAddress('');
     provider.setVenue('');
     provider.setAddress('');

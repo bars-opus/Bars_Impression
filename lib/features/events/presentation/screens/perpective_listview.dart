@@ -14,8 +14,8 @@ class PerpectiveListView extends StatefulWidget {
   final ValueChanged<int> onChangeItem;
   // final Color backItemsShadowColor;
 
-  final List<TicketOrderModel> selectedEvents;
-  final String currentUserId;
+  // final List<TicketOrderModel> selectedEvents;
+  // final String currentUserId;
 
   const PerpectiveListView({
     super.key,
@@ -26,8 +26,8 @@ class PerpectiveListView extends StatefulWidget {
     this.padding = const EdgeInsets.all(0),
     required this.onTapFrontItem,
     required this.onChangeItem,
-    required this.selectedEvents,
-    required this.currentUserId,
+    // required this.selectedEvents,
+    // required this.currentUserId,
     // this.backItemsShadowColor = Colors.black
   });
 
@@ -109,40 +109,7 @@ class _PerpectiveListViewState extends State<PerpectiveListView> {
     );
   }
 
-  _navigateToTicketOrder(TicketOrderModel ticketOrder) async {
-    // print(widget.ticketOrder.eventAuthorId );
-    // if (_isLoading) return;
-    // _isLoading = true;
-    try {
-      Event? event = await DatabaseService.getUserEventWithId(
-          ticketOrder.eventId, ticketOrder.eventAuthorId);
-
-      if (event != null) {
-        PaletteGenerator _paletteGenerator =
-            await PaletteGenerator.fromImageProvider(
-          CachedNetworkImageProvider(event.imageUrl),
-          size: Size(1110, 150),
-          maximumColorCount: 20,
-        );
-
-        _navigateToPage(
-          PurchasedAttendingTicketScreen(
-            ticketOrder: ticketOrder,
-            event: event,
-            currentUserId: widget.currentUserId,
-            justPurchased: '',
-            palette: _paletteGenerator,
-          ),
-        );
-      } else {
-        // _showBottomSheetErrorMessage('Failed to fetch event.');
-      }
-    } catch (e) {
-      // _showBottomSheetErrorMessage('Failed to fetch event');
-    } finally {
-      // _isLoading = false;
-    }
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -175,30 +142,30 @@ class _PerpectiveListViewState extends State<PerpectiveListView> {
             },
           ),
 
-          Positioned.fill(
-            top: height - widget.extentItem,
-            child: GestureDetector(
-              onTap: () {
-                // if (widget.onTapFrontItem != null) {
-                //   widget.onTapFrontItem(_currentIndex);
+          // Positioned.fill(
+          //   top: height - widget.extentItem,
+          //   child: GestureDetector(
+          //     onTap: () {
+          //       // if (widget.onTapFrontItem != null) {
+          //       //   widget.onTapFrontItem(_currentIndex);
 
-                final ticket = widget.selectedEvents[_currentIndex];
+          //       final ticket = widget.selectedEvents[_currentIndex];
 
-                //   print(ticket.eventTitle);
-                //   // Use the ticket ID in your callback
-                //   // widget.onTapFrontItem(ticket.orderId);
-                // }
+          //       //   print(ticket.eventTitle);
+          //       //   // Use the ticket ID in your callback
+          //       //   // widget.onTapFrontItem(ticket.orderId);
+          //       // }
 
-                //    widget.ticketOrder.isDeleted
-                // ?
-                //     _showBottomDeletedEvent(context)
+          //       //    widget.ticketOrder.isDeleted
+          //       // ?
+          //       //     _showBottomDeletedEvent(context)
 
-                // :
-                //
-                _navigateToTicketOrder(ticket);
-              },
-            ),
-          )
+          //       // :
+          //       //
+          //       _navigateToTicketOrder(ticket);
+          //     },
+          //   ),
+          // )
         ],
       );
     });

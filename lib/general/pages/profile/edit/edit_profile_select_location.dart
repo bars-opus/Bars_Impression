@@ -246,6 +246,28 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
     );
   }
 
+  _addressValueProcessing() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          '...',
+          style: TextStyle(
+            fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+            color: Colors.grey,
+          ),
+        ),
+        SizedBox(
+          height: ResponsiveHelper.responsiveHeight(context, 10.0),
+          width: ResponsiveHelper.responsiveHeight(context, 10.0),
+          child: CircularProgressIndicator(
+            strokeWidth: 3,
+          ),
+        ),
+      ],
+    );
+  }
+
   void _showBottomSheetCountry(BuildContext context, String from) {
     var _provider = Provider.of<UserData>(context, listen: false);
     showModalBottomSheet(
@@ -254,92 +276,96 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
       isDismissible: false,
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
-        return GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Container(
-            height: MediaQuery.of(context).size.height.toDouble() / 1.1,
-            decoration: BoxDecoration(
-                color: Theme.of(context).primaryColorLight,
-                borderRadius: BorderRadius.circular(30)),
-            child: ListView(
-              children: [
-                const SizedBox(
-                  height: 10,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: SearchContentField(
-                      autoFocus: true,
-                      showCancelButton: true,
-                      cancelSearch: _cancelSearch,
-                      controller: _addressSearchController,
-                      focusNode: _addressSearchfocusNode,
-                      hintText: 'Enter city name...',
-                      onClearText: () {
-                        _clearSearch();
-                      },
-                      onTap: () {},
-                      onChanged: (value) {
-                        if (_addressSearchController.text.trim().isNotEmpty)
-                          _debouncer.run(() {
-                            _provider.searchPlaces(value);
-                          });
-                      }),
-                ),
-                Text('        Select your city from the list below'),
-                if (Provider.of<UserData>(
-                      context,
-                    ).searchResults !=
-                    null)
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Container(
+              height: MediaQuery.of(context).size.height.toDouble() / 1.1,
+              decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColorLight,
+                  borderRadius: BorderRadius.circular(30)),
+              child: ListView(
+                children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Container(
-                            height: MediaQuery.of(context).size.height,
-                            width: double.infinity,
-                            child: ListView.builder(
-                              itemCount: _provider.searchResults!.length,
-                              itemBuilder: (context, index) {
-                                return Column(
-                                  children: [
-                                    ListTile(
-                                        title: Text(
-                                          _provider.searchResults![index]
-                                              .description,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyLarge,
-                                        ),
-                                        onTap: () async {
-                                          Navigator.pop(context);
-                                          _provider.setCity('');
-                                          _provider.setCountry('');
-                                          _provider.searchPlaces(_provider
-                                              .searchResults![index]
-                                              .description);
-                                          _provider.setIsLoading(true);
-                                          await reverseGeocoding(
-                                              _provider,
-                                              _provider.searchResults![index]
-                                                  .description);
-                                          _submit2();
-                                        }),
-                                    Divider(),
-                                  ],
-                                );
-                              },
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: SearchContentField(
+                        autoFocus: true,
+                        showCancelButton: true,
+                        cancelSearch: _cancelSearch,
+                        controller: _addressSearchController,
+                        focusNode: _addressSearchfocusNode,
+                        hintText: 'Enter city name...',
+                        onClearText: () {
+                          _clearSearch();
+                        },
+                        onTap: () {},
+                        onChanged: (value) async {
+                          if (_addressSearchController.text.trim().isNotEmpty)
+                            await _debouncer.run(() {
+                              _provider.searchPlaces(value);
+                            });
+                        }),
+                  ),
+                  Text('        Select your city from the list below'),
+                  if (Provider.of<UserData>(
+                        context,
+                      ).searchResults !=
+                      null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Container(
+                              height: MediaQuery.of(context).size.height,
+                              width: double.infinity,
+                              child: ListView.builder(
+                                itemCount: _provider.searchResults!.length,
+                                itemBuilder: (context, index) {
+                                  return Column(
+                                    children: [
+                                      ListTile(
+                                          title: Text(
+                                            _provider.searchResults![index]
+                                                .description,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyLarge,
+                                          ),
+                                          onTap: () async {
+                                            Navigator.pop(context);
+                                            _provider.setCity('');
+                                            _provider.setCountry('');
+                                            _provider.searchPlaces(_provider
+                                                .searchResults![index]
+                                                .description);
+                                            _provider.setIsLoading(true);
+                                            await reverseGeocoding(
+                                                _provider,
+                                                _provider.searchResults![index]
+                                                    .description);
+                                            _submit2();
+                                            // _provider.setIsLoading(false);
+                                          }),
+                                      Divider(),
+                                    ],
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
+          );
+        });
       },
     );
   }
@@ -347,11 +373,14 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
   @override
   Widget build(BuildContext context) {
     var _provider = Provider.of<UserData>(context, listen: false);
+    var _provider2 = Provider.of<UserData>(
+      context,
+    );
+
     return EditProfileScaffold(
       title: '',
       widget: Column(
         children: [
-          if (_provider.isLoading) LinearProgress(),
           Padding(
             padding:
                 const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
@@ -364,19 +393,19 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                     if (_provider.country.isNotEmpty &&
                         _provider.city.isNotEmpty &&
                         _continent.isNotEmpty)
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: MiniCircularProgressButton(
-                      color: Colors.blue,
-                      onPressed: () {
-                        Navigator.pop(context);
-                        mySnackBar(
-                            context, 'You can now continue with your process');
-                        //  _submitCreate();
-                      },
-                      text: 'Done',
-                    ),
-                  ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: MiniCircularProgressButton(
+                          color: Colors.blue,
+                          onPressed: () {
+                            Navigator.pop(context);
+                            mySnackBar(context,
+                                'You can now continue with your process');
+                            //  _submitCreate();
+                          },
+                          text: 'Done',
+                        ),
+                      ),
                   const SizedBox(height: 20.0),
                   EditProfileInfo(
                     editTitle: _provider.userLocationPreference!.continent!,
@@ -389,16 +418,20 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                   const SizedBox(
                     height: 30,
                   ),
-                  _addressValue(
-                      'City',
-                      _provider.city.isEmpty
-                          ? widget.user.city!
-                          : _provider.city),
-                  _addressValue(
-                      'Country',
-                      _provider.country.isEmpty
-                          ? widget.user.country!
-                          : _provider.country),
+                  _provider2.isLoading
+                      ? _addressValueProcessing()
+                      : _addressValue(
+                          'City',
+                          _provider2.city.isEmpty
+                              ? widget.user.city!
+                              : _provider.city),
+                  _provider.isLoading
+                      ? _addressValueProcessing()
+                      : _addressValue(
+                          'Country',
+                          _provider.country.isEmpty
+                              ? widget.user.country!
+                              : _provider.country),
                   _addressValue('Continent',
                       _continent.isEmpty ? widget.user.continent! : _continent),
                   const SizedBox(

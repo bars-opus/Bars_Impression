@@ -1858,7 +1858,6 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
         SizedBox(
           height: 20.0,
         ),
-        // if (!_isAuthor)
         if (!widget.event.isPrivate && !_isAuthor)
           if (!_eventHasEnded)
             Padding(

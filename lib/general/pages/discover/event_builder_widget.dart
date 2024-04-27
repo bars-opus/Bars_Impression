@@ -273,7 +273,7 @@ class EventBuilderWidget extends StatelessWidget {
                     children: [
                       TextSpan(
                           text: isFree
-                              ? "Free ${typeSpecific.toLowerCase()}\nin ${user.country!.isEmpty ? 'your country' : 'user.country'}"
+                              ? "Free ${typeSpecific.toLowerCase()}\nin ${user.country!.isEmpty ? 'your country' : user.country}"
                               : typeSpecific.endsWith('events')
                                   ? "All events\nHappening\nthis week "
                                   : "$typeSpecific\nHappening\nthis week ",

@@ -15,7 +15,6 @@ class TicketPurchaseSummaryWidget extends StatelessWidget {
         _provider.ticketList.map((finalPurchasintgTicket) {
       return Column(
         children: <Widget>[
-          
           TicketInfo(
             // event: widget.event!,
             label: 'Category',
