@@ -358,6 +358,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
             padding: const EdgeInsets.only(top: 20.0, bottom: 30),
             child: Divider(
               color: Colors.grey,
+              thickness: .3,
             ),
           ),
           Text(
@@ -1042,6 +1043,10 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
       backgroundColor: _paletteDark,
       appBar: AppBar(
           automaticallyImplyLeading: true,
+          iconTheme: IconThemeData(
+            color: Colors.white,
+          ),
+          surfaceTintColor: Colors.transparent,
           elevation: 0,
           backgroundColor: _paletteDark),
       body: Padding(
@@ -1310,6 +1315,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                       padding: const EdgeInsets.only(top: 50.0, bottom: 50),
                       child: Divider(
                         color: Colors.grey,
+                        thickness: .3,
                       ),
                     ),
                     Padding(
@@ -1437,6 +1443,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
               ),
               Divider(
                 color: Colors.white,
+                thickness: .3,
               ),
               const SizedBox(
                 height: 25,

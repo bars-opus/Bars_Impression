@@ -385,7 +385,7 @@ class _EventRefundsState extends State<EventRefunds>
                 ),
               ];
             },
-            body: RefreshIndicator(
+            body: RefreshIndicator(color: Colors.blue,
               onRefresh: refreshData,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

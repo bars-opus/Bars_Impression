@@ -827,6 +827,7 @@ class _InviteSearchScreenState extends State<InviteSearchScreen>
             color: Colors.white,
           ),
           automaticallyImplyLeading: false,
+          surfaceTintColor: Colors.transparent,
           elevation: 0,
           backgroundColor: widget.paletteColor,
           title: _searchContainer()),

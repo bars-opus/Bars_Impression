@@ -1163,7 +1163,7 @@ SPEC CHECKSUMS:
   FirebaseMessagingInterop: ec84569ed0436f52280ca07a214a83f48674cf5c
   FirebaseSharedSwift: f34eeb7d3ea87a34497629b6ca41657beadef76a
   FirebaseStorage: 1d4be239ea32fb3c0f3680a6f2b706d6cabe37f2
-  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_image_compress: 5a5e9aee05b6553048b8df1c3bc456d0afaac433
   flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
   flutter_paystack: 50021637b71e7712780744f69d2843e71b65175d
@@ -1206,4 +1206,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: d242f90393cbd732ef61b0b7e43cf95ad1e59027
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.15.2

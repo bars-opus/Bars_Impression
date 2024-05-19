@@ -330,6 +330,7 @@ class _UserRefundsState extends State<UserRefunds>
                   ),
                   pinned: false,
                   centerTitle: false,
+                  surfaceTintColor: Colors.transparent,
                   backgroundColor: Theme.of(context).primaryColorLight,
                   title: Text(
                     'Ticket refunds',
@@ -356,7 +357,7 @@ class _UserRefundsState extends State<UserRefunds>
                 ),
               ];
             },
-            body: RefreshIndicator(
+            body: RefreshIndicator(color: Colors.blue,
               onRefresh: refreshData,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

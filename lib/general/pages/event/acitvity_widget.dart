@@ -514,7 +514,7 @@ class _ActivityWidgetState extends State<ActivityWidget> {
               height: ResponsiveHelper.responsiveHeight(context, 10.0),
               width: ResponsiveHelper.responsiveHeight(context, 10.0),
               child: CircularProgressIndicator(
-                strokeWidth: 3,
+                strokeWidth: 3, color:Colors.blue,
               ),
             )
           : _isFollowRequestRejected || _isFollowRequestAccepted
@@ -617,7 +617,7 @@ class _ActivityWidgetState extends State<ActivityWidget> {
             height: ResponsiveHelper.responsiveHeight(context, 10.0),
             width: ResponsiveHelper.responsiveHeight(context, 10.0),
             child: CircularProgressIndicator(
-              strokeWidth: 3,
+              strokeWidth: 3, color:Colors.blue,
             ),
           )
         : activity.type == NotificationActivityType.follow &&

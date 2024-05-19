@@ -89,7 +89,7 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
                               width: ResponsiveHelper.responsiveHeight(
                                   context, 10.0),
                               child: CircularProgressIndicator(
-                                strokeWidth: 3,
+                                strokeWidth: 3, color:Colors.blue,
                               ),
                             )
                           : MiniCircularProgressButton(
@@ -309,8 +309,7 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
     return !isGhanaian
         ? () {
             _showBottomSheetErrorMessage(
-                'This event is currently unavailable in $_usercountry.',
-                '');
+                'This event is currently unavailable in $_usercountry.', '');
           }
         : widget.event.termsAndConditions.isNotEmpty
             ? () {
@@ -538,15 +537,15 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
               if (widget.event.authorId != _provider.currentUserId)
                 Positioned(
                   bottom: 20,
-                  left: 0,
+                  // left: 0,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Align(
-                      alignment: Alignment.bottomLeft,
+                      alignment: Alignment.bottomCenter,
                       child: Container(
                         width: ResponsiveHelper.responsiveHeight(
                           context,
-                          100,
+                          120,
                         ),
                         child: OutlinedButton(
                           style: OutlinedButton.styleFrom(
@@ -566,7 +565,7 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
                                     height: 15,
                                     width: 15,
                                     child: CircularProgressIndicator(
-                                      strokeWidth: 2,
+                                      strokeWidth: 2, color:Colors.blue,
                                     ),
                                   )
                                 : Text('Attend',

@@ -15,6 +15,7 @@ class EditProfileScaffold extends StatelessWidget {
         iconTheme: IconThemeData(
           color: Theme.of(context).secondaryHeaderColor,
         ),
+        surfaceTintColor: Colors.transparent,
         automaticallyImplyLeading: true,
         elevation: 0,
         backgroundColor: Theme.of(context).primaryColorLight,
@@ -23,7 +24,6 @@ class EditProfileScaffold extends StatelessWidget {
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         centerTitle: true,
-       
       ),
       body: SafeArea(
         child: GestureDetector(

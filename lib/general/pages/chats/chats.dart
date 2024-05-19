@@ -846,7 +846,7 @@ class _ChatsState extends State<Chats>
       builder:
           (BuildContext context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
         if (!streamSnapshot.hasData) {
-          return Center(child: CircularProgressIndicator());
+          return Center(child: CircularProgressIndicator( color:Colors.blue,));
         }
 
         if (streamSnapshot.data!.docs.isEmpty) {
@@ -1691,7 +1691,7 @@ class _DisplayState extends State<Display> {
                           const SizedBox(
                             height: 30,
                           ),
-                          Divider(),
+                          Divider( thickness: .2,),
                         ],
                       )
                     : Wrap(
@@ -1723,7 +1723,7 @@ class _DisplayState extends State<Display> {
                           const SizedBox(
                             height: 30,
                           ),
-                          Divider(),
+                          Divider( thickness: .2,),
                         ],
                       ),
               ],

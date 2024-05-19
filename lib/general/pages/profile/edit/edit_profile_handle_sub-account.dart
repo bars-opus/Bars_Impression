@@ -88,8 +88,8 @@ class _EditProfileHandleSubAccountState
               textAlign: TextAlign.center,
             ),
             children: <Widget>[
-              Divider(),
-              Divider(),
+              Divider( thickness: .2,),
+              Divider( thickness: .2,),
               Center(
                 child: SimpleDialogOption(
                   child: Text(

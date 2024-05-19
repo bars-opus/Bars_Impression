@@ -17,6 +17,8 @@ class BottomModelSheetListTileWidget extends StatelessWidget {
         ? Colors.blue
         : colorCode.startsWith('Red')
             ? Colors.red
+            :   colorCode.startsWith('Grey')
+            ? Colors.grey
             : Theme.of(context).secondaryHeaderColor;
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,

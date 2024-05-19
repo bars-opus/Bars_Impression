@@ -326,7 +326,8 @@ class _InvitationPagesState extends State<InvitationPages>
                     color: Theme.of(context).secondaryHeaderColor,
                   ),
                   pinned: false,
-                  centerTitle: false,
+                  centerTitle: false,        surfaceTintColor: Colors.transparent,
+
                   backgroundColor: Theme.of(context).primaryColor,
                   title: Text(
                     'Event invitations',
@@ -353,7 +354,7 @@ class _InvitationPagesState extends State<InvitationPages>
                 ),
               ];
             },
-            body: RefreshIndicator(
+            body: RefreshIndicator(color: Colors.blue,
               onRefresh: refreshData,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

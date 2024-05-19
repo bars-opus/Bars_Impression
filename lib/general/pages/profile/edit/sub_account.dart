@@ -69,7 +69,7 @@ class _SubAccountsState extends State<SubAccounts> {
               textAlign: TextAlign.center,
             ),
             children: <Widget>[
-              Divider(),
+              Divider( thickness: .2,),
               Center(
                 child: SimpleDialogOption(
                   child: Text(
@@ -84,7 +84,7 @@ class _SubAccountsState extends State<SubAccounts> {
                   },
                 ),
               ),
-              Divider(),
+              Divider( thickness: .2,),
               Center(
                 child: SimpleDialogOption(
                   child: Text(

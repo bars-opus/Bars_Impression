@@ -485,7 +485,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   height: 15,
                   width: 15,
                   child: CircularProgressIndicator(
-                    strokeWidth: 3,
+                    strokeWidth: 3, color: Colors.blue,
                   ),
                 ),
                 title: Text(

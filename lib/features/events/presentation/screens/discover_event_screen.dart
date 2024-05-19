@@ -229,6 +229,8 @@ class _DiscoverEventScreenState extends State<DiscoverEventScreen>
               indicatorColor: Colors.blue,
               unselectedLabelColor: Colors.grey,
               isScrollable: true,
+              dividerColor: Colors.transparent,
+              tabAlignment: TabAlignment.start,
               labelPadding:
                   EdgeInsets.symmetric(horizontal: 20, vertical: 10.0),
               indicatorWeight: 2.0,

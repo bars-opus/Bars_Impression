@@ -116,7 +116,7 @@ class EventBuilderWidget extends StatelessWidget {
                 ),
               ),
             ),
-            Divider(),
+            Divider( thickness: .2,),
             PortfolioWorkRequestWidget(
               edit: false,
               seeMore: false,

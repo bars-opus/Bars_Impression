@@ -85,6 +85,8 @@ class _DiscoverUserState extends State<DiscoverUser>
         unselectedLabelColor: Colors.grey,
         labelPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10.0),
         indicatorWeight: 2.0,
+        dividerColor: Colors.transparent,
+        tabAlignment: TabAlignment.start,
         isScrollable: true,
         tabs: <Widget>[
           Text(

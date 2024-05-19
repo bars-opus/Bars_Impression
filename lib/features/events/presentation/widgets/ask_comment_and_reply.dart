@@ -214,7 +214,7 @@ class _DisplayAskAndReplyState extends State<DisplayAskAndReply> {
                         if (!snapshot.hasData) {
                           return Expanded(
                             child: Center(
-                              child: CircularProgressIndicator(),
+                              child: CircularProgressIndicator( color:Colors.blue,),
                             ),
                           );
                         }

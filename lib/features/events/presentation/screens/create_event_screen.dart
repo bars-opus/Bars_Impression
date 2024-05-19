@@ -1,4 +1,5 @@
 import 'package:bars/general/pages/profile/create/date_picker.dart';
+import 'package:bars/general/pages/profile/setup_brand.dart';
 import 'package:bars/widgets/create/schedule_people_group.dart';
 
 import 'package:blurhash/blurhash.dart';
@@ -243,8 +244,10 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     // _provider.setIsEndDateSelected(false);
     _provider.schedulePerson.clear();
     _scheduleTitleController.clear();
-
     _schedulePerfomerController.clear();
+    // mySnackBar(context, 'Program added to schedule');
+
+    // mySnackBar(context, "Program added to Schedule")''
   }
 
   // method to add tagged event person to the list of tagged event people (performers, crew, sponsors, partners)
@@ -644,6 +647,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       valueListenable: _isTypingNotifier,
       builder: (BuildContext context, bool isTyping, Widget? child) {
         return AlertDialog(
+          surfaceTintColor: Colors.transparent,
           backgroundColor: Theme.of(context).primaryColorLight,
           title: Text(
             'Add reason',
@@ -763,18 +767,17 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     "Others",
   ];
 
-  Widget buildRadios() => Theme(
-        data: Theme.of(context).copyWith(
-          unselectedWidgetColor: Colors.white,
-        ),
-        child: Column(
-            children: values.map((value) {
-          var _provider = Provider.of<UserData>(context, listen: false);
+  Widget buildRadios() => Column(
+          children: values.map((value) {
+        var _provider = Provider.of<UserData>(context, listen: false);
 
-          final selected = this.selectedValue == value;
-          final color = selected ? Colors.blue : Colors.white;
+        final selected = this.selectedValue == value;
+        final color = selected ? Colors.blue : Colors.white;
 
-          return RadioListTile<String>(
+        return RadioTheme(
+          data: RadioThemeData(
+              fillColor: MaterialStateProperty.all(Colors.white)),
+          child: RadioListTile<String>(
               value: value,
               groupValue: selectedValue,
               title: Text(
@@ -788,9 +791,9 @@ class _CreateEventScreenState extends State<CreateEventScreen>
               onChanged: (value) {
                 _provider.setCategory(this.selectedValue = value!);
                 value.startsWith('Others') ? () {} : animateToPage(1);
-              });
-        }).toList()),
-      );
+              }),
+        );
+      }).toList());
 
 //Radion button for tagged sponsors and partners
   static const SponserOrPartner = <String>[
@@ -807,25 +810,31 @@ class _CreateEventScreenState extends State<CreateEventScreen>
           final selected = this.selectedSponsorOrPartnerValue == value;
           final color = selected ? Colors.blue : Colors.white;
 
-          return RadioListTile<String>(
-              value: value,
-              groupValue: selectedSponsorOrPartnerValue,
-              title: Text(
-                value,
-                style: TextStyle(
-                  color: color,
-                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+          return RadioTheme(
+            data: RadioThemeData(
+                fillColor: MaterialStateProperty.all(Colors.white)),
+            child: RadioListTile<String>(
+                value: value,
+                groupValue: selectedSponsorOrPartnerValue,
+                title: Text(
+                  value,
+                  style: TextStyle(
+                    color: color,
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 14.0),
+                  ),
                 ),
-              ),
-              activeColor: Colors.blue,
-              onChanged: (value) {
-                if (mounted) {
-                  setState(() {
-                    _selectedRole = this.selectedSponsorOrPartnerValue = value!;
-                    _taggedType = _selectedRole;
-                  });
-                }
-              });
+                activeColor: Colors.blue,
+                onChanged: (value) {
+                  if (mounted) {
+                    setState(() {
+                      _selectedRole =
+                          this.selectedSponsorOrPartnerValue = value!;
+                      _taggedType = _selectedRole;
+                    });
+                  }
+                }),
+          );
         }).toList()),
       );
 
@@ -947,6 +956,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                 context: context,
                 builder: (context) {
                   return AlertDialog(
+                    surfaceTintColor: Colors.transparent,
                     backgroundColor: Theme.of(context).primaryColor,
                     content: SingleChildScrollView(
                       child: Column(
@@ -1061,7 +1071,10 @@ class _CreateEventScreenState extends State<CreateEventScreen>
         ),
         Padding(
           padding: const EdgeInsets.only(top: 10.0, bottom: 10),
-          child: Divider(color: Colors.grey),
+          child: Divider(
+            color: Colors.grey,
+            thickness: .3,
+          ),
         ),
       ],
     );
@@ -1306,7 +1319,9 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                                                   .addressSearchResults![index]
                                                   .description);
                                         }),
-                                    Divider(),
+                                    Divider(
+                                      thickness: .3,
+                                    ),
                                   ],
                                 );
                               },
@@ -1351,6 +1366,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
         color: Colors.grey);
     return TextFormField(
       autofocus: autofocus,
+      cursorColor: Colors.blue,
       controller: controler,
       maxLines: null,
       keyboardAppearance: MediaQuery.of(context).platformBrightness,
@@ -1361,6 +1377,11 @@ class _CreateEventScreenState extends State<CreateEventScreen>
         hintText: hintText,
         labelStyle: isTicket ? labelStyle : null,
         hintStyle: hintStyle,
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: Colors.blue,
+          ),
+        ),
       ),
       validator: (string) => onValidateText(string),
     );
@@ -1547,6 +1568,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                 ),
                 leading: Radio<DateTime>(
                   value: date,
+                  activeColor: Colors.blue,
                   groupValue: _provider.sheduleDateTemp.toDate(),
                   onChanged: (DateTime? value) {
                     _provider.setSheduleDateTemp(Timestamp.fromDate(value!));
@@ -1761,7 +1783,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
 
                 DirectionWidgetWhite(
                   text:
-                      'Create tickets for your event! Customize them based on your needs and preferences. For instance, you have the option to create VIP tickets with special access levels and exclusive options. Additionally, you can also create Regular tickets with different benefits and access levels.',
+                      'Create tickets for your event! Customize them based on your needs and preferences. For instance, you have the option to create VIP tickets with special access levels and exclusive options.',
                 ),
                 if (_provider.endDateSelected)
                   Container(
@@ -1794,6 +1816,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                 ),
                 Divider(
                   color: Colors.white,
+                  thickness: .3,
                 ),
                 const SizedBox(
                   height: 30,
@@ -1837,6 +1860,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       valueListenable: _isTypingNotifier,
       builder: (BuildContext context, bool isTyping, Widget? child) {
         return AlertDialog(
+          surfaceTintColor: Colors.transparent,
           backgroundColor: Theme.of(context).primaryColorLight,
           title: ListTile(
             trailing: _priceController.text.isEmpty && !_provider.isFree
@@ -1934,7 +1958,9 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                       }
                       Navigator.pop(context);
                     },
-                    subtitle: Divider(),
+                    subtitle: Divider(
+                      thickness: .3,
+                    ),
                   );
                 },
               )
@@ -1956,7 +1982,9 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                       }
                       Navigator.pop(context);
                     },
-                    subtitle: Divider(),
+                    subtitle: Divider(
+                      thickness: .3,
+                    ),
                   );
                 },
               ));
@@ -2146,19 +2174,22 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                                     '  Add  ',
                                     !isSchedule
                                         ? () {
-                                            Navigator.pop(context);
+                                            if (_addPersonFormKey.currentState!
+                                                .validate())
+                                              Navigator.pop(context);
                                           }
                                         : () {
                                             if (_addPersonFormKey.currentState!
-                                                .validate())
+                                                .validate()) {
                                               _addSchedulePeople(
                                                 _selectedNameToAdd,
                                                 '',
                                                 _taggedUserExternalLink,
                                               );
-                                            // _addSchedulePeople(
-                                            //     _selectedNameToAdd, '');
-                                            Navigator.pop(context);
+
+                                              Navigator.pop(context);
+                                            }
+
                                             // }
                                           },
                                   ),
@@ -2263,7 +2294,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
           _buildEventProcessRow3(),
           DirectionWidgetWhite(
             text:
-                'Select a start and end date for your event. Even if your event would end within a day select the same date as start and end date. This would be helpful in displaying your program lineup. ',
+                'Select a start and end date for your event. If your event would end on thesame day, you can select only the start date. ',
           ),
           if (widget.isEditting)
             Container(
@@ -2336,6 +2367,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: Divider(
         color: Colors.white,
+        thickness: .3,
       ),
     );
   }
@@ -2375,6 +2407,39 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     return dates;
   }
 
+  _sheduleDivider(String text) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(
+          height: 10,
+        ),
+        // const Divider(
+        //   color: Colors.white,
+        //   thickness: .3,
+        // ),
+        const SizedBox(
+          height: 10,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: Text(
+            text,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+            ),
+            textAlign: TextAlign.start,
+          ),
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+      ],
+    );
+  }
+
   // DateTime? _selectedDate;
 
   _eventPickTimeScheduleSection() {
@@ -2383,6 +2448,8 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       context,
     );
 
+    List<DateTime> dateList = getDatesInRange(
+        _provider.startDate.toDate(), _provider.clossingDay.toDate());
     return _pageWidget(
       newWidget: Column(
         children: [
@@ -2421,9 +2488,9 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                 ),
                 DirectionWidgetWhite(
                   text:
-                      'You should provide a structured timeline for attendees, staff, and participants to know when each segment of the event will occur. The program lineup refers to the sequence or order in which different elements of the event will be presented or performed.',
+                      'The program lineup refers to the sequence or order in which different elements of the event will be presented or performed. You should provide a structured timeline for attendees, staff, and participants to know when each segment of the event will occur.',
                 ),
-                const SizedBox(height: 10.0),
+
                 _scheduleTitleController.text.isEmpty ||
                         _provider.schedulePerson.isEmpty ||
                         !_provider.endTimeSelected ||
@@ -2438,89 +2505,118 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                           },
                         ),
                       ),
-                const SizedBox(
-                  height: 30,
-                ),
+                const SizedBox(height: 10.0),
+                // const SizedBox(
+                //   height: 30,
+                // ),
                 Container(
                   decoration: BoxDecoration(
-                      color: !_provider.endDateSelected
-                          ? Colors.transparent
-                          : Theme.of(context).primaryColorLight.withOpacity(.3),
+                      color:
+                          //  !_provider.endDateSelected
+                          //     ? Colors.transparent
+                          //     :
+                          Theme.of(context).primaryColorLight.withOpacity(.3),
                       borderRadius: BorderRadius.circular(10)),
-                  padding: EdgeInsets.all(3),
+                  // padding: EdgeInsets.all(3),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      if (dateList.length > 1)
+                        _sheduleDivider(
+                            'Choose the date for which you want to create a program lineup.'),
+                      // Column(
+                      //   children: [
                       if (_provider.endDateSelected) _dateRange(),
-                      if (_provider.endDateSelected)
-                        const SizedBox(
-                          height: 30,
+                      // if (_provider.endDateSelected)
+                      // const SizedBox(
+                      //   height: 30,
+                      // ),
+                      _sheduleDivider(
+                          'Select the start and end time to indicate the duration for this program on the schedule'),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: DatePicker(
+                          onStartDateChanged: (DateTime newDate) {
+                            _scheduleStartTime = newDate;
+                          },
+                          onStartTimeChanged: (DateTime newDate) {
+                            _scheduleStartTime = newDate;
+                          },
+                          onEndDateChanged: (DateTime newDate) {
+                            _scheduleEndTime = newDate;
+                          },
+                          onEndTimeChanged: (DateTime newDate) {
+                            _scheduleEndTime = newDate;
+                          },
+                          date: false,
                         ),
-                      DatePicker(
-                        onStartDateChanged: (DateTime newDate) {
-                          _scheduleStartTime = newDate;
-                        },
-                        onStartTimeChanged: (DateTime newDate) {
-                          _scheduleStartTime = newDate;
-                        },
-                        onEndDateChanged: (DateTime newDate) {
-                          _scheduleEndTime = newDate;
-                        },
-                        onEndTimeChanged: (DateTime newDate) {
-                          _scheduleEndTime = newDate;
-                        },
-                        date: false,
+                      ),
+                      //   ],
+                      // ),
+                      // if (_provider.endDateSelected)
+                      //   const SizedBox(
+                      //     height: 40,
+                      //   ),
+                      _sheduleDivider(
+                          'Enter the title of the program segment (e.g., \'opening prayer\') '),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Container(
+                          color: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: _ticketFiled(
+                            false,
+                            false,
+                            'Program title',
+                            'Schedule(Program) title',
+                            _scheduleTitleController,
+                            TextInputType.text,
+                            (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Program title cannot be empty';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                      ),
+                      _sheduleDivider(
+                          'Add the person or people performing or participating in this program. You can either provide their names from Bars Impression or include a link to their profiles on other platforms.'),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: PickOptionWidget(
+                            dropDown: true,
+                            title: 'Add speaker or performer',
+                            onPressed: () {
+                              _showBottomTaggedPeople(true);
+                            }),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            bottom: 10.0, left: 10, right: 10),
+                        child: SchedulePeopleGroup(
+                          canBeEdited: true,
+                          groupTaggedEventPeopleGroup: _provider.schedulePerson,
+                          // .where((taggedPerson) =>
+                          //     taggedPerson.role != 'Sponsor' &&
+                          //     taggedPerson.role != 'Partner')
+                          // .toList(),
+                        ),
                       ),
                     ],
                   ),
                 ),
-                if (_provider.endDateSelected)
-                  const SizedBox(
-                    height: 40,
-                  ),
-                Container(
-                  color: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: _ticketFiled(
-                    false,
-                    false,
-                    'Program title',
-                    'Schedule(Program) title',
-                    _scheduleTitleController,
-                    TextInputType.text,
-                    (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Program title cannot be empty';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                SizedBox(
-                  height: _provider.endDateSelected ? 30 : 10,
-                ),
-                PickOptionWidget(
-                    dropDown: true,
-                    title: 'Add speaker or performer',
-                    onPressed: () {
-                      _showBottomTaggedPeople(true);
-                    }),
-                SchedulePeopleGroup(
-                  canBeEdited: true,
-                  groupTaggedEventPeopleGroup: _provider.schedulePerson,
-                  // .where((taggedPerson) =>
-                  //     taggedPerson.role != 'Sponsor' &&
-                  //     taggedPerson.role != 'Partner')
-                  // .toList(),
-                ),
                 const SizedBox(
                   height: 30,
                 ),
-                Divider(
-                  color: Colors.white,
-                ),
-                const SizedBox(
-                  height: 30,
-                ),
+                // Divider(
+                //   color: Colors.white,
+                //   thickness: .3,
+                // ),
+                // const SizedBox(
+                //   height: 30,
+                // ),
                 ScheduleGroup(
                   schedules: _provider.schedule,
                   isEditing: true,
@@ -2749,6 +2845,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
           const SizedBox(height: 20.0),
           Divider(
             color: Colors.white,
+            thickness: .3,
           ),
           const SizedBox(height: 20.0),
           TaggedPeopleGroup(
@@ -2930,6 +3027,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
           const SizedBox(height: 20.0),
           Divider(
             color: Colors.white,
+            thickness: .3,
           ),
           const SizedBox(height: 20.0),
           EventOrganizerContactWidget(
@@ -3002,14 +3100,14 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     }
   }
 
-  void mySnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: Duration(seconds: 2),
-      ),
-    );
-  }
+  // void myInternalSnackBar(BuildContext context, String message) {
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(
+  //       content: Text(message),
+  //       duration: Duration(seconds: 2),
+  //     ),
+  //   );
+  // }
 
   void mySnackBarModeration(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(

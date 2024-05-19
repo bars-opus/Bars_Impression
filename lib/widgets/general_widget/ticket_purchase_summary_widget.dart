@@ -42,7 +42,7 @@ class TicketPurchaseSummaryWidget extends StatelessWidget {
             value: finalPurchasintgTicket.price.toString(),
           ),
           // Add a divider or padding if necessary
-          Divider(),
+          Divider( thickness: .2,),
         ],
       );
     }).toList();

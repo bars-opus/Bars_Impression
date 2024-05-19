@@ -157,6 +157,7 @@ class _BlockedAccountsState extends State<BlockedAccounts>
             floating: true,
             snap: true,
             pinned: true,
+            surfaceTintColor: Colors.transparent,
             iconTheme: new IconThemeData(
               color: Theme.of(context).secondaryHeaderColor,
             ),
@@ -193,7 +194,9 @@ class _BlockedAccountsState extends State<BlockedAccounts>
                           ),
                         ),
                       ),
-                      Divider(),
+                      Divider(
+                        thickness: .2,
+                      ),
                       _userList.length == 0
                           ? Expanded(
                               child: Center(

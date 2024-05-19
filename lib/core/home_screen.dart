@@ -21,7 +21,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  final int _updateAppVersion = Platform.isIOS ? 21 : 21;
+  final int _updateAppVersion = Platform.isIOS ? 22 : 22;
   String notificationMsg = '';
 
   @override
@@ -2641,7 +2641,7 @@ class _HomeMobileState extends State<HomeMobile>
   }
 
   void triggerHapticFeedback() {
-    HapticFeedback.mediumImpact(); // Use the desired haptic feedback method
+    HapticFeedback.lightImpact(); // Use the desired haptic feedback method
   }
   // _setUpInvitsCount() async {
   //   final String currentUserId =
@@ -2916,7 +2916,7 @@ class _HomeMobileState extends State<HomeMobile>
                               _currentTab = index;
                             });
 
-                            HapticFeedback.mediumImpact();
+                            // HapticFeedback.mediumImpact();
                           },
                         ),
                       ),

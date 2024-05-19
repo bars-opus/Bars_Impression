@@ -112,18 +112,18 @@ class _RefundWidgetState extends State<RefundWidget> {
               'Status',
               widget.currentRefund.status,
             ),
-            Divider(),
+            Divider( thickness: .2,),
             _payoutWidget(
               'Amount',
               widget.currentRefund.amount.toString(),
             ),
-            Divider(),
+            Divider( thickness: .2,),
             _payoutWidget(
               'Request \ntime',
               MyDateFormat.toTime(
                   widget.currentRefund.approvedTimestamp.toDate()),
             ),
-            Divider(),
+            Divider( thickness: .2,),
 
             _payoutWidget(
               'Request \ndate',
@@ -139,7 +139,7 @@ class _RefundWidgetState extends State<RefundWidget> {
                   widget.currentRefund.expectedDate,
                 )),
               ),
-            Divider(),
+            Divider( thickness: .2,),
             _payoutWidget(
               'Request\nReason',
               widget.currentRefund.reason,
@@ -184,7 +184,7 @@ class _RefundWidgetState extends State<RefundWidget> {
             //   lable: 'Reason',
             //   value: widget.currentRefund.reason,
             // ),
-            Divider(),
+            Divider( thickness: .2,),
             const SizedBox(
               height: 10,
             ),
@@ -197,7 +197,7 @@ class _RefundWidgetState extends State<RefundWidget> {
                   color: Colors.red,
                   // size: ResponsiveHelper.responsiveFontSize(context, 20),
                 )),
-            Divider(),
+            Divider( thickness: .2,),
           ],
         ),
       ),

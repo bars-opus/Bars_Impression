@@ -673,7 +673,7 @@ class _TicketAndCalendarFeedScreenState
 
   _ticketPageBody() {
     int count = _ticketCount - 1;
-    return RefreshIndicator(
+    return RefreshIndicator(color: Colors.blue,
       onRefresh: refreshData,
       child: Padding(
         padding: const EdgeInsets.only(top: 1.0),

@@ -160,7 +160,7 @@ class _ChatDetailsState extends State<ChatDetails> {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          Divider(color: Colors.blue),
+          Divider(color: Colors.blue, thickness: .2,),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15.0),
             child: SettingSwitch(
@@ -174,7 +174,7 @@ class _ChatDetailsState extends State<ChatDetails> {
               },
             ),
           ),
-          Divider(color: Colors.blue),
+          Divider(color: Colors.blue,  thickness: .2,),
           GestureDetector(
             onTap: () {
               _showBottomSheetClearActivity(context);
@@ -192,7 +192,7 @@ class _ChatDetailsState extends State<ChatDetails> {
               icon: Icons.block,
             ),
           ),
-          Divider(color: Colors.blue),
+          Divider(color: Colors.blue,  thickness: .2,),
           const SizedBox(height: 30),
           Text(
             '     Details',

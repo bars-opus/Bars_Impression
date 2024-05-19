@@ -155,7 +155,7 @@ class TaggedPeopleGroup extends StatelessWidget {
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
-                          Divider()
+                          Divider( thickness: .2,)
                         ],
                       ),
                     ),

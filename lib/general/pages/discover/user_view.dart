@@ -249,7 +249,10 @@ class _UserViewState extends State<UserView> {
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
-                      Divider(),
+                      Divider(
+                        thickness: .3,
+                        color: Theme.of(context).primaryColor,
+                      ),
                     ],
                   ),
                 ),

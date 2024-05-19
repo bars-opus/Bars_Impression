@@ -9,8 +9,7 @@ class SeeMore extends StatelessWidget {
   final String liveCountry;
   final bool isEvent;
   final String isFrom;
-    final int sortNumberOfDays;
-
+  final int sortNumberOfDays;
 
   SeeMore({
     required this.userLocationSettings,
@@ -21,7 +20,7 @@ class SeeMore extends StatelessWidget {
     required this.liveCountry,
     required this.isEvent,
     required this.isFrom,
-     required this.sortNumberOfDays,
+    required this.sortNumberOfDays,
   });
 
   @override
@@ -34,6 +33,7 @@ class SeeMore extends StatelessWidget {
         ),
         automaticallyImplyLeading: true,
         elevation: 0,
+        surfaceTintColor: Colors.transparent,
         backgroundColor: Theme.of(context).primaryColorLight,
       ),
       body: Container(

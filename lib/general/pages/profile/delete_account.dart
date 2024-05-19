@@ -576,6 +576,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return ConfirmationPrompt(
+          height: 300,
           buttonText: buttonText,
           onPressed: onPressed,
           title: title,
@@ -616,7 +617,10 @@ class _DeleteAccountState extends State<DeleteAccount> {
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
-          const Divider(color: Colors.grey),
+          const Divider(
+            color: Colors.grey,
+            thickness: .2,
+          ),
           Padding(
             padding: const EdgeInsets.only(left: 20),
             child: IntroInfo(
@@ -630,7 +634,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
               },
             ),
           ),
-          const Divider(color: Colors.grey),
+          const Divider(thickness: .2, color: Colors.grey),
           Padding(
             padding: const EdgeInsets.only(left: 20),
             child: IntroInfo(
@@ -644,7 +648,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
               icon: Icons.arrow_forward_ios_outlined,
             ),
           ),
-          const Divider(color: Colors.grey),
+          const Divider(thickness: .2, color: Colors.grey),
           Padding(
             padding: const EdgeInsets.all(10.0),
             child: ContentFieldBlack(
@@ -685,7 +689,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
           SizedBox(
             height: 10.0,
           ),
-          Divider(color: Colors.grey),
+          Divider(thickness: .2, color: Colors.grey),
           Padding(
             padding: const EdgeInsets.only(left: 20),
             child: IntroInfo(
@@ -704,7 +708,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
               },
             ),
           ),
-          Divider(color: Colors.grey),
+          Divider(thickness: .2, color: Colors.grey),
           Padding(
             padding: const EdgeInsets.only(left: 20),
             child: GestureDetector(
@@ -723,7 +727,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
               ),
             ),
           ),
-          Divider(color: Colors.grey),
+          Divider(thickness: .2, color: Colors.grey),
         ],
       ),
     );

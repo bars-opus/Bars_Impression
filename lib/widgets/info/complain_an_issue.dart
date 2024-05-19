@@ -194,6 +194,7 @@ class _CompainAnIssueState extends State<CompainAnIssue> {
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColorLight,
       appBar: AppBar(
+        surfaceTintColor: Colors.white,
         backgroundColor: Theme.of(context).primaryColorLight,
         iconTheme: IconThemeData(
           color: Theme.of(context).secondaryHeaderColor,

@@ -343,6 +343,7 @@ class _UserPayoutsState extends State<UserPayouts>
                   ),
                   pinned: false,
                   centerTitle: false,
+                  surfaceTintColor: Colors.transparent,
                   backgroundColor: Theme.of(context).primaryColorLight,
                   title: Text(
                     'Ticket sales payout',
@@ -369,7 +370,7 @@ class _UserPayoutsState extends State<UserPayouts>
                 ),
               ];
             },
-            body: RefreshIndicator(
+            body: RefreshIndicator(color: Colors.blue,
               onRefresh: refreshData,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

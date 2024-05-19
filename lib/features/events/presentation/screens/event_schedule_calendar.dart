@@ -151,6 +151,7 @@ class EventSheduleCalendar extends StatelessWidget {
                               context: context,
                               builder: (context) {
                                 return AlertDialog(
+                                    surfaceTintColor: Colors.transparent,
                                     backgroundColor: Colors.transparent,
                                     title: Row(
                                       mainAxisAlignment:

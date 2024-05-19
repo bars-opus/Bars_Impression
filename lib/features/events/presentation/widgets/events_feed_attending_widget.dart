@@ -121,33 +121,39 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                           alignment: FractionalOffset.center,
                           children: [
                             BottomModelSheetListTileActionWidget(
-                              colorCode: '',
+                              colorCode:
+                                  widget.ticketOrder.isDeleted ? 'Grey' : '',
                               icon: Icons.event_available_outlined,
-                              onPressed: () async {
-                                _isLoading = true;
-                                try {
-                                  Event? event =
-                                      await DatabaseService.getUserEventWithId(
-                                          widget.ticketOrder.eventId,
-                                          widget.ticketOrder.eventAuthorId);
+                              onPressed: widget.ticketOrder.isDeleted
+                                  ? () {
+                                      _showBottomDeletedEvent(context);
+                                    }
+                                  : () async {
+                                      _isLoading = true;
+                                      try {
+                                        Event? event = await DatabaseService
+                                            .getUserEventWithId(
+                                                widget.ticketOrder.eventId,
+                                                widget
+                                                    .ticketOrder.eventAuthorId);
 
-                                  if (event != null) {
-                                    _navigateToPage(EventEnlargedScreen(
-                                      currentUserId: widget.currentUserId,
-                                      event: event,
-                                      type: event.type,
-                                    ));
-                                  } else {
-                                    _showBottomSheetErrorMessage(
-                                        'Failed to fetch event.');
-                                  }
-                                } catch (e) {
-                                  _showBottomSheetErrorMessage(
-                                      'Failed to fetch event');
-                                } finally {
-                                  _isLoading = false;
-                                }
-                              },
+                                        if (event != null) {
+                                          _navigateToPage(EventEnlargedScreen(
+                                            currentUserId: widget.currentUserId,
+                                            event: event,
+                                            type: event.type,
+                                          ));
+                                        } else {
+                                          _showBottomSheetErrorMessage(
+                                              'Failed to fetch event.');
+                                        }
+                                      } catch (e) {
+                                        _showBottomSheetErrorMessage(
+                                            'Failed to fetch event');
+                                      } finally {
+                                        _isLoading = false;
+                                      }
+                                    },
                               text: 'View event',
                             ),
                             _isLoading
@@ -158,6 +164,7 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                                       width: 20,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 3,
+                                        color: Colors.blue,
                                       ),
                                     ),
                                   )
@@ -168,28 +175,34 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                           alignment: FractionalOffset.center,
                           children: [
                             BottomModelSheetListTileActionWidget(
-                              colorCode: '',
+                              colorCode:
+                                  widget.ticketOrder.isDeleted ? 'Grey' : '',
                               icon: Icons.location_on_outlined,
-                              onPressed: () async {
-                                _isLoading = true;
-                                try {
-                                  Event? event =
-                                      await DatabaseService.getUserEventWithId(
-                                          widget.ticketOrder.eventId,
-                                          widget.ticketOrder.eventAuthorId);
-                                  if (event != null) {
-                                    _launchMap(event);
-                                  } else {
-                                    _showBottomSheetErrorMessage(
-                                        'Failed to launch map.');
-                                  }
-                                } catch (e) {
-                                  _showBottomSheetErrorMessage(
-                                      'Failed to launch map');
-                                } finally {
-                                  _isLoading = false;
-                                }
-                              },
+                              onPressed: widget.ticketOrder.isDeleted
+                                  ? () {
+                                      _showBottomDeletedEvent(context);
+                                    }
+                                  : () async {
+                                      _isLoading = true;
+                                      try {
+                                        Event? event = await DatabaseService
+                                            .getUserEventWithId(
+                                                widget.ticketOrder.eventId,
+                                                widget
+                                                    .ticketOrder.eventAuthorId);
+                                        if (event != null) {
+                                          _launchMap(event);
+                                        } else {
+                                          _showBottomSheetErrorMessage(
+                                              'Failed to launch map.');
+                                        }
+                                      } catch (e) {
+                                        _showBottomSheetErrorMessage(
+                                            'Failed to launch map');
+                                      } finally {
+                                        _isLoading = false;
+                                      }
+                                    },
                               text: 'Acces location',
                             ),
                             _isLoading
@@ -200,6 +213,7 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                                       width: 20,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 3,
+                                        color: Colors.blue,
                                       ),
                                     ),
                                   )
@@ -278,6 +292,7 @@ class _EventsFeedAttendingWidgetState extends State<EventsFeedAttendingWidget> {
                   width: ResponsiveHelper.responsiveHeight(context, 20),
                   child: CircularProgressIndicator(
                     strokeWidth: 3,
+                    color: Colors.blue,
                   ),
                 )
               : Container(

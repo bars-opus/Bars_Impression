@@ -385,7 +385,10 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 120.0, bottom: 30),
-                  child: Divider(color: Colors.grey),
+                  child: Divider(
+                    color: Colors.grey,
+                    thickness: .3,
+                  ),
                 ),
                 widget.invite.answer.isNotEmpty
                     ? _alreadyAnswered(widget.invite.answer)
@@ -448,6 +451,7 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
                 padding: const EdgeInsets.only(top: 10.0, bottom: 20),
                 child: Divider(
                   color: Colors.grey,
+                  thickness: .3,
                 ),
               ),
               GestureDetector(
@@ -642,7 +646,11 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
         backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
         elevation: 0.0,
         automaticallyImplyLeading: true,
         centerTitle: false,
@@ -822,6 +830,7 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
                               width: 10,
                               child: CircularProgressIndicator(
                                 strokeWidth: 3,
+                                color: Colors.blue,
                               ),
                             )
                           : SizedBox.shrink()
@@ -947,6 +956,7 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
                                         padding: const EdgeInsets.all(8.0),
                                         child: Divider(
                                           color: Colors.white,
+                                          thickness: .3,
                                         ),
                                       ),
                                       Padding(

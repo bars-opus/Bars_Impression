@@ -185,17 +185,17 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
     // "Fan",
   ];
 
-  Widget buildRadios() => Theme(
-        data: Theme.of(context).copyWith(
-          unselectedWidgetColor: Theme.of(context).secondaryHeaderColor,
-        ),
-        child: Column(
-            children: values.map((value) {
-          final selected = this.selectedValue == value;
-          final color =
-              selected ? Colors.blue : Theme.of(context).secondaryHeaderColor;
+  Widget buildRadios() => Column(
+          children: values.map((value) {
+        final selected = this.selectedValue == value;
+        final color =
+            selected ? Colors.blue : Theme.of(context).secondaryHeaderColor;
 
-          return RadioListTile<String>(
+        return RadioTheme(
+          data: RadioThemeData(
+              fillColor: MaterialStateProperty.all(
+                  Theme.of(context).secondaryHeaderColor)),
+          child: RadioListTile<String>(
             value: value,
             groupValue: selectedValue,
             title: Text(
@@ -214,9 +214,9 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
                 _submit();
               },
             ),
-          );
-        }).toList()),
-      );
+          ),
+        );
+      }).toList());
 
   void navigateToPage(BuildContext context, Widget page) {
     Navigator.push(

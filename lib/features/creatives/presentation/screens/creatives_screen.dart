@@ -766,6 +766,7 @@ class _CreativesScreenState extends State<CreativesScreen>
                 _usersAll.length > 0
             ? RefreshIndicator(
                 backgroundColor: Colors.grey[300],
+                color: Colors.blue,
                 onRefresh: _refresh,
                 child: _buildBody2())
             : Center(

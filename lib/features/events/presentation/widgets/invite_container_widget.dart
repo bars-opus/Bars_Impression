@@ -202,7 +202,7 @@ class _InviteContainerWidgetState extends State<InviteContainerWidget> {
         child: Container(
           padding: EdgeInsets.only(top: 5),
           width: width,
-          height: ResponsiveHelper.responsiveHeight(context, 100.0),
+          height: ResponsiveHelper.responsiveHeight(context, 120.0),
           decoration: BoxDecoration(
               color: widget.invite.answer.isEmpty
                   ? Theme.of(context).primaryColorLight
@@ -225,6 +225,7 @@ class _InviteContainerWidgetState extends State<InviteContainerWidget> {
                     width: 20,
                     child: CircularProgressIndicator(
                       strokeWidth: 3,
+                      color: Colors.blue,
                     ),
                   )
                 : widget.invite.isDeleted

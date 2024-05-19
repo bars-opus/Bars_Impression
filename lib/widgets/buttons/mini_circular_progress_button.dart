@@ -18,6 +18,7 @@ class MiniCircularProgressButton extends StatelessWidget {
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: color,
+            surfaceTintColor: Colors.transparent,
             elevation: 20.0,
             foregroundColor: color == Colors.blue ? Colors.white : Colors.blue,
             shape: RoundedRectangleBorder(

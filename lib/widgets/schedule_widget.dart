@@ -249,7 +249,7 @@ class ScheduleWidget extends StatelessWidget {
                 //   schedule.performer,
                 //   style: Theme.of(context).textTheme.bodyMedium,
                 // ),
-                Divider(
+                Divider( thickness: .2,
                   color: Theme.of(context).secondaryHeaderColor.withOpacity(.4),
                 )
               ],

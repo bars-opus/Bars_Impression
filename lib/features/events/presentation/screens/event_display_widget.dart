@@ -265,7 +265,9 @@ class _EventDisplayWidgetState extends State<EventDisplayWidget> {
                           style: Theme.of(context).textTheme.bodyMedium,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        Divider(),
+                        Divider(
+                          color: Theme.of(context).primaryColor, thickness: .3,
+                        ),
                       ],
                     ),
                   ),

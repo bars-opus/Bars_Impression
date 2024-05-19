@@ -48,7 +48,7 @@ class AccessDashBoardWidget extends StatelessWidget {
               const SizedBox(
                 height: 20,
               ),
-              Divider(
+              Divider( thickness: .2,
                 color: Colors.grey,
               ),
               const SizedBox(

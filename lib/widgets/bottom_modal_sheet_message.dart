@@ -631,10 +631,10 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
   ) {
     var _provider = Provider.of<UserData>(context, listen: false);
 
-    bool readyToSend = _provider.messageImage != null ||
-            controller.text.trim().length > 0 
-        ? true
-        : false;
+    bool readyToSend =
+        _provider.messageImage != null || controller.text.trim().length > 0
+            ? true
+            : false;
     return Material(
       elevation: 10,
       borderRadius: BorderRadius.circular(30),
@@ -662,6 +662,7 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
             autofocus: true,
             focusNode: _focusNode,
             controller: controller,
+            cursorColor: Colors.blue,
             keyboardAppearance: MediaQuery.of(context).platformBrightness,
             textCapitalization: TextCapitalization.sentences,
             keyboardType: TextInputType.multiline,

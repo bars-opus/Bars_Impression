@@ -14,12 +14,12 @@ class SignInWithButton extends StatelessWidget {
       padding: const EdgeInsets.all(5.0),
       child: new Container(
         height: ResponsiveHelper.responsiveHeight(context, 45),
-
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.white,
             elevation: 20.0,
-            foregroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+            surfaceTintColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),

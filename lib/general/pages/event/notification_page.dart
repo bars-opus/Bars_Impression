@@ -248,7 +248,7 @@ class _NotificationPageState extends State<NotificationPage>
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-            height: ResponsiveHelper.responsiveHeight(context, 650.0),
+            height: ResponsiveHelper.responsiveHeight(context, 700.0),
             decoration: BoxDecoration(
                 color: Theme.of(context).primaryColorLight,
                 borderRadius: BorderRadius.circular(30)),
@@ -481,6 +481,7 @@ class _NotificationPageState extends State<NotificationPage>
             ];
           },
           body: RefreshIndicator(
+            color: Colors.blue,
             onRefresh: refreshData,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

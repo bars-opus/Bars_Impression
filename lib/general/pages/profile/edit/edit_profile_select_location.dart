@@ -261,7 +261,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
           height: ResponsiveHelper.responsiveHeight(context, 10.0),
           width: ResponsiveHelper.responsiveHeight(context, 10.0),
           child: CircularProgressIndicator(
-            strokeWidth: 3,
+            strokeWidth: 3, color:Colors.blue,
           ),
         ),
       ],
@@ -351,7 +351,7 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                                             _submit2();
                                             // _provider.setIsLoading(false);
                                           }),
-                                      Divider(),
+                                      Divider( thickness: .2,),
                                     ],
                                   );
                                 },

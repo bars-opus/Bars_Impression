@@ -222,7 +222,7 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
   }
 
   Widget _buildLoadingContainer(BuildContext context) {
-    return const Center(child: CircularProgressIndicator());
+    return const Center(child: CircularProgressIndicator( color:Colors.blue,));
   }
 
   Widget _buildNoContentContainer(BuildContext context) {

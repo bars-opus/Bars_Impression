@@ -564,7 +564,7 @@ class _TicketGroupState extends State<TicketGroup> {
       builder: (BuildContext context) {
         return ConfirmationPrompt(
           height:
-              widget.event!.isFree || widget.event!.isCashPayment ? 300 : 350,
+              widget.event!.isFree || widget.event!.isCashPayment ? 300 : 400,
           buttonText: widget.event!.isFree || widget.event!.isCashPayment
               ? 'Generate Ticket'
               : 'Purchase Ticket',
@@ -672,7 +672,9 @@ class _TicketGroupState extends State<TicketGroup> {
         const SizedBox(
           height: 20,
         ),
-        Divider(),
+        Divider(
+          thickness: .2,
+        ),
         const SizedBox(
           height: 40,
         ),
@@ -745,7 +747,8 @@ class _TicketGroupState extends State<TicketGroup> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(right: 20.0),
-                      child: Center(
+                      child: ShakeTransition(
+                        axis: Axis.vertical,
                         child: RichText(
                           textScaleFactor:
                               MediaQuery.of(context).textScaleFactor,
@@ -773,13 +776,14 @@ class _TicketGroupState extends State<TicketGroup> {
                 const SizedBox(
                   height: 40,
                 ),
-                ShakeTransition(
-                    axis: Axis.vertical, child: TicketPurchaseSummaryWidget()),
+                TicketPurchaseSummaryWidget(),
                 // TicketPurchaseSummaryWidget(),
                 const SizedBox(
                   height: 10,
                 ),
-                Divider(),
+                Divider(
+                  thickness: .2,
+                ),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: RichText(
@@ -809,7 +813,9 @@ class _TicketGroupState extends State<TicketGroup> {
                     textAlign: TextAlign.start,
                   ),
                 ),
-                Divider(),
+                Divider(
+                  thickness: .2,
+                ),
                 const SizedBox(
                   height: 20,
                 ),

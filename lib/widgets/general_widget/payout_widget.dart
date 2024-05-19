@@ -103,12 +103,12 @@ class _PayoutWidgetState extends State<PayoutWidget> {
             'Event',
             widget.payout.eventTitle,
           ),
-          Divider(),
+          Divider( thickness: .2,),
           _payoutWidget(
             'Status',
             widget.payout.status,
           ),
-          Divider(),
+          Divider( thickness: .2,),
           // SalesReceiptWidget(
           //   color: widget.payout.status == 'pending' ? Colors.red : Colors.blue,
           //   isRefunded: false,
@@ -119,20 +119,20 @@ class _PayoutWidgetState extends State<PayoutWidget> {
             'Amount',
             widget.payout.total.toString(),
           ),
-          Divider(),
+          Divider( thickness: .2,),
 
           _payoutWidget(
             'Processed \ntime',
             MyDateFormat.toTime(widget.payout.timestamp.toDate()),
           ),
-          Divider(),
+          Divider( thickness: .2,),
 
           _payoutWidget(
             'Processed \ndate',
             MyDateFormat.toDate(widget.payout.timestamp.toDate()),
           ),
 
-          Divider(),
+          Divider( thickness: .2,),
         ],
       ),
     );

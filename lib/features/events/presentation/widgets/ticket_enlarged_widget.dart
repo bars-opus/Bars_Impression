@@ -446,6 +446,7 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
                 padding: const EdgeInsets.only(top: 70.0, bottom: 30),
                 child: Divider(
                   color: Colors.grey,
+                  thickness: .2,
                 ),
               ),
               Container(
@@ -489,6 +490,7 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
                 padding: const EdgeInsets.only(top: 30.0, bottom: 30),
                 child: Divider(
                   color: Colors.grey,
+                   thickness: .2,
                 ),
               ),
               Container(
@@ -565,6 +567,7 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
                 padding: const EdgeInsets.only(top: 30.0, bottom: 30),
                 child: Divider(
                   color: Colors.grey,
+                 thickness: .2,
                 ),
               ),
               Padding(

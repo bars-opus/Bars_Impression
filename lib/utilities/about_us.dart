@@ -76,6 +76,7 @@ class _AboutUsState extends State<AboutUs> {
             ),
             SizedBox(height: 50),
             Divider(
+              thickness: .2,
               color: Colors.grey,
             ),
             Material(

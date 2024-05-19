@@ -209,7 +209,7 @@ class _DisplayAdviceAndReplyState extends State<DisplayAdviceAndReply> {
                         if (!snapshot.hasData) {
                           return Expanded(
                             child: Center(
-                              child: CircularProgressIndicator(),
+                              child: CircularProgressIndicator( color:Colors.blue,),
                             ),
                           );
                         }

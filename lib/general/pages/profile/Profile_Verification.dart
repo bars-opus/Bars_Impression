@@ -375,7 +375,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
               textAlign: TextAlign.center,
             ),
             children: <Widget>[
-              Divider(),
+              Divider( thickness: .2,),
               Center(
                 child: SimpleDialogOption(
                   child: Text(
@@ -390,7 +390,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                   },
                 ),
               ),
-              Divider(),
+              Divider( thickness: .2,),
               Center(
                 child: SimpleDialogOption(
                   child: Text(
@@ -405,7 +405,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                   },
                 ),
               ),
-              Divider(),
+              Divider( thickness: .2,),
               Center(
                 child: SimpleDialogOption(
                   child: Text(
@@ -529,7 +529,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
               textAlign: TextAlign.start,
             ),
             children: <Widget>[
-              Divider(),
+              Divider( thickness: .2,),
               Center(
                 child: SimpleDialogOption(
                   child: Text(
@@ -552,7 +552,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
                   },
                 ),
               ),
-              Divider(),
+              Divider( thickness: .2,),
               Center(
                 child: SimpleDialogOption(
                   child: Text(
@@ -683,7 +683,7 @@ class _ProfileVerificationState extends State<ProfileVerification> {
               height: MediaQuery.of(context).size.height,
               color: Theme.of(context).primaryColor,
               child: Center(
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator( color:Colors.blue,),
               ),
             );
           }

@@ -36,7 +36,8 @@ exports.createSubaccount = functions.https.onCall(async (data, context) => {
 
     subaccountCode = paystackResponse.data.data.subaccount_code;
 
-    const recipientResponse = await createTransferRecipient(data, PAYSTACK_SECRET_KEY);
+    const recipientResponse = 
+    await createTransferRecipient(data, PAYSTACK_SECRET_KEY);
     return { subaccount_id: subaccountCode, recipient_code: recipientResponse };
 
   } catch (error) {
@@ -46,6 +47,7 @@ exports.createSubaccount = functions.https.onCall(async (data, context) => {
     // If subaccount creation was successful but transfer recipient creation failed,
     // attempt to delete the subaccount to maintain system consistency.
     if (subaccountCode) {
+ 
       try {
         await axios.delete(`https://api.paystack.co/subaccount/${subaccountCode}`, {
           headers: {
@@ -55,14 +57,14 @@ exports.createSubaccount = functions.https.onCall(async (data, context) => {
         });
         console.log(`Compensation transaction successful: Subaccount ${subaccountCode} deleted.`);
       } catch (compensationError) {
-        alertAdminSubAccountIdFFailure(data.userId, compensationError )
+        // alertAdminSubAccountIdFFailure(data.userId, compensationError )
         console.error('Compensation transaction failed:', compensationError);
         // Depending on your error handling policy, you might want to alert an admin here
       }
     }
 
     // After attempting compensation, rethrow an error to inform the caller that the overall operation failed.
-    alertAdminSubAccountIdFFailure(data.userId, error )
+    // alertAdminSubAccountIdFFailure(data.userId, error )
     throw new functions.https.HttpsError('unknown', 'Failed to create transfer recipient, compensation transaction attempted.', error);
   }
 });
@@ -77,7 +79,7 @@ async function createTransferRecipient(data, PAYSTACK_SECRET_KEY) {
       name: data.business_name,
       account_number: data.account_number,
       bank_code: data.bank_code,
-      currency: 'GHS',
+      currency: data.currency,
     }, {
       headers: {
         Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
@@ -118,102 +120,102 @@ async function createTransferRecipient(data, PAYSTACK_SECRET_KEY) {
 
 
 
-exports.updateSubaccount = functions.https.onCall(async (data, context) => {
-  const PAYSTACK_SECRET_KEY = functions.config().paystack.secret_key;
-  if (!context.auth) {
-    throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
-  }
+// exports.updateSubaccount = functions.https.onCall(async (data, context) => {
+//   const PAYSTACK_SECRET_KEY = functions.config().paystack.secret_key;
+//   if (!context.auth) {
+//     throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+//   }
 
-  let subaccountCode = null;
+//   let subaccountCode = null;
 
-  try {
-    const paystackResponse = await axios.put(`https://api.paystack.co/subaccount/${data.oldSubaccountId}`, {
-      business_name: data.business_name,
-      settlement_bank: data.bank_code,
-      account_number: data.account_number,
-      percentage_charge: data.percentage_charge
-    }, {
-      headers: {
-        Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-        'Content-Type': 'application/json'
-      }
-    });
+//   try {
+//     const paystackResponse = await axios.put(`https://api.paystack.co/subaccount/${data.oldSubaccountId}`, {
+//       business_name: data.business_name,
+//       settlement_bank: data.bank_code,
+//       account_number: data.account_number,
+//       percentage_charge: data.percentage_charge
+//     }, {
+//       headers: {
+//         Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+//         'Content-Type': 'application/json'
+//       }
+//     });
 
-    if (!paystackResponse.data.status) {
-      throw new Error('Subaccount creation failed');
-    }
+//     if (!paystackResponse.data.status) {
+//       throw new Error('Subaccount creation failed');
+//     }
 
-    subaccountCode = paystackResponse.data.data.subaccount_code;
+//     subaccountCode = paystackResponse.data.data.subaccount_code;
 
-    const recipientResponse = await updateTransferRecipient(data, PAYSTACK_SECRET_KEY);
-    return { subaccount_id: subaccountCode, recipient_code: recipientResponse };
+//     const recipientResponse = await updateTransferRecipient(data, PAYSTACK_SECRET_KEY);
+//     return { subaccount_id: subaccountCode, recipient_code: recipientResponse };
 
-  } catch (error) {
-    alertAdminSubAccountIdFFailure(data.userId, error )
-    console.error('Error during subaccount creation or transfer recipient creation:', error);
+//   } catch (error) {
+//     alertAdminSubAccountIdFFailure(data.userId, error )
+//     console.error('Error during subaccount creation or transfer recipient creation:', error);
 
-    // If subaccount creation was successful but transfer recipient creation failed,
-    // attempt to delete the subaccount to maintain system consistency.
-    if (subaccountCode) {
-      try {
-        await axios.delete(`https://api.paystack.co/subaccount/${subaccountCode}`, {
-          headers: {
-            Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        console.log(`Compensation transaction successful: Subaccount ${subaccountCode} deleted.`);
-      } catch (compensationError) {
-        alertAdminSubAccountIdFFailure(data.userId, compensationError )
-        console.error('Compensation transaction failed:', compensationError);
-        // Depending on your error handling policy, you might want to alert an admin here
-      }
-    }
+//     // If subaccount creation was successful but transfer recipient creation failed,
+//     // attempt to delete the subaccount to maintain system consistency.
+//     if (subaccountCode) {
+//       try {
+//         await axios.delete(`https://api.paystack.co/subaccount/${subaccountCode}`, {
+//           headers: {
+//             Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+//             'Content-Type': 'application/json'
+//           }
+//         });
+//         console.log(`Compensation transaction successful: Subaccount ${subaccountCode} deleted.`);
+//       } catch (compensationError) {
+//         alertAdminSubAccountIdFFailure(data.userId, compensationError )
+//         console.error('Compensation transaction failed:', compensationError);
+//         // Depending on your error handling policy, you might want to alert an admin here
+//       }
+//     }
 
-    // After attempting compensation, rethrow an error to inform the caller that the overall operation failed.
-    alertAdminSubAccountIdFFailure(data.userId, error )
-    throw new functions.https.HttpsError('unknown', 'Failed to create transfer recipient, compensation transaction attempted.', error);
-  }
-});
+//     // After attempting compensation, rethrow an error to inform the caller that the overall operation failed.
+//     alertAdminSubAccountIdFFailure(data.userId, error )
+//     throw new functions.https.HttpsError('unknown', 'Failed to create transfer recipient, compensation transaction attempted.', error);
+//   }
+// });
 
 
-// // Helper function to create a transfer recipient
-async function updateTransferRecipient(data, PAYSTACK_SECRET_KEY) {
+// // // Helper function to create a transfer recipient
+// async function updateTransferRecipient(data, PAYSTACK_SECRET_KEY) {
 
-  try {
-    const response = await axios.put(`https://api.paystack.co/transferrecipient/${data.oldTransferRecepientId}`, {
-      // type: "ghipss", // Adjust type as per your requirements
-      name: data.business_name,
-      // account_number: data.account_number,
-      // bank_code: data.bank_code,
-      // currency: 'GHS',
-    }, {
-      headers: {
-        Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-        'Content-Type': 'application/json'
-      }
-    });
+//   try {
+//     const response = await axios.put(`https://api.paystack.co/transferrecipient/${data.oldTransferRecepientId}`, {
+//       // type: "ghipss", // Adjust type as per your requirements
+//       name: data.business_name,
+//       // account_number: data.account_number,
+//       // bank_code: data.bank_code,
+//       // currency: 'GHS',
+//     }, {
+//       headers: {
+//         Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+//         'Content-Type': 'application/json'
+//       }
+//     });
 
-    // Check if the status is true and the data object contains the recipient_code
-    if (response.data.status ) {
-      return response.data.data.recipient_code;
-    } else {
-      // Provide more detailed error informationy
-      const message = response.data.message || 'Failed to create transfer recipient with Paystack';
-      alertAdminSubAccountIdFFailure(data.userId, message )
-      console.error(message);
-      throw new functions.https.HttpsError('unknown', message, response.data);
-    }
-  } catch (error) {
-    alertAdminSubAccountIdFFailure(data.userId, error.response ? error.response.data : error )
-    console.error('Error creating transfer recipient:', error.response ? error.response.data : error);
-    throw new functions.https.HttpsError(
-      'unknown',
-      'Error occurred while creating transfer recipient.',
-      error.response ? error.response.data : error.message
-    );
-  }
-}
+//     // Check if the status is true and the data object contains the recipient_code
+//     if (response.data.status ) {
+//       return response.data.data.recipient_code;
+//     } else {
+//       // Provide more detailed error informationy
+//       const message = response.data.message || 'Failed to create transfer recipient with Paystack';
+//       alertAdminSubAccountIdFFailure(data.userId, message )
+//       console.error(message);
+//       throw new functions.https.HttpsError('unknown', message, response.data);
+//     }
+//   } catch (error) {
+//     alertAdminSubAccountIdFFailure(data.userId, error.response ? error.response.data : error )
+//     console.error('Error creating transfer recipient:', error.response ? error.response.data : error);
+//     throw new functions.https.HttpsError(
+//       'unknown',
+//       'Error occurred while creating transfer recipient.',
+//       error.response ? error.response.data : error.message
+//     );
+//   }
+// }
 
 
 

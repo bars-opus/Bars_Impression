@@ -75,7 +75,9 @@ class _IntroState extends State<Intro> {
                             ShakeTransition(
                               child: Container(
                                 height: ResponsiveHelper.responsiveHeight(
-                                    context, 50),
+                                    context, 60),
+                                // color: Colors.red,
+                                // alignment: Alignment.topCenter,
                                 child: AnimatedTextKit(
                                     animatedTexts: [
                                       _fadeText(

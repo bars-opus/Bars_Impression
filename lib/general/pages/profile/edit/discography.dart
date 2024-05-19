@@ -729,7 +729,9 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 20),
-        Divider(),
+        Divider(
+          thickness: .2,
+        ),
         text.isEmpty ? const SizedBox.shrink() : const SizedBox(height: 20),
         ListTile(
           title: Text(
@@ -939,6 +941,9 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
           return [
             SliverAppBar(
               pinned: true,
+              iconTheme: IconThemeData(
+                color: Colors.white,
+              ),
               backgroundColor: Colors.black,
               expandedHeight: ResponsiveHelper.responsiveHeight(context, 350),
               flexibleSpace: Container(
@@ -1024,6 +1029,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                                 width: 10,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 3,
+                                  color: Colors.blue,
                                 ),
                               )
                             : _isCurrentUser

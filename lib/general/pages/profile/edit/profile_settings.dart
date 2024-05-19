@@ -117,7 +117,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
     showAboutDialog(
         context: context,
         applicationName: 'Bars Impression',
-        applicationVersion: 'Version 2.0.1',
+        applicationVersion: 'Version 2.0.2',
         applicationIcon: Container(
           width: 40,
           height: 40,
@@ -133,7 +133,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                 text: TextSpan(
                   children: [
                     TextSpan(
-                        text: "Version Release Date: April 2024\n",
+                        text: "Version Release Date: May 2024\n",
                         style: TextStyle(
                           fontSize: ResponsiveHelper.responsiveFontSize(
                               context, 14.0),
@@ -176,6 +176,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                       height: 50, width: 50, fit: BoxFit.cover)),
               SizedBox(height: 50),
               Divider(
+                thickness: .2,
                 color: Colors.grey,
               ),
               Material(
@@ -208,6 +209,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Divider(
+                  thickness: .2,
                   color: Colors.grey,
                 ),
               ),
@@ -241,6 +243,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Divider(
+                  thickness: .2,
                   color: Colors.grey,
                 ),
               ),
@@ -274,6 +277,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Divider(
+                  thickness: .2,
                   color: Colors.grey,
                 ),
               ),
@@ -295,6 +299,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Divider(
+                  thickness: .2,
                   color: Colors.grey,
                 ),
               ),
@@ -438,6 +443,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                   icon: Icons.arrow_forward_ios_outlined,
                 ),
                 Divider(
+                  thickness: .2,
                   color: Colors.grey,
                 ),
                 IntroInfo(
@@ -455,6 +461,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                   icon: Icons.arrow_forward_ios_outlined,
                 ),
                 Divider(
+                  thickness: .2,
                   color: Colors.grey,
                 ),
                 IntroInfo(
@@ -490,6 +497,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                 //   icon: Icons.arrow_forward_ios_outlined,
                 // ),
                 Divider(
+                  thickness: .2,
                   color: Colors.grey,
                 ),
                 IntroInfo(
@@ -505,6 +513,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                   icon: Icons.arrow_forward_ios_outlined,
                 ),
                 Divider(
+                  thickness: .2,
                   color: Colors.grey,
                 ),
                 IntroInfo(
@@ -522,6 +531,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                   icon: Icons.arrow_forward_ios_outlined,
                 ),
                 Divider(
+                  thickness: .2,
                   color: Colors.grey,
                 ),
                 IntroInfo(
@@ -557,7 +567,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                     icon: Icons.share,
                   ),
                 ),
-                Divider(color: Colors.grey),
+                Divider(thickness: .2, color: Colors.grey),
                 GestureDetector(
                   onTap: () {},
                   child: IntroInfo(
@@ -570,7 +580,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                     icon: Icons.people,
                   ),
                 ),
-                Divider(color: Colors.grey),
+                Divider(thickness: .2, color: Colors.grey),
                 GestureDetector(
                   onTap: () => _navigateToPage(context, FeatureSurvey()),
                   child: IntroInfo(

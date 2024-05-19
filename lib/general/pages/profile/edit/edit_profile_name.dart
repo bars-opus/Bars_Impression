@@ -376,7 +376,7 @@ class _EditProfileNameState extends State<EditProfileName> {
                             ResponsiveHelper.responsiveHeight(context, 20.0),
                         width: ResponsiveHelper.responsiveHeight(context, 20.0),
                         child: CircularProgressIndicator(
-                          strokeWidth: 3,
+                          strokeWidth: 3, color:Colors.blue,
                         ),
                       ),
                     )

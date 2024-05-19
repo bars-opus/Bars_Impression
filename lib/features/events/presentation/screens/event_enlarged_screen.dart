@@ -572,8 +572,10 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                               return Container(
                                 height: ResponsiveHelper.responsiveHeight(
                                     context, 630),
-                                child:
-                                    Center(child: CircularProgressIndicator()),
+                                child: Center(
+                                    child: CircularProgressIndicator(
+                                  color: Colors.blue,
+                                )),
                               );
                             }
                             return snapshot.data.docs.length == 0
@@ -842,6 +844,59 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
         });
   }
 
+  void _showBottomSheetContactOrganizer(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          height: ResponsiveHelper.responsiveHeight(context, 700),
+          decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(30)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Icon(
+                Icons.horizontal_rule,
+                color: Theme.of(context).secondaryHeaderColor,
+                size: ResponsiveHelper.responsiveHeight(context, 30.0),
+              ),
+              Container(
+                width: double.infinity,
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      DisclaimerWidget(
+                        title: 'Call Organizer',
+                        subTitle:
+                            'These are the contacts provided by this event\'s organizers. While we make efforts to gather the contact information, we cannot guarantee that these are the exact and correct contacts. Therefore, we advise you to conduct additional research and verify these contact details  independently.',
+                        icon: Icons.call,
+                      ),
+                      const SizedBox(height: 40),
+                      EventOrganizerContactWidget(
+                        portfolios: widget.event.contacts,
+                        edit: false,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void _showBottomSheetFullTitleAndTheme() {
     var blueTextStyle = TextStyle(
         color: Colors.blue,
@@ -965,6 +1020,10 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                         ),
                       ),
                     ),
+                  Text(
+                    "\nContact organizer",
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                   GestureDetector(
                     onTap: () {
                       Navigator.pop(context);
@@ -976,16 +1035,18 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                             userId: widget.event.authorId,
                           ));
                     },
-                    child: RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: "\nContact organizer",
-                            style: blueTextStyle,
-                          ),
-                        ],
-                      ),
+                    child: Text(
+                      "View organizer\'s profile",
+                      style: blueTextStyle,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      _showBottomSheetContactOrganizer(context);
+                    },
+                    child: Text(
+                      "Call organizer",
+                      style: blueTextStyle,
                     ),
                   ),
                   const SizedBox(height: 60),
@@ -1051,6 +1112,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                 ),
                 Divider(
                   color: Colors.grey,
+                  thickness: .3,
                 ),
                 const SizedBox(
                   height: 30,
@@ -1339,6 +1401,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                                   context, 10.0),
                               child: CircularProgressIndicator(
                                 strokeWidth: 3,
+                                color: Colors.blue,
                               ),
                             )
                           : MiniCircularProgressButton(
@@ -1880,6 +1943,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                               width: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 3,
+                                color: Colors.blue,
                               ),
                             )
                           : Text(
@@ -2053,6 +2117,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                           width: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 3,
+                            color: Colors.blue,
                           ),
                         )
                       : RichText(

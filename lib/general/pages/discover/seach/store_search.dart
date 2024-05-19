@@ -128,10 +128,12 @@ class _StoreSearchState extends State<StoreSearch>
                           : null;
                     },
                     controller: _tabController,
+                    dividerColor: Colors.transparent,
                     labelColor: Theme.of(context).secondaryHeaderColor,
                     indicatorSize: TabBarIndicatorSize.label,
                     indicatorColor: Colors.blue,
                     unselectedLabelColor: Colors.grey,
+                    tabAlignment: TabAlignment.center,
                     isScrollable: true,
                     labelPadding:
                         EdgeInsets.symmetric(horizontal: 20, vertical: 5.0),

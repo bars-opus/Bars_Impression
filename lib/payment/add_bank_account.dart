@@ -79,8 +79,9 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
         'bank_code': bankCode,
         'account_number': _accountNumber.text.trim(),
         'percentage_charge': percentageCharge,
-        'currency': _user!.currency,
-        'userId': _user.userId
+        'currency': 'GHS',
+        //  _user!.currency,
+        'userId': _user!.userId
       };
 
       try {
@@ -131,7 +132,7 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
           }
 
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Received invalid subaccount data'),
+            content: Text('Received invalid account data'),
           ));
         }
         if (mounted) {
@@ -141,7 +142,7 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
         }
       } on FirebaseFunctionsException catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Failed to create subaccount: ${e.message}'),
+          content: Text('Failed to create payout account'),
         ));
         if (mounted) {
           setState(() {
@@ -168,135 +169,135 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
     }
   }
 
-  void _submitFormEdit(BuildContext context) async {
-    FirebaseFunctions functions = FirebaseFunctions.instance;
-    var createSubaccountCallable = functions.httpsCallable(
-      'updateSubaccount',
-    );
+  // void _submitFormEdit(BuildContext context) async {
+  //   FirebaseFunctions functions = FirebaseFunctions.instance;
+  //   var createSubaccountCallable = functions.httpsCallable(
+  //     'updateSubaccount',
+  //   );
 
-    var _user =
-        Provider.of<UserData>(context, listen: false).userLocationPreference;
+  //   var _user =
+  //       Provider.of<UserData>(context, listen: false).userLocationPreference;
 
-    if (_formKey.currentState!.validate() && !_isLoading) {
-      _formKey.currentState!.save();
+  //   if (_formKey.currentState!.validate() && !_isLoading) {
+  //     _formKey.currentState!.save();
 
-      if (mounted) {
-        setState(() {
-          _isLoading = true;
-        });
-      }
+  //     if (mounted) {
+  //       setState(() {
+  //         _isLoading = true;
+  //       });
+  //     }
 
-      final bankCode = _selectedBankCode;
+  //     final bankCode = _selectedBankCode;
 
-      if (bankCode == null || bankCode.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Please select a bank'),
-        ));
-        return;
-      }
+  //     if (bankCode == null || bankCode.isEmpty) {
+  //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //         content: Text('Please select a bank'),
+  //       ));
+  //       return;
+  //     }
 
-      print(_user!.subaccountId.toString() +
-          '    ' +
-          _user.transferRecepientId.toString());
-      // Ensure you collect the percentage charge properly
-      final percentageCharge = 10; // Replace with your method/logic
+  //     print(_user!.subaccountId.toString() +
+  //         '    ' +
+  //         _user.transferRecepientId.toString());
+  //     // Ensure you collect the percentage charge properly
+  //     final percentageCharge = 10; // Replace with your method/logic
 
-      final subaccountData = {
-        'business_name': _bussinessNameController.text.trim(),
-        'bank_code': bankCode,
-        'account_number': _accountNumber.text.trim(),
-        'percentage_charge': percentageCharge,
-        'currency': _user!.currency,
-        'userId': _user.userId,
-        'oldSubaccountId': _user.subaccountId,
-        'oldTransferRecepientId': _user.transferRecepientId,
-      };
+  //     final subaccountData = {
+  //       'business_name': _bussinessNameController.text.trim(),
+  //       'bank_code': bankCode,
+  //       'account_number': _accountNumber.text.trim(),
+  //       'percentage_charge': percentageCharge,
+  //       'currency': _user.currency,
+  //       'userId': _user.userId,
+  //       'oldSubaccountId': _user.subaccountId,
+  //       'oldTransferRecepientId': _user.transferRecepientId,
+  //     };
 
-      try {
-        final HttpsCallableResult<dynamic> result =
-            await createSubaccountCallable.call(
-          subaccountData,
-        );
+  //     try {
+  //       final HttpsCallableResult<dynamic> result =
+  //           await createSubaccountCallable.call(
+  //         subaccountData,
+  //       );
 
-        // print('Full result data: ${result.data}');
+  //       // print('Full result data: ${result.data}');
 
-        var subaccountId = result.data['subaccount_id'];
-        var transferRecepient = result.data['recipient_code'];
+  //       var subaccountId = result.data['subaccount_id'];
+  //       var transferRecepient = result.data['recipient_code'];
 
-        print('Result data: $result.data');
-        print('Result data: $result');
+  //       print('Result data: $result.data');
+  //       print('Result data: $result');
 
-        if (subaccountId != null && _user != null) {
-          try {
-            await usersLocationSettingsRef.doc(_user.userId).update({
-              'subaccountId': subaccountId.toString(),
-              'transferRecepientId': transferRecepient.toString(),
-            });
+  //       if (subaccountId != null && _user != null) {
+  //         try {
+  //           await usersLocationSettingsRef.doc(_user.userId).update({
+  //             'subaccountId': subaccountId.toString(),
+  //             'transferRecepientId': transferRecepient.toString(),
+  //           });
 
-            Navigator.pop(context);
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text('Payout account updated.'),
-            ));
-            _updateAuthorHive(
-                subaccountId.toString(), transferRecepient.toString());
-          } catch (e) {
-            if (mounted) {
-              setState(() {
-                _isLoading = false;
-              });
-            }
-            // print(e);
+  //           Navigator.pop(context);
+  //           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //             content: Text('Payout account updated.'),
+  //           ));
+  //           _updateAuthorHive(
+  //               subaccountId.toString(), transferRecepient.toString());
+  //         } catch (e) {
+  //           if (mounted) {
+  //             setState(() {
+  //               _isLoading = false;
+  //             });
+  //           }
+  //           // print(e);
 
-            // Log the error or use a debugger to inspect the error
-            // print('Error updating Firestore with subaccount ID: $e');
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text('Failed to update payout account'),
-            ));
-          }
-        } else {
-          if (mounted) {
-            setState(() {
-              _isLoading = false;
-            });
-          }
+  //           // Log the error or use a debugger to inspect the error
+  //           // print('Error updating Firestore with subaccount ID: $e');
+  //           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //             content: Text('Failed to update payout account'),
+  //           ));
+  //         }
+  //       } else {
+  //         if (mounted) {
+  //           setState(() {
+  //             _isLoading = false;
+  //           });
+  //         }
 
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Received invalid subaccount data'),
-          ));
-        }
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-        }
-      } on FirebaseFunctionsException catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Failed to create subaccount: ${e.message}'),
-        ));
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-        }
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('An unexpected error occurred'),
-        ));
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-        }
-      } finally {
-        // Use finally to ensure _isLoading is set to false in both success and error scenarios
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-        }
-      }
-    }
-  }
+  //         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //           content: Text('Received invalid subaccount data'),
+  //         ));
+  //       }
+  //       if (mounted) {
+  //         setState(() {
+  //           _isLoading = false;
+  //         });
+  //       }
+  //     } on FirebaseFunctionsException catch (e) {
+  //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //         content: Text('Failed to create subaccount: ${e.message}'),
+  //       ));
+  //       if (mounted) {
+  //         setState(() {
+  //           _isLoading = false;
+  //         });
+  //       }
+  //     } catch (e) {
+  //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //         content: Text('An unexpected error occurred'),
+  //       ));
+  //       if (mounted) {
+  //         setState(() {
+  //           _isLoading = false;
+  //         });
+  //       }
+  //     } finally {
+  //       // Use finally to ensure _isLoading is set to false in both success and error scenarios
+  //       if (mounted) {
+  //         setState(() {
+  //           _isLoading = false;
+  //         });
+  //       }
+  //     }
+  //   }
+  // }
 
   _updateAuthorHive(
     String subacccountId,
@@ -357,6 +358,9 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
         'Bank of Ghana',
         'OmniBSCI Bank',
         'Société Générale Ghana Limited',
+        'MTN',
+        'Vodafone',
+        'AirtelTigo',
       ];
 
       // Filter out the banks that should be excluded
@@ -444,6 +448,11 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
         dropdownColor: Colors.white,
         // style: labelStyle,
         decoration: InputDecoration(
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.blue,
+            ),
+          ),
           enabledBorder: UnderlineInputBorder(
               borderSide: new BorderSide(color: Colors.grey)),
         ),
@@ -506,11 +515,17 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
         keyboardAppearance: MediaQuery.of(context).platformBrightness,
         style: style,
         keyboardType: textInputType,
+        cursorColor: Colors.blue,
         decoration: InputDecoration(
           labelText: labelText,
           hintText: hintText,
           labelStyle: labelStyle,
           hintStyle: hintStyle,
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.blue,
+            ),
+          ),
         ),
         validator: (string) => onValidateText(string),
       ),
@@ -820,6 +835,7 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
                         color: Color(0xFFf2f2f2),
                       ),
                       child: SingleChildScrollView(
+                        physics: NeverScrollableScrollPhysics(),
                         child: Padding(
                           padding: const EdgeInsets.all(30.0),
                           child: Column(
@@ -863,6 +879,7 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
                                 height: 20,
                               ),
                               Divider(
+                                thickness: .2,
                                 color: Colors.grey,
                               ),
                               const SizedBox(
@@ -901,6 +918,7 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
                                 height: 20,
                               ),
                               Divider(
+                                thickness: .2,
                                 color: Colors.grey,
                               ),
                               const SizedBox(
@@ -948,6 +966,7 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
                                     context, 20.0),
                                 child: CircularProgressIndicator(
                                   strokeWidth: 3,
+                                  color: Colors.blue,
                                 ),
                               ),
                             )

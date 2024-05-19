@@ -139,7 +139,7 @@ class SchedulePeopleGroup extends StatelessWidget {
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
-                      subtitle: Divider());
+                      subtitle: Divider( thickness: .2,));
                 },
               ),
             ),

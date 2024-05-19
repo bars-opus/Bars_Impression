@@ -402,6 +402,7 @@ class _EventsAttendingTicketScreenState
                 padding: const EdgeInsets.only(top: 10.0, bottom: 10),
                 child: Divider(
                   color: Colors.grey,
+                  thickness: .3,
                 ),
               ),
               const SizedBox(
@@ -939,6 +940,7 @@ class _EventsAttendingTicketScreenState
                 width: 10,
                 child: CircularProgressIndicator(
                   strokeWidth: 3,
+                  color: Colors.blue,
                 ),
               )
             : SizedBox.shrink()
@@ -989,6 +991,7 @@ class _EventsAttendingTicketScreenState
                 width: 10,
                 child: CircularProgressIndicator(
                   strokeWidth: 3,
+                  color: Colors.blue,
                 ),
               )
             : SizedBox.shrink()
@@ -1106,6 +1109,7 @@ class _EventsAttendingTicketScreenState
         ),
         Divider(
           color: Colors.white,
+          thickness: .3,
         ),
         const SizedBox(
           height: 25,
@@ -1308,9 +1312,13 @@ class _EventsAttendingTicketScreenState
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0.0,
         automaticallyImplyLeading: true,
+        surfaceTintColor: Colors.transparent,
         centerTitle: false,
         title: Text(
           widget.ticket.type,

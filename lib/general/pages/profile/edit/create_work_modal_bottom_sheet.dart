@@ -447,7 +447,7 @@ class _CreateWorkState extends State<CreateWork> {
                                           //     .addressSearchResults![index]
                                           //     .description);
                                         }),
-                                    Divider(),
+                                    Divider( thickness: .2,),
                                   ],
                                 );
                               },

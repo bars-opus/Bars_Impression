@@ -136,7 +136,7 @@ class ComplaintWidget extends StatelessWidget {
           const SizedBox(
             height: 10,
           ),
-          Divider()
+          Divider( thickness: .2,)
         ],
       ),
     );

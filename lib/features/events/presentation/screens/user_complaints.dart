@@ -363,7 +363,7 @@ class _UserComplaintsState extends State<UserComplaints>
                 ),
               ];
             },
-            body: RefreshIndicator(
+            body: RefreshIndicator(color: Colors.blue,
               onRefresh: refreshData,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

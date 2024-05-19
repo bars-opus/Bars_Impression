@@ -319,6 +319,7 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
                                                     context, 10.0),
                                             child: CircularProgressIndicator(
                                               strokeWidth: 3,
+                                              color: Colors.blue,
                                             ),
                                           )
                                         : Checkbox(
@@ -381,6 +382,8 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
 
           return ExpansionTile(
             initiallyExpanded: true,
+            iconColor: Colors.grey,
+            collapsedIconColor: Colors.blue,
             title: Text(
               groupName.toUpperCase(),
               style: TextStyle(
@@ -421,7 +424,9 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
             SizedBox(
               height: widget.isEditing ? 10 : 30,
             ),
-            Divider(),
+            Divider(
+              thickness: .2,
+            ),
             SizedBox(
               height: widget.isEditing ? 10 : 30,
             ),

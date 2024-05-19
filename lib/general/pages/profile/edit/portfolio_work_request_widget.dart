@@ -196,7 +196,7 @@ class _RequestWidgetState extends State<RequestWidget> {
                         height: 10,
                         width: 10,
                         child: CircularProgressIndicator(
-                          strokeWidth: 3,
+                          strokeWidth: 3, color:Colors.blue,
                         ),
                       )
                     : Container(
@@ -236,7 +236,7 @@ class _RequestWidgetState extends State<RequestWidget> {
                           widget.workRequest.overView.replaceAll('\n', ' '),
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
-                        Divider(
+                        Divider( thickness: .2,
                           color: Theme.of(context).primaryColorLight,
                         ),
                         _sizedBox,
@@ -248,7 +248,7 @@ class _RequestWidgetState extends State<RequestWidget> {
                         _buildDisplayPortfolioGrid(
                             context, widget.workRequest.type),
                         _sizedBox,
-                        Divider(
+                        Divider( thickness: .2,
                           color: Theme.of(context).primaryColorLight,
                         ),
                         Text(
@@ -259,7 +259,7 @@ class _RequestWidgetState extends State<RequestWidget> {
                         _buildDisplayPortfolioGrid(
                             context, widget.workRequest.genre),
                         _sizedBox,
-                        Divider(
+                        Divider( thickness: .2,
                           color: Theme.of(context).primaryColorLight,
                         ),
                         Text(

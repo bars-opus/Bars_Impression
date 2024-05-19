@@ -80,7 +80,7 @@ class _EditCommentsState extends State<EditComments> {
               textAlign: TextAlign.center,
             ),
             children: <Widget>[
-              Divider(),
+              Divider( thickness: .2,),
               Center(
                 child: SimpleDialogOption(
                   child: Text(
@@ -95,7 +95,7 @@ class _EditCommentsState extends State<EditComments> {
                   },
                 ),
               ),
-              Divider(),
+              Divider( thickness: .2,),
               Center(
                 child: SimpleDialogOption(
                   child: Text(

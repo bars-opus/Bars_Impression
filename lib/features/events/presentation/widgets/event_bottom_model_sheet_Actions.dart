@@ -308,7 +308,7 @@ class _EventBottomModalSheetActionsState
                               width: ResponsiveHelper.responsiveHeight(
                                   context, 10.0),
                               child: CircularProgressIndicator(
-                                strokeWidth: 3,
+                                strokeWidth: 3, color:Colors.blue,
                               ),
                             )
                           : MiniCircularProgressButton(
@@ -477,7 +477,7 @@ class _EventBottomModalSheetActionsState
                                   height: 20,
                                   width: 20,
                                   child: CircularProgressIndicator(
-                                    strokeWidth: 3,
+                                    strokeWidth: 3, color:Colors.blue,
                                   ),
                                 )
                               : Icon(

@@ -203,7 +203,7 @@ class _EventAttendeesInvitedScreeenState
                           )),
                     ])),
                 subtitle: Divider(
-                  color: Colors.grey,
+                  color: Colors.grey, thickness: .3,
                 ),
               );
             }));

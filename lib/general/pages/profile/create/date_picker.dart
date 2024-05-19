@@ -61,9 +61,9 @@ class _DatePickerState extends State<DatePicker> {
             style: TextStyle(fontSize: 16, color: Colors.white),
           ),
         ),
-        const SizedBox(
-          height: 30,
-        ),
+        // const SizedBox(
+        //   height: 30,
+        // ),
       ],
     );
   }
