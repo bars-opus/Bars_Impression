@@ -2554,10 +2554,12 @@ class DatabaseService {
 
   static Future<int> numEventsAllSortNumberOfDays(
       DateTime currentDate, int sortNumberOfDays) async {
-    final endDate = currentDate.add(Duration(days: sortNumberOfDays));
+    final sortDate = currentDate.add(Duration(days: sortNumberOfDays));
     QuerySnapshot feedEventSnapShot = await allEventsRef
         .where('showOnExplorePage', isEqualTo: true)
-        .where('clossingDay', isLessThanOrEqualTo: endDate)
+        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+        .where('clossingDay', isLessThanOrEqualTo: sortDate)
+        // .where('clossingDay', isLessThanOrEqualTo: endDate)
         // .where('clossingDay', isLessThanOrEqualTo: endDate)
 
         // .where('type', isEqualTo: eventType)
@@ -2568,11 +2570,13 @@ class DatabaseService {
 
   static Future<int> numEventsTypesSortNumberOfDays(
       String eventType, DateTime currentDate, int sortNumberOfDays) async {
-    final endDate = currentDate.add(Duration(days: sortNumberOfDays));
+    final sortDate = currentDate.add(Duration(days: sortNumberOfDays));
     QuerySnapshot feedEventSnapShot = await allEventsRef
         .where('showOnExplorePage', isEqualTo: true)
         .where('type', isEqualTo: eventType)
-        .where('clossingDay', isLessThanOrEqualTo: endDate)
+        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+        .where('clossingDay', isLessThanOrEqualTo: sortDate)
+        // .where('clossingDay', isLessThanOrEqualTo: endDate)
         // .where('clossingDay', isLessThanOrEqualTo: endDate)
         // .where('showOnExplorePage', isEqualTo: true)
         .get();

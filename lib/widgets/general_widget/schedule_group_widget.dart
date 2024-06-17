@@ -163,19 +163,16 @@ class ScheduleGroup extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                         vertical: 8.0,
                       ),
-                      child: Container(
-                        width:
-                            ResponsiveHelper.responsiveFontSize(context, 200),
-                        child: Text(
-                          MyDateFormat.toDate(date),
-                          // DateFormat('yyyy-MM-dd').format(date),
-                          style: TextStyle(
-                              color: from.isEmpty
-                                  ? Colors.white
-                                  : Theme.of(context).secondaryHeaderColor,
-                              fontSize: from.isEmpty ? 20 : 16,
-                              fontWeight: FontWeight.bold),
-                        ),
+                      child: Text(
+                        MyDateFormat.toDate(date),
+                        // DateFormat('yyyy-MM-dd').format(date),
+                        style: TextStyle(
+                            color: from.isEmpty
+                                ? Colors.white
+                                : Theme.of(context).secondaryHeaderColor,
+                            fontSize: 20,
+                            // from.isEmpty ? 20 : 20,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                     // Display the schedules for this date

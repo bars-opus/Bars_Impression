@@ -913,7 +913,8 @@ class _EventTypesState extends State<EventTypes>
   }
 
   Widget _buildRefreshIndicator() {
-    return RefreshIndicator(color: Colors.blue,
+    return RefreshIndicator(
+      color: Colors.blue,
       backgroundColor: Colors.grey[300],
       onRefresh: _refresh,
       child: NotificationListener<ScrollNotification>(

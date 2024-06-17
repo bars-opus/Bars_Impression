@@ -350,11 +350,11 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     mySnackBar(context, result);
   }
 
-  void _showBottomSheetErrorMessage(Object e) {
-    String error = e.toString();
-    String result = error.contains(']')
-        ? error.substring(error.lastIndexOf(']') + 1)
-        : error;
+  void _showBottomSheetErrorMessage(String e) {
+    // String error = e.toString();
+    // String result = error.contains(']')
+    //     ? error.substring(error.lastIndexOf(']') + 1)
+    //     : error;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -365,7 +365,8 @@ class _CreateEventScreenState extends State<CreateEventScreen>
           onPressed: () async {
             Navigator.pop(context);
           },
-          title: 'Failed to create event',
+          title: e,
+          // 'Failed to create event',
           subTitle: 'Check your internet connection and try again.',
         );
       },
@@ -432,7 +433,9 @@ class _CreateEventScreenState extends State<CreateEventScreen>
         // _handleError(e, false);
         animateToBack(1);
         _isLoading = false;
-        _showBottomSheetErrorMessage(e);
+        _showBottomSheetErrorMessage(
+          'Failed to create event',
+        );
       }
     }
   }
@@ -578,7 +581,9 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       // _handleError(e, false);
       animateToBack(1);
       _isLoading = false;
-      _showBottomSheetErrorMessage(e);
+      _showBottomSheetErrorMessage(
+        'Failed to edit event',
+      );
     }
   }
 
@@ -751,6 +756,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     provider.setIsFree(false);
     provider.addressSearchResults = [];
     provider.setCouldntDecodeCity(false);
+    provider.eventOrganizerContacts.clear();
     Navigator.pop(context);
   }
 
@@ -1010,6 +1016,69 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     );
   }
 
+  void _showBottomSheetSettingsLearnMore(
+      String title, String subTitle, String body) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+            height: ResponsiveHelper.responsiveHeight(context, 700),
+            decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(30)),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: ListView(
+                children: [
+                  // const SizedBox(
+                  //   height: 30,
+                  // ),
+                  TicketPurchasingIcon(
+                    title: '',
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  RichText(
+                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: title,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        TextSpan(
+                          text: "\n\n${subTitle}",
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 30.0),
+                    child: Divider(
+                      thickness: .5,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  Text(
+                    "Overview",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  Text(
+                    "${body}",
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 60),
+                ],
+              ),
+            ));
+      },
+    );
+  }
+
   _buildSettingOptions(UserData _provider) {
     List<Widget> options = [];
     options.add(const SizedBox(height: 30));
@@ -1020,6 +1089,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
           _provider.isFree
               ? 'This is a free event with no ticket or gate fee.(Change back to paid)'
               : 'This is a paid event with a ticket or gate fee. (Change to free)',
+          '',
           _provider.isFree,
           _provider.setIsFree));
     }
@@ -1029,14 +1099,16 @@ class _CreateEventScreenState extends State<CreateEventScreen>
           _provider.isCashPayment
               ? 'Only cash is accepted as a payment method for tickets or gate fees'
               : 'Card and mobile money as a payment method for tickets or gate fees',
+          'You can choose either online payment or cash payment, but not both at the same time\n\nOnline Payment:\nWhen you select the online payment option, the payment process is handled by the system.\nAfter the online payment is successful, the tickets are generated.\n\nCash Payment:\nWhen you select the cash payment option, the system generates free tickets for attendees. \nThe cash payment will be made at the event gate when the users show the generated ticket on the app.',
           _provider.isCashPayment,
           _provider.setIsCashPayment));
     }
     options.add(_buildSettingSwitchWithDivider(
         _provider.isPrivate ? 'Private event' : 'Not private event',
         _provider.isPrivate
-            ? 'You are creating a private event. When creating a private event, you have the option to send invitations only to specific individuals who are intended to attend. This means that the event is not open to the general public, and access is restricted to those who have received and accepted an invitation.(Change back to public)'
+            ? 'You are creating a private event, it means the event is exclusive and only accessible to a selected group of people, rather than being open to the general public. (Change back to public)'
             : 'You are creating a public (general) event where anybody can attend.(Change to private)',
+        'When creating a private event, you have the option to send invitations only to specific individuals who are intended to attend. This means that the event is not open to the general public, and access is restricted to those who have received and accepted an invitation. \n\nExample: Weddings, Birthday celebrations, Graduation ceremonies, Exclusive fundraising events for high-net-worth individuals, Employee training sessions, Executive retreats, Product launch events for select customers or partners',
         _provider.isPrivate,
         _provider.setIsPrivate));
 
@@ -1048,6 +1120,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
           _provider.showToFollowers
               ? 'Exclusive event where access is granted to both invited attendees and followers.'
               : 'Your followers cannot see this private event. This means only the people you send invites to can attend.',
+          '',
           _provider.showToFollowers,
           _provider.setshowToFollowers));
     }
@@ -1059,9 +1132,11 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     return options;
   }
 
-  Widget _buildSettingSwitchWithDivider(
-      String title, String subTitle, bool value, Function onChanged) {
+  Widget _buildSettingSwitchWithDivider(String title, String subTitle,
+      String body, bool value, Function onChanged) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SettingSwitchBlack(
           title: title,
@@ -1069,6 +1144,19 @@ class _CreateEventScreenState extends State<CreateEventScreen>
           value: value,
           onChanged: (bool value) => onChanged(value),
         ),
+        if (body.isNotEmpty)
+          GestureDetector(
+            onTap: () {
+              _showBottomSheetSettingsLearnMore(title, subTitle, body);
+            },
+            child: Text(
+              'Learn more',
+              style: TextStyle(
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+                color: Colors.blue,
+              ),
+            ),
+          ),
         Padding(
           padding: const EdgeInsets.only(top: 10.0, bottom: 10),
           child: Divider(
@@ -2998,7 +3086,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                     text: widget.isEditting
                         ? 'Next'
                         : _provider.isPrivate
-                            ? "Skip"
+                            ? "Next"
                             : "Next"),
             ],
           ),
@@ -3406,7 +3494,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                         if (connectivityResult == ConnectivityResult.none) {
                           // No internet connection
                           _showBottomSheetErrorMessage(
-                              'No internet connection available. Please connect to the internet and try again.');
+                              'No internet connection available. ');
                           return;
                         }
                         widget.isEditting ? _editEvent() : _submitCreate();

@@ -405,7 +405,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             'Username',
             style: TextStyle(
               color: Colors.grey,
-              fontSize: ResponsiveHelper.responsiveFontSize(context, 8.0),
+              fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
             ),
           ),
           DummyTextField(
@@ -485,7 +485,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   height: 15,
                   width: 15,
                   child: CircularProgressIndicator(
-                    strokeWidth: 3, color: Colors.blue,
+                    strokeWidth: 3,
+                    color: Colors.blue,
                   ),
                 ),
                 title: Text(

@@ -260,7 +260,7 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
                 EditProfileInfo(
                   editTitle: 'Select \nAccount Type',
                   info:
-                      'Choose an account type that allows other users to easily identify you for business purposes. You can select only one account type at a time.',
+                      'Choose an account type that allows other users to easily identify you for business purposes. You can select only one account type at a time. If you are not sure about the account type to select, Learn',
                   icon: Icons.account_circle,
                   showMore: true,
                   moreOnPressed: () {

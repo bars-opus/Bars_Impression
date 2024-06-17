@@ -846,7 +846,10 @@ class _ChatsState extends State<Chats>
       builder:
           (BuildContext context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
         if (!streamSnapshot.hasData) {
-          return Center(child: CircularProgressIndicator( color:Colors.blue,));
+          return Center(
+              child: CircularProgressIndicator(
+            color: Colors.blue,
+          ));
         }
 
         if (streamSnapshot.data!.docs.isEmpty) {
@@ -967,7 +970,7 @@ class _ChatsState extends State<Chats>
                 // sif (Provider.of<UserData>(context, listen: false).showUsersTab)
                 SliverAppBar(
                   backgroundColor: Theme.of(context).primaryColorLight,
-                  expandedHeight: 100,
+                  expandedHeight: 110,
                   flexibleSpace: SingleChildScrollView(
                     // controller: _hideButtonController,
                     child: Column(
@@ -979,6 +982,7 @@ class _ChatsState extends State<Chats>
                           indicatorSize: TabBarIndicatorSize.label,
                           indicatorColor: Colors.blue,
                           unselectedLabelColor: Colors.grey,
+                          dividerColor: Colors.transparent,
                           labelPadding: EdgeInsets.symmetric(
                             horizontal: 20,
                             vertical: 10.0,
@@ -1691,7 +1695,9 @@ class _DisplayState extends State<Display> {
                           const SizedBox(
                             height: 30,
                           ),
-                          Divider( thickness: .2,),
+                          Divider(
+                            thickness: .2,
+                          ),
                         ],
                       )
                     : Wrap(
@@ -1723,7 +1729,9 @@ class _DisplayState extends State<Display> {
                           const SizedBox(
                             height: 30,
                           ),
-                          Divider( thickness: .2,),
+                          Divider(
+                            thickness: .2,
+                          ),
                         ],
                       ),
               ],

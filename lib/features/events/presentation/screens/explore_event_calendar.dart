@@ -270,7 +270,7 @@ class _ExploreEventCalendarState extends State<ExploreEventCalendar> {
           // const SizedBox(
           //   height: 30,
           // ),
-          Divider( thickness: .3,),
+          // Divider( thickness: .3,),
           TableCalendar(
               daysOfWeekHeight: ResponsiveHelper.responsiveHeight(context, 50),
               calendarBuilders: CalendarBuilders(
@@ -460,7 +460,9 @@ class _ExploreEventCalendarState extends State<ExploreEventCalendar> {
                       const SizedBox(
                         height: 30,
                       ),
-                      Divider( thickness: .3,),
+                      Divider(
+                        thickness: .3,
+                      ),
                       const SizedBox(
                         height: 30,
                       ),

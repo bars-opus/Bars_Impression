@@ -336,77 +336,77 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
     );
   }
 
-//display schedules and programe line ups
-  void _showBottomSheetSchedules(BuildContext context) {
-    List<Schedule> shedules = widget.event.schedule;
-    List<Schedule> scheduleOptions = [];
-    for (Schedule shedules in shedules) {
-      Schedule sheduleOption = shedules;
-      scheduleOptions.add(sheduleOption);
-    }
-    scheduleOptions
-        .sort((a, b) => a.startTime.toDate().compareTo(b.startTime.toDate()));
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return widget.event.schedule.isEmpty
-            ? NoScheduleCalendar(
-                showAskMore: true,
-                askMoreOnpressed: () {
-                  Navigator.pop(context);
-                  _showBottomSheetAskMore(context);
-                },
-              )
-            : Stack(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    height: ResponsiveHelper.responsiveHeight(context, 650),
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColorLight,
-                        borderRadius: BorderRadius.circular(30)),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColor.withOpacity(.3),
-                          borderRadius: BorderRadius.circular(30)),
-                      child: Padding(
-                        padding:
-                            const EdgeInsets.fromLTRB(10.0, 70.0, 10.0, 0.0),
-                        child: ScheduleGroup(
-                          from: 'schedule',
-                          schedules: widget.event.schedule,
-                          isEditing: false,
-                          eventOrganiserId: widget.event.authorId,
-                          currentUserId: widget.currentUserId,
-                        ),
-                      ),
-                    ),
+// //display schedules and programe line ups
+//   void _showBottomSheetSchedules(BuildContext context) {
+//     List<Schedule> shedules = widget.event.schedule;
+//     List<Schedule> scheduleOptions = [];
+//     for (Schedule shedules in shedules) {
+//       Schedule sheduleOption = shedules;
+//       scheduleOptions.add(sheduleOption);
+//     }
+//     scheduleOptions
+//         .sort((a, b) => a.startTime.toDate().compareTo(b.startTime.toDate()));
+//     showModalBottomSheet(
+//       context: context,
+//       isScrollControlled: true,
+//       backgroundColor: Colors.transparent,
+//       builder: (BuildContext context) {
+//         return widget.event.schedule.isEmpty
+//             ? NoScheduleCalendar(
+//                 showAskMore: true,
+//                 askMoreOnpressed: () {
+//                   Navigator.pop(context);
+//                   _showBottomSheetAskMore(context);
+//                 },
+//               )
+//             : Stack(
+//                 children: [
+//                   Container(
+//                     width: double.infinity,
+//                     height: ResponsiveHelper.responsiveHeight(context, 650),
+//                     decoration: BoxDecoration(
+//                         color: Theme.of(context).primaryColorLight,
+//                         borderRadius: BorderRadius.circular(30)),
+//                     child: Container(
+//                       decoration: BoxDecoration(
+//                           color: Theme.of(context).primaryColor.withOpacity(.3),
+//                           borderRadius: BorderRadius.circular(30)),
+//                       child: Padding(
+//                         padding:
+//                             const EdgeInsets.fromLTRB(10.0, 70.0, 10.0, 0.0),
+//                         child: ScheduleGroup(
+//                           from: 'schedule',
+//                           schedules: widget.event.schedule,
+//                           isEditing: false,
+//                           eventOrganiserId: widget.event.authorId,
+//                           currentUserId: widget.currentUserId,
+//                         ),
+//                       ),
+//                     ),
 
-                    // Padding(
-                    //     padding:
-                    //         const EdgeInsets.fromLTRB(10.0, 70.0, 10.0, 0.0),
-                    //     child: ListView.builder(
-                    //       itemCount: scheduleOptions.length,
-                    //       itemBuilder: (BuildContext context, int index) {
-                    //         Schedule schedule = scheduleOptions[index];
+//                     // Padding(
+//                     //     padding:
+//                     //         const EdgeInsets.fromLTRB(10.0, 70.0, 10.0, 0.0),
+//                     //     child: ListView.builder(
+//                     //       itemCount: scheduleOptions.length,
+//                     //       itemBuilder: (BuildContext context, int index) {
+//                     //         Schedule schedule = scheduleOptions[index];
 
-                    //         return ScheduleWidget(schedule: schedule, edit: false,);
-                    //       },
-                    //     )),
-                  ),
-                  Positioned(
-                    top: 10,
-                    child: TicketPurchasingIcon(
-                      title: 'Schedules.',
-                    ),
-                  ),
-                ],
-              );
-      },
-    );
-  }
+//                     //         return ScheduleWidget(schedule: schedule, edit: false,);
+//                     //       },
+//                     //     )),
+//                   ),
+//                   Positioned(
+//                     top: 10,
+//                     child: TicketPurchasingIcon(
+//                       title: 'Schedules.',
+//                     ),
+//                   ),
+//                 ],
+//               );
+//       },
+//     );
+//   }
 
   void _showBottomSheetEditAsk(
     Ask ask,
@@ -920,7 +920,17 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                   TicketPurchasingIcon(
                     title: '',
                   ),
-                  const SizedBox(height: 40),
+                  // const SizedBox(height: 10),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: Text(
+                      'Overview',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 40,
+                  ),
                   RichText(
                     textScaleFactor: MediaQuery.of(context).textScaleFactor,
                     text: TextSpan(
@@ -934,6 +944,60 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: EdgeInsets.only(
+                        top: ResponsiveHelper.responsiveHeight(context, 10)),
+                    child: Container(
+                      height: ResponsiveHelper.responsiveHeight(context, 300),
+                      width: ResponsiveHelper.responsiveHeight(context, 300),
+                      child: Row(
+                        children: [
+                          // Column(
+                          //   children: [
+                          //     Container(
+                          //       height: ResponsiveHelper.responsiveHeight(
+                          //           context, 120),
+                          //       width: ResponsiveHelper.responsiveHeight(
+                          //           context, 120),
+                          //       decoration: BoxDecoration(
+                          //           color: Colors.black,
+                          //           borderRadius: BorderRadius.circular(30)),
+                          //     ),
+                          //     Container(
+                          //       height: ResponsiveHelper.responsiveHeight(
+                          //           context, 120),
+                          //       width: ResponsiveHelper.responsiveHeight(
+                          //           context, 120),
+                          //       decoration: BoxDecoration(
+                          //           color: Colors.black,
+                          //           borderRadius: BorderRadius.circular(30)),
+                          //     ),
+                          //   ],
+                          // ),
+                          SizedBox(
+                              width: ResponsiveHelper.responsiveHeight(
+                                  context, 10)),
+                          Expanded(
+                            child: Container(
+                              width: ResponsiveHelper.responsiveHeight(
+                                  context, 280),
+                              decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(30)),
+                              child: EventSheduleCalendar(
+                                
+                                // makeSmall: true,
+                                event: widget.event,
+                                currentUserId: widget.currentUserId,
+                                duration: duratoinDuringStartingToEndingDate,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   GestureDetector(
@@ -1895,7 +1959,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
             ),
             GestureDetector(
               onTap: () {
-                _showBottomSheetSchedules(context);
+                _showBottomSheetCalendar(context);
               },
               child: RichText(
                 textScaleFactor: MediaQuery.of(context).textScaleFactor,

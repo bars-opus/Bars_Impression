@@ -363,7 +363,8 @@ class _UserComplaintsState extends State<UserComplaints>
                 ),
               ];
             },
-            body: RefreshIndicator(color: Colors.blue,
+            body: RefreshIndicator(
+              color: Colors.blue,
               onRefresh: refreshData,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -383,10 +384,9 @@ class _UserComplaintsState extends State<UserComplaints>
                           ? Expanded(
                               child: Center(
                               child: NoContents(
-                                icon: (MdiIcons.transfer),
-                                title: 'No payouts,',
-                                subTitle:
-                                    'All your ticket sales payouts would appear here.',
+                                icon: (Icons.bug_report_outlined),
+                                title: 'No complaints',
+                                subTitle: '',
                               ),
                             ))
                           : Expanded(

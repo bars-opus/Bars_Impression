@@ -154,23 +154,23 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
     'Africa',
     'Antarctica',
     'Asia',
+    'Australia',
     'Europe	',
     'North America',
     'South America',
-    'Australia',
   ];
 
-  Widget buildRadios() => Theme(
-        data: Theme.of(context).copyWith(
-          unselectedWidgetColor: Theme.of(context).secondaryHeaderColor,
-        ),
-        child: Column(
-            children: values.map((value) {
-          final selected = this.selectedValue == value;
-          final color =
-              selected ? Colors.blue : Theme.of(context).secondaryHeaderColor;
+  Widget buildRadios() => Column(
+          children: values.map((value) {
+        final selected = this.selectedValue == value;
+        final color =
+            selected ? Colors.blue : Theme.of(context).secondaryHeaderColor;
 
-          return RadioListTile<String>(
+        return RadioTheme(
+          data: RadioThemeData(
+              fillColor: MaterialStateProperty.all(
+                  Theme.of(context).secondaryHeaderColor)),
+          child: RadioListTile<String>(
             value: value,
             groupValue: selectedValue,
             title: Text(
@@ -190,9 +190,9 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                 _submit1();
               },
             ),
-          );
-        }).toList()),
-      );
+          ),
+        );
+      }).toList());
 
   Widget buildContinentPicker() => Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -261,7 +261,8 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
           height: ResponsiveHelper.responsiveHeight(context, 10.0),
           width: ResponsiveHelper.responsiveHeight(context, 10.0),
           child: CircularProgressIndicator(
-            strokeWidth: 3, color:Colors.blue,
+            strokeWidth: 3,
+            color: Colors.blue,
           ),
         ),
       ],
@@ -351,7 +352,9 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
                                             _submit2();
                                             // _provider.setIsLoading(false);
                                           }),
-                                      Divider( thickness: .2,),
+                                      Divider(
+                                        thickness: .2,
+                                      ),
                                     ],
                                   );
                                 },

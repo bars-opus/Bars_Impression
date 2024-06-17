@@ -1421,6 +1421,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   indicatorSize: TabBarIndicatorSize.label,
                                   indicatorColor: Colors.blue,
                                   unselectedLabelColor: Colors.grey,
+                                  dividerColor: Colors.transparent,
+
                                   isScrollable: false,
                                   // tabAlignment: TabAlignment.start,
                                   indicatorWeight: 2.0,

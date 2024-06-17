@@ -8,6 +8,7 @@ class CountdownTimer extends StatefulWidget {
   final String split;
   final bool eventHasStarted;
   final bool eventHasEnded;
+  final bool isBold;
   final bool big;
 
   CountdownTimer({
@@ -19,6 +20,7 @@ class CountdownTimer extends StatefulWidget {
     required this.eventHasStarted,
     required this.eventHasEnded,
     this.big = false,
+    this.isBold = false,
   });
 
   @override
@@ -124,7 +126,11 @@ class _CountdownTimerState extends State<CountdownTimer> {
             ]))
         : Text(
             _countDownToStartingDate,
-            style: TextStyle(color: widget.color, fontSize: widget.fontSize),
+            style: TextStyle(
+                color: widget.color,
+                fontSize: widget.fontSize,
+                fontWeight:
+                    widget.isBold ? FontWeight.bold : FontWeight.normal),
             overflow: TextOverflow.ellipsis,
           );
   }

@@ -30,8 +30,6 @@ class _EditEventScreenState extends State<EditEventScreen> {
       _provider.setTheme(widget.event.theme);
       _provider.setImageUrl(widget.event.imageUrl);
       _provider.setVenue(widget.event.venue);
-      _provider.setVenue(widget.event.city);
-      _provider.setVenue(widget.event.country);
       _provider.setAddress(widget.event.address);
       _provider.setAddress(widget.event.address);
       _provider.setType(widget.event.type);
@@ -100,7 +98,6 @@ class _EditEventScreenState extends State<EditEventScreen> {
     provider.setImageUrl('');
     provider.setVenue('');
     provider.setAddress('');
-    provider.setVenue('');
     provider.setAddress('');
     provider.setType('');
     provider.setCategory('');
@@ -122,7 +119,7 @@ class _EditEventScreenState extends State<EditEventScreen> {
     provider.setIsVirtual(false);
     provider.setIsPrivate(false);
     provider.setIsFree(false);
-
+    provider.eventOrganizerContacts.clear();
     provider.setCouldntDecodeCity(false);
   }
 

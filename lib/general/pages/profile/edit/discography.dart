@@ -1,3 +1,4 @@
+import 'package:bars/utilities/dimensions.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:currency_picker/currency_picker.dart';
 import 'package:flutter/scheduler.dart';
@@ -802,107 +803,114 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
   //   );
   // }
 
+  _navigateToProfile() {
+    return _navigateToPage(
+        context,
+        ProfileScreen(
+          currentUserId: widget.currentUserId,
+          userId: widget.userPortfolio.id,
+          user: null,
+        ));
+  }
+
   _authorWidget() {
     final width = MediaQuery.of(context).size.width;
     return SingleChildScrollView(
       child: Container(
-          height: ResponsiveHelper.responsiveHeight(context, 60),
-          width: width.toDouble(),
-          child: Stack(
-            children: [
-              GestureDetector(
+        width: ResponsiveHelper.responsiveWidth(context, width),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SizedBox(width: 10),
+            widget.userPortfolio.profileImageUrl.isEmpty
+                ? GestureDetector(
+                    onTap: () {
+                      _navigateToProfile();
+                    },
+                    child: Icon(
+                      Icons.account_circle,
+                      size: 40.0,
+                      color: Colors.grey,
+                    ),
+                  )
+                : GestureDetector(
+                    onTap: () {
+                      _navigateToProfile();
+                    },
+                    child: CircleAvatar(
+                      radius: 18.0,
+                      backgroundColor: Colors.blue,
+                      backgroundImage: CachedNetworkImageProvider(
+                          widget.userPortfolio.profileImageUrl),
+                    ),
+                  ),
+            SizedBox(width: 10),
+            Expanded(
+              // Add this
+              child: GestureDetector(
                 onTap: () {
-                  _navigateToPage(
-                      context,
-                      ProfileScreen(
-                        currentUserId: widget.currentUserId,
-                        userId: widget.userPortfolio.id,
-                        user: null,
-                      ));
+                  _navigateToProfile();
                 },
-                child: Row(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    SizedBox(width: 10),
-                    widget.userPortfolio.profileImageUrl.isEmpty
-                        ? Icon(
-                            Icons.account_circle,
-                            size: 40.0,
-                            color: Colors.grey,
-                          )
-                        : CircleAvatar(
-                            radius: 18.0,
-                            backgroundColor: Colors.blue,
-                            backgroundImage: CachedNetworkImageProvider(
-                                widget.userPortfolio.profileImageUrl),
-                          ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      // Add this
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Flexible(
-                                  // And this
-                                  child: Text(
-                                widget.userPortfolio.userName,
-                                style: TextStyle(
-                                  fontSize: ResponsiveHelper.responsiveFontSize(
-                                      context, 16.0),
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                    Row(
+                      children: [
+                        Flexible(
+                            // And this
+                            child: Text(
+                          widget.userPortfolio.userName,
+                          style: TextStyle(
+                            fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 16.0),
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
 
-                                  overflow: TextOverflow.ellipsis, // And this
-                                ),
-                                maxLines: 2,
-                              )),
-                              SizedBox(width: 5),
-                              if (widget.userPortfolio.verified)
-                                Icon(
-                                  Icons.check_circle,
-                                  color: Colors.blue,
-                                  size: 16,
-                                ),
-                            ],
+                            overflow: TextOverflow.ellipsis, // And this
                           ),
-                          SizedBox(height: 5),
-                          Text(
-                            widget.userPortfolio.profileHandle,
-                            style: TextStyle(
-                              fontSize: ResponsiveHelper.responsiveFontSize(
-                                  context, 14.0),
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            maxLines: 2, // Adjust as necessary
-                            overflow: TextOverflow.ellipsis, // Add this
+                          maxLines: 2,
+                        )),
+                        SizedBox(width: 5),
+                        if (widget.userPortfolio.verified)
+                          Icon(
+                            Icons.check_circle,
+                            color: Colors.blue,
+                            size: 16,
                           ),
-                        ],
+                      ],
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      widget.userPortfolio.profileHandle,
+                      style: TextStyle(
+                        fontSize:
+                            ResponsiveHelper.responsiveFontSize(context, 14.0),
+                        color: Colors.blue,
+                        fontWeight: FontWeight.bold,
                       ),
+                      maxLines: 2, // Adjust as necessary
+                      overflow: TextOverflow.ellipsis, // Add this
                     ),
                   ],
                 ),
               ),
-              if (!_isBlockingUser && !_isBlockedUser)
-                Positioned(
-                  right: 1,
-                  child: IconButton(
-                    onPressed: () {
-                      _showBottomSheet();
-                    },
-                    icon: Icon(
-                      Icons.more_vert_rounded,
-                      size: ResponsiveHelper.responsiveHeight(context, 20),
-                      color: Colors.white,
-                    ),
-                  ),
+            ),
+            if (!_isBlockingUser && !_isBlockedUser)
+              IconButton(
+                onPressed: () {
+                  _showBottomSheet();
+                },
+                icon: Icon(
+                  Icons.more_vert_rounded,
+                  size: ResponsiveHelper.responsiveHeight(context, 20),
+                  color: Colors.white,
                 ),
-            ],
-          )),
+              ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -949,7 +957,10 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
               flexibleSpace: Container(
                 width: double.infinity,
                 child: FlexibleSpaceBar(
+                  titlePadding: EdgeInsets.only(
+                      bottom: ResponsiveHelper.responsiveFontSize(context, 20)),
                   title: _authorWidget(),
+                  centerTitle: false,
                   expandedTitleScale: 1,
                   background:
 

@@ -322,6 +322,8 @@ class _EditProfileNameState extends State<EditProfileName> {
                     focusNode: _focusNode,
                     controller: _controller,
                     textCapitalization: TextCapitalization.characters,
+                    keyboardAppearance:
+                        MediaQuery.of(context).platformBrightness,
                     keyboardType: TextInputType.multiline,
                     maxLines: 1,
                     autovalidateMode: AutovalidateMode.always,
@@ -376,7 +378,8 @@ class _EditProfileNameState extends State<EditProfileName> {
                             ResponsiveHelper.responsiveHeight(context, 20.0),
                         width: ResponsiveHelper.responsiveHeight(context, 20.0),
                         child: CircularProgressIndicator(
-                          strokeWidth: 3, color:Colors.blue,
+                          strokeWidth: 3,
+                          color: Colors.blue,
                         ),
                       ),
                     )

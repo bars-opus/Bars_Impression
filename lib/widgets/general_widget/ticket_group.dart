@@ -564,7 +564,7 @@ class _TicketGroupState extends State<TicketGroup> {
       builder: (BuildContext context) {
         return ConfirmationPrompt(
           height:
-              widget.event!.isFree || widget.event!.isCashPayment ? 300 : 400,
+              widget.event!.isFree || widget.event!.isCashPayment ? 300 : 380,
           buttonText: widget.event!.isFree || widget.event!.isCashPayment
               ? 'Generate Ticket'
               : 'Purchase Ticket',

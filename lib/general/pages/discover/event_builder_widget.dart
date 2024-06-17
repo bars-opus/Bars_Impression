@@ -307,10 +307,10 @@ class EventBuilderWidget extends StatelessWidget {
                       child: NoContents(
                           title: isFree
                               ? 'Free ${typeSpecific.toLowerCase()} in ${user.country}'
-                              : '${typeSpecific.toLowerCase()} This week',
+                              : '${typeSpecific.toLowerCase()} this week',
                           subTitle: isFree
-                              ? 'There are no free  ${typeSpecific.toLowerCase()} in ${user.country} at the moment. We would keep you updated if new ${typeSpecific.toLowerCase()} become available.'
-                              : 'There are no ${typeSpecific.toLowerCase()} in ${user.country} at the moment. We would keep you updated if new ${typeSpecific.toLowerCase()} become available.',
+                              ? 'There are no free ${typeSpecific.toLowerCase()} in ${user.country} at the moment. We would keep you updated if new ${typeSpecific.toLowerCase()} become available.'
+                              : 'There are no ${typeSpecific.toLowerCase()} happening in ${user.country} this week. We would keep you updated if new ${typeSpecific.toLowerCase()} become available.',
                           icon: FontAwesomeIcons.zero),
                     ))
                 : Container(

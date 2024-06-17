@@ -347,3 +347,4 @@ export 'package:bars/features/events/presentation/widgets/payout_doc.dart';
 export 'package:bars/features/events/presentation/screens/perpective_listview.dart';
 export 'package:bars/widgets/general_widget/access_dashboard_widget.dart';
 export 'package:bars/widgets/general_widget/tap_to_access_dashboard_widget.dart';
+export 'package:bars/widgets/general_widget/schedule_person_horizontal.dart';
