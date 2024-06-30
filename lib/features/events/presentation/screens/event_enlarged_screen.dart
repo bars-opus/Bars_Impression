@@ -1,6 +1,8 @@
 import 'package:bars/utilities/exports.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class EventEnlargedScreen extends StatefulWidget {
   final String currentUserId;
@@ -66,7 +68,8 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
 
   bool _isLoading = false;
 
-  bool _checkingTicketAvailability = false;
+  // bool _isEventDetailsExpanded = false;
+  // bool _checkingTicketAvailability = false;
 
   late ScrollController _hideButtonController;
 
@@ -275,63 +278,873 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
     );
   }
 
-// Ticket options purchase entry
-  void _showBottomSheetAttendOptions(BuildContext context) {
-    showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        builder: (BuildContext context) {
-          final width = MediaQuery.of(context).size.width;
+// // Ticket options purchase entry
+//   void _showBottomSheetAttendOptions(BuildContext context) {
+//     showModalBottomSheet(
+//         context: context,
+//         isScrollControlled: true,
+//         backgroundColor: Colors.transparent,
+//         builder: (BuildContext context) {
+//           final width = MediaQuery.of(context).size.width;
 
-          return Container(
-            height: ResponsiveHelper.responsiveHeight(context, 690),
-            width: width,
-            decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(30)),
-            child: ListView(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: TicketPurchasingIcon(
-                    title: 'Ticket packages.',
-                  ),
-                ),
-                // const SizedBox(height: 20),
-                TicketGroup(
-                  currentUserId: widget.currentUserId,
-                  groupTickets: widget.event.ticket,
-                  event: widget.event,
-                  inviteReply: '',
-                  onInvite: false,
-                ),
-              ],
-            ),
-          );
-        });
-  }
+//           return Container(
+//             height: ResponsiveHelper.responsiveHeight(context, 690),
+//             width: width,
+//             decoration: BoxDecoration(
+//                 color: Theme.of(context).cardColor,
+//                 borderRadius: BorderRadius.circular(30)),
+//             child: ListView(
+//               children: [
+//                 Padding(
+//                   padding: const EdgeInsets.all(20.0),
+//                   child: TicketPurchasingIcon(
+//                     title: 'Ticket packages.',
+//                   ),
+//                 ),
+//                 // const SizedBox(height: 20),
+//                 TicketGroup(
+//                   currentUserId: widget.currentUserId,
+//                   groupTickets: widget.event.ticket,
+//                   event: widget.event,
+//                   inviteReply: '',
+//                   onInvite: false,
+//                 ),
+//               ],
+//             ),
+//           );
+//         });
+//   }
 
   // display event dates and schedules on calendar
-  void _showBottomSheetCalendar(BuildContext context) {
+  void _expandEventDetails() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
-        return widget.event.schedule.isEmpty
-            ? NoScheduleCalendar(
-                showAskMore: true,
-                askMoreOnpressed: () {
-                  Navigator.pop(context);
-                  _showBottomSheetAskMore(context);
-                },
-              )
-            : EventSheduleCalendar(
-                event: widget.event,
-                currentUserId: widget.currentUserId,
-                duration: duratoinDuringStartingToEndingDate,
-              );
+        return Container(
+            height: ResponsiveHelper.responsiveHeight(context, 650),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: _eventDetails());
+      },
+    );
+  }
+
+  GoogleMapController? _mapController;
+  LatLng? _initialPosition;
+  Set<Marker> _markers = {};
+
+  Future<void> _setInitialPosition() async {
+    try {
+      print(widget.event.address);
+      List<Location> results =
+          await locationFromAddress('Gronausestraat 710, Enschede');
+      if (results.isNotEmpty) {
+        Location firstResult = results.first;
+        final LatLng newPosition = LatLng(
+          firstResult.latitude,
+          firstResult.longitude,
+        );
+        setState(() {
+          _initialPosition = newPosition;
+          _markers.add(
+            Marker(
+              onTap: _launchMap,
+              markerId: MarkerId('marker_id_23'),
+              position: newPosition,
+              infoWindow: InfoWindow(
+                title: widget.event.address,
+                onTap: _launchMap,
+              ),
+            ),
+          );
+        });
+      } else {
+        _fallbackPosition();
+      }
+    } catch (e) {
+      print('Error getting initial position: $e');
+      _fallbackPosition();
+    }
+  }
+
+  void _fallbackPosition() {
+    setState(() {
+      _initialPosition = LatLng(37.7749, -122.4194); // San Francisco
+      _markers.add(
+        Marker(
+          markerId: MarkerId('default_marker'),
+          position: _initialPosition!,
+          infoWindow: InfoWindow(title: 'Fallback Location'),
+        ),
+      );
+    });
+  }
+
+  void _moveCamera(LatLng position) {
+    _mapController?.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: position,
+          zoom: 12.0,
+        ),
+      ),
+    );
+  }
+
+  // Future<void> _setInitialPosition() async {
+  //   try {
+  //     print(widget.event.address);
+  //     List<Location> results = await locationFromAddress(widget.event.address);
+  //     if (results != null && results.length > 0) {
+  //       Location firstResult = results.first;
+  //       final LatLng newPosition = LatLng(
+  //         firstResult.latitude,
+  //         firstResult.longitude,
+  //       );
+  //       _moveCameraAndAddMarker(
+  //           newPosition, 'marker_id_23', widget.event.address);
+  //     } else {
+  //       // Fallback to a default position
+  //       _initialPosition = LatLng(37.7749, -122.4194); // San Francisco
+  //     }
+  //   } catch (e) {
+  //     // Handle any errors that occur during the geocoding process
+  //     print('Error getting initial position: $e');
+  //     // Fallback to a default position
+  //     _initialPosition = LatLng(37.7749, -122.4194); // San Francisco
+  //   }
+  // }
+
+  // Set<Marker> _markers = {};
+
+  // void _moveCameraAndAddMarker(
+  //     LatLng position, String markerId, String markerTitle) {
+  //   Future.delayed(Duration(seconds: 1), () {
+  //     _mapController?.animateCamera(
+  //       CameraUpdate.newCameraPosition(
+  //         CameraPosition(
+  //           target: position,
+  //           zoom: 12.0,
+  //         ),
+  //       ),
+  //     );
+  //   });
+
+  //   setState(() {
+  //     _markers.add(
+  //       Marker(
+  //         icon: BitmapDescriptor.defaultMarker,
+  //         markerId: MarkerId(markerId),
+  //         position: position,
+  //         infoWindow: InfoWindow(title: markerTitle),
+  //       ),
+  //     );
+  //   });
+  // }
+
+  Map<DateTime, List<Schedule>> convertToMap(List<Schedule> shedules) {
+    Map<DateTime, List<Schedule>> scheduleMap = {};
+    for (Schedule schedule in shedules) {
+      DateTime date = schedule.scheduleDate.toDate();
+      DateTime normalizedDate = DateTime(date.year, date.month, date.day);
+      if (scheduleMap[normalizedDate] == null) {
+        scheduleMap[normalizedDate] = [];
+      }
+      scheduleMap[normalizedDate]?.add(schedule);
+    }
+    return scheduleMap;
+  }
+
+  _scheduleTitle(DateTime selectedDay) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(
+              Icons.close,
+              color: Colors.white,
+              // size: ResponsiveHelper.responsiveFontSize(context, 20),
+            )),
+        Text(
+          MyDateFormat.toDate(selectedDay),
+          style: TextStyle(
+              fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
+              color: Colors.white,
+              fontWeight: FontWeight.bold),
+          textAlign: TextAlign.right,
+        ),
+      ],
+    );
+  }
+
+  _eventDetails() {
+    final width = MediaQuery.of(context).size.width;
+    bool _isAuthor = widget.currentUserId == widget.event.authorId;
+
+    List<Schedule> scheduleOptions = [];
+
+    for (Schedule schedule in widget.event.schedule) {
+      scheduleOptions.add(schedule);
+    }
+    scheduleOptions.sort(
+        (a, b) => a.scheduleDate.toDate().compareTo(b.scheduleDate.toDate()));
+
+    DateTime _scheduleFirsttDay = scheduleOptions.first.scheduleDate.toDate();
+    DateTime _scheduleLastDay = scheduleOptions.last.scheduleDate.toDate();
+    DateTime _startDay = widget.event.startDate.toDate();
+    DateTime _astDay = widget.event.clossingDay.toDate();
+
+    DateTime _calendarFirstDay =
+        _startDay.isBefore(_scheduleFirsttDay) ? _startDay : _scheduleFirsttDay;
+
+    DateTime _calendarLastDay =
+        _astDay.isAfter(_scheduleLastDay) ? _astDay : _scheduleLastDay;
+
+    DateTime _focusedDay =
+        _startDay.isBefore(_scheduleFirsttDay) ? _startDay : _scheduleFirsttDay;
+
+    Map<DateTime, List<Schedule>> _sheduleDates = convertToMap(scheduleOptions);
+    var blueTextStyle = TextStyle(
+        color: Colors.blue,
+        fontSize: ResponsiveHelper.responsiveFontSize(context, 14));
+    var greyTextStyle = TextStyle(
+        color: Colors.blueGrey,
+        fontSize: ResponsiveHelper.responsiveFontSize(context, 14));
+
+    List<TaggedEventPeopleModel> taggedPeople = widget.event.taggedPeople;
+    List<TaggedEventPeopleModel> taggedPeopleOption = [];
+    for (TaggedEventPeopleModel taggedPeople in taggedPeople) {
+      TaggedEventPeopleModel taggedPersonOption = taggedPeople;
+      taggedPeopleOption.add(taggedPersonOption);
+    }
+
+    var crew = taggedPeopleOption
+        .where((taggedPerson) =>
+            taggedPerson.taggedType == 'performer' ||
+            taggedPerson.taggedType == 'crew')
+        .toList();
+
+    var sponsor = taggedPeopleOption
+        .where((taggedPerson) =>
+            taggedPerson.taggedType == 'Partner' ||
+            taggedPerson.taggedType == 'Sponsor')
+        .toList();
+
+    return ListView(
+      padding: const EdgeInsets.all(5.0),
+      children: [
+        const SizedBox(
+          height: 10,
+        ),
+        Align(
+          alignment: Alignment.topLeft,
+          child: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(
+              Icons.close,
+              color: Theme.of(context).secondaryHeaderColor,
+              size: ResponsiveHelper.responsiveFontSize(context, 25),
+              // size: 20.0,
+            ),
+          ),
+        ),
+
+        const SizedBox(
+          height: 30,
+        ),
+        Padding(
+          padding: EdgeInsets.all(ResponsiveHelper.responsiveWidth(context, 5)),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: RichText(
+              textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: widget.event.title,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  TextSpan(
+                    text: "\n${widget.event.theme}",
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  if (widget.event.dressCode.isNotEmpty)
+                    TextSpan(
+                      text: "\nDress code: ",
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  if (widget.event.dressCode.isNotEmpty)
+                    TextSpan(
+                      text: " ${widget.event.dressCode}",
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
+
+        // const SizedBox(
+        //   height: 30,
+        // ),
+        // // Padding(
+        //   padding: EdgeInsets.all(
+        //       ResponsiveHelper.responsiveWidth(context, 5)),
+        //   child: Align(
+        //     alignment: Alignment.centerLeft,
+        //     child: CountdownTimer(
+        //       color: Theme.of(context).secondaryHeaderColor,
+        //       clossingDay: DateTime.now(),
+        //       startDate: event.startDate.toDate(),
+        //       isBold: true,
+        //       fontSize:
+        //           ResponsiveHelper.responsiveFontSize(context, 16.0),
+        //       eventHasEnded: false,
+        //       eventHasStarted: false,
+        //     ),
+        //   ),
+        // ),
+        // // const SizedBox(
+        // //   height: 10,
+        // // ),
+        widget.event.startDate == null
+            ? const SizedBox.shrink()
+            : Container(
+                margin: EdgeInsets.all(
+                    ResponsiveHelper.responsiveWidth(context, 5)),
+                height: ResponsiveHelper.responsiveHeight(context, 400.0),
+                width: width.toDouble(),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColorLight,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(
+                      ResponsiveHelper.responsiveWidth(context, 5)),
+                  child: Container(
+                    margin: EdgeInsets.all(
+                        ResponsiveHelper.responsiveWidth(context, 5)),
+                    height: ResponsiveHelper.responsiveHeight(context, 350.0),
+                    width: width.toDouble(),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor.withOpacity(.3),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: TableCalendar(
+                      eventLoader: (day) {
+                        DateTime normalizedDay =
+                            DateTime(day.year, day.month, day.day);
+
+                        return _sheduleDates[normalizedDay] ?? [];
+                      },
+                      pageAnimationCurve: Curves.easeInOut,
+                      startingDayOfWeek: StartingDayOfWeek.monday,
+                      calendarFormat: CalendarFormat.month,
+                      availableGestures: AvailableGestures.horizontalSwipe,
+                      rowHeight:
+                          ResponsiveHelper.responsiveHeight(context, 40.0),
+                      daysOfWeekHeight:
+                          ResponsiveHelper.responsiveHeight(context, 30),
+                      calendarStyle: CalendarStyle(
+                        todayDecoration: BoxDecoration(
+                          color: Colors.blue,
+                          shape: BoxShape.circle,
+                        ),
+                        defaultTextStyle: TextStyle(
+                            color: Colors.blue,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                        markerDecoration: BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        holidayTextStyle: TextStyle(color: Colors.red),
+                        outsideDaysVisible: true,
+                      ),
+                      headerStyle: HeaderStyle(
+                        titleTextStyle: TextStyle(
+                          fontSize:
+                              ResponsiveHelper.responsiveFontSize(context, 14),
+                        ),
+                        formatButtonDecoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        formatButtonVisible: false,
+                        formatButtonTextStyle: TextStyle(color: Colors.white),
+                        formatButtonShowsNext: false,
+                      ),
+                      firstDay: _calendarFirstDay,
+                      focusedDay: _focusedDay,
+                      lastDay: _calendarLastDay,
+                      onDaySelected: (selectedDay, focusedDay) {
+                        DateTime normalizedDay = DateTime(selectedDay.year,
+                            selectedDay.month, selectedDay.day);
+                        List<Schedule> selectedEvents =
+                            _sheduleDates[normalizedDay] ?? [];
+                        HapticFeedback.mediumImpact();
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (BuildContext context) {
+                            return Container(
+                              height: ResponsiveHelper.responsiveHeight(
+                                  context, 800),
+                              width: ResponsiveHelper.responsiveHeight(
+                                  context, 400),
+                              color: Colors.transparent,
+                              padding: const EdgeInsets.all(20),
+                              child: selectedEvents.isEmpty
+                                  ? Column(
+                                      children: [
+                                        _scheduleTitle(selectedDay),
+                                        Center(
+                                          child: NoContents(
+                                              title: 'No Schedules',
+                                              subTitle:
+                                                  'The event organizer didn\'t provide schedules for this date. If you want to know more about the schedules and program lineup, you can contact the organizer',
+                                              icon: Icons.watch_later_outlined),
+                                        ),
+                                      ],
+                                    )
+                                  : Stack(
+                                      children: [
+                                        Container(
+                                          padding: EdgeInsets.only(
+                                              top: ResponsiveHelper
+                                                  .responsiveFontSize(
+                                                      context, 100)),
+                                          child: ListView(
+
+                                              // mainAxisSize: MainAxisSize.min,
+                                              children: selectedEvents
+                                                  .map((schedule) =>
+                                                      ScheduleWidget(
+                                                        schedule: schedule,
+                                                        edit: false,
+                                                        from: 'Calendar',
+                                                        currentUserId: widget
+                                                            .currentUserId,
+                                                      ))
+                                                  .toList()),
+                                        ),
+                                        Positioned(
+                                          top: 50,
+                                          child: _scheduleTitle(selectedDay),
+                                        ),
+                                      ],
+                                    ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+        SizedBox(
+          height: 5,
+        ),
+
+        EventDateInfo(
+          duration: duratoinDuringStartingToEndingDate,
+          endDate: widget.event.clossingDay.toDate(),
+          startDate: widget.event.startDate.toDate(),
+        ),
+        SizedBox(
+          height: 60,
+        ),
+
+        GestureDetector(
+          onTap: _launchMap,
+          child: RichText(
+            textScaleFactor: MediaQuery.of(context).textScaleFactor,
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text:
+                      "This event would take place at ${widget.event.venue}: ",
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                TextSpan(
+                  text: widget.event.address,
+                  style: blueTextStyle,
+                ),
+                TextSpan(
+                  text: '\nTap here for venue direction on map ',
+                  style: greyTextStyle,
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Container(
+          padding: EdgeInsets.all(ResponsiveHelper.responsiveWidth(context, 5)),
+          height: ResponsiveHelper.responsiveHeight(context, 400.0),
+          width: width.toDouble(),
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColorLight,
+            // borderRadius: BorderRadius.circular(30),
+          ),
+          child: FutureBuilder<void>(
+            future: _setInitialPosition(),
+            builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else {
+                return GoogleMap(
+                  myLocationButtonEnabled: false,
+                  onMapCreated: (controller) {
+                    _mapController = controller;
+                    if (_initialPosition != null) {
+                      _moveCamera(_initialPosition!);
+                    }
+                  },
+                  markers: _markers,
+                  initialCameraPosition: CameraPosition(
+                    target: _initialPosition!,
+                    zoom: 14.0,
+                  ),
+                );
+              }
+            },
+          ),
+
+          // GoogleMap(
+          //   myLocationButtonEnabled: false,
+          //   onMapCreated: (controller) {
+          //     _mapController = controller;
+          //     _setInitialPosition();
+          //   },
+          //   markers: {
+          //     Marker(
+          //         markerId: MarkerId('My Position'),
+          //         position: _initialPosition ?? LatLng(37.7749, -122.4194),
+          //         onTap: () {
+          //           _launchMap();
+          //         })
+          //   },
+          //   initialCameraPosition: CameraPosition(
+          //     target: _initialPosition ?? LatLng(37.7749, -122.4194),
+          //     zoom: 14.0,
+          //   ),
+          // ),
+        ),
+
+        const SizedBox(
+          height: 60,
+        ),
+
+        // Text(
+        //   'Featured people',
+        //   style: Theme.of(context).textTheme.titleMedium,
+        // ),
+        // const SizedBox(
+        //   height: 10,
+        // ),
+        if (widget.event.taggedPeople.isNotEmpty)
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (crew.isNotEmpty)
+                GestureDetector(
+                  onTap: () {
+                    _showBottomSheetTaggedPeople(context, false);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Performers and Crew",
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      Icon(
+                        Icons.keyboard_arrow_down_sharp,
+                        color: Colors.blue,
+                        size: ResponsiveHelper.responsiveHeight(context, 30.0),
+                      ),
+                    ],
+                  ),
+                ),
+              if (crew.isNotEmpty)
+                const SizedBox(
+                  height: 10,
+                ),
+              if (crew.isNotEmpty)
+                Container(
+                  padding: EdgeInsets.all(
+                      ResponsiveHelper.responsiveWidth(context, 10)),
+                  // height: ResponsiveHelper.responsiveHeight(context, 400.0),
+                  width: width.toDouble(),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ShedulePeopleHorizontal(
+                    edit: false,
+                    from: '',
+                    schedulepeople: crew,
+                    // event.taggedPeople,
+                    currentUserId: widget.currentUserId,
+                  ),
+                ),
+              if (crew.isNotEmpty)
+                const SizedBox(
+                  height: 20,
+                ),
+              if (sponsor.isNotEmpty)
+                GestureDetector(
+                  onTap: () {
+                    _showBottomSheetTaggedPeople(context, true);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Partners and Sponsers",
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      Icon(
+                        Icons.keyboard_arrow_down_sharp,
+                        color: Colors.blue,
+                        size: ResponsiveHelper.responsiveHeight(context, 30.0),
+                      ),
+                    ],
+                  ),
+                ),
+              if (sponsor.isNotEmpty)
+                const SizedBox(
+                  height: 10,
+                ),
+              if (sponsor.isNotEmpty)
+                Container(
+                  padding: EdgeInsets.all(
+                      ResponsiveHelper.responsiveWidth(context, 10)),
+                  // height: ResponsiveHelper.responsiveHeight(context, 400.0),
+                  width: width.toDouble(),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ShedulePeopleHorizontal(
+                    edit: false,
+                    from: '',
+                    schedulepeople: sponsor,
+                    currentUserId: widget.currentUserId,
+                  ),
+                ),
+              const SizedBox(
+                height: 60,
+              ),
+            ],
+          ),
+
+        // Padding(
+        //   padding:
+        //       EdgeInsets.all(ResponsiveHelper.responsiveWidth(context, 5)),
+        //   child: Text(
+        //     'Organizer\'s info',
+        //     style: Theme.of(context).textTheme.titleMedium,
+        //   ),
+        // ),
+        // const SizedBox(
+        //   height: 20,
+        // ),
+        // Divider(
+        //   thickness: .4,
+        // ),
+
+        Container(
+          margin: EdgeInsets.all(ResponsiveHelper.responsiveWidth(context, 5)),
+          height: ResponsiveHelper.responsiveHeight(
+              context, widget.event.previousEvent.isNotEmpty ? 330 : 330.0),
+          width: width.toDouble(),
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColorLight,
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (widget.event.previousEvent.isNotEmpty)
+                  BottomModelSheetListTileActionWidget(
+                    colorCode: 'Blue',
+                    dontPop: true,
+                    icon: Icons.play_circle_fill_rounded,
+                    onPressed: () {
+                      _showBottomSheetPreviosEvent(context);
+                    },
+                    text: 'Watch previous event',
+                  ),
+                BottomModelSheetListTileActionWidget(
+                  colorCode: 'Blue',
+                  dontPop: true,
+                  icon: Icons.question_mark_rounded,
+                  onPressed: () {
+                    _showBottomSheetAskMore(context);
+                  },
+                  text: 'Ask questions',
+                ),
+                BottomModelSheetListTileActionWidget(
+                  colorCode: 'Blue',
+                  dontPop: true,
+                  icon: Icons.qr_code_2_sharp,
+                  onPressed: () {
+                    _navigateToPage(
+                      context,
+                      ExpandEventBarcodeScreen(
+                        event: widget.event,
+                      ),
+                    );
+                  },
+                  text: 'Share Qr code',
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                BottomModelSheetListTileActionWidget(
+                  colorCode: 'Blue',
+                  dontPop: true,
+                  icon: Icons.account_circle,
+                  onPressed: () {
+                    _navigateToPage(
+                        context,
+                        ProfileScreen(
+                          user: null,
+                          currentUserId: widget.currentUserId,
+                          userId: widget.event.authorId,
+                        ));
+                    // _showBottomSheetContactOrganizer(context);
+                  },
+                  text: 'See creator',
+                ),
+                BottomModelSheetListTileActionWidget(
+                  dontPop: true,
+                  colorCode: 'Blue',
+                  icon: Icons.call_outlined,
+                  onPressed: () {
+                    _showBottomSheetContactOrganizer(context);
+                  },
+                  text: 'Call organizer',
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(
+          height: 30,
+        ),
+        if (!widget.event.isPrivate && !_isAuthor)
+          if (!_eventHasEnded)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 30.0),
+                child: AttendButton(
+                  currentUserId: widget.currentUserId,
+                  event: widget.event,
+                  fromFlyier: false,
+                ),
+              ),
+            ),
+
+        const SizedBox(
+          height: 30,
+        ),
+
+        const SizedBox(
+          height: 60,
+        ),
+        // Container(
+        //   width: double.infinity,
+        //   height: ResponsiveHelper.responsiveHeight(
+        //     context,
+        //     width * width.toDouble(),
+        //   ),
+        //   decoration: BoxDecoration(
+        //     color: Colors.transparent,
+        //   ),
+        //   child: Padding(
+        //     padding: const EdgeInsets.fromLTRB(10.0, 70.0, 10.0, 0.0),
+        //     child: ScheduleGroup(
+        //       from: 'EventEnlarged',
+        //       schedules: event.schedule,
+        //       isEditing: false,
+        //       eventOrganiserId: event.authorId,
+        //       currentUserId: currentUserId,
+        //     ),
+        //   ),
+        // )
+      ],
+    );
+  }
+
+  void _showBottomSheetContactOrganizer(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          height: ResponsiveHelper.responsiveHeight(context, 700),
+          decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(30)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Icon(
+                Icons.horizontal_rule,
+                color: Theme.of(context).secondaryHeaderColor,
+                size: ResponsiveHelper.responsiveHeight(context, 30.0),
+              ),
+              Container(
+                width: double.infinity,
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      DisclaimerWidget(
+                        title: 'Call Organizer',
+                        subTitle:
+                            'These are the contacts provided by this event\'s organizers. While we make efforts to gather the contact information, we cannot guarantee that these are the exact and correct contacts. Therefore, we advise you to conduct additional research and verify these contact details  independently.',
+                        icon: Icons.call,
+                      ),
+                      const SizedBox(height: 40),
+                      EventOrganizerContactWidget(
+                        portfolios: widget.event.contacts,
+                        edit: false,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
       },
     );
   }
@@ -844,284 +1657,284 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
         });
   }
 
-  void _showBottomSheetContactOrganizer(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return Container(
-          height: ResponsiveHelper.responsiveHeight(context, 700),
-          decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(30)),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Icon(
-                Icons.horizontal_rule,
-                color: Theme.of(context).secondaryHeaderColor,
-                size: ResponsiveHelper.responsiveHeight(context, 30.0),
-              ),
-              Container(
-                width: double.infinity,
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      DisclaimerWidget(
-                        title: 'Call Organizer',
-                        subTitle:
-                            'These are the contacts provided by this event\'s organizers. While we make efforts to gather the contact information, we cannot guarantee that these are the exact and correct contacts. Therefore, we advise you to conduct additional research and verify these contact details  independently.',
-                        icon: Icons.call,
-                      ),
-                      const SizedBox(height: 40),
-                      EventOrganizerContactWidget(
-                        portfolios: widget.event.contacts,
-                        edit: false,
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+  // void _showBottomSheetContactOrganizer(BuildContext context) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (BuildContext context) {
+  //       return Container(
+  //         height: ResponsiveHelper.responsiveHeight(context, 700),
+  //         decoration: BoxDecoration(
+  //             color: Theme.of(context).cardColor,
+  //             borderRadius: BorderRadius.circular(30)),
+  //         child: Column(
+  //           mainAxisAlignment: MainAxisAlignment.start,
+  //           crossAxisAlignment: CrossAxisAlignment.center,
+  //           children: <Widget>[
+  //             Icon(
+  //               Icons.horizontal_rule,
+  //               color: Theme.of(context).secondaryHeaderColor,
+  //               size: ResponsiveHelper.responsiveHeight(context, 30.0),
+  //             ),
+  //             Container(
+  //               width: double.infinity,
+  //               child: Padding(
+  //                 padding: const EdgeInsets.all(10.0),
+  //                 child: Column(
+  //                   mainAxisAlignment: MainAxisAlignment.center,
+  //                   crossAxisAlignment: CrossAxisAlignment.center,
+  //                   children: [
+  //                     DisclaimerWidget(
+  //                       title: 'Call Organizer',
+  //                       subTitle:
+  //                           'These are the contacts provided by this event\'s organizers. While we make efforts to gather the contact information, we cannot guarantee that these are the exact and correct contacts. Therefore, we advise you to conduct additional research and verify these contact details  independently.',
+  //                       icon: Icons.call,
+  //                     ),
+  //                     const SizedBox(height: 40),
+  //                     EventOrganizerContactWidget(
+  //                       portfolios: widget.event.contacts,
+  //                       edit: false,
+  //                     ),
+  //                     const SizedBox(
+  //                       height: 10,
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
-  void _showBottomSheetFullTitleAndTheme() {
-    var blueTextStyle = TextStyle(
-        color: Colors.blue,
-        fontSize: ResponsiveHelper.responsiveFontSize(context, 14));
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-          return Container(
-            height: ResponsiveHelper.responsiveHeight(context, 700),
-            decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(30)),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: ListView(
-                children: [
-                  TicketPurchasingIcon(
-                    title: '',
-                  ),
-                  // const SizedBox(height: 10),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: Text(
-                      'Overview',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 40,
-                  ),
-                  RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: widget.event.title,
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        TextSpan(
-                          text: "\n${widget.event.theme}",
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ],
-                    ),
-                  ),
+  // void _showBottomSheetFullTitleAndTheme() {
+  //   var blueTextStyle = TextStyle(
+  //       color: Colors.blue,
+  //       fontSize: ResponsiveHelper.responsiveFontSize(context, 14));
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (BuildContext context) {
+  //       return StatefulBuilder(
+  //           builder: (BuildContext context, StateSetter setState) {
+  //         return Container(
+  //           height: ResponsiveHelper.responsiveHeight(context, 700),
+  //           decoration: BoxDecoration(
+  //               color: Theme.of(context).cardColor,
+  //               borderRadius: BorderRadius.circular(30)),
+  //           child: Padding(
+  //             padding: const EdgeInsets.all(20.0),
+  //             child: ListView(
+  //               children: [
+  //                 TicketPurchasingIcon(
+  //                   title: '',
+  //                 ),
+  //                 // const SizedBox(height: 10),
+  //                 Align(
+  //                   alignment: Alignment.topRight,
+  //                   child: Text(
+  //                     'Overview',
+  //                     style: Theme.of(context).textTheme.bodyMedium,
+  //                   ),
+  //                 ),
+  //                 const SizedBox(
+  //                   height: 40,
+  //                 ),
+  //                 RichText(
+  //                   textScaleFactor: MediaQuery.of(context).textScaleFactor,
+  //                   text: TextSpan(
+  //                     children: [
+  //                       TextSpan(
+  //                         text: widget.event.title,
+  //                         style: Theme.of(context).textTheme.titleLarge,
+  //                       ),
+  //                       TextSpan(
+  //                         text: "\n${widget.event.theme}",
+  //                         style: Theme.of(context).textTheme.bodyMedium,
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ),
 
-                  Padding(
-                    padding: EdgeInsets.only(
-                        top: ResponsiveHelper.responsiveHeight(context, 10)),
-                    child: Container(
-                      height: ResponsiveHelper.responsiveHeight(context, 300),
-                      width: ResponsiveHelper.responsiveHeight(context, 300),
-                      child: Row(
-                        children: [
-                          // Column(
-                          //   children: [
-                          //     Container(
-                          //       height: ResponsiveHelper.responsiveHeight(
-                          //           context, 120),
-                          //       width: ResponsiveHelper.responsiveHeight(
-                          //           context, 120),
-                          //       decoration: BoxDecoration(
-                          //           color: Colors.black,
-                          //           borderRadius: BorderRadius.circular(30)),
-                          //     ),
-                          //     Container(
-                          //       height: ResponsiveHelper.responsiveHeight(
-                          //           context, 120),
-                          //       width: ResponsiveHelper.responsiveHeight(
-                          //           context, 120),
-                          //       decoration: BoxDecoration(
-                          //           color: Colors.black,
-                          //           borderRadius: BorderRadius.circular(30)),
-                          //     ),
-                          //   ],
-                          // ),
-                          SizedBox(
-                              width: ResponsiveHelper.responsiveHeight(
-                                  context, 10)),
-                          Expanded(
-                            child: Container(
-                              width: ResponsiveHelper.responsiveHeight(
-                                  context, 280),
-                              decoration: BoxDecoration(
-                                  color: Colors.red,
-                                  borderRadius: BorderRadius.circular(30)),
-                              child: EventSheduleCalendar(
-                                
-                                // makeSmall: true,
-                                event: widget.event,
-                                currentUserId: widget.currentUserId,
-                                duration: duratoinDuringStartingToEndingDate,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: _launchMap,
-                    child: RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text:
-                                "\nThis event would take place at ${widget.event.venue}: ",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          TextSpan(
-                            text: widget.event.address,
-                            style: blueTextStyle,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                      _showBottomSheetCalendar(context);
-                    },
-                    child: EventDateInfo(
-                      duration: duratoinDuringStartingToEndingDate,
-                      endDate: widget.event.clossingDay.toDate(),
-                      startDate: widget.event.startDate.toDate(),
-                    ),
-                  ),
-                  if (widget.event.taggedPeople.isNotEmpty)
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                        _showBottomSheetTaggedPeopleOption(context);
-                      },
-                      child: RichText(
-                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "\nCrew, performers and sponsers:   ",
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                            TextSpan(
-                              text: widget.event.taggedPeople
-                                  .map((taggedPeople) => taggedPeople.name)
-                                  .join(', '),
-                              style: blueTextStyle,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  if (widget.event.dressCode.isNotEmpty)
-                    RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: "\nDressing code:  ${widget.event.dressCode}",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ],
-                      ),
-                    ),
-                  if (widget.event.previousEvent.isNotEmpty)
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                        _showBottomSheetPreviosEvent(context);
-                      },
-                      child: RichText(
-                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "Watch previous event",
-                              style: blueTextStyle,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  Text(
-                    "\nContact organizer",
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                      _navigateToPage(
-                          context,
-                          ProfileScreen(
-                            user: null,
-                            currentUserId: widget.currentUserId,
-                            userId: widget.event.authorId,
-                          ));
-                    },
-                    child: Text(
-                      "View organizer\'s profile",
-                      style: blueTextStyle,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      _showBottomSheetContactOrganizer(context);
-                    },
-                    child: Text(
-                      "Call organizer",
-                      style: blueTextStyle,
-                    ),
-                  ),
-                  const SizedBox(height: 60),
-                ],
-              ),
-            ),
-          );
-        });
-      },
-    );
-  }
+  //                 Padding(
+  //                   padding: EdgeInsets.only(
+  //                       top: ResponsiveHelper.responsiveHeight(context, 10)),
+  //                   child: Container(
+  //                     height: ResponsiveHelper.responsiveHeight(context, 300),
+  //                     width: ResponsiveHelper.responsiveHeight(context, 300),
+  //                     child: Row(
+  //                       children: [
+  //                         // Column(
+  //                         //   children: [
+  //                         //     Container(
+  //                         //       height: ResponsiveHelper.responsiveHeight(
+  //                         //           context, 120),
+  //                         //       width: ResponsiveHelper.responsiveHeight(
+  //                         //           context, 120),
+  //                         //       decoration: BoxDecoration(
+  //                         //           color: Colors.black,
+  //                         //           borderRadius: BorderRadius.circular(30)),
+  //                         //     ),
+  //                         //     Container(
+  //                         //       height: ResponsiveHelper.responsiveHeight(
+  //                         //           context, 120),
+  //                         //       width: ResponsiveHelper.responsiveHeight(
+  //                         //           context, 120),
+  //                         //       decoration: BoxDecoration(
+  //                         //           color: Colors.black,
+  //                         //           borderRadius: BorderRadius.circular(30)),
+  //                         //     ),
+  //                         //   ],
+  //                         // ),
+  //                         SizedBox(
+  //                             width: ResponsiveHelper.responsiveHeight(
+  //                                 context, 10)),
+  //                         Expanded(
+  //                           child: Container(
+  //                             width: ResponsiveHelper.responsiveHeight(
+  //                                 context, 280),
+  //                             decoration: BoxDecoration(
+  //                                 color: Colors.red,
+  //                                 borderRadius: BorderRadius.circular(30)),
+  //                             child: EventSheduleCalendar(
+
+  //                               // makeSmall: true,
+  //                               event: widget.event,
+  //                               currentUserId: widget.currentUserId,
+  //                               duration: duratoinDuringStartingToEndingDate,
+  //                             ),
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 GestureDetector(
+  //                   onTap: _launchMap,
+  //                   child: RichText(
+  //                     textScaleFactor: MediaQuery.of(context).textScaleFactor,
+  //                     text: TextSpan(
+  //                       children: [
+  //                         TextSpan(
+  //                           text:
+  //                               "\nThis event would take place at ${widget.event.venue}: ",
+  //                           style: Theme.of(context).textTheme.bodyMedium,
+  //                         ),
+  //                         TextSpan(
+  //                           text: widget.event.address,
+  //                           style: blueTextStyle,
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 GestureDetector(
+  //                   onTap: () {
+  //                     Navigator.pop(context);
+  //                     _expandEventDetails();
+  //                   },
+  //                   child: EventDateInfo(
+  //                     duration: duratoinDuringStartingToEndingDate,
+  //                     endDate: widget.event.clossingDay.toDate(),
+  //                     startDate: widget.event.startDate.toDate(),
+  //                   ),
+  //                 ),
+  //                 if (widget.event.taggedPeople.isNotEmpty)
+  //                   GestureDetector(
+  //                     onTap: () {
+  //                       Navigator.pop(context);
+  //                       _showBottomSheetTaggedPeopleOption(context);
+  //                     },
+  //                     child: RichText(
+  //                       textScaleFactor: MediaQuery.of(context).textScaleFactor,
+  //                       text: TextSpan(
+  //                         children: [
+  //                           TextSpan(
+  //                             text: "\nCrew, performers and sponsers:   ",
+  //                             style: Theme.of(context).textTheme.bodyMedium,
+  //                           ),
+  //                           TextSpan(
+  //                             text: widget.event.taggedPeople
+  //                                 .map((taggedPeople) => taggedPeople.name)
+  //                                 .join(', '),
+  //                             style: blueTextStyle,
+  //                           ),
+  //                         ],
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 if (widget.event.dressCode.isNotEmpty)
+  //                   RichText(
+  //                     textScaleFactor: MediaQuery.of(context).textScaleFactor,
+  //                     text: TextSpan(
+  //                       children: [
+  //                         TextSpan(
+  //                           text: "\nDressing code:  ${widget.event.dressCode}",
+  //                           style: Theme.of(context).textTheme.bodyMedium,
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ),
+  //                 if (widget.event.previousEvent.isNotEmpty)
+  //                   GestureDetector(
+  //                     onTap: () {
+  //                       Navigator.pop(context);
+  //                       _showBottomSheetPreviosEvent(context);
+  //                     },
+  //                     child: RichText(
+  //                       textScaleFactor: MediaQuery.of(context).textScaleFactor,
+  //                       text: TextSpan(
+  //                         children: [
+  //                           TextSpan(
+  //                             text: "Watch previous event",
+  //                             style: blueTextStyle,
+  //                           ),
+  //                         ],
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 Text(
+  //                   "\nContact organizer",
+  //                   style: Theme.of(context).textTheme.bodyMedium,
+  //                 ),
+  //                 GestureDetector(
+  //                   onTap: () {
+  //                     Navigator.pop(context);
+  // _navigateToPage(
+  //     context,
+  //     ProfileScreen(
+  //       user: null,
+  //       currentUserId: widget.currentUserId,
+  //       userId: widget.event.authorId,
+  //     ));
+  //                   },
+  //                   child: Text(
+  //                     "View organizer\'s profile",
+  //                     style: blueTextStyle,
+  //                   ),
+  //                 ),
+  //                 GestureDetector(
+  //                   onTap: () {
+  //                     _showBottomSheetContactOrganizer(context);
+  //                   },
+  //                   child: Text(
+  //                     "Call organizer",
+  //                     style: blueTextStyle,
+  //                   ),
+  //                 ),
+  //                 const SizedBox(height: 60),
+  //               ],
+  //             ),
+  //           ),
+  //         );
+  //       });
+  //     },
+  //   );
+  // }
 
   _resourceSummaryInfo() {
     final width = MediaQuery.of(context).size.width;
@@ -1431,134 +2244,134 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
     );
   }
 
-  void _showBottomSheetTermsAndConditions() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-          return Container(
-            height: MediaQuery.of(context).size.height.toDouble() / 1.2,
-            decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(30)),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: ListView(
-                children: [
-                  // const SizedBox(
-                  //   height: 30,
-                  // ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TicketPurchasingIcon(
-                        title: '',
-                      ),
-                      _checkingTicketAvailability
-                          ? SizedBox(
-                              height: ResponsiveHelper.responsiveHeight(
-                                  context, 10.0),
-                              width: ResponsiveHelper.responsiveHeight(
-                                  context, 10.0),
-                              child: CircularProgressIndicator(
-                                strokeWidth: 3,
-                                color: Colors.blue,
-                              ),
-                            )
-                          : MiniCircularProgressButton(
-                              color: Colors.blue,
-                              text: 'Continue',
-                              onPressed: widget.event.ticketSite.isNotEmpty
-                                  ? () {
-                                      Navigator.pop(context);
-                                      _showBottomSheetExternalLink();
-                                    }
-                                  : () async {
-                                      if (mounted) {
-                                        setState(() {
-                                          _checkingTicketAvailability = true;
-                                        });
-                                      }
-                                      await _attendMethod();
-                                      if (mounted) {
-                                        setState(() {
-                                          _checkingTicketAvailability = false;
-                                        });
-                                      }
-                                    })
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: 'Terms and Conditions',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        TextSpan(
-                          text: "\n\n${widget.event.termsAndConditions}",
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
-      },
-    );
-  }
+  // void _showBottomSheetTermsAndConditions() {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (BuildContext context) {
+  //       return StatefulBuilder(
+  //           builder: (BuildContext context, StateSetter setState) {
+  //         return Container(
+  //           height: MediaQuery.of(context).size.height.toDouble() / 1.2,
+  //           decoration: BoxDecoration(
+  //               color: Theme.of(context).cardColor,
+  //               borderRadius: BorderRadius.circular(30)),
+  //           child: Padding(
+  //             padding: const EdgeInsets.all(20.0),
+  //             child: ListView(
+  //               children: [
+  //                 // const SizedBox(
+  //                 //   height: 30,
+  //                 // ),
+  //                 Row(
+  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                   children: [
+  //                     TicketPurchasingIcon(
+  //                       title: '',
+  //                     ),
+  //                     _checkingTicketAvailability
+  //                         ? SizedBox(
+  //                             height: ResponsiveHelper.responsiveHeight(
+  //                                 context, 10.0),
+  //                             width: ResponsiveHelper.responsiveHeight(
+  //                                 context, 10.0),
+  //                             child: CircularProgressIndicator(
+  //                               strokeWidth: 3,
+  //                               color: Colors.blue,
+  //                             ),
+  //                           )
+  //                         : MiniCircularProgressButton(
+  //                             color: Colors.blue,
+  //                             text: 'Continue',
+  //                             onPressed: widget.event.ticketSite.isNotEmpty
+  //                                 ? () {
+  //                                     Navigator.pop(context);
+  //                                     _showBottomSheetExternalLink();
+  //                                   }
+  //                                 : () async {
+  //                                     if (mounted) {
+  //                                       setState(() {
+  //                                         _checkingTicketAvailability = true;
+  //                                       });
+  //                                     }
+  //                                     await _attendMethod();
+  //                                     if (mounted) {
+  //                                       setState(() {
+  //                                         _checkingTicketAvailability = false;
+  //                                       });
+  //                                     }
+  //                                   })
+  //                   ],
+  //                 ),
+  //                 const SizedBox(height: 20),
+  //                 RichText(
+  //                   textScaleFactor: MediaQuery.of(context).textScaleFactor,
+  //                   text: TextSpan(
+  //                     children: [
+  //                       TextSpan(
+  //                         text: 'Terms and Conditions',
+  //                         style: Theme.of(context).textTheme.titleMedium,
+  //                       ),
+  //                       TextSpan(
+  //                         text: "\n\n${widget.event.termsAndConditions}",
+  //                         style: Theme.of(context).textTheme.bodyMedium,
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         );
+  //       });
+  //     },
+  //   );
+  // }
 
-  _attendMethod() async {
-    HapticFeedback.lightImpact();
-    if (mounted) {
-      setState(() {
-        _checkingTicketAvailability = true;
-      });
-    }
+  // _attendMethod() async {
+  //   HapticFeedback.lightImpact();
+  //   if (mounted) {
+  //     setState(() {
+  //       _checkingTicketAvailability = true;
+  //     });
+  //   }
 
-    TicketOrderModel? _ticket = await DatabaseService.getTicketWithId(
-        widget.event.id, widget.currentUserId);
+  //   TicketOrderModel? _ticket = await DatabaseService.getTicketWithId(
+  //       widget.event.id, widget.currentUserId);
 
-    if (_ticket != null) {
-      PaletteGenerator _paletteGenerator =
-          await PaletteGenerator.fromImageProvider(
-        CachedNetworkImageProvider(widget.event.imageUrl),
-        size: Size(1110, 150),
-        maximumColorCount: 20,
-      );
+  //   if (_ticket != null) {
+  //     PaletteGenerator _paletteGenerator =
+  //         await PaletteGenerator.fromImageProvider(
+  //       CachedNetworkImageProvider(widget.event.imageUrl),
+  //       size: Size(1110, 150),
+  //       maximumColorCount: 20,
+  //     );
 
-      _navigateToPage(
-        context,
-        PurchasedAttendingTicketScreen(
-          ticketOrder: _ticket,
-          event: widget.event,
-          currentUserId: widget.currentUserId,
-          justPurchased: 'Already',
-          palette: _paletteGenerator,
-        ),
-      );
-      if (mounted) {
-        setState(() {
-          _checkingTicketAvailability = false;
-        });
-      }
-    } else {
-      if (mounted) {
-        setState(() {
-          _checkingTicketAvailability = false;
-        });
-        _showBottomSheetAttendOptions(context);
-      }
-    }
-  }
+  //     _navigateToPage(
+  //       context,
+  //       PurchasedAttendingTicketScreen(
+  //         ticketOrder: _ticket,
+  //         event: widget.event,
+  //         currentUserId: widget.currentUserId,
+  //         justPurchased: 'Already',
+  //         palette: _paletteGenerator,
+  //       ),
+  //     );
+  //     if (mounted) {
+  //       setState(() {
+  //         _checkingTicketAvailability = false;
+  //       });
+  //     }
+  //   } else {
+  //     if (mounted) {
+  //       setState(() {
+  //         _checkingTicketAvailability = false;
+  //       });
+  //       _showBottomSheetAttendOptions(context);
+  //     }
+  //   }
+  // }
 
   _barCode() {
     return Center(
@@ -1586,54 +2399,54 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
     );
   }
 
-  void _showBottomSheetExternalLink() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return Container(
-            height: ResponsiveHelper.responsiveHeight(context, 550),
-            decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(30)),
-            child: WebDisclaimer(
-              link: widget.event.ticketSite,
-              contentType: 'Event ticket',
-              icon: Icons.link,
-            ));
-      },
-    );
-  }
+  // void _showBottomSheetExternalLink() {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (BuildContext context) {
+  //       return Container(
+  //           height: ResponsiveHelper.responsiveHeight(context, 550),
+  //           decoration: BoxDecoration(
+  //               color: Theme.of(context).cardColor,
+  //               borderRadius: BorderRadius.circular(30)),
+  //           child: WebDisclaimer(
+  //             link: widget.event.ticketSite,
+  //             contentType: 'Event ticket',
+  //             icon: Icons.link,
+  //           ));
+  //     },
+  //   );
+  // }
 
-  _validateAttempt() async {
-    var _provider = Provider.of<UserData>(context, listen: false);
-    var _usercountry = _provider.userLocationPreference!.country;
+  // _validateAttempt() async {
+  //   var _provider = Provider.of<UserData>(context, listen: false);
+  //   var _usercountry = _provider.userLocationPreference!.country;
 
-    bool isGhanaian = _usercountry == 'Ghana' ||
-        _provider.userLocationPreference!.currency == 'Ghana Cedi | GHS';
+  //   bool isGhanaian = _usercountry == 'Ghana' ||
+  //       _provider.userLocationPreference!.currency == 'Ghana Cedi | GHS';
 
-    if (!isGhanaian) {
-      _showBottomSheetErrorMessage(
-          'This event is currently unavailable in $_usercountry.', '');
-    } else if (widget.event.termsAndConditions.isNotEmpty) {
-      _showBottomSheetTermsAndConditions();
-    } else {
-      if (widget.event.ticketSite.isNotEmpty) {
-        _showBottomSheetExternalLink();
-      } else {
-        var connectivityResult = await Connectivity().checkConnectivity();
-        if (connectivityResult == ConnectivityResult.none) {
-          // No internet connection
-          _showBottomSheetErrorMessage('No Internet',
-              'No internet connection available. Please connect to the internet and try again.');
-          return;
-        } else {
-          _attendMethod();
-        }
-      }
-    }
-  }
+  //   if (!isGhanaian) {
+  //     _showBottomSheetErrorMessage(
+  //         'This event is currently unavailable in $_usercountry.', '');
+  //   } else if (widget.event.termsAndConditions.isNotEmpty) {
+  //     _showBottomSheetTermsAndConditions();
+  //   } else {
+  //     if (widget.event.ticketSite.isNotEmpty) {
+  //       _showBottomSheetExternalLink();
+  //     } else {
+  //       var connectivityResult = await Connectivity().checkConnectivity();
+  //       if (connectivityResult == ConnectivityResult.none) {
+  //         // No internet connection
+  //         _showBottomSheetErrorMessage('No Internet',
+  //             'No internet connection available. Please connect to the internet and try again.');
+  //         return;
+  //       } else {
+  //         _attendMethod();
+  //       }
+  //     }
+  //   }
+  // }
 
   void _showBottomSheetTicketDoc() {
     showModalBottomSheet(
@@ -1682,35 +2495,35 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
     );
   }
 
-  void _showBottomEditLocation(
-    BuildContext context,
-  ) {
-    var _provider = Provider.of<UserData>(context, listen: false);
-    var _userLocation = _provider.userLocationPreference;
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return ConfirmationPrompt(
-          height: 400,
-          buttonText: 'set up city',
-          onPressed: () async {
-            Navigator.pop(context);
-            _navigateToPage(
-                context,
-                EditProfileSelectLocation(
-                  user: _userLocation!,
-                  notFromEditProfile: true,
-                ));
-          },
-          title: 'Set up your city',
-          subTitle:
-              'To proceed with purchasing a ticket, we kindly ask you to provide your country information. This allows us to handle ticket processing appropriately, as the process may vary depending on different countries. Please note that specifying your city is sufficient, and there is no need to provide your precise location or community details.',
-        );
-      },
-    );
-  }
+  // void _showBottomEditLocation(
+  //   BuildContext context,
+  // ) {
+  //   var _provider = Provider.of<UserData>(context, listen: false);
+  //   var _userLocation = _provider.userLocationPreference;
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (BuildContext context) {
+  //       return ConfirmationPrompt(
+  //         height: 400,
+  //         buttonText: 'set up city',
+  //         onPressed: () async {
+  //           Navigator.pop(context);
+  //           _navigateToPage(
+  //               context,
+  //               EditProfileSelectLocation(
+  //                 user: _userLocation!,
+  //                 notFromEditProfile: true,
+  //               ));
+  //         },
+  //         title: 'Set up your city',
+  //         subTitle:
+  //             'To proceed with purchasing a ticket, we kindly ask you to provide your country information. This allows us to handle ticket processing appropriately, as the process may vary depending on different countries. Please note that specifying your city is sufficient, and there is no need to provide your precise location or community details.',
+  //       );
+  //     },
+  //   );
+  // }
 
   _contentWidget() {
     // final width = MediaQuery.of(context).size.width;
@@ -1764,80 +2577,198 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
           children: [
             if (_isAuthor)
               Padding(
-                padding: const EdgeInsets.only(
-                  top: 30.0,
-                ),
-                child: EventBottomButton(
-                  onlyWhite: true,
-                  buttonText:
-                      _isLoadingDashboard ? 'Loading...' : 'Access Dashbord',
-                  onPressed: () {
-                    widget.palette == null
-                        ? _generatePalette(true)
-                        : _navigateToPage(
-                            context,
-                            EventDashboardScreen(
-                              // askCount: _askCount,
-                              currentUserId: widget.currentUserId,
-                              event: widget.event,
-                              palette: widget.palette!,
-                            ));
-                  },
-                ),
-              ),
-            if (_isAuthor)
-              EventBottomButton(
-                onlyWhite: true,
-                buttonText: _isLoading ? 'Loading...' : 'Access Room',
-                onPressed: () {
-                  widget.palette == null
-                      ? _generatePalette(false)
-                      : _goToRoom(widget.palette!);
-                },
-              ),
-            if (_isAuthor)
-              // if (!_eventHasEnded)
-              EventBottomButton(
-                onlyWhite: true,
-                buttonText: 'Edit event',
-                onPressed: () {
-                  _navigateToPage(
-                    context,
-                    EditEventScreen(
-                      currentUserId: widget.currentUserId,
-                      event: widget.event,
-                      isCompleted: _eventHasEnded,
+                padding: EdgeInsets.only(
+                    bottom: widget.justCreated ? 100.0 : 30, top: 30),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Container(
+                      // padding: const EdgeInsets.all(5),
+                      // height: ResponsiveHelper.responsiveHeight(context, 200),
+                      // width: ResponsiveHelper.responsiveHeight(context, 300),
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          BottomModelSheetIconActionWidget(
+                            minor: true,
+                            dontPop: true,
+                            color: _isLoadingDashboard ? Colors.blue : null,
+                            icon: Icons.dashboard_outlined,
+                            onPressed: () {
+                              widget.palette == null
+                                  ? _generatePalette(true)
+                                  : _navigateToPage(
+                                      context,
+                                      EventDashboardScreen(
+                                        // askCount: _askCount,
+                                        currentUserId: widget.currentUserId,
+                                        event: widget.event,
+                                        palette: widget.palette!,
+                                      ));
+                            },
+                            text:
+                                _isLoadingDashboard ? 'Loading...' : 'Dashbord',
+                          ),
+                          Container(
+                            width: 1,
+                            height: 50,
+                            color: Colors.grey,
+                          ),
+                          BottomModelSheetIconActionWidget(
+                            minor: true,
+                            dontPop: true,
+                            color: _isLoading ? Colors.blue : null,
+                            icon: MdiIcons.thoughtBubbleOutline,
+                            onPressed: () async {
+                              widget.palette == null
+                                  ? _generatePalette(false)
+                                  : _goToRoom(widget.palette!);
+                            },
+                            text: _isLoading ? 'Loading...' : 'Room',
+                          ),
+                        ],
+                      ),
                     ),
-                  );
-                },
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Container(
+                      // padding: const EdgeInsets.all(5),
+                      // height: ResponsiveHelper.responsiveHeight(context, 200),
+                      // width: ResponsiveHelper.responsiveHeight(context, 300),
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          BottomModelSheetIconActionWidget(
+                            minor: true,
+                            dontPop: true,
+                            icon: Icons.edit_outlined,
+                            onPressed: () {
+                              _navigateToPage(
+                                context,
+                                EditEventScreen(
+                                  currentUserId: widget.currentUserId,
+                                  event: widget.event,
+                                  isCompleted: _eventHasEnded,
+                                ),
+                              );
+                            },
+                            text: 'Edit',
+                          ),
+                          Container(
+                            width: 1,
+                            height: 50,
+                            color: Colors.grey,
+                          ),
+                          BottomModelSheetIconActionWidget(
+                            minor: true,
+                            dontPop: true,
+                            icon: Icons.call_outlined,
+                            onPressed: () async {
+                              _navigateToPage(
+                                context,
+                                DiscoverUser(
+                                  currentUserId: widget.currentUserId,
+                                  // userLocationSettings:
+                                  //     _provider.userLocationPreference!,
+                                  isLiveLocation: true,
+                                  liveCity: widget.event.city,
+                                  liveCountry: widget.event.country,
+                                  liveLocationIntialPage: 0,
+                                  isWelcome: false,
+                                  // sortNumberOfDays: 0,
+                                ),
+                              );
+                            },
+                            text: 'Book creative',
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            if (_isAuthor)
-              Padding(
-                padding:
-                    EdgeInsets.only(bottom: widget.justCreated ? 100.0 : 30),
-                child: EventBottomButton(
-                    onlyWhite: true,
-                    buttonText: 'Book a creative',
-                    onPressed: () {
-                      _navigateToPage(
-                        context,
-                        DiscoverUser(
-                          currentUserId: widget.currentUserId,
-                          // userLocationSettings:
-                          //     _provider.userLocationPreference!,
-                          isLiveLocation: true,
-                          liveCity: widget.event.city,
-                          liveCountry: widget.event.country,
-                          liveLocationIntialPage: 0,
-                          isWelcome: false,
-                          // sortNumberOfDays: 0,
-                        ),
-                      );
-                    }),
-              ),
+            // Padding(
+            //   padding: const EdgeInsets.only(
+            //     top: 30.0,
+            //   ),
+            //   child: EventBottomButton(
+            //     onlyWhite: true,
+            //     buttonText:
+            //         _isLoadingDashboard ? 'Loading...' : 'Access Dashbord',
+            //     onPressed: () {
+            //       widget.palette == null
+            //           ? _generatePalette(true)
+            //           : _navigateToPage(
+            //               context,
+            //               EventDashboardScreen(
+            //                 // askCount: _askCount,
+            //                 currentUserId: widget.currentUserId,
+            //                 event: widget.event,
+            //                 palette: widget.palette!,
+            //               ));
+            //     },
+            //   ),
+            // ),
+            // if (_isAuthor)
+            //   EventBottomButton(
+            //     onlyWhite: true,
+            //     buttonText: _isLoading ? 'Loading...' : 'Access Room',
+            //     onPressed: () {
+            //       widget.palette == null
+            //           ? _generatePalette(false)
+            //           : _goToRoom(widget.palette!);
+            //     },
+            //   ),
+            // if (_isAuthor)
+            //   // if (!_eventHasEnded)
+            //   EventBottomButton(
+            //     onlyWhite: true,
+            //     buttonText: 'Edit event',
+            //     onPressed: () {
+            //       _navigateToPage(
+            //         context,
+            //         EditEventScreen(
+            //           currentUserId: widget.currentUserId,
+            //           event: widget.event,
+            //           isCompleted: _eventHasEnded,
+            //         ),
+            //       );
+            //     },
+            //   ),
+            // if (_isAuthor)
+            //   Padding(
+            //     padding:
+            //         EdgeInsets.only(bottom: widget.justCreated ? 100.0 : 30),
+            //     child: EventBottomButton(
+            //         onlyWhite: true,
+            //         buttonText: 'Book a creative',
+            //         onPressed: () {
+            //           _navigateToPage(
+            //             context,
+            //             DiscoverUser(
+            //               currentUserId: widget.currentUserId,
+            //               // userLocationSettings:
+            //               //     _provider.userLocationPreference!,
+            //               isLiveLocation: true,
+            //               liveCity: widget.event.city,
+            //               liveCountry: widget.event.country,
+            //               liveLocationIntialPage: 0,
+            //               isWelcome: false,
+            //               // sortNumberOfDays: 0,
+            //             ),
+            //           );
+            //         }),
+            //   ),
             GestureDetector(
               onTap: () {
-                _showBottomSheetFullTitleAndTheme();
+                _expandEventDetails();
               },
               child: RichText(
                 textScaleFactor: MediaQuery.of(context).textScaleFactor,
@@ -1897,14 +2828,17 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
             SizedBox(
               height: ResponsiveHelper.responsiveWidth(context, 10.0),
             ),
+
             GestureDetector(
               onTap: () {
-                _showBottomSheetFullTitleAndTheme();
+                _expandEventDetails();
               },
               child: Align(
                 alignment: Alignment.center,
                 child: Text(
-                  "${widget.event.theme.trim().replaceAll('\n', ' ')}. \nThis event would take place at ${widget.event.venue} ",
+                  _isAuthor
+                      ? "${widget.event.theme.trim().replaceAll('\n', ' ')}"
+                      : "${widget.event.theme.trim().replaceAll('\n', ' ')}. \nThis event would take place at ${widget.event.venue} ",
                   style: TextStyle(
                     fontSize:
                         ResponsiveHelper.responsiveFontSize(context, 16.0),
@@ -1927,7 +2861,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
           children: [
             GestureDetector(
               onTap: () {
-                _showBottomSheetCalendar(context);
+                _expandEventDetails();
               },
               child: RichText(
                 textScaleFactor: MediaQuery.of(context).textScaleFactor,
@@ -1959,7 +2893,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
             ),
             GestureDetector(
               onTap: () {
-                _showBottomSheetCalendar(context);
+                _expandEventDetails();
               },
               child: RichText(
                 textScaleFactor: MediaQuery.of(context).textScaleFactor,
@@ -1987,63 +2921,69 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
         ),
         if (!widget.event.isPrivate && !_isAuthor)
           if (!_eventHasEnded)
-            Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: Container(
-                  width: ResponsiveHelper.responsiveWidth(context, 150.0),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        elevation: 20.0,
-                        foregroundColor: Colors.blue,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                        )),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: _checkingTicketAvailability
-                          ? SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 3,
-                                color: Colors.blue,
-                              ),
-                            )
-                          : Text(
-                              'Attend',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: ResponsiveHelper.responsiveFontSize(
-                                    context, 14.0),
-                              ),
-                            ),
-                    ),
-                    onPressed: _usercountry!.isEmpty
-                        ? () {
-                            widget.event.isFree
-                                ? _attendMethod()
-                                : _showBottomEditLocation(context);
-                          }
-                        : _validateAttempt,
-                    //
-                    // !isGhanaian
-                    //         ? () {
-                    //             _showBottomSheetErrorMessage(
-                    //                 'This event is currently unavailable in your $_usercountry.',
-                    //                 '');
-                    //           }
-                    //         : widget.event.termsAndConditions.isNotEmpty
-                    //             ? () {
-                    //                 _showBottomSheetTermsAndConditions();
-                    //               }
-                    //             : () async {
-                    //                 widget.event.ticketSite.isNotEmpty
-                    //                     ? _showBottomSheetExternalLink()
-                    //                     : _attendMethod();
-                    //               },
-                  ),
-                )),
+            AttendButton(
+              fromFlyier: true,
+              currentUserId: widget.currentUserId,
+              event: widget.event,
+            ),
+
+        // Padding(
+        //     padding: const EdgeInsets.only(top: 10),
+        //     child: Container(
+        //       width: ResponsiveHelper.responsiveWidth(context, 150.0),
+        //       child: ElevatedButton(
+        //         style: ElevatedButton.styleFrom(
+        //             backgroundColor: Colors.white,
+        //             elevation: 20.0,
+        //             foregroundColor: Colors.blue,
+        //             shape: RoundedRectangleBorder(
+        //               borderRadius: BorderRadius.circular(20.0),
+        //             )),
+        //         child: Padding(
+        //           padding: const EdgeInsets.all(10.0),
+        //           child: _checkingTicketAvailability
+        //               ? SizedBox(
+        //                   height: 20,
+        //                   width: 20,
+        //                   child: CircularProgressIndicator(
+        //                     strokeWidth: 3,
+        //                     color: Colors.blue,
+        //                   ),
+        //                 )
+        //               : Text(
+        //                   'Attend',
+        //                   style: TextStyle(
+        //                     color: Colors.black,
+        //                     fontSize: ResponsiveHelper.responsiveFontSize(
+        //                         context, 14.0),
+        //                   ),
+        //                 ),
+        //         ),
+        //         onPressed: _usercountry!.isEmpty
+        //             ? () {
+        //                 widget.event.isFree
+        //                     ? _attendMethod()
+        //                     : _showBottomEditLocation(context);
+        //               }
+        //             : _validateAttempt,
+        //         //
+        //         // !isGhanaian
+        //         //         ? () {
+        //         //             _showBottomSheetErrorMessage(
+        //         //                 'This event is currently unavailable in your $_usercountry.',
+        //         //                 '');
+        //         //           }
+        //         //         : widget.event.termsAndConditions.isNotEmpty
+        //         //             ? () {
+        //         //                 _showBottomSheetTermsAndConditions();
+        //         //               }
+        //         //             : () async {
+        //         //                 widget.event.ticketSite.isNotEmpty
+        //         //                     ? _showBottomSheetExternalLink()
+        //         //                     : _attendMethod();
+        //         //               },
+        //       ),
+        //     )),
         SizedBox(
           height: 5,
         ),
@@ -2080,37 +3020,38 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
         SizedBox(
           height: 20,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _accessIcons(
-              Icons.location_on,
-              _launchMap,
-            ),
-            const SizedBox(
-              width: 5,
-            ),
-            widget.event.taggedPeople.isEmpty
-                ? const SizedBox.shrink()
-                : _accessIcons(
-                    Icons.people,
-                    () {
-                      _showBottomSheetTaggedPeopleOption(context);
-                    },
-                  ),
-            const SizedBox(
-              width: 5,
-            ),
-            widget.event.previousEvent.isEmpty
-                ? const SizedBox.shrink()
-                : _accessIcons(
-                    Icons.play_arrow_outlined,
-                    () {
-                      _showBottomSheetPreviosEvent(context);
-                    },
-                  ),
-          ],
-        ),
+        if (!_isAuthor)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _accessIcons(
+                Icons.location_on,
+                _launchMap,
+              ),
+              const SizedBox(
+                width: 5,
+              ),
+              widget.event.taggedPeople.isEmpty
+                  ? const SizedBox.shrink()
+                  : _accessIcons(
+                      Icons.people,
+                      () {
+                        _showBottomSheetTaggedPeopleOption(context);
+                      },
+                    ),
+              const SizedBox(
+                width: 5,
+              ),
+              widget.event.previousEvent.isEmpty
+                  ? const SizedBox.shrink()
+                  : _accessIcons(
+                      Icons.play_arrow_outlined,
+                      () {
+                        _showBottomSheetPreviosEvent(context);
+                      },
+                    ),
+            ],
+          ),
         SizedBox(
           height: 10,
         ),
@@ -2163,57 +3104,56 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
               onTap: _eventHasEnded
                   ? () {}
                   : () {
-                      _usercountry!.isEmpty
-                          ? widget.event.isFree
-                              ? _attendMethod()
-                              : _showBottomEditLocation(context)
-                          : _validateAttempt();
-                      // if (!widget.event.isPrivate && !_isAuthor)
-                      //   widget.event.ticketSite.isNotEmpty
-                      //       ? _showBottomSheetExternalLink()
-                      //       : _attendMethod();
+                      // _usercountry!.isEmpty
+                      //     ? widget.event.isFree
+                      //         ? _attendMethod()
+                      //         : _showBottomEditLocation(context)
+                      //     : _validateAttempt();
+                      // // if (!widget.event.isPrivate && !_isAuthor)
+                      // //   widget.event.ticketSite.isNotEmpty
+                      // //       ? _showBottomSheetExternalLink()
+                      // //       : _attendMethod();
                     },
               child: _eventHasEnded
                   ? SizedBox.shrink()
-                  : _checkingTicketAvailability
-                      ? SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 3,
-                            color: Colors.blue,
+                  // : _checkingTicketAvailability
+                  //     ? SizedBox(
+                  //         height: 20,
+                  //         width: 20,
+                  //         child: CircularProgressIndicator(
+                  //           strokeWidth: 3,
+                  //           color: Colors.blue,
+                  //         ),
+                  //       )
+                  : RichText(
+                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: widget.event.isFree
+                                ? ''
+                                : "${widget.event.rate}:\n",
+                            style: TextStyle(
+                              fontSize: ResponsiveHelper.responsiveFontSize(
+                                  context, 12.0),
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        )
-                      : RichText(
-                          textScaleFactor:
-                              MediaQuery.of(context).textScaleFactor,
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: widget.event.isFree
-                                    ? ''
-                                    : "${widget.event.rate}:\n",
-                                style: TextStyle(
-                                  fontSize: ResponsiveHelper.responsiveFontSize(
-                                      context, 12.0),
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              TextSpan(
-                                text: widget.event.isFree
-                                    ? 'Free'
-                                    : _fristTickePrice.toString(),
-                                style: TextStyle(
-                                  fontSize: ResponsiveHelper.responsiveFontSize(
-                                      context, 30.0),
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
+                          TextSpan(
+                            text: widget.event.isFree
+                                ? 'Free'
+                                : _fristTickePrice.toString(),
+                            style: TextStyle(
+                              fontSize: ResponsiveHelper.responsiveFontSize(
+                                  context, 30.0),
+                              color: Colors.white,
+                            ),
                           ),
-                          textAlign: TextAlign.center,
-                        ),
+                        ],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
             ),
         if (widget.event.isPrivate && !_isAuthor)
           GestureDetector(
@@ -2316,6 +3256,9 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
           ),
           GestureDetector(
               onLongPress: _setImage,
+              onTap: () {
+                _expandEventDetails();
+              },
               child: Container(
                 height: height,
                 width: double.infinity,

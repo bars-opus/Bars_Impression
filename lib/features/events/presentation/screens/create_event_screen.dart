@@ -43,6 +43,8 @@ class _CreateEventScreenState extends State<CreateEventScreen>
   String _selectedRole = '';
   String _taggedType = '';
   String _selectedNameToAdd = '';
+  String _selectedNameToAddProfileImageUrl = '';
+
   String _taggedUserExternalLink = '';
   String selectedclosingDay = '';
   String _type = '';
@@ -269,6 +271,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       externalProfileLink: externalProfileLink,
       internalProfileLink: internalProfileLink,
       taggedType: taggedType,
+      profileImageUrl: _selectedNameToAddProfileImageUrl,
     );
 
     //Add tagged person to taggedPeopleList
@@ -285,8 +288,8 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     _tagNameController.clear();
   }
 
-  void _addSchedulePeople(
-      String name, String internalProfileLink, String taggedUserExternalLink) {
+  void _addSchedulePeople(String name, String internalProfileLink,
+      String taggedUserExternalLink, String profileImageUrl) {
     var _provider = Provider.of<UserData>(context, listen: false);
     // final name = _selectedNameToAdd;
     // final role = _selectedRole;
@@ -297,6 +300,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
 
     String commonId = Uuid().v4();
     final taggedEvenPeople = SchedulePeopleModel(
+      profileImageUrl: profileImageUrl,
       id: commonId,
       name: name,
       verifiedTag: false,
@@ -2019,6 +2023,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     WidgetsBinding.instance
         .addPostFrameCallback((_) => _tagNameController.clear());
     _selectedNameToAdd = '';
+    _selectedNameToAddProfileImageUrl = '';
     _tagNameController.clear();
   }
 
@@ -2082,7 +2087,8 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     var _provider = Provider.of<UserData>(context, listen: false);
     return isSchedule
         ? () {
-            _addSchedulePeople(user.userName!, user.userId!, '');
+            _addSchedulePeople(
+                user.userName!, user.userId!, '', user.profileImageUrl!);
             Navigator.pop(context);
           }
         : () {
@@ -2090,6 +2096,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
             if (mounted) {
               setState(() {
                 _selectedNameToAdd = user.userName!;
+                _selectedNameToAddProfileImageUrl = user.profileImageUrl!;
               });
             }
 
@@ -2270,10 +2277,10 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                                             if (_addPersonFormKey.currentState!
                                                 .validate()) {
                                               _addSchedulePeople(
-                                                _selectedNameToAdd,
-                                                '',
-                                                _taggedUserExternalLink,
-                                              );
+                                                  _selectedNameToAdd,
+                                                  '',
+                                                  _taggedUserExternalLink,
+                                                  '');
 
                                               Navigator.pop(context);
                                             }

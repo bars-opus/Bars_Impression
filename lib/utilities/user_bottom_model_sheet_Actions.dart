@@ -204,7 +204,7 @@ class _UserBottomModalSheetActionsState
             //         TextSpan(
             //           text: "\n${user.profileHandle}",
             //           style: TextStyle(color: Colors.blue, fontSize:  ResponsiveHelper.responsiveFontSize(
-                                // context, 12),),
+            // context, 12),),
             //         )
             //       ],
             //     ),
@@ -254,9 +254,7 @@ class _UserBottomModalSheetActionsState
                 ),
               ],
             ),
-            const SizedBox(
-              height: 10,
-            ),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -291,6 +289,9 @@ class _UserBottomModalSheetActionsState
                   text: 'Message',
                 ),
               ],
+            ),
+            const SizedBox(
+              height: 10,
             ),
             BottomModelSheetListTileActionWidget(
               colorCode: '',

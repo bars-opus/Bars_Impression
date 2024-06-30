@@ -116,7 +116,9 @@ class EventBuilderWidget extends StatelessWidget {
                 ),
               ),
             ),
-            Divider( thickness: .2,),
+            Divider(
+              thickness: .2,
+            ),
             PortfolioWorkRequestWidget(
               edit: false,
               seeMore: false,
@@ -306,12 +308,12 @@ class EventBuilderWidget extends StatelessWidget {
                     child: Center(
                       child: NoContents(
                           title: isFree
-                              ? 'Free ${typeSpecific.toLowerCase()} in ${user.country}'
-                              : '${typeSpecific.toLowerCase()} this week',
+                              ? 'No free ${typeSpecific.toLowerCase()} in ${user.country}'
+                              : 'No ${typeSpecific.toLowerCase()} this week',
                           subTitle: isFree
                               ? 'There are no free ${typeSpecific.toLowerCase()} in ${user.country} at the moment. We would keep you updated if new ${typeSpecific.toLowerCase()} become available.'
                               : 'There are no ${typeSpecific.toLowerCase()} happening in ${user.country} this week. We would keep you updated if new ${typeSpecific.toLowerCase()} become available.',
-                          icon: FontAwesomeIcons.zero),
+                          icon: Icons.event_outlined),
                     ))
                 : Container(
                     height: ResponsiveHelper.responsiveHeight(context, 450),

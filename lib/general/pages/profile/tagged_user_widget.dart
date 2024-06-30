@@ -150,7 +150,7 @@ class _TaggedUsersWidgetState extends State<TaggedUsersWidget> {
                     padding: const EdgeInsets.only(bottom: 20.0),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.grey[700],
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
@@ -183,7 +183,7 @@ class _TaggedUsersWidgetState extends State<TaggedUsersWidget> {
                                         fontSize:
                                             ResponsiveHelper.responsiveFontSize(
                                                 context, 12),
-                                        color: Colors.white,
+                                        color: Colors.black,
                                       ),
                                     )
                                   ])),
@@ -211,7 +211,7 @@ class _TaggedUsersWidgetState extends State<TaggedUsersWidget> {
                     bottom: -8,
                     child: Icon(
                       Icons.arrow_drop_down_outlined,
-                      color: Colors.grey[700],
+                      color: Colors.white,
                       size: ResponsiveHelper.responsiveHeight(context, 50),
                     ),
                   )

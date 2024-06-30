@@ -188,12 +188,59 @@ class ScheduleWidget extends StatelessWidget {
   //   );
   // }
 
+  _peopleMini(BuildContext context) {
+    return ShakeTransition(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 700),
+        height: schedule.people.isEmpty
+            ? 0
+            : ResponsiveHelper.responsiveWidth(context, 50),
+        // color: Colors.red,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: schedule.people.length,
+          itemBuilder: (context, index) {
+            String imageUrl = schedule.people[index].profileImageUrl == null
+                ? ''
+                : schedule.people[index].profileImageUrl!;
+            return imageUrl.isEmpty
+                ? Icon(
+                    Icons.account_circle,
+                    size: ResponsiveHelper.responsiveHeight(context, 30.0),
+                    color: Colors.grey,
+                  )
+                : CircleAvatar(
+                    radius: ResponsiveHelper.responsiveWidth(context, 12),
+                    backgroundColor: Colors.blue,
+                    backgroundImage: NetworkImage(
+                        imageUrl), // replace with your user avatar url
+                  );
+          },
+        ),
+      ),
+    );
+  }
+
+  _scheduleTitle(BuildContext context) {
+    return IconButton(
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        icon: Icon(
+          Icons.close,
+          color: Colors.white,
+          // size: ResponsiveHelper.responsiveFontSize(context, 20),
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     final List<String> startTimePartition =
         MyDateFormat.toTime(schedule.startTime.toDate()).split(" ");
     final List<String> endTimePartition =
         MyDateFormat.toTime(schedule.endTime.toDate()).split(" ");
+    final width = MediaQuery.of(context).size.width;
+
     // final List<String> _startDatePartition =
     //     MyDateFormat.toDate(schedule.startTime.toDate()).split(" ");
     // final List<String> _endDatePartition =
@@ -202,67 +249,107 @@ class ScheduleWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: Container(
         decoration: BoxDecoration(
-            color: Theme.of(context).primaryColorLight,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(30)),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 5.0),
-          child: ListTile(
-            leading: RichText(
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                text: TextSpan(children: [
-                  TextSpan(
-                    text: startTimePartition[0].toUpperCase(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Padding(
+            //   padding: const EdgeInsets.only(right: 50.0),
+            //   child: Text(
+            //     MyDateFormat.toDate(schedule.scheduleDate.toDate()),
+            //     style: Theme.of(context).textTheme.bodyLarge,
+            //   ),
+            // ),
+
+            Container(
+              padding: const EdgeInsets.all(20),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColorLight,
+                  borderRadius: BorderRadius.circular(30)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (BuildContext context) {
+                            return Stack(
+                              children: [
+                                Container(
+                                  height: ResponsiveHelper.responsiveHeight(
+                                      context, 800),
+                                  width: ResponsiveHelper.responsiveHeight(
+                                      context, 400),
+                                  padding: EdgeInsets.only(
+                                      top: ResponsiveHelper.responsiveFontSize(
+                                          context, 120)),
+                                  color: Colors.transparent,
+                                  child: ListView.builder(
+                                    itemCount: schedule.people.length,
+                                    itemBuilder: (context, index) {
+                                      var person = schedule.people[index];
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20.0, vertical: 5),
+                                        child: ScheduleBuildPeople(
+                                          currentUserId: currentUserId,
+                                          edit: edit,
+                                          from: 'list',
+                                          width: width,
+                                          fullWidth: false,
+                                          person: person,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 70,
+                                  left: 20,
+                                  child: _scheduleTitle(context),
+                                ),
+                              ],
+                            );
+                          });
+                    },
+                    child: _peopleMini(context),
+                  ),
+                  Text(
+                    '${startTimePartition[0]} ${startTimePartition[1]}    --->   ${endTimePartition[0]} ${endTimePartition[1]} ',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  if (startTimePartition.length > 1)
-                    TextSpan(
-                      text: "\n${startTimePartition[1].toUpperCase()} ",
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                ])),
-            title: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Padding(
-                //   padding: const EdgeInsets.only(right: 50.0),
-                //   child: Text(
-                //     MyDateFormat.toDate(schedule.scheduleDate.toDate()),
-                //     style: Theme.of(context).textTheme.bodyLarge,
-                //   ),
-                // ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  '${startTimePartition[0]} ${startTimePartition[1]}\nTo --- >  ',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                Text(
-                  '${endTimePartition[0]} ${endTimePartition[1]}\n',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                Text(
-                  schedule.title,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                ShedulePeopleHorizontal(
-                  edit: edit,
-                  from: from,
-                  schedulepeople: schedule.people,
-                  currentUserId: currentUserId,
-                ),
-                // Text(
-                //   schedule.performer,
-                //   style: Theme.of(context).textTheme.bodyMedium,
-                // ),
-                Divider(
-                  thickness: .2,
-                  color: Theme.of(context).secondaryHeaderColor.withOpacity(.4),
-                )
-              ],
+                  Text(
+                    schedule.title,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                ],
+              ),
             ),
-          ),
+
+            ShedulePeopleHorizontal(
+              edit: edit,
+              from: from,
+              schedulepeople: schedule.people,
+              currentUserId: currentUserId,
+            ),
+            // Text(
+            //   schedule.performer,
+            //   style: Theme.of(context).textTheme.bodyMedium,
+            // ),
+            Divider(
+              thickness: .2,
+              color: Theme.of(context).secondaryHeaderColor.withOpacity(.4),
+            )
+          ],
         ),
       ),
     );

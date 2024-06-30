@@ -9,6 +9,7 @@ class TicketGoupWidget extends StatefulWidget {
   final String currency;
   final String eventId;
   final String eventAuthorId;
+  final bool onCalendatSchedule;
 
   const TicketGoupWidget({
     super.key,
@@ -19,6 +20,7 @@ class TicketGoupWidget extends StatefulWidget {
     required this.isFree,
     required this.eventId,
     required this.eventAuthorId,
+    this.onCalendatSchedule = false,
   });
 
   @override

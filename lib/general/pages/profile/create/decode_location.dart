@@ -2,6 +2,7 @@ import 'package:bars/utilities/exports.dart';
 
 Future<void> reverseGeocoding(UserData provider, String address) async {
   try {
+    print(address);
     List<Location> results = await locationFromAddress(address);
 
     if (results != null && results.length > 0) {

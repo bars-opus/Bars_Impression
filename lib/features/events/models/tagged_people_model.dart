@@ -1,12 +1,14 @@
-
 class TaggedEventPeopleModel {
   String id;
   final String name; // tagged person name
-  final String role; // the role of the tagged person either a special guess, an artist, a sponsor or stc.
+  final String
+      role; // the role of the tagged person either a special guess, an artist, a sponsor or stc.
   final String taggedType; // either its a crew tagged, or a guess or a sponsor.
-  final bool verifiedTag; // if the tagged is verified by the tagged person or not
+  final bool
+      verifiedTag; // if the tagged is verified by the tagged person or not
   final String? internalProfileLink; // like to tagged person on Bars impression
   final String? externalProfileLink; //link to tagged person to external sites
+  final String? profileImageUrl;
 
   TaggedEventPeopleModel({
     required this.id,
@@ -16,6 +18,7 @@ class TaggedEventPeopleModel {
     required this.verifiedTag,
     required this.internalProfileLink,
     required this.externalProfileLink,
+    required this.profileImageUrl,
   });
 
   factory TaggedEventPeopleModel.fromJson(Map<String, dynamic> json) {
@@ -27,6 +30,7 @@ class TaggedEventPeopleModel {
       verifiedTag: json['verifiedTag'],
       internalProfileLink: json['internalProfileLink'],
       externalProfileLink: json['externalProfileLink'],
+      profileImageUrl: json['profileImageUrl'],
     );
   }
 
@@ -39,7 +43,7 @@ class TaggedEventPeopleModel {
       'verifiedTag': verifiedTag,
       'internalProfileLink': internalProfileLink,
       'externalProfileLink': externalProfileLink,
+      'profileImageUrl': profileImageUrl,
     };
   }
 }
-

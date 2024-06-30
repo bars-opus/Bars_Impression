@@ -19,6 +19,7 @@ class TicketGroup extends StatefulWidget {
   final String currentUserId;
   final String inviteReply;
   final bool onInvite;
+  final bool onCalendatSchedule;
 
   TicketGroup({
     required this.groupTickets,
@@ -26,6 +27,7 @@ class TicketGroup extends StatefulWidget {
     required this.currentUserId,
     required this.inviteReply,
     this.onInvite = false,
+    this.onCalendatSchedule = false,
   });
 
   @override
@@ -857,7 +859,14 @@ class _TicketGroupState extends State<TicketGroup> {
     return Stack(
       children: [
         Container(
-            height: width * width,
+            height: ResponsiveHelper.responsiveHeight(
+                context,
+                widget.event == null || !widget.event!.isFree
+                    ? widget.groupTickets.length * 500
+                    : widget.groupTickets.length * 300),
+            // widget.groupTickets.length *,
+
+            // width * width,
             // color: Colors.red,
             width: width,
             child:
@@ -871,6 +880,7 @@ class _TicketGroupState extends State<TicketGroup> {
               padding: EdgeInsets.only(
                   top: _provider.ticketList.isEmpty ? 0.0 : 50.0),
               child: TicketGoupWidget(
+                onCalendatSchedule: widget.onCalendatSchedule,
                 onInvite: widget.onInvite,
                 groupTickets: widget.groupTickets,
                 isEditing: widget.event == null ? true : false,

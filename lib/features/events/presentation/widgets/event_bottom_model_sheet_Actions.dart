@@ -25,26 +25,26 @@ class _EventBottomModalSheetActionsState
     return MapsLauncher.launchQuery(widget.event.address);
   }
 
-//display calendar
-  void _showBottomSheetCalendar(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return widget.event.schedule.isEmpty
-            ? NoScheduleCalendar(
-                askMoreOnpressed: () {},
-                showAskMore: false,
-              )
-            : EventSheduleCalendar(
-                event: widget.event,
-                currentUserId: widget.currentUserId,
-                duration: 0,
-              );
-      },
-    );
-  }
+// //display calendar
+//   void _showBottomSheetCalendar(BuildContext context) {
+//     showModalBottomSheet(
+//       context: context,
+//       isScrollControlled: true,
+//       backgroundColor: Colors.transparent,
+//       builder: (BuildContext context) {
+//         return widget.event.schedule.isEmpty
+//             ? NoScheduleCalendar(
+//                 askMoreOnpressed: () {},
+//                 showAskMore: false,
+//               )
+//             : EventSheduleCalendar(
+//                 event: widget.event,
+//                 currentUserId: widget.currentUserId,
+//                 duration: 0, eventHasEnded: null,
+//               );
+//       },
+//     );
+//   }
 
 // To display the people tagged in a post as performers, crew, sponsors or partners
   void _showBottomSheetTaggedPeople(BuildContext context, bool isSponsor) {
@@ -308,7 +308,8 @@ class _EventBottomModalSheetActionsState
                               width: ResponsiveHelper.responsiveHeight(
                                   context, 10.0),
                               child: CircularProgressIndicator(
-                                strokeWidth: 3, color:Colors.blue,
+                                strokeWidth: 3,
+                                color: Colors.blue,
                               ),
                             )
                           : MiniCircularProgressButton(
@@ -477,7 +478,8 @@ class _EventBottomModalSheetActionsState
                                   height: 20,
                                   width: 20,
                                   child: CircularProgressIndicator(
-                                    strokeWidth: 3, color:Colors.blue,
+                                    strokeWidth: 3,
+                                    color: Colors.blue,
                                   ),
                                 )
                               : Icon(
@@ -568,9 +570,9 @@ class _EventBottomModalSheetActionsState
                 ),
               ],
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            // const SizedBox(
+            //   height: 10,
+            // ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -590,29 +592,38 @@ class _EventBottomModalSheetActionsState
                 ),
               ],
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                BottomModelSheetIconActionWidget(
-                  icon: Icons.calendar_month_outlined,
-                  onPressed: () {
-                    _showBottomSheetCalendar(
-                      context,
-                    );
-                  },
-                  text: 'Schedules',
-                ),
-                BottomModelSheetIconActionWidget(
-                  icon: Icons.location_on_outlined,
-                  onPressed: () {
-                    _launchMap();
-                  },
-                  text: 'Location',
-                ),
-              ],
-            ),
+
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     BottomModelSheetIconActionWidget(
+            //       icon: Icons.calendar_month_outlined,
+            //       onPressed: () {
+            //         _showBottomSheetCalendar(
+            //           context,
+            //         );
+            //       },
+            //       text: 'Schedules',
+            //     ),
+            //     BottomModelSheetIconActionWidget(
+            //       icon: Icons.location_on_outlined,
+            //       onPressed: () {
+            //         _launchMap();
+            //       },
+            //       text: 'Location',
+            //     ),
+            //   ],
+            // ),
             const SizedBox(
               height: 10,
+            ),
+            BottomModelSheetListTileActionWidget(
+              colorCode: '',
+              icon: Icons.location_on_outlined,
+              onPressed: () {
+                _launchMap();
+              },
+              text: 'Location',
             ),
             _isAuthor
                 ? SizedBox.shrink()

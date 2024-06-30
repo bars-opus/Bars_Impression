@@ -295,7 +295,7 @@ export 'package:bars/features/events/presentation/screens/event_enlarged_screen.
 export 'package:bars/features/events/presentation/screens/discover_event_screen.dart';
 export 'package:bars/features/events/presentation/screens/edit_event_screen.dart';
 export 'package:bars/features/events/presentation/screens/event_tagged_peope.dart';
-export 'package:bars/features/events/presentation/screens/event_schedule_calendar.dart';
+// export 'package:bars/features/events/presentation/screens/event_schedule_calendar.dart';
 export 'package:bars/features/events/presentation/screens/explore_event_calendar.dart';
 export 'package:bars/features/events/presentation/widgets/event_bottom_model_sheet_Actions.dart';
 export 'package:bars/features/events/presentation/screens/exand_event_barcode_screen.dart';
@@ -348,3 +348,5 @@ export 'package:bars/features/events/presentation/screens/perpective_listview.da
 export 'package:bars/widgets/general_widget/access_dashboard_widget.dart';
 export 'package:bars/widgets/general_widget/tap_to_access_dashboard_widget.dart';
 export 'package:bars/widgets/general_widget/schedule_person_horizontal.dart';
+export 'package:bars/features/events/presentation/screens/attend_button.dart';
+export 'package:bars/widgets/general_widget/shedule_build_people.dart';

@@ -13,56 +13,56 @@ class ShedulePeopleHorizontal extends StatelessWidget {
       required this.schedulepeople,
       required this.currentUserId});
 
-  void _showBottomSheetWork(
-    BuildContext context,
-    String type,
-    String link,
-  ) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return Container(
-          height: MediaQuery.of(context).size.height.toDouble() / 2,
-          decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(30)),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                DisclaimerWidget(
-                  title: type,
-                  subTitle:
-                      'You will be redirected to wibesite, where you can read, listen or watch $type. Please note that Bars Impression assumes no liability or responsibility for the information, views, or opinions presented on that platform.',
-                  icon: Icons.link,
-                ),
-                const SizedBox(
-                  height: 30,
-                ),
-                BottomModalSheetButtonBlue(
-                  buttonText: type,
-                  onPressed: () async {
-                    if (!await launchUrl(Uri.parse(link))) {
-                      throw 'Could not launch link';
-                    }
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (_) => MyWebView(
-                    //               url: link,
-                    //               title: '',
-                    //             )));
-                  },
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
+  // void _showBottomSheetWork(
+  //   BuildContext context,
+  //   String type,
+  //   String link,
+  // ) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (BuildContext context) {
+  //       return Container(
+  //         height: MediaQuery.of(context).size.height.toDouble() / 2,
+  //         decoration: BoxDecoration(
+  //             color: Theme.of(context).cardColor,
+  //             borderRadius: BorderRadius.circular(30)),
+  //         child: Padding(
+  //           padding: const EdgeInsets.all(20.0),
+  //           child: Column(
+  //             children: [
+  //               DisclaimerWidget(
+  //                 title: type,
+  //                 subTitle:
+  //                     'You will be redirected to wibesite, where you can read, listen or watch $type. Please note that Bars Impression assumes no liability or responsibility for the information, views, or opinions presented on that platform.',
+  //                 icon: Icons.link,
+  //               ),
+  //               const SizedBox(
+  //                 height: 30,
+  //               ),
+  //               BottomModalSheetButtonBlue(
+  //                 buttonText: type,
+  //                 onPressed: () async {
+  //                   if (!await launchUrl(Uri.parse(link))) {
+  //                     throw 'Could not launch link';
+  //                   }
+  //                   // Navigator.push(
+  //                   //     context,
+  //                   //     MaterialPageRoute(
+  //                   //         builder: (_) => MyWebView(
+  //                   //               url: link,
+  //                   //               title: '',
+  //                   //             )));
+  //                 },
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   _buildDisplayPortfolioGrid(
     BuildContext context,
@@ -71,8 +71,17 @@ class ShedulePeopleHorizontal extends StatelessWidget {
 
     final width = MediaQuery.of(context).size.width;
     List<Widget> tiles = [];
-    schedulepeople.forEach(
-        (people) => tiles.add(_buildPeople(context, width, people, false)));
+    schedulepeople.forEach((people) => tiles.add(ScheduleBuildPeople(
+          currentUserId: currentUserId,
+          edit: edit,
+          from: from,
+          width: width,
+          fullWidth: false,
+          person: people,
+        )
+            // _buildPeople(context, width, people, false)
+
+            ));
 
     return Container(
       height: ResponsiveHelper.responsiveHeight(context, 120),
@@ -89,118 +98,144 @@ class ShedulePeopleHorizontal extends StatelessWidget {
     );
   }
 
-  _buildPeople(BuildContext context, double width, var person, bool fullWidth) {
-    // var _currentUserId =
-    //     Provider.of<UserData>(context, listen: false).currentUserId;
+  // _buildPeople(BuildContext context, double width, var person, bool fullWidth) {
+  //   // var _currentUserId =
+  //   //     Provider.of<UserData>(context, listen: false).currentUserId;
 
-    return Padding(
-      padding: fullWidth
-          ? EdgeInsets.only(top: 5.0, left: 10, right: 10)
-          : EdgeInsets.all(0),
-      child: Container(
-        decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withOpacity(.3),
-            // from.isEmpty
-            //     ? Theme.of(context).primaryColorLight
-            // : Theme.of(context).primaryColor.withOpacity(.5),
-            borderRadius: BorderRadius.circular(5)),
-        width: fullWidth ? width : width / 2,
-        child: Padding(
-          padding:
-              fullWidth ? EdgeInsets.all(10.0) : EdgeInsets.only(bottom: 2.0),
-          child: GestureDetector(
-            onTap: edit || from == 'Calendar'
-                ? () {}
-                : () {
-                    person.externalProfileLink!.isEmpty
-                        ? _navigateToPage(
-                            context,
-                            ProfileScreen(
-                              currentUserId: currentUserId,
-                              userId: person.internalProfileLink!,
-                              user: null,
-                            ))
-                        : _showBottomSheetWork(
-                            context, person.name, person.externalProfileLink!);
-                  },
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: ResponsiveHelper.responsiveHeight(
-                  context,
-                  5,
-                ),
-              ),
-              child: Row(
-                children: [
-                  //    person.name.isEmpty
-                  // ?
-                  Icon(
-                    Icons.account_circle,
-                    size: ResponsiveHelper.responsiveHeight(context, 30.0),
-                    color: Colors.grey,
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  // : CircleAvatar(
-                  //     radius: isreplyWidget
-                  //         ? ResponsiveHelper.responsiveHeight(context, 15.0)
-                  //         : ResponsiveHelper.responsiveHeight(context, 18.0),
-                  //     backgroundColor: Colors.blue,
-                  //     backgroundImage:
-                  //         CachedNetworkImageProvider(profileImageUrl),
-                  //   ),
-                  Expanded(
-                    child: Text(
-                      person.name,
-                      style: Theme.of(context).textTheme.bodySmall,
-                      maxLines: fullWidth ? null : 2,
-                      overflow: fullWidth ? null : TextOverflow.ellipsis,
-                    ),
-                  ),
-                  Container(
-                    height: ResponsiveHelper.responsiveHeight(
-                      context,
-                      40,
-                    ),
-                    width: ResponsiveHelper.responsiveHeight(
-                      context,
-                      30,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        if (person.verifiedTag)
-                          Icon(
-                            Icons.verified,
-                            size: ResponsiveHelper.responsiveHeight(
-                              context,
-                              10,
-                            ),
-                            color: Colors.blue,
-                          ),
-                        Icon(
-                          person.internalProfileLink!.isNotEmpty
-                              ? Icons.arrow_forward_ios
-                              : Icons.link,
-                          size: ResponsiveHelper.responsiveHeight(
-                            context,
-                            15,
-                          ),
-                          color: Colors.blue,
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  //   return Padding(
+  //     padding: fullWidth
+  //         ? EdgeInsets.only(top: 5.0, left: 10, right: 10)
+  //         : EdgeInsets.all(0),
+  //     child: Container(
+  //       decoration: BoxDecoration(
+  //           color: Theme.of(context).primaryColor.withOpacity(.3),
+  //           // from.isEmpty
+  //           //     ? Theme.of(context).primaryColorLight
+  //           // : Theme.of(context).primaryColor.withOpacity(.5),
+  //           borderRadius: BorderRadius.circular(5)),
+  //       width: fullWidth ? width : width / 2,
+  //       child: Padding(
+  //         padding:
+  //             fullWidth ? EdgeInsets.all(10.0) : EdgeInsets.only(bottom: 2.0),
+  //         child: GestureDetector(
+  //           onTap: edit || from == 'Calendar'
+  //               ? () {}
+  //               : () {
+  //                   person.externalProfileLink!.isEmpty
+  //                       ? _navigateToPage(
+  //                           context,
+  //                           ProfileScreen(
+  //                             currentUserId: currentUserId,
+  //                             userId: person.internalProfileLink!,
+  //                             user: null,
+  //                           ))
+  //                       : _showBottomSheetWork(
+  //                           context, person.name, person.externalProfileLink!);
+  //                 },
+  //           child: Padding(
+  //             padding: EdgeInsets.symmetric(
+  //               horizontal: ResponsiveHelper.responsiveHeight(
+  //                 context,
+  //                 5,
+  //               ),
+  //             ),
+  //             child: Row(
+  //               children: [
+  //                 if (person.profileImageUrl != null)
+  //                   person.profileImageUrl.isEmpty
+  //                       ? Icon(
+  //                           Icons.account_circle,
+  //                           size: ResponsiveHelper.responsiveHeight(
+  //                               context, 40.0),
+  //                           color: Colors.grey,
+  //                         )
+  //                       : CircleAvatar(
+  //                           radius: ResponsiveHelper.responsiveHeight(
+  //                               context, 18.0),
+  //                           backgroundColor: Colors.blue,
+  //                           backgroundImage: CachedNetworkImageProvider(
+  //                               person.profileImageUrl),
+  //                         ),
+  //                 SizedBox(
+  //                   width: 10,
+  //                 ),
+  //                 Expanded(
+  //                   child: RichText(
+  //                     textScaleFactor: MediaQuery.of(context).textScaleFactor,
+  //                     text: TextSpan(
+  //                       children: [
+  //                         TextSpan(
+  //                           text: person.name,
+  //                           style: Theme.of(context).textTheme.bodySmall,
+  //                         ),
+  //                         if (from != 'Calendar')
+  //                           if (!edit)
+  //                             TextSpan(
+  //                               text: "\n${person.role}",
+  //                               style: TextStyle(
+  //                                   color: Colors.blue,
+  //                                   fontSize:
+  //                                       ResponsiveHelper.responsiveFontSize(
+  //                                           context, 12)),
+  //                             ),
+  //                       ],
+  //                     ),
+  //                     maxLines: fullWidth ? null : 2,
+  //                     overflow: fullWidth
+  //                         ? TextOverflow.visible
+  //                         : TextOverflow.ellipsis,
+  //                   ),
+
+  //                   //  Text(
+  //                   //   person.name,
+  //                   //   style: Theme.of(context).textTheme.bodySmall,
+  //                   //   maxLines: fullWidth ? null : 2,
+  //                   //   overflow: fullWidth ? null : TextOverflow.ellipsis,
+  //                   // ),
+  //                 ),
+  //                 Container(
+  //                   height: ResponsiveHelper.responsiveHeight(
+  //                     context,
+  //                     40,
+  //                   ),
+  //                   width: ResponsiveHelper.responsiveHeight(
+  //                     context,
+  //                     30,
+  //                   ),
+  //                   child: Column(
+  //                     mainAxisAlignment: MainAxisAlignment.center,
+  //                     crossAxisAlignment: CrossAxisAlignment.end,
+  //                     children: [
+  //                       if (person.verifiedTag)
+  //                         Icon(
+  //                           Icons.verified,
+  //                           size: ResponsiveHelper.responsiveHeight(
+  //                             context,
+  //                             10,
+  //                           ),
+  //                           color: Colors.blue,
+  //                         ),
+  //                       // Icon(
+  //                       //   person.internalProfileLink!.isNotEmpty
+  //                       //       ? Icons.arrow_forward_ios
+  //                       //       : Icons.link,
+  //                       //   size: ResponsiveHelper.responsiveHeight(
+  //                       //     context,
+  //                       //     15,
+  //                       //   ),
+  //                       //   color: Colors.blue,
+  //                       // )
+  //                     ],
+  //                   ),
+  //                 )
+  //               ],
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   void _navigateToPage(BuildContext context, Widget page) {
     Navigator.push(

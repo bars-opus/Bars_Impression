@@ -1,6 +1,7 @@
 import UIKit
 import Flutter
 import Firebase
+import GoogleMaps
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
@@ -14,7 +15,7 @@ import Firebase
     AppCheck.setAppCheckProviderFactory(providerFactory)
     return true
     #endif
-    // GMSServices.provideAPIKey("AIzaSyBzHyTS-J9Ge8ohh8A1fZANeLqQbGHcGQY")
+    GMSServices.provideAPIKey("AIzaSyBzHyTS-J9Ge8ohh8A1fZANeLqQbGHcGQY")
     var flutter_native_splash = 1
     UIApplication.shared.isStatusBarHidden = false
     GeneratedPluginRegistrant.register(with: self)
