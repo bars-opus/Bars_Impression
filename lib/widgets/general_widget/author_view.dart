@@ -154,11 +154,24 @@ class Authorview extends StatelessWidget {
                 Material(
                   color: Colors.transparent,
                   child: report.isNotEmpty
-                      ? BarsTextStrikeThrough(
-                          fontSize:
-                              ResponsiveHelper.responsiveFontSize(context, 12),
-                          text: content,
+                      ? Text(
+                          content,
+                          style: TextStyle(
+                            fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 12),
+                            color: Colors.grey,
+                            decorationColor: Colors.grey,
+                            decorationStyle: TextDecorationStyle.solid,
+                            decoration: TextDecoration.lineThrough,
+                          ),
+                          maxLines: 5,
                         )
+
+                      // BarsTextStrikeThrough(
+                      //     fontSize:
+                      //         ResponsiveHelper.responsiveFontSize(context, 12),
+                      //     text: content,
+                      //   )
                       : HyperLinkText(
                           from: from,
                           text: content,

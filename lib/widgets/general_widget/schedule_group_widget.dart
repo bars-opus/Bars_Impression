@@ -160,33 +160,30 @@ class ScheduleGroup extends StatelessWidget {
                     ),
                     // Display the date
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 8.0,
-                      ),
-                      child: Container(
-                        width:
-                            ResponsiveHelper.responsiveFontSize(context, 200),
-                        child: Text(
-                          MyDateFormat.toDate(date),
-                          // DateFormat('yyyy-MM-dd').format(date),
-                          style: TextStyle(
-                              color: from.isEmpty
-                                  ? Colors.white
-                                  : Theme.of(context).secondaryHeaderColor,
-                              fontSize: from.isEmpty ? 20 : 16,
-                              fontWeight: FontWeight.bold),
-                        ),
+                      padding: EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: from.isEmpty ? 0 : 20),
+                      child: Text(
+                        MyDateFormat.toDate(date),
+                        // DateFormat('yyyy-MM-dd').format(date),
+                        style: TextStyle(
+                            color: from.isEmpty || from == 'Schedule'
+                                ? Colors.white
+                                : Theme.of(context).secondaryHeaderColor,
+                            fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 16),
+                            // from.isEmpty ? 20 : 20,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                     // Display the schedules for this date
                     ...dateSchedules.map((schedule) {
                       return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 4.0, horizontal: 16),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 4.0, horizontal: from.isEmpty ? 0 : 16),
                         child: Stack(
                           children: [
                             ScheduleWidget(
-                              from: 'EventEnlarged',
+                              from: 'Calendar',
                               schedule: schedule,
                               edit: isEditing,
                               currentUserId: _currentUserId!,

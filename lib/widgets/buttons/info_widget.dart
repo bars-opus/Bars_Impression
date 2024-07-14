@@ -1,5 +1,4 @@
 import 'package:bars/utilities/exports.dart';
-import 'package:flutter/material.dart';
 
 class InfoWidget extends StatelessWidget {
   final String info;

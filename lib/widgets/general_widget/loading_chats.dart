@@ -15,6 +15,7 @@ class LoadingChats extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
+      color: Colors.transparent,
       child: ListTile(
           leading: CircleAvatar(
             radius: 20.0,

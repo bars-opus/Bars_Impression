@@ -1,5 +1,4 @@
 import 'package:bars/utilities/exports.dart';
-import 'package:flutter/cupertino.dart';
 
 class DummySearchContainer extends StatelessWidget {
   const DummySearchContainer({super.key});

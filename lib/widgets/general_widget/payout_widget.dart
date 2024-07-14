@@ -4,8 +4,11 @@ class PayoutWidget extends StatefulWidget {
   final EventPayoutModel payout;
   final String currentUserId;
 
-  const PayoutWidget(
-      {super.key, required this.payout, required this.currentUserId});
+  const PayoutWidget({
+    super.key,
+    required this.payout,
+    required this.currentUserId,
+  });
 
   @override
   State<PayoutWidget> createState() => _PayoutWidgetState();
@@ -66,33 +69,40 @@ class _PayoutWidgetState extends State<PayoutWidget> {
     );
   }
 
-  _payoutWidget(String lable,String value) {
-    return ShakeTransition(
-      // axis: Axis.vertical,
-      curve: Curves.linearToEaseOut,
-      offset: -140,
-      duration: const Duration(seconds: 2),
-      child: SalesReceiptWidget(
-        isRefunded: false,
-        lable: lable,
-        value: value,
-        color: Colors.black,
-      ),
+  _payoutWidget(String lable, String value) {
+    return PayoutDataWidget(
+      label: lable,
+      value: value,
+      color: Colors.black,
     );
+
+    //  ShakeTransition(
+    //   // axis: Axis.vertical,
+    //   curve: Curves.linearToEaseOut,
+    //   offset: -140,
+    //   duration: const Duration(seconds: 2),
+    //   child: SalesReceiptWidget(
+    //     isRefunded: false,
+    //     lable: lable,
+    //     value: value,
+    //     color: Colors.black,
+    //   ),
+    // );
   }
 
   @override
   Widget build(BuildContext context) {
-    var _textStyle2 = TextStyle(
-      fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-      color: Colors.black,
-      decoration: TextDecoration.none,
-    );
+    var _amount = widget.payout.total / 100;
+    // var _textStyle2 = TextStyle(
+    //   fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+    //   color: Colors.black,
+    //   decoration: TextDecoration.none,
+    // );
 
-    var _textStyle = TextStyle(
-      fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-      color: Colors.grey,
-    );
+    // var _textStyle = TextStyle(
+    //   fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+    //   color: Colors.grey,
+    // );
 
     return Padding(
       padding: const EdgeInsets.all(20.0),
@@ -103,12 +113,16 @@ class _PayoutWidgetState extends State<PayoutWidget> {
             'Event',
             widget.payout.eventTitle,
           ),
-          Divider(),
+          Divider(
+            thickness: .2,
+          ),
           _payoutWidget(
             'Status',
             widget.payout.status,
           ),
-          Divider(),
+          Divider(
+            thickness: .2,
+          ),
           // SalesReceiptWidget(
           //   color: widget.payout.status == 'pending' ? Colors.red : Colors.blue,
           //   isRefunded: false,
@@ -117,22 +131,28 @@ class _PayoutWidgetState extends State<PayoutWidget> {
           // ),
           _payoutWidget(
             'Amount',
-            widget.payout.total.toString(),
+            _amount.toString(),
           ),
-          Divider(),
+          Divider(
+            thickness: .2,
+          ),
 
           _payoutWidget(
             'Processed \ntime',
             MyDateFormat.toTime(widget.payout.timestamp.toDate()),
           ),
-          Divider(),
+          Divider(
+            thickness: .2,
+          ),
 
           _payoutWidget(
             'Processed \ndate',
             MyDateFormat.toDate(widget.payout.timestamp.toDate()),
           ),
 
-          Divider(),
+          Divider(
+            thickness: .2,
+          ),
         ],
       ),
     );

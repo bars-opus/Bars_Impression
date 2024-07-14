@@ -5,9 +5,18 @@ class BottomModalSheetButton extends StatelessWidget {
   final Widget child;
 
   final VoidCallback? onPressed;
+  final bool isMinor;
+  final bool isMini;
+  final Color? buttoncolor;
 
-  BottomModalSheetButton(
-      {required this.width, required this.child, required this.onPressed});
+  BottomModalSheetButton({
+    required this.width,
+    required this.child,
+    required this.onPressed,
+    this.isMinor = false,
+    this.isMini = false,
+    this.buttoncolor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,13 +25,19 @@ class BottomModalSheetButton extends StatelessWidget {
         vertical: ResponsiveHelper.responsiveHeight(context, 1.0),
       ),
       child: Container(
-        width: width,
+        width: isMinor
+            ? 177
+            : isMini
+                ? 120
+                : width,
+        height: isMinor || isMini ? 60 : null,
         child: TextButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).cardColor,
+            backgroundColor:
+                buttoncolor != null ? buttoncolor : Theme.of(context).cardColor,
             foregroundColor: Colors.blue,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5.0),
+              borderRadius: BorderRadius.circular(isMinor ? 10 : 5.0),
             ),
           ),
           onPressed: onPressed,

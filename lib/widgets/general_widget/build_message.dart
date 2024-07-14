@@ -380,6 +380,7 @@ class _SlidableMessageState extends State<SlidableMessage>
                                 currentUserId: widget.currentUserId,
                                 event: event,
                                 type: event.type,
+                                showPrivateEvent: true,
                               ));
                         } else {
                           _showBottomSheetErrorMessage(
@@ -518,7 +519,7 @@ class _SlidableMessageState extends State<SlidableMessage>
 
   Future<void> deleteMessageAndAttachment(
       List<MessageAttachment> attatchments) async {
-    if (widget.chat == null || widget.message == null) {
+    if (widget.chat == null) {
       // If there's no chat or message, there's nothing to delete.
       return;
     }

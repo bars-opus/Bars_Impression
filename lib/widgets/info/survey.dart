@@ -28,6 +28,15 @@ class _FeatureSurveyState extends State<FeatureSurvey> {
     super.initState();
   }
 
+  animateToPage() {
+    FocusScope.of(context).unfocus();
+    _pageController.animateToPage(
+      _index + 1,
+      duration: Duration(milliseconds: 800),
+      curve: Curves.easeInOut,
+    );
+  }
+
   _submit() async {
     if (_formKey.currentState!.validate() && !_isLoading) {
       _formKey.currentState?.save();
@@ -53,7 +62,7 @@ class _FeatureSurveyState extends State<FeatureSurvey> {
         id: '',
       );
       try {
-       await DatabaseService.createSurvey(survey);
+        await DatabaseService.createSurvey(survey);
         Navigator.pop(context);
         mySnackBar(context, 'Thank You\nSurvey submitted successfully.');
       } catch (e) {
@@ -111,6 +120,7 @@ class _FeatureSurveyState extends State<FeatureSurvey> {
             activeColor: Colors.blue,
             onChanged: (moreImprovement) => setState(
               () {
+                animateToPage();
                 _moreImprovement =
                     this.selectedMoreImprovementValue = moreImprovement!;
               },
@@ -157,6 +167,7 @@ class _FeatureSurveyState extends State<FeatureSurvey> {
               () {
                 _mostHelpfulFeature =
                     this.selectedMostHelpfulValue = mostHelpfulFeature!;
+                animateToPage();
               },
             ),
           );
@@ -200,6 +211,7 @@ class _FeatureSurveyState extends State<FeatureSurvey> {
             activeColor: Colors.blue,
             onChanged: (lessHelpfulFeature) => setState(
               () {
+                animateToPage();
                 _lessHelpfulFeature =
                     this.selectedLessHelpfulValue = lessHelpfulFeature!;
               },
@@ -242,6 +254,7 @@ class _FeatureSurveyState extends State<FeatureSurvey> {
             activeColor: Colors.blue,
             onChanged: (satisfaction) => setState(
               () {
+                animateToPage();
                 _overRallSatisfaction =
                     this.selectedSatisfaction = satisfaction!;
               },
@@ -464,7 +477,7 @@ class _FeatureSurveyState extends State<FeatureSurvey> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           DirectionWidget(
-                            text: 'Kindly leave an advice for us',
+                            text: 'Add additional comments',
                             fontSize: ResponsiveHelper.responsiveFontSize(
                                 context, 16),
                           ),
@@ -475,7 +488,7 @@ class _FeatureSurveyState extends State<FeatureSurvey> {
                               context,
                               200,
                             ),
-                            color: Colors.blue[200],
+                            color: Colors.blue[50],
                             child: Padding(
                               padding: const EdgeInsets.all(12.0),
                               child: Align(

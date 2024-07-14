@@ -117,7 +117,7 @@ class SearchUserTile extends StatelessWidget {
           SizedBox(
             height: 20.0,
           ),
-          Divider(
+          Divider( thickness: .2,
             color: Colors.grey[350],
           )
         ],

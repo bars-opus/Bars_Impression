@@ -1,4 +1,4 @@
-import 'package:bars/general/models/timstamp_adapter.dart';
+import 'package:bars/features/creatives/models/timstamp_adapter.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:hive_flutter/adapters.dart';
 

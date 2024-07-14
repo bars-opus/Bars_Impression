@@ -204,6 +204,7 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
                 ),
                 Divider(
                   color: Colors.grey,
+                  thickness: .3,
                 ),
                 Padding(
                   padding: const EdgeInsets.only(

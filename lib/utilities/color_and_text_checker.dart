@@ -10,7 +10,7 @@ class Utils {
     }
 
     // Check if vibrantColor is non-null and has a valid color
-    if (palette.vibrantColor != null && palette.vibrantColor!.color != null) {
+    if (palette.vibrantColor != null) {
       return palette.vibrantColor!.color;
     }
 
@@ -26,8 +26,7 @@ class Utils {
     }
 
     // Check if vibrantColor is non-null and has a valid color
-    if (palette.darkMutedColor != null &&
-        palette.darkMutedColor!.color != null) {
+    if (palette.darkMutedColor != null) {
       return palette.darkMutedColor!.color;
     }
 
@@ -43,7 +42,7 @@ class Utils {
     }
 
     // Check if vibrantColor is non-null and has a valid color
-    if (palette.dominantColor != null && palette.dominantColor!.color != null) {
+    if (palette.dominantColor != null) {
       return palette.dominantColor!.color;
     }
 

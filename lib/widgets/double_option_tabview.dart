@@ -38,9 +38,14 @@ class DoubleOptionTabview extends StatelessWidget {
                   title: pageTitle,
                 ),
                 Container(
-                  height: ResponsiveHelper.responsiveHeight(context, 40,),
+                  height: ResponsiveHelper.responsiveHeight(
+                    context,
+                    40,
+                  ),
                   child: TabBar(
                     indicatorColor: Colors.blue,
+                    dividerColor: Colors.transparent,
+                    splashFactory: NoSplash.splashFactory,
                     onTap: onPressed,
                     tabs: <Widget>[
                       Text(
@@ -51,11 +56,9 @@ class DoubleOptionTabview extends StatelessWidget {
                         style: Theme.of(context).textTheme.bodyMedium,
                         tabText2,
                       ),
-                     
                     ],
                   ),
                 ),
-               
                 const SizedBox(
                   height: 40,
                 ),

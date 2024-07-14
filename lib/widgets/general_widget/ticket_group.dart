@@ -19,13 +19,17 @@ class TicketGroup extends StatefulWidget {
   final String currentUserId;
   final String inviteReply;
   final bool onInvite;
+  final bool onCalendatSchedule;
+  // final String marketedAffiliateId;
 
   TicketGroup({
     required this.groupTickets,
     required this.event,
     required this.currentUserId,
     required this.inviteReply,
+    // required this.marketedAffiliateId ,
     this.onInvite = false,
+    this.onCalendatSchedule = false,
   });
 
   @override
@@ -191,6 +195,8 @@ class _TicketGroupState extends State<TicketGroup> {
 
           // Navigator.pop(context);
           await removeTickets();
+
+          ;
           Navigator.pop(context);
           PaletteGenerator _paletteGenerator =
               await PaletteGenerator.fromImageProvider(
@@ -249,7 +255,13 @@ class _TicketGroupState extends State<TicketGroup> {
     isPaymentVerified,
     paymentProvider,
   ) async {
-    var _user = Provider.of<UserData>(context, listen: false).user;
+    var _provider = Provider.of<UserData>(context, listen: false);
+    var _user = _provider.user;
+    String? affiliateId = await AffiliateManager.getAffiliateIdForEvent(
+      widget.event!.id,
+    );
+
+    // String _marketAffiliateId = _provider.marketedAffiliateId;
 
     double total = _finalTicket.fold(0, (acc, ticket) => acc + ticket.price);
 
@@ -304,16 +316,21 @@ class _TicketGroupState extends State<TicketGroup> {
     // widget.event!.ticketOrder.add(order);
 
     await DatabaseService.purchaseTicketTransaction(
-        transaction: transaction,
-        ticketOrder: order,
-        user: _user!,
-        purchaseReferenceId: purchaseReferenceId,
-        eventAuthorId: widget.event!.authorId,
-        isEventFree: widget.event!.isFree,
-        isEventPrivate: widget.event!.isPrivate,
-        purchasedTicketIds: ticketIds,
-        dontUpdateTicketSales: dontUpdateTicketSales,
-        inviteReply: widget.inviteReply);
+      transaction: transaction,
+      ticketOrder: order,
+      user: _user!,
+      purchaseReferenceId: purchaseReferenceId,
+      eventAuthorId: widget.event!.authorId,
+      isEventFree: widget.event!.isFree,
+      isEventPrivate: widget.event!.isPrivate,
+      purchasedTicketIds: ticketIds,
+      dontUpdateTicketSales: dontUpdateTicketSales,
+      inviteReply: widget.inviteReply,
+      marketAffiliateId: affiliateId == null ? '' : affiliateId,
+      isEventAffiliated: widget.event!.isAffiliateEnabled,
+    );
+    if (affiliateId != null)
+      await AffiliateManager.clearEventAffiliateId(widget.event!.id);
 
     return order;
   }
@@ -515,6 +532,8 @@ class _TicketGroupState extends State<TicketGroup> {
         if (verificationResult.data['success']) {
           Navigator.pop(context);
           Navigator.pop(context);
+          //affiliate check and update would happen here..
+
           await _processingToGenerate(
               verificationResult, paymentResult, true, 'Paystack');
         } else {
@@ -564,7 +583,7 @@ class _TicketGroupState extends State<TicketGroup> {
       builder: (BuildContext context) {
         return ConfirmationPrompt(
           height:
-              widget.event!.isFree || widget.event!.isCashPayment ? 300 : 350,
+              widget.event!.isFree || widget.event!.isCashPayment ? 300 : 380,
           buttonText: widget.event!.isFree || widget.event!.isCashPayment
               ? 'Generate Ticket'
               : 'Purchase Ticket',
@@ -672,7 +691,9 @@ class _TicketGroupState extends State<TicketGroup> {
         const SizedBox(
           height: 20,
         ),
-        Divider(),
+        Divider(
+          thickness: .2,
+        ),
         const SizedBox(
           height: 40,
         ),
@@ -745,7 +766,8 @@ class _TicketGroupState extends State<TicketGroup> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(right: 20.0),
-                      child: Center(
+                      child: ShakeTransition(
+                        axis: Axis.vertical,
                         child: RichText(
                           textScaleFactor:
                               MediaQuery.of(context).textScaleFactor,
@@ -774,10 +796,13 @@ class _TicketGroupState extends State<TicketGroup> {
                   height: 40,
                 ),
                 TicketPurchaseSummaryWidget(),
+                // TicketPurchaseSummaryWidget(),
                 const SizedBox(
                   height: 10,
                 ),
-                Divider(),
+                Divider(
+                  thickness: .2,
+                ),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: RichText(
@@ -807,7 +832,9 @@ class _TicketGroupState extends State<TicketGroup> {
                     textAlign: TextAlign.start,
                   ),
                 ),
-                Divider(),
+                Divider(
+                  thickness: .2,
+                ),
                 const SizedBox(
                   height: 20,
                 ),
@@ -849,7 +876,14 @@ class _TicketGroupState extends State<TicketGroup> {
     return Stack(
       children: [
         Container(
-            height: width * width,
+            height: ResponsiveHelper.responsiveHeight(
+                context,
+                widget.event == null || !widget.event!.isFree
+                    ? widget.groupTickets.length * 500
+                    : widget.groupTickets.length * 300),
+            // widget.groupTickets.length *,
+
+            // width * width,
             // color: Colors.red,
             width: width,
             child:
@@ -863,6 +897,7 @@ class _TicketGroupState extends State<TicketGroup> {
               padding: EdgeInsets.only(
                   top: _provider.ticketList.isEmpty ? 0.0 : 50.0),
               child: TicketGoupWidget(
+                onCalendatSchedule: widget.onCalendatSchedule,
                 onInvite: widget.onInvite,
                 groupTickets: widget.groupTickets,
                 isEditing: widget.event == null ? true : false,

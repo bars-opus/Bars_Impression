@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 import 'package:bars/utilities/exports.dart';
 
 class UpdateInfoMini extends StatefulWidget {
@@ -27,7 +25,6 @@ class _UpdateInfoMiniState extends State<UpdateInfoMini> {
     final width = MediaQuery.of(context).size.width;
     return AnimatedContainer(
         curve: Curves.easeInOut,
-        
         duration: Duration(milliseconds: 800),
         height:
             widget.displayMiniUpdate && widget.showinfo && _showinfo ? 80 : 0.0,
@@ -38,8 +35,14 @@ class _UpdateInfoMiniState extends State<UpdateInfoMini> {
           leading: Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: Container(
-                width:  ResponsiveHelper.responsiveHeight(context, 20,),
-                height:  ResponsiveHelper.responsiveHeight(context, 20,),
+                width: ResponsiveHelper.responsiveHeight(
+                  context,
+                  20,
+                ),
+                height: ResponsiveHelper.responsiveHeight(
+                  context,
+                  20,
+                ),
                 child: Image.asset(
                   'assets/images/bars.png',
                   color: Colors.black,
@@ -47,7 +50,10 @@ class _UpdateInfoMiniState extends State<UpdateInfoMini> {
           ),
           trailing: IconButton(
             icon: Icon(Icons.close),
-            iconSize: ResponsiveHelper.responsiveHeight(context, 25,),
+            iconSize: ResponsiveHelper.responsiveHeight(
+              context,
+              25,
+            ),
             color: Colors.black,
             onPressed: () {
               if (mounted) {
@@ -59,17 +65,40 @@ class _UpdateInfoMiniState extends State<UpdateInfoMini> {
           ),
           title: Text('Update is available',
               style: TextStyle(
-                fontSize: ResponsiveHelper.responsiveFontSize(context, 14,),
+                fontSize: ResponsiveHelper.responsiveFontSize(
+                  context,
+                  14,
+                ),
                 color: Colors.black,
               )),
-          subtitle: Text(
-            widget.updateNote,
-            style: TextStyle(
-              fontSize:  ResponsiveHelper.responsiveFontSize(context, 11,),
-              color: Colors.black,
+          subtitle: RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: widget.updateNote,
+                  style: TextStyle(
+                    fontSize: ResponsiveHelper.responsiveFontSize(
+                      context,
+                      11,
+                    ),
+                    color: Colors.black,
+                  ),
+                ),
+                TextSpan(
+                  text: ' Tap here to update.',
+                  style: TextStyle(
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 11.0),
+                    color: Colors.blue,
+                  ),
+                ),
+              ],
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.start,
+            textScaler: TextScaler.linear(
+                MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
           ),
           onTap: widget.onPressed,
         ));

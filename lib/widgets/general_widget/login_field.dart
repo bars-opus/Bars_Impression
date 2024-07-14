@@ -34,8 +34,14 @@ class LoginField extends StatelessWidget {
       keyboardAppearance: MediaQuery.of(context).platformBrightness,
       textCapitalization: TextCapitalization.sentences,
       keyboardType: TextInputType.multiline,
+      cursorColor: Colors.blue,
       // maxLines: 2,
       decoration: InputDecoration(
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.blue,
+            ),
+          ),
           icon: notLogin
               ? null
               : Icon(

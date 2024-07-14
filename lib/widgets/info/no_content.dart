@@ -4,13 +4,16 @@ class NoContents extends StatelessWidget {
   final String title;
   final String subTitle;
   final IconData? icon;
-  final Color color;
+  final Color color;  final Color? textColor;
+
 
   NoContents({
     required this.title,
     required this.subTitle,
     required this.icon,
     this.color = Colors.grey,
+        this.textColor ,
+
   });
 
   @override
@@ -29,7 +32,15 @@ class NoContents extends StatelessWidget {
           SizedBox(height: 10),
           Text(
             title,
-            style: Theme.of(context).textTheme.bodyLarge,
+            style:textColor !=null?
+            
+            
+            TextStyle(
+              color: textColor,
+              fontSize: ResponsiveHelper.responsiveFontSize(context, 20),
+              fontWeight: FontWeight.bold
+            ):
+             Theme.of(context).textTheme.bodyLarge,
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 3),
@@ -37,7 +48,13 @@ class NoContents extends StatelessWidget {
             padding: const EdgeInsets.only(left: 30.0, right: 30),
             child: Text(
               subTitle,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: textColor !=null?
+            
+            
+            TextStyle(
+              color: textColor,
+              fontSize: ResponsiveHelper.responsiveFontSize(context, 14),
+            ): Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
           ),

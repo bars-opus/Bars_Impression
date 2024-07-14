@@ -1,4 +1,3 @@
-import 'package:timeago/timeago.dart';
 
 // I am trying to implement paystack payment with mobile money in my flutter firebase app, using
 // the paystack API and cloudfunctions, i have already implemented paying with only card but i am

@@ -59,7 +59,7 @@ class EventAndUserScimmer extends StatelessWidget {
                           const SizedBox(
                             height: 20,
                           ),
-                          Divider(),
+                          Divider( thickness: .2,),
                           Padding(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 8.0,

@@ -92,7 +92,7 @@ class UserListTile extends StatelessWidget {
               SizedBox(
                 height: 10.0,
               ),
-              Divider(
+              Divider( thickness: .2,
                 color: Colors.grey[350],
               )
             ],

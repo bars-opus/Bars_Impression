@@ -41,6 +41,7 @@ class EditProfileTextField extends StatelessWidget {
             keyboardAppearance: MediaQuery.of(context).platformBrightness,
             textCapitalization: TextCapitalization.sentences,
             initialValue: initialValue.trim(),
+            cursorColor: Colors.blue,
             decoration: InputDecoration(
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.blue, width: 3.0),

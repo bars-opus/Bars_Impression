@@ -5,15 +5,15 @@ class ColumnDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-       const SizedBox(
+        const SizedBox(
           height: 20.0,
         ),
         Container(
           width: MediaQuery.of(context).size.width,
           height: 1.0,
-          color:  Colors.grey,
+          color: Colors.grey,
         ),
-      const  SizedBox(
+        const SizedBox(
           height: 20.0,
         ),
       ],

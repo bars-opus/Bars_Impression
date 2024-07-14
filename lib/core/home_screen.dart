@@ -1,10 +1,8 @@
-import 'dart:math';
-
 // import 'package:app_tracking_transparency/app_tracking_transparency.dart';
-import 'package:bars/general/pages/chats/chats.dart';
+import 'package:bars/features/events/event_room_and_chat/presentation/screens/chats.dart';
 
 import 'package:bars/utilities/exports.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:bars/widgets/info/mini_affiliate_note.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
@@ -21,7 +19,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  final int _updateAppVersion = Platform.isIOS ? 21 : 21;
+  final int _updateAppVersion = Platform.isIOS ? 24 : 24;
   String notificationMsg = '';
 
   @override
@@ -2251,11 +2249,9 @@ class HomeScreenState extends State<HomeScreen> {
       } catch (e) {}
       try {
         FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
-          if (newToken != null) {
-            usersGeneralSettingsRef
-                .doc(currentUserId)
-                .update({'androidNotificationToken': newToken});
-          }
+          usersGeneralSettingsRef
+              .doc(currentUserId)
+              .update({'androidNotificationToken': newToken});
         });
 
         final authorizationStatus =
@@ -2396,6 +2392,7 @@ class HomeScreenState extends State<HomeScreen> {
                                 contentId: contentId,
                                 contentType: 'message',
                                 eventAuthorId: '',
+                                // affiliateId: '',
                               ),
                             )
                           : contentType.endsWith('eventRoom')
@@ -2405,6 +2402,7 @@ class HomeScreenState extends State<HomeScreen> {
                                     contentId: contentId,
                                     contentType: 'eventRoom',
                                     eventAuthorId: '',
+                                    // affiliateId: '',
                                   ),
                                 )
                               : contentType.endsWith('eventDeleted')
@@ -2414,6 +2412,7 @@ class HomeScreenState extends State<HomeScreen> {
                                         contentId: contentId,
                                         contentType: 'eventDeleted',
                                         eventAuthorId: '',
+                                        // affiliateId: '',
                                       ),
                                     )
                                   : contentType.endsWith('refundProcessed')
@@ -2423,6 +2422,7 @@ class HomeScreenState extends State<HomeScreen> {
                                             contentId: contentId,
                                             contentType: 'refundProcessed',
                                             eventAuthorId: eventAuthorId!,
+                                            // affiliateId: '',
                                           ),
                                         )
                                       : _navigateToPage(
@@ -2449,6 +2449,7 @@ class HomeScreenState extends State<HomeScreen> {
                                                                             'inviteRecieved')
                                                                     ? 'InviteRecieved'
                                                                     : '',
+                                            // affiliateId: '',
                                             eventAuthorId: eventAuthorId!,
                                           ),
                                         );
@@ -2477,25 +2478,35 @@ class HomeScreenState extends State<HomeScreen> {
 
   Future<void> _handleDynamicLink(
       PendingDynamicLinkData? dynamicLinkData) async {
+    final _provider = Provider.of<UserData>(context, listen: false);
+
     final Uri? link = dynamicLinkData?.link;
     if (link != null && link.path.isNotEmpty) {
       // Normalize the path by removing the leading slash if it exists
       final String normalizedPath =
           link.path.startsWith('/') ? link.path.substring(1) : link.path;
       final List<String> parts = normalizedPath.split("_");
+      await AffiliateManager.saveEventAffiliateId(
+          parts[1], parts.length > 3 ? parts[3].trim() : '');
+
       if (parts.length >= 2) {
-        print(link);
-        // print(parts[1]);
-        // print(parts[0]);
-        // print(parts[2]);
+        print('link     ' + link.toString());
+        print(parts[1]);
+        print(parts[0]);
+        print(parts[2]);
+        // print(parts.length > 3 ? 'vvvvv' + parts[3].trim() : 'zzzzz');
+        //  await _provider.setMarketedAffiliateId(
+        //     parts.length > 3 ? parts[3].trim() : '',
+        //   );
+
+        // print(parts[3]);
 
         // Handle the dynamic link based on its type
         if (parts[0].endsWith('user')) {
           _navigateToPage(
             context,
             ProfileScreen(
-              currentUserId:
-                  Provider.of<UserData>(context, listen: false).currentUserId!,
+              currentUserId: _provider.currentUserId!,
               userId: parts[1],
               user: null,
             ),
@@ -2511,6 +2522,7 @@ class HomeScreenState extends State<HomeScreen> {
                       ? 'Event'
                       : '',
               eventAuthorId: parts[2].trim(),
+              // affiliateId: parts.length > 3 ? parts[3].trim() : '',
             ),
           );
         }
@@ -2609,6 +2621,8 @@ class _HomeMobileState extends State<HomeMobile>
   late PageController _pageController;
   int _version = 0;
   bool _showInfo = false;
+  int _affiliateCount = 0;
+
   // int _inviteCount = -1;
 
   List<InviteModel> _inviteList = [];
@@ -2619,6 +2633,15 @@ class _HomeMobileState extends State<HomeMobile>
     _pageController = PageController(
       initialPage: _currentTab,
     );
+    _pageController.addListener(() {
+      // Check if the scroll position indicates that the page has finished scrolling
+      if ((_pageController.position.pixels %
+              _pageController.position.viewportDimension) ==
+          0) {
+        triggerHapticFeedback(); // Trigger haptic feedback when the page finishes scrolling
+      }
+    });
+
     // _setUpInvitsCount();
 
     int? version = Platform.isIOS
@@ -2629,11 +2652,15 @@ class _HomeMobileState extends State<HomeMobile>
       await _setUpInvites();
       _setShowDelayInfo();
     });
+    _setAffiliateCount();
   }
 
+  void triggerHapticFeedback() {
+    HapticFeedback.lightImpact(); // Use the desired haptic feedback method
+  }
   // _setUpInvitsCount() async {
-  //   final String currentUserId =
-  //       Provider.of<UserData>(context, listen: false).currentUserId!;
+  // final String currentUserId =
+  //     Provider.of<UserData>(context, listen: false).currentUserId!;
   //   int feedCount = await DatabaseService.numUnAnsweredInvites(currentUserId);
   //   if (mounted) {
   //     setState(() {
@@ -2647,6 +2674,20 @@ class _HomeMobileState extends State<HomeMobile>
 
 // Define a constant for how many documents to fetch at a time
   static const int inviteLimit = 2;
+
+  _setAffiliateCount() async {
+    final String currentUserId =
+        Provider.of<UserData>(context, listen: false).currentUserId!;
+    DatabaseService.numUerAffiliates(
+      currentUserId,
+    ).listen((affiliateCount) {
+      if (mounted) {
+        setState(() {
+          _affiliateCount = affiliateCount;
+        });
+      }
+    });
+  }
 
   _setUpInvites() async {
     final currentDate = DateTime(now.year, now.month, now.day);
@@ -2903,6 +2944,8 @@ class _HomeMobileState extends State<HomeMobile>
                             setState(() {
                               _currentTab = index;
                             });
+
+                            // HapticFeedback.mediumImpact();
                           },
                         ),
                       ),
@@ -2921,6 +2964,25 @@ class _HomeMobileState extends State<HomeMobile>
                                 iOSAppId: "1610868894",
                               );
                             },
+                          )),
+                      Positioned(
+                          bottom: widget.updateAppVersion < _version ? 90 : 7,
+                          child: MiniAffiliateNote(
+                            updateNote:
+                                'Congratulations, you have one or more affiliate deals.',
+                            showinfo: _affiliateCount > 0 ? true : false,
+                            displayMiniUpdate:
+                                widget.updateApp.displayMiniUpdate!,
+                            // onPressed: () {
+                            //   _navigateToPage(
+                            //     UserAffilate(
+                            //       currentUserId: _provider.currentUserId!,
+                            //       eventId: '',
+                            //       marketingType: '',
+                            //       isUser: true,
+                            //     ),
+                            //   );
+                            // },
                           )),
                       Positioned(bottom: 7, child: NoConnection()),
 

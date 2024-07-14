@@ -141,16 +141,17 @@ class _HyperLinkTextState extends State<HyperLinkText> {
                         contentType: 'Link'),
                   ),
                 )
-              : type.startsWith('nameMention')
-                  ? Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => TaggedUser(
-                          userId: linkToOpen,
-                          currentUserId: '',
-                        ),
-                      ),
-                    )
+              // : 
+              // type.startsWith('nameMention')
+              //     ? Navigator.push(
+              //         context,
+              //         MaterialPageRoute(
+              //           builder: (_) => TaggedUser(
+              //             userId: linkToOpen,
+              //             currentUserId: '',
+              //           ),
+              //         ),
+              //       )
                   : type.startsWith('verified')
                       ? Navigator.push(
                           context,

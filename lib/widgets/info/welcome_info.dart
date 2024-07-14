@@ -69,7 +69,7 @@ onTap:  moreOnpressed,            child: RichText(
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 30.0),
-          child: Divider(
+          child: Divider( thickness: .2,
             color: Colors.grey,
           ),
         ),

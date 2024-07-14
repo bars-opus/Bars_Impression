@@ -9,6 +9,7 @@ class TicketGoupWidget extends StatefulWidget {
   final String currency;
   final String eventId;
   final String eventAuthorId;
+  final bool onCalendatSchedule;
 
   const TicketGoupWidget({
     super.key,
@@ -19,6 +20,7 @@ class TicketGoupWidget extends StatefulWidget {
     required this.isFree,
     required this.eventId,
     required this.eventAuthorId,
+    this.onCalendatSchedule = false,
   });
 
   @override
@@ -155,22 +157,24 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SalesReceiptWidget(
-                                isTicket: true,
-                                color: Colors.black,
-                                width: 100,
-                                isRefunded: false,
-                                lable: 'Type',
-                                value: ticket.type.toUpperCase(),
-                              ),
-                              SalesReceiptWidget(
-                                isTicket: true,
-                                color: Colors.black,
-                                width: 100,
-                                isRefunded: false,
-                                lable: 'Acess level',
-                                value: ticket.accessLevel,
-                              ),
+                              if (ticket.type.isNotEmpty)
+                                SalesReceiptWidget(
+                                  isTicket: true,
+                                  color: Colors.black,
+                                  width: 100,
+                                  isRefunded: false,
+                                  lable: 'Type',
+                                  value: ticket.type.toUpperCase(),
+                                ),
+                              if (ticket.accessLevel.isNotEmpty)
+                                SalesReceiptWidget(
+                                  isTicket: true,
+                                  color: Colors.black,
+                                  width: 100,
+                                  isRefunded: false,
+                                  lable: 'Benefits',
+                                  value: ticket.accessLevel,
+                                ),
                               if (ticket.maxOder != 0)
                                 SalesReceiptWidget(
                                   isTicket: true,
@@ -319,6 +323,7 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
                                                     context, 10.0),
                                             child: CircularProgressIndicator(
                                               strokeWidth: 3,
+                                              color: Colors.blue,
                                             ),
                                           )
                                         : Checkbox(
@@ -381,6 +386,8 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
 
           return ExpansionTile(
             initiallyExpanded: true,
+            iconColor: Colors.grey,
+            collapsedIconColor: Colors.blue,
             title: Text(
               groupName.toUpperCase(),
               style: TextStyle(
@@ -421,7 +428,9 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
             SizedBox(
               height: widget.isEditing ? 10 : 30,
             ),
-            Divider(),
+            Divider(
+              thickness: .2,
+            ),
             SizedBox(
               height: widget.isEditing ? 10 : 30,
             ),

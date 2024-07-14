@@ -1,5 +1,5 @@
-import 'package:bars/services/address_service.dart';
-import 'package:bars/services/places_service.dart';
+import 'package:bars/services/location_services/address_service.dart';
+import 'package:bars/services/location_services/places_service.dart';
 import 'package:bars/utilities/exports.dart';
 
 class UserData extends ChangeNotifier {
@@ -42,6 +42,11 @@ class UserData extends ChangeNotifier {
   late String _dressingCode;
   late String _ticketSite;
   late bool _isPrivate;
+  late bool _isAffiliateEnabled;
+  late bool _isAffiliateExclusive;
+
+  late String _marketedAffiliateId;
+
   late bool _showToFollowers;
 
   late bool _isVirtual;
@@ -111,6 +116,8 @@ class UserData extends ChangeNotifier {
   late bool _workRequestisEvent;
   late double _workRequestPrice;
 
+  late int _affiliatecommission;
+
   List<String> _workRequestGenre = [];
   List<String> _workRequesttype = [];
   List<String> _workRequestAvailableLocations = [];
@@ -137,6 +144,7 @@ class UserData extends ChangeNotifier {
   final addressService = AddressService();
   List<PlaceSearch>? searchResults;
   List<AddressSearch>? addressSearchResults;
+  late String _latLng;
 
   // universal variables
   late int _int1;
@@ -204,6 +212,7 @@ class UserData extends ChangeNotifier {
     _continent = '';
     _rate = '';
     _currency = '';
+    _marketedAffiliateId = '';
     // _guess = '';
     _clossingDate = '';
     _imageUrl = '';
@@ -253,6 +262,8 @@ class UserData extends ChangeNotifier {
     _showEventTab = true;
     _showUsersTab = true;
     _isPrivate = false;
+    _isAffiliateEnabled = false;
+    _isAffiliateExclusive = false;
     _showToFollowers = true;
     // _expandEventBardcode = false;
     _isVirtual = false;
@@ -277,8 +288,10 @@ class UserData extends ChangeNotifier {
     _workRequestoverView = '';
 
     _changeNewUserName = '';
+    _latLng = '';
 
     _workRequestPrice = 0.0;
+    _affiliatecommission = 0;
     _notificaitonTab = 0;
     _creatIconIndex = 0;
     _workRequestisEvent = false;
@@ -356,8 +369,8 @@ class UserData extends ChangeNotifier {
   String get eventTermsAndConditions => _eventTermsAndConditions;
 
   String get currency => _currency;
-  // String get date => _date;
-  // String get time => _time;
+  String get marketedAffiliateId => _marketedAffiliateId;
+  String get latLng => _latLng;
   String get city => _city;
   String get country => _country;
   String get continent => _continent;
@@ -413,6 +426,7 @@ class UserData extends ChangeNotifier {
 
   String get availableDynamicLink => _availableDynamicLink;
   double get workRequestPrice => _workRequestPrice;
+  int get affiliatecommission => _affiliatecommission;
 
   int get notificaitonTab => _notificaitonTab;
   int get creatIconIndex => _creatIconIndex;
@@ -422,6 +436,9 @@ class UserData extends ChangeNotifier {
   bool get showEventTab => _showEventTab;
   bool get showUsersTab => _showUsersTab;
   bool get isPrivate => _isPrivate;
+  bool get isAffiliateEnabled => _isAffiliateEnabled;
+  bool get isAffiliateExclusive => _isAffiliateExclusive;
+
   bool get showToFollowers => _showToFollowers;
 
   String get workRequestoverView => _workRequestoverView;
@@ -684,10 +701,10 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  // void setGuess(String guess) {
-  //   _guess = guess;
-  //   notifyListeners();
-  // }
+  void setMarketedAffiliateId(String marketedAffiliateId) {
+    _marketedAffiliateId = marketedAffiliateId;
+    notifyListeners();
+  }
 
   void setClossingDate(String clossingDate) {
     _clossingDate = clossingDate;
@@ -860,6 +877,11 @@ class UserData extends ChangeNotifier {
 
   void setWorkRequestPrice(double workRequestPrice) {
     _workRequestPrice = workRequestPrice;
+    notifyListeners();
+  }
+
+  void setAffiliateComission(int affiliatecommission) {
+    _affiliatecommission = affiliatecommission;
     notifyListeners();
   }
 
@@ -1138,6 +1160,16 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setIsAffiliateEnabled(bool isAffiliateEnabled) {
+    _isAffiliateEnabled = isAffiliateEnabled;
+    notifyListeners();
+  }
+
+  void setisAffiliateExclusive(bool isAffiliateExclusive) {
+    _isAffiliateExclusive = isAffiliateExclusive;
+    notifyListeners();
+  }
+
   void setshowToFollowers(bool showToFollowers) {
     _showToFollowers = showToFollowers;
     notifyListeners();
@@ -1253,10 +1285,10 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  // void setSchedule(List timeSchedule) {
-  //   _timeSchedule = timeSchedule;
-  //   notifyListeners();
-  // }
+  void setLatLng(String latLng) {
+    _latLng = latLng;
+    notifyListeners();
+  }
 
   void setDynamicLink(PendingDynamicLinkData dynamicLink) async {
     _dynamicLink = dynamicLink;

@@ -1,4 +1,4 @@
-import 'package:bars/general/models/collaborated_people_model.dart';
+import 'package:bars/features/events/event_management/models/collaborated_people_model.dart';
 
 class PortfolioCollaborationModel {
   String id;

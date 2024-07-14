@@ -48,6 +48,7 @@ class SalesReceiptWidget extends StatelessWidget {
           child: Text(
             value,
             style: _textStyle2,
+            maxLines: 10,
             textAlign: TextAlign.start,
           ),
         )

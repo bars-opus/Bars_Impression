@@ -15,7 +15,6 @@ class TicketPurchaseSummaryWidget extends StatelessWidget {
         _provider.ticketList.map((finalPurchasintgTicket) {
       return Column(
         children: <Widget>[
-          
           TicketInfo(
             // event: widget.event!,
             label: 'Category',
@@ -43,7 +42,7 @@ class TicketPurchaseSummaryWidget extends StatelessWidget {
             value: finalPurchasintgTicket.price.toString(),
           ),
           // Add a divider or padding if necessary
-          Divider(),
+          Divider( thickness: .2,),
         ],
       );
     }).toList();
