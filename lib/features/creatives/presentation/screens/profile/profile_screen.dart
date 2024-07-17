@@ -3,6 +3,8 @@ import 'package:bars/features/creatives/presentation/screens/no_followers.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:collection/collection.dart';
+
 import 'package:intl/intl.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -1319,122 +1321,167 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
-  _eventDisplay(bool _isAuthor, String userName) {
+  Widget _eventDisplay(bool _isAuthor, String userName) {
     return Column(
       children: [
         Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-          stream: eventsRef
-              .doc(widget.userId)
-              .collection('userEvents')
-              .orderBy('timestamp', descending: true)
-              .limit(10)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return _loaindSchimmer();
-            }
+          child: StreamBuilder<QuerySnapshot>(
+            stream: eventsRef
+                .doc(widget.userId)
+                .collection('userEvents')
+                .orderBy('timestamp', descending: true)
+                .limit(10)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return _loaindSchimmer();
+              }
 
-            if (snapshot.data!.docs.isEmpty) {
-              return Center(
-                child: NoContents(
-                  icon: null,
-                  title: 'No events',
-                  subTitle: _isAuthor
-                      ? 'The events you create would appear here.'
-                      : '$userName hasn\'t created any events yet',
-                ),
-              );
-            }
+              if (snapshot.data!.docs.isEmpty) {
+                return Center(
+                  child: NoContents(
+                    icon: null,
+                    title: 'No events',
+                    subTitle: _isAuthor
+                        ? 'The events you create would appear here.'
+                        : '$userName hasn\'t created any events yet',
+                  ),
+                );
+              }
 
-            // Only update the initial load
-            if (_eventsList.isEmpty) {
-              _eventsList =
+              List<Event> events =
                   snapshot.data!.docs.map((doc) => Event.fromDoc(doc)).toList();
-              _lastEventDocument.addAll((snapshot.data!.docs));
-              // _lastEventDocument = snapshot.data!.docs;
-            }
 
-            return _buildEventList();
-          },
-        )
+              // Check if the events list has changed
+              if (!const DeepCollectionEquality().equals(_eventsList, events)) {
+                _eventsList = events;
+                _lastEventDocument.clear();
+                _lastEventDocument.addAll(snapshot.data!.docs);
+              }
 
-            // StreamBuilder<QuerySnapshot>(
-            //   stream: eventsRef
-            //       .doc(widget.userId)
-            //       .collection('userEvents')
-            //       .orderBy('timestamp', descending: true)
-            //       .limit(1)
-            //       .snapshots(),
-            //   builder:
-            //       (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            //     if (!snapshot.hasData) {
-            //       return Container(
-            //         height: ResponsiveHelper.responsiveHeight(context, 630),
-            //         child: Center(
-            //           child: CircularProgressIndicator(
-            //             color: Colors.blue,
-            //           ),
-            //         ),
-            //       );
-            //     }
-
-            //     if (snapshot.data!.docs.isEmpty) {
-            //       return Container(
-            //         height: ResponsiveHelper.responsiveHeight(context, 630),
-            //         child: Center(
-            //           child: NoContents(
-            //             icon: null,
-            //             title: 'No events',
-            //             subTitle: _isAuthor
-            //                 ? 'The events you create would appear here.'
-            //                 : '$userName hasn\'t created any events yet',
-            //           ),
-            //         ),
-            //       );
-            //     }
-
-            // _eventsList =
-            //         snapshot.data!.docs.map((doc) => Event.fromDoc(doc)).toList();
-
-            //     if (_eventsList.isNotEmpty) {
-            //       _lastEventDocument.addAll((snapshot.data!.docs));
-            //       // _lastEventDocument = snapshot.data!.docs.last;
-            //     }
-
-            //     return CustomScrollView(
-            //       slivers: [
-            //         SliverList(
-            //           delegate: SliverChildBuilderDelegate(
-            //             (context, index) {
-            //               Event event = _eventsList[index];
-            //               return Padding(
-            //                 padding: const EdgeInsets.symmetric(vertical: 2.0),
-            //                 child: EventDisplayWidget(
-            //                   currentUserId: widget.currentUserId,
-            //                   eventList: _eventsList,
-            //                   event: event,
-            //                   pageIndex: 0,
-            //                   eventSnapshot: [],
-            //                   eventPagesOnly: true,
-            //                   liveCity: '',
-            //                   liveCountry: '',
-            //                   isFrom: '',
-            //                   sortNumberOfDays: 0,
-            //                 ),
-            //               );
-            //             },
-            //             childCount: _eventsList.length,
-            //           ),
-            //         ),
-            //       ],
-            //     );
-            //   },
-            // ),
-            ),
+              return _buildEventList();
+            },
+          ),
+        ),
       ],
     );
   }
+  // _eventDisplay(bool _isAuthor, String userName) {
+  //   return Column(
+  //     children: [
+  //       Expanded(
+  //           child: StreamBuilder<QuerySnapshot>(
+  //         stream: eventsRef
+  //             .doc(widget.userId)
+  //             .collection('userEvents')
+  //             .orderBy('timestamp', descending: true)
+  //             .limit(10)
+  //             .snapshots(),
+  //         builder: (context, snapshot) {
+  //           if (!snapshot.hasData) {
+  //             return _loaindSchimmer();
+  //           }
+
+  //           if (snapshot.data!.docs.isEmpty) {
+  //             return Center(
+  //               child: NoContents(
+  //                 icon: null,
+  //                 title: 'No events',
+  //                 subTitle: _isAuthor
+  //                     ? 'The events you create would appear here.'
+  //                     : '$userName hasn\'t created any events yet',
+  //               ),
+  //             );
+  //           }
+
+  //           // Only update the initial load
+  //           // if (_eventsList.isEmpty) {
+  //           //   _eventsList =
+  //           //       snapshot.data!.docs.map((doc) => Event.fromDoc(doc)).toList();
+  //           //   _lastEventDocument.addAll((snapshot.data!.docs));
+  //           //   // _lastEventDocument = snapshot.data!.docs;
+  //           // }
+
+  //           return _buildEventList();
+  //         },
+  //       )
+
+  //           // StreamBuilder<QuerySnapshot>(
+  //           //   stream: eventsRef
+  //           //       .doc(widget.userId)
+  //           //       .collection('userEvents')
+  //           //       .orderBy('timestamp', descending: true)
+  //           //       .limit(1)
+  //           //       .snapshots(),
+  //           //   builder:
+  //           //       (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+  //           //     if (!snapshot.hasData) {
+  //           //       return Container(
+  //           //         height: ResponsiveHelper.responsiveHeight(context, 630),
+  //           //         child: Center(
+  //           //           child: CircularProgressIndicator(
+  //           //             color: Colors.blue,
+  //           //           ),
+  //           //         ),
+  //           //       );
+  //           //     }
+
+  //           //     if (snapshot.data!.docs.isEmpty) {
+  //           //       return Container(
+  //           //         height: ResponsiveHelper.responsiveHeight(context, 630),
+  //           //         child: Center(
+  //           //           child: NoContents(
+  //           //             icon: null,
+  //           //             title: 'No events',
+  //           //             subTitle: _isAuthor
+  //           //                 ? 'The events you create would appear here.'
+  //           //                 : '$userName hasn\'t created any events yet',
+  //           //           ),
+  //           //         ),
+  //           //       );
+  //           //     }
+
+  //           // _eventsList =
+  //           //         snapshot.data!.docs.map((doc) => Event.fromDoc(doc)).toList();
+
+  //           //     if (_eventsList.isNotEmpty) {
+  //           //       _lastEventDocument.addAll((snapshot.data!.docs));
+  //           //       // _lastEventDocument = snapshot.data!.docs.last;
+  //           //     }
+
+  //           //     return CustomScrollView(
+  //           //       slivers: [
+  //           //         SliverList(
+  //           //           delegate: SliverChildBuilderDelegate(
+  //           //             (context, index) {
+  //           //               Event event = _eventsList[index];
+  //           //               return Padding(
+  //           //                 padding: const EdgeInsets.symmetric(vertical: 2.0),
+  //           //                 child: EventDisplayWidget(
+  //           //                   currentUserId: widget.currentUserId,
+  //           //                   eventList: _eventsList,
+  //           //                   event: event,
+  //           //                   pageIndex: 0,
+  //           //                   eventSnapshot: [],
+  //           //                   eventPagesOnly: true,
+  //           //                   liveCity: '',
+  //           //                   liveCountry: '',
+  //           //                   isFrom: '',
+  //           //                   sortNumberOfDays: 0,
+  //           //                 ),
+  //           //               );
+  //           //             },
+  //           //             childCount: _eventsList.length,
+  //           //           ),
+  //           //         ),
+  //           //       ],
+  //           //     );
+  //           //   },
+  //           // ),
+  //           ),
+  //     ],
+  //   );
+  // }
   // _eventDisplay(bool _isAuthor, String userName) {
   //   return Column(
   //     children: [

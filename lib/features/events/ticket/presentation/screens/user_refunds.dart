@@ -23,6 +23,7 @@ class _UserRefundsState extends State<UserRefunds>
   String _isSortedBy = '';
 
   bool _isLoading = true;
+  bool _isDeleting = false;
 
   final now = DateTime.now();
 
@@ -232,9 +233,15 @@ class _UserRefundsState extends State<UserRefunds>
           onPressed: () async {
             Navigator.pop(context);
             try {
+              setState(() {
+                _isDeleting = true;
+              });
               // Call recursive function to delete documents in chunks
               await deleteActivityDocsInBatches();
               _refundList.clear();
+              setState(() {
+                _isDeleting = false;
+              });
             } catch (e) {
               _showBottomSheetErrorMessage('Error clearing notifications ');
             }
@@ -247,6 +254,9 @@ class _UserRefundsState extends State<UserRefunds>
   }
 
   Future<void> deleteActivityDocsInBatches() async {
+    // setState(() {
+    //   _isDeleting = true;
+    // });
     // get the first batch of documents to be deleted
     var snapshot = await userRefundRequestsRef
         .doc(widget.currentUserId)
@@ -270,7 +280,9 @@ class _UserRefundsState extends State<UserRefunds>
     // commit the deletions
     await batch.commit();
     _refundList.clear();
-
+    // setState(() {
+    //   _isDeleting = false;
+    // });
     // call the function recursively to delete the next batch
     return deleteActivityDocsInBatches();
   }
@@ -337,27 +349,47 @@ class _UserRefundsState extends State<UserRefunds>
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   actions: [
-                    GestureDetector(
-                      onTap: () {
-                        _showBottomSheetClearActivity(context);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 20.0, right: 20),
-                        child: Text(
-                          'Clear all',
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontSize: ResponsiveHelper.responsiveFontSize(
-                                context, 14),
+                    _isDeleting
+                        ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: SizedBox(
+                                height: ResponsiveHelper.responsiveFontSize(
+                                    context, 20.0),
+                                width: ResponsiveHelper.responsiveFontSize(
+                                    context, 20.0),
+                                child: CircularProgressIndicator(
+                                  backgroundColor: Colors.transparent,
+                                  valueColor: new AlwaysStoppedAnimation<Color>(
+                                    Colors.blue,
+                                  ),
+                                  strokeWidth:
+                                      ResponsiveHelper.responsiveFontSize(
+                                          context, 2.0),
+                                )),
+                          )
+                        : GestureDetector(
+                            onTap: () {
+                              _showBottomSheetClearActivity(context);
+                            },
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 20.0, right: 20),
+                              child: Text(
+                                'Clear all',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: ResponsiveHelper.responsiveFontSize(
+                                      context, 14),
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ];
             },
-            body: RefreshIndicator(color: Colors.blue,
+            body: RefreshIndicator(
+              color: Colors.blue,
               onRefresh: refreshData,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

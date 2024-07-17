@@ -362,3 +362,4 @@ export 'package:bars/utilities/affiliate_manager.dart';
 export 'package:bars/features/events/affiliate/presentation/screens/affiliate_customer.dart';
 export 'package:bars/widgets/info/payout_success_widget.dart';
 export 'package:bars/widgets/general_widget/payout_data_widget.dart';
+export 'package:bars/features/events/event_management/utilities/event_success_validator.dart';

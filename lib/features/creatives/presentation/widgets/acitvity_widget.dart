@@ -368,6 +368,7 @@ class _ActivityWidgetState extends State<ActivityWidget> {
         currentUserId: widget.currentUserId,
         isUser: true,
         affiliate: affiliate!,
+        fromActivity: true,
       ),
     );
   }

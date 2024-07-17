@@ -97,7 +97,7 @@ final sentEventIviteRef = _firestore.collection('new_sentEventInvite');
 final userRefundRequestsRef = _firestore.collection('userRefundRequests');
 final userPayoutRequestRef = _firestore.collection('userPayoutRequests');
 
-final eventAffiliateRef = _firestore.collection('eventAffiliate');
+final eventAffiliateRef = _firestore.collection('new_eventAffiliate');
 final userAffiliateRef = _firestore.collection('userAffiliate');
 final userAffiliateBuyersRef = _firestore.collection('userAffiliateBuyers');
 

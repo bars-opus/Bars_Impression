@@ -407,12 +407,12 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
     //   print(e);
     // }
 
-    // // debugAddress(widget.event.address);
-    // var _provider = Provider.of<UserData>(context, listen: false);
-    final BitmapDescriptor customIcon = await BitmapDescriptor.asset(
-      ImageConfiguration(size: Size(80, 80)), // Adjust the size as needed
-      'assets/images/custom_marker.png',
-    );
+    // // // debugAddress(widget.event.address);
+    // // var _provider = Provider.of<UserData>(context, listen: false);
+    // final BitmapDescriptor customIcon = await BitmapDescriptor.fromAssetImage(
+    //   ImageConfiguration(size: Size(80, 80)), // Adjust the size as needed
+    //   'assets/images/custom_marker.png',
+    // );
 
     try {
       // Trim and normalize the address
@@ -439,7 +439,10 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
               markerId: MarkerId('marker_id_23'),
               position: newPosition,
               icon:
-                  Platform.isIOS ? customIcon : BitmapDescriptor.defaultMarker,
+                  // Platform.isIOS ?
+                  // customIcon,
+                  // :
+                  BitmapDescriptor.defaultMarker,
               infoWindow: InfoWindow(
                 title: widget.event.address,
                 onTap: _launchMap,
@@ -2100,6 +2103,29 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
   //   );
   // }
 
+  void _showBottomSheetCreateAffiliate() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Container(
+              height: ResponsiveHelper.responsiveHeight(context, 700),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(30)),
+              child: CreateAffiliate(
+                event: widget.event,
+                currentUserId: widget.currentUserId,
+                paletteColor: widget.palette!,
+              ));
+        });
+      },
+    );
+  }
+
   void _showBottomSheetRefund(bool isRefund) {
     showModalBottomSheet(
       context: context,
@@ -2118,11 +2144,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                 isOganiser: true,
                 affiliateOnPressed: () {
                   Navigator.pop(context);
-                  CreateAffiliate(
-                    event: widget.event,
-                    currentUserId: widget.currentUserId,
-                    paletteColor: widget.palette!,
-                  );
+                  _showBottomSheetCreateAffiliate();
                 },
               ));
         });
@@ -3165,14 +3187,27 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
         SizedBox(
           height: 20.0,
         ),
-        // if (!widget.event.isPrivate && !_isAuthor)
-        //   if (!_eventHasEnded)
-        AttendButton(
-          marketedAffiliateId: widget.marketedAffiliateId,
-          fromFlyier: true,
-          currentUserId: widget.currentUserId,
-          event: widget.event,
-        ),
+
+        widget.event.isPrivate
+            ? widget.showPrivateEvent
+                ? AttendButton(
+                    marketedAffiliateId: widget.marketedAffiliateId,
+                    fromFlyier: true,
+                    currentUserId: widget.currentUserId,
+                    event: widget.event,
+                  )
+                : SizedBox.shrink()
+            :
+
+            // if (widget.showPrivateEvent)
+            !_eventHasEnded && !_isAuthor
+                ? AttendButton(
+                    marketedAffiliateId: widget.marketedAffiliateId,
+                    fromFlyier: true,
+                    currentUserId: widget.currentUserId,
+                    event: widget.event,
+                  )
+                : SizedBox.shrink(),
 
         // Padding(
         //     padding: const EdgeInsets.only(top: 10),

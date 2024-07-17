@@ -1,7 +1,8 @@
 import 'package:bars/utilities/exports.dart';
 
 class PayoutSuccessWidget extends StatelessWidget {
-  const PayoutSuccessWidget({super.key});
+  final int amount;
+  const PayoutSuccessWidget({super.key, required this.amount});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +36,7 @@ class PayoutSuccessWidget extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              "We are pleased to inform you that your payout request has been successfully processed. The requested funds have been transferred to your designated account and should be credited within the next few minutes.\n\nThank you for choosing Bars Impression.",
+              "We are pleased to inform you that your payout request has been successfully processed. The requested funds of ${amount} have been transferred to your designated account and should be credited within the next few minutes.\n\nThank you for choosing Bars Impression.",
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ],

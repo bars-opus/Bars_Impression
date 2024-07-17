@@ -172,13 +172,30 @@ class StorageService {
   static Future<File?> compressImage(String photoId, File image) async {
     final tempDir = await getTemporaryDirectory();
     final path = tempDir.path;
-    File? compressImageFile = await FlutterImageCompress.compressAndGetFile(
+    final compressImageFile = await FlutterImageCompress.compressAndGetFile(
       image.absolute.path,
       '$path/img_$photoId.jpg',
       quality: 50,
     );
-    return compressImageFile;
+
+    // Convert XFile to File (if needed)
+    if (compressImageFile != null) {
+      return File(compressImageFile.path);
+    } else {
+      return null;
+    }
   }
+
+  // static Future<File?> compressImage(String photoId, File image) async {
+  //   final tempDir = await getTemporaryDirectory();
+  //   final path = tempDir.path;
+  //   File? compressImageFile = await FlutterImageCompress.compressAndGetFile(
+  //     image.absolute.path,
+  //     '$path/img_$photoId.jpg',
+  //     quality: 50,
+  //   );
+  //   return compressImageFile;
+  // }
   // static Future<String> uploadUserprofessionalVideo1(
   //     String url, PickedFile videoFile) async {
   //   String? videoId = Uuid().v4();

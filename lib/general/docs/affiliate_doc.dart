@@ -182,6 +182,25 @@ class AffiliateDoc extends StatelessWidget {
                   ),
           ),
           const SizedBox(height: 60),
+          RichText(
+            textScaleFactor: MediaQuery.of(context).textScaleFactor,
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: 'Note.',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                TextSpan(
+                  text: "\n\nNeither would event organizer or affiliates incase of event cancellation or deletion.",
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                TextSpan(
+                  text: termAndConditions,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

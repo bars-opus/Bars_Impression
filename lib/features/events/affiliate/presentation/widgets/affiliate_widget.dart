@@ -5,12 +5,15 @@ class AffiliateWidget extends StatefulWidget {
   final AffiliateModel affiliate;
   final String currentUserId;
   final bool isUser;
+  final bool fromActivity;
 
-  const AffiliateWidget(
-      {super.key,
-      required this.affiliate,
-      required this.currentUserId,
-      required this.isUser});
+  const AffiliateWidget({
+    super.key,
+    required this.affiliate,
+    required this.currentUserId,
+    required this.isUser,
+    required this.fromActivity,
+  });
 
   @override
   State<AffiliateWidget> createState() => _AffiliatetStateState();
@@ -20,11 +23,24 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
   bool _isLoadingSubmit = false;
   bool _isLoading = false;
   bool _hasOrganiserBeingPaid = false;
+  bool _eventHasEnded = false;
 
   @override
   void initState() {
     super.initState();
     _countDown();
+    _hasEventEnded();
+  }
+
+  void _hasEventEnded() {
+    if (EventHasStarted.hasEventEnded(
+        widget.affiliate.eventClossingDay.toDate())) {
+      if (mounted) {
+        setState(() {
+          _eventHasEnded = true;
+        });
+      }
+    }
   }
 
   void _countDown() async {
@@ -93,12 +109,22 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
         _isLoading = true;
       });
       try {
-        await _createPayoutRequst();
+        bool existingOrder = await DatabaseService.isAffiliatePayoutAvailable(
+          // transaction: transaction,
+          userId: widget.affiliate.userId,
+          eventId: widget.affiliate.eventId,
+        );
+        if (!existingOrder) {
+          await _createPayoutRequst();
+          _showBottomSheetPayoutSuccessful();
+        } else {
+          _showBottomSheetErrorMessage('Payout already requested');
+        }
 
         setState(() {
           _isLoading = false;
         });
-        _showBottomSheetPayoutSuccessful();
+
         // mySnackBar(context, "Payout requested successfully");
 
         // }
@@ -387,7 +413,9 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
       builder: (BuildContext context) {
         return StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
-          return PayoutSuccessWidget();
+          return PayoutSuccessWidget(
+            amount: widget.affiliate.affiliateAmount.toInt(),
+          );
         });
       },
     );
@@ -597,13 +625,18 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).primaryColorLight,
+      color: widget.fromActivity
+          ? Theme.of(context).cardColor.withOpacity(.5)
+          : Theme.of(context).primaryColorLight,
       padding: const EdgeInsets.all(20),
       margin: const EdgeInsets.all(30),
       child: GestureDetector(
         onTap: widget.isUser
             ? () async {
-                _isLoading = true;
+                setState(() {
+                  _isLoading = true;
+                });
+
                 try {
                   Event? event = await DatabaseService.getUserEventWithId(
                       widget.affiliate.eventId, widget.affiliate.eventAuthorId);
@@ -616,12 +649,15 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
                       showPrivateEvent: true,
                     ));
                   } else {
-                    _showBottomSheetErrorMessage('Failed to fetch event.');
+                    _showBottomSheetErrorMessage(
+                        'Event not found. This event might have been deleted or cancelled');
                   }
                 } catch (e) {
                   _showBottomSheetErrorMessage('Failed to fetch event');
                 } finally {
-                  _isLoading = false;
+                  setState(() {
+                    _isLoading = false;
+                  });
                 }
               }
             : () {
@@ -661,13 +697,7 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
                     Padding(
                       padding: const EdgeInsets.only(top: 40.0),
                       child: _isLoading
-                          ? Center(
-                              child: CircularProgress(
-                                isMini: true,
-                                // indicatorColor: Colors.white,
-                                indicatorColor: Colors.blue,
-                              ),
-                            )
+                          ? SizedBox.shrink()
                           : MiniCircularProgressButton(
                               color: Colors.blue,
                               text: 'Request Payout',
@@ -685,33 +715,50 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
                     ),
                   ),
               ListTile(
-                leading: widget.isUser
-                    ? Container(
-                        height: ResponsiveHelper.responsiveHeight(context, 50),
-                        width: ResponsiveHelper.responsiveHeight(context, 50),
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          image: DecorationImage(
-                            image: CachedNetworkImageProvider(
-                                widget.affiliate.eventImageUrl),
-                            fit: BoxFit.cover,
+                leading: _isLoading
+                    ? SizedBox(
+                        height:
+                            ResponsiveHelper.responsiveFontSize(context, 30.0),
+                        width:
+                            ResponsiveHelper.responsiveFontSize(context, 30.0),
+                        child: CircularProgressIndicator(
+                          backgroundColor: Colors.transparent,
+                          valueColor: new AlwaysStoppedAnimation<Color>(
+                            Colors.blue,
                           ),
+                          strokeWidth:
+                              ResponsiveHelper.responsiveFontSize(context, 2.0),
                         ),
                       )
-                    : widget.affiliate.userProfileUrl.isEmpty
-                        ? Icon(
-                            Icons.account_circle,
-                            size: ResponsiveHelper.responsiveHeight(
-                                context, 50.0),
-                            color: Colors.grey,
+                    : widget.isUser
+                        ? Container(
+                            height:
+                                ResponsiveHelper.responsiveHeight(context, 50),
+                            width:
+                                ResponsiveHelper.responsiveHeight(context, 50),
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
+                              image: DecorationImage(
+                                image: CachedNetworkImageProvider(
+                                    widget.affiliate.eventImageUrl),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
                           )
-                        : CircleAvatar(
-                            radius: ResponsiveHelper.responsiveHeight(
-                                context, 25.0),
-                            backgroundColor: Colors.blue,
-                            backgroundImage: CachedNetworkImageProvider(
-                                widget.affiliate.userProfileUrl),
-                          ),
+                        : widget.affiliate.userProfileUrl.isEmpty
+                            ? Icon(
+                                Icons.account_circle,
+                                size: ResponsiveHelper.responsiveHeight(
+                                    context, 50.0),
+                                color: Colors.grey,
+                              )
+                            : CircleAvatar(
+                                radius: ResponsiveHelper.responsiveHeight(
+                                    context, 25.0),
+                                backgroundColor: Colors.blue,
+                                backgroundImage: CachedNetworkImageProvider(
+                                    widget.affiliate.userProfileUrl),
+                              ),
                 title: Text(
                   widget.isUser
                       ? widget.affiliate.eventTitle
@@ -730,7 +777,7 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
                 ),
               ),
               if (widget.affiliate.affiliateLink.isNotEmpty && widget.isUser)
-                if (!_hasOrganiserBeingPaid)
+                if (!_eventHasEnded)
                   GestureDetector(
                     onTap: () {
                       _navigateToPage(AffiliateBarcode(
@@ -760,7 +807,7 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
                     ),
                   ),
               if (widget.affiliate.affiliateLink.isNotEmpty && widget.isUser)
-                if (!_hasOrganiserBeingPaid)
+                if (!_eventHasEnded)
                   GestureDetector(
                     onTap: () {
                       Share.share(widget.affiliate.affiliateLink);

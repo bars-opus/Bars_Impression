@@ -7,12 +7,14 @@ class UserAffilate extends StatefulWidget {
   final String marketingType;
 
   final bool isUser;
+  final bool fromActivity;
 
   UserAffilate({
     required this.currentUserId,
     required this.isUser,
     required this.eventId,
     required this.marketingType,
+    required this.fromActivity,
   });
 
   @override
@@ -31,6 +33,7 @@ class _UserAffilateState extends State<UserAffilate>
   // String _isSortedBy = '';
 
   bool _isLoading = true;
+  bool _isDeleting = false;
 
   final now = DateTime.now();
 
@@ -258,9 +261,15 @@ class _UserAffilateState extends State<UserAffilate>
           onPressed: () async {
             Navigator.pop(context);
             try {
+              setState(() {
+                _isDeleting = true;
+              });
               // Call recursive function to delete documents in chunks
               await deleteActivityDocsInBatches();
               _affiliateList.clear();
+              setState(() {
+                _isDeleting = false;
+              });
             } catch (e) {
               _showBottomSheetErrorMessage('Error clearing affiliate ');
             }
@@ -332,6 +341,7 @@ class _UserAffilateState extends State<UserAffilate>
                   isUser: widget.isUser,
                   affiliate: affiliate,
                   currentUserId: widget.currentUserId,
+                  fromActivity: false,
                 );
               },
               childCount: _affiliateList.length,
@@ -373,22 +383,41 @@ class _UserAffilateState extends State<UserAffilate>
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   actions: [
-                    GestureDetector(
-                      onTap: () {
-                        _showBottomSheetClearActivity(context);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 20.0, right: 20),
-                        child: Text(
-                          'Clear all',
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontSize: ResponsiveHelper.responsiveFontSize(
-                                context, 14),
+                    _isDeleting
+                        ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: SizedBox(
+                                height: ResponsiveHelper.responsiveFontSize(
+                                    context, 20.0),
+                                width: ResponsiveHelper.responsiveFontSize(
+                                    context, 20.0),
+                                child: CircularProgressIndicator(
+                                  backgroundColor: Colors.transparent,
+                                  valueColor: new AlwaysStoppedAnimation<Color>(
+                                    Colors.blue,
+                                  ),
+                                  strokeWidth:
+                                      ResponsiveHelper.responsiveFontSize(
+                                          context, 2.0),
+                                )),
+                          )
+                        : GestureDetector(
+                            onTap: () {
+                              _showBottomSheetClearActivity(context);
+                            },
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 20.0, right: 20),
+                              child: Text(
+                                'Clear all',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: ResponsiveHelper.responsiveFontSize(
+                                      context, 14),
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ];

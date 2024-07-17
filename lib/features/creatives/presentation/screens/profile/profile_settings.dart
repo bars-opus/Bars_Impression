@@ -494,6 +494,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                         eventId: '',
                         marketingType: '',
                         isUser: true,
+                        fromActivity: false,
                       ),
                     );
                   },

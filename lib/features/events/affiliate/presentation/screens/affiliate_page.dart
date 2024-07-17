@@ -4,12 +4,13 @@ class AffiliatePage extends StatelessWidget {
   final AffiliateModel affiliate;
   final bool isUser;
   final String currentUserId;
+    final bool fromActivity;
 
   const AffiliatePage(
       {super.key,
       required this.affiliate,
       required this.isUser,
-      required this.currentUserId});
+      required this.currentUserId, required this.fromActivity});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class AffiliatePage extends StatelessWidget {
         widget: AffiliateWidget(
           isUser: isUser,
           affiliate: affiliate,
-          currentUserId: currentUserId,
+          currentUserId: currentUserId, fromActivity: fromActivity,
         ));
   }
 }

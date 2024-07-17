@@ -116,7 +116,7 @@ class _MiniAffiliateNoteState extends State<MiniAffiliateNote> {
                   currentUserId: _provider.currentUserId!,
                   eventId: '',
                   marketingType: '',
-                  isUser: true,
+                  isUser: true, fromActivity: false,
                 ),
               );
             }));

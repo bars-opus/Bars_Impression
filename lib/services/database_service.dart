@@ -1384,24 +1384,24 @@ class DatabaseService {
       }
     }
 
-    // Get all event invites and perform batch operations
-    QuerySnapshot eventInvitesSnapshot = await newEventTicketOrderRef
+    // // Get all event invites and perform batch operations
+    QuerySnapshot eventTicketOrderSnapshot = await newEventTicketOrderRef
         .doc(event.id)
         .collection('ticketOrders')
         .where('refundRequestStatus', isEqualTo: '')
         .get();
 
-    for (var doc in eventInvitesSnapshot.docs) {
+    for (var doc in eventTicketOrderSnapshot.docs) {
       String userId = doc.id;
       String commonId = Uuid().v4();
-      Map<String, dynamic> inviteData = doc.data() as Map<String, dynamic>;
+      Map<String, dynamic> ticketOrderData = doc.data() as Map<String, dynamic>;
 
-      String transactionId = inviteData['transactionId'] ?? '';
+      String transactionId = ticketOrderData['transactionId'] ?? '';
 
-      String orderId = inviteData['orderId'] ?? '';
+      String orderId = ticketOrderData['orderId'] ?? '';
 
-      DocumentReference inviteRef = doc.reference;
-      batch.delete(inviteRef);
+      DocumentReference ticketOderRef = doc.reference;
+      batch.delete(ticketOderRef);
       batchSize++;
 
       // // Update the event invites
@@ -1514,6 +1514,10 @@ class DatabaseService {
     //   // Consider how to handle the error, e.g., retry mechanism or user notification
     // }
   }
+
+
+
+
 
   static Future<int> numUnAnsweredInvites(
     String currentUserId,
@@ -1733,6 +1737,27 @@ class DatabaseService {
         .delete();
   }
 
+  static Future<bool> isAffiliatePayoutAvailable({
+    required String userId,
+    required String eventId,
+  }) async {
+    try {
+      DocumentReference payoutRequestDocRef = FirebaseFirestore.instance
+          .collection('userAffiliatePayoutRequests')
+          .doc(userId)
+          .collection('payoutRequests')
+          .doc(eventId);
+
+      DocumentSnapshot payoutRequestDoc = await payoutRequestDocRef.get();
+
+      return payoutRequestDoc.exists;
+    } catch (e) {
+      // Handle any errors that may occur during the operation
+      print('Error checking payout availability: $e');
+      return false;
+    }
+  }
+
   static Future<void> requestAffiliatePayout(
     AffiliatePayoutModel payout,
   ) async {
@@ -1757,6 +1782,27 @@ class DatabaseService {
     batch.set(userPayoutRequestRef, payoutData);
 
     await batch.commit();
+  }
+
+  static Future<bool> isPayoutAvailable({
+    required String userId,
+    required String eventId,
+  }) async {
+    try {
+      DocumentReference payoutRequestDocRef = FirebaseFirestore.instance
+          .collection('userPayoutRequests')
+          .doc(userId)
+          .collection('payoutRequests')
+          .doc(eventId);
+
+      DocumentSnapshot payoutRequestDoc = await payoutRequestDocRef.get();
+
+      return payoutRequestDoc.exists;
+    } catch (e) {
+      // Handle any errors that may occur during the operation
+      print('Error checking payout availability: $e');
+      return false;
+    }
   }
 
   static Future<void> requestPayout(Event event, EventPayoutModel payout,

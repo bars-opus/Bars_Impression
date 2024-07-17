@@ -109,6 +109,16 @@ class _RefundWidgetState extends State<RefundWidget> {
         padding: const EdgeInsets.only(left: 20.0, top: 20, bottom: 20),
         child: Column(
           children: [
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 20.0, top: 10),
+                child: Icon(
+                  Icons.check_circle_outline_outlined,
+                  size: ResponsiveHelper.responsiveHeight(context, 50.0),
+                  color: Colors.green,
+                ),
+              ),
+            ),
             _payoutWidget(
               'Status',
               widget.currentRefund.status,

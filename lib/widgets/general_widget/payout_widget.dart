@@ -109,6 +109,16 @@ class _PayoutWidgetState extends State<PayoutWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 20.0, top: 10),
+              child: Icon(
+                Icons.check_circle_outline_outlined,
+                size: ResponsiveHelper.responsiveHeight(context, 50.0),
+                color: Colors.green,
+              ),
+            ),
+          ),
           _payoutWidget(
             'Event',
             widget.payout.eventTitle,

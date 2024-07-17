@@ -662,7 +662,7 @@ async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
         const response =  await createAffiliateTransferWithRetry(db, snapshot);
         
         // await
-        const  eventAffiliateDocRef = db.collection('eventAffiliate').doc(eventId).collection('affiliateMarketers').doc(affiliateId);
+        const  eventAffiliateDocRef = db.collection('new_eventAffiliate').doc(eventId).collection('affiliateMarketers').doc(affiliateId);
         const  userAffiliateRef = db.collection('userAffiliate').doc(affiliateId).collection('affiliateMarketers').doc(eventId);
         const userAffiliateRequestRef = db.collection('userAffiliatePayoutRequests').doc(affiliateId).collection('payoutRequests').doc(eventId);
         // const allEventDocRef = db.collection('new_allEvents').doc(eventId);
@@ -678,7 +678,7 @@ async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
         transaction.update(userAffiliateRef, { payoutToAffiliates: true, });
         // transaction.update(eventDocRef, { status: 'processed', idempotencyKey: idempotencyKey });
         transaction.set(idempotencyDocRef, {
-          transferResponse:   response, // Assume the API response has a data field
+          transferResponse:  response, // Assume the API response has a data field
           created: admin.firestore.FieldValue.serverTimestamp()
         });
       });
@@ -2784,6 +2784,11 @@ exports.onDeleteFeedEvent = functions.firestore
     const eventInviteRef = admin.firestore().collection('new_sentEventInvite').doc(eventId).collection('eventInvite');
      // eslint-disable-next-line no-await-in-loop
     await deleteCollection(eventInviteRef);
+
+     // Delete all documents in the sentEventInvite subcollection
+     const affiliateInviteRef = admin.firestore().collection('new_eventAffiliate').doc(eventId).collection('affiliateMarketers');
+     // eslint-disable-next-line no-await-in-loop
+    await deleteCollection(affiliateInviteRef);
 
     // Delete all documents in the asks subcollection
     const askRef = admin.firestore().collection('new_asks').doc(eventId).collection('eventAsks');

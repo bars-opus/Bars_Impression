@@ -1,6 +1,5 @@
 import 'package:bars/utilities/date_picker.dart';
 import 'package:bars/widgets/create/schedule_people_group.dart';
-
 import 'package:blurhash/blurhash.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -418,7 +417,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                 event: newEvent,
                 type: newEvent.type,
                 palette: _paletteGenerator,
-                showPrivateEvent: true,
+                showPrivateEvent: false,
               ));
 
           mySnackBar(context, 'Your event was published successfully.');
@@ -428,7 +427,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
         animateToBack(1);
         _isLoading = false;
         _showBottomSheetErrorMessage(
-          'Failed to create event',
+          e.toString(),
         );
       }
     }
@@ -1164,22 +1163,24 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       _provider.isAffiliateEnabled,
       _provider.setIsAffiliateEnabled,
     ));
-    if (_provider.isAffiliateEnabled) {
-      options.add(_buildSettingSwitchWithDivider(
-        'Affiliate is exclusive',
-        _provider.isAffiliateExclusive
-            ? 'Only selected people invited by the organizers can become an affiliate'
-            : 'Up to 10 people in the public can generate an affiliate linnk and start promoting this event',
-        '',
-        _provider.isAffiliateExclusive,
-        _provider.setisAffiliateExclusive,
-      ));
-    }
-    // options.add(_buildSettingSwitchWithDivider(
-    //     'Virtual event',
-    //     'You can create an event that people can attend, or you can also create a virtual event that can be hosted on virtual platforms, where people can interact with you.',
-    //     _provider.isVirtual,
-    //     _provider.setIsVirtual));
+
+    // if (_provider.isAffiliateEnabled) {
+    //   options.add(_buildSettingSwitchWithDivider(
+    //     'Affiliate is exclusive',
+    //     _provider.isAffiliateExclusive
+    //         ? 'Only selected people invited by the organizers can become an affiliate'
+    //         : 'Up to 10 people in the public can generate an affiliate linnk and start promoting this event',
+    //     '',
+    //     _provider.isAffiliateExclusive,
+    //     _provider.setisAffiliateExclusive,
+    //   ));
+    // }
+
+    // // options.add(_buildSettingSwitchWithDivider(
+    // //     'Virtual event',
+    // //     'You can create an event that people can attend, or you can also create a virtual event that can be hosted on virtual platforms, where people can interact with you.',
+    // //     _provider.isVirtual,
+    // //     _provider.setIsVirtual));
     return options;
   }
 
@@ -3650,7 +3651,8 @@ class _CreateEventScreenState extends State<CreateEventScreen>
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Loading(
-                title: 'Publishing event',
+                title:
+                    widget.isEditting ? 'Updating event' : 'Publishing event',
                 icon: (Icons.event),
               ),
               SizedBox(height: 40),
@@ -3799,7 +3801,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                 : SafeArea(
                     child: PageView(
                         controller: _pageController,
-                        physics: const AlwaysScrollableScrollPhysics(),
+                        physics: const NeverScrollableScrollPhysics(),
                         onPageChanged: (int index) {
                           _provider.setInt1(index);
                         },

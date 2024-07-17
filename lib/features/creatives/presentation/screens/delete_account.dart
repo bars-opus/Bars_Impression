@@ -375,6 +375,17 @@ class _DeleteAccountState extends State<DeleteAccount> {
     }
 
     // Delete user new_userTicketOrder
+    final CollectionReference newUserAffiliateOrder = FirebaseFirestore.instance
+        .collection('userAffiliate')
+        .doc(currentUserId)
+        .collection('affiliateMarketers');
+    final QuerySnapshot newUserAffiliateSnapshot =
+        await newUserAffiliateOrder.get();
+    for (var doc in newUserAffiliateSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete user new_userTicketOrder
     final CollectionReference newTicketId = FirebaseFirestore.instance
         .collection('new_ticketId')
         .doc(currentUserId)

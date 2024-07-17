@@ -39,6 +39,8 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
   int _affiliateInviteCount = 0;
 
   EventPayoutModel? fundPayout;
+  bool _fundsDistibuted = false;
+  bool _isEventSuccessful = false;
 
   // final _messageController = TextEditingController();
   // ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
@@ -59,7 +61,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
 
     //  Invited
     //         Requested
-
+    _validateEvent();
     _setExpectedPeople();
 
     sumFunction();
@@ -67,6 +69,16 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
     if (widget.event.fundsDistributed) _getFundsPayout();
     if (widget.event.isAffiliateEnabled) _setUpAffiliateCount();
     // _messageController.addListener(_onAskTextChanged);
+  }
+
+  void _validateEvent() {
+    setState(() {
+      EventSuccessValidator validator = EventSuccessValidator(
+        expectedAttendees: _expectedAttendees,
+        validatedAttendees: _validatedAttendees,
+      );
+      _isEventSuccessful = validator.validateEvent();
+    });
   }
 
   _setUpAffiliateCount() {
@@ -77,10 +89,10 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
   _getFundsPayout() async {
     EventPayoutModel? newFundPayout = await DatabaseService.getUserPayoutWithId(
         widget.currentUserId, widget.event.id);
-
-    setState(() {
-      fundPayout = newFundPayout;
-    });
+    if (mounted)
+      setState(() {
+        fundPayout = newFundPayout;
+      });
   }
 
   void _countDown() async {
@@ -95,9 +107,10 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
 
   void sumFunction() async {
     double totalSum = await getTotalSum();
-    setState(() {
-      totalSales = totalSum;
-    });
+    if (mounted)
+      setState(() {
+        totalSales = totalSum;
+      });
   }
 
   Future<double> getTotalSum() async {
@@ -663,6 +676,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                     eventId: widget.event.id,
                     marketingType: 'Requested',
                     isUser: false,
+                    fromActivity: false,
                   ),
                 ),
                 _tableText(
@@ -673,6 +687,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                     eventId: widget.event.id,
                     marketingType: 'Invited',
                     isUser: false,
+                    fromActivity: false,
                   ),
                 ),
               ]),
@@ -789,60 +804,68 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
 
     return Column(
       children: [
-        GestureDetector(
-          onTap: () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  surfaceTintColor: Colors.transparent,
-                  backgroundColor: Theme.of(context).primaryColorLight,
-                  title: TicketPurchasingIcon(
-                    // icon: Icons.payment,
-                    title: '',
-                  ),
-                  content: _salesSummary(),
-                );
-              },
-            );
-          },
-          child: RichText(
-            textScaleFactor:
-                MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5),
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text:
-                      '${currencyPartition.isEmpty ? '' : currencyPartition.length > 0 ? currencyPartition[1] : ''}\n',
-                  style: TextStyle(
-                    fontSize:
-                        ResponsiveHelper.responsiveFontSize(context, 14.0),
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
+        _isLoading
+            ? Center(
+                child: CircularProgress(
+                  isMini: true,
+                  // indicatorColor: Colors.white,
+                  indicatorColor: Colors.blue,
                 ),
-                TextSpan(
-                  text: totalSales.toString(),
-                  style: TextStyle(
-                    fontSize:
-                        ResponsiveHelper.responsiveFontSize(context, 50.0),
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+              )
+            : GestureDetector(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        surfaceTintColor: Colors.transparent,
+                        backgroundColor: Theme.of(context).primaryColorLight,
+                        title: TicketPurchasingIcon(
+                          // icon: Icons.payment,
+                          title: '',
+                        ),
+                        content: _salesSummary(),
+                      );
+                    },
+                  );
+                },
+                child: RichText(
+                  textScaleFactor:
+                      MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5),
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text:
+                            '${currencyPartition.isEmpty ? '' : currencyPartition.length > 0 ? currencyPartition[1] : ''}\n',
+                        style: TextStyle(
+                          fontSize: ResponsiveHelper.responsiveFontSize(
+                              context, 14.0),
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      TextSpan(
+                        text: totalSales.toString(),
+                        style: TextStyle(
+                          fontSize: ResponsiveHelper.responsiveFontSize(
+                              context, 50.0),
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      TextSpan(
+                        text: '\nTotal sales',
+                        style: TextStyle(
+                          fontSize: ResponsiveHelper.responsiveFontSize(
+                              context, 14.0),
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ],
                   ),
+                  textAlign: TextAlign.center,
                 ),
-                TextSpan(
-                  text: '\nTotal sales',
-                  style: TextStyle(
-                    fontSize:
-                        ResponsiveHelper.responsiveFontSize(context, 14.0),
-                    color: Colors.blue,
-                  ),
-                ),
-              ],
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
+              ),
         const SizedBox(
           height: 50,
         ),
@@ -875,7 +898,9 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                       isRefunding: false,
                     )
                   : AffiliateDoc(
-                      isAffiliated: widget.event.isAffiliateEnabled,
+                      isAffiliated: _eventHasEnded
+                          ? false
+                          : widget.event.isAffiliateEnabled,
                       isOganiser: true,
                       affiliateOnPressed: () {
                         Navigator.pop(context);
@@ -1011,19 +1036,40 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
   // Method to create event
   _submitRequest() async {
     if (!_isLoading) {
-      _isLoading = true;
-      try {
-        await _createPayoutRequst();
+//
+      if (mounted)
+        setState(() {
+          _isLoading = true;
+        });
 
-        _isLoading = false;
-        _showBottomSheetPayoutSuccessful();
+      try {
+        bool existingOrder = await DatabaseService.isPayoutAvailable(
+          // transaction: transaction,
+          userId: widget.event.authorId,
+          eventId: widget.event.id,
+        );
+        if (!existingOrder) {
+          await _createPayoutRequst();
+          _showBottomSheetPayoutSuccessful();
+          _fundsDistibuted = true;
+        } else {
+          _showBottomSheetErrorMessage('Payout already requested');
+        }
+        if (mounted)
+          setState(() {
+            _isLoading = false;
+          });
 
         // mySnackBar(context, 'Payout requested succesfully.');
         // }
       } catch (e) {
         // _handleError(e, false);
-        _isLoading = false;
-        _showBottomSheetErrorMessage();
+        if (mounted)
+          setState(() {
+            _isLoading = false;
+          });
+        _showBottomSheetErrorMessage(
+            'Please check your internet connection and try again.');
       }
     }
   }
@@ -1056,6 +1102,10 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
   }
 
   void _showBottomSheetPayoutSuccessful() {
+    var _comission = totalSales * 0.10;
+    var _expetedAmount =
+        totalSales - widget.event.totalAffiliateAmount - _comission;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1063,13 +1113,15 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
       builder: (BuildContext context) {
         return StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
-          return PayoutSuccessWidget();
+          return PayoutSuccessWidget(
+            amount: _expetedAmount.toInt(),
+          );
         });
       },
     );
   }
 
-  void _showBottomSheetErrorMessage() {
+  void _showBottomSheetErrorMessage(String error) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1079,10 +1131,9 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
           buttonText: 'Ok',
           onPressed: () async {
             Navigator.pop(context);
-            _submitRequest();
           },
           title: "Request failed",
-          subTitle: 'Please check your internet connection and try again.',
+          subTitle: error,
         );
       },
     );
@@ -1151,6 +1202,61 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                   const SizedBox(height: 60),
                 ],
               ),
+            ),
+          );
+        });
+      },
+    );
+  }
+
+  void _showBottomSheetNoSalesPayouts() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Container(
+            height: ResponsiveHelper.responsiveHeight(context, 400),
+            decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(30)),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: widget.event.isFree
+                  ? PayoutDoc(
+                      isRequesting: false,
+                      isFreeEvent: widget.event.isFree,
+                      eventTitle: widget.event.title,
+                      eventClossinDay: widget.event.clossingDay)
+                  : ListView(
+                      children: [
+                        TicketPurchasingIcon(
+                          title: '',
+                        ),
+                        // const SizedBox(height: 40),
+
+                        RichText(
+                          textScaleFactor:
+                              MediaQuery.of(context).textScaleFactor,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: '\nNo Sales',
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                              TextSpan(
+                                text:
+                                    '\n\nUnfortunately, no ticket sales have been recorded for this event. As a result, there are no ticket sales payouts available at this time. The total sales amount remains at 0.00.',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 60),
+                      ],
+                    ),
             ),
           );
         });
@@ -1392,14 +1498,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                     physics: NeverScrollableScrollPhysics(),
                     child: Column(
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20.0),
-                          child: Icon(
-                            Icons.check_circle_outline_outlined,
-                            size: 50,
-                            color: Colors.green,
-                          ),
-                        ),
                         PayoutWidget(
                           payout: fundPayout!,
                           currentUserId: widget.currentUserId,
@@ -1673,26 +1771,50 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                       if (_expectedPeople > 1) _currentSaleReport(),
                     _buttons(
                         _showFunds ? 'Request Payout' : 'Payout',
-
-                        // if (_expectedPeople > 1)
-                        _showFunds && _expectedPeople > 1
+                        widget.event.fundsDistributed || _fundsDistibuted
                             ? () {
-                                _showBottomSheetRequestPayouts(
-                                    // _eventHasEnded &&
-                                    //       !widget.event.fundsDistributed
-                                    //   ?
-                                    true
-                                    // :false
-
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      surfaceTintColor: Colors.transparent,
+                                      backgroundColor:
+                                          Theme.of(context).primaryColorLight,
+                                      title: TicketPurchasingIcon(
+                                        // icon: Icons.payment,
+                                        title: '',
+                                      ),
+                                      content: _salesSummary(),
                                     );
+                                  },
+                                );
                               }
-                            : () {
-                                _showBottomSheetRequestPayouts(false);
-                              },
+                            : _showFunds &&
+                                    _expectedPeople > 1
+                                    // _isEventSuccessful
+                                    &&
+                                    _eventHasEnded
+                                ? () {
+                                    _showBottomSheetRequestPayouts(true);
+                                  }
+                                : !_eventHasEnded
+                                    ? () {
+                                        _showBottomSheetRequestPayouts(false);
+                                      }
+                                    : totalSales == 0
+                                        ? () {
+                                            _showBottomSheetNoSalesPayouts();
+                                          }
+                                        : () {
+                                            _showBottomSheetRequestPayouts(
+                                                false);
+                                          },
                         'Create affiliate', () {
                       widget.event.isFree
                           ? _showBottomSheetFreeAffiliateDoc()
-                          : _showBottomSheetRefund(false);
+                          : _eventHasEnded
+                              ? _showBottomSheetRefund(false)
+                              : _showBottomSheetRefund(false);
                     }),
                     const SizedBox(
                       height: 5,

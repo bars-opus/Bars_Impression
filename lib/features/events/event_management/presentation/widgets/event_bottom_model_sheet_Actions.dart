@@ -98,7 +98,7 @@ class _EventBottomModalSheetActionsState
                   currentUserId: widget.currentUserId,
                   groupTickets: widget.event.ticket,
                   event: widget.event,
-                  inviteReply: '', 
+                  inviteReply: '',
                   // marketedAffiliateId: '',
                 ),
               ],
@@ -428,9 +428,11 @@ class _EventBottomModalSheetActionsState
     return Container(
       height: ResponsiveHelper.responsiveHeight(
           context,
-          widget.event.isAffiliateEnabled && widget.event.isAffiliateExclusive
-              ? 700
-              : 650.0),
+          // widget.event.isAffiliateEnabled && widget.event.isAffiliateExclusive
+          //     ? 700
+          //     :
+
+          650.0),
       decoration: BoxDecoration(
           color: Theme.of(context).primaryColorLight,
           borderRadius: BorderRadius.circular(30)),
@@ -519,16 +521,16 @@ class _EventBottomModalSheetActionsState
               height: 20,
             ),
 
-            if (widget.event.isAffiliateEnabled)
-              if (!widget.event.isAffiliateExclusive)
-                BottomModelSheetListTileActionWidget(
-                  colorCode: 'Blue',
-                  icon: Icons.attach_money,
-                  onPressed: () {
-                    Share.share(widget.event.dynamicLink);
-                  },
-                  text: 'Generate affiliate link',
-                ),
+            // if (widget.event.isAffiliateEnabled)
+            //   if (!widget.event.isAffiliateExclusive)
+            //     BottomModelSheetListTileActionWidget(
+            //       colorCode: 'Blue',
+            //       icon: Icons.attach_money,
+            //       onPressed: () {
+            //         Share.share(widget.event.dynamicLink);
+            //       },
+            //       text: 'Generate affiliate link',
+            //     ),
             !_isAuthor
                 ? const SizedBox.shrink()
                 : BottomModelSheetListTileActionWidget(

@@ -1,17 +1,14 @@
-buildscript {
-    ext.kotlin_version = '1.7.10'
-    repositories {
-        google()
-        mavenCentral()
-    }
 
-    dependencies {
-        // classpath 'com.android.tools.build:gradle:3.5.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.google.gms:google-services:4.3.13'
-        classpath 'com.android.tools.build:gradle:7.2.1'
-    }
-}
+subprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            project.android {
+                if (namespace == null) {
+                    namespace project.group
+                }
+            }
+        }
+    }}
 
 allprojects {
     repositories {
@@ -21,6 +18,8 @@ allprojects {
 }
 
 rootProject.buildDir = '../build'
+
+
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
