@@ -18,8 +18,6 @@ class _EventDeletedMessageWidgetState extends State<EventDeletedMessageWidget> {
   @override
   void initState() {
     super.initState();
-    // _generatePalette();
-
     if (widget.ticketOrder.refundRequestStatus.isNotEmpty) _getRefund();
   }
 
@@ -59,12 +57,9 @@ class _EventDeletedMessageWidgetState extends State<EventDeletedMessageWidget> {
             alignment: Alignment.centerLeft,
             width: double.infinity,
             height: ResponsiveHelper.responsiveFontSize(context, 40.0),
-            // padding:
-            //     const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10),
             decoration: BoxDecoration(
               color: Colors.red,
             ),
-            // width: width,
             child: Text(
               'Refund processed  ',
               style: TextStyle(
@@ -74,7 +69,6 @@ class _EventDeletedMessageWidgetState extends State<EventDeletedMessageWidget> {
               ),
             ),
           ),
-          // if (refund != null)
           AnimatedContainer(
             duration: const Duration(seconds: 2),
             height: refund == null
@@ -128,7 +122,6 @@ class _EventDeletedMessageWidgetState extends State<EventDeletedMessageWidget> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TicketPurchasingIcon(
-                    // icon: Icons.event,
                     title: '',
                   ),
                   Text(
@@ -198,7 +191,6 @@ class _EventDeletedMessageWidgetState extends State<EventDeletedMessageWidget> {
                             "\nThis are the reasons provided by the event organizer.\n",
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
-
                       TextSpan(
                         text: widget.ticketOrder.canlcellationReason,
                         style: Theme.of(context).textTheme.bodyMedium,
@@ -210,8 +202,6 @@ class _EventDeletedMessageWidgetState extends State<EventDeletedMessageWidget> {
                                 context, 14),
                             color: Colors.blue),
                       ),
-
-                      // Include any additional information or links here
                     ],
                   ),
                 ),
@@ -237,16 +227,6 @@ class _EventDeletedMessageWidgetState extends State<EventDeletedMessageWidget> {
                                 context, 14),
                             color: Colors.blue),
                       ),
-                      // TextSpan(
-                      //   text: "\n\nYour order Id .",
-                      //   style: Theme.of(context).textTheme.bodyMedium,
-                      // ),
-                      // TextSpan(
-                      //   text: "\n${widget.ticketOrder.orderId}",
-                      //   style: Theme.of(context).textTheme.bodyLarge,
-                      // ),
-
-                      // Include any additional information or links here
                     ],
                   ),
                 ),

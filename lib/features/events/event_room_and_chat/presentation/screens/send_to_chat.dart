@@ -195,8 +195,6 @@ class _SendToChatsState extends State<SendToChats> {
                             return _loadingSkeleton(); // return a loading spinner or some other widget
                           }
                           final author = authorSnapshot.data;
-                          // limitRooms(); // Ensure these functions are defined and manage your data as expected
-                          // limitTicketIds(); // Ensure these functions are defined and manage your data as expected
                           return GetAuthor(
                             chats: chats,
                             lastMessage: lastMessage,
@@ -488,8 +486,6 @@ class _GetAuthorState extends State<GetAuthor>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return
-        //  widget.author == null ? _loadingSkeleton() :
-        _display();
+    return _display();
   }
 }

@@ -202,20 +202,6 @@ class _DeleteAccountState extends State<DeleteAccount> {
     }
   }
 
-  // nT4CrmVLB6VPaQglyq0vgqAbF452
-  // f9iDwxBuw0XniGUP7ROtIhKKd6n2
-  // Ys0gvO4DO8cJeYEZGUZZX56oPCv2
-
-  // v2K3Pi4HuHcQ3LyIOwKkdT2uSo63
-
-  // zlhI0sU1InSWF4FThGLTzwuvJGG3
-
-  // dAh8m9fBLbSG2nA4KX3Y1R1mG8r1
-
-  // hjtiDuoaDOdtpG07sS7aPNJZY2J3
-
-  // fiTBRa9hOJaownGdbv8jaoq5yO13
-
   Future<void> deletePaystackData(
       String subAccountId, String transferId) async {
     HttpsCallable callable =
@@ -406,6 +392,78 @@ class _DeleteAccountState extends State<DeleteAccount> {
       await doc.reference.delete();
     }
 
+    // Delete user affiliate payouts
+    final CollectionReference userAffiliatePayoutRequests = FirebaseFirestore
+        .instance
+        .collection('userAffiliatePayoutRequests')
+        .doc(currentUserId)
+        .collection('payoutRequests');
+    final QuerySnapshot userAffiliatePayoutRequestsSnapshot =
+        await userAffiliatePayoutRequests.get();
+    for (var doc in userAffiliatePayoutRequestsSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete user bookings received
+    final CollectionReference bookingReceived = FirebaseFirestore.instance
+        .collection('new_userBookingReceived')
+        .doc(currentUserId)
+        .collection('bookings');
+    final QuerySnapshot bookingReceivedSnapshot = await bookingReceived.get();
+    for (var doc in bookingReceivedSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete user bookings made
+    final CollectionReference bookingMade = FirebaseFirestore.instance
+        .collection('new_userBookingMade')
+        .doc(currentUserId)
+        .collection('bookings');
+    final QuerySnapshot bookingMadeSnapshot = await bookingMade.get();
+    for (var doc in bookingMadeSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete user donations made
+    final CollectionReference donationMade = FirebaseFirestore.instance
+        .collection('new_donationToCreative')
+        .doc(currentUserId)
+        .collection('donations');
+    final QuerySnapshot donationMadeSnapshot = await donationMade.get();
+    for (var doc in donationMadeSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete user donations made
+    final CollectionReference donationReceived = FirebaseFirestore.instance
+        .collection('new_userDonations')
+        .doc(currentUserId)
+        .collection('donations');
+    final QuerySnapshot donationReceivedSnapshot = await donationReceived.get();
+    for (var doc in donationReceivedSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete user reviews received
+    final CollectionReference reviewsReceived = FirebaseFirestore.instance
+        .collection('new_userReviewReceived')
+        .doc(currentUserId)
+        .collection('reviews');
+    final QuerySnapshot reviewsReceivedSnapshot = await reviewsReceived.get();
+    for (var doc in reviewsReceivedSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Delete user reviews made
+    final CollectionReference reviewsMade = FirebaseFirestore.instance
+        .collection('new_userReviewMade')
+        .doc(currentUserId)
+        .collection('reviews');
+    final QuerySnapshot reviewsMadeSnapshot = await reviewsMade.get();
+    for (var doc in reviewsMadeSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
     // Delete user refunds
     final CollectionReference userRefundRequests = FirebaseFirestore.instance
         .collection('userRefundRequests')
@@ -448,6 +506,12 @@ class _DeleteAccountState extends State<DeleteAccount> {
     // Delete user user_general_settings
     await FirebaseFirestore.instance
         .collection('user_general_settings')
+        .doc(currentUserId)
+        .delete();
+
+    // Delete user ratings
+    await FirebaseFirestore.instance
+        .collection('new_userRating')
         .doc(currentUserId)
         .delete();
 

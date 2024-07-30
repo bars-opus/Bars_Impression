@@ -27,7 +27,7 @@ class PortfolioWidgetWorkLink extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-          height: MediaQuery.of(context).size.height.toDouble() / 2,
+          height: ResponsiveHelper.responsiveHeight(context, 500),
           decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(30)),
@@ -51,12 +51,6 @@ class PortfolioWidgetWorkLink extends StatelessWidget {
                     if (!await launchUrl(Uri.parse(link))) {
                       throw 'Could not launch link';
                     }
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (_) => MyWebView(
-                    //               url: link, title: '',
-                    //             )));
                   },
                 ),
               ],

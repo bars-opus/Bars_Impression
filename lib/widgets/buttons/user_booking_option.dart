@@ -29,7 +29,7 @@ class UserBookingOption extends StatelessWidget {
                   title: 'Booking Contact',
                   subTitle:
                       'These are the contacts provided by ${bookingUser.userName}. While we make efforts to gather the contact information for ${bookingUser.userName}, we cannot guarantee that these are the exact and correct contacts. Therefore, we advise you to conduct additional research and verify the management contact details for ${bookingUser.userName} independently.',
-                  icon: Icons.mail,
+                  icon: Icons.call,
                 ),
                 const SizedBox(height: 40),
                 PortfolioContactWidget(

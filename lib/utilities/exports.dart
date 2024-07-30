@@ -8,7 +8,6 @@ export 'package:flutter/material.dart';
 export 'package:flutter/services.dart';
 export 'package:bars/widgets/animation/fade_animation.dart';
 export 'package:bars/widgets/buttons/circular_button.dart';
-export 'package:bars/utilities/webview_url.dart';
 export 'dart:io';
 export 'package:bars/utilities/constants.dart';
 export 'package:bars/features/creatives/presentation/widgets/user_view.dart';
@@ -46,7 +45,6 @@ export 'package:bars/features/creatives/presentation/screens/profile/edit_profil
 export 'package:bars/widgets/buttons/widget_user_website.dart';
 export 'package:bars/features/creatives/presentation/screens/profile/edit_profile.dart';
 export 'package:bars/features/creatives/presentation/screens/follower_following.dart';
-export 'package:bars/features/creatives/models/user_model.dart';
 export 'package:bars/utilities/pick_crop_image.dart';
 export 'package:bars/widgets/schimmers/event_user_schimmer.dart';
 export 'package:bars/services/database_service.dart';
@@ -77,7 +75,6 @@ export 'package:bars/widgets/info/edit_profile_info.dart';
 export 'package:bars/features/creatives/presentation/screens/setup_brand.dart';
 export 'package:bars/features/events/event_room_and_chat/models/chat_model.dart';
 export 'package:bars/features/events/event_room_and_chat/models/chat_message_model.dart';
-
 export 'package:bars/utilities/pick_crop_camera.dart';
 export 'package:bars/widgets/info/no_users_discoverd.dart';
 export 'package:bars/widgets/general_widget/author_view.dart';
@@ -105,7 +102,6 @@ export 'package:bars/widgets/info/loading.dart';
 export 'package:bars/features/creatives/presentation/screens/verification_nutralized.dart';
 export 'package:bars/features/creatives/presentation/screens/verification_info.dart';
 export 'package:bars/widgets/info/user_banned.dart';
-// export 'package:bars/utilities/about_us.dart';
 export 'package:bars/utilities/error_user.dart';
 export 'package:bars/widgets/buttons/sign_in_with_button.dart';
 export 'package:bars/auth_screens/presentation/screens/login_screen_options.dart';
@@ -136,25 +132,14 @@ export 'package:image_cropper/image_cropper.dart';
 export 'package:firebase_storage/firebase_storage.dart';
 export 'package:font_awesome_flutter/font_awesome_flutter.dart';
 export 'package:shimmer/shimmer.dart';
-// export 'package:animator/animator.dart';
 export 'package:geocoding/geocoding.dart';
-// export 'package:geolocator/geolocator.dart';
 export 'package:avatar_glow/avatar_glow.dart';
 export 'package:share/share.dart';
 export 'package:maps_launcher/maps_launcher.dart';
 export 'package:palette_generator/palette_generator.dart';
-// export 'package:syncfusion_flutter_calendar/calendar.dart';
-// export 'package:random_color/random_color.dart';
 export 'package:image_picker/image_picker.dart';
 export 'package:bars/features/creatives/presentation/screens/creatives_screen.dart';
-
-// discover user import live users
-//event page
-//discover events
-//event page location
-//event page live
 export 'package:bars/widgets/info/direction_widget_white.dart';
-//
 export 'package:bars/features/events/event_management/presentation/screens/event_search%20.dart';
 export 'package:bars/features/creatives/presentation/screens/user_search.dart';
 export 'package:bars/features/creatives/models/user_author_model.dart';
@@ -191,7 +176,6 @@ export 'package:bars/widgets/create/tagged_people_group.dart';
 export 'package:bars/widgets/ticket_purchasing_process_icon.dart';
 export 'package:flutter/rendering.dart';
 export 'package:table_calendar/table_calendar.dart';
-
 export 'package:bars/features/creatives/presentation/screens/user_bottom_model_sheet_Actions.dart';
 export 'package:bars/widgets/discover_category_widget.dart';
 export 'package:bars/features/events/event_management/presentation/screens/event_builder_widget.dart';
@@ -225,7 +209,6 @@ export 'package:qr_flutter/qr_flutter.dart';
 export 'package:bars/utilities/my_snackbar.dart';
 export 'package:bars/features/events/event_management/presentation/widgets/tagged_user_widget.dart';
 export 'package:bars/utilities/paystack_key.dart';
-export 'package:flutter_paystack/flutter_paystack.dart';
 export 'package:bars/widgets/display_create_image.dart';
 export 'package:bars/widgets/buttons/event_bottom_bottun.dart';
 export 'package:bars/features/creatives/models/portfolio_collaboration_model.dart';
@@ -278,7 +261,6 @@ export 'package:bars/features/events/event_management/presentation/screens/event
 export 'package:bars/features/events/invites/presentation/screens/invite_search_screen.dart';
 export 'package:bars/features/events/ticket/presentation/screens/ticket_scanner_validator_screen.dart';
 export 'package:bars/features/events/event_management/presentation/screens/event_dashboard_screen.dart';
-export 'package:bars/features/creatives/presentation/screens/fans_screen.dart';
 export 'package:bars/features/events/ticket/model/ticket_model.dart';
 export 'package:bars/features/events/event_management/models/tagged_people_model.dart';
 export 'package:bars/features/events/event_room_and_chat/presentation/screens/event_room_screen.dart';
@@ -363,3 +345,27 @@ export 'package:bars/features/events/affiliate/presentation/screens/affiliate_cu
 export 'package:bars/widgets/info/payout_success_widget.dart';
 export 'package:bars/widgets/general_widget/payout_data_widget.dart';
 export 'package:bars/features/events/event_management/utilities/event_success_validator.dart';
+export 'package:bars/features/creatives/models/donation_model.dart';
+export 'package:bars/features/creatives/presentation/screens/user_donations.dart';
+export 'package:bars/features/creatives/presentation/screens/donar_receiver.dart';
+export 'package:bars/features/creatives/presentation/widgets/donation_widget.dart';
+export 'package:bars/features/bookings/presentation/widgets/booking_calendart.dart';
+export 'package:bars/features/bookings/models/booking_model.dart';
+export 'package:bars/features/creatives/presentation/widgets/donation_header_widget.dart';
+export 'package:bars/features/bookings/presentation/widgets/booking_widget.dart';
+export 'package:bars/features/bookings/presentation/screen/booking_page.dart';
+export 'package:bars/features/bookings/presentation/screen/user_bookings.dart';
+export 'package:bars/features/bookings/presentation/screen/booked_bookings.dart';
+export 'package:bars/features/events/affiliate/presentation/widgets/affiliate_commission_options.dart';
+export 'package:bars/features/bookings/models/rating_model.dart';
+export 'package:bars/features/bookings/presentation/widgets/star_rating_widget.dart';
+export 'package:bars/features/bookings/presentation/widgets/rating_aggregate_widget.dart';
+export 'package:bars/features/bookings/models/review_model.dart';
+export 'package:bars/features/bookings/presentation/widgets/time_duration.dart';
+export 'package:bars/features/events/services/paystack_ticket_payment.dart';
+export 'package:bars/features/creatives/presentation/screens/profile/change_username_unique_validator.dart';
+export 'package:bars/features/creatives/presentation/widgets/review_widget.dart';
+export 'package:bars/features/creatives/presentation/screens/review_made_receiver.dart';
+export 'package:bars/features/creatives/presentation/screens/user_reviews.dart';
+export 'package:bars/general/docs/manager_donation_doc.dart';
+export 'package:bars/utilities/is_Ghanaian.dart';

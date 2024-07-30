@@ -21,6 +21,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
   late PageController _pageController;
   int _index = 0;
   bool _userNameCreated = false;
+  final UsernameService _usernameService = UsernameService();
 
   @override
   void initState() {
@@ -31,7 +32,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
     _controller = TextEditingController(
       text: _userName,
     );
-    selectedValue = _profileHandle.isEmpty ? values.last : _profileHandle;
+    selectedValue = _profileHandle.isEmpty ? '' : _profileHandle;
     SchedulerBinding.instance.addPostFrameCallback((_) {
       Provider.of<UserData>(context, listen: false).setIsLoading(false);
     });
@@ -83,48 +84,48 @@ class _SetUpBrandState extends State<SetUpBrand> {
     return FileImage(_profileImage!);
   }
 
-  Future<void> createUser(String username, String userId) async {
-    final _firestore = FirebaseFirestore.instance;
+  // Future<void> createUser(String username, String userId) async {
+  //   final _firestore = FirebaseFirestore.instance;
 
-    // try {
-    await _firestore.runTransaction((transaction) async {
-      DocumentSnapshot usernameDoc = await transaction
-          .get(_firestore.collection('usernames').doc(username));
-      bool isTaken = await DatabaseService.isUsernameTaken(username);
+  //   // try {
+  //   await _firestore.runTransaction((transaction) async {
+  //     DocumentSnapshot usernameDoc = await transaction
+  //         .get(_firestore.collection('usernames').doc(username));
+  //     bool isTaken = await DatabaseService.isUsernameTaken(username);
 
-      if (isTaken || usernameDoc.exists) {
-        throw Exception(
-            'The username you entered is already taken. Please choose a different username.');
-      }
+  //     if (isTaken || usernameDoc.exists) {
+  //       throw Exception(
+  //           'The username you entered is already taken. Please choose a different username.');
+  //     }
 
-      // Create the username document
-      DocumentReference usernameRef =
-          _firestore.collection('usernames').doc(username.toUpperCase());
-      transaction.set(usernameRef, {'userId': userId});
-      transaction.update(
-        usersAuthorRef.doc(userId),
-        {
-          'userName': username.toUpperCase(),
-        },
-      );
+  //     // Create the username document
+  //     DocumentReference usernameRef =
+  //         _firestore.collection('usernames').doc(username.toUpperCase());
+  //     transaction.set(usernameRef, {'userId': userId});
+  //     transaction.update(
+  //       usersAuthorRef.doc(userId),
+  //       {
+  //         'userName': username.toUpperCase(),
+  //       },
+  //     );
 
-      transaction.update(
-        userProfessionalRef.doc(userId),
-        {
-          'userName': username.toUpperCase(),
-        },
-      );
-      _userNameCreated = true;
-      _updateAuthorHive(username.toUpperCase());
-      Provider.of<UserData>(context, listen: false)
-          .setChangeUserName(username.toUpperCase());
-      animateToPage();
-    });
-    // } catch (e) {
-    //   // Rethrow the caught exception to handle it in the _validate method
-    //   throw e;
-    // }
-  }
+  //     transaction.update(
+  //       userProfessionalRef.doc(userId),
+  //       {
+  //         'userName': username.toUpperCase(),
+  //       },
+  //     );
+  //     _userNameCreated = true;
+  //     _updateAuthorHive(username.toUpperCase());
+  //     Provider.of<UserData>(context, listen: false)
+  //         .setChangeUserName(username.toUpperCase());
+  //     animateToPage();
+  //   });
+  //   // } catch (e) {
+  //   //   // Rethrow the caught exception to handle it in the _validate method
+  //   //   throw e;
+  //   // }
+  // }
 
   Future<void> changeUsername(
       String oldUsername, String newUsername, String userId) async {
@@ -265,151 +266,95 @@ class _SetUpBrandState extends State<SetUpBrand> {
     accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
   }
 
-  // _validateTextToxicity(String changeUserName) async {
-  //   var _provider = Provider.of<UserData>(context, listen: false);
-  //   _provider.setIsLoading(true);
+  // _validateTextToxicity() async {
+  //   final form = _formKey.currentState;
 
-  //   TextModerator moderator = TextModerator();
+  //   if (form!.validate()) {
+  //     form.save();
+  //     var _provider = Provider.of<UserData>(context, listen: false);
+  //     _provider.setIsLoading(true);
+  //     var changeUserName = _controller.text.toUpperCase();
+  //     // print('  name  ' + changeUserName);
 
-  //   // Define the texts to be checked
-  //   List<String> textsToCheck = [changeUserName];
+  //     TextModerator moderator = TextModerator();
+  //     List<String> textsToCheck = [changeUserName];
+  //     const double toxicityThreshold = 0.7;
+  //     bool allTextsValid = true;
+  //     print(changeUserName + 'ggg'); // Replace with your logging mechanism
 
-  //   // Set a threshold for toxicity that is appropriate for your app
-  //   const double toxicityThreshold = 0.7;
-  //   bool allTextsValid = true;
+  //     try {
+  //       for (String text in textsToCheck) {
+  //         Map<String, dynamic>? analysisResult =
+  //             await moderator.moderateText(text);
 
-  //   for (String text in textsToCheck) {
-  //     Map<String, dynamic>? analysisResult = await moderator.moderateText(text);
+  //         if (analysisResult != null) {
+  //           double toxicityScore = analysisResult['attributeScores']['TOXICITY']
+  //               ['summaryScore']['value'];
 
-  //     // Check if the API call was successful
-  //     if (analysisResult != null) {
-  //       double toxicityScore = analysisResult['attributeScores']['TOXICITY']
-  //           ['summaryScore']['value'];
-
-  //       if (toxicityScore >= toxicityThreshold) {
-  //         // If any text's score is above the threshold, show a Snackbar and set allTextsValid to false
-  //         mySnackBarModeration(context,
-  //             'Your username contains inappropriate content. Please review');
-  //         _provider.setIsLoading(false);
-
-  //         allTextsValid = false;
-  //         break; // Exit loop as we already found inappropriate content
+  //           if (toxicityScore >= toxicityThreshold) {
+  //             mySnackBarModeration(context,
+  //                 'Your username contains inappropriate content. Please review');
+  //             allTextsValid = false;
+  //             break; // Exit loop as we already found inappropriate content
+  //           }
+  //         } else {
+  //           mySnackBar(context, 'Try again.');
+  //           allTextsValid = false;
+  //           break; // Exit loop as there was an API error
+  //         }
   //       }
-  //     } else {
-  //       // Handle the case where the API call failed
-  //       _provider.setIsLoading(false);
-  //       mySnackBar(context, 'Try again.');
+  //     } catch (e) {
+  //       // Log the error or handle it as needed
+  //       print(e); // Replace with your logging mechanism
+  //       mySnackBar(context, 'An unexpected error occurred.');
   //       allTextsValid = false;
-  //       break; // Exit loop as there was an API error
+  //     } finally {
+  //       _provider.setIsLoading(
+  //           false); // This ensures isLoading is always set to false at the end
+  //     }
+
+  //     if (allTextsValid) {
+  //       _validate();
+  //       // await changeUsername(changeUserName.toUpperCase(),
+  //       //     _controller.text.toUpperCase(), _provider.currentUserId!);
+  //       // mySnackBar(context, 'Username changed successfully');
+  //       // animateToPage(1);
   //     }
   //   }
+  // }
 
-  //   // Animate to the next page if all texts are valid
-  //   if (allTextsValid) {
-  //     _provider.setIsLoading(false);
+  // _validate() async {
+  //   var _provider = Provider.of<UserData>(context, listen: false);
+  //   _provider.setIsLoading(true);
+  //   var _changeUserName = _provider.changeNewUserName;
 
-  //     await changeUsername(changeUserName.toUpperCase(),
-  //         _controller.text.toUpperCase(), _provider.currentUserId!);
-  //     mySnackBar(context, 'Username changed successfully');
-  //     // animateToPage(1);
+  //   if (_changeUserName == _controller.text.toUpperCase()) {
+  //     animateToPage();
+  //     // mySnackBar(context, '');
+  //   } else {
+  //     try {
+  //       if (_userNameCreated) {
+  //         await _usernameService.validateTextToxicity(
+  //             context, _changeUserName, _controller);
+  //         // await changeUsername(_changeUserName.toUpperCase(),
+  //         //     _controller.text.trim().toUpperCase(), _provider.currentUserId!);
+  //         // mySnackBar(context, 'Username changed successfully');
+  //       } else {
+  //         await createUser(_controller.text.trim(), _provider.currentUserId!);
+  //         mySnackBar(context, 'Username set successfully');
+  //       }
+  //     } catch (e) {
+  //       mySnackBar(context, e.toString());
+  //     }
+  //     // }
   //   }
-  // // }
-
-  _validateTextToxicity() async {
-    final form = _formKey.currentState;
-
-    if (form!.validate()) {
-      form.save();
-      var _provider = Provider.of<UserData>(context, listen: false);
-      _provider.setIsLoading(true);
-      var changeUserName = _controller.text.toUpperCase();
-      // print('  name  ' + changeUserName);
-
-      TextModerator moderator = TextModerator();
-      List<String> textsToCheck = [changeUserName];
-      const double toxicityThreshold = 0.7;
-      bool allTextsValid = true;
-      print(changeUserName + 'ggg'); // Replace with your logging mechanism
-
-      try {
-        for (String text in textsToCheck) {
-          Map<String, dynamic>? analysisResult =
-              await moderator.moderateText(text);
-
-          if (analysisResult != null) {
-            double toxicityScore = analysisResult['attributeScores']['TOXICITY']
-                ['summaryScore']['value'];
-
-            if (toxicityScore >= toxicityThreshold) {
-              mySnackBarModeration(context,
-                  'Your username contains inappropriate content. Please review');
-              allTextsValid = false;
-              break; // Exit loop as we already found inappropriate content
-            }
-          } else {
-            mySnackBar(context, 'Try again.');
-            allTextsValid = false;
-            break; // Exit loop as there was an API error
-          }
-        }
-      } catch (e) {
-        // Log the error or handle it as needed
-        print(e); // Replace with your logging mechanism
-        mySnackBar(context, 'An unexpected error occurred.');
-        allTextsValid = false;
-      } finally {
-        _provider.setIsLoading(
-            false); // This ensures isLoading is always set to false at the end
-      }
-
-      if (allTextsValid) {
-        _validate();
-        // await changeUsername(changeUserName.toUpperCase(),
-        //     _controller.text.toUpperCase(), _provider.currentUserId!);
-        // mySnackBar(context, 'Username changed successfully');
-        // animateToPage(1);
-      }
-    }
-  }
-
-  _validate() async {
-    var _provider = Provider.of<UserData>(context, listen: false);
-    _provider.setIsLoading(true);
-    var _changeUserName = _provider.changeNewUserName;
-
-    // final form = _formKey.currentState;
-    // if (form!.validate()) {
-    //   form.save();
-    // Check if the username has changed
-    if (_changeUserName == _controller.text.toUpperCase()) {
-      animateToPage();
-      // mySnackBar(context, '');
-    } else {
-      try {
-        if (_userNameCreated) {
-          await changeUsername(_changeUserName.toUpperCase(),
-              _controller.text.trim().toUpperCase(), _provider.currentUserId!);
-          mySnackBar(context, 'Username changed successfully');
-        } else {
-          // print('  bgbgb' + _provider.currentUserId!);
-          await createUser(_controller.text.trim(), _provider.currentUserId!);
-          mySnackBar(context, 'Username set successfully');
-        }
-      } catch (e) {
-        mySnackBar(context, e.toString());
-      }
-      // }
-    }
-    _provider.setIsLoading(false);
-  }
+  //   _provider.setIsLoading(false);
+  // }
 
   _validateTextToxicityBio(AccountHolderAuthor user) async {
     animateToPage();
     var _provider = Provider.of<UserData>(context, listen: false);
-    // _provider.setIsLoading(true);
-
     TextModerator moderator = TextModerator();
-
     // Define the texts to be checked
     List<String> textsToCheck = [_provider.bio];
 
@@ -458,6 +403,28 @@ class _SetUpBrandState extends State<SetUpBrand> {
       // _provider.setIsLoading(false);
 
       _submitProfileImage(user); // animateToPage(1);
+    }
+  }
+
+  _validate(BuildContext context) async {
+    var _changeUserName =
+        Provider.of<UserData>(context, listen: false).changeNewUserName;
+    final form = _formKey.currentState;
+    if (form!.validate()) {
+      form.save();
+      // Check if the username has changed
+      if (_changeUserName == _controller.text.trim()) {
+        Navigator.pop(context);
+      } else {
+        try {
+          // var currentUser = Provider.of<UserData>(context, listen: false).user;
+          await _usernameService.validateTextToxicity(
+              context, _changeUserName, _controller, true, _pageController);
+          // _validateTextToxicity(_changeUserName);
+        } catch (e) {
+          mySnackBar(context, e.toString());
+        }
+      }
     }
   }
 
@@ -513,29 +480,11 @@ class _SetUpBrandState extends State<SetUpBrand> {
             'bio': bio,
           },
         );
-
-        // batch.update(
-        //   usersAuthorRef.doc(currentUserId),
-        //   {
-        //     'dynamicLink': link,
-        //   },
-        // );
-
-        // batch.update(
-        //   userProfessionalRef.doc(currentUserId),
-        //   {
-        //     'dynamicLink': link,
-        //   },
-        // );
-        // try {
         batch.commit();
         _updateAuthorBioAndImgeUrlHive(bio, profileImageUrl, link);
 
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-                builder: (context) => ConfigPage(
-                    // email: email,
-                    )),
+            MaterialPageRoute(builder: (context) => ConfigPage()),
             (Route<dynamic> route) => false);
 
         mySnackBar(context, 'Your brand has been setup successfully');
@@ -635,27 +584,6 @@ class _SetUpBrandState extends State<SetUpBrand> {
     "Record_Label",
     "Video_Vixen",
     "Fan",
-
-    // "Artist",
-    // "Producer",
-    // "DJ",
-    // "Dancer",
-    // "Music_Video_Director",
-    // "Content_creator",
-    // "Photographer",
-    // "Record_Label",
-    // "Brand_Influencer",
-    // "Event_organiser",
-    // "Band",
-    // "Instrumentalist",
-    // "Cover_Art_Designer",
-    // "Makeup_Artist",
-    // "Video_Vixen",
-    // "Blogger",
-    // "MC(Host)",
-    // "Choire",
-    // "Battle_Rapper",
-    // "Fan",
   ];
 
   Widget buildRadios() => Theme(
@@ -908,7 +836,7 @@ class _SetUpBrandState extends State<SetUpBrand> {
                   Provider.of<UserData>(context, listen: false).isLoading
                       ? const SizedBox.shrink()
                       : _outlineButton('Save Username', () {
-                          _validateTextToxicity();
+                          _validate(context);
                           // _validate();
                         }),
                   const SizedBox(height: 60),
@@ -945,16 +873,6 @@ class _SetUpBrandState extends State<SetUpBrand> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _loadingToNext(),
-            // Align(
-            //   alignment: Alignment.centerRight,
-            //   child: MiniCircularProgressButton(
-            //     color: Colors.blue,
-            //     text: 'Skip',
-            //     onPressed: () {
-            //       _submitProfileHandle();
-            //     },
-            //   ),
-            // ),
             _directionWidget(
               ' Select \nAccount Type',
               'Choose an account type that allows other users to easily identify you for business purposes. You can select only one account type at a time.',

@@ -1,8 +1,7 @@
 import 'package:bars/utilities/exports.dart';
 
 class TicketPurchaseSummaryWidget extends StatelessWidget {
-  // Assuming `finalPurchasingTicketList` is a list of tickets you want to display.
-  // final List<TicketModel> finalPurchasingTicketList;
+
 
   TicketPurchaseSummaryWidget({Key? key}) : super(key: key);
 

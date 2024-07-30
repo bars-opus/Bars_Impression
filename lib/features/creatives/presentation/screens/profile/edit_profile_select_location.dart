@@ -21,7 +21,6 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
   String selectedValue = '';
   late double userLatitude;
   late double userLongitude;
-  // bool _isLoading = false;
   final _addressSearchController = TextEditingController();
   final FocusNode _addressSearchfocusNode = FocusNode();
   final _debouncer = Debouncer(milliseconds: 500);
@@ -224,25 +223,30 @@ class _EditProfileSelectLocationState extends State<EditProfileSelectLocation> {
   }
 
   _addressValue(String name, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          name,
-          style: TextStyle(
-            fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-            color: Colors.grey,
+    return GestureDetector(
+      onTap: () {
+        _showBottomSheetCountry(context, 'userName');
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            name,
+            style: TextStyle(
+              fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+              color: Colors.grey,
+            ),
           ),
-        ),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
-            color: Theme.of(context).secondaryHeaderColor,
-            fontWeight: FontWeight.bold,
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
+              color: Theme.of(context).secondaryHeaderColor,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

@@ -163,46 +163,7 @@ class _RefundWidgetState extends State<RefundWidget> {
               'Request\nReason',
               widget.currentRefund.reason,
             ),
-            // SalesReceiptWidget(
-            //   color: widget.currentRefund.status == 'pending'
-            //       ? Colors.red
-            //       : Colors.blue,
-            //   isRefunded: false,
-            //   lable: 'Status',
-            //   value: widget.currentRefund.status,
-            // ),
-            // Divider(),
-            // SalesReceiptWidget(
-            //   isRefunded: false,
-            //   lable: 'Amount',
-            //   value: widget.currentRefund.amount.toString(),
-            // ),
-            // Divider(),
-            // SalesReceiptWidget(
-            //   isRefunded: false,
-            //   lable: 'Processed \ntime',
-            //   value: MyDateFormat.toTime(
-            //       widget.currentRefund.approvedTimestamp.toDate()),
-            // ),
-            // Divider(),
-            // SalesReceiptWidget(
-            //   isRefunded: false,
-            //   lable: 'Processed \ndate',
-            //   value: MyDateFormat.toDate(
-            //       widget.currentRefund.approvedTimestamp.toDate()),
-            // ),
-            // Divider(),
-            // SalesReceiptWidget(
-            //   isRefunded: false,
-            //   lable: 'Expected \ndate',
-            //   value: widget.currentRefund.expectedDate,
-            // ),
-            // Divider(),
-            // SalesReceiptWidget(
-            //   isRefunded: false,
-            //   lable: 'Reason',
-            //   value: widget.currentRefund.reason,
-            // ),
+           
             Divider(
               thickness: .2,
             ),
@@ -216,7 +177,6 @@ class _RefundWidgetState extends State<RefundWidget> {
                 icon: Icon(
                   Icons.delete_forever_outlined,
                   color: Colors.red,
-                  // size: ResponsiveHelper.responsiveFontSize(context, 20),
                 )),
             Divider(
               thickness: .2,

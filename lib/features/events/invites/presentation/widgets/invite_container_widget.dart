@@ -101,7 +101,6 @@ class _InviteContainerWidgetState extends State<InviteContainerWidget> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         TicketPurchasingIcon(
-                          // icon: Icons.event,
                           title: '',
                         ),
                         Text(
@@ -125,21 +124,16 @@ class _InviteContainerWidgetState extends State<InviteContainerWidget> {
                             text: widget.invite.eventTitle,
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
-
                           TextSpan(
                             text:
                                 "\n\We apologize for the inconvenience, but we regret to inform you that the event: ${widget.invite.eventTitle} has been deleted by the organizer. We understand the impact this may have, and we sincerely apologize for any inconvenience caused.",
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
-
-                          // Include any additional information or links here
                         ],
                       ),
                     ),
                     SizedBox(
                         height: ResponsiveHelper.responsiveHeight(context, 30)),
-
-                    // Include buttons for contacting support or accessing FAQs
                     const SizedBox(height: 60),
                   ],
                 ),
@@ -151,7 +145,6 @@ class _InviteContainerWidgetState extends State<InviteContainerWidget> {
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
     var _provider = Provider.of<UserData>(context);
-
     bool isCurrentUser = widget.invite.inviteeId == _provider.currentUserId;
     return Padding(
       padding: const EdgeInsets.all(20.0),
@@ -202,7 +195,7 @@ class _InviteContainerWidgetState extends State<InviteContainerWidget> {
         child: Container(
           padding: EdgeInsets.only(top: 5),
           width: width,
-          height: ResponsiveHelper.responsiveHeight(context, 120.0),
+          height: ResponsiveHelper.responsiveHeight(context, 140.0),
           decoration: BoxDecoration(
               color: widget.invite.answer.isEmpty
                   ? Theme.of(context).primaryColorLight
@@ -277,40 +270,18 @@ class _InviteContainerWidgetState extends State<InviteContainerWidget> {
                   textScaleFactor: MediaQuery.of(context).textScaleFactor,
                   text: TextSpan(
                     children: [
-                      // TextSpan(
-                      //   text: 'CORDIALLY INVITED  ',
-                      //   style: TextStyle(
-                      //       fontSize: ResponsiveHelper.responsiveFontSize(
-                      //           context, 12.0),
-                      //       color: Colors.blue),
-                      // ),
-                      // TextSpan(
-                      //   text: widget.invite.answer,
-                      //   style: TextStyle(
-                      //       fontSize: ResponsiveHelper.responsiveFontSize(
-                      //           context, 12.0),
-                      //       color: widget.invite.answer.startsWith('Accepted')
-                      //           ? Colors.blue
-                      //           : Colors.red),
-                      // ),
                       TextSpan(
                         text: '${widget.invite.generatedMessage}',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
                   ),
-                  maxLines: 4,
+                  maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.start,
                 ),
               ],
             ),
-            // subtitle: Text(
-            //   MyDateFormat.toDate(
-            //     widget.invite.eventTimestamp!.toDate(),
-            //   ),
-            //   style: Theme.of(context).textTheme.bodyMedium,
-            // ),
           ),
         ),
       ),

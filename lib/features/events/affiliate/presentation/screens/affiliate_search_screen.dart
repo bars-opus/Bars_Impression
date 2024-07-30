@@ -11,9 +11,7 @@ class AffiliateSearchScreen extends StatefulWidget {
   final String inviteMessage;
   final String termsAndCondition;
   final double commission;
-
   final Color paletteColor;
-  // final PaletteGenerator palette;
 
   AffiliateSearchScreen({
     required this.currentUserId,
@@ -22,7 +20,6 @@ class AffiliateSearchScreen extends StatefulWidget {
     required this.paletteColor,
     required this.commission,
     required this.termsAndCondition,
-    // required this.palette,
   });
 
   @override
@@ -32,22 +29,14 @@ class AffiliateSearchScreen extends StatefulWidget {
 class _AffiliateSearchScreenState extends State<AffiliateSearchScreen>
     with AutomaticKeepAliveClientMixin {
   int limit = 10;
-
   late ScrollController _hideButtonController;
   String query = "";
-  final _controller = new TextEditingController();
-
-  bool _isTicketPass = false;
-
   final FocusNode _focusNode = FocusNode();
   TextEditingController _searchController = TextEditingController();
-
   ValueNotifier<List<AccountHolderAuthor>> _users =
       ValueNotifier<List<AccountHolderAuthor>>([]);
-
   Map<String, bool> userSelection = {};
   List<AccountHolderAuthor> selectedUsersList = [];
-
   bool _isLoading = false;
 
   @override
@@ -58,7 +47,6 @@ class _AffiliateSearchScreenState extends State<AffiliateSearchScreen>
 
 // The dispose method is properly implemented to clean up resources when they are no longer needed.
 // This can help prevent memory leaks and improve the overall performance of the app.
-
   @override
   void dispose() {
     _hideButtonController.dispose();
@@ -71,10 +59,8 @@ class _AffiliateSearchScreenState extends State<AffiliateSearchScreen>
   // The _sendInvite method sends invites to all selected users.
   // It uses a retry function to retry failed attempts at sending invites.
   // It also displays a loading modal while the invites are being sent and a success or error message when done.
-
   // The use of a retry function for sending invites can help prevent temporary issues from causing failures.
   // Also, the use of bottom sheets to display error messages can give the user valuable feedback when something goes wrong.
-
   _sendInvite() async {
     var _user = Provider.of<UserData>(context, listen: false).user;
     String date = MyDateFormat.toDate(widget.event.startDate.toDate());
@@ -111,12 +97,6 @@ class _AffiliateSearchScreenState extends State<AffiliateSearchScreen>
           commission: widget.commission,
           authorProfileImageUrl: _user!.profileImageUrl!,
           termsAndCondition: widget.termsAndCondition,
-          // users: selectedUsersList,
-          // message: widget.inviteMessage,
-          // currentUser: Provider.of<UserData>(context, listen: false).user!,
-          // isTicketPass: _isTicketPass,
-          // generatedMessage:
-          //     'You have been invited by ${_user!.userName} to attend ${widget.event.title} on $date at ${widget.event.venue}'
         );
 
     try {
@@ -132,7 +112,6 @@ class _AffiliateSearchScreenState extends State<AffiliateSearchScreen>
 // This method shows a bottom sheet with an error message.
 // It uses the showModalBottomSheet function to display a DisplayErrorHandler widget, which shows
 // the message "Request failed" along with a button for dismissing the bottom sheet.
-
   void _showBottomSheetErrorMessage(String from, Object e) {
     String error = e.toString();
     String result = error.contains(']')
@@ -159,7 +138,6 @@ class _AffiliateSearchScreenState extends State<AffiliateSearchScreen>
 
 // This method sets _isLoadingSubmit to false.
 // This indicates that the loading process is finished.
-
   void _endLoading() {
     if (_isModalShown) {
       Navigator.pop(context);
@@ -172,7 +150,6 @@ class _AffiliateSearchScreenState extends State<AffiliateSearchScreen>
 // The _showBottomSheetLoading and _showBottomSheetErrorMessage methods are used to display
 // a loading modal and error messages, respectively. The loading modal is displayed
 // while invites are being sent, and the error message modal is displayed if an error occurs.
-
   bool _isModalShown = false;
   _showBottomSheetLoading() {
     _isModalShown = true;
@@ -268,7 +245,6 @@ class _AffiliateSearchScreenState extends State<AffiliateSearchScreen>
   // The _searchContainer method builds a search bar where the user can enter a username.
   // As the user types, the onChanged callback queries the database for matching usernames
   // and updates the _users value notifier.
-
   Timer? searchTimer;
   _searchContainer() {
     return SearchContentField(
@@ -678,7 +654,6 @@ class _AffiliateSearchScreenState extends State<AffiliateSearchScreen>
   // The use of ValueNotifier and ValueListenableBuilder allows for efficient rebuilding of widgets.
   // This means that only the widgets that need to change (the user list) get
   // rebuilt when the state changes, rather than the whole widget tree.
-
   _buildResults() {
     return ValueListenableBuilder<List<AccountHolderAuthor>>(
       valueListenable: _users,

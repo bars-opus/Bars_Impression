@@ -57,13 +57,6 @@ class _ScheduleBuildPeopleState extends State<ScheduleBuildPeople> {
                     if (!await launchUrl(Uri.parse(link))) {
                       throw 'Could not launch link';
                     }
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (_) => MyWebView(
-                    //               url: link,
-                    //               title: '',
-                    //             )));
                   },
                 ),
               ],
@@ -86,20 +79,12 @@ class _ScheduleBuildPeopleState extends State<ScheduleBuildPeople> {
     String profileImageUrl = widget.person.profileImageUrl == null
         ? ''
         : widget.person.profileImageUrl;
-    // var _currentUserId =
-    //     Provider.of<UserData>(context, listen: false).currentUserId;
-
     return Padding(
       padding: widget.fullWidth
           ? EdgeInsets.only(top: 5.0, left: 10, right: 10)
           : EdgeInsets.all(0),
       child: GestureDetector(
-        onTap:
-
-            // widget.edit || widget.from == 'Calendar'
-            //     ? () {}
-            //     :
-            () {
+        onTap: () {
           widget.person.externalProfileLink!.isEmpty
               ? _navigateToPage(
                   context,
@@ -115,13 +100,11 @@ class _ScheduleBuildPeopleState extends State<ScheduleBuildPeople> {
           decoration: BoxDecoration(
               color: widget.from.startsWith('list')
                   ? Theme.of(context).primaryColor
-                  : Theme.of(context).primaryColor.withOpacity(.3),
-              // from.isEmpty
-              //     ? Theme.of(context).primaryColorLight
-              // : Theme.of(context).primaryColor.withOpacity(.5),
-              borderRadius: BorderRadius.circular(20)),
+                  : Theme.of(context).primaryColorLight,
+              borderRadius: BorderRadius.circular(5)),
           width: widget.fullWidth ? widget.width : widget.width / 2,
           height: widget.from == 'list' ? 80 : null,
+          margin: EdgeInsets.all(1.0),
           child: Padding(
             padding: widget.fullWidth
                 ? EdgeInsets.all(10.0)
@@ -135,7 +118,6 @@ class _ScheduleBuildPeopleState extends State<ScheduleBuildPeople> {
               ),
               child: Row(
                 children: [
-                  // if (l)
                   profileImageUrl.isEmpty
                       ? Icon(
                           Icons.account_circle,
@@ -181,13 +163,6 @@ class _ScheduleBuildPeopleState extends State<ScheduleBuildPeople> {
                           ? TextOverflow.visible
                           : TextOverflow.ellipsis,
                     ),
-
-                    //  Text(
-                    //   person.name,
-                    //   style: Theme.of(context).textTheme.bodySmall,
-                    //   maxLines: fullWidth ? null : 2,
-                    //   overflow: fullWidth ? null : TextOverflow.ellipsis,
-                    // ),
                   ),
                   Container(
                     height: ResponsiveHelper.responsiveHeight(
@@ -198,30 +173,18 @@ class _ScheduleBuildPeopleState extends State<ScheduleBuildPeople> {
                       context,
                       30,
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        if (widget.person.verifiedTag)
-                          Icon(
-                            Icons.verified,
-                            size: ResponsiveHelper.responsiveHeight(
-                              context,
-                              10,
-                            ),
-                            color: Colors.blue,
-                          ),
-                        // Icon(
-                        //   person.internalProfileLink!.isNotEmpty
-                        //       ? Icons.arrow_forward_ios
-                        //       : Icons.link,
-                        //   size: ResponsiveHelper.responsiveHeight(
-                        //     context,
-                        //     15,
-                        //   ),
-                        //   color: Colors.blue,
-                        // )
-                      ],
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 20.0),
+                      child: Icon(
+                        widget.person.externalProfileLink!.isEmpty
+                            ? Icons.arrow_forward_ios_rounded
+                            : Icons.link,
+                        size: ResponsiveHelper.responsiveHeight(
+                          context,
+                          20,
+                        ),
+                        color: Colors.blue,
+                      ),
                     ),
                   )
                 ],

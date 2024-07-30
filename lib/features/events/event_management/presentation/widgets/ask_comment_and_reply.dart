@@ -14,27 +14,15 @@ class _DisplayAskAndReplyState extends State<DisplayAskAndReply> {
   late Future<List<Ask>> _repliesFuture;
   final TextEditingController _commentController = TextEditingController();
   ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
-  // int _repliedComment = 0;
   String _editedComment = '';
 
   @override
   void initState() {
     super.initState();
     _repliesFuture = _initData();
-    // _setUpRepliedCommentCount();
     _commentController.addListener(_onAskTextChanged);
   }
 
-  // _setUpRepliedCommentCount() async {
-  //   DatabaseService.numRepliedAsks(widget.event.id, widget.ask.id)
-  //       .listen((repliedComment) {
-  //     if (mounted) {
-  //       setState(() {
-  //         _repliedComment = repliedComment;
-  //       });
-  //     }
-  //   });
-  // }
 
   @override
   void dispose() {

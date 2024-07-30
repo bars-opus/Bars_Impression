@@ -10,7 +10,6 @@ Future<void> reverseGeocoding(UserData provider, String address) async {
       print(
         provider.latLng,
       );
-      // print('Latitude: ${latLng['lat']}, Longitude: ${latLng['lng']}');
     } catch (e) {
       print(e);
     }

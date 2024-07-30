@@ -1,5 +1,6 @@
 import 'package:bars/features/creatives/presentation/widgets/acitvity_widget.dart';
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class NotificationPage extends StatefulWidget {
@@ -240,6 +241,47 @@ class _NotificationPageState extends State<NotificationPage>
     Navigator.pop(context);
   }
 
+  _sortByWidget(
+    VoidCallback onPressed,
+    IconData icon,
+    String title,
+  ) {
+    // var _blueStyle = TextStyle(
+    //     fontSize: ResponsiveHelper.responsiveFontSize(context, 14),
+    //     color: Colors.black);
+    return GestureDetector(
+      onTap: onPressed,
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Icon(
+                  size: ResponsiveHelper.responsiveFontSize(context, 20.0),
+                  icon,
+                  color: Colors.blue,
+                ),
+                const SizedBox(
+                  width: 30,
+                ),
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
+          ),
+          Divider(
+            color: Colors.grey,
+            thickness: .2,
+          )
+        ],
+      ),
+    );
+  }
+
   void _showBottomSheetSortNotifications(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     showModalBottomSheet(
@@ -255,103 +297,136 @@ class _NotificationPageState extends State<NotificationPage>
             child: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 30.0, vertical: 2),
-                child: MyBottomModelSheetAction(actions: [
-                  Icon(
-                    Icons.horizontal_rule,
-                    size: ResponsiveHelper.responsiveHeight(context, 25.0),
-                    color: Theme.of(context).secondaryHeaderColor,
+                child: ListView(children: [
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  TicketPurchasingIcon(
+                    title: 'Sort:',
                   ),
                   const SizedBox(
                     height: 20,
                   ),
-                  Text(
-                    'Sort by:',
-                    style: Theme.of(context).textTheme.bodyMedium,
+                  Divider(
+                    color: Colors.grey,
+                    thickness: .2,
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  BottomModalSheetButton(
-                    onPressed: () async {
+                  _sortByWidget(
+                    () async {
                       HapticFeedback.mediumImpact();
                       await Future.delayed(Duration(milliseconds: 300));
-                      _sort(NotificationActivityType.ticketPurchased);
+                      _sort(NotificationActivityType.advice);
                     },
-                    width: width.toDouble(),
-                    child: Text('Tickets purchased'),
+                    Icons.comment_outlined,
+                    'Advices',
                   ),
-                  BottomModalSheetButton(
-                    onPressed: () async {
+                  _sortByWidget(
+                    () async {
                       HapticFeedback.mediumImpact();
                       await Future.delayed(Duration(milliseconds: 300));
-                      _sort(NotificationActivityType.inviteRecieved);
+                      _sort(NotificationActivityType.affiliate);
                     },
-                    width: width.toDouble(),
-                    child: Text('Invites recieved'),
+                    Icons.attach_money,
+                    'Affiliates',
                   ),
-                  BottomModalSheetButton(
-                    onPressed: () async {
+                  _sortByWidget(
+                    () async {
                       HapticFeedback.mediumImpact();
                       await Future.delayed(Duration(milliseconds: 300));
-                      _sort(NotificationActivityType.newEventInNearYou);
+                      _sort(NotificationActivityType.bookingMade);
                     },
-                    width: width.toDouble(),
-                    child: Text('Events nearby'),
+                    Icons.calendar_month_outlined,
+                    'Bookings made',
                   ),
-                  BottomModalSheetButton(
-                    onPressed: () async {
+                  _sortByWidget(
+                    () async {
                       HapticFeedback.mediumImpact();
                       await Future.delayed(Duration(milliseconds: 300));
-                      _sort(NotificationActivityType.ask);
+                      _sort(NotificationActivityType.bookingReceived);
                     },
-                    width: width.toDouble(),
-                    child: Text('Event questions'),
+                    Icons.calendar_month_outlined,
+                    'Bookings received',
                   ),
-                  BottomModalSheetButton(
-                    onPressed: () async {
+                  _sortByWidget(
+                    () async {
                       HapticFeedback.mediumImpact();
                       await Future.delayed(Duration(milliseconds: 300));
-                      _sort(NotificationActivityType.eventUpdate);
+                      _sort(NotificationActivityType.donation);
                     },
-                    width: width.toDouble(),
-                    child: Text('Event update'),
+                    MdiIcons.giftOutline,
+                    'Donations',
                   ),
-                  BottomModalSheetButton(
-                    onPressed: () async {
-                      HapticFeedback.mediumImpact();
-                      await Future.delayed(Duration(milliseconds: 300));
-                      _sort(NotificationActivityType.refundRequested);
-                    },
-                    width: width.toDouble(),
-                    child: Text('Refund requests'),
-                  ),
-                  BottomModalSheetButton(
-                    onPressed: () async {
+                  _sortByWidget(
+                    () async {
                       HapticFeedback.mediumImpact();
                       await Future.delayed(Duration(milliseconds: 300));
                       _sort(NotificationActivityType.eventDeleted);
                     },
-                    width: width.toDouble(),
-                    child: Text('Events deleted'),
+                    Icons.event_busy_outlined,
+                    'Events deleted',
                   ),
-                  BottomModalSheetButton(
-                    onPressed: () async {
+                  _sortByWidget(
+                    () async {
                       HapticFeedback.mediumImpact();
                       await Future.delayed(Duration(milliseconds: 300));
-
-                      _sort(NotificationActivityType.advice);
+                      _sort(NotificationActivityType.newEventInNearYou);
                     },
-                    width: width.toDouble(),
-                    child: Text('Advices'),
+                    Icons.event_available_outlined,
+                    'Events nearby',
                   ),
-                  BottomModalSheetButton(
-                    onPressed: () async {
+                  _sortByWidget(
+                    () async {
+                      HapticFeedback.mediumImpact();
+                      await Future.delayed(Duration(milliseconds: 300));
+                      _sort(NotificationActivityType.eventUpdate);
+                    },
+                    Icons.event_note,
+                    'Events update',
+                  ),
+                  _sortByWidget(
+                    () async {
+                      HapticFeedback.mediumImpact();
+                      await Future.delayed(Duration(milliseconds: 300));
+                      _sort(NotificationActivityType.ask);
+                    },
+                    Icons.question_mark_rounded,
+                    'Events questions',
+                  ),
+                  _sortByWidget(
+                    () async {
                       HapticFeedback.mediumImpact();
                       await Future.delayed(Duration(milliseconds: 300));
                       _sort(NotificationActivityType.follow);
                     },
-                    width: width.toDouble(),
-                    child: Text('Followers'),
+                    Icons.account_circle_outlined,
+                    'Followers',
+                  ),
+                  _sortByWidget(
+                    () async {
+                      HapticFeedback.mediumImpact();
+                      await Future.delayed(Duration(milliseconds: 300));
+                      _sort(NotificationActivityType.inviteRecieved);
+                    },
+                    FontAwesomeIcons.idBadge,
+                    'Invites received',
+                  ),
+                  _sortByWidget(
+                    () async {
+                      HapticFeedback.mediumImpact();
+                      await Future.delayed(Duration(milliseconds: 300));
+                      _sort(NotificationActivityType.refundRequested);
+                    },
+                    Icons.request_quote_outlined,
+                    'Refund requests',
+                  ),
+                  _sortByWidget(
+                    () async {
+                      HapticFeedback.mediumImpact();
+                      await Future.delayed(Duration(milliseconds: 300));
+                      _sort(NotificationActivityType.ticketPurchased);
+                    },
+                    Icons.payment,
+                    'Tickets purchased',
                   ),
                 ])));
       },

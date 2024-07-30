@@ -1,5 +1,3 @@
-
-
 import 'package:bars/utilities/exports.dart';
 
 class DummyTextField extends StatelessWidget {
@@ -23,15 +21,14 @@ class DummyTextField extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Theme.of(context).secondaryHeaderColor,
-                fontSize:  ResponsiveHelper.responsiveFontSize(context, 14.0),
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
               ),
             ),
             SizedBox(height: 12),
-            Container(
-              height: 0.7,
-              width: double.infinity,
+            Divider(
+              thickness: .2,
               color: Colors.grey,
-            )
+            ),
           ],
         ),
       ),

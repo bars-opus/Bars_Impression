@@ -186,31 +186,5 @@ class StorageService {
     }
   }
 
-  // static Future<File?> compressImage(String photoId, File image) async {
-  //   final tempDir = await getTemporaryDirectory();
-  //   final path = tempDir.path;
-  //   File? compressImageFile = await FlutterImageCompress.compressAndGetFile(
-  //     image.absolute.path,
-  //     '$path/img_$photoId.jpg',
-  //     quality: 50,
-  //   );
-  //   return compressImageFile;
-  // }
-  // static Future<String> uploadUserprofessionalVideo1(
-  //     String url, PickedFile videoFile) async {
-  //   String? videoId = Uuid().v4();
-  //   // File? image = await compressImage(videoId, imageFile);
 
-  //   // if (url.isNotEmpty) {
-  //   //   RegExp exp = RegExp(r'professionalPicture1Url_(.*).jpg');
-  //   //   videoId = exp.firstMatch(url)![1];
-  //   // }
-  //   String currentUserId = FirebaseAuth.instance.currentUser!.uid;
-  //   UploadTask uploadTask = storageRef
-  //       .child(
-  //           'videos/professionalVideo1/$currentUserId/professionalVideoUrl_$videoId.mp4')
-  //       .putFile(videoFile as File);
-  //   String downloadUrl = await (await uploadTask).ref.getDownloadURL();
-  //   return downloadUrl;
-  // }
 }

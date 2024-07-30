@@ -2,12 +2,19 @@ import 'package:bars/utilities/exports.dart';
 
 class PayoutSuccessWidget extends StatelessWidget {
   final int amount;
-  const PayoutSuccessWidget({super.key, required this.amount});
+  final bool payout;
+  final bool payment;
+
+  const PayoutSuccessWidget(
+      {super.key,
+      required this.amount,
+      this.payout = true,
+      this.payment = false});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: ResponsiveHelper.responsiveHeight(context, 450),
+      height: ResponsiveHelper.responsiveHeight(context, payment ? 350 : 450),
       decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(30)),
@@ -29,20 +36,27 @@ class PayoutSuccessWidget extends StatelessWidget {
             const SizedBox(height: 20),
             Center(
               child: Text(
-                'Payout\nsuccessfully processed',
+                payment
+                    ? 'Payment\nsuccessfully processed'
+                    : payout
+                        ? 'Payout\nsuccessfully processed'
+                        : 'Donation\nsuccessful',
                 style: Theme.of(context).textTheme.titleLarge,
                 textAlign: TextAlign.center,
               ),
             ),
             const SizedBox(height: 20),
             Text(
-              "We are pleased to inform you that your payout request has been successfully processed. The requested funds of ${amount} have been transferred to your designated account and should be credited within the next few minutes.\n\nThank you for choosing Bars Impression.",
+              payment
+                  ? 'Your 30% down payment has been successfully processed. Your booking request has now been finalized and confirmed.'
+                  : payout
+                      ? "We are pleased to inform you that your payout request has been successfully processed. The requested funds of ${amount} have been transferred to your designated account and should be credited within the next few minutes.\n\nThank you for choosing Bars Impression."
+                      : 'You donatino to this user has been successful. We appreciate your generosity and support for the creative community.',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ],
         ),
       ),
     );
-    ;
   }
 }

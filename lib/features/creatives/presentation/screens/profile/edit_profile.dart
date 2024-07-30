@@ -205,30 +205,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
   }
 
-//   _updateAuthorHive() {
-//     final accountAuthorbox = Hive.box('currentUser');
-
-//     var _provider = Provider.of<UserData>(context, listen: false);
-
-// // Create a new instance of AccountHolderAuthor with the updated name
-//     var updatedAccountAuthor = AccountHolderAuthor(
-//       name: _name,
-//       bio: _bio,
-//       disabledAccount: _provider.user!.disabledAccount,
-//       dynamicLink: _provider.user!.dynamicLink,
-//       lastActiveDate: _provider.user!.lastActiveDate,
-//       profileHandle: _profileHandle,
-//       profileImageUrl: _provider.user!.profileImageUrl,
-//       reportConfirmed: _provider.user!.reportConfirmed,
-//       userId: _provider.user!.userId,
-//       userName: _userName,
-//       verified: _provider.user!.verified,
-//     );
-
-// // Put the new object back into the box with the same key
-//     accountAuthorbox.put('userId', updatedAccountAuthor);
-//   }
-
   void _showBottomSheetVerficationNeutralized(
       BuildContext context, String from) {
     final width = MediaQuery.of(context).size.width;
@@ -352,107 +328,170 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  _userNameInfo() {
-    final double width = MediaQuery.of(context).size.width;
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        new Material(
-          color: Colors.transparent,
-          child: Text(
-            _userName.toUpperCase(),
-            style: Theme.of(context).textTheme.titleMedium,
-            textAlign: TextAlign.center,
-          ),
-        ),
-        Hero(
-          tag: 'nickName',
-          child: new Material(
-            color: Colors.transparent,
-            child: Text(
-              _name,
-              style: Theme.of(context).textTheme.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-        Hero(
-          tag: 'profileHandle',
-          child: new Material(
-            color: Colors.transparent,
-            child: Text(
-              _profileHandle,
-              style: TextStyle(
-                color: Colors.blueGrey,
-                fontSize: width > 600 ? 16 : 14.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  // _userNameInfo() {
+  //   final double width = MediaQuery.of(context).size.width;
+  //   return Column(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     crossAxisAlignment: CrossAxisAlignment.center,
+  //     children: <Widget>[
+  //       new Material(
+  //         color: Colors.transparent,
+  //         child: Text(
+  //           _userName.toUpperCase(),
+  //           style: Theme.of(context).textTheme.titleMedium,
+  //           textAlign: TextAlign.center,
+  //         ),
+  //       ),
+  //       new Material(
+  //         color: Colors.transparent,
+  //         child: Text(
+  //           _name,
+  //           style: Theme.of(context).textTheme.bodyMedium,
+  //           textAlign: TextAlign.center,
+  //         ),
+  //       ),
+  //       new Material(
+  //         color: Colors.transparent,
+  //         child: Text(
+  //           _profileHandle,
+  //           style: TextStyle(
+  //             color: Colors.blueGrey,
+  //             fontSize: width > 600 ? 16 : 14.0,
+  //             fontWeight: FontWeight.bold,
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   _changeUserNameField() {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Username',
-            style: TextStyle(
-              color: Colors.grey,
-              fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Username',
+          style: TextStyle(
+            color: Theme.of(context).secondaryHeaderColor,
+            fontSize: ResponsiveHelper.responsiveFontSize(context, 10.0),
           ),
-          DummyTextField(
-            onPressed: () {
-              _navigateToPage(
-                context,
-                EditProfileName(
-                  user: widget.user,
-                ),
-              );
-            },
-            text: _userName.toUpperCase(),
-          ),
-        ],
-      ),
+        ),
+        DummyTextField(
+          onPressed: () {
+            _navigateToPage(
+              context,
+              EditProfileName(
+                user: widget.user,
+              ),
+            );
+          },
+          text: _userName.toUpperCase(),
+        ),
+      ],
     );
   }
 
   _stageNameAndBioFields() {
     return Column(
       children: [
-        Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: EditProfileTextField(
-              labelText: 'Stage name',
-              hintText: 'Stage or brand or nickname',
-              initialValue: _name,
-              onValidateText: (input) => input!.trim().length < 1
-                  ? 'Please enter a valid nickname'
-                  : null,
-              onSavedText: (input) => _name = input,
-              enableBorder: false,
-            )),
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: EditProfileTextField(
-            enableBorder: false,
-            labelText: 'bio',
-            hintText: 'A piece of short information about yourself',
-            initialValue: _bio,
-            onSavedText: (input) => _bio = input,
-            onValidateText: (input) => input!.trim().length > 700
-                ? 'Please, enter a bio of fewer than 700 characters.'
-                : null,
-          ),
+        EditProfileTextField(
+          padding: 0,
+          labelText: 'Stage name',
+          hintText: 'Stage or brand or nickname',
+          initialValue: _name,
+          onValidateText: (input) =>
+              input!.trim().length < 1 ? 'Please enter a valid nickname' : null,
+          onSavedText: (input) => _name = input,
+          enableBorder: false,
+        ),
+        EditProfileTextField(
+          padding: 0,
+          enableBorder: false,
+          labelText: 'bio',
+          hintText: 'A piece of short information about yourself',
+          initialValue: _bio,
+          onSavedText: (input) => _bio = input,
+          onValidateText: (input) => input!.trim().length > 700
+              ? 'Please, enter a bio of fewer than 700 characters.'
+              : null,
         ),
       ],
+    );
+  }
+
+  _loadingPortfolio() {
+    return ListTile(
+      leading: SizedBox(
+        height: 15,
+        width: 15,
+        child: CircularProgressIndicator(
+          strokeWidth: 3,
+          color: Colors.blue,
+        ),
+      ),
+      title: Text(
+        ' Booking portfolio',
+        style: TextStyle(
+          color: Theme.of(context).secondaryHeaderColor,
+          fontWeight: FontWeight.normal,
+          fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+        ),
+        overflow: TextOverflow.ellipsis,
+      ),
+      trailing: Icon(
+        Icons.arrow_forward_ios_outlined,
+        color: Theme.of(context).secondaryHeaderColor,
+        size: ResponsiveHelper.responsiveFontSize(context, 20),
+      ),
+    );
+  }
+
+  void _showBottomSheetNoCity() async {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    final UserSettingsLoadingPreferenceModel _user =
+        _provider.userLocationPreference!;
+
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return Container(
+          height: ResponsiveHelper.responsiveHeight(context, 600),
+          decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(30)),
+          child: Padding(
+              padding: const EdgeInsets.only(top: 30.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  NoContents(
+                      title: 'No City',
+                      subTitle:
+                          'Enter your location to setup your booking portfolio. When you enter your city, we can suggest local events taking place in that area, as well as connect you with other creatives who are also based in the same location. This facilitates meaningful connections and creates opportunities for potential business collaborations and networking.',
+                      icon: Icons.location_on_outlined),
+                  SizedBox(
+                    height: ResponsiveHelper.responsiveHeight(context, 30),
+                  ),
+                  BlueOutlineButton(
+                    buttonText: 'Enter city',
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _navigateToPage(
+                        context,
+                        EditProfileSelectLocation(
+                          user: _user,
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              )),
+        );
+      },
     );
   }
 
@@ -461,86 +500,181 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     final UserSettingsLoadingPreferenceModel _user =
         _provider.userLocationPreference!;
+    var _divider = Divider(
+      thickness: .2,
+      color: Colors.grey,
+    );
     return Column(
       children: [
-        _editPageOptions(' Select an Account Type', Icons.person, () {
-          _navigateToPage(
-            context,
-            EditProfileHandle(
-              user: widget.user,
-            ),
-          );
-        }),
-        _editPageOptions(' Choose your location', MdiIcons.mapMarker, () {
-          _navigateToPage(
-            context,
-            EditProfileSelectLocation(
-              user: _user,
-            ),
-          );
-        }),
+        IntroInfo(
+          leadingIcon: Icons.person_outline,
+          titleColor: Theme.of(context).secondaryHeaderColor,
+          title: 'Account Type',
+          onPressed: () {
+            _navigateToPage(
+              context,
+              EditProfileHandle(
+                user: widget.user,
+              ),
+            );
+          },
+          subTitle: "",
+          icon: Icons.arrow_forward_ios_outlined,
+        ),
+        _divider,
+        IntroInfo(
+          leadingIcon: Icons.location_on_outlined,
+          titleColor: Theme.of(context).secondaryHeaderColor,
+          title: 'Change location',
+          onPressed: () {
+            _navigateToPage(
+              context,
+              EditProfileSelectLocation(
+                user: _user,
+              ),
+            );
+          },
+          subTitle: "",
+          icon: Icons.arrow_forward_ios_outlined,
+        ),
+        _divider,
         _isLoadingBooking
-            ? ListTile(
-                leading: SizedBox(
-                  height: 15,
-                  width: 15,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 3,
-                    color: Colors.blue,
-                  ),
-                ),
-                title: Text(
-                  ' Booking portfolio',
-                  style: TextStyle(
-                    color: Theme.of(context).secondaryHeaderColor,
-                    fontWeight: FontWeight.normal,
-                    fontSize:
-                        ResponsiveHelper.responsiveFontSize(context, 14.0),
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                trailing: Icon(
-                  Icons.arrow_forward_ios_outlined,
-                  color: Colors.grey,
-                  size: ResponsiveHelper.responsiveFontSize(context, 20),
-                ),
-              )
-            : _editPageOptions(' Booking portfolio', MdiIcons.briefcaseEdit,
-                () async {
-                if (_isLoadingBooking) return;
-                _isLoadingBooking = true;
+            ? _loadingPortfolio()
+            : IntroInfo(
+                leadingIcon: Icons.work_outline_sharp,
+                titleColor: Theme.of(context).secondaryHeaderColor,
+                title: 'Booking portfolio',
+                onPressed: _user.city!.isEmpty
+                    ? () {
+                        _showBottomSheetNoCity();
+                      }
+                    : () async {
+                        if (_isLoadingBooking) return;
+                        _isLoadingBooking = true;
 
-                try {
-                  UserProfessionalModel? user =
-                      await DatabaseService.getUserProfessionalWithId(
-                    widget.user.userId!,
-                  );
+                        try {
+                          UserProfessionalModel? user =
+                              await DatabaseService.getUserProfessionalWithId(
+                            widget.user.userId!,
+                          );
 
-                  if (user != null) {
-                    _navigateToPage(
-                      context,
-                      EditProfileProfessional(
-                        user: user,
-                      ),
-                    );
-                  } else {
-                    _showBottomSheetErrorMessage(
-                        'Failed to fetch booking data.');
-                  }
-                } catch (e) {
-                  _showBottomSheetErrorMessage('Failed to fetch booking data.');
-                } finally {
-                  _isLoadingBooking = false;
-                }
-              }),
-        _editPageOptions('Account settings', Icons.settings, () async {
-          _navigateToPage(
-            context,
-            ProfileSettings(
-              user: widget.user,
-            ),
-          );
-        }),
+                          if (user != null) {
+                            _navigateToPage(
+                              context,
+                              EditProfileProfessional(
+                                user: user,
+                              ),
+                            );
+                          } else {
+                            _showBottomSheetErrorMessage(
+                                'Failed to fetch booking data.');
+                          }
+                        } catch (e) {
+                          _showBottomSheetErrorMessage(
+                              'Failed to fetch booking data.');
+                        } finally {
+                          _isLoadingBooking = false;
+                        }
+                      },
+                subTitle: "",
+                icon: Icons.arrow_forward_ios_outlined,
+              ),
+        _divider,
+        IntroInfo(
+          leadingIcon: Icons.settings_outlined,
+          titleColor: Theme.of(context).secondaryHeaderColor,
+          title: 'Account settings',
+          onPressed: () {
+            _navigateToPage(
+              context,
+              ProfileSettings(
+                user: widget.user,
+              ),
+            );
+          },
+          subTitle: "",
+          icon: Icons.arrow_forward_ios_outlined,
+        ),
+        _divider,
+        // _divider,
+        // _editPageOptions(' Select an Account Type', Icons.person, () {
+        // _navigateToPage(
+        //   context,
+        //   EditProfileHandle(
+        //     user: widget.user,
+        //   ),
+        // );
+        // }),
+        // _editPageOptions(' Choose your location', MdiIcons.mapMarker, () {
+        //   _navigateToPage(
+        //     context,
+        // EditProfileSelectLocation(
+        //   user: _user,
+        //     ),
+        //   );
+        // }),
+        // _isLoadingBooking
+        //     ? ListTile(
+        //         leading: SizedBox(
+        //           height: 15,
+        //           width: 15,
+        //           child: CircularProgressIndicator(
+        //             strokeWidth: 3,
+        //             color: Colors.blue,
+        //           ),
+        //         ),
+        //         title: Text(
+        //           ' Booking portfolio',
+        //           style: TextStyle(
+        //             color: Theme.of(context).secondaryHeaderColor,
+        //             fontWeight: FontWeight.normal,
+        //             fontSize:
+        //                 ResponsiveHelper.responsiveFontSize(context, 14.0),
+        //           ),
+        //           overflow: TextOverflow.ellipsis,
+        //         ),
+        //         trailing: Icon(
+        //           Icons.arrow_forward_ios_outlined,
+        //           color: Colors.grey,
+        //           size: ResponsiveHelper.responsiveFontSize(context, 20),
+        //         ),
+        //       )
+        //     : _editPageOptions(' Booking portfolio', MdiIcons.briefcaseEdit,
+        //   () async {
+        //   if (_isLoadingBooking) return;
+        //   _isLoadingBooking = true;
+
+        //   try {
+        //     UserProfessionalModel? user =
+        //         await DatabaseService.getUserProfessionalWithId(
+        //       widget.user.userId!,
+        //     );
+
+        //     if (user != null) {
+        //       _navigateToPage(
+        //         context,
+        //         EditProfileProfessional(
+        //           user: user,
+        //         ),
+        //       );
+        //     } else {
+        //       _showBottomSheetErrorMessage(
+        //           'Failed to fetch booking data.');
+        //     }
+        //   } catch (e) {
+        //     _showBottomSheetErrorMessage('Failed to fetch booking data.');
+        //   } finally {
+        //     _isLoadingBooking = false;
+        //   }
+        // }),
+        // _editPageOptions('Account settings', Icons.settings, () async {
+        //   _navigateToPage(
+        //     context,
+        // ProfileSettings(
+        //   user: widget.user,
+        //     ),
+        //   );
+        // }),
       ],
     );
   }
@@ -599,7 +733,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             'Set photo',
             style: TextStyle(
               color: Colors.blue,
-              fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
+              fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
             ),
           ),
         ),
@@ -668,6 +802,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     var _provider = Provider.of<UserData>(context, listen: false);
 
+    final UserSettingsLoadingPreferenceModel? _user =
+        _provider.userLocationPreference;
+
     return EditProfileScaffold(
       title: 'Edit Profile',
       widget: Form(
@@ -679,18 +816,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 padding: const EdgeInsets.all(30.0),
                 child: Column(
                   children: [
+                    const SizedBox(
+                      height: 20.0,
+                    ),
                     _profileImageWidget(),
                     const SizedBox(
                       height: 30.0,
                     ),
-                    _userNameInfo(),
-                    const SizedBox(height: 20),
-                    _changeUserNameField(),
-                    _stageNameAndBioFields(),
-                    const SizedBox(
-                      height: 30,
+                    // _userNameInfo(),
+                    // const SizedBox(height: 20),
+                    Divider(
+                      thickness: .2,
+                      color: Colors.grey,
                     ),
-                    _editPageOptionWidget(),
+                    Column(
+                      children: [
+                        _changeUserNameField(),
+                        _stageNameAndBioFields(),
+                      ],
+                    ),
+
+                    const SizedBox(
+                      height: 40,
+                    ),
+                    if (_user != null) _editPageOptionWidget(),
                     _isLoading || _provider.isLoading
                         ? Padding(
                             padding: const EdgeInsets.only(top: 30.0),

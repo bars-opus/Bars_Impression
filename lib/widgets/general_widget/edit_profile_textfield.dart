@@ -11,6 +11,7 @@ class EditProfileTextField extends StatelessWidget {
   final Function onValidateText;
   final bool autofocus;
   final bool isNumber;
+  final double padding;
 
   EditProfileTextField({
     required this.onSavedText,
@@ -21,17 +22,18 @@ class EditProfileTextField extends StatelessWidget {
     required this.enableBorder,
     this.autofocus = false,
     this.isNumber = false,
+    this.padding = 5,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.all(5.0),
+        padding: EdgeInsets.all(padding),
         child: Container(
           child: TextFormField(
             autofocus: autofocus,
             style: TextStyle(
-                fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
                 color: Theme.of(context).secondaryHeaderColor,
                 fontWeight: FontWeight.normal),
             keyboardType: isNumber
@@ -53,9 +55,10 @@ class EditProfileTextField extends StatelessWidget {
                     color: Colors.grey),
                 labelText: labelText,
                 labelStyle: TextStyle(
-                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-                  color: Colors.grey,
-                ),
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 14.0),
+                    color: Theme.of(context).secondaryHeaderColor,
+                    fontWeight: FontWeight.normal),
                 enabledBorder: enableBorder
                     ? OutlineInputBorder(
                         borderSide: new BorderSide(color: Colors.grey))

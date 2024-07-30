@@ -2,11 +2,12 @@ import 'package:bars/utilities/exports.dart';
 
 class inviteDoc extends StatelessWidget {
   final VoidCallback affiliateOnPressed;
-  // final bool isAffiliated;
+  final bool showInviteButton;
+
   const inviteDoc({
     super.key,
     required this.affiliateOnPressed,
-    // required this.isAffiliated,
+    required this.showInviteButton,
   });
 
   @override
@@ -18,17 +19,16 @@ class inviteDoc extends StatelessWidget {
           TicketPurchasingIcon(
             title: '',
           ),
-          // if (isAffiliated)
-          Align(
-            alignment: Alignment.centerRight,
-            child: MiniCircularProgressButton(
-              onPressed: affiliateOnPressed,
-              text: "Continue",
-              color: Colors.blue,
+          if (showInviteButton)
+            Align(
+              alignment: Alignment.centerRight,
+              child: MiniCircularProgressButton(
+                onPressed: affiliateOnPressed,
+                text: "Continue",
+                color: Colors.blue,
+              ),
             ),
-          ),
           const SizedBox(height: 40),
-
           GestureDetector(
             onTap: () async {
               // if (!await launchUrl(

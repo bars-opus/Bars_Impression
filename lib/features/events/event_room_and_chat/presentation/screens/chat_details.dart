@@ -3,7 +3,7 @@ import 'package:timeago/timeago.dart' as timeago;
 
 //display
 class ChatDetails extends StatefulWidget {
-  var user;
+   var user;
   final Chat chat;
   final String currentUserId;
   final bool isBlockingUser;
@@ -24,7 +24,6 @@ class ChatDetails extends StatefulWidget {
 }
 
 class _ChatDetailsState extends State<ChatDetails> {
-  // bool _isAFollower = false;
 
   _blockOrUnBlock() {
     HapticFeedback.heavyImpact();

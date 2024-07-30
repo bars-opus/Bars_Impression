@@ -13,7 +13,7 @@ class EventTaggedPeople extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var _size = MediaQuery.of(context).size;
+    // var _size = MediaQuery.of(context).size;
     List<TaggedEventPeopleModel> taggedPeople = event.taggedPeople;
     List<TaggedEventPeopleModel> taggedPeopleOption = [];
     for (TaggedEventPeopleModel taggedPeople in taggedPeople) {
@@ -54,8 +54,8 @@ class EventTaggedPeople extends StatelessWidget {
                 ],
               )
             : TaggedUsersWidget(
-              taggedPeopleOption: taggedPeopleOption,
-            )
+                taggedPeopleOption: taggedPeopleOption,
+              )
         : Container(
             height: ResponsiveHelper.responsiveHeight(context, 700),
             decoration: BoxDecoration(
@@ -65,7 +65,7 @@ class EventTaggedPeople extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 30),
                 child: DoubleOptionTabview(
                   lightColor: false,
-                  height: _size.height,
+                  height: taggedPeopleOption.length * 300,
                   onPressed: (int) {},
                   tabText1: isSponsor ? 'Sponsors' : 'Performers',
                   tabText2: isSponsor ? 'Partners' : 'Crew',
@@ -91,6 +91,7 @@ class EventTaggedPeople extends StatelessWidget {
                     ],
                   ),
                   widget2: ListView(
+                    physics: const NeverScrollableScrollPhysics(),
                     children: [
                       isSponsor
                           ? TaggedPeopleGroup(

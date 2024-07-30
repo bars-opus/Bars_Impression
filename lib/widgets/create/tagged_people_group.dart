@@ -17,7 +17,7 @@ class TaggedPeopleGroup extends StatelessWidget {
     var _provider = Provider.of<UserData>(context, listen: false);
 
     _provider.taggedEventPeople.removeWhere(
-        (taggedPerson) => taggedPerson.name == removingTaggedEventPeople.name);
+        (taggedPerson) => taggedPerson.id == removingTaggedEventPeople.id);
   }
 
   void _showBottomTaggedPersonExternalLink(
@@ -43,6 +43,101 @@ class TaggedPeopleGroup extends StatelessWidget {
     );
   }
 
+  _display(BuildContext context, TaggedEventPeopleModel taggedPerson) {
+    String imageUrl = taggedPerson.profileImageUrl ?? '';
+    return ListTile(
+      leading: imageUrl.isEmpty
+          ? Icon(
+              Icons.account_circle,
+              size: 43.0,
+              color: Colors.grey,
+            )
+          : CircleAvatar(
+              radius: 18, // Adjust the radius as needed
+              backgroundColor: Colors.blue,
+
+              backgroundImage: NetworkImage(taggedPerson.profileImageUrl!),
+            ),
+      trailing: canBeEdited
+          ? IconButton(
+              icon: Icon(
+                Icons.remove,
+                color: Colors.red,
+              ),
+              onPressed: () {
+                _removeTaggedEventPeople(
+                  context,
+                  taggedPerson,
+                );
+              })
+          : Icon(
+              taggedPerson.internalProfileLink!.isEmpty
+                  ? Icons.link
+                  : Icons.arrow_forward_ios_outlined,
+              color: Colors.black,
+              size: taggedPerson.internalProfileLink!.isEmpty ? 25 : 15,
+            ),
+      onTap: () {
+        HapticFeedback.lightImpact();
+        taggedPerson.internalProfileLink!.isEmpty
+            ? _showBottomTaggedPersonExternalLink(
+                context, taggedPerson.externalProfileLink!)
+            : Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => ProfileScreen(
+                          user: null,
+                          currentUserId:
+                              Provider.of<UserData>(context, listen: false)
+                                  .currentUserId!,
+                          userId: taggedPerson.internalProfileLink!,
+                        )));
+      },
+      title: RichText(
+        textScaleFactor: MediaQuery.of(context).textScaleFactor,
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: taggedPerson.name,
+              style: TextStyle(
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold),
+            )
+          ],
+        ),
+        overflow: TextOverflow.ellipsis,
+      ),
+      subtitle: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          RichText(
+            textScaleFactor: MediaQuery.of(context).textScaleFactor,
+            text: TextSpan(
+              children: [
+                TextSpan(
+                    text: taggedPerson.taggedType.startsWith('Sponsor') ||
+                            taggedPerson.taggedType.startsWith('Partner')
+                        ? ''
+                        : "${taggedPerson.taggedType}:  ${taggedPerson.role}",
+                    style: TextStyle(
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 12.0),
+                      color: Colors.black,
+                    ))
+              ],
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+          Divider(
+            thickness: .2,
+          )
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     List<TaggedEventPeopleModel> groupTaggedEventPeopleGroups =
@@ -58,7 +153,7 @@ class TaggedPeopleGroup extends StatelessWidget {
     }
     final width = MediaQuery.of(context).size.width;
     return Container(
-      height: width * 2,
+      height: width * 5,
       width: width - 40,
       child: ListView.builder(
         physics: const NeverScrollableScrollPhysics(),
@@ -73,92 +168,7 @@ class TaggedPeopleGroup extends StatelessWidget {
           List<Widget> taggedPeoplwWidgets = taggedGroup
               .map((taggedPerson) => Padding(
                     padding: const EdgeInsets.only(top: 10.0),
-                    child: ListTile(
-                      trailing: canBeEdited
-                          ? IconButton(
-                              icon: Icon(
-                                Icons.remove,
-                                color: Colors.red,
-                              ),
-                              onPressed: () {
-                                _removeTaggedEventPeople(
-                                  context,
-                                  taggedPerson,
-                                );
-                              })
-                          : Icon(
-                              taggedPerson.internalProfileLink!.isEmpty
-                                  ? Icons.link
-                                  : Icons.arrow_forward_ios_outlined,
-                              color: Colors.black,
-                              size: taggedPerson.internalProfileLink!.isEmpty
-                                  ? 25
-                                  : 15,
-                            ),
-                      onTap: () {
-                        HapticFeedback.lightImpact();
-                        taggedPerson.internalProfileLink!.isEmpty
-                            ? _showBottomTaggedPersonExternalLink(
-                                context, taggedPerson.externalProfileLink!)
-                            : Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => ProfileScreen(
-                                          user: null,
-                                          currentUserId: Provider.of<UserData>(
-                                                  context,
-                                                  listen: false)
-                                              .currentUserId!,
-                                          userId:
-                                              taggedPerson.internalProfileLink!,
-                                        )));
-                      },
-                      title: RichText(
-                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: taggedPerson.name,
-                              style: TextStyle(
-                                  fontSize: ResponsiveHelper.responsiveFontSize(
-                                      context, 14.0),
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                            )
-                          ],
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      subtitle: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          RichText(
-                            textScaleFactor:
-                                MediaQuery.of(context).textScaleFactor,
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                    text: taggedPerson.taggedType
-                                                .startsWith('Sponsor') ||
-                                            taggedPerson.taggedType
-                                                .startsWith('Partner')
-                                        ? ''
-                                        : "${taggedPerson.taggedType}:  ${taggedPerson.role}",
-                                    style: TextStyle(
-                                      fontSize:
-                                          ResponsiveHelper.responsiveFontSize(
-                                              context, 12.0),
-                                      color: Colors.black,
-                                    ))
-                              ],
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Divider( thickness: .2,)
-                        ],
-                      ),
-                    ),
+                    child: _display(context, taggedPerson),
                   ))
               .toList();
 

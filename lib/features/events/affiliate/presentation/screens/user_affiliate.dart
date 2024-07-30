@@ -67,7 +67,7 @@ class _UserAffilateState extends State<UserAffilate>
   }
 
   _setUpAffiliates() async {
-    // try {
+    try {
     Query ticketOrderSnapShot = await widget.isUser
         ? userAffiliateRef
             .doc(widget.currentUserId)
@@ -101,11 +101,11 @@ class _UserAffilateState extends State<UserAffilate>
     }
 
     return affiliate;
-    // } catch (e) {
-    //   print('Error fetching initial invites: $e');
-    //   // Handle the error appropriately.
-    //   return [];
-    // }
+    } catch (e) {
+      print('Error fetching initial invites: $e');
+      // Handle the error appropriately.
+      return [];
+    }
   }
 
   _loadMoreInvites() async {
@@ -148,89 +148,6 @@ class _UserAffilateState extends State<UserAffilate>
       return _hasNext;
     }
   }
-
-  // _setupActivities() async {
-  // final currentDate = DateTime(now.year, now.month, now.day);
-
-  //   try {
-  //     Query activitiesQuery = userRefundRequestsRef
-  //         .doc(widget.currentUserId)
-  //         .collection('refundRequests')
-  //         .where('startDate', isGreaterThanOrEqualTo: currentDate)
-  //         .orderBy('timestamp', descending: true)
-  //         .limit(10);
-
-  //     if (_lastInviteDocument != null) {
-  //       activitiesQuery =
-  //           activitiesQuery.startAfterDocument(_lastInviteDocument!);
-  //     }
-
-  //     QuerySnapshot userFeedSnapShot = await activitiesQuery.get();
-  //     List<AffiliateModel> activities =
-  //         userFeedSnapShot.docs.map((doc) => AffiliateModel.fromDoc(doc)).toList();
-
-  //     if (mounted) {
-  //       setState(() {
-  //         _affiliateList.addAll(
-  //             activities.where((activity) => !_affiliateList.contains(activity)));
-  //         _hasNext = userFeedSnapShot.docs.length == 10;
-  //         if (userFeedSnapShot.docs.isNotEmpty) {
-  //           _lastInviteDocument = userFeedSnapShot.docs.last;
-  //         }
-  //         _isLoading = false;
-  //       });
-  //     }
-  //     return activities;
-  //   } catch (e) {
-  //     // Handle the error
-  //     print('Error fetching user activities: $e');
-  //     return []; // Return an empty list or a suitable default value
-  //   }
-  // }
-
-  // _setupActivities() async {
-  //       final currentDate = DateTime(now.year, now.month, now.day);
-
-  //   try {
-  //     Query activitiesQuery = userRefundRequestsRef
-  //         .doc(widget.currentUserId)
-  //         .collection('refundRequests')
-  //         .where('startDate', isGreaterThanOrEqualTo: currentDate)
-  //         .orderBy('timestamp', descending: true)
-  //         .limit(10);
-  //     // if _lastInviteDocument is not null, start after it
-  //     if (_lastInviteDocument != null) {
-  //       activitiesQuery =
-  //           activitiesQuery.startAfterDocument(_lastInviteDocument!);
-  //     }
-
-  //     QuerySnapshot userFeedSnapShot = await activitiesQuery.get();
-  //     List<AffiliateModel> activities =
-  //         userFeedSnapShot.docs.map((doc) => AffiliateModel.fromDoc(doc)).toList();
-
-  //     if (mounted) {
-  //       setState(() {
-  //         _affiliateList +=
-  //             activities; // append new activities to the existing list
-  //         _hasNext = userFeedSnapShot.docs.length == 10;
-  //         if (userFeedSnapShot.docs.isNotEmpty) {
-  //           _lastInviteDocument = userFeedSnapShot.docs.last;
-  //           _lastFiletedActivityDocument = userFeedSnapShot.docs.last;
-  //         } else {
-  //           _lastInviteDocument = null; // Or your suitable default value
-  //           _lastFiletedActivityDocument =
-  //               null; // Or your suitable default value
-  //         }
-  //         _isLoading = false;
-  //       });
-  //     }
-  //     return activities;
-  //   } catch (e) {
-  //     // Handle the error
-  //     print('Error fetching user activities: $e');
-  //     return []; // Return an empty list or a suitable default value
-  //   }
-  // }
 
   void _showBottomSheetErrorMessage(String errorTitle) {
     showModalBottomSheet(
@@ -294,15 +211,7 @@ class _UserAffilateState extends State<UserAffilate>
             .collection('affiliateMarketers')
             .limit(500)
             .limit(limit);
-
     QuerySnapshot snapshot = await activitiesQuery.get();
-
-    // var snapshot = await   userAffiliateRef
-    //     .doc(widget.currentUserId)
-    //     .collection('affiliateMarketers')
-    //     .limit(500)
-    //     .get();
-
     // if there's no document left, return
     if (snapshot.docs.isEmpty) {
       return;
@@ -310,7 +219,6 @@ class _UserAffilateState extends State<UserAffilate>
 
     // prepare a new batch
     var batch = FirebaseFirestore.instance.batch();
-
     // loop over the documents in the snapshot and delete them
     snapshot.docs.forEach((doc) {
       batch.delete(doc.reference);

@@ -18,38 +18,30 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
   final _formKey = GlobalKey<FormState>();
   final _portfolioFormKey = GlobalKey<FormState>();
   final _priceFormKey = GlobalKey<FormState>();
-
   final _collaborationFormKey = GlobalKey<FormState>();
   final _collaboratedPeopleFormKey = GlobalKey<FormState>();
-
   final _rolekeyFormKey = GlobalKey<FormState>();
-
   final _contactsFormKey = GlobalKey<FormState>();
-
   final _companiesFormKey = GlobalKey<FormState>();
-
   Future<QuerySnapshot>? _users;
-
   String imageUrl = '';
   File? _imgeFile;
-
   bool _isLoading = false;
   bool _isLoadingImage = false;
-
   late PageController _pageController;
-
   final _nameController = TextEditingController();
   final _linkController = TextEditingController();
   final _typeController = TextEditingController();
-
   final _collaboratedPersonLinkController = TextEditingController();
   final _collaboratedPersonNameContrller = TextEditingController();
-
   final _tagNameController = TextEditingController();
-  String _taggedUserExternalLink = '';
   String _selectedNameToAdd = '';
+  String _profileImage = '';
+
   final FocusNode _nameSearchfocusNode = FocusNode();
   final _roleController = TextEditingController();
+  final _priceDuratioController = TextEditingController();
+
   ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
 
   @override
@@ -71,6 +63,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
 
   _addLists() {
     var _provider = Provider.of<UserData>(context, listen: false);
+    processCurrency(_provider);
 
     _provider.setNoBooking(widget.user.noBooking);
     _provider.setOverview(widget.user.overview);
@@ -121,6 +114,30 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     _provider.setProfessionalImages(imageUrls);
   }
 
+  void processCurrency(UserData provider) {
+    // Check if widget.userPortfolio.currency is null or empty
+    if (widget.user.currency == null || widget.user.currency.trim().isEmpty) {
+      // Handle the case where currency is null or empty
+      provider.setCurrency('');
+      return;
+    }
+
+    // Proceed with normal processing if currency is not null or empty
+    final List<String> currencyPartition =
+        widget.user.currency.trim().replaceAll('\n', ' ').split("|");
+
+    String _currency = currencyPartition.length > 1 ? currencyPartition[1] : '';
+
+    // Check if _currency has at least 3 characters before accessing _currency[2]
+    if (_currency.length >= 2) {
+      provider.setCurrency(_currency);
+      // print(_currency);
+    } else {
+      // Handle the case where _currency does not have enough characters
+      provider.setCurrency('');
+    }
+  }
+
   clear() {
     var _provider = Provider.of<UserData>(context, listen: false);
     _provider.awards.clear();
@@ -138,6 +155,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     _provider.setProfessionalImageFile3(null);
     _provider.setTermsAndConditions('');
     _provider.setOverview('');
+    _provider.setCurrency('');
   }
 
   void _onAskTextChanged() {
@@ -156,6 +174,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     _typeController.dispose();
     _nameSearchfocusNode.dispose();
     _roleController.dispose();
+    _priceDuratioController.dispose();
   }
 
   //Method to create ticket
@@ -215,6 +234,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
         name: _nameController.text,
         price: _typeController.text,
         value: _roleController.text,
+        duruation: _priceDuratioController.text,
       );
 
       // adds ticket to ticket list
@@ -225,6 +245,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
       _nameController.clear();
       _typeController.clear();
       _roleController.clear();
+      _priceDuratioController.clear();
     }
   }
 
@@ -287,6 +308,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
         externalProfileLink: _collaboratedPersonLinkController.text.trim(),
         internalProfileLink: _provider.artist,
         role: _roleController.text,
+        profileImageUrl: _profileImage,
       );
 
       // adds ticket to ticket list
@@ -294,6 +316,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
 
       // _provider.setArtist('');
       _selectedNameToAdd = '';
+      _profileImage = '';
       _roleController.clear();
       // _taggedUserExternalLink = '';
 
@@ -398,7 +421,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
       _provider.setProfessionalImages(professionalImageUrls);
 
       try {
-        await retry(() => userProfessionalRef.doc(widget.user.id).update({
+        await retry(() => userProfessionalRef.doc(widget.user.userId).update({
               'awards':
                   _provider.awards.map((awards) => awards.toJson()).toList(),
               'collaborations': _provider.collaborations
@@ -429,7 +452,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
               'currency': _provider.currency,
             }));
         DocumentSnapshot doc =
-            await userProfessionalRef.doc(widget.user.id).get();
+            await userProfessionalRef.doc(widget.user.userId).get();
 
         // Assuming 'Event' is a class that can be constructed from a Firestore document
         UserProfessionalModel updatedUser = UserProfessionalModel.fromDoc(doc);
@@ -437,7 +460,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
         _navigateToPage(
           context,
           DiscographyWidget(
-            currentUserId: widget.user.id,
+            currentUserId: widget.user.userId,
             userIndex: 0,
             userPortfolio: updatedUser,
           ),
@@ -654,6 +677,19 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     }
   }
 
+  String? validateWebsiteUrl(String? value) {
+    final pattern =
+        r'^(https?:\/\/)?([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(:[0-9]{1,5})?(\/.*)?$';
+    RegExp regex = RegExp(pattern);
+    if (value == null || value.isEmpty) {
+      return 'URL cannot be empty';
+    } else if (!regex.hasMatch(value)) {
+      return 'Enter a valid URL';
+    } else {
+      return null;
+    }
+  }
+
   _textField(
     String labelText,
     String hintText,
@@ -676,16 +712,17 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
         textCapitalization: TextCapitalization.sentences,
         onChanged: onChanged,
         validator: isLink
-            ? (value) {
-                String pattern =
-                    r'^(https?:\/\/)?([a-zA-Z0-9.-]+)(:[0-9]{1,5})?(\/.*)?$';
-                // r'^(https?:\/\/)?(([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?)$';
-                RegExp regex = new RegExp(pattern);
-                if (!regex.hasMatch(value!))
-                  return 'Enter a valid URL';
-                else
-                  return null;
-              }
+            ? validateWebsiteUrl
+            // (value) {
+            //     String pattern =
+            //         r'^(https?:\/\/)?([a-zA-Z0-9.-]+)(:[0-9]{1,5})?(\/.*)?$';
+            //     // r'^(https?:\/\/)?(([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?)$';
+            //     RegExp regex = new RegExp(pattern);
+            //     if (!regex.hasMatch(value!))
+            //       return 'Enter a valid URL';
+            //     else
+            //       return null;
+            //   }
             : (input) =>
                 input!.trim().length < 1 ? 'This field cannot be empty' : null,
         decoration: InputDecoration(
@@ -704,6 +741,19 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
           enabledBorder: OutlineInputBorder(
               borderSide: new BorderSide(color: Colors.grey)),
         ));
+  }
+
+  String? validatePhoneNumber(String? value) {
+    final String pattern =
+        r'^\+?(\d{1,3})?[- .]?\(?\d{1,4}\)?[- .]?\d{1,4}[- .]?\d{1,9}(\s?(ext|x)\s?\d{1,5})?$';
+    final RegExp regex = RegExp(pattern);
+    if (value == null || value.isEmpty) {
+      return 'Phone number cannot be empty';
+    } else if (!regex.hasMatch(value)) {
+      return 'Enter a valid phone number';
+    } else {
+      return null;
+    }
   }
 
   _textFieldContact(
@@ -733,16 +783,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
             ? (email) => email != null && !EmailValidator.validate(email.trim())
                 ? 'Please enter a valid email'
                 : null
-            : (value) {
-                String pattern =
-                    r'^(https?:\/\/)?([a-zA-Z0-9.-]+)(:[0-9]{1,5})?(\/.*)?$';
-                // r'^(\+\d{1,3}[- ]?)?\d{1,4}[- ]?(\d{1,3}[- ]?){1,2}\d{1,9}(\ x\d{1,4})?$';
-                RegExp regex = new RegExp(pattern);
-                if (!regex.hasMatch(value!))
-                  return 'Enter a valid phone number';
-                else
-                  return null;
-              },
+            : validatePhoneNumber,
         decoration: InputDecoration(
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.blue, width: 3.0),
@@ -788,7 +829,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                         children: [
                           portfolios.length < 6 &&
                                   _nameController.text.length > 0 &&
-                                  _linkController.text.length > 0
+                                  nameLabel == 'Skills'
                               ? Align(
                                   alignment: Alignment.centerRight,
                                   child: MiniCircularProgressButton(
@@ -802,31 +843,48 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                                     color: Colors.blue,
                                   ),
                                 )
-                              : ListTile(
-                                  leading: portfolios.length > 0
-                                      ? SizedBox.shrink()
-                                      : IconButton(
-                                          icon: const Icon(Icons.close),
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          color: Theme.of(context)
-                                              .secondaryHeaderColor,
-                                        ),
-                                  trailing: portfolios.length < 1
-                                      ? SizedBox.shrink()
-                                      : GestureDetector(
-                                          onTap: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: Text(
-                                            'Done',
-                                            style: TextStyle(
-                                                color: Colors.blue,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                ),
+                              : portfolios.length < 6 &&
+                                      _nameController.text.length > 0 &&
+                                      _linkController.text.length > 0
+                                  ? Align(
+                                      alignment: Alignment.centerRight,
+                                      child: MiniCircularProgressButton(
+                                        onPressed: () {
+                                          portfolios.length > 5
+                                              ? _showBottomSheetErrorMessage(
+                                                  nameLabel.toLowerCase(), '')
+                                              : _add(nameLabel);
+                                        },
+                                        text: "Add",
+                                        color: Colors.blue,
+                                      ),
+                                    )
+                                  : ListTile(
+                                      leading: portfolios.length > 0
+                                          ? SizedBox.shrink()
+                                          : IconButton(
+                                              icon: const Icon(Icons.close),
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              color: Theme.of(context)
+                                                  .secondaryHeaderColor,
+                                            ),
+                                      trailing: portfolios.length < 1
+                                          ? SizedBox.shrink()
+                                          : GestureDetector(
+                                              onTap: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text(
+                                                'Done',
+                                                style: TextStyle(
+                                                    color: Colors.blue,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ),
+                                    ),
                           if (portfolios.length > 5 &&
                               _nameController.text.length > 0 &&
                               _linkController.text.length > 0)
@@ -1273,7 +1331,8 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                             price.length < 6 &&
                                     _nameController.text.length > 0 &&
                                     _typeController.text.length > 0 &&
-                                    _roleController.text.length > 0
+                                    _roleController.text.length > 0 &&
+                                    _priceDuratioController.text.length > 0
                                 ? Align(
                                     alignment: Alignment.centerRight,
                                     child: MiniCircularProgressButton(
@@ -1317,6 +1376,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                             const SizedBox(height: 40),
                             if (price.length > 5 &&
                                 _typeController.text.length > 0 &&
+                                _priceDuratioController.text.length > 0 &&
                                 _roleController.text.length > 0)
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 30.0),
@@ -1360,6 +1420,17 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
                               },
                               false,
                             ),
+                            const SizedBox(height: 20),
+                            _textField(
+                              'Duration',
+                              '30 minutes, 1 hour, 2 hours',
+                              true,
+                              _priceDuratioController,
+                              (value) {
+                                setState(() {});
+                              },
+                              false,
+                            ),
                             const SizedBox(
                               height: 20,
                             ),
@@ -1391,6 +1462,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
 
           if (mounted) {
             setState(() {
+              _profileImage = user.profileImageUrl!;
               _selectedNameToAdd = user.userName!;
             });
           }
@@ -1808,10 +1880,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
         break;
       case 'price':
         _widget = PriceRateWidget(
-            currency: _provider.currency,
-            edit: false,
-            prices: _provider.priceRate,
-            seeMore: true);
+            edit: false, prices: _provider.priceRate, seeMore: true);
         break;
       case 'companies':
         _widget = PortfolioCompanyWidget(
@@ -1898,10 +1967,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
       case 'price':
         _onPressed = () => _showBottomPrice(_provider.priceRate);
         _widget = PriceRateWidget(
-            currency: _provider.currency,
-            edit: true,
-            prices: _provider.priceRate,
-            seeMore: true);
+            edit: true, prices: _provider.priceRate, seeMore: true);
         break;
       case 'collaborations':
         _onPressed = () => _showBottomSheetCollaboration(false);
@@ -1994,7 +2060,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
 
     showCurrencyPicker(
       theme: CurrencyPickerThemeData(
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Theme.of(context).primaryColorLight,
         flagSize: 25,
         titleTextStyle: TextStyle(
           fontSize: ResponsiveHelper.responsiveFontSize(context, 17.0),
@@ -2042,9 +2108,9 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               EditProfileInfo(
-                editTitle: 'Booking \ndiscography',
+                editTitle: 'Booking\nportfolio',
                 info:
-                    'Please provide your professional information to facilitate easy connections and recommendations from other users. Make sure to carefully read the instructions under each text field before filling out the forms.',
+                    'Provide your professional information to facilitate easy connections and recommendations from other users. Make sure to carefully read the instructions under each text field before filling out the forms.',
                 icon: Icons.work,
               ),
               const SizedBox(

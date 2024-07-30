@@ -6,25 +6,19 @@ Future<void> initializeApp() async {
   try {
     await Firebase.initializeApp();
     await FirebaseAppCheck.instance.activate();
-
-    // Bars.prefs = await SharedPreferences.getInstance();
   } catch (e) {}
 }
 
 Future<void> _backgroundHandler(message) async {
-  // Only initialize Firebase if necessary
   if (Firebase.apps.isEmpty) {
     await Firebase.initializeApp();
   }
-  // Handle your background message here
 }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeApp();
-
   FirebaseMessaging.onBackgroundMessage(_backgroundHandler);
-
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   await Hive.initFlutter();
@@ -37,17 +31,14 @@ Future<void> main() async {
   Hive.registerAdapter(EventRoomAdapter());
   Hive.registerAdapter(TicketIdModelAdapter());
   Hive.registerAdapter(AccountHolderAuthorAdapter());
-    Hive.registerAdapter(UserSettingsLoadingPreferenceModelAdapter());
-
+  Hive.registerAdapter(UserSettingsLoadingPreferenceModelAdapter());
   await Hive.openBox<ChatMessage>('chatMessages');
   await Hive.openBox<Chat>('chats');
   await Hive.openBox<EventRoom>('eventRooms');
   await Hive.openBox<TicketIdModel>('ticketIds');
   await Hive.openBox<AccountHolderAuthor>('accountHolderAuthor');
-    await Hive.openBox<AccountHolderAuthor>('currentUser');
-
+  await Hive.openBox<AccountHolderAuthor>('currentUser');
   await Hive.openBox<UserSettingsLoadingPreferenceModel>(
       'accountLocationPreference');
-
   runApp(ConfigPage());
 }

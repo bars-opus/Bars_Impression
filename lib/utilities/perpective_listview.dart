@@ -11,10 +11,6 @@ class PerpectiveListView extends StatefulWidget {
   final EdgeInsetsGeometry padding;
   final ValueChanged<int> onTapFrontItem;
   final ValueChanged<int> onChangeItem;
-  // final Color backItemsShadowColor;
-
-  // final List<TicketOrderModel> selectedEvents;
-  // final String currentUserId;
 
   const PerpectiveListView({
     super.key,
@@ -25,9 +21,6 @@ class PerpectiveListView extends StatefulWidget {
     this.padding = const EdgeInsets.all(0),
     required this.onTapFrontItem,
     required this.onChangeItem,
-    // required this.selectedEvents,
-    // required this.currentUserId,
-    // this.backItemsShadowColor = Colors.black
   });
 
   @override
@@ -50,19 +43,11 @@ class _PerpectiveListViewState extends State<PerpectiveListView> {
       viewportFraction: 1 / widget.visualizedItem,
     );
     _currentIndex = widget.initialIndex;
-    // _peroidicTimer();
     _pagePercent = 0.0;
     _pageController.addListener(_pageListener);
     super.initState();
   }
 
-  // _peroidicTimer() {
-  //   Timer.periodic(Duration(seconds: 1), (Timer timer) {
-  //     setState(() {
-  //       _ignorePointer = false;
-  //     });
-  //   });
-  // }
 
   @override
   void dispose() {
@@ -71,17 +56,6 @@ class _PerpectiveListViewState extends State<PerpectiveListView> {
     super.dispose();
   }
 
-  // void _startIgnoreTimer() {
-  //   _ignoreTimer = Timer(const Duration(milliseconds: 100), () {
-  //     if (_lastTapTime == null ||
-  //         DateTime.now().difference(_lastTapTime!) >
-  //             const Duration(milliseconds: 100)) {
-  //       setState(() {
-  //         _ignorePointer = true;
-  //       });
-  //     }
-  //   });
-  // }
 
   void _pageListener() {
     _currentIndex = _pageController.page!.floor();
@@ -89,24 +63,7 @@ class _PerpectiveListViewState extends State<PerpectiveListView> {
     setState(() {});
   }
 
-  // void _cancelIgnoreTimer() {
-  //   _ignoreTimer?.cancel();
-  //   _ignoreTimer = null;
-  // }
-
-  // void _startIgnoreTimer() {
-  //   _cancelIgnoreTimer();
-  //   _ignoreTimer = Timer(Duration(milliseconds: 100), () {
-  //     setState(() => _ignorePointer = true);
-  //   });
-  // }
-
-  void _navigateToPage(Widget page) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => page),
-    );
-  }
+ 
 
  
 
@@ -299,64 +256,3 @@ class _TransformedItem extends StatelessWidget {
     );
   }
 }
-
-// class PerspectiveCardStack extends StatefulWidget {
-//   @override
-//   _PerspectiveCardStackState createState() => _PerspectiveCardStackState();
-// }
-
-// class _PerspectiveCardStackState extends State<PerspectiveCardStack> {
-//   final PageController _pageController = PageController(viewportFraction: 0.8);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return PageView.builder(
-//       controller: _pageController,
-//       scrollDirection: Axis.horizontal,
-//       itemCount: 5, // Replace with your desired number of cards
-//       itemBuilder: (context, index) {
-//         return AnimatedBuilder(
-//           animation: _pageController,
-//           builder: (context, child) {
-//             double value = 1.0;
-//             if (_pageController.position.haveDimensions) {
-//               value = _pageController.page! - index;
-//               value = (1 - (value.abs() * 0.3)).clamp(0.0, 1.0);
-//             }
-
-//             return Center(
-//               child: Transform(
-//                 alignment: Alignment.center,
-//                 transform: Matrix4.identity()
-//                   ..setEntry(3, 2, 0.001) // perspective
-//                   ..rotateY(value * math.pi / 6) // apply the 3D effect
-//                   ..scale(value), // scale the card
-//                 child: child,
-//               ),
-//             );
-//           },
-//           child: CardItem(index: index),
-//         );
-//       },
-//     );
-//   }
-// }
-
-// class CardItem extends StatelessWidget {
-//   final int index;
-
-//   CardItem({required this.index});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Card(
-//       color: Colors.blue[100 * (index % 9) + 100],
-//       child: Center(
-//         child: Text(
-//           "Card $index",
-//           style: TextStyle(fontSize: 24.0),
-//         ),
-//       ),
-//     );
-//   }
-// }

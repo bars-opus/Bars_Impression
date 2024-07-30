@@ -191,7 +191,8 @@ class AffiliateDoc extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 TextSpan(
-                  text: "\n\nNeither would event organizer or affiliates incase of event cancellation or deletion.",
+                  text:
+                      "\n\nNeither would event organizer or affiliates incase of event cancellation or deletion.",
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 TextSpan(

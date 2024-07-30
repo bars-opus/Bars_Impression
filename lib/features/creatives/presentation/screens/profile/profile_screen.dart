@@ -810,7 +810,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   void _showBottomSheetNoPortolio(
       BuildContext context, UserProfessionalModel _user) async {
-    bool _isAuthor = _user.id == widget.currentUserId;
+    bool _isAuthor = _user.userId == widget.currentUserId;
 
     await showModalBottomSheet(
       context: context,
@@ -818,7 +818,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       isScrollControlled: true,
       builder: (BuildContext context) {
         return Container(
-          height: MediaQuery.of(context).size.height.toDouble() / 1.2,
+          height: ResponsiveHelper.responsiveHeight(context, 600),
           decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(30)),
@@ -906,7 +906,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   void _showBottomSheetNoBooking(
       BuildContext context, UserProfessionalModel _user) async {
-    bool _isAuthor = _user.id == widget.currentUserId;
+    bool _isAuthor = _user.userId == widget.currentUserId;
 
     await showModalBottomSheet(
       context: context,
@@ -938,7 +938,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                           buttonText: 'Enable booking.',
                           onPressed: () {
                             Navigator.pop(context);
-                            _showBottomSheetEnableBooking(context, _user.id);
+                            _showBottomSheetEnableBooking(
+                                context, _user.userId);
                           },
                         )
                       : const SizedBox.shrink(),
@@ -979,7 +980,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                               userPortfolio: _user,
                             ),
                           );
-              } else {}
+              } else {
+                _showBottomSheetErrorMessage(user.userId.toString());
+              }
             } catch (e) {
               _showBottomSheetErrorMessage(e);
             } finally {

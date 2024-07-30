@@ -7,13 +7,9 @@ class Event {
   final Timestamp startDate;
   final String address;
   final String imageUrl;
-  // final bool isTicketed;
-  // final int maxAttendees;
   List<Schedule> schedule;
   List<TicketModel> ticket;
-  // List<TicketOrderModel> ticketOrder;
   List<TaggedEventPeopleModel> taggedPeople;
-  // List<EventOffer> offers;
   List<String> contacts;
   final String termsAndConditions;
   final String type;
@@ -50,8 +46,7 @@ class Event {
   final bool isAffiliateEnabled;
   final bool isAffiliateExclusive;
   final double totalAffiliateAmount;
-   final String latLng;
-
+  final String latLng;
 
   Event({
     required this.id,
@@ -60,13 +55,9 @@ class Event {
     required this.startDate,
     required this.address,
     required this.imageUrl,
-    // this.isTicketed = false,
-    // this.maxAttendees = 0,
     this.schedule = const [],
     this.ticket = const [],
-    // this.ticketOrder = const [],
     this.taggedPeople = const [],
-    // this.offers = const [],
     this.contacts = const [],
     required this.termsAndConditions,
     required this.type,
@@ -114,7 +105,6 @@ class Event {
       subaccountId: doc['subaccountId'] ?? '',
       transferRecepientId: doc['transferRecepientId'] ?? '',
       improvemenSuggestion: doc['improvemenSuggestion'] ?? '',
-
       contacts: List<String>.from(doc['contacts'] ?? []),
       startDate: doc['startDate'] ??
           Timestamp.fromDate(
@@ -122,22 +112,15 @@ class Event {
           ),
       address: doc['address'] ?? '',
       imageUrl: doc['imageUrl'] ?? '',
-      // isTicketed: doc['isTicketed'] ?? false,
-      // maxAttendees: doc['maxAttendees'] ?? 0,
       schedule: List<Schedule>.from(
           doc['schedule']?.map((schedule) => Schedule.fromJson(schedule)) ??
               []),
       ticket: List<TicketModel>.from(
           doc['ticket']?.map((ticket) => TicketModel.fromJson(ticket)) ?? []),
-      // ticketOrder: List<TicketOrderModel>.from(doc['ticketOrder']
-      //         ?.map((ticketOrder) => TicketOrderModel.fromJson(ticketOrder)) ??
-      //     []),
       taggedPeople: List<TaggedEventPeopleModel>.from(doc['taggedPeople']?.map(
               (taggedPeople) =>
                   TaggedEventPeopleModel.fromJson(taggedPeople)) ??
           []),
-      // offers: List<EventOffer>.from(
-      //     doc['offers']?.map((offers) => EventOffer.fromJson(offers)) ?? []),
       type: doc['type'] ?? "",
       termsAndConditions: doc['termsAndConditions'] ?? "",
       category: doc['category'] ?? "",
@@ -163,19 +146,15 @@ class Event {
       showOnExplorePage: doc['showOnExplorePage'] ?? true,
       fundsDistributed: doc['fundsDistributed'] ?? false,
       isAffiliateEnabled: doc['isAffiliateEnabled'] ?? false,
-
       isAffiliateExclusive: doc['isAffiliateExclusive'] ?? false,
-
       clossingDay: doc['clossingDay'] ??
           Timestamp.fromDate(
             DateTime.now(),
           ),
       blurHash: doc['blurHash'] ?? '',
       authorName: doc['authorName'] ?? '',
-        totalAffiliateAmount: doc['totalAffiliateAmount'].toDouble(),
-
- latLng: doc['latLng'] ?? '',
-        
+      totalAffiliateAmount: doc['totalAffiliateAmount'].toDouble(),
+      latLng: doc['latLng'] ?? '',
     );
   }
 
@@ -187,15 +166,12 @@ class Event {
       theme: map['theme'] ?? '',
       dynamicLink: map['dynamicLink'] ?? '',
       improvemenSuggestion: map['improvemenSuggestion'] ?? '',
-
       contacts: (map['contacts'] as List<dynamic>)
           .map((accountType) => accountType as String)
           .toList(),
       startDate: map['startDate'] ?? Timestamp.fromDate(DateTime.now()),
       address: map['address'] ?? '',
       imageUrl: map['imageUrl'] ?? '',
-      // isTicketed: map['isTicketed'] ?? false,
-      // maxAttendees: map['maxAttendees'] ?? 0,
       schedule: List<Schedule>.from(
         (map['schedule'] as List<dynamic>?)
                 ?.map((schedule) => Schedule.fromJson(schedule))
@@ -208,12 +184,6 @@ class Event {
                 .toList() ??
             [],
       ),
-      // ticketOrder: List<TicketOrderModel>.from(
-      //   (map['ticketOrder'] as List<dynamic>?)
-      //           ?.map((ticketOrder) => TicketOrderModel.fromJson(ticketOrder))
-      //           ?.toList() ??
-      //       [],
-      // ),
       taggedPeople: List<TaggedEventPeopleModel>.from(
         (map['taggedPeople'] as List<dynamic>?)
                 ?.map((taggedPeople) =>
@@ -221,12 +191,6 @@ class Event {
                 .toList() ??
             [],
       ),
-      // offers: List<EventOffer>.from(
-      //   (map['offers'] as List<dynamic>?)
-      //           ?.map((offers) => EventOffer.fromJson(offers))
-      //           ?.toList() ??
-      //       [],
-      // ),
       type: map['type'] ?? '',
       termsAndConditions: map['termsAndConditions'] ?? '',
       category: map['category'] ?? '',
@@ -253,15 +217,12 @@ class Event {
       fundsDistributed: map['fundsDistributed'] ?? false,
       isAffiliateEnabled: map['isAffiliateEnabled'] ?? false,
       isAffiliateExclusive: map['isAffiliateExclusive'] ?? false,
-
       clossingDay: map['clossingDay'] ?? Timestamp.fromDate(DateTime.now()),
       blurHash: map['blurHash'] ?? '',
       authorName: map['authorName'] ?? '',
       transferRecepientId: map['transferRecepientId'] ?? '',
-       totalAffiliateAmount: (map['totalAffiliateAmount'] as num).toDouble(),
- latLng: map['latLng'] ?? '',
-
-       
+      totalAffiliateAmount: (map['totalAffiliateAmount'] as num).toDouble(),
+      latLng: map['latLng'] ?? '',
     );
   }
 
@@ -276,17 +237,11 @@ class Event {
       'imageUrl': imageUrl,
       'dynamicLink': dynamicLink,
       'improvemenSuggestion': improvemenSuggestion,
-
-      // 'isTicketed': isTicketed,
-      // 'maxAttendees': maxAttendees,
       'contacts': contacts,
       'schedule': schedule.map((schedule) => schedule.toJson()).toList(),
       'ticket': ticket.map((ticket) => ticket.toJson()).toList(),
-      // 'ticketOrder':
-      //     ticketOrder.map((ticketOrder) => ticketOrder.toJson()).toList(),
       'taggedPeople':
           taggedPeople.map((taggedPeople) => taggedPeople.toJson()).toList(),
-      // 'offers': offers.map((offers) => offers.toJson()).toList(),
       'termsAndConditions': termsAndConditions,
       'authorName': authorName,
       'type': type,

@@ -1,7 +1,7 @@
 import 'package:bars/utilities/exports.dart';
 
 class UserProfessionalModel {
-  final String id;
+  final String userId;
   final String userName;
   final String profileImageUrl;
   final bool verified;
@@ -10,7 +10,7 @@ class UserProfessionalModel {
   final String terms;
   final String overview;
   final bool noBooking;
- final bool? disableAdvice;
+  final bool? disableAdvice;
   final bool? hideAdvice;
 
   final String city;
@@ -31,9 +31,11 @@ class UserProfessionalModel {
   List<PriceModel> priceTags;
 
   final double randomId;
+    final String transferRecepientId;
+
 
   UserProfessionalModel({
-    required this.id,
+    required this.userId,
     required this.userName,
     required this.profileImageUrl,
     required this.profileHandle,
@@ -60,11 +62,13 @@ class UserProfessionalModel {
     required this.currency,
     required this.disableAdvice,
     required this.hideAdvice,
+        required this.transferRecepientId,
+
   });
 
   factory UserProfessionalModel.fromDoc(DocumentSnapshot doc) {
     return UserProfessionalModel(
-      id: doc.id,
+      userId: doc.id,
       userName: doc['userName'] ?? '',
       profileImageUrl: doc['profileImageUrl'],
       profileHandle: doc['profileHandle'] ?? 'Fan',
@@ -76,9 +80,10 @@ class UserProfessionalModel {
       currency: doc['currency'] ?? '',
       country: doc['country'] ?? '',
       continent: doc['continent'] ?? '',
+       transferRecepientId: doc['transferRecepientId'] ?? '',
       randomId: doc['randomId'] ?? 0.0,
       noBooking: doc['noBooking'] ?? false,
-       disableAdvice: doc['disableAdvice'] ?? false,
+      disableAdvice: doc['disableAdvice'] ?? false,
       hideAdvice: doc['hideAdvice'] ?? false,
       company: List<PortfolioCompanyModel>.from(doc['company']
               ?.map((company) => PortfolioCompanyModel.fromJson(company)) ??
@@ -111,11 +116,13 @@ class UserProfessionalModel {
           doc['priceTags']?.map((priceTag) => PriceModel.fromJson(priceTag)) ??
               []),
     );
+         
+
   }
 
   factory UserProfessionalModel.fromJson(Map<String, dynamic> json) {
     return UserProfessionalModel(
-      id: json['id'],
+      userId: json['userId'],
       userName: json['userName'],
       profileImageUrl: json['profileImageUrl'],
       profileHandle: json['profileHandle'],
@@ -129,7 +136,7 @@ class UserProfessionalModel {
       currency: json['currency'],
       continent: json['continent'],
       noBooking: json['noBooking'],
-        disableAdvice: json['disableAdvice'],
+      disableAdvice: json['disableAdvice'],
       hideAdvice: json['hideAdvice'],
       company: (json['company'] as List<dynamic>)
           .map((company) => PortfolioCompanyModel.fromJson(company))
@@ -165,12 +172,14 @@ class UserProfessionalModel {
       priceTags: (json['priceTags'] as List<dynamic>)
           .map((priceTag) => PriceModel.fromJson(priceTag))
           .toList(),
+                transferRecepientId: json['transferRecepientId'] ?? '',
+
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      'userId': userId,
       'userName': userName,
       'profileImageUrl': profileImageUrl,
       'profileHandle': profileHandle,
@@ -186,6 +195,7 @@ class UserProfessionalModel {
       'noBooking': noBooking,
       'disableAdvice': disableAdvice,
       'hideAdvice': hideAdvice,
+'transferRecepientId': transferRecepientId,
       'company': company.map((company) => company.toJson()).toList(),
       'collaborations': collaborations
           .map((collaborations) => collaborations.toJson())

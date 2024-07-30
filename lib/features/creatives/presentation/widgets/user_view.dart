@@ -67,8 +67,23 @@ class _UserViewState extends State<UserView> {
     );
   }
 
+  void _showBottomSheetBookingCalendar() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return BookingCalendar(
+          currentUserId: widget.currentUserId,
+          bookingUser: widget.userProfessional,
+          prices: widget.userProfessional.priceTags,
+        );
+      },
+    );
+  }
+
   _userOthers() {
-    bool isAuthor = widget.currentUserId == widget.userProfessional.id;
+    bool isAuthor = widget.currentUserId == widget.userProfessional.userId;
     var textStyle = TextStyle(
       fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
       color: Colors.grey,
@@ -78,10 +93,10 @@ class _UserViewState extends State<UserView> {
         _navigateToPage(
             context,
             ReportContentPage(
-              contentId: widget.userProfessional.id,
+              contentId: widget.userProfessional.userId,
               contentType: widget.userProfessional.userName,
-              parentContentId: widget.userProfessional.id,
-              repotedAuthorId: widget.userProfessional.id,
+              parentContentId: widget.userProfessional.userId,
+              repotedAuthorId: widget.userProfessional.userId,
             ));
       },
       onPressedSend: () {
@@ -90,7 +105,7 @@ class _UserViewState extends State<UserView> {
           SendToChats(
             currentUserId: widget.currentUserId,
             sendContentType: 'User',
-            sendContentId: widget.userProfessional.id,
+            sendContentId: widget.userProfessional.userId,
             sendImageUrl: widget.userProfessional.profileImageUrl,
             sendTitle: widget.userProfessional.userName,
           ),
@@ -103,7 +118,7 @@ class _UserViewState extends State<UserView> {
       child: GestureDetector(
         onTap: () async {
           int userIndex = widget.userList
-              .indexWhere((p) => p.id == widget.userProfessional.id);
+              .indexWhere((p) => p.userId == widget.userProfessional.userId);
           await Future.delayed(Duration(milliseconds: 300));
 
           Navigator.push(
@@ -286,10 +301,10 @@ class _UserViewState extends State<UserView> {
                         GestureDetector(
                           onTap: () {
                             HapticFeedback.mediumImpact();
-                            _showBottomSheetBookMe(context);
+                            _showBottomSheetBookingCalendar();
                           },
                           child: Icon(
-                            Icons.mail_rounded,
+                            Icons.calendar_month,
                             size:
                                 ResponsiveHelper.responsiveHeight(context, 25),
                             color: Colors.blue,

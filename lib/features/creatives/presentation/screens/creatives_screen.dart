@@ -205,26 +205,26 @@ class _CreativesScreenState extends State<CreativesScreen>
 
       List<UserProfessionalModel> uniqueEvents = [];
       if (from.startsWith('City')) {
-        for (var event in users) {
-          if (addedCityCountryUserIds.add(event.id)) {
-            uniqueEvents.add(event);
+        for (var user in users) {
+          if (addedCityCountryUserIds.add(user.userId)) {
+            uniqueEvents.add(user);
           }
         }
       } else if (from.startsWith('Country')) {
-        for (var event in users) {
-          if (addedCityCountryUserIds.add(event.id)) {
-            uniqueEvents.add(event);
+        for (var user in users) {
+          if (addedCityCountryUserIds.add(user.userId)) {
+            uniqueEvents.add(user);
           }
         }
       } else if (from.startsWith('Continent')) {
-        for (var event in users) {
-          if (addedCityCountryUserIds.add(event.id)) {
-            uniqueEvents.add(event);
+        for (var user in users) {
+          if (addedCityCountryUserIds.add(user.userId)) {
+            uniqueEvents.add(user);
           }
         }
       } else {
         for (var event in users) {
-          if (addedUserIds.add(event.id)) {
+          if (addedUserIds.add(event.userId)) {
             uniqueEvents.add(event);
           }
         }
@@ -389,8 +389,8 @@ class _CreativesScreenState extends State<CreativesScreen>
       List<UserProfessionalModel> moreUsers = [];
 
       for (var user in users) {
-        if (!addedUserIds.contains(user.id)) {
-          addedUserIds.add(user.id);
+        if (!addedUserIds.contains(user.userId)) {
+          addedUserIds.add(user.userId);
           moreUsers.add(user);
         }
       }
@@ -520,7 +520,7 @@ class _CreativesScreenState extends State<CreativesScreen>
                   builder: (_) => ProfileScreen(
                         user: null,
                         currentUserId: _provider.currentUserId!,
-                        userId: user.id,
+                        userId: user.userId,
                       ))),
         ),
       ),
@@ -758,9 +758,7 @@ class _CreativesScreenState extends State<CreativesScreen>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return 
-    
-     _feedCount.isNegative
+    return _feedCount.isNegative
         ? _noUsers()
         : _usersCity.length > 0 ||
                 _usersCountry.length > 0 ||

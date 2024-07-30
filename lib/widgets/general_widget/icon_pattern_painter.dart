@@ -11,11 +11,7 @@ class IconPatternPainter extends CustomPainter {
   final List<IconData> icons = [
     Icons.favorite_border_outlined,
     Icons.music_note_outlined,
-    // MdiIcons.,
-    // Icons.favorite,
-    // Icons.face,
-    // Icons.flight,
-    // Add more icons as desired.
+
   ];
 
   @override

@@ -39,37 +39,17 @@ class EventPageView extends StatefulWidget {
 
 class _EventPageViewState extends State<EventPageView> {
   late PageController _pageController2;
-  // bool _showAllPosts = true;
   List<Event> _filteredEvents = [];
-
   final _filteredEventSnapshot = <DocumentSnapshot>[];
-
-  // DocumentSnapshot? _lastFilteredDocument;
-
   double page = 0.0;
-  // int limit = 2;
-
   bool _hasNext = true;
   bool _loading = false;
-
   int _feedCount = 0;
-
   int _currentPageIndex = 0;
   bool _isSnackbarShown = false;
   String _isSnackbarType = '';
   late Timer _timer;
-
   final now = DateTime.now();
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _pageController2 = PageController(
-  //     initialPage: widget.pageIndex,
-  //   );
-  //   // _filteredEvents = widget.eventList;
-  //   _timer = Timer(Duration(seconds: 0), () {});
-  // }
 
   @override
   void initState() {
@@ -135,15 +115,6 @@ class _EventPageViewState extends State<EventPageView> {
     });
   }
 
-  // @override
-  // void dispose() {
-  //   _pageController2.dispose();
-  //   _pageController2.removeListener(_onPageChanged);
-  //   _timer.cancel();
-
-  //   super.dispose();
-  // }
-
   Map<int, String> eventTypes = {
     0: 'All',
     1: 'Parties',
@@ -174,10 +145,6 @@ class _EventPageViewState extends State<EventPageView> {
       });
     }
     if (pageIndex != 0) {
-      // if (_showAllPosts) {
-      //   _showAllPosts = false;
-      // Clear existing events and snapshots
-      // _filteredEvents.clear();
       _filteredEvents =
           widget.eventList.where((event) => event.type == type).toList();
       _filteredEventSnapshot.clear();
@@ -190,16 +157,6 @@ class _EventPageViewState extends State<EventPageView> {
           : widget.isFrom.isNotEmpty
               ? _setUpCityCountry(type)
               : _setupEvents(type: type);
-
-      //   _filteredEvents =
-      //       widget.eventList.where((event) => event.type == type).toList();
-      // } else if (_filteredEvents.where((event) => event.type == type).isEmpty) {
-      //   // _fetchEventsByType(type);
-      //   _setupEvents(type);
-      // } else {
-      // _showAllPosts = true;
-      // _filteredEvents = widget.eventList;
-      // }
     } else {
       widget.liveCity.isNotEmpty
           ? _setupEvents(
@@ -247,7 +204,6 @@ class _EventPageViewState extends State<EventPageView> {
     final currentDate = DateTime(now.year, now.month, now.day);
     // Calculate the end date based on the sortNumberOfDays
     final endDate = currentDate.add(Duration(days: sortNumberOfDays));
-
     var query = (type.startsWith('All'))
         ? allEventsRef.where('showOnExplorePage', isEqualTo: true)
         : allEventsRef
@@ -269,7 +225,6 @@ class _EventPageViewState extends State<EventPageView> {
       QuerySnapshot eventFeedSnapShot = await query
           .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
           .orderBy('clossingDay', descending: false)
-          // .orderBy(FieldPath.documentId) // add this line
           .limit(2)
           .get();
 
@@ -287,7 +242,6 @@ class _EventPageViewState extends State<EventPageView> {
       if (mounted) {
         setState(() {
           _filteredEvents = events;
-          // _filteredEvents.addAll(uniqueEvents);
           _filteredEventSnapshot.addAll((eventFeedSnapShot.docs));
           _loading = false;
         });
@@ -295,7 +249,6 @@ class _EventPageViewState extends State<EventPageView> {
       return events;
     } catch (e) {
       _showBottomSheetErrorMessage();
-      // print('Error setting up events: $e');
       if (mounted) {
         setState(() {
           _loading = false;
@@ -425,17 +378,12 @@ class _EventPageViewState extends State<EventPageView> {
                           event: widget.event,
                           currentUserId: widget.currentUserId,
                           eventList: _filteredEvents,
-
-                          //  _filteredEvents.isEmpty
-                          //     ? widget.eventList
-                          //     : _filteredEvents,
                           eventSnapshot: _filteredEventSnapshot.isEmpty
                               ? widget.eventSnapshot
                               : _filteredEventSnapshot,
                           eventIndex: widget.eventIndex,
                           liveCity: widget.liveCity,
                           liveCountry: widget.liveCountry,
-                          // seeMoreFrom: widget.seeMoreFrom,
                           sortNumberOfDays: widget.sortNumberOfDays,
                           isFrom: widget.isFrom,
                         );

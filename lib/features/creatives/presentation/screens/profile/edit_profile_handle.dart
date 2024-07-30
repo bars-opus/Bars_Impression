@@ -147,7 +147,6 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
     'Caterers',
     "Choire",
     "Content_creator",
-    // "Cover_Art_Designer",
     "Dancer",
     'Decorator',
     "DJ",
@@ -163,26 +162,6 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
     "Record_Label",
     "Video_Vixen",
     "Fan",
-
-    // "Producer",
-    // "DJ",
-    // "Dancer",
-    // "Music_Video_Director",
-    // "Content_creator",
-    // "Photographer",
-    // "Record_Label",
-    // "Brand_Influencer",
-    // "Event_organiser",
-    // "Band",
-    // "Instrumentalist",
-    // "Cover_Art_Designer",
-    // "Makeup_Artist",
-    // "Video_Vixen",
-    // "Blogger",
-    // "MC(Host)",
-    // "Choire",
-    // "Battle_Rapper",
-    // "Fan",
   ];
 
   Widget buildRadios() => Column(
@@ -267,34 +246,6 @@ class _EditProfileHandleState extends State<EditProfileHandle> {
                     _showBottomMoreAboutAccountTypes();
                   },
                 ),
-                // _profileHandle.startsWith('Fan') ||
-                //         _profileHandle.startsWith('Record_Label')
-                //     ? const SizedBox.shrink()
-                //     : GestureDetector(
-                //         onTap: () => navigateToPage(
-                //             context,
-                //             SubAccounts(
-                //               user: widget.user,
-                //               profileHandle: _profileHandle,
-                //             )),
-                //         child: Row(
-                //           children: [
-                //             Icon(
-                //               Icons.add,
-                //               color: Colors.blue,
-                //               size: 20,
-                //             ),
-                //             Text(
-                //               'Add sub-accounts',
-                //               style: TextStyle(
-                //                 color: Colors.blue,
-                //                 fontSize: ResponsiveHelper.responsiveFontSize(
-                //                     context, 12.0),
-                //               ),
-                //             ),
-                //           ],
-                //         ),
-                //       ),
                 const SizedBox(
                   height: 30.0,
                 ),

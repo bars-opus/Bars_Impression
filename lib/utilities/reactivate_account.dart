@@ -13,49 +13,7 @@ class ReActivateAccount extends StatefulWidget {
 }
 
 class _ReActivateAccountState extends State<ReActivateAccount> {
-  // void _showBottomSheetErrorMessage(String error) {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     isScrollControlled: true,
-  //     backgroundColor: Colors.transparent,
-  //     builder: (BuildContext context) {
-  //       return DisplayErrorHandler(
-  //         buttonText: 'Ok',
-  //         onPressed: () async {
-  //           Navigator.pop(context);
-  //         },
-  //         title: 'Failed to activate account',
-  //         subTitle: error,
-  //       );
-  //     },
-  //   );
-  // }
-
-  // _reActivate() {
-  //   try {
-  //     usersAuthorRef
-  //         .doc(
-  //       widget.user.userId,
-  //     )
-  //         .update({
-  //       'disabledAccount': false,
-  //     });
-  //     mySnackBar(context, 'Your account was activated successfully!!!');
-  //     Navigator.push(
-  //       context,
-  //       MaterialPageRoute(
-  //         builder: (_) => HomeScreen(),
-  //       ),
-  //     );
-  //   } catch (e) {
-  //     String error = e.toString();
-  //     String result = error.contains(']')
-  //         ? error.substring(error.lastIndexOf(']') + 1)
-  //         : error;
-  //     _showBottomSheetErrorMessage(result);
-  //   }
-  // }
-
+ 
   _reActivate() async {
     var _user = Provider.of<UserData>(context, listen: false).user;
 

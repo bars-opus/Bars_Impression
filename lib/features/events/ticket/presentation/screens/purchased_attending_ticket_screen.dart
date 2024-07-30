@@ -144,7 +144,6 @@ class _PurchasedAttendingTicketScreenState
   //  It also provides a link to see the attendees' list.
   //  When the user taps on this link, a PaletteGenerator is used to generate a color palette from the event's image,
   //  and then it navigates to the EventExpectedAttendees page.
-
   _eventInfoDisplay() {
     final width = MediaQuery.of(context).size.width;
     return new Material(
@@ -745,16 +744,6 @@ class _PurchasedAttendingTicketScreenState
                               onPressed: () {
                                 Navigator.pop(context);
                                 _showBottomSheetConfirmRefund(context);
-                                // Navigator.pop(context);
-                                // _navigateToPage(
-                                //     context,
-                                //     InviteSearchScreen(
-                                //       event: widget.event,
-                                //       currentUserId: widget.currentUserId,
-                                //       inviteMessage:
-                                //           _messageController.text.trim(),
-                                //       paletteColor: _paletteDark,
-                                //     ));
                               },
                               text: _messageController.text.isEmpty
                                   ? 'Skip'
@@ -805,8 +794,8 @@ class _PurchasedAttendingTicketScreenState
       },
     );
   }
-  // This button leads to the ProfileScreen of the event's organizer.
 
+  // This button leads to the ProfileScreen of the event's organizer.
   _organizerButton() {
     return EventBottomButton(
       buttonText: 'View organizer',
@@ -823,7 +812,6 @@ class _PurchasedAttendingTicketScreenState
   }
 
   // This button leads to the ProfileScreen of the event's organizer.
-
   _refundButton() {
     return EventBottomButton(
       buttonColor: Colors.red,
@@ -843,7 +831,6 @@ class _PurchasedAttendingTicketScreenState
 
   //  This button leads to either the event's location on a map or the event's virtual venue,
   //  depending on whether the event is virtual or not.
-
   _locationButton() {
     return EventBottomButton(
       buttonText: widget.event.isVirtual ? 'Host link' : 'Event location',
@@ -967,7 +954,6 @@ class _PurchasedAttendingTicketScreenState
 
   // full-screen image for the event, with a Hero widget
   //to create an animation when transitioning between pages.
-
   _backgroundEventImage() {
     return Container(
       height: double.infinity,
@@ -1228,7 +1214,6 @@ class _PurchasedAttendingTicketScreenState
         const SizedBox(
           height: 40,
         ),
-
         widget.justPurchased.startsWith('New') ||
                 widget.justPurchased.startsWith('Affiliate')
             ? _ticketSummaryInfo()
@@ -1238,7 +1223,6 @@ class _PurchasedAttendingTicketScreenState
         const SizedBox(
           height: 40,
         ),
-
         widget.ticketOrder.refundRequestStatus == 'pending'
             ? Padding(
                 padding:
@@ -1282,20 +1266,6 @@ class _PurchasedAttendingTicketScreenState
             : widget.ticketOrder.refundRequestStatus == 'processed'
                 ? _alreadyRefunded()
                 : SizedBox.shrink(),
-
-        // TicketEnlargedWidget(
-        //   // event: widget.event,
-        //   palette: widget.palette,
-        //   ticketOrder: widget.ticketOrder,
-        //   hasEnded: _eventHasStarted,
-        //   currency: widget.event.isFree || widget.event.rate.isEmpty
-        //       ? ''
-        //       : currencyPartition.length > 0
-        //           ? currencyPartition[1]
-        //           : '',
-        //   event: widget.event,
-        // ),
-        // // _ticketdisplay(),
         isAuthor
             ? AccessDashBoardWidget(
                 currentUserId: widget.currentUserId,
@@ -1310,27 +1280,6 @@ class _PurchasedAttendingTicketScreenState
                 palette: widget.palette,
                 ticketOrder: widget.ticketOrder,
               ),
-
-        // widget.ticketOrder.tickets.length == 1 &&
-        //         widget.ticketOrder.tickets.isNotEmpty
-        //     ? EventsAttendingTicketScreen(
-        //         // finalPurchasingTicketList: widget.ticketOrder.tickets,
-        //         currentUserId: widget.currentUserId,
-        //         event: widget.event,
-        //         justPurchased: widget.justPurchased,
-        //         palette: widget.palette,
-        //         ticketOrder: widget.ticketOrder,
-        //         ticket: widget.ticketOrder.tickets[0],
-        //       )
-        //     : PurchaseTicketSummaryWidget(
-        //         finalPurchasingTicketList: widget.ticketOrder.tickets,
-        //         currentUserId: widget.currentUserId,
-        //         event: widget.event,
-        //         justPurchased: widget.justPurchased,
-        //         palette: widget.palette,
-        //         ticketOrder: widget.ticketOrder,
-        //       ),
-
         SizedBox(
           height: isAuthor ? 10 : 50,
         ),
@@ -1345,7 +1294,6 @@ class _PurchasedAttendingTicketScreenState
         const SizedBox(
           height: 8,
         ),
-
         if (widget.currentUserId != widget.event.authorId)
           if (!_eventHasStarted)
             if (widget.ticketOrder.refundRequestStatus.isEmpty)
@@ -1443,130 +1391,12 @@ class _PurchasedAttendingTicketScreenState
               ),
             ],
           ),
-
         const SizedBox(
           height: 25,
         ),
       ],
     );
   }
-
-  // _programLineup() {
-  //   List<Schedule> shedules = widget.event.schedule;
-  //   List<Schedule> scheduleOptions = [];
-  //   for (Schedule shedules in shedules) {
-  //     Schedule sheduleOption = shedules;
-  //     scheduleOptions.add(sheduleOption);
-  //   }
-  //   scheduleOptions
-  //       .sort((a, b) => a.startTime.toDate().compareTo(b.startTime.toDate()));
-  //   return Stack(
-  //     children: [
-  //       Padding(
-  //         padding: EdgeInsets.only(
-  //             top: ResponsiveHelper.responsiveHeight(context, 120)),
-  //         child: ScheduleGroup(
-  //           from: '',
-  //           schedules: scheduleOptions,
-  //           isEditing: false,
-  //         ),
-
-  //         // ListView.builder(
-  //         //   itemCount: scheduleOptions.length,
-  //         //   itemBuilder: (BuildContext context, int index) {
-  //         //     Schedule schedule = scheduleOptions[index];
-
-  //         //     return ScheduleWidget(schedule: schedule);
-  //         //   },
-  //         // ),
-  //       ),
-  //       Positioned(
-  //         top: 200,
-  //         child: ShakeTransition(
-  //           duration: const Duration(seconds: 2),
-  //           child: Text(
-  //             'Program\nLineup',
-  //             style: TextStyle(
-  //               fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-  //               //  24.0,
-  //               fontWeight: FontWeight.bold,
-  //               color: Colors.white,
-  //             ),
-  //           ),
-  //         ),
-  //       ),
-  //     ],
-  //   );
-
-  //   // ListView(
-  //   //   // physics: NeverScrollableScrollPhysics(),
-  //   //   children: [
-  //   //     const SizedBox(
-  //   //       height: 80,
-  //   //     ),
-  //   //     Text(
-  //   //       'Program\nLineup',
-  //   //       style: TextStyle(
-  //   //         fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
-  //   //         //  24.0,
-  //   //         fontWeight: FontWeight.bold,
-  //   //         color: Colors.white,
-  //   //       ),
-  //   //     ),
-  //   //     const SizedBox(
-  //   //       height: 10,
-  //   //     ),
-  //   //     Container(
-  //   //       height: 700,
-  //   //       width: 500,
-  //   //       child: ListView.builder(
-  //   //         itemCount: scheduleOptions.length,
-  //   //         itemBuilder: (BuildContext context, int index) {
-  //   //           Schedule schedule = scheduleOptions[index];
-
-  //   //           return ScheduleWidget(schedule: schedule);
-  //   //         },
-  //   //       ),
-  //   //     ),
-  //   //     // _eventInfoDisplay(),
-  //   //     // const SizedBox(
-  //   //     //   height: 30,
-  //   //     // ),
-  //   //     // if (widget.ticketOrder.isInvited) _invitationButton(),
-  //   //     // _locationButton(),
-  //   //     // _eventRoomButton(),
-  //   //     // _organizerButton(),
-  //   //     // const SizedBox(
-  //   //     //   height: 10,
-  //   //     // ),
-  //   //     // if (!_eventHasStarted) _refundButton(),
-  //   //     // const SizedBox(
-  //   //     //   height: 100,
-  //   //     // ),
-  //   //     IconButton(
-  //   //       icon: Icon(Icons.close),
-  //   //       iconSize: 30.0,
-  //   //       color: Colors.white,
-  //   //       onPressed: () => Navigator.pop(context),
-  //   //     ),
-  //   //     const SizedBox(
-  //   //       height: 100,
-  //   //     ),
-  //   //   ],
-  //   // );
-  // }
-
-  // _indicator(int index) {
-  //   return AnimatedContainer(
-  //     duration: const Duration(milliseconds: 500),
-  //     height: _index == index ? 2 : 5,
-  //     width: _index == index ? 20 : 50,
-  //     decoration: BoxDecoration(
-  //         color: Colors.transparent,
-  //         // shape: BoxShape.circle,
-  //         border: Border.all(width: 2, color: Colors.white)),
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -1597,35 +1427,6 @@ class _PurchasedAttendingTicketScreenState
           children: [
             _backgroundEventImage(),
             _ticket(),
-            // Positioned(
-            //   top: 120,
-            //   child: Row(
-            //     children: [
-            //       _indicator(1),
-            //       const SizedBox(
-            //         width: 5,
-            //       ),
-            //       _indicator(0),
-            //     ],
-            //   ),
-            // ),
-            // Padding(
-            //   padding:
-            //       const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
-            //   child: PageView(
-            //     //  controller: _pageController,
-            //     onPageChanged: (int index) {
-            //       // HapticFeedback.lightImpact();
-            //       setState(() {
-            //         _index = index;
-            //       });
-            //     },
-            //     children: [
-            //       _ticket(),
-            //       _programLineup(),
-            //     ],
-            //   ),
-            // ),
           ],
         ),
       ),

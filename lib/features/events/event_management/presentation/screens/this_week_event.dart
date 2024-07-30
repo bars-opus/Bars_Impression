@@ -64,7 +64,7 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
         return StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
           return Container(
-            height: MediaQuery.of(context).size.height.toDouble() / 1.2,
+            height: ResponsiveHelper.responsiveHeight(context, 600),
             decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(30)),
@@ -72,9 +72,6 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
               padding: const EdgeInsets.all(20.0),
               child: ListView(
                 children: [
-                  // const SizedBox(
-                  //   height: 30,
-                  // ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -191,7 +188,6 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
   // Ticket options purchase entry
   void _showBottomSheetAttendOptions(BuildContext context, Event currentEvent) {
     var _provider = Provider.of<UserData>(context, listen: false);
-
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -217,7 +213,6 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
                 Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: TicketPurchasingIcon(
-                    // icon: Icons.close,
                     title: 'Ticket packages.',
                   ),
                 ),
@@ -226,7 +221,6 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
                   groupTickets: currentEvent.ticket,
                   event: currentEvent,
                   inviteReply: '',
-                  //  marketedAffiliateId: '',
                 ),
               ],
             ),
@@ -305,7 +299,6 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
   _validateAttempt() {
     var _provider = Provider.of<UserData>(context, listen: false);
     var _usercountry = _provider.userLocationPreference!.country;
-
     bool isGhanaian = _usercountry == 'Ghana' ||
         _provider.userLocationPreference!.currency == 'Ghana Cedi | GHS';
     return !isGhanaian
@@ -324,7 +317,6 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
                   var connectivityResult =
                       await Connectivity().checkConnectivity();
                   if (connectivityResult == ConnectivityResult.none) {
-                    // No internet connection
                     _showBottomSheetErrorMessage('No Internet',
                         'Please connect to the internet and try again.');
                     return;
@@ -332,9 +324,6 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
                     _attendMethod();
                   }
                 }
-                // widget.event.ticketSite.isNotEmpty
-                //     ? _showBottomSheetExternalLink()
-                //     : _attendMethod();
               };
   }
 
@@ -402,14 +391,11 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
                 liveCity: '',
                 liveCountry: '',
                 isFrom: '',
-                // seeMoreFrom: seeMoreFrom,
                 sortNumberOfDays: 7,
-
                 eventIndex: eventIndex,
               ));
         },
         child: Stack(
-          // alignment: FractionalOffset.bottomRight,
           children: [
             Padding(
               padding:
@@ -446,7 +432,6 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
                           image:
                               CachedNetworkImageProvider(widget.event.imageUrl),
                           fit: BoxFit.cover,
-                          // ),
                         ),
                       ),
                     ),
@@ -467,7 +452,6 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
                                   context, 20.0),
                               fontWeight: FontWeight.w400,
                             ),
-                            // maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(
@@ -500,22 +484,31 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
                           const SizedBox(
                             height: 5,
                           ),
-                          Text(
-                            widget.event.isFree
-                                ? 'Free'
-                                : currencyPartition.length > 0 ||
-                                        widget.event.rate.isNotEmpty
-                                    ? "${currencyPartition[1]}${_fristTickePrice.toString()}"
-                                    : _fristTickePrice.toString(),
-                            style: TextStyle(
-                              fontSize: ResponsiveHelper.responsiveFontSize(
-                                  context, 14.0),
-                              // fontSize: 18,
-                              color: _eventHasEnded ? Colors.grey : Colors.blue,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.right,
-                          ),
+                          widget.event.ticketSite.isNotEmpty
+                              ? Icon(
+                                  Icons.link,
+                                  size: ResponsiveHelper.responsiveHeight(
+                                      context, 30.0),
+                                  color: Colors.blue,
+                                )
+                              : Text(
+                                  widget.event.isFree
+                                      ? 'Free'
+                                      : currencyPartition.length > 0 ||
+                                              widget.event.rate.isNotEmpty
+                                          ? "${currencyPartition[1]}${_fristTickePrice.toString()}"
+                                          : _fristTickePrice.toString(),
+                                  style: TextStyle(
+                                    fontSize:
+                                        ResponsiveHelper.responsiveFontSize(
+                                            context, 14.0),
+                                    color: _eventHasEnded
+                                        ? Colors.grey
+                                        : Colors.blue,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.right,
+                                ),
                           if (_eventHasStarted)
                             Text(
                               _eventHasEnded ? 'Completed' : 'Ongoing',
@@ -524,7 +517,6 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
                                     context, 12.0),
                                 color:
                                     _eventHasEnded ? Colors.red : Colors.blue,
-                                // fontWeight: FontWeight.bold,
                               ),
                               textAlign: TextAlign.right,
                             ),
@@ -535,124 +527,80 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
                 ),
               ),
             ),
-            if (!_eventHasEnded)
-              if (widget.event.authorId != _provider.currentUserId)
-                Positioned(
-                  bottom: 20,
-                  // left: 0,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Container(
-                        width: ResponsiveHelper.responsiveHeight(
-                          context,
-                          120,
-                        ),
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.blue,
-                            side: BorderSide(
-                              width: 0.5,
-                              color: Theme.of(context).secondaryHeaderColor,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0),
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: _checkingTicketAvailability
-                                ? SizedBox(
-                                    height: 15,
-                                    width: 15,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.blue,
-                                    ),
-                                  )
-                                : Text('Attend',
-                                    style: TextStyle(
-                                      fontSize:
-                                          ResponsiveHelper.responsiveFontSize(
-                                              context, 14.0),
-                                      color: Theme.of(context)
-                                          .secondaryHeaderColor,
-                                    )),
-                          ),
-                          onPressed: _usercountry!.isEmpty
-                              ? () {
-                                  widget.event.isFree
-                                      ? _attendMethod()
-                                      : _showBottomEditLocation(context);
-                                }
-                              : _validateAttempt(),
 
-                          //  widget.event.termsAndConditions.isNotEmpty
-                          //     ? () {
-                          //         _showBottomSheetTermsAndConditions();
-                          //       }
-                          //     : () async {
-                          //         widget.event.ticketSite.isNotEmpty
-                          //             ? _showBottomSheetExternalLink()
-                          //             : _attendMethod();
-                          //       },
-
-                          //  () async {
-                          //   HapticFeedback.lightImpact();
-                          //   if (mounted) {
-                          //     setState(() {
-                          //       _checkingTicketAvailability = true;
-                          //     });
-                          //   }
-
-                          //   TicketOrderModel? _ticket =
-                          //       await DatabaseService.getTicketWithId(
-                          //           widget.event.id, _provider.currentUserId!);
-
-                          //   if (_ticket != null) {
-                          //     PaletteGenerator _paletteGenerator =
-                          //         await PaletteGenerator.fromImageProvider(
-                          //       CachedNetworkImageProvider(widget.event.imageUrl),
-                          //       size: Size(1110, 150),
-                          //       maximumColorCount: 20,
-                          //     );
-
-                          //     _navigateToPage(
-                          //       context,
-                          //       EventsAttendingTicketScreen(
-                          //         ticketOrder: _ticket,
-                          //         event: widget.event,
-                          //         currentUserId: _provider.currentUserId!,
-                          //         justPurchased: 'Already',
-                          //         palette: _paletteGenerator,
-                          //       ),
-                          //     );
-                          //     if (mounted) {
-                          //       setState(() {
-                          //         _checkingTicketAvailability = false;
-                          //       });
-                          //     }
-                          //   } else {
-                          //     if (mounted) {
-                          //       setState(() {
-                          //         _checkingTicketAvailability = false;
-                          //       });
-                          //       _showBottomSheetAttendOptions(
-                          //           context, widget.event);
-                          //     }
-                          //   }
-                          // },
-
-                          //  () {
-                          //   HapticFeedback.mediumImpact();
-                          //   _showBottomSheetAttendOptions(context, event);
-                          // },
-                        ),
-                      ),
+            !_eventHasEnded && !isAuthor
+                ? Positioned(
+                    bottom: 10,
+                    left: 10,
+                    child: AttendButton(
+                      fromThisWeek: true,
+                      marketedAffiliateId: '',
+                      fromFlyier: false,
+                      currentUserId: _provider.currentUserId!,
+                      event: widget.event,
                     ),
-                  ),
-                ),
+                  )
+                : SizedBox.shrink(),
+
+            // if (!_eventHasEnded)
+            //   if (widget.event.authorId != _provider.currentUserId)
+            //     Positioned(
+            //       bottom: 10,
+            //       child: Padding(
+            //         padding: const EdgeInsets.all(5.0),
+            //         child: Align(
+            //           alignment: Alignment.bottomCenter,
+            //           child: Container(
+            //             width: ResponsiveHelper.responsiveHeight(
+            //               context,
+            //               120,
+            //             ),
+            //             child: OutlinedButton(
+            //               style: OutlinedButton.styleFrom(
+            //                 foregroundColor: Colors.blue,
+            //                 side: BorderSide(
+            //                   width: 0.5,
+            //                   color: Theme.of(context).secondaryHeaderColor,
+            //                 ),
+            //                 shape: RoundedRectangleBorder(
+            //                   borderRadius: BorderRadius.circular(20.0),
+            //                 ),
+            //               ),
+            //               child: Padding(
+            //                 padding: const EdgeInsets.all(10.0),
+            // child: _checkingTicketAvailability
+            //     ? SizedBox(
+            //         height: 15,
+            //         width: 15,
+            //         child: CircularProgressIndicator(
+            //           strokeWidth: 2,
+            //           color: Colors.blue,
+            //         ),
+            //       )
+            //     : Text(
+            //                         'Attend',
+            //                         style: TextStyle(
+            //                           fontSize:
+            //                               ResponsiveHelper.responsiveFontSize(
+            //                                   context, 14.0),
+            //                           color: Theme.of(context)
+            //                               .secondaryHeaderColor,
+            //                         ),
+            //                         overflow: TextOverflow.ellipsis,
+            //                       ),
+            //               ),
+            //               onPressed: _usercountry!.isEmpty
+            //                   ? () {
+            //                       widget.event.isFree
+            //                           ? _attendMethod()
+            //                           : _showBottomEditLocation(context);
+            //                     }
+            //                   : _validateAttempt(),
+            //             ),
+            //           ),
+            //         ),
+            //       ),
+            //     ),
           ],
         ),
       ),

@@ -73,37 +73,13 @@ class _PayoutWidgetState extends State<PayoutWidget> {
     return PayoutDataWidget(
       label: lable,
       value: value,
-      color: Colors.black,
+      text2Ccolor: Colors.black,
     );
-
-    //  ShakeTransition(
-    //   // axis: Axis.vertical,
-    //   curve: Curves.linearToEaseOut,
-    //   offset: -140,
-    //   duration: const Duration(seconds: 2),
-    //   child: SalesReceiptWidget(
-    //     isRefunded: false,
-    //     lable: lable,
-    //     value: value,
-    //     color: Colors.black,
-    //   ),
-    // );
   }
 
   @override
   Widget build(BuildContext context) {
     var _amount = widget.payout.total / 100;
-    // var _textStyle2 = TextStyle(
-    //   fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-    //   color: Colors.black,
-    //   decoration: TextDecoration.none,
-    // );
-
-    // var _textStyle = TextStyle(
-    //   fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-    //   color: Colors.grey,
-    // );
-
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
@@ -133,12 +109,7 @@ class _PayoutWidgetState extends State<PayoutWidget> {
           Divider(
             thickness: .2,
           ),
-          // SalesReceiptWidget(
-          //   color: widget.payout.status == 'pending' ? Colors.red : Colors.blue,
-          //   isRefunded: false,
-          //   lable: 'Status',
-          //   value: widget.payout.status,
-          // ),
+        
           _payoutWidget(
             'Amount',
             _amount.toString(),

@@ -55,7 +55,7 @@ class _UserBottomModalSheetActionsState
               userAuthor: null,
               chatLoaded: chat,
               userPortfolio: widget.user,
-              userId: widget.user.id,
+              userId: widget.user.userId,
               showAppbar: false,
             ),
           ),
@@ -112,7 +112,7 @@ class _UserBottomModalSheetActionsState
               updateBlockStatus: () {
                 setState(() {});
               },
-              userId: widget.user.id,
+              userId: widget.user.userId,
               userName: widget.user.userName,
               currentUserId: widget.currentUserId,
               disableAdvice: widget.user.disableAdvice,
@@ -124,6 +124,8 @@ class _UserBottomModalSheetActionsState
       },
     );
   }
+
+
 
   // _goToChurch(BuildContext context) async {
   @override
@@ -151,66 +153,24 @@ class _UserBottomModalSheetActionsState
                     context,
                     ProfileScreen(
                       currentUserId: widget.currentUserId,
-                      userId: widget.user.id,
+                      userId: widget.user.userId,
                       user: null,
                     ));
               },
               user: widget.user,
               trailing: GestureDetector(
                 onTap: () {
-                  // HapticFeedback.mediumImpact();
                   Navigator.pop(context);
+
                   _showBottomSheetBookMe(context);
                 },
                 child: Icon(
-                  Icons.email_outlined,
+                  Icons.call_outlined,
                   color: Colors.blue,
                   size: ResponsiveHelper.responsiveHeight(context, 30.0),
                 ),
               ),
             ),
-            // ListTile(
-            // trailing: GestureDetector(
-            //   onTap: () {
-            //     HapticFeedback.mediumImpact();
-            //     Navigator.pop(context);
-            //     _showBottomSheetBookMe(context);
-            //   },
-            //   child: Icon(
-            //     Icons.email,
-            //     color: Colors.blue,
-            //     size: 30.0,
-            //   ),
-            // ),
-            // leading: Container(
-            //   height: 40,
-            //   width: 40,
-            //   decoration: BoxDecoration(
-            //     shape: BoxShape.circle,
-            //     color: Theme.of(context).primaryColor,
-            //     image: DecorationImage(
-            //       image: CachedNetworkImageProvider(user.profileImageUrl!),
-            //       fit: BoxFit.cover,
-            //     ),
-            //   ),
-            // ),
-            //   title: RichText(
-            //     textScaleFactor: MediaQuery.of(context).textScaleFactor,
-            //     text: TextSpan(
-            //       children: [
-            //         TextSpan(
-            //             text: user.userName!.toUpperCase(),
-            //             style: Theme.of(context).textTheme.bodyMedium),
-            //         TextSpan(
-            //           text: "\n${user.profileHandle}",
-            //           style: TextStyle(color: Colors.blue, fontSize:  ResponsiveHelper.responsiveFontSize(
-            // context, 12),),
-            //         )
-            //       ],
-            //     ),
-            //     overflow: TextOverflow.ellipsis,
-            //   ),
-            // ),
             const SizedBox(
               height: 10,
             ),
@@ -223,19 +183,13 @@ class _UserBottomModalSheetActionsState
                     _navigateToPage(
                         context,
                         SendToChats(
-                          sendContentId: widget.user.id,
+                          sendContentId: widget.user.userId,
                           currentUserId:
                               Provider.of<UserData>(context, listen: false)
                                   .currentUserId!,
-                          // userId: '',
                           sendContentType: 'User',
                           sendImageUrl: widget.user.profileImageUrl,
                           sendTitle: widget.user.userName,
-
-                          // event: null,
-                          // post: null,
-                          // // forum: null,
-                          // user: user,
                         ));
                   },
                   text: 'Send',
@@ -243,18 +197,12 @@ class _UserBottomModalSheetActionsState
                 BottomModelSheetIconActionWidget(
                   icon: Icons.share_outlined,
                   onPressed: () async {
-                    // String link = await DatabaseService.myDynamicLink(
-                    //     widget.user.profileImageUrl,
-                    //     widget.user.userName,
-                    //     widget.user.overview,
-                    //     'https://www.barsopus.com/user_${widget.user.id}');
                     Share.share(widget.user.dynamicLink);
                   },
                   text: 'Share',
                 ),
               ],
             ),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -268,7 +216,7 @@ class _UserBottomModalSheetActionsState
                 BottomModelSheetIconActionWidget(
                   dontPop: true,
                   icon: Icons.message_outlined,
-                  onPressed: widget.currentUserId == widget.user.id
+                  onPressed: widget.currentUserId == widget.user.userId
                       ? () {
                           _showBottomSheetCantMessage();
                         }
@@ -277,7 +225,7 @@ class _UserBottomModalSheetActionsState
                             Chat? _chat =
                                 await DatabaseService.getUserChatWithId(
                               widget.currentUserId,
-                              widget.user.id,
+                              widget.user.userId,
                             );
 
                             _bottomModalSheetMessage(
@@ -301,7 +249,7 @@ class _UserBottomModalSheetActionsState
                     context,
                     ProfileScreen(
                       currentUserId: widget.currentUserId,
-                      userId: widget.user.id,
+                      userId: widget.user.userId,
                       user: null,
                     ));
               },
@@ -317,7 +265,7 @@ class _UserBottomModalSheetActionsState
                       userDynamicLink: widget.user.dynamicLink,
                       bio: widget.user.overview,
                       userName: widget.user.userName,
-                      userId: widget.user.id,
+                      userId: widget.user.userId,
                       profileImageUrl: widget.user.profileImageUrl,
                     ));
               },
@@ -336,10 +284,10 @@ class _UserBottomModalSheetActionsState
                     _navigateToPage(
                         context,
                         ReportContentPage(
-                          contentId: widget.user.id,
+                          contentId: widget.user.userId,
                           contentType: widget.user.userName,
-                          parentContentId: widget.user.id,
-                          repotedAuthorId: widget.user.id,
+                          parentContentId: widget.user.userId,
+                          repotedAuthorId: widget.user.userId,
                         ));
                   },
                   text: 'Report',
@@ -354,30 +302,6 @@ class _UserBottomModalSheetActionsState
                 ),
               ],
             ),
-            // BottomModelSheetListTileActionWidget(
-            //   colorCode: 'Red',
-            //   icon: Icons.flag_outlined,
-            //   onPressed: () {
-            // _navigateToPage(
-            //     context,
-            //     ReportContentPage(
-            //       contentId: widget.user.id,
-            //       contentType: widget.user.userName,
-            //       parentContentId: widget.user.id,
-            //       repotedAuthorId: widget.user.id,
-            //     ));
-            //   },
-            //   text: 'Report',
-            // ),
-            // BottomModelSheetListTileActionWidget(
-            //   colorCode: '',
-            //   icon: Icons.feedback_outlined,
-            //   onPressed: () {
-            //     Navigator.push(context,
-            //         MaterialPageRoute(builder: (_) => SuggestionBox()));
-            //   },
-            //   text: 'Suggestion',
-            // ),
           ],
         ),
       ),

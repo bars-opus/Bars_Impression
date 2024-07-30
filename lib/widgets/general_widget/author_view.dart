@@ -167,11 +167,6 @@ class Authorview extends StatelessWidget {
                           maxLines: 5,
                         )
 
-                      // BarsTextStrikeThrough(
-                      //     fontSize:
-                      //         ResponsiveHelper.responsiveFontSize(context, 12),
-                      //     text: content,
-                      //   )
                       : HyperLinkText(
                           from: from,
                           text: content,

@@ -20,14 +20,11 @@ class FollowerFollowing extends StatefulWidget {
 
 class _FollowerFollowingState extends State<FollowerFollowing>
     with AutomaticKeepAliveClientMixin {
-  // List<String> _noUserIds = [];
   List<AccountHolderAuthor?> _userList = [];
-
   final _userSnapshot = <DocumentSnapshot>[];
   int limit = 20;
   bool _hasNext = true;
   bool _isFectchingUser = false;
-  // bool _showInfo = true;
   late ScrollController _hideButtonController;
 
   @override
@@ -36,7 +33,6 @@ class _FollowerFollowingState extends State<FollowerFollowing>
     widget.follower.startsWith('Follower')
         ? _setUpFollower()
         : _setUpFollowing();
-    // __setShowInfo();
     _hideButtonController = ScrollController();
   }
 
@@ -56,37 +52,6 @@ class _FollowerFollowingState extends State<FollowerFollowing>
     _hideButtonController.dispose();
     super.dispose();
   }
-
-  // __setShowInfo() {
-  //   if (_showInfo) {
-  //     Timer(Duration(seconds: 7), () {
-  //       if (mounted) {
-  //         setState(() {
-  //           _showInfo = false;
-  //         });
-  //       }
-  //     });
-  //   }
-  // }
-
-  // _setUpFollower() async {
-  //   QuerySnapshot userSnapShot = await followersRef
-  //       .doc(widget.userId)
-  //       .collection('userFollowers')
-  //       .limit(limit)
-  //       .get();
-  //   List<DocId> users =
-  //       userSnapShot.docs.map((doc) => DocId.fromDoc(doc)).toList();
-  //   _userSnapshot.addAll((userSnapShot.docs));
-  //   if (mounted) {
-  //     print(users.length.toString());
-  //     setState(() {
-  //       _hasNext = false;
-  //       _userList = users;
-  //     });
-  //   }
-  //   return users;
-  // }
 
   _setUpFollower() async {
     QuerySnapshot userSnapShot = await followersRef
@@ -154,30 +119,6 @@ class _FollowerFollowingState extends State<FollowerFollowing>
     return _hasNext;
   }
 
-  // _loadMoreFollower() async {
-  //   if (_isFectchingUser) return;
-  //   _isFectchingUser = true;
-  // QuerySnapshot userSnapShot = await followersRef
-  //     .doc(widget.userId)
-  //     .collection('userFollowers')
-  //       .limit(limit)
-  //       .startAfterDocument(_userSnapshot.last)
-  //       .get();
-  //   List<DocId> moreusers =
-  //       userSnapShot.docs.map((doc) => DocId.fromDoc(doc)).toList();
-  //   if (_userSnapshot.length < limit) _hasNext = false;
-  //   List<DocId> allusers = (_userList..addAll(moreusers)).cast<DocId>();
-  //   _userSnapshot.addAll((userSnapShot.docs));
-  //   if (mounted) {
-  //     setState(() {
-  //       _userList = allusers.cast<AccountHolderAuthor>();
-  //     });
-  //   }
-  //   _hasNext = false;
-  //   _isFectchingUser = false;
-  //   return _hasNext;
-  // }
-
   _setUpFollowing() async {
     QuerySnapshot userSnapShot = await followingRef
         .doc(widget.userId)
@@ -208,24 +149,6 @@ class _FollowerFollowingState extends State<FollowerFollowing>
     return users;
   }
 
-  // _setUpFollowing() async {
-  //   QuerySnapshot userSnapShot = await followingRef
-  //       .doc(widget.userId)
-  //       .collection('userFollowing')
-  //       .limit(limit)
-  //       .get();
-  //   List<DocId> users =
-  //       userSnapShot.docs.map((doc) => DocId.fromDoc(doc)).toList();
-  //   _userSnapshot.addAll((userSnapShot.docs));
-  //   if (mounted) {
-  //     print(users.length.toString());
-  //     setState(() {
-  //       _hasNext = false;
-  //       _userList = users.cast<AccountHolderAuthor>();
-  //     });
-  //   }
-  //   return users;
-  // }
   _loadMoreFollowing() async {
     if (_isFectchingUser) return;
     _isFectchingUser = true;
@@ -260,29 +183,6 @@ class _FollowerFollowingState extends State<FollowerFollowing>
     _isFectchingUser = false;
     return _hasNext;
   }
-  // _loadMoreFollowing() async {
-  //   if (_isFectchingUser) return;
-  //   _isFectchingUser = true;
-  // QuerySnapshot userSnapShot = await followingRef
-  //     .doc(widget.userId)
-  //     .collection('userFollowing')
-  //       .limit(limit)
-  //       .startAfterDocument(_userSnapshot.last)
-  //       .get();
-  //   List<DocId> moreusers =
-  //       userSnapShot.docs.map((doc) => DocId.fromDoc(doc)).toList();
-  //   if (_userSnapshot.length < limit) _hasNext = false;
-  //   List<DocId> allusers = (_userList..addAll(moreusers)).cast<DocId>();
-  //   _userSnapshot.addAll((userSnapShot.docs));
-  //   if (mounted) {
-  //     setState(() {
-  //       _userList = allusers.cast<AccountHolderAuthor>();
-  //     });
-  //   }
-  //   _hasNext = false;
-  //   _isFectchingUser = false;
-  //   return _hasNext;
-  // }
 
   _buildUserTile(AccountHolderAuthor user) {
     return UserListTile(
@@ -384,61 +284,6 @@ class _FollowerFollowingState extends State<FollowerFollowing>
                     : widget.userId == _user.userId
                         ? SizedBox.shrink()
                         : _buildUserTile(_user);
-
-                // FutureBuilder(
-                //   future: DatabaseService.getUserWithId(user.id),
-                //   builder: (BuildContext context, AsyncSnapshot snapshot) {
-                //     if (snapshot.connectionState == ConnectionState.waiting) {
-                //       // While waiting for the future to resolve, show the skeleton.
-                //       return FollowerUserSchimmerSkeleton();
-                //     } else if (snapshot.hasError) {
-                //       // If the future completes with an error, handle it appropriately.
-                //       debugPrint('Error: ${snapshot.error}');
-                //       return Text('Something went wrong');
-                //     } else if (!snapshot.hasData) {
-                //       return Material(
-                //         color: Colors.transparent,
-                //         child: LoadingChats(
-                //           deleted: true,
-                //           userId: user.id,
-                //           onPressed: () {},
-                //         ),
-                //       );
-                //       // No error, but there's also no data. This might indicate a null user.
-                //       // debugPrint(
-                //       //     'No data available for user with id: ${user.id}');
-                //       // return SizedBox.shrink();
-                //     } else {
-                //       // Data is available.
-                //       AccountHolderAuthor? _user = snapshot.data;
-                //       debugPrint('User data: $_user');
-                //       return _user == null
-                //           ? LoadingChats(
-                //               deleted: true,
-                //               userId: user.id,
-                //               onPressed: () {},
-                //             )
-                //           : widget.userId == _user.userId
-                //               ? SizedBox.shrink()
-                //               : _buildUserTile(_user);
-                //     }
-                //   },
-                // );
-
-                // FutureBuilder(
-                //   future: DatabaseService.getUserWithId(user.id),
-                //   builder: (BuildContext context, AsyncSnapshot snapshot) {
-                //     if (!snapshot.hasData) {
-                //       return FollowerUserSchimmerSkeleton();
-                //     }
-                //     AccountHolderAuthor? _user = snapshot.data;
-                //     return _user == null
-                //         ? SizedBox.shrink()
-                //         : widget.userId == _user.userId
-                //             ? const SizedBox.shrink()
-                //             : _buildUserTile(_user);
-                //   },
-                // );
               },
               childCount: _userList.length,
             ),

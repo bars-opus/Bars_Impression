@@ -5,22 +5,16 @@ class EventRoomMessageWidget extends StatefulWidget {
   final EventRoomMessageModel message;
   final EventRoom room;
   final PaletteGenerator palette;
-  // final Chat chat;
   final String currentUserId;
-  // final Color randomColor ;
-  // var user;
   final Function(EventRoomMessageModel) onReply;
 
   EventRoomMessageWidget({
     Key? key,
     required this.message,
-    // required this.chat,
     required this.onReply,
     required this.room,
     required this.palette,
-    // required this.user,
     required this.currentUserId,
-    // required this.randomColor,
   }) : super(key: key);
 
   @override
@@ -47,30 +41,6 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
     super.dispose();
   }
 
-  _unLikeMessage(
-    EventRoomMessageModel message,
-    // Chat chat,
-  ) {
-    // DatabaseService.likeMessage(
-    //     currentUserId: widget.currentUserId,
-    //     liked: false,
-    //     userId: widget.user.id!,
-    //     message: message,
-    //     chat: chat);
-  }
-
-  _likeMessage(
-    EventRoomMessageModel message,
-    // Chat chat,
-  ) {
-    // DatabaseService.likeMessage(
-    //     currentUserId: widget.currentUserId,
-    //     liked: true,
-    //     userId: widget.user.id!,
-    //     message: message,
-    //     chat: chat);
-  }
-
   _action(BuildContext context, String text) {
     return Expanded(
       child: Center(
@@ -83,24 +53,6 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
       ),
     );
   }
-
-  // _likeWidget(
-  //   EventRoomMessageModel message,
-  // ) {
-  //   return IconButton(
-  //     icon: Icon(message.isLiked ? Icons.favorite : Icons.favorite_border),
-  //     color: message.isLiked ? Colors.red : Colors.grey,
-  //     onPressed: () {
-  //       message.isLiked
-  //           ? _unLikeMessage(
-  //               message,
-  //             )
-  //           : _likeMessage(
-  //               message,
-  //             );
-  //     },
-  //   );
-  // }
 
   _profileWidgetWidget(
     EventRoomMessageModel message,
@@ -148,7 +100,6 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
             width: width,
             decoration: BoxDecoration(
               color: backgroundColor,
-              // color: Colors.white,
               borderRadius: BorderRadius.circular(5),
               image: messageAttatchment.isEmpty
                   ? null
@@ -166,37 +117,20 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
   Widget _buildMessageTile(EventRoomMessageModel message,
       List<MessageAttachment> messageAttatchment) {
     final width = MediaQuery.of(context).size.width;
-
-    // Color _palleteColor = widget.palette == null
-    //     ? Colors.blue
-    //     : widget.palette.dominantColor == null
-    //         ? Colors.blue
-    //         : widget.palette.dominantColor!.color;
-
-    // Color _palleteColor = getPaletteColor(widget.palette, Colors.blue);
      Color _palleteColor =
         Utils.getPaletteDominantColor(widget.palette, Colors.blue);
-
     Color dominantColor = _palleteColor;
     double luminance = dominantColor.computeLuminance();
     Color titleColor = luminance < 0.5 ? Colors.white : Colors.black;
-
     String senderId = message.senderId;
-
     bool isSent = senderId == widget.currentUserId;
-    //Row alignment in container
     CrossAxisAlignment crossAxisAlignment =
         isSent ? CrossAxisAlignment.end : CrossAxisAlignment.start;
-
     MainAxisAlignment mainAxisAlignment =
         isSent ? MainAxisAlignment.end : MainAxisAlignment.start;
-
-    //Container color
     Color backgroundColor =
         isSent ? _palleteColor : Theme.of(context).primaryColorLight;
-
     TextAlign textAlign = isSent ? TextAlign.end : TextAlign.start;
-
     Color textColor =
         isSent ? titleColor : Theme.of(context).secondaryHeaderColor;
 
@@ -232,9 +166,7 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: mainAxisAlignment,
                 children: [
-                  // message.isLiked && isSent
-                  //     ? _likeWidget(message)
-                  //     : const SizedBox.shrink(),
+                 
                   isSent
                       ? const SizedBox.shrink()
                       : const SizedBox(
@@ -365,8 +297,6 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
                       ),
                     ),
                   ),
-
-                  // !isSent ? _likeWidget(message) : const SizedBox.shrink()
                 ],
               ),
             ),
@@ -475,22 +405,7 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
                   onPressed: isAuthor
                       ? () {
                           deleteMessageAndAttachment(attatchments);
-                          // try {
-                          //   eventsChatRoomsConverstionRef
-                          //       .doc(widget.room.linkedEventId)
-                          //       .collection('roomChats')
-                          //       .doc(widget.message.id)
-                          //       .get()
-                          //       .then((doc) {
-                          //     if (doc.exists) {
-                          //       doc.reference.delete();
-                          //     }
-                          //   });
-                          // } catch (e) {}
-                          // FirebaseStorage.instance
-                          //     .refFromURL(attatchments[0].mediaUrl)
-                          //     .delete()
-                          //     .catchError((e) {});
+                         
                         }
                       : () {
                           _navigateToPage(

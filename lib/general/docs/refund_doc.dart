@@ -8,15 +8,10 @@ class RefundDoc extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   
-
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: ListView(
         children: [
-          // const SizedBox(
-          //   height: 30,
-          // ),
           TicketPurchasingIcon(
             title: '',
           ),
@@ -30,21 +25,6 @@ class RefundDoc extends StatelessWidget {
               ),
             ),
           const SizedBox(height: 40),
-          // RichText(
-          //   textScaleFactor: MediaQuery.of(context).textScaleFactor,
-          //   text: TextSpan(
-          //     children: [
-          //       TextSpan(
-          //         text: 'Refund',
-          //         style: Theme.of(context).textTheme.titleMedium,
-          //       ),
-          //       TextSpan(
-          //         text: "\n\n${widget.event.termsAndConditions}",
-          //         style: Theme.of(context).textTheme.bodyMedium,
-          //       ),
-          //     ],
-          //   ),
-          // ),
           GestureDetector(
             onTap: () async {
               if (!await launchUrl(

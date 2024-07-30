@@ -1,4 +1,3 @@
-import 'package:bars/features/events/affiliate/presentation/widgets/affiliate_commission_options.dart';
 import 'package:bars/utilities/exports.dart';
 
 class CreateAffiliate extends StatefulWidget {
@@ -57,7 +56,7 @@ class _CreateAffiliateState extends State<CreateAffiliate> {
   List<Map<String, dynamic>> optionData = [
     {
       'title': 'Candidate',
-      // 'subTitle': 'For job seekers',
+     
       'amount': 5,
       'index': 0,
     },
@@ -92,40 +91,6 @@ class _CreateAffiliateState extends State<CreateAffiliate> {
       'index': 3,
     },
   ];
-
-  // _ticketFiled(
-  //   String labelText,
-  //   String hintText,
-  //   TextEditingController controler,
-  //   final Function onValidateText,
-  // ) {
-  //   var style = Theme.of(context).textTheme.titleSmall;
-  //   var labelStyle = TextStyle(
-  //       fontSize: ResponsiveHelper.responsiveFontSize(context, 18.0),
-  //       color: Colors.blue);
-  //   var hintStyle = TextStyle(
-  //       fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-  //       color: Colors.grey);
-  //   return TextFormField(
-  //     controller: controler,
-  //     keyboardType: TextInputType.multiline,
-  //     keyboardAppearance: MediaQuery.of(context).platformBrightness,
-  //     style: style,
-  //     maxLines: null,
-  //     autofocus: true,
-  //     cursorColor: Colors.blue,
-  //     decoration: InputDecoration(
-  //       focusedBorder: UnderlineInputBorder(
-  //         borderSide: BorderSide(color: Colors.blue, width: 2.0),
-  //       ),
-  //       labelText: labelText,
-  //       hintText: hintText,
-  //       labelStyle: labelStyle,
-  //       hintStyle: hintStyle,
-  //     ),
-  //     validator: (string) => onValidateText(string),
-  //   );
-  // }
 
   void _navigateToPage(BuildContext context, Widget page) {
     Navigator.push(

@@ -563,45 +563,6 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
       fullLength: fullLength,
     );
 
-    // Center(
-    //   child: Container(
-    //     padding: EdgeInsets.symmetric(
-    //       horizontal: fullLength ? 20.0 : 0,
-    //     ),
-    //     width: ResponsiveHelper.responsiveWidth(
-    //         context, fullLength ? double.infinity : 145.0),
-    //     child: ElevatedButton(
-    //       style: ElevatedButton.styleFrom(
-    //         backgroundColor: Theme.of(context).primaryColorLight,
-    //         elevation: 0.0,
-    //         foregroundColor: Colors.blue,
-    //         shape: RoundedRectangleBorder(
-    //           borderRadius: BorderRadius.circular(5.0),
-    //         ),
-    //       ),
-    //       child: Row(
-    //         mainAxisAlignment: MainAxisAlignment.center,
-    //         children: [
-    //           Text(
-    //             buttonText,
-    //             style: TextStyle(
-    //               color: Theme.of(context).secondaryHeaderColor,
-    //               fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-    //             ),
-    //             textAlign: TextAlign.center,
-    //           ),
-    //           Icon(
-    //             buttonText.startsWith('Accept') ? Icons.check : Icons.close,
-    //             size: ResponsiveHelper.responsiveHeight(context, 20.0),
-    //             color:
-    //                 buttonText.startsWith('Accept') ? Colors.blue : Colors.red,
-    //           )
-    //         ],
-    //       ),
-    //       onPressed: onPressed,
-    //     ),
-    //   ),
-    // );
   }
 
 // This function generates a widget that tells the user they have already responded to the invitation.
@@ -646,8 +607,6 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> currencyPartition =
-        widget.event.rate.trim().replaceAll('\n', ' ').split("|");
     return Scaffold(
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
@@ -708,7 +667,6 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
                                       spreadRadius: 4.0,
                                     )
                                   ]),
-                              // width: width,
                               child: RichText(
                                 textScaleFactor:
                                     MediaQuery.of(context).textScaleFactor,
@@ -746,17 +704,7 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
                         ),
                       ],
                     ),
-                  // TicketEnlargedWidget(
-                  //   onInvite: true,
-                  //   // event: widget.event,
-                  //   palette: widget.palette,
-                  //   ticketOrder: widget.ticketOrder!,
-                  //   hasEnded: _eventHasEnded,
-                  //   currency: currencyPartition.length > 0
-                  //       ? currencyPartition[1]
-                  //       : '',
-                  //   event: widget.event,
-                  // ),
+                 
                   const SizedBox(
                     height: 10,
                   ),
@@ -768,14 +716,7 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
                     buttonText:
                         widget.event.isVirtual ? 'Host link' : 'Event location',
                     onPressed: () {
-                      // widget.event.isVirtual
-                      //     ? _navigateToPage(
-                      //         context,
-                      //         MyWebView(
-                      //           title: '',
-                      //           url: widget.event.virtualVenue,
-                      //         ))
-                      //     :
+                     
                       _launchMap();
                     },
                   ),

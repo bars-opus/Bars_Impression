@@ -4,7 +4,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 part 'ticket_id_model.g.dart';
 
 @HiveType(typeId: 9) // Use unique IDs for different classes
-
 class TicketIdModel {
   @HiveField(0)
   final String eventId;

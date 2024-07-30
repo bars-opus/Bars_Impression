@@ -29,11 +29,7 @@ class CountdownTimer extends StatefulWidget {
 
 class _CountdownTimerState extends State<CountdownTimer> {
   String _countDownToStartingDate = '';
-  // String _singleCountDownToStartingDate = '';
   String _metaData = '';
-
-  // bool _eventHasStarted = false;
-  // bool _eventHasEnded = false;
 
   @override
   void initState() {
@@ -82,14 +78,6 @@ class _CountdownTimerState extends State<CountdownTimer> {
       setState(() {
         _countDownToStartingDate = countdownString;
         _metaData = ' days ' + (isPastStartDate ? '-' : ' +');
-        //
-        //countdownString = widget.split.startsWith('Multiple')
-        //     ? (differenceInDays == 0)
-        //         ? ''
-        //         : (isPastStartDate ? '\nago' : '\nmore')
-        //     : (differenceInDays == 0)
-        //         ? ''
-        //         : (isPastStartDate ? 'ago' : 'more');
       });
     }
   }
@@ -120,7 +108,6 @@ class _CountdownTimerState extends State<CountdownTimer> {
                 style: TextStyle(
                   fontSize: ResponsiveHelper.responsiveFontSize(context, 11.0),
                   color: widget.color,
-                  // fontWeight: FontWeight.bold,
                 ),
               ),
             ]))
@@ -137,39 +124,16 @@ class _CountdownTimerState extends State<CountdownTimer> {
 
   @override
   Widget build(BuildContext context) {
-    return
-
-        //  widget.eventHasStarted
-        //     ? Text('Ongiong...',
-        //         style: TextStyle(
-        //           fontWeight: FontWeight.bold,
-        //           fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-        //           color: Colors.blue,
-        //         ))
-        //     : widget.eventHasEnded
-        //         ?
-
-        widget.eventHasStarted
-            ? Text(
-                widget.eventHasEnded ? 'Completed' : 'Ongoing',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: ResponsiveHelper.responsiveFontSize(
-                      context, widget.big ? 16.0 : 12),
-                  color: widget.eventHasEnded ? Colors.red : Colors.blue,
-                ),
-              )
-            : _countDownWidget();
-    //  if (!_eventHasEnded)
-    //         _eventHasStarted
-    //             ?   TextSpan(
-    //             text:'Ongiong...',
-    //                 style: TextStyle(
-    //                   fontWeight: FontWeight.bold,
-    //                   fontSize:
-    //                       ResponsiveHelper.responsiveFontSize(context, 12.0),
-    //                   color: Colors.blue,
-    //                 ))
-    //             :
+    return widget.eventHasStarted
+        ? Text(
+            widget.eventHasEnded ? 'Completed' : 'Ongoing',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: ResponsiveHelper.responsiveFontSize(
+                  context, widget.big ? 16.0 : 12),
+              color: widget.eventHasEnded ? Colors.red : Colors.blue,
+            ),
+          )
+        : _countDownWidget();
   }
 }

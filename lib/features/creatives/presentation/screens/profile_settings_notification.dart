@@ -144,10 +144,7 @@ class _ProfileSettingsNotificationState
                 onChanged: (value) => setState(
                   () {
                     _disableAdvice = value;
-                    //  _disableChat = value;
-
                     WriteBatch batch = FirebaseFirestore.instance.batch();
-
                     batch.update(
                       usersGeneralSettingsRef
                           .doc(widget.userGeneralSettings.userId),
@@ -169,14 +166,6 @@ class _ProfileSettingsNotificationState
                     } catch (error) {
                       // Handle the error appropriately
                     }
-
-                    // usersGeneralSettingsRef
-                    //     .doc(
-                    //   widget.userGeneralSettings.userId,
-                    // )
-                    //     .update({
-                    //   'disableAdvice': _disableAdvice,
-                    // });
                   },
                 ),
               ),
@@ -216,13 +205,7 @@ class _ProfileSettingsNotificationState
                     } catch (error) {
                       // Handle the error appropriately
                     }
-                    // usersGeneralSettingsRef
-                    //     .doc(
-                    //   widget.userGeneralSettings.userId,
-                    // )
-                    //     .update({
-                    //   'hideAdvice': _hideAdvice,
-                    // });
+                   
                   },
                 ),
               ),
@@ -260,22 +243,6 @@ class _ProfileSettingsNotificationState
                     } catch (error) {
                       // Handle the error appropriately
                     }
-
-                    // usersGeneralSettingsRef
-                    //     .doc(
-                    //   widget.userGeneralSettings.userId,
-                    // )
-                    //     .update({
-                    //   'disableBooking': _disableBooking,
-                    // });
-
-                    // userProfessionalRef
-                    //     .doc(
-                    //   widget.userGeneralSettings.userId,
-                    // )
-                    //     .update({
-                    //   'noBooking': _disableBooking,
-                    // });
                   },
                 ),
               ),
@@ -327,78 +294,7 @@ class _ProfileSettingsNotificationState
                   },
                 ),
               ),
-              // Padding(
-              //   padding: const EdgeInsets.symmetric(vertical: 10.0),
-              //   child: _divider(),
-              // ),
-              // SettingSwitch(
-              //   title: 'Disable new creative suggestion notification',
-              //   subTitle:
-              //       'Turn off suggestion notifications for new creatives nearby.',
-              //   value: _disableNewCreativeNotifications,
-              //   onChanged: (value) => setState(
-              //     () {
-              //       _disableNewCreativeNotifications = value;
-
-              //       usersGeneralSettingsRef
-              //           .doc(
-              //         widget.userGeneralSettings.userId,
-              //       )
-              //           .update({
-              //         'disableNewCreativeNotifications':
-              //             _disableNewCreativeNotifications,
-              //       });
-              //     },
-              //   ),
-              // ),
-              // Padding(
-              //   padding: const EdgeInsets.symmetric(vertical: 10.0),
-              //   child: _divider(),
-              // ),
-              // SettingSwitch(
-              //   title: 'Disable work vacancy notification',
-              //   subTitle:
-              //       'Turn off work available vacancy notifications nearby.',
-              //   value: _disableWorkVacancyNotifications,
-              //   onChanged: (value) => setState(
-              //     () {
-              //       _disableWorkVacancyNotifications = value;
-
-              //       usersGeneralSettingsRef
-              //           .doc(
-              //         widget.userGeneralSettings.userId,
-              //       )
-              //           .update({
-              //         'disableWorkVacancyNotifications':
-              //             _disableWorkVacancyNotifications,
-              //       });
-              //     },
-              //   ),
-              // ),
-              // Padding(
-              //   padding: const EdgeInsets.symmetric(vertical: 10.0),
-              //   child: _divider(),
-              // ),
-              // SettingSwitch(
-              //   title: 'Mute work vacancy notification',
-              //   subTitle:
-              //       'Silence work available vacancy notifications nearby.',
-              //   value: _muteWorkVacancyNotifications,
-              //   onChanged: (value) => setState(
-              //     () {
-              //       _muteWorkVacancyNotifications = value;
-
-              //       usersGeneralSettingsRef
-              //           .doc(
-              //         widget.userGeneralSettings.userId,
-              //       )
-              //           .update({
-              //         'muteWorkVacancyNotifications':
-              //             _muteWorkVacancyNotifications,
-              //       });
-              //     },
-              //   ),
-              // ),
+             
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10.0),
                 child: _divider(),
@@ -427,7 +323,6 @@ class _ProfileSettingsNotificationState
                         try {
                           batch.commit();
                         } catch (error) {
-                          // Handle the error appropriately
                         }
                       })),
             ],

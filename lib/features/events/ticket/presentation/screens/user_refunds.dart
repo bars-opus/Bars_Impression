@@ -121,89 +121,6 @@ class _UserRefundsState extends State<UserRefunds>
     }
   }
 
-  // _setupActivities() async {
-  // final currentDate = DateTime(now.year, now.month, now.day);
-
-  //   try {
-  //     Query activitiesQuery = userRefundRequestsRef
-  //         .doc(widget.currentUserId)
-  //         .collection('refundRequests')
-  //         .where('startDate', isGreaterThanOrEqualTo: currentDate)
-  //         .orderBy('timestamp', descending: true)
-  //         .limit(10);
-
-  //     if (_lastInviteDocument != null) {
-  //       activitiesQuery =
-  //           activitiesQuery.startAfterDocument(_lastInviteDocument!);
-  //     }
-
-  //     QuerySnapshot userFeedSnapShot = await activitiesQuery.get();
-  //     List<RefundModel> activities =
-  //         userFeedSnapShot.docs.map((doc) => RefundModel.fromDoc(doc)).toList();
-
-  //     if (mounted) {
-  //       setState(() {
-  //         _refundList.addAll(
-  //             activities.where((activity) => !_refundList.contains(activity)));
-  //         _hasNext = userFeedSnapShot.docs.length == 10;
-  //         if (userFeedSnapShot.docs.isNotEmpty) {
-  //           _lastInviteDocument = userFeedSnapShot.docs.last;
-  //         }
-  //         _isLoading = false;
-  //       });
-  //     }
-  //     return activities;
-  //   } catch (e) {
-  //     // Handle the error
-  //     print('Error fetching user activities: $e');
-  //     return []; // Return an empty list or a suitable default value
-  //   }
-  // }
-
-  // _setupActivities() async {
-  //       final currentDate = DateTime(now.year, now.month, now.day);
-
-  //   try {
-  //     Query activitiesQuery = userRefundRequestsRef
-  //         .doc(widget.currentUserId)
-  //         .collection('refundRequests')
-  //         .where('startDate', isGreaterThanOrEqualTo: currentDate)
-  //         .orderBy('timestamp', descending: true)
-  //         .limit(10);
-  //     // if _lastInviteDocument is not null, start after it
-  //     if (_lastInviteDocument != null) {
-  //       activitiesQuery =
-  //           activitiesQuery.startAfterDocument(_lastInviteDocument!);
-  //     }
-
-  //     QuerySnapshot userFeedSnapShot = await activitiesQuery.get();
-  //     List<RefundModel> activities =
-  //         userFeedSnapShot.docs.map((doc) => RefundModel.fromDoc(doc)).toList();
-
-  //     if (mounted) {
-  //       setState(() {
-  //         _refundList +=
-  //             activities; // append new activities to the existing list
-  //         _hasNext = userFeedSnapShot.docs.length == 10;
-  //         if (userFeedSnapShot.docs.isNotEmpty) {
-  //           _lastInviteDocument = userFeedSnapShot.docs.last;
-  //           _lastFiletedActivityDocument = userFeedSnapShot.docs.last;
-  //         } else {
-  //           _lastInviteDocument = null; // Or your suitable default value
-  //           _lastFiletedActivityDocument =
-  //               null; // Or your suitable default value
-  //         }
-  //         _isLoading = false;
-  //       });
-  //     }
-  //     return activities;
-  //   } catch (e) {
-  //     // Handle the error
-  //     print('Error fetching user activities: $e');
-  //     return []; // Return an empty list or a suitable default value
-  //   }
-  // }
-
   void _showBottomSheetErrorMessage(String errorTitle) {
     showModalBottomSheet(
       context: context,
@@ -254,9 +171,6 @@ class _UserRefundsState extends State<UserRefunds>
   }
 
   Future<void> deleteActivityDocsInBatches() async {
-    // setState(() {
-    //   _isDeleting = true;
-    // });
     // get the first batch of documents to be deleted
     var snapshot = await userRefundRequestsRef
         .doc(widget.currentUserId)
@@ -280,9 +194,7 @@ class _UserRefundsState extends State<UserRefunds>
     // commit the deletions
     await batch.commit();
     _refundList.clear();
-    // setState(() {
-    //   _isDeleting = false;
-    // });
+
     // call the function recursively to delete the next batch
     return deleteActivityDocsInBatches();
   }
@@ -292,7 +204,6 @@ class _UserRefundsState extends State<UserRefunds>
   ) {
     return Scrollbar(
       child: CustomScrollView(
-        // controller: _hideButtonController,
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           SliverList(
@@ -319,13 +230,7 @@ class _UserRefundsState extends State<UserRefunds>
 
   @override
   Widget build(BuildContext context) {
-    var _provider = Provider.of<UserData>(context, listen: false);
-    // int  .count = _provider.activityCount - 1;
-
     super.build(context);
-    // final width =
-    //      MediaQuery.of(context).size.width;
-
     return Material(
       color: Theme.of(context).primaryColorLight,
       child: NotificationListener<ScrollNotification>(
@@ -409,7 +314,7 @@ class _UserRefundsState extends State<UserRefunds>
                           ? Expanded(
                               child: Center(
                               child: NoContents(
-                                icon: (Icons.payment_outlined),
+                                icon: (Icons.request_quote_outlined),
                                 title: 'No refunds,',
                                 subTitle:
                                     'All your refund requests would be displayed here.',
@@ -429,51 +334,3 @@ class _UserRefundsState extends State<UserRefunds>
     );
   }
 }
-
-// //display
-// class Display extends StatelessWidget {
-//   // final AccountHolder user;
-
-//   // Display({
-//   //   // required this.user,
-//   // });
-//   // @override
-//   Widget build(BuildContext context) {
-//     return MediaQuery(
-//       data: MediaQuery.of(context).copyWith(
-//           textScaleFactor:
-//               MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.2)),
-//       child: FadeAnimation(
-//         1,
-//         Container(
-//           height: 35,
-//           child: Row(
-//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: <Widget>[
-//               AnimatedTextKit(
-//                   animatedTexts: [
-//                     FadeAnimatedText(
-//                       'Attend',
-//                       textStyle: Theme.of(context).textTheme.titleMedium,
-//                     ),
-//                     FadeAnimatedText(
-//                       'Meet',
-//                       textStyle: Theme.of(context).textTheme.titleMedium,
-//                     ),
-//                     FadeAnimatedText(
-//                       'Experience...',
-//                       textStyle: Theme.of(context).textTheme.titleMedium,
-//                     ),
-//                   ],
-//                   repeatForever: true,
-//                   pause: const Duration(milliseconds: 3000),
-//                   displayFullTextOnTap: true,
-//                   stopPauseOnTap: true),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }

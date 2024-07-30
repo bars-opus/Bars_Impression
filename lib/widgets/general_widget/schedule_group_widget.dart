@@ -1,7 +1,5 @@
 import 'package:bars/utilities/exports.dart';
 
-// import 'package:flutter/material.dart';
-// import 'package:intl/intl.dart';
 
 class ScheduleGroup extends StatelessWidget {
   final List<Schedule> schedules;
@@ -58,20 +56,6 @@ class ScheduleGroup extends StatelessWidget {
 
     final width = MediaQuery.of(context).size.width;
 
-    // If ticketEventDate is not null, filter the groupedSchedules
-    // if (ticketEventDate != null) {
-    //   DateTime ticketDate = ticketEventDate!.toDate();
-    //   DateTime ticketDateWithoutTime = DateTime(
-    //     ticketDate.year,
-    //     ticketDate.month,
-    //     ticketDate.day,
-    //   );
-    //   // Keep only the schedules for ticketEventDate
-
-    //   groupedSchedules = {
-    //     ticketDateWithoutTime: groupedSchedules[ticketDateWithoutTime] ?? []
-    //   };
-    // }
 
     if (ticketEventDate != null) {
       DateTime ticketDate = ticketEventDate!.toDate();
@@ -214,59 +198,3 @@ class ScheduleGroup extends StatelessWidget {
           );
   }
 }
-
-// class ScheduleGroup extends StatelessWidget {
-//   List<Schedule> schedules;
-
-//   ScheduleGroup({
-//     required this.schedules,
-//   });
-
-//   _removeShedule(Schedule removingShedule) {
-//     schedules.removeWhere((schedule) =>
-//         schedule.title == removingShedule.title &&
-//         schedule.startTime == removingShedule.startTime);
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // Sort the schedules by date in ascending order
-//     schedules.sort((a, b) => a.scheduleDate.compareTo(b.startTime));
-
-//     final width = MediaQuery.of(context).size.width;
-//     return Container(
-//       height: width * width,
-//       width: width - 40,
-//       child: ListView.builder(
-//         physics: const NeverScrollableScrollPhysics(),
-//         itemCount: schedules.length,
-//         itemBuilder: (BuildContext context, int index) {
-//           // Get the schedule for the current index
-//           Schedule schedule = schedules[index];
-
-//           // Return a ScheduleWidget for the schedule
-//           return Padding(
-//             padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-//             child: Stack(
-//               children: [
-//                 ScheduleWidget(
-//                   schedule: schedule,
-//                 ),
-//                 Positioned(
-//                     right: 10,
-//                     top: 10,
-//                     child: IconButton(
-//                       onPressed: () => _removeShedule(schedule),
-//                       icon: Icon(
-//                         Icons.remove,
-//                         color: Colors.red,
-//                       ),
-//                     ))
-//               ],
-//             ),
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }

@@ -10,8 +10,7 @@ class SendInviteMessage extends StatefulWidget {
       {super.key,
       required this.event,
       required this.currentUserId,
-      this.palette
-      });
+      this.palette});
 
   @override
   State<SendInviteMessage> createState() => _SendInviteMessageState();
@@ -41,40 +40,6 @@ class _SendInviteMessageState extends State<SendInviteMessage> {
     _messageController.dispose();
   }
 
-  // _ticketFiled(
-  //   String labelText,
-  //   String hintText,
-  //   TextEditingController controler,
-  //   final Function onValidateText,
-  // ) {
-  //   var style = Theme.of(context).textTheme.titleSmall;
-  //   var labelStyle = TextStyle(
-  //       fontSize: ResponsiveHelper.responsiveFontSize(context, 18.0),
-  //       color: Colors.blue);
-  //   var hintStyle = TextStyle(
-  //       fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-  //       color: Colors.grey);
-  //   return TextFormField(
-  //     controller: controler,
-  //     keyboardType: TextInputType.multiline,
-  //     keyboardAppearance: MediaQuery.of(context).platformBrightness,
-  //     style: style,
-  //     maxLines: null,
-  //     autofocus: true,
-  //     cursorColor: Colors.blue,
-  //     decoration: InputDecoration(
-  //       focusedBorder: UnderlineInputBorder(
-  //         borderSide: BorderSide(color: Colors.blue, width: 2.0),
-  //       ),
-  //       labelText: labelText,
-  //       hintText: hintText,
-  //       labelStyle: labelStyle,
-  //       hintStyle: hintStyle,
-  //     ),
-  //     validator: (string) => onValidateText(string),
-  //   );
-  // }
-
   void _navigateToPage(BuildContext context, Widget page) {
     Navigator.push(
       context,
@@ -86,11 +51,6 @@ class _SendInviteMessageState extends State<SendInviteMessage> {
   Widget build(BuildContext context) {
     Color _paletteDark =
         Utils.getPaletteDarkMutedColor(widget.palette, Color(0xFF1a1a1a));
-    // Color _paletteDark = widget.palette == null
-    //     ? Color(0xFF1a1a1a)
-    //     : widget.palette!.darkMutedColor == null
-    //         ? Color(0xFF1a1a1a)
-    //         : widget.palette!.darkMutedColor!.color;
     return ValueListenableBuilder(
         valueListenable: _isTypingNotifier,
         builder: (BuildContext context, bool isTyping, Widget? child) {
@@ -164,12 +124,6 @@ class _SendInviteMessageState extends State<SendInviteMessage> {
                     controler: _messageController,
                     onValidateText: () {},
                   ),
-                  // _ticketFiled(
-                  //   'Invitation message',
-                  //   'A special invitation message to your guests',
-                  //   _messageController,
-                  //   () {},
-                  // ),
                   const SizedBox(height: 20),
                 ]),
               ),

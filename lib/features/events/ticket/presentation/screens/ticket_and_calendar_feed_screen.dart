@@ -416,132 +416,6 @@ class _TicketAndCalendarFeedScreenState
                     height: ResponsiveHelper.responsiveHeight(context, 100),
                   ),
                   if (selectedEvents.isNotEmpty)
-                    // selectedEvents.length > 1
-                    //     ? ShakeTransition(
-                    //         axis: Axis.vertical,
-                    //         child: Container(
-                    //             height: ResponsiveHelper.responsiveHeight(
-                    //                 context, 130),
-
-                    //             // The Padding widget is no longer needed because the PageView.builder handles the padding.
-                    //             child: PerpectiveListView(
-                    //               onTapFrontItem: (int value) {},
-                    //               visualizedItem: selectedEvents.length,
-                    //               initialIndex: selectedEvents.length - 1,
-                    //               extentItem:
-                    //                   MediaQuery.of(context).size.height * .10,
-                    //               // backItemsShadowColor: Colors.black,
-                    //               padding: const EdgeInsets.all(10),
-                    //               onChangeItem: (int value) {
-                    //                 HapticFeedback.lightImpact();
-                    //               },
-
-                    //               selectedEvents: selectedEvents,
-                    //               currentUserId: widget.currentUserId,
-                    //               children: List.generate(selectedEvents.length,
-                    //                   (index) {
-                    //                 final ticket = selectedEvents[index];
-                    //                 bool isAuthor = widget.currentUserId ==
-                    //                     ticket.eventAuthorId;
-                    //                 return Container(
-                    //                   decoration: BoxDecoration(
-                    //                       color: Theme.of(context).cardColor,
-                    //                       borderRadius:
-                    //                           BorderRadius.circular(10)),
-                    //                   padding: const EdgeInsets.only(top: 20),
-                    //                   child: EventsFeedAttendingWidget(
-                    //                     ticketOrder: ticket,
-                    //                     currentUserId: widget.currentUserId,
-                    //                     ticketList: _ticketOrder,
-                    //                     disableMoreVert: true,
-                    //                   ),
-                    //                 );
-                    //                 // Container(
-                    //                 //   decoration: BoxDecoration(
-                    //                 //       color: Theme.of(context).cardColor,
-                    //                 //       borderRadius: BorderRadius.circular(10)),
-                    //                 //   child: Column(
-                    //                 //     children: [
-                    //                 //       const SizedBox(
-                    //                 //         height: 20,
-                    //                 //       ),
-                    //                 //       EventsFeedAttendingWidget(
-                    //                 //         ticketOrder: ticket,
-                    //                 //         currentUserId: widget.currentUserId,
-                    //                 //         ticketList: _ticketOrder,
-                    //                 //       ),
-                    //                 //       // ListTile(
-                    //                 //       //   leading: Container(
-                    //                 //       //       height: 50,
-                    //                 //       //       width: 50,
-                    //                 //       //       decoration: BoxDecoration(
-                    //                 //       //         color: Colors.blue,
-                    //                 //       //         image: DecorationImage(
-                    //                 //       //           image: CachedNetworkImageProvider(
-                    //                 //       //               ticket.eventImageUrl),
-                    //                 //       //           fit: BoxFit.cover,
-                    //                 //       //         ),
-                    //                 //       //       )),
-                    //                 //       //   trailing: isAuthor
-                    //                 //       //       ? const SizedBox.shrink()
-                    //                 //       //       : Icon(
-                    //                 //       //           Icons.qr_code,
-                    //                 //       //           color: Colors.blue,
-                    //                 //       //           size: ResponsiveHelper
-                    //                 //       //               .responsiveHeight(
-                    //                 //       //                   context, 18.0),
-                    //                 //       //         ),
-                    //                 //       //   title: isAuthor
-                    //                 //       //       ? Text(
-                    //                 //       //           "Tap to access your dashboard",
-                    //                 //       //           style: TextStyle(
-                    //                 //       //             fontSize: ResponsiveHelper
-                    //                 //       //                 .responsiveFontSize(
-                    //                 //       //                     context, 12.0),
-                    //                 //       //             color: Colors.blue,
-                    //                 //       //           ),
-                    //                 //       //         )
-                    //                 //       //       : RichText(
-                    //                 //       //           textScaleFactor:
-                    //                 //       //               MediaQuery.of(context)
-                    //                 //       //                   .textScaleFactor
-                    //                 //       //                   .clamp(0.5, 1.5),
-                    //                 //       //           text: TextSpan(
-                    //                 //       //             children: [
-                    //                 //       //               TextSpan(
-                    //                 //       //                   text: "Your ticket",
-                    //                 //       //                   style: TextStyle(
-                    //                 //       //                     fontWeight:
-                    //                 //       //                         FontWeight.bold,
-                    //                 //       //                     fontSize: ResponsiveHelper
-                    //                 //       //                         .responsiveFontSize(
-                    //                 //       //                             context, 12.0),
-                    //                 //       //                     color: Colors.blue,
-                    //                 //       //                   )),
-                    //                 //       //               if (ticket.isInvited)
-                    //                 //       //                 TextSpan(
-                    //                 //       //                   text:
-                    //                 //       //                       '\nCordially invited.',
-                    //                 //       //                   style: TextStyle(
-                    //                 //       //                     fontSize: ResponsiveHelper
-                    //                 //       //                         .responsiveFontSize(
-                    //                 //       //                             context, 12.0),
-                    //                 //       //                     color: Colors.grey,
-                    //                 //       //                   ),
-                    //                 //       //                 ),
-                    //                 //       //             ],
-                    //                 //       //           ),
-                    //                 //       //           textAlign: TextAlign.start,
-                    //                 //       //         ),
-                    //                 //       // )
-                    //                 //     ],
-                    //                 //   ),
-                    //                 // );
-                    //               }),
-                    //             )),
-                    //       )
-                    //     :
-
                     Container(
                       decoration: BoxDecoration(
                           color: Theme.of(context).primaryColorLight,
@@ -673,7 +547,8 @@ class _TicketAndCalendarFeedScreenState
 
   _ticketPageBody() {
     int count = _ticketCount - 1;
-    return RefreshIndicator(color: Colors.blue,
+    return RefreshIndicator(
+      color: Colors.blue,
       onRefresh: refreshData,
       child: Padding(
         padding: const EdgeInsets.only(top: 1.0),

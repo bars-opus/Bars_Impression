@@ -4,17 +4,21 @@ import 'package:flutter/cupertino.dart';
 class DatePicker extends StatefulWidget {
   final Function(DateTime) onStartDateChanged;
   final Function(DateTime) onEndDateChanged;
-
   final Function(DateTime) onStartTimeChanged;
   final Function(DateTime) onEndTimeChanged;
   final bool date;
+  final bool onlyWhite;
+  final bool isMini;
 
-  DatePicker(
-      {required this.onStartDateChanged,
-      required this.onEndDateChanged,
-      required this.date,
-      required this.onStartTimeChanged,
-      required this.onEndTimeChanged});
+  DatePicker({
+    required this.onStartDateChanged,
+    required this.onEndDateChanged,
+    required this.date,
+    required this.onStartTimeChanged,
+    required this.onEndTimeChanged,
+    this.onlyWhite = true,
+    this.isMini = false,
+  });
 
   @override
   _DatePickerState createState() => _DatePickerState();
@@ -58,12 +62,14 @@ class _DatePickerState extends State<DatePicker> {
           onTap: onPressed,
           child: Text(
             dateTime,
-            style: TextStyle(fontSize: 16, color: Colors.white),
+            style: TextStyle(
+              fontSize: 16,
+              color: widget.onlyWhite
+                  ? Colors.white
+                  : Theme.of(context).secondaryHeaderColor,
+            ),
           ),
         ),
-        // const SizedBox(
-        //   height: 30,
-        // ),
       ],
     );
   }
@@ -95,10 +101,15 @@ class _DatePickerState extends State<DatePicker> {
   }
 
   _dateSelector() {
+    var _sixedBox = const SizedBox(
+      height: 20,
+    );
     return Column(
       children: [
         _stateDateSelector(),
+        _sixedBox,
         _endDateSelector(),
+        _sixedBox,
       ],
     );
   }
@@ -106,8 +117,8 @@ class _DatePickerState extends State<DatePicker> {
   _stateTimeSelector() {
     var _provider = Provider.of<UserData>(context, listen: false);
     return Container(
-        // color: Colors.red,
-        width: ResponsiveHelper.responsiveFontSize(context, 160),
+        width: ResponsiveHelper.responsiveFontSize(
+            context, widget.isMini ? 140 : 160),
         child: _selector(
           'Start Time',
           _provider.startTimeSelected
@@ -122,8 +133,8 @@ class _DatePickerState extends State<DatePicker> {
   _endTimeSelector() {
     var _provider = Provider.of<UserData>(context, listen: false);
     return Container(
-        // color: Colors.red,
-        width: ResponsiveHelper.responsiveFontSize(context, 160),
+        width: ResponsiveHelper.responsiveFontSize(
+            context, widget.isMini ? 140 : 160),
         child: _selector(
           'End Time',
           _provider.endTimeSelected ? "    ${_endTime.format(context)}" : '',
@@ -173,7 +184,6 @@ class _DatePickerState extends State<DatePicker> {
   }
 
   void _showStartDatePicker(String from) {
-    var _size = MediaQuery.of(context).size;
     var _provider = Provider.of<UserData>(context, listen: false);
     showModalBottomSheet(
       context: context,
@@ -197,7 +207,6 @@ class _DatePickerState extends State<DatePicker> {
                     mode: CupertinoDatePickerMode.date,
                     minimumYear: DateTime.now().year,
                     maximumYear: DateTime.now().year + 3,
-                    // backgroundColor: Theme.of(context).primaryColorLight,
                     initialDateTime: from == 'Start' ? _startDate : _endDate,
                     minimumDate: from == 'End'
                         ? _startDate.add(Duration(days: 1))
@@ -205,8 +214,7 @@ class _DatePickerState extends State<DatePicker> {
                     maximumDate: from == 'Start'
                         ? _endDate.subtract(Duration(days: 1))
                         : null, //
-                    // initialDateTime: _startDate,
-                    // maximumDate: _endDate.subtract(Duration(days: 1)),
+
                     onDateTimeChanged: (DateTime newStartDate) {
                       setState(() {
                         // Update the provider's state to reflect the new start date selection
@@ -235,23 +243,7 @@ class _DatePickerState extends State<DatePicker> {
 
                       // Call the callback provided to the widget with the new start date
                       widget.onStartDateChanged(newStartDate);
-                                        },
-                    // onDateTimeChanged: (DateTime newDate) {
-                    //   setState(() {
-                    //     _provider.setIsStartDateSelected(true);
-                    //     _startDate = newDate;
-
-                    //     if (_startTime.hour < _startDate.hour) {
-                    //       _startTime =
-                    //           TimeOfDay(hour: _startDate.hour, minute: 0);
-
-                    //       // _startDateSelected = true;
-                    //     }
-                    //   });
-                    //   if (widget.onStartDateChanged != null) {
-                    //     widget.onStartDateChanged(newDate);
-                    //   }
-                    // },
+                    },
                   ),
                 ),
                 widget2: _paddingForDatePicket(
@@ -264,15 +256,15 @@ class _DatePickerState extends State<DatePicker> {
                     onDateTimeChanged: (DateTime newDate) {
                       setState(() {
                         _provider.setIsEndDateSelected(true);
+                        _provider.setClossingDate(MyDateFormat.toDate(
+                            DateTime.parse(_provider.startDateString)));
                         _endDate = newDate;
                         if (_endTime.hour > _endDate.hour) {
                           _endTime = TimeOfDay(hour: _endDate.hour, minute: 0);
-
-                          // _endDateSelected = true;
                         }
                       });
                       widget.onEndDateChanged(newDate);
-                                        },
+                    },
                   ),
                 ),
                 onPressed: (int) {},
@@ -285,7 +277,6 @@ class _DatePickerState extends State<DatePicker> {
   }
 
   void _showStartTimePicker(String from) {
-    var _size = MediaQuery.of(context).size;
     var _provider = Provider.of<UserData>(context, listen: false);
     showModalBottomSheet(
       context: context,
@@ -294,7 +285,6 @@ class _DatePickerState extends State<DatePicker> {
       builder: (BuildContext context) {
         return Container(
             height: ResponsiveHelper.responsiveWidth(context, 550),
-            // _size.height / 1.5,
             decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(30)),
@@ -315,11 +305,10 @@ class _DatePickerState extends State<DatePicker> {
                       setState(() {
                         _startTime = TimeOfDay.fromDateTime(newTime);
                         _provider.setIsStartTimeSelected(true);
-                        // _startTimeSelected = true;
                       });
 
                       widget.onStartTimeChanged(newTime);
-                                        },
+                    },
                   ),
                 ),
                 widget2: _paddingForDatePicket(
@@ -335,13 +324,11 @@ class _DatePickerState extends State<DatePicker> {
                     onDateTimeChanged: (DateTime newTime) {
                       setState(() {
                         _provider.setIsEndTimeSelected(true);
-
                         _endTime = TimeOfDay.fromDateTime(newTime);
-                        // _endTimeSelected = true;
                       });
 
                       widget.onEndTimeChanged(newTime);
-                                        },
+                    },
                   ),
                 ),
                 onPressed: (int) {},

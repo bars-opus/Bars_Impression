@@ -14,6 +14,7 @@ class AffiliateModel {
   final String answer;
 
   final bool payoutToAffiliates;
+  
   final double commissionRate;
   final int salesNumber;
   final String eventAuthorId;

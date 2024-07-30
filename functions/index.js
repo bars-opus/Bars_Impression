@@ -355,9 +355,6 @@ exports.initiatePaystackMobileMoneyPayment = functions.https.onCall(async (data,
   }
 });
 
-
-
-
 exports.verifyPaystackPayment = functions.https.onCall(async (data, context) => {
   // Ensure the user is authenticated
   if (!context.auth) {
@@ -366,6 +363,7 @@ exports.verifyPaystackPayment = functions.https.onCall(async (data, context) => 
 
   const paymentReference = data.reference;
   const eventId = data.eventId;
+  const isEvent = data.isEvent || true;
   const expectedAmount = data.amount; // The expected amount in kobo.
   const PAYSTACK_SECRET_KEY =functions.config().paystack.secret_key; // Securely stored Paystack secret key
 
@@ -385,13 +383,13 @@ exports.verifyPaystackPayment = functions.https.onCall(async (data, context) => 
       // ...
 
       return { success: true, message: 'Payment verified successfully', transactionData: paymentData };
-    } else {  alertAdminPaymentVerificationFailure(eventId, paymentData, paymentReference )
+    } else {  alertAdminPaymentVerificationFailure(eventId, paymentData, isEvent, paymentReference )
       // Payment failed or the amount does not match
       return { success: false, message: 'Payment verification failed: Amount does not match or payment was unsuccessful.', transactionData: paymentData };
     }
   } catch (error) {
     // Handle errors
-    alertAdminPaymentVerificationFailure(eventId, error, paymentReference )
+    alertAdminPaymentVerificationFailure(eventId, error,isEvent, paymentReference )
     console.error('Payment verification error:', error);
     // Return a sanitized error message to the client
     throw new functions.https.HttpsError('unknown', 'Payment verification failed. Please try again later.');
@@ -400,10 +398,11 @@ exports.verifyPaystackPayment = functions.https.onCall(async (data, context) => 
 
 
 
-function  alertAdminPaymentVerificationFailure( eventId,  response, paymentReference) {
+function  alertAdminPaymentVerificationFailure( eventId,  response, isEvent, paymentReference) {
   const sanitizedResponse = sanitizeResponse(response);
   const logEntry = {
     timestamp: new Date(),
+    isEvent: isEvent,
     paymentReference: paymentReference,
            eventId: eventId,
         response: sanitizedResponse

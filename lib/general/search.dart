@@ -1,5 +1,4 @@
-import 'package:bars/features/events/event_management/presentation/screens/event_search%20.dart';
-import 'package:bars/features/creatives/presentation/screens/user_search.dart';
+
 import 'package:bars/utilities/exports.dart';
 
 class Search extends StatefulWidget {
@@ -14,12 +13,9 @@ class _SearchState extends State<Search>
   final _debouncer = Debouncer(milliseconds: 500);
   late TabController _tabController;
   final _physycsNotifier = ValueNotifier<bool>(false);
-
   ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
-
   Future<QuerySnapshot>? _users;
   Future<QuerySnapshot>? _event;
-
   final FocusNode _focusNode = FocusNode();
 
   @override
@@ -41,7 +37,6 @@ class _SearchState extends State<Search>
     _tabController.dispose();
     _debouncer.cancel();
     _focusNode.dispose();
-
     super.dispose();
   }
 
@@ -50,7 +45,6 @@ class _SearchState extends State<Search>
     _event = null;
     FocusScope.of(context).unfocus();
     _clearSearch();
-
     Navigator.pop(context);
   }
 
@@ -90,9 +84,7 @@ class _SearchState extends State<Search>
       },
       onChanged: (value) {
         if (value.trim().isNotEmpty) {
-          // _debouncer.run(() {
           _search();
-          // });
         }
       },
       onTap: () {},
@@ -101,8 +93,6 @@ class _SearchState extends State<Search>
 
   @override
   Widget build(BuildContext context) {
-    var _provider = Provider.of<UserData>(context, listen: false);
-
     return Container(
       color: Theme.of(context).primaryColorLight,
       child: MediaQuery(
@@ -155,7 +145,6 @@ class _SearchState extends State<Search>
               ),
               body: Listener(
                 onPointerMove: (event) {
-                  // _provider.setStoreSearchIndex(_tabController.index + 1);
                   if (_searchController.text.trim().isNotEmpty &&
                       !_physycsNotifier.value) {
                     _search();
@@ -188,124 +177,3 @@ class _SearchState extends State<Search>
 }
 
 
-
-
-
-
-
-
-
-
-// import 'package:bars/utilities/exports.dart';
-
-// class StoreSearch extends StatefulWidget {
-//   static final id = 'StoreSearch';
-
-//   @override
-//   _StoreSearchState createState() => _StoreSearchState();
-// }
-
-// class _StoreSearchState extends State<StoreSearch>
-//     with TickerProviderStateMixin {
-//   late TabController _tabController;
-//   final _physycsNotifier = ValueNotifier<bool>(false);
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _tabController = TabController(length: 2, vsync: this);
-//   }
-
-//   void _search(UserData _provider) {
-//     switch (_provider.storeSearchTabIndex) {
-//       case 0:
-//         _provider.setUserStoreSearchSnapShot(DatabaseService.searchUsers(
-//             _provider.storeSearchTerm.toUpperCase()));
-//         break;
-//       case 1:
-//         _provider.setEventStoreSearchSnapShot(DatabaseService.searchEvent(
-//             _provider.storeSearchTerm.toUpperCase()));
-//         break;
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     var _provider = Provider.of<UserData>(context, listen: false);
-//     return MediaQuery(
-//       data: MediaQuery.of(context).copyWith(
-//           textScaleFactor:
-//               MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.3)),
-//       child: DefaultTabController(
-//         length: 2,
-//         child: Scaffold(
-//           resizeToAvoidBottomInset: false,
-//           backgroundColor: Theme.of(context).primaryColorLight,
-//           appBar: PreferredSize(
-//             preferredSize: Size.fromHeight(70),
-//             child: AppBar(
-//               elevation: 0.0,
-//               backgroundColor: Theme.of(context).primaryColorLight,
-//               primary: false,
-//               bottom: TabBar(
-//                 onTap: (index) {
-//                   _provider.setStoreSearchIndex(index);
-//                   _provider.storeSearchTerm.isNotEmpty
-//                       ? _search(_provider)
-//                       : null;
-//                 },
-//                 controller: _tabController,
-//                 labelColor: Theme.of(context).secondaryHeaderColor,
-//                 indicatorSize: TabBarIndicatorSize.label,
-//                 indicatorColor: Colors.blue,
-//                 unselectedLabelColor: Colors.grey,
-//                 isScrollable: true,
-//                 labelPadding:
-//                     EdgeInsets.symmetric(horizontal: 20, vertical: 5.0),
-//                 indicatorWeight: 2.0,
-//                 tabs: <Widget>[
-//                   Text(
-//                     style: Theme.of(context).textTheme.bodyMedium,
-//                     'Events',
-//                   ),
-//                   Text(
-//                     style: Theme.of(context).textTheme.bodyMedium,
-//                     'Creatives',
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ),
-//           body: Listener(
-//             onPointerMove: (event) {
-//               _provider.setStoreSearchIndex(_tabController.index + 1);
-//               if (_provider.storeSearchTerm.isNotEmpty &&
-//                   !_physycsNotifier.value) {
-//                 _search(_provider);
-//                 _physycsNotifier.value = true;
-//               }
-//             },
-//             onPointerUp: (_) => _physycsNotifier.value = false,
-//             child: ValueListenableBuilder<bool>(
-//               valueListenable: _physycsNotifier,
-//               builder: (_, value, __) {
-//                 return TabBarView(
-//                   controller: _tabController,
-//                   physics: const AlwaysScrollableScrollPhysics(),
-//                   children: <Widget>[
-//                     StoreSearchEvents(
-//                       events: _provider.eventStoreSearchSnapShot,
-//                     ),
-//                     StoreSearchUsers(
-//                       users: _provider.userStoreSearchSnapShot,
-//                     ),
-//                   ],
-//                 );
-//               },
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }

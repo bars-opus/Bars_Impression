@@ -4,14 +4,12 @@ import 'package:bars/utilities/exports.dart';
 class PerformanceRequest {
   final String userId;
   final String info;
-
   final String availableTime;
   final String performanceDuration;
   final String performanceType;
   final String genre;
   final List<String> availableDays;
   final List<String> eventTypes;
-
   final List<String> availableLocations;
   final List<PriceModel> price;
   final String answer;

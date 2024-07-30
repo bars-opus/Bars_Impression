@@ -15,7 +15,10 @@ enum NotificationActivityType {
   refundRequested,
   refundProcessed,
   eventDeleted,
-  affiliate
+  affiliate,
+  donation,
+  bookingMade,
+  bookingReceived,
 }
 
 class Activity {
@@ -97,6 +100,14 @@ class Activity {
         return NotificationActivityType.refundProcessed;
       case 'affiliate':
         return NotificationActivityType.affiliate;
+      case 'donation':
+        return NotificationActivityType.donation;
+      case 'bookingMade':
+        return NotificationActivityType.bookingMade;
+
+      case 'bookingReceived':
+        return NotificationActivityType.bookingReceived;
+
       default:
         return NotificationActivityType.eventUpdate;
     }

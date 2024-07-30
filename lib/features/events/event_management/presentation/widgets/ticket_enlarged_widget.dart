@@ -124,7 +124,7 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
           // If the last scanned time is not recent, just update the validation state.
           checkAndUpdateValidationState(updatedTicket.validated);
         }
-                  } else {
+      } else {
         // Handle the case where the order document does not exist.
         // onOrderNotFound();
       }
@@ -303,17 +303,9 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
         Utils.safeSubstring(widget.ticketOrder.orderNumber, 0, 4);
 
     bool _isRefunded = widget.ticketOrder.refundRequestStatus == 'processed';
-    var _textStyle2 = TextStyle(
-      fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-      color: Theme.of(context).secondaryHeaderColor,
-      decoration:
-          _isRefunded ? TextDecoration.lineThrough : TextDecoration.none,
-    );
-
-    // var _textStyle2 = Theme.of(context).textTheme.bodyMedium;
-    var _textStyle = TextStyle(
+    var _textStyle3 = TextStyle(
       fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-      color: Colors.grey,
+      color: Colors.red,
     );
 
     void _navigateToPage(BuildContext context, Widget page) {
@@ -470,7 +462,7 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
                         },
                         child: SalesReceiptWidget(
                             width: 110,
-                            color: Colors.blue,
+                            text2Ccolor: Colors.blue,
                             isRefunded: _isRefunded,
                             lable: 'Ticket event date',
                             value: MyDateFormat.toDate(
@@ -485,7 +477,7 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
                 padding: const EdgeInsets.only(top: 30.0, bottom: 30),
                 child: Divider(
                   color: Colors.grey,
-                   thickness: .2,
+                  thickness: .2,
                 ),
               ),
               Container(
@@ -554,6 +546,13 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
                             ? 'Free'
                             : '${widget.currency} ${widget.ticket.price.toString()}',
                       ),
+                      if (widget.event.isCashPayment)
+                        Center(
+                          child: Text(
+                            '\n\nCash in-hand payment',
+                            style: _textStyle3,
+                          ),
+                        )
                     ],
                   ),
                 ),
@@ -562,7 +561,7 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
                 padding: const EdgeInsets.only(top: 30.0, bottom: 30),
                 child: Divider(
                   color: Colors.grey,
-                 thickness: .2,
+                  thickness: .2,
                 ),
               ),
               Padding(

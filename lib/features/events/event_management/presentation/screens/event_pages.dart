@@ -63,20 +63,17 @@ class _EventPagesState extends State<EventPages> {
   Future<List<Event>> _loadMoreEvents({
     String? country,
     String? city,
-    // required bool isAll,
-    // required String from,
     int sortNumberOfDays = 0,
   }) async {
     sortNumberOfDays = widget.sortNumberOfDays;
-    // print('AftereCity: $city, ');
-
     final currentDate = DateTime(now.year, now.month, now.day);
-    // Calculate the end date based on the sortNumberOfDays
     final endDate = currentDate.add(Duration(days: sortNumberOfDays));
 
     var query = widget.types.startsWith('All')
-        ? allEventsRef.where('showOnExplorePage', isEqualTo:true)
-        : allEventsRef.where('showOnExplorePage', isEqualTo:true).where('type', isEqualTo: widget.types);
+        ? allEventsRef.where('showOnExplorePage', isEqualTo: true)
+        : allEventsRef
+            .where('showOnExplorePage', isEqualTo: true)
+            .where('type', isEqualTo: widget.types);
 
     if (country != null) {
       query = query.where('country', isEqualTo: country);
@@ -92,21 +89,17 @@ class _EventPagesState extends State<EventPages> {
       QuerySnapshot eventFeedSnapShot = await query
           .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
           .orderBy('clossingDay', descending: false)
-          // .orderBy(FieldPath.documentId) // add this line
           .startAfterDocument(eventSnapshot.last)
           .limit(2)
           .get();
 
       List<Event> events =
           eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
-      // List<Event> moreEvents = widget.eventList + events;
 
 // Add new events to existing list
       eventList.addAll(events);
-
 // Add new snapshots to existing list
       eventSnapshot.addAll((eventFeedSnapShot.docs));
-
       if (mounted) {
         setState(() {});
       }
@@ -143,36 +136,15 @@ class _EventPagesState extends State<EventPages> {
       onPageChanged: (i) async {
         // Update the current page index first
         _currentPageIndex = i;
-
         if (i == eventList.length) {
-          // The user has navigated to the last (empty) page, load more events
-          // String? city =
-          //     widget.liveCity.isNotEmpty ? widget.liveCity : _provider.city;
-          // String? country = widget.liveCountry.isNotEmpty
-          //     ? widget.liveCountry
-          //     : _provider.country;
-
           List<Event> newEvents = await (widget.liveCity.isNotEmpty
-                  ? _loadMoreEvents(
-                      city: widget.liveCity,
-                      country: widget.liveCountry,
-                    )
-                  : widget.isFrom.isNotEmpty
-                      ? _loadMoreCityCountry()
-                      : _loadMoreEvents()
-
-              // widget.seeMoreFrom.startsWith('City')
-              //     ? _loadMoreEvents(
-              //         city: city,
-              //         country: country,
-              //       )
-              //     : widget.seeMoreFrom.startsWith('Country')
-              //         ? _loadMoreEvents(
-              //             country: country,
-              //           )
-              //         :
-
-              );
+              ? _loadMoreEvents(
+                  city: widget.liveCity,
+                  country: widget.liveCountry,
+                )
+              : widget.isFrom.isNotEmpty
+                  ? _loadMoreCityCountry()
+                  : _loadMoreEvents());
           // If no more events were loaded, navigate back to the previous page
           if (newEvents.isEmpty) {
             _pageController2.animateToPage(
@@ -183,10 +155,6 @@ class _EventPagesState extends State<EventPages> {
             // Display a Snackbar
             HapticFeedback.lightImpact();
             mySnackBar(context, 'no more events to load');
-
-            // ScaffoldMessenger.of(context).showSnackBar(
-            // SnackBar(content: Text('No more events to load')),
-            // );
           }
         }
       },
@@ -197,14 +165,12 @@ class _EventPagesState extends State<EventPages> {
             isMini: false,
           );
         }
-
         final event = eventList[index];
-
         return EventEnlargedScreen(
           currentUserId: widget.currentUserId,
           event: event,
           type: widget.types,
-           showPrivateEvent: false,
+          showPrivateEvent: false,
         );
       },
     );

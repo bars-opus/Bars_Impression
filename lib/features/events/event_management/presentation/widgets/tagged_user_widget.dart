@@ -92,8 +92,7 @@ class _TaggedUsersWidgetState extends State<TaggedUsersWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // final height = MediaQuery.of(context).size.height;
-    // final width = MediaQuery.of(context).size.width;
+
     var _provider = Provider.of<UserData>(context, listen: false);
     if (positions.isEmpty) {
       // Return a placeholder widget or an empty Container

@@ -2,7 +2,6 @@ import 'package:bars/utilities/exports.dart';
 
 class AffiliateCommissionOptions extends StatelessWidget {
   final Widget widget;
-  // final String subTitle;
   final String title;
   final VoidCallback onPressed;
   final bool isSelected;
@@ -12,7 +11,6 @@ class AffiliateCommissionOptions extends StatelessWidget {
     required this.widget,
     required this.title,
     required this.onPressed,
-    // required this.subTitle,
     this.isSelected = false,
   });
 
@@ -22,7 +20,6 @@ class AffiliateCommissionOptions extends StatelessWidget {
       onTap: onPressed,
       child: Container(
         width: ResponsiveHelper.responsiveHeight(context, 130),
-        // height: ResponsiveHelper.responsiveHeight(context, 200),
         decoration: BoxDecoration(
           border: Border.all(
             width: 2,
@@ -35,40 +32,6 @@ class AffiliateCommissionOptions extends StatelessWidget {
               : Theme.of(context).primaryColorLight.withOpacity(.5),
         ),
         child: Center(child: widget),
-
-        //  Column(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   crossAxisAlignment: CrossAxisAlignment.center,
-        //   children: [
-        //     widget,
-        //     SizedBox(
-        //       height: 10,
-        //     ),
-        //     Text(
-        //       title,
-        //       style: TextStyle(
-        //         color: isSelected
-        //             ? Colors.blue
-        //             : Theme.of(context).secondaryHeaderColor,
-        //         fontWeight: FontWeight.bold,
-        //         fontFamily: 'Metropolis',
-        //         fontSize: ResponsiveHelper.responsiveFontSize(
-        //             context, isSelected ? 14 : 12),
-        //       ),
-        //     ),
-        //     // SizedBox(
-        //     //   height: 10,
-        //     // ),
-        //     // Text(
-        //     //   subTitle,
-        //     //   style: TextStyle(
-        //     //     color: Theme.of(context).secondaryHeaderColor,
-        //     //     fontSize: ResponsiveHelper.responsiveFontSize(context, 14),
-        //     //   ),
-        //     //   textAlign: TextAlign.center,
-        //     // ),
-        //   ],
-        // ),
       ),
     );
   }

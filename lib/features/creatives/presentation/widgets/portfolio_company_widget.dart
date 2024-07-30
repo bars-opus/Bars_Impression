@@ -51,12 +51,7 @@ class PortfolioCompanyWidget extends StatelessWidget {
                     if (!await launchUrl(Uri.parse(link))) {
                       throw 'Could not launch link';
                     }
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (_) => MyWebView(
-                    //               url: link, title: '',
-                    //             )));
+                  
                   },
                 ),
               ],
@@ -95,7 +90,7 @@ class PortfolioCompanyWidget extends StatelessWidget {
           ? EdgeInsets.only(top: 5.0, left: 10, right: 10)
           : EdgeInsets.all(0),
       child: Container(
-        color: Theme.of(context).primaryColor,
+        color: Theme.of(context).cardColor,
         width: fullWidth ? width : width / 2,
         child: Padding(
           padding:

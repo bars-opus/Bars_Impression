@@ -45,30 +45,6 @@ class UserStatistics extends StatelessWidget {
           ),
           textAlign: TextAlign.center,
         ),
-
-        //  Column(
-        //   children: <Widget>[
-        //     Text(
-        //       count,
-        //       style: TextStyle(
-        //         color: countColor,
-        //         fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-        //       ),
-        //     ),
-        //     const SizedBox(
-        //       width: 5.0,
-        //     ),
-        //     Text(
-        // title,
-        // style: TextStyle(
-        //   color: titleColor,
-        //   fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-        //   fontWeight: FontWeight.w500,
-        // ),
-        //       textAlign: TextAlign.center,
-        //     ),
-        //   ],
-        // ),
       ),
     );
   }

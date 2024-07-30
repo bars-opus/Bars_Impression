@@ -716,54 +716,17 @@ class _ChatsState extends State<Chats>
   _loadingSkeleton(bool deleted, String userId) {
     return LoadingChats(
       deleted: deleted,
-      // userId: userId,
       onPressed: deleted
           ? () {
               _showBottomSheetDeledDeletedChatUser(context, userId);
             }
           : () {},
     );
-
-    // ListTile(
-    //     leading: CircleAvatar(
-    //       radius: 20.0,
-    //       backgroundColor: deleted ? Colors.black : Colors.blue,
-    //     ),
-    //     title: Column(
-    //       mainAxisAlignment: MainAxisAlignment.start,
-    //       crossAxisAlignment: CrossAxisAlignment.start,
-    //       children: <Widget>[
-    //         Padding(
-    //           padding: const EdgeInsets.only(right: 12.0),
-    //           child: Text(
-    //             deleted ? 'User deleted' : 'Loading...',
-    //             style: TextStyle(
-    //               fontWeight: deleted ? FontWeight.normal : FontWeight.bold,
-    //               fontSize: ResponsiveHelper.responsiveFontSize(
-    //                 context,
-    //                 ResponsiveHelper.responsiveFontSize(
-    //                     context, deleted ? 12 : 14.0),
-    //               ),
-    //               color: Theme.of(context).secondaryHeaderColor,
-    //             ),
-    //           ),
-    //         ),
-    //         const SizedBox(
-    //           height: 2.0,
-    //         ),
-    //       ],
-    //     ),
-    //     onTap: deleted
-    //         ? () {
-    //             _showBottomSheetDeledDeletedChatUser(context, userId);
-    //           }
-    //         : () {});
   }
 
   // Define this in your State class
   Future<EventRoom?> _getEventRoom(String eventId) async {
     final eventRoomsBox = Hive.box<EventRoom>('eventRooms');
-
     // Check if the event room is already in the cache
     if (eventRoomsBox.containsKey(eventId)) {
       return eventRoomsBox.get(eventId);
@@ -777,7 +740,6 @@ class _ChatsState extends State<Chats>
 
   void _listenToTicketIdUpdates(String ticketIdKey) {
     final ticketIdsBox = Hive.box<TicketIdModel>('ticketIds');
-
     var subscription = userTicketIdRef
         .doc(widget.currentUserId)
         .collection('tickedIds')
@@ -793,12 +755,7 @@ class _ChatsState extends State<Chats>
           // Document does not exist, remove the entry from the Hive box
           ticketIdsBox.delete(ticketIdKey);
         }
-        // if (snapshot.exists) {
-        //   TicketIdModel updatedTicketId = TicketIdModel.fromDoc(snapshot);
-        //   ticketIdsBox.put(ticketIdKey, updatedTicketId);
-        //   // print(
-        //   //     "Updated Hive box for $ticketIdKey with data: ${updatedTicketId.toJson()}");
-        // }
+      
       } catch (e) {
         print("Error updating Hive box for $ticketIdKey: $e");
       }
@@ -1067,78 +1024,15 @@ class GetAuthor extends StatefulWidget {
 
 class _GetAuthorState extends State<GetAuthor>
     with AutomaticKeepAliveClientMixin {
-  // AccountHolderAuthor? _author;
   Object? _error;
-  // bool _loading = true;
-  // late Future<Box> box;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   //  box = Hive.openBox('accountHolderAuthorBox');
-  //   _loading = widget.isEventRoom ? false : true;
-  //   widget.isEventRoom ? () {} : _setUpProfileUser();
-  // }
-
-  // Future<void> _setUpProfileUser() async {
-  //   final usersBox = Hive.box<AccountHolderAuthor>('accountHolderAuthor');
-  //   if (usersBox.containsKey(widget.chatUserId)) {
-  //     // // If the user data is already in the box, use it
-  //     _author = usersBox.get(widget.chatUserId);
-  //   } else {
-  //     // If the user data is not in the box, fetch it from the database and save it to the box
-  //     try {
-  //       _author = await DatabaseService.getUserWithId(widget.chatUserId);
-  //       usersBox.put(widget.chatUserId, _author!);
-  //     } catch (e) {
-  //       _error = e;
-  //     }
-  //   }
-  //   if (mounted) {
-  //     setState(() {
-  //       _loading = false;
-  //     });
-  //   }
-  // }
-
-  // _loadingSkeleton() {
-  //   return ListTile(
-  //       leading: CircleAvatar(
-  //         radius: 20.0,
-  //         backgroundColor: Colors.blue,
-  //       ),
-  //       title: Column(
-  //         mainAxisAlignment: MainAxisAlignment.start,
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: <Widget>[
-  //           Padding(
-  //             padding: const EdgeInsets.only(right: 12.0),
-  //             child: Text(
-  //               'Loading...',
-  //               style: TextStyle(
-  //                 fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-  //                 color: Theme.of(context).secondaryHeaderColor,
-  //               ),
-  //             ),
-  //           ),
-  //           const SizedBox(
-  //             height: 2.0,
-  //           ),
-  //         ],
-  //       ),
-  //       onTap: () {});
-  // }
 
   bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    // if (_loading) {
-    //   return _loadingSkeleton();
-    // } else if (_error != null) {
-    //   return Text('Error loading user data: $_error');
-    // } else {
+   
     return Display(
       connectivityStatus: widget.connectivityStatus,
       author: widget.author,
@@ -1151,7 +1045,7 @@ class _GetAuthorState extends State<GetAuthor>
       ticketId: widget.ticketId,
     );
   }
-  // }
+
 }
 
 class Display extends StatefulWidget {
@@ -1184,14 +1078,12 @@ class Display extends StatefulWidget {
 
 class _DisplayState extends State<Display> {
   bool _isLoading = false;
-  // late PaletteGenerator _paletteGenerator;
   bool muteEvent = false;
   bool muteMessage = false;
 
   @override
   void initState() {
     super.initState();
-    // widget.room == null ? () {} : _initPaletteGenerator();
     widget.ticketId == null ? _seMuteMessage() : _seMute();
   }
 
@@ -1206,14 +1098,6 @@ class _DisplayState extends State<Display> {
       muteEvent = widget.ticketId!.muteNotification;
     });
   }
-
-  // Future<void> _initPaletteGenerator() async {
-  //   _paletteGenerator = await PaletteGenerator.fromImageProvider(
-  //     CachedNetworkImageProvider(widget.room!.imageUrl),
-  //     size: const Size(1110, 150),
-  //     maximumColorCount: 20,
-  //   );
-  // }
 
   void _showBottomSheetErrorMessage() {
     showModalBottomSheet(

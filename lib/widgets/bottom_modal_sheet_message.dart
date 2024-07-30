@@ -10,13 +10,11 @@ class BottomModalSheetMessage extends StatefulWidget {
   final AccountHolderAuthor? userAuthor;
   final String userId;
   final bool showAppbar;
-
   final Chat? chatLoaded;
   final String currentUserId;
   final bool? isBlocked;
-
   final bool? isBlocking;
-  // final ConnectivityResult connectivityStatus;
+
   BottomModalSheetMessage({
     required this.user,
     required this.userPortfolio,
@@ -42,24 +40,17 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
   bool _isBlockingUser = false;
   bool _disableChat = false;
   late var _user;
-
-  // late Future<Box> box;
   Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    // box = Hive.openBox('chatMessages');
     _user = widget.user ?? widget.userAuthor ?? widget.userPortfolio;
     _isBlockedUser = widget.isBlocked ?? false;
     _isBlockingUser = widget.isBlocking ?? false;
     widget.isBlocked ?? _setupIsBlocked();
     widget.isBlocking ?? _setupIsBlocking();
-
     widget.userPortfolio == null ? _setDisabled() : _setFetchedDisabled();
-
-    // widget.chatLoaded ?? _setupIsBlocking();
-
     _isTypingNotifier =
         ValueNotifier<bool>(_messageController.text.trim().isNotEmpty);
     _messageController.addListener(_onAskTextChanged);
@@ -95,7 +86,6 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
   void _updateChatSeen() {
     // Assuming usersRef is a global variable of type CollectionReference
     WriteBatch batch = FirebaseFirestore.instance.batch();
-
     batch.update(
       usersAuthorRef
           .doc(widget.currentUserId)
@@ -103,16 +93,6 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
           .doc(widget.userId),
       {'seen': true},
     );
-
-    // batch.update(
-    //   usersAuthorRef
-
-    //       .doc(widget.userId)
-    //       .collection('new_chats')
-    //       .doc(widget.currentUserId),
-    //   {'seen': true},
-    // );
-
     batch.commit();
   }
 
@@ -149,7 +129,6 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
     _messageController.dispose();
     _isTypingNotifier.dispose();
     _timer?.cancel();
-    // box.then((hiveBox) => hiveBox.close());
     super.dispose();
   }
 
@@ -157,13 +136,10 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
     final file = fromCamera
         ? await PickCropCamera.pickedMedia(cropImage: _cropImage)
         : await PickCropImage.pickedMedia(cropImage: _cropImage);
-
     if (file != null && mounted) {
-      // setState(() {
       Provider.of<UserData>(context, listen: false)
           .setMessageImage(file as File?);
       _focusNode.requestFocus();
-      // });
     }
   }
 
@@ -179,7 +155,6 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
     String result = error.contains(']')
         ? error.substring(error.lastIndexOf(']') + 1)
         : error;
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -200,7 +175,6 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
   _submitMessageFirstMessage() async {
     var _provider = Provider.of<UserData>(context, listen: false);
     HapticFeedback.mediumImpact();
-
     var replyMessage;
     if (_provider.replyChatMessage != null) {
       replyMessage = ReplyToMessage(
@@ -221,9 +195,7 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
       } catch (e) {}
     }
     List<MessageAttachment> attachement = [];
-
     String commonId = Uuid().v4();
-
     if (_provider.messageImage != null) {
       attachement.add(MessageAttachment(
         id: commonId,
@@ -233,7 +205,6 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
     }
 
     var sendContent;
-
     ChatMessage message = ChatMessage(
         content: _messageController.text.trim().isEmpty
             ? ''
@@ -251,10 +222,10 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
     try {
       String messageId = Uuid().v4();
       DatabaseService.firstChatMessage(
-        // isFirstMessage:_provider.chatMessageId,
         chatId: _provider.chatMessageId,
         message: message,
-        currentUserId: widget.currentUserId, messageId: messageId,
+        currentUserId: widget.currentUserId,
+        messageId: messageId,
         isAuthor: widget.currentUserId == message.senderId,
       );
       _provider.setChatMessageId(messageId);
@@ -268,9 +239,6 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
   }
 
   _commentField() {
-    // final width = Responsive.isDesktop(context)
-    //     ? 600.0
-    //     : MediaQuery.of(context).size.width;
     final _provider = Provider.of<UserData>(
       context,
     );
@@ -293,14 +261,7 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
                           try {
                             _submitMessageFirstMessage();
                           } catch (e) {
-                            // String error = e.toString();
-                            // String result = error.contains(']')
-                            //     ? error.substring(error.lastIndexOf(']') + 1)
-                            //     : error;
-
                             _showBottomSheetErrorMessage(e);
-                            // Handle the error appropriately (e.g., show an error message)
-                            // print('Error sending comment or reply: $e');
                           }
                         }
                       },
@@ -319,7 +280,6 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
   void _markAllMessagesAsRead(String chatId) async {
     // Get a reference to the Firestore messages collection
     final messageRef = FirebaseFirestore.instance.collection('messages');
-
     // Query for all messages where isRead is false and receiverId is widget.userId
     final querySnap = await messageRef
         .doc(chatId)
@@ -327,10 +287,8 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
         .where('isRead', isEqualTo: false)
         .where('receiverId', isEqualTo: widget.currentUserId)
         .get();
-
     // Get the documents from the query snapshot
     final docs = querySnap.docs;
-
     // For each document, update isRead to true
     for (final doc in docs) {
       await doc.reference.update({'isRead': true});
@@ -347,13 +305,7 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
                 Uri.parse('https://www.barsopus.com/terms-of-use'))) {
               throw 'Could not launch link';
             }
-            // Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //         builder: (_) => MyWebView(
-            //               url: 'https://www.barsopus.com/terms-of-use',
-            //               title: '',
-            //             )));
+            
           },
           child: RichText(
             textScaleFactor: MediaQuery.of(context).textScaleFactor,
@@ -413,12 +365,10 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
   _displayImage() {
     final width = MediaQuery.of(context).size.width;
     final _provider = Provider.of<UserData>(context, listen: false);
-
     FileImage? image;
     if (_provider.messageImage != null) {
       image = FileImage(File(_provider.messageImage!.path));
     }
-
     return ReplyMessageAndActivityCountWidget(
       color: Colors.blue,
       height: _provider.messageImage == null ? 0.0 : 80,
@@ -446,10 +396,8 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
                 )
               : IconButton(
                   onPressed: () {
-                    // setState(() {
                     HapticFeedback.lightImpact();
                     _provider.setMessageImage(null);
-                    // });
                   },
                   icon: Icon(
                     Icons.close,
@@ -501,7 +449,6 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
                           _handleImage(fromCamera: true);
                         } catch (e) {
                           _showBottomSheetErrorMessage(e);
-                          // print('Failed to handle image: $e');
                         }
                       },
                       text: 'Camera',
@@ -515,7 +462,6 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
                           _handleImage(fromCamera: false);
                         } catch (e) {
                           _showBottomSheetErrorMessage(e);
-                          // print('Failed to handle image: $e');
                         }
                       },
                       text: 'Gallery',
@@ -525,7 +471,6 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
       );
     } catch (e) {
       _showBottomSheetErrorMessage(e);
-      // print('Failed to show bottom sheet: $e');
     }
   }
 
@@ -580,7 +525,6 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
       );
     } catch (e) {
       _showBottomSheetErrorMessage(e);
-      // print('Failed to show bottom sheet: $e');
     }
   }
 
@@ -640,7 +584,6 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
       borderRadius: BorderRadius.circular(30),
       color: Theme.of(context).primaryColorLight,
       child: Container(
-        // height: 50,
         margin: EdgeInsets.symmetric(
           horizontal: 8.0,
         ),
@@ -684,12 +627,10 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
                   margin: EdgeInsets.symmetric(horizontal: 4.0),
                   child: CircularButton(
                       color: readyToSend
-                          // controller.text.trim().length > 0
                           ? Colors.blue
                           : Colors.transparent,
                       icon: Icon(Icons.send,
                           color: readyToSend
-                              // controller.text.trim().length > 0
                               ? Colors.white
                               : Colors.grey),
                       onPressed: onSend),
@@ -722,7 +663,6 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
                           width: 70,
                           height: 60,
                           decoration: BoxDecoration(
-                              // color: Colors.white,
                               borderRadius: BorderRadius.circular(5),
                               image: DecorationImage(
                                 image: CachedNetworkImageProvider(_provider
@@ -732,10 +672,8 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
                     ),
           trailing: IconButton(
               onPressed: () {
-                // setState(() {
                 HapticFeedback.lightImpact();
                 _provider.setReplyChatMessage(null);
-                // });
               },
               icon: Icon(
                 Icons.close,
@@ -781,10 +719,8 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
     var box = await Hive.openBox<ChatMessage>('chatMessages');
     var messages =
         box.values.where((message) => message.id == chatMessageId).toList();
-
     if (messages.length > 25) {
       messages.sort((a, b) => a.timestamp!.compareTo(b.timestamp!));
-
       for (var i = 0; i < messages.length - 25; i++) {
         box.delete(messages[i].id);
       }
@@ -794,7 +730,6 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
   void expireOldMessages(Duration ageLimit) async {
     var box = await Hive.openBox<ChatMessage>('chatMessages');
     var now = DateTime.now();
-
     for (var message in box.values) {
       if (now.difference(message.timestamp!.toDate()) > ageLimit) {
         box.delete(message.id);
@@ -828,8 +763,6 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
     final chatMessagesBox = Hive.box<ChatMessage>('chatMessages');
     _markAllMessagesAsRead(chat.messageId);
     final _provider = Provider.of<UserData>(context, listen: false);
-    print(chat.messageId);
-
     return FutureBuilder<Box<ChatMessage>>(
       future: getChatMessagesBox(),
       builder: (context, snapshot) {
@@ -839,7 +772,6 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
           return Text('Error opening the box: ${snapshot.error}');
         } else {
           final box = snapshot.data!;
-
           return StreamBuilder<QuerySnapshot>(
             stream: messageRef
                 .doc(chat.messageId)
@@ -861,12 +793,10 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
                 List<ChatMessage> newMessages = snapshot.data!.docs.map((doc) {
                   return ChatMessage.fromDoc(doc);
                 }).toList();
-
                 // Save new messages to Hive
                 for (ChatMessage newMessage in newMessages) {
                   box.put(newMessage.id, newMessage);
                 }
-
                 // Fetch messages from Hive directly
                 List<ChatMessage> retrievedMessages = [];
                 for (ChatMessage newMessage in newMessages) {
@@ -924,9 +854,7 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
               currentUserId: widget.currentUserId,
               onReply: (message) {
                 _focusNode.requestFocus();
-                // setState(() {
                 _provider.setReplyChatMessage(message);
-                // });
               },
               chatId: chatId,
               message: messages[index],
@@ -944,7 +872,6 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
   _future() {
     final chatMessageId =
         Provider.of<UserData>(context, listen: false).chatMessageId;
-
     return chatMessageId.isEmpty
         ? Expanded(child: _noMessage())
         : FutureBuilder<Box<ChatMessage>>(
@@ -1010,36 +937,15 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
               }
             },
           );
-
-    // FutureBuilder(
-    //     future: DatabaseService.getChatMesssage(
-    //         widget.currentUserId, widget.userId),
-    //     builder: (BuildContext context, AsyncSnapshot snapshot) {
-    //       if (!snapshot.hasData) {
-    //         return Expanded(
-    //             child: Center(
-    //           child: SizedBox(
-    //               height: 50, width: 50, child: CircularProgressIndicator()),
-    //         ));
-    //       }
-    //       Chat _chat = snapshot.data;
-
-    //       if (snapshot.hasData) {
-    //         return Expanded(child: _noMessage());
-    //       }
-    //       return _getMessages(_chat);
-    //     });
   }
 
 // The build function is the main rendering function.
 //  It sets up a Scaffold with an AppBar (if widget.userAuthor is not null),
 //   a list of messages, and a comment field.
-
   @override
   Widget build(BuildContext context) {
     bool _restricitedChat =
         widget.chatLoaded == null ? false : widget.chatLoaded!.restrictChat;
-
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(

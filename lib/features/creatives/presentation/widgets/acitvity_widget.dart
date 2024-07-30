@@ -55,25 +55,6 @@ class _ActivityWidgetState extends State<ActivityWidget> {
     );
   }
 
-  void _showBottomSheetErrorDeletedEvent(String errorTitle) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return DisplayErrorHandler(
-          buttonText: 'Ok',
-          onPressed: () async {
-            Navigator.pop(context);
-          },
-          title: errorTitle,
-          subTitle:
-              'The event you are trying to access might have either been deleted or is not available.',
-        );
-      },
-    );
-  }
-
   void _navigateToPage(BuildContext context, Widget page) {
     Navigator.push(
       context,
@@ -157,7 +138,8 @@ class _ActivityWidgetState extends State<ActivityWidget> {
   Future<void> _getActivityTicketOrder(Activity activity) async {
     var postId = activity.postId;
     if (postId == null) {
-      return;
+      return _showBottomSheetErrorMessage(
+          'Ticket not found.', 'This ticket might have been deleted');
     }
 
     TicketOrderModel? ticketOrder =
@@ -215,6 +197,18 @@ class _ActivityWidgetState extends State<ActivityWidget> {
         await _getAffiliate(activity);
         break;
 
+      case NotificationActivityType.bookingReceived:
+        await _getBooking(activity, false);
+        break;
+
+      case NotificationActivityType.bookingMade:
+        await _getBooking(activity, true);
+        break;
+
+      case NotificationActivityType.donation:
+        await _getActivityFollower(activity);
+        break;
+
       default:
         break;
     }
@@ -237,7 +231,8 @@ class _ActivityWidgetState extends State<ActivityWidget> {
   Future<void> _getActivityInviteReceived(Activity activity) async {
     var postId = activity.postId;
     if (postId == null) {
-      return;
+      return _showBottomSheetErrorMessage(
+          'Invite not found.', 'This invite might have been deleted');
     }
 
     InviteModel? _invite =
@@ -290,7 +285,8 @@ class _ActivityWidgetState extends State<ActivityWidget> {
   Future<void> _getActivityEvent(Activity activity) async {
     var postId = activity.postId;
     if (postId == null) {
-      return;
+      return _showBottomSheetErrorMessage('Event not found.',
+          'This event might have been deleted or cancelled');
     }
 
     Event? event = await DatabaseService.getUserEventWithId(
@@ -317,7 +313,8 @@ class _ActivityWidgetState extends State<ActivityWidget> {
   Future<void> _getActivityAdvice(Activity activity) async {
     var authorId = activity.authorId;
     if (authorId == null) {
-      return;
+      return _showBottomSheetErrorMessage(
+          'User not found.', 'This user might have deleted this account');
     }
 
     // AccountHolderAuthor? user = await DatabaseService.getUserWithId(authorId);
@@ -339,7 +336,8 @@ class _ActivityWidgetState extends State<ActivityWidget> {
     var authorId = activity.authorId;
     if (authorId == null) {
       // handle null authorId appropriately
-      return;
+      return _showBottomSheetErrorMessage(
+          'User not found.', 'This user might have deleted this account');
     }
 
     _navigateToPage(
@@ -362,12 +360,43 @@ class _ActivityWidgetState extends State<ActivityWidget> {
     AffiliateModel? affiliate = await DatabaseService.getUserAffiliate(
         widget.currentUserId, activity.postId!);
 
+    if (affiliate == null)
+      return _showBottomSheetErrorMessage(
+          'Affiliate not found.', 'This affiliate might have been deleted');
+
     _navigateToPage(
       context,
       AffiliatePage(
         currentUserId: widget.currentUserId,
         isUser: true,
-        affiliate: affiliate!,
+        affiliate: affiliate,
+        fromActivity: true,
+      ),
+    );
+  }
+
+  Future<void> _getBooking(Activity activity, bool bookingMade) async {
+    var authorId = activity.authorId;
+    if (authorId == null) {
+      // handle null authorId appropriately
+      return;
+    }
+
+    BookingModel? booking = bookingMade
+        ? await DatabaseService.getBookingMade(
+            widget.currentUserId, activity.postId!)
+        : await DatabaseService.getUserBooking(
+            widget.currentUserId, activity.postId!);
+    if (booking == null)
+      return _showBottomSheetErrorMessage(
+          'Booking not found.', 'This booking might have been deleted');
+
+    _navigateToPage(
+      context,
+      BookingPage(
+        currentUserId: widget.currentUserId,
+        // isUser: true,
+        booking: booking,
         fromActivity: true,
       ),
     );
@@ -472,7 +501,9 @@ class _ActivityWidgetState extends State<ActivityWidget> {
         child: Icon(
           activity.type == NotificationActivityType.inviteRecieved
               ? Icons.mail_outline_rounded
-              : Icons.event_outlined,
+              : activity.type == NotificationActivityType.donation
+                  ? Icons.payment
+                  : Icons.event_outlined,
           color: Theme.of(context).primaryColorLight,
         ),
       ),
@@ -760,6 +791,8 @@ class _ActivityWidgetState extends State<ActivityWidget> {
                                 NotificationActivityType.inviteRecieved ||
                             widget.activity.type ==
                                 NotificationActivityType.eventDeleted ||
+                            widget.activity.type ==
+                                NotificationActivityType.donation ||
                             widget.activity.type ==
                                 NotificationActivityType.eventUpdate
                         ? _iconContiner(widget.activity)

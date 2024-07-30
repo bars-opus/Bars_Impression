@@ -98,9 +98,21 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
         // print('Result data: $result.data);
 
         if (subaccountId != null) {
+          final _firestore = FirebaseFirestore.instance;
+
           try {
-            await usersLocationSettingsRef.doc(_user.userId).update({
+            WriteBatch batch = _firestore.batch();
+
+            final _usersLocationSettings =
+                usersLocationSettingsRef.doc(_user.userId);
+
+            final _userProfessional = userProfessionalRef.doc(_user.userId);
+
+            batch.update(_usersLocationSettings, {
               'subaccountId': subaccountId.toString(),
+              'transferRecepientId': transferRecepient.toString(),
+            });
+            batch.update(_userProfessional, {
               'transferRecepientId': transferRecepient.toString(),
             });
 
@@ -609,13 +621,13 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
                 //   height: 20,
                 // ),
                 Container(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(30.0),
                   height: ResponsiveHelper.responsiveHeight(context, 700),
                   // decoration: BoxDecoration(
-                  //   borderRadius: BorderRadius.only(
-                  //     topLeft: Radius.circular(30.0),
-                  //     topRight: Radius.circular(30.0),
-                  //   ),
+                  // borderRadius: BorderRadius.only(
+                  //   topLeft: Radius.circular(30.0),
+                  //   topRight: Radius.circular(30.0),
+                  // ),
                   //   // BorderRadius.circular(30),
                   // color: _provider.int1 == 1
                   //     ? Color(0xFF1a1a1a)
@@ -637,7 +649,7 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
                       Center(
                         child: ShakeTransition(
                           child: Text(
-                            'Payout account information\nfor ticket sales',
+                            'Add Payout \nAccount',
                             style: TextStyle(
                                 fontSize: ResponsiveHelper.responsiveFontSize(
                                     context, 20),
@@ -649,7 +661,9 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
                       ),
                       // const SizedBox(height: 20),
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 30.0),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 30.0,
+                        ),
                         child: Center(
                           child: Container(
                             width: 50,
@@ -668,7 +682,7 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
                             // ),
                             TextSpan(
                               text:
-                                  "To ensure you receive your earnings from ticket sales promptly, we require your bank account details. Your payouts will be processed securely through Paystack, a trusted payment platform that adheres to the highest levels of security compliance.",
+                                  "To ensure you receive your earnings from ticket sales, booking services and donations promptly, we require your bank account details. Your payouts will be processed securely through Paystack, a trusted payment platform that adheres to the highest levels of security compliance.",
                               style: bodyMedium,
                             ),
                             TextSpan(
@@ -677,7 +691,7 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
                             ),
                             TextSpan(
                               text:
-                                  "\nYour earnings from ticket sales will be securely deposited into the bank account you provide.",
+                                  "\nYour earnings will be securely deposited into the bank account you provide.",
                               style: bodyMedium,
                             ),
                             TextSpan(
@@ -701,7 +715,7 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
 
                             TextSpan(
                               text:
-                                  "\n\nWe will process your payout approximately 48 hours after the closing date of your event. Once the payout has been processed, you should receive the funds within 24 hours. \n\nYou must request the payout yourself. A 'Request Payout' button will appear on your event dashboard after the closing day of your event. You can use this button to request the payout",
+                                  "\n\nWe will process your payout approximately 24 hours after your payout request. Once the payout has been processed, you should receive the funds in your designated account. \n\nIt's important to note that you, the user, are responsible for requesting the payouts yourself. A 'Request Payout\' button will be available after you have completed an event, provided a booking service, or received a donation. You can use this button to submit your payout request when you are ready to receive the funds.",
                               style: bodyMedium,
                             ),
                           ],

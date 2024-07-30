@@ -147,7 +147,7 @@ class _BlockedAccountsState extends State<BlockedAccounts>
   Widget build(BuildContext context) {
     super.build(context);
     return Container(
-      color: Theme.of(context).primaryColor,
+      color: Theme.of(context).primaryColorLight,
       child: NestedScrollView(
         controller: _hideButtonController,
         headerSliverBuilder: (context, innerBoxScrolled) => [
@@ -161,7 +161,7 @@ class _BlockedAccountsState extends State<BlockedAccounts>
             iconTheme: new IconThemeData(
               color: Theme.of(context).secondaryHeaderColor,
             ),
-            backgroundColor: Theme.of(context).primaryColor,
+            backgroundColor: Theme.of(context).primaryColorLight,
             title: Text(
               'Blocked Accounts',
               style: Theme.of(context).textTheme.bodyLarge,
@@ -173,14 +173,14 @@ class _BlockedAccountsState extends State<BlockedAccounts>
           context: context,
           removeTop: true,
           child: Container(
-            color: Theme.of(context).primaryColor,
+            color: Theme.of(context).primaryColorLight,
             child: SafeArea(
               child: MediaQuery(
                 data: MediaQuery.of(context).copyWith(
                     textScaleFactor:
                         MediaQuery.of(context).textScaleFactor.clamp(0.5, 1.5)),
                 child: Material(
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).primaryColorLight,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,7 +201,7 @@ class _BlockedAccountsState extends State<BlockedAccounts>
                           ? Expanded(
                               child: Center(
                                 child: NoContents(
-                                  icon: (Icons.person_add_disabled_outlined),
+                                  icon: (Icons.block),
                                   title: 'No blocked Accounts,',
                                   subTitle: '',
                                 ),

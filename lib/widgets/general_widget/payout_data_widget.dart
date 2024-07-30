@@ -3,13 +3,24 @@ import 'package:bars/utilities/exports.dart';
 class PayoutDataWidget extends StatelessWidget {
   final String label;
   final String value;
-    final Color? color;
+  final Color? text2Ccolor;
+  final Color? text1Ccolor;
 
-  const PayoutDataWidget({super.key, required this.label, required this.value,    this.color,});
+  final bool inMini;
+  final int? maxLines;
+
+  const PayoutDataWidget({
+    super.key,
+    required this.label,
+    required this.value,
+    this.inMini = false,
+    this.text2Ccolor,
+    this.text1Ccolor,
+    this.maxLines = 5,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // return  _payoutWidget(String lable, String value) {
     return ShakeTransition(
       // axis: Axis.vertical,
       curve: Curves.linearToEaseOut,
@@ -18,7 +29,10 @@ class PayoutDataWidget extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 5.0),
         child: SalesReceiptWidget(
-          color: color,
+          maxLines: maxLines,
+          text1Ccolor: text1Ccolor,
+          inMini: inMini,
+          text2Ccolor: text2Ccolor,
           isRefunded: false,
           lable: label,
           value: value,

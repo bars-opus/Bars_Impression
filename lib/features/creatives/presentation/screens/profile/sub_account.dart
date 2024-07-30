@@ -69,7 +69,9 @@ class _SubAccountsState extends State<SubAccounts> {
               textAlign: TextAlign.center,
             ),
             children: <Widget>[
-              Divider( thickness: .2,),
+              Divider(
+                thickness: .2,
+              ),
               Center(
                 child: SimpleDialogOption(
                   child: Text(
@@ -84,7 +86,9 @@ class _SubAccountsState extends State<SubAccounts> {
                   },
                 ),
               ),
-              Divider( thickness: .2,),
+              Divider(
+                thickness: .2,
+              ),
               Center(
                 child: SimpleDialogOption(
                   child: Text(
@@ -106,77 +110,8 @@ class _SubAccountsState extends State<SubAccounts> {
                   user: widget.user,
                   profileHandle: widget.profileHandle,
                 )));
-    try {
-      // usersRef
-      //     .doc(
-      //   widget.user.userId,
-      // )
-      //     .update({
-      //   'subAccountType': '',
-      // });
-    } catch (e) {}
+    try {} catch (e) {}
   }
-
-  // _submit() async {
-  //   try {
-  //     usersRef
-  //         .doc(
-  //       widget.user.id,
-  //     )
-  //         .update({
-  //       'subAccountType': artist +
-  //           producer +
-  //           coverArtDesigner +
-  //           musicVideoDirector +
-  //           dJ +
-  //           battleRapper +
-  //           photographer +
-  //           videoVixen +
-  //           blogger +
-  //           dancer +
-  //           makeupArtist +
-  //           brandInfluencer +
-  //           mC
-  //     });
-  //   } catch (e) {
-  //     final double width = Responsive.isDesktop(context)
-  //         ? 600.0
-  //         : MediaQuery.of(context).size.width;
-  //     Flushbar(
-  //       margin: EdgeInsets.all(8),
-  //       boxShadows: [
-  //         BoxShadow(
-  //           color: Colors.black,
-  //           offset: Offset(0.0, 2.0),
-  //           blurRadius: 3.0,
-  //         )
-  //       ],
-  //       flushbarPosition: FlushbarPosition.TOP,
-  //       flushbarStyle: FlushbarStyle.FLOATING,
-  //       titleText: Text(
-  //         'Error',
-  //         style: TextStyle(
-  //           color: Colors.white,
-  //           fontSize: width > 800 ? 22 : 14,
-  //         ),
-  //       ),
-  //       messageText: Text(
-  //         e.toString(),
-  //         style: TextStyle(
-  //           color: Colors.white,
-  //           fontSize: width > 800 ? 20 : 12,
-  //         ),
-  //       ),
-  //       icon: Icon(
-  //         Icons.error_outline,
-  //         size: 28.0,
-  //         color: Colors.blue,
-  //       ),
-  //       duration: Duration(seconds: 3),
-  //       leftBarIndicatorColor: Colors.blue,
-  //     )..show(context);
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -213,11 +148,6 @@ class _SubAccountsState extends State<SubAccounts> {
                           'You can add multiple  sub-accounts skills if you offer more than one skill. For instance, main account Artist, sub-accounts: producer, video director.',
                       icon: Icons.account_box_outlined,
                     ),
-                    // Text(
-                    //   widget.user.subAccountType!,
-                    //   style: TextStyle(fontSize:  ResponsiveHelper.responsiveFontSize(
-                    // context, 12), color: Colors.blue),
-                    // ),
                     Center(
                       child: Padding(
                         padding: const EdgeInsets.only(top: 30.0),

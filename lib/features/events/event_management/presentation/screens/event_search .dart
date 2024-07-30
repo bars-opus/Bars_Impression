@@ -2,7 +2,6 @@ import 'package:bars/utilities/exports.dart';
 
 class EventSearch extends StatefulWidget {
   static final id = 'EventSearch';
-
   final Future<QuerySnapshot>? events;
 
   EventSearch({required this.events});
@@ -60,8 +59,10 @@ class _EventSearchState extends State<EventSearch> {
                                     color: Colors.blueGrey)),
                             TextSpan(text: '\nCheck title and try again.'),
                           ],
-                          style: TextStyle(fontSize: ResponsiveHelper.responsiveFontSize(
-                                context, 14), color: Colors.grey),
+                          style: TextStyle(
+                              fontSize: ResponsiveHelper.responsiveFontSize(
+                                  context, 14),
+                              color: Colors.grey),
                         )),
                       );
                     }
@@ -95,65 +96,6 @@ class _EventSearchState extends State<EventSearch> {
                           ]),
                     );
                   }),
-
-          //  FutureBuilder<QuerySnapshot>(
-          //     future: widget.events,
-          //     builder: (BuildContext context,
-          //         AsyncSnapshot<QuerySnapshot> snapshot)   {
-
-          //       if (!snapshot.hasData) {
-          //         return SearchUserSchimmer();
-          //       }
-          //       if (snapshot.data!.docs.length == 0) {
-          //         return Center(
-          //           child: RichText(
-          //               text: TextSpan(
-          //             children: [
-          //               TextSpan(
-          //                   text: "No events found. ",
-          //                   style: TextStyle(
-          //                       fontSize:  ResponsiveHelper.responsiveFontSize( context, 20),
-          //                       fontWeight: FontWeight.bold,
-          //                       color: Colors.blueGrey)),
-          //               TextSpan(text: '\nCheck title and try again.'),
-          //             ],
-          //             style: TextStyle(fontSize: 14, color: Colors.grey),
-          //           )),
-          //         );
-          //       }
-          //       return Padding(
-          //         padding: const EdgeInsets.only(top: 30.0),
-          //         child: CustomScrollView(
-          //             physics: const AlwaysScrollableScrollPhysics(),
-          //             slivers: [
-          //               SliverList(
-          //                 delegate: SliverChildBuilderDelegate(
-          //                   (context, index) {
-
-          //                     Event? event = Event.fromDoc(
-          //                         snapshot.data!.docs[index]);
-          //                           List<Event> _events = await getEvents();
-          //                     return EventDisplayWidget(
-          //                       currentUserId:
-          //                           Provider.of<UserData>(context)
-          //                               .currentUserId!,
-          //                       event: event,
-          //                       eventList:_events,
-          //                       pageIndex: 0,
-          //                       eventSnapshot: [],
-          //                       eventPagesOnly: false,
-          //                       liveCity: '',
-          //                       liveCountry: '',
-          //                       sortNumberOfDays: 0,
-          //                       isFrom: '',
-          //                     );
-          //                   },
-          //                   childCount: snapshot.data!.docs.length,
-          //                 ),
-          //               ),
-          //             ]),
-          //       );
-          //     })
         ),
       ),
     );

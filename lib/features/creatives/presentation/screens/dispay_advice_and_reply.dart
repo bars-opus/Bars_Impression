@@ -3,12 +3,10 @@ import 'package:bars/utilities/exports.dart';
 class DisplayAdviceAndReply extends StatefulWidget {
   final UserAdvice advice;
   final String userId;
-  // var user;
 
   DisplayAdviceAndReply(
       {super.key,
       required this.userId,
-      // required this.user,
       required this.advice});
 
   @override
@@ -19,14 +17,12 @@ class _DisplayAdviceAndReplyState extends State<DisplayAdviceAndReply> {
   late Future<List<UserAdvice>> _repliesFuture;
   final TextEditingController _commentController = TextEditingController();
   ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
-  // int _repliedComment = 0;
   String _editedComment = '';
 
   @override
   void initState() {
     super.initState();
     _repliesFuture = _initData();
-    // _setUpRepliedCommentCount();
     _commentController.addListener(_onAskTextChanged);
   }
 
@@ -173,7 +169,6 @@ class _DisplayAdviceAndReplyState extends State<DisplayAdviceAndReply> {
                 child: Column(
                   children: [
                     TicketPurchasingIcon(
-                      // icon: Icons.payment,
                       title: '',
                     ),
                     Authorview(

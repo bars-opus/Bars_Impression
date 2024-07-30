@@ -10,7 +10,6 @@ class UserAdviceScreen extends StatefulWidget {
   final bool? hideAdvice;
   final bool? disableAdvice;
   final VoidCallback updateBlockStatus;
-  // var user;
 
   UserAdviceScreen({
     required this.userId,
@@ -21,7 +20,6 @@ class UserAdviceScreen extends StatefulWidget {
     this.isBlocking,
     required this.hideAdvice,
     required this.disableAdvice,
-    // required this.user,
   });
 
   @override
@@ -97,16 +95,7 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
     }
   }
 
-  // _setUpUserAdvice() async {
-  //   DatabaseService.numAdvices(widget.userId).listen((userAdviceCount) {
-  //     if (mounted) {
-  //       widget.updateBlockStatus();
-  //       setState(() {
-  //         _userAdviceCount = userAdviceCount;
-  //       });
-  //     }
-  //   });
-  // }
+
 
   _buildAskTF() {
     final currentUserId = Provider.of<UserData>(context).currentUserId;
@@ -166,40 +155,9 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
   ) {
     return DisplayAdviceAndReply(
       advice: userAdvice,
-      // user: widget.user,
       userId: widget.userId,
     );
 
-    // Authorview(
-    //   report: userAdvice.report,
-    //   content: userAdvice.content,
-    //   timestamp: userAdvice.timestamp,
-    //   authorId: userAdvice.authorId,
-    //   profileHandle: userAdvice.authorProfileHanlde,
-    //   userName: userAdvice.authorName,
-
-    //   profileImageUrl: userAdvice.authorProfileImageUrl,
-    //   verified: userAdvice.authorVerification.isEmpty,
-    //   from: '',
-    //   onPressedReport: isAuthor
-    //       ? () {
-    //           _showBottomSheetEditAdvice(userAdvice);
-    //         }
-    //       : () {
-    //           _navigateToPage(
-    //             context,
-    //             ReportContentPage(
-    //               parentContentId: widget.userId,
-    //               repotedAuthorId: userAdvice.authorId,
-    //               contentId: userAdvice.id,
-    //               contentType: 'Advice',
-    //             ),
-    //           );
-    //         },
-    //   onPressedReply: () {},
-    //   onPressedSeeAllReplies: () {},
-    //   isPostAuthor: false,
-    // );
   }
 
   Widget _buildStreamBuilder(BuildContext context) {

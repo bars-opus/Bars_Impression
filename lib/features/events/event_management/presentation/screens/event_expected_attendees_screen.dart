@@ -6,9 +6,8 @@ class EventExpectedAttendeesScreen extends StatefulWidget {
   final bool validated;
   final bool peopleAttending;
   final bool letShowAppBar;
-
   final PaletteGenerator palette;
-  bool fromDashboard;
+  final bool fromDashboard;
 
   EventExpectedAttendeesScreen({
     required this.event,
@@ -29,10 +28,8 @@ class _EventExpectedAttendeesScreenState
     with AutomaticKeepAliveClientMixin {
   List<TicketOrderModel> _inviteList = [];
   final _inviteSnapshot = <DocumentSnapshot>[];
-  // int limit = 10;
   bool _hasNext = true;
   bool _isLoading = true;
-
   bool _isFectchingUser = false;
   bool _showInfo = true;
   late ScrollController _hideButtonController;
@@ -96,8 +93,6 @@ class _EventExpectedAttendeesScreenState
       // Cast away the nulls to get a non-nullable list
       List<TicketOrderModel> users = List<TicketOrderModel>.from(filteredUsers);
 
-      
-
       _inviteSnapshot.addAll(inviteSnapShot.docs);
       if (mounted) {
         print(users.length.toString());
@@ -115,27 +110,6 @@ class _EventExpectedAttendeesScreenState
     }
     return _inviteList;
   }
-  // _setUpPeopleValidated() async {
-  //   QuerySnapshot inviteSnapShot = await newEventTicketOrderRef
-  //       .doc(widget.event.id)
-  //       .collection('eventInvite')
-  //       .where('validated', isEqualTo: widget.validated)
-  //       // .limit(limit)
-  //       .get();
-  //   List<TicketOrderModel> users = inviteSnapShot.docs
-  //       .map((doc) => TicketOrderModel.fromDoc(doc))
-  //       .toList();
-  //   _inviteSnapshot.addAll((inviteSnapShot.docs));
-  //   if (mounted) {
-  //     print(users.length.toString());
-  //     setState(() {
-  //       _hasNext = false;
-  //       _inviteList = users;
-  //       _isLoading = false;
-  //     });
-  //   }
-  //   return users;
-  // }
 
   _setUpPeopleAttending() async {
     QuerySnapshot inviteSnapShot = await newEventTicketOrderRef
@@ -170,9 +144,6 @@ class _EventExpectedAttendeesScreenState
     var _provider = Provider.of<UserData>(context, listen: false);
 
     String ordernumberSubstring = Utils.safeSubstring(attendee.orderId, 0, 4);
-
-
-
 
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -230,33 +201,15 @@ class _EventExpectedAttendeesScreenState
                       if (widget.fromDashboard)
                         TextSpan(
                             text: ordernumberSubstring,
-                            // "${attendee.orderId.substring(0, 4)}",
                             style: TextStyle(
                               fontSize: ResponsiveHelper.responsiveFontSize(
                                   context, 12.0),
                               color: Colors.blue,
                             )),
-                      // if (widget.fromDashboard)
-                      //   TextSpan(
-                      //       text: "\nEntracne id:         ",
-                      //       style: TextStyle(
-                      //         fontSize: ResponsiveHelper.responsiveFontSize(
-                      //             context, 12.0),
-                      //         color: Colors.grey,
-                      //       )),
-                      // if (widget.fromDashboard)
-                      //   if (attendee.orderId.isNotEmpty)
-                      //     TextSpan(
-                      //         text: attendee.orderId.
-                      //         // "${attendee.orderId.substring(0, 4)}",
-                      //         style: TextStyle(
-                      //           fontSize: ResponsiveHelper.responsiveFontSize(
-                      //               context, 12.0),
-                      //           color: Colors.blue,
-                      //         )),
                     ])),
                 subtitle: Divider(
-                  color: Colors.grey, thickness: .3,
+                  color: Colors.grey,
+                  thickness: .3,
                 ),
               );
             }));

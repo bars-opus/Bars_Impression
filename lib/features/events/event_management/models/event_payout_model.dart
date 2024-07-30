@@ -6,13 +6,10 @@ class EventPayoutModel {
   String status;
   String subaccountId;
   String eventTitle;
-  // String city;
   final String transferRecepientId;
   final String eventAuthorId;
   final String idempotencyKey;
   final double total;
-
-  // String reason;
   Timestamp clossingDay;
   final Timestamp timestamp;
   final double totalAffiliateAmount;
@@ -23,9 +20,6 @@ class EventPayoutModel {
     required this.status,
     required this.subaccountId,
     required this.total,
-
-    // required this.reason,
-    // required this.city,
     required this.clossingDay,
     required this.timestamp,
     required this.transferRecepientId,
@@ -38,8 +32,6 @@ class EventPayoutModel {
   factory EventPayoutModel.fromDoc(DocumentSnapshot doc) {
     return EventPayoutModel(
       eventId: doc['eventId']!,
-      // city: doc['city'] ?? '',
-      // reason: doc['reason'] ?? '',
       status: doc['status'] ?? '',
       idempotencyKey: doc['idempotencyKey'] ?? '',
       transferRecepientId: doc['transferRecepientId'] ?? '',
@@ -68,10 +60,8 @@ class EventPayoutModel {
       transferRecepientId: json['transferRecepientId'],
       eventTitle: json['eventTitle'],
       idempotencyKey: json['idempotencyKey'],
-      // city: json['city'],
       subaccountId: json['subaccountId'],
       eventAuthorId: json['eventAuthorId'],
-      // reason: json['reason'],
       clossingDay: json['clossingDay'],
       timestamp: json['timestamp'],
       total: json['total'] ?? 0.0,
@@ -90,8 +80,6 @@ class EventPayoutModel {
       'eventAuthorId': eventAuthorId,
       'idempotencyKey': idempotencyKey,
       'total': total,
-      // 'city': city,
-      // 'reason': reason,
       'clossingDay': clossingDay,
       'timestamp': timestamp,
       'totalAffiliateAmount': totalAffiliateAmount,

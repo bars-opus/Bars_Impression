@@ -4,11 +4,8 @@ class EventOnTicketWidget extends StatelessWidget {
   final Event event;
   final String currentUserId;
 
-  // final TicketModel? finalPurchasintgTicket;
-
   EventOnTicketWidget({
     required this.event,
-    // required this.finalPurchasintgTicket,
     required this.currentUserId,
   });
 

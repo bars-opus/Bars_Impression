@@ -16,7 +16,6 @@ class DiscographyPageView extends StatefulWidget {
   final List<DocumentSnapshot> userSnapshot;
   final String liveCity;
   final String liveCountry;
-  // final String seeMoreFrom;
   final String isFrom;
 
   DiscographyPageView({
@@ -408,7 +407,7 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
                           ? ProfileScreen(
                               currentUserId: widget.currentUserId,
                               user: null,
-                              userId: widget.user.id,
+                              userId: widget.user.userId,
                             )
                           : DiscographyPages(
                               types: eventType,
@@ -418,9 +417,6 @@ class _DiscographyPageViewState extends State<DiscographyPageView> {
                               user: widget.user,
                               userList: _filteredUsers,
 
-                              //  _filteredUsers.isEmpty
-                              //     ? widget.userList
-                              //     : _filteredUsers,
                               userSnapshot: _filteredUsers.isEmpty
                                   ? widget.userSnapshot
                                   : _filteredUserSnapshot,

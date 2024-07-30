@@ -10,8 +10,6 @@ class AffiliateBarcode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var _provider = Provider.of<UserData>(context, listen: false);
-
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColorLight,
       appBar: AppBar(

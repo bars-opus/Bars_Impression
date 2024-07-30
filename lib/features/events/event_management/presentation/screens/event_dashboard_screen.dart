@@ -6,13 +6,11 @@ class EventDashboardScreen extends StatefulWidget {
   final Event event;
   final String currentUserId;
   final PaletteGenerator? palette;
-  // final int askCount;
 
   EventDashboardScreen({
     required this.event,
     required this.currentUserId,
     required this.palette,
-    // required this.askCount,
   });
 
   @override
@@ -26,24 +24,16 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
   int _invitationsRejected = 0;
   int _expectedAttendees = 0;
   int _validatedAttendees = 0;
-
   int _expectedPeople = 0;
-
   int _refundRequestedCount = 0;
-
   int _refundProcessedCount = 0;
   bool _isLoading = false;
   bool _eventHasEnded = false;
-
   int _affiliateRequestedCount = 0;
   int _affiliateInviteCount = 0;
-
   EventPayoutModel? fundPayout;
   bool _fundsDistibuted = false;
   bool _isEventSuccessful = false;
-
-  // final _messageController = TextEditingController();
-  // ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
   double totalSales = 0;
 
   @override
@@ -53,22 +43,16 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
     _setUpEventInvites('Rejected');
     _setUpEventInvites('');
     _setUpEventInvites('Sent');
-
     _setUpEventExpectedAttendees(true);
     _setUpEventExpectedAttendees(false);
     _setRefundCount('pending');
     _setRefundCount('processed');
-
-    //  Invited
-    //         Requested
     _validateEvent();
     _setExpectedPeople();
-
     sumFunction();
     _countDown();
     if (widget.event.fundsDistributed) _getFundsPayout();
     if (widget.event.isAffiliateEnabled) _setUpAffiliateCount();
-    // _messageController.addListener(_onAskTextChanged);
   }
 
   void _validateEvent() {
@@ -118,7 +102,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
     if (widget.event.id.isEmpty || widget.event.id.trim() == '') {
       return 0;
     }
-
     // Fetch the query snapshot from Firestore
     QuerySnapshot querySnapshot = await newEventTicketOrderRef
         .doc(widget.event.id)
@@ -146,20 +129,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
 
     return totalSum;
   }
-
-  // void _onAskTextChanged() {
-  //   if (_messageController.text.isNotEmpty) {
-  //     _isTypingNotifier.value = true;
-  //   } else {
-  //     _isTypingNotifier.value = false;
-  //   }
-  // }
-
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  //   _messageController.dispose();
-  // }
 
   _setExpectedPeople() async {
     DatabaseService.numExpectedPeople(
@@ -270,44 +239,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
     );
   }
 
-  // _inviteButton(double width, String buttonText, VoidCallback onPressed) {
-  //   Color _paletteDark =
-  //       Utils.getPaletteDarkMutedColor(widget.palette, Colors.blue);
-
-  //   // Color _paletteDark = widget.palette == null
-  //   //     ? Colors.blue
-  //   //     : widget.palette!.darkMutedColor == null
-  //   //         ? Color(0xFF1a1a1a)
-  //   //         : widget.palette!.darkMutedColor!.color;
-  //   return Container(
-  //     width: ResponsiveHelper.responsiveWidth(context, width),
-  //     child: ElevatedButton(
-  //       style: ElevatedButton.styleFrom(
-  //         backgroundColor: _paletteDark,
-  //         elevation: 0.0,
-  //         foregroundColor: Colors.white,
-  //         shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(5.0),
-  //         ),
-  //       ),
-  //       child: Padding(
-  //         padding: EdgeInsets.all(
-  //           ResponsiveHelper.responsiveHeight(context, 8.0),
-  //         ),
-  //         child: Text(
-  //           buttonText,
-  //           style: TextStyle(
-  //             color: Colors.white,
-  //             fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-  //           ),
-  //           textAlign: TextAlign.center,
-  //         ),
-  //       ),
-  //       onPressed: onPressed,
-  //     ),
-  //   );
-  // }
-
   _buttons(
     String buttonText1,
     VoidCallback onPressed1,
@@ -320,8 +251,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
       margin: const EdgeInsets.symmetric(
         horizontal: 5,
       ),
-      // height: ResponsiveHelper.responsiveHeight(context, 200),
-      // width: ResponsiveHelper.responsiveHeight(context, 300),
       decoration: BoxDecoration(
           color: _paletteDark, borderRadius: BorderRadius.circular(10)),
       child: Row(
@@ -372,16 +301,12 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
       padding: const EdgeInsets.symmetric(
         vertical: 2,
       ),
-
-      // height: ResponsiveHelper.responsiveHeight(context, 200),
-      // width: ResponsiveHelper.responsiveHeight(context, 300),
       decoration: BoxDecoration(
           color: _paletteDark, borderRadius: BorderRadius.circular(10)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           BottomModelSheetIconActionWidget(
-            // minor: true,
             dontPop: true,
             mini: true,
             buttoncolor: _paletteDark,
@@ -396,7 +321,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
             color: Colors.grey,
           ),
           BottomModelSheetIconActionWidget(
-            // minor: true,
             mini: true,
             dontPop: true,
             buttoncolor: _paletteDark,
@@ -411,7 +335,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
             color: Colors.grey,
           ),
           BottomModelSheetIconActionWidget(
-            // minor: true,
             dontPop: true,
             mini: true,
             buttoncolor: _paletteDark,
@@ -456,49 +379,9 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
     );
   }
 
-  // _refundTableText(
-  //   int count,
-  //   String title,
-  //   Widget page,
-  // ) {
-  //   return GestureDetector(
-  //     onTap: () => _navigateToPage(context, page),
-  //     child: Padding(
-  //       padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
-  //       child: RichText(
-  //         textScaleFactor: MediaQuery.of(context).textScaleFactor,
-  //         text: TextSpan(
-  //           children: [
-  //             TextSpan(
-  //               text: NumberFormat.compact().format(count),
-  //               style: TextStyle(
-  //                 fontSize: ResponsiveHelper.responsiveFontSize(context, 20.0),
-  //                 color: Colors.grey,
-  //               ),
-  //             ),
-  //             TextSpan(
-  //               text: title,
-  //               style: TextStyle(
-  //                 fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-  //                 color: Colors.grey,
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //         textAlign: TextAlign.center,
-  //       ),
-  //     ),
-  //   );
-  // }
-
   _invitationTable() {
     Color _paletteDark =
         Utils.getPaletteDarkMutedColor(widget.palette, Colors.blue);
-    // Color _paletteDark = widget.palette == null
-    //     ? Colors.blue
-    //     : widget.palette!.darkMutedColor == null
-    //         ? Color(0xFF1a1a1a)
-    //         : widget.palette!.darkMutedColor!.color;
     var _tableTitleStyle = TextStyle(
         color: _paletteDark,
         fontWeight: FontWeight.bold,
@@ -531,9 +414,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
               TableRow(children: [
                 _tableText(
                     _invitationsSent,
-                    // _invitationsAccepted +
-                    //     _invitationsAnunswered +
-                    //     _invitationsRejected,
                     '\nInvitations\nsent',
                     EventAttendeesInvitedScreeen(
                       letShowAppBar: true,
@@ -584,11 +464,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
   _refundTable() {
     Color _paletteDark =
         Utils.getPaletteDarkMutedColor(widget.palette, Colors.blue);
-    // Color _paletteDark = widget.palette == null
-    //     ? Colors.blue
-    //     : widget.palette!.darkMutedColor == null
-    //         ? Color(0xFF1a1a1a)
-    //         : widget.palette!.darkMutedColor!.color;
+
     var _tableTitleStyle = TextStyle(
         color: _paletteDark,
         fontWeight: FontWeight.bold,
@@ -640,11 +516,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
   _affiliateTable() {
     Color _paletteDark =
         Utils.getPaletteDarkMutedColor(widget.palette, Colors.blue);
-    // Color _paletteDark = widget.palette == null
-    //     ? Colors.blue
-    //     : widget.palette!.darkMutedColor == null
-    //         ? Color(0xFF1a1a1a)
-    //         : widget.palette!.darkMutedColor!.color;
     var _tableTitleStyle = TextStyle(
         color: _paletteDark,
         fontWeight: FontWeight.bold,
@@ -702,12 +573,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
   }
 
   void _showBottomInvitationMessage() {
-    // Color _paletteDark = widget.palette == null
-    //     ? Color(0xFF1a1a1a)
-    //     : widget.palette!.darkMutedColor == null
-    //         ? Color(0xFF1a1a1a)
-    //         : widget.palette!.darkMutedColor!.color;
-    // var _size = MediaQuery.of(context).size;
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -718,10 +583,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
             event: widget.event,
             palette: widget.palette,
           );
-          // return StatefulBuilder(
-          //     builder: (BuildContext context, StateSetter setState) {
-          //   return
-          // });
         });
   }
 
@@ -731,7 +592,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
         totalSales - widget.event.totalAffiliateAmount - _comission;
     return Container(
       width: ResponsiveHelper.responsiveHeight(context, 600),
-      // height: ResponsiveHelper.responsiveHeight(context, 600),
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColorLight,
         borderRadius: BorderRadius.circular(0),
@@ -801,14 +661,12 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
   _currentSaleReport() {
     final List<String> currencyPartition =
         widget.event.rate.trim().replaceAll('\n', ' ').split("|");
-
     return Column(
       children: [
         _isLoading
             ? Center(
                 child: CircularProgress(
                   isMini: true,
-                  // indicatorColor: Colors.white,
                   indicatorColor: Colors.blue,
                 ),
               )
@@ -821,7 +679,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                         surfaceTintColor: Colors.transparent,
                         backgroundColor: Theme.of(context).primaryColorLight,
                         title: TicketPurchasingIcon(
-                          // icon: Icons.payment,
                           title: '',
                         ),
                         content: _salesSummary(),
@@ -869,16 +726,15 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
         const SizedBox(
           height: 50,
         ),
-        // if (_eventHasEnded || !widget.event.fundsDistributed)
-        // _inviteButton(300, 'Request payout', () {
-        //   _showBottomSheetRequestPayouts(true);
-        // })
       ],
     );
   }
 
-  void _showBottomSheetRefund(bool isRefund) {
+  void _showBottomSheetRefund(bool isRefund, bool fromNoAffiliate) {
     var _provider = Provider.of<UserData>(context, listen: false);
+    // bool _showFunds = !widget.event.isFree &&
+    //     !widget.event.isCashPayment &&
+    //     widget.event.ticketSite.isNotEmpty;
 
     showModalBottomSheet(
       context: context,
@@ -900,7 +756,9 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                   : AffiliateDoc(
                       isAffiliated: _eventHasEnded
                           ? false
-                          : widget.event.isAffiliateEnabled,
+                          : fromNoAffiliate
+                              ? false
+                              : true,
                       isOganiser: true,
                       affiliateOnPressed: () {
                         Navigator.pop(context);
@@ -922,7 +780,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
         return StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
           return Container(
-              height: ResponsiveHelper.responsiveHeight(context, 400),
+              height: ResponsiveHelper.responsiveHeight(context, 450),
               decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(30)),
@@ -942,7 +800,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                         ),
                         TextSpan(
                           text:
-                              '\n\nAffiliate marketing is a type of performance-based marketing where a business rewards one or more affiliates for each visitor or customer brought about by the affiliate\'s own marketing efforts.\n\nThis is only available for events that offer paid tickets and not free events.',
+                              '\n\nAffiliate marketing is a type of performance-based marketing where a business rewards one or more affiliates for each visitor or customer brought about by the affiliate\'s own marketing efforts.\n\nThis is only available for events that offer paid tickets through Bars Impression(not support for payment through other website or cash-payment) and not free events.',
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ],
@@ -950,7 +808,8 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      _showBottomSheetRefund(false);
+                      Navigator.pop(context);
+                      _showBottomSheetRefund(false, true);
                     },
                     child: Center(
                       child: Text(
@@ -983,11 +842,11 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(30)),
               child: inviteDoc(
-                // isAffiliated: widget.event.isAffiliateEnabled,
                 affiliateOnPressed: () {
                   Navigator.pop(context);
                   _showBottomInvitationMessage();
                 },
+                showInviteButton: _eventHasEnded ? false : true,
               ));
         });
       },
@@ -1016,27 +875,10 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
       },
     );
   }
-  // This button leads to the ProfileScreen of the event's organizer.
-
-  _organizerButton() {
-    return EventBottomButton(
-      buttonText: 'View organizer',
-      onPressed: () {
-        _navigateToPage(
-            context,
-            ProfileScreen(
-              user: null,
-              currentUserId: widget.currentUserId,
-              userId: widget.event.authorId,
-            ));
-      },
-    );
-  }
 
   // Method to create event
   _submitRequest() async {
     if (!_isLoading) {
-//
       if (mounted)
         setState(() {
           _isLoading = true;
@@ -1044,7 +886,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
 
       try {
         bool existingOrder = await DatabaseService.isPayoutAvailable(
-          // transaction: transaction,
           userId: widget.event.authorId,
           eventId: widget.event.id,
         );
@@ -1059,11 +900,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
           setState(() {
             _isLoading = false;
           });
-
-        // mySnackBar(context, 'Payout requested succesfully.');
-        // }
       } catch (e) {
-        // _handleError(e, false);
         if (mounted)
           setState(() {
             _isLoading = false;
@@ -1076,11 +913,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
 
   Future<EventPayoutModel> _createPayoutRequst() async {
     var _provider = Provider.of<UserData>(context, listen: false);
-
-    // Calculate the total cost of the order
-
     String commonId = Uuid().v4();
-
     EventPayoutModel payout = EventPayoutModel(
       id: commonId,
       eventId: widget.event.id,
@@ -1097,7 +930,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
     );
 
     await DatabaseService.requestPayout(widget.event, payout, _provider.user!);
-
     return payout;
   }
 
@@ -1105,7 +937,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
     var _comission = totalSales * 0.10;
     var _expetedAmount =
         totalSales - widget.event.totalAffiliateAmount - _comission;
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1161,6 +992,10 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
   }
 
   void _showBottomSheetRequestPayouts(bool isRequesting) {
+    bool _noResources = !widget.event.isFree &&
+        !widget.event.isCashPayment &&
+        widget.event.ticketSite.isNotEmpty;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1181,7 +1016,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                   TicketPurchasingIcon(
                     title: '',
                   ),
-                  // const SizedBox(height: 40),
                   if (isRequesting)
                     Align(
                       alignment: Alignment.centerRight,
@@ -1195,8 +1029,10 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                       ),
                     ),
                   PayoutDoc(
+                      isCashPayment: widget.event.isCashPayment,
                       isRequesting: isRequesting,
-                      isFreeEvent: widget.event.isFree,
+                      isFreeEvent:
+                          !_noResources ? widget.event.isFree : _noResources,
                       eventTitle: widget.event.title,
                       eventClossinDay: widget.event.clossingDay),
                   const SizedBox(height: 60),
@@ -1229,7 +1065,9 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                       isRequesting: false,
                       isFreeEvent: widget.event.isFree,
                       eventTitle: widget.event.title,
-                      eventClossinDay: widget.event.clossingDay)
+                      eventClossinDay: widget.event.clossingDay,
+                      isCashPayment: widget.event.isCashPayment,
+                    )
                   : ListView(
                       children: [
                         TicketPurchasingIcon(
@@ -1438,8 +1276,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
   }
 
   _fundsAlreadyPaidOut() {
-    final width = MediaQuery.of(context).size.width;
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 0),
       child: Column(
@@ -1476,7 +1312,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
               ),
             ),
           ),
-
           AnimatedContainer(
             duration: const Duration(seconds: 2),
             height: fundPayout == null
@@ -1514,7 +1349,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                                     backgroundColor:
                                         Theme.of(context).primaryColorLight,
                                     title: TicketPurchasingIcon(
-                                      // icon: Icons.payment,
                                       title: '',
                                     ),
                                     content: _salesSummary(),
@@ -1543,35 +1377,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                   )
                 : SizedBox.shrink(),
           ),
-
-          // if (fundPayout != null)
-          //   Container(
-          //     width: width,
-          //     decoration: BoxDecoration(
-          //         borderRadius: BorderRadius.only(
-          //           bottomLeft: Radius.circular(5.0),
-          //           bottomRight: Radius.circular(5.0),
-          //         ),
-          //         color: Colors.white,
-          //         boxShadow: [
-          //           BoxShadow(
-          //             color: Colors.black26,
-          //             offset: Offset(10, 10),
-          //             blurRadius: 10.0,
-          //             spreadRadius: 4.0,
-          //           )
-          //         ]),
-          //     child: Column(
-          //       crossAxisAlignment: CrossAxisAlignment.start,
-          //       children: [
-          //         PayoutWidget(
-          //           payout: fundPayout!,
-          //           currentUserId: widget.currentUserId,
-          //         ),
-
-          //   ],
-          // ),
-          // ),
         ],
       ),
     );
@@ -1580,21 +1385,18 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     var _provider = Provider.of<UserData>(context, listen: false);
-
     final width = MediaQuery.of(context).size.width;
     Color _paletteDark =
         Utils.getPaletteDarkMutedColor(widget.palette, Color(0xFF1a1a1a));
-    // Color _paletteDark = widget.palette == null
-    //     ? Color(0xFF1a1a1a)
-    //     : widget.palette!.darkMutedColor == null
-    //         ? Color(0xFF1a1a1a)
-    //         : widget.palette!.darkMutedColor!.color;
     bool isGhanaian = _provider.userLocationPreference!.country == 'Ghana' ||
         _provider.userLocationPreference!.currency == 'Ghana Cedi | GHS';
-
     bool _showFunds = !widget.event.isFree &&
         !widget.event.isCashPayment &&
         widget.event.ticketSite.isEmpty;
+
+    bool _noResources = !widget.event.isFree ||
+        !widget.event.isCashPayment && widget.event.ticketSite.isNotEmpty;
+
     return Scaffold(
       backgroundColor: _paletteDark,
       appBar: AppBar(
@@ -1781,7 +1583,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                                       backgroundColor:
                                           Theme.of(context).primaryColorLight,
                                       title: TicketPurchasingIcon(
-                                        // icon: Icons.payment,
                                         title: '',
                                       ),
                                       content: _salesSummary(),
@@ -1789,32 +1590,37 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                                   },
                                 );
                               }
-                            : _showFunds &&
-                                    _expectedPeople > 1
-                                    // _isEventSuccessful
-                                    &&
-                                    _eventHasEnded
+                            : _noResources
                                 ? () {
-                                    _showBottomSheetRequestPayouts(true);
+                                    _showBottomSheetRequestPayouts(false);
                                   }
-                                : !_eventHasEnded
+                                : _showFunds &&
+                                        _expectedPeople > 1 &&
+                                        _eventHasEnded
                                     ? () {
-                                        _showBottomSheetRequestPayouts(false);
+                                        _showBottomSheetRequestPayouts(true);
                                       }
-                                    : totalSales == 0
+                                    : !_eventHasEnded
                                         ? () {
-                                            _showBottomSheetNoSalesPayouts();
-                                          }
-                                        : () {
                                             _showBottomSheetRequestPayouts(
                                                 false);
-                                          },
+                                          }
+                                        : totalSales == 0
+                                            ? () {
+                                                _showBottomSheetNoSalesPayouts();
+                                              }
+                                            : () {
+                                                _showBottomSheetRequestPayouts(
+                                                    false);
+                                              },
                         'Create affiliate', () {
-                      widget.event.isFree
+                      widget.event.isFree ||
+                              widget.event.isCashPayment ||
+                              widget.event.ticketSite.isNotEmpty
                           ? _showBottomSheetFreeAffiliateDoc()
                           : _eventHasEnded
-                              ? _showBottomSheetRefund(false)
-                              : _showBottomSheetRefund(false);
+                              ? _showBottomSheetRefund(false, false)
+                              : _showBottomSheetRefund(false, false);
                     }),
                     const SizedBox(
                       height: 5,
@@ -1843,40 +1649,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                     const SizedBox(
                       height: 5,
                     ),
-
-                    // _inviteButton(300, 'Create affiliates', () {
-                    //   _showBottomSheetRefund(false);
-                    // }),
-                    // if (!_eventHasEnded)
-                    //   _inviteButton(300, 'Send Invite', () {
-                    //   }),
-                    // const SizedBox(height: 5),
-                    // Container(
-                    //   width: width,
-                    //   child: Padding(
-                    //     padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    //     child: Row(
-                    //       mainAxisAlignment: MainAxisAlignment.center,
-                    //       children: [
-                    //         _inviteButton(150, 'Send to chat', () {
-                    // _navigateToPage(
-                    //     context,
-                    //     SendToChats(
-                    //       currentUserId: widget.currentUserId,
-                    //       sendContentType: 'Event',
-                    //       sendContentId: widget.event.id,
-                    //       sendImageUrl: widget.event.imageUrl,
-                    //       sendTitle: widget.event.title,
-                    //     ));
-                    //         }),
-                    //         const SizedBox(width: 2),
-                    //         _inviteButton(150, 'Share event', () async {
-                    //           Share.share(widget.event.dynamicLink);
-                    //         }),
-                    //       ],
-                    //     ),
-                    //   ),
-                    // ),
                     const SizedBox(height: 50),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 30.0),
@@ -1929,8 +1701,6 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                         alignment: Alignment.topLeft,
                         child: Text(
                           "   ${NumberFormat.compact().format(_expectedPeople)} people attending",
-                          // _expectedPeople
-
                           style: TextStyle(
                               color: Colors.grey,
                               fontSize: ResponsiveHelper.responsiveFontSize(
@@ -1943,8 +1713,14 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                       height: 10,
                     ),
                     _invitationTable(),
-                    if (!widget.event.isFree) _refundTable(),
-                    if (widget.event.isAffiliateEnabled) _affiliateTable(),
+                    if (!widget.event.isFree &&
+                        !widget.event.isCashPayment &&
+                        widget.event.ticketSite.isEmpty)
+                      _refundTable(),
+                    if (!widget.event.isFree &&
+                        !widget.event.isCashPayment &&
+                        widget.event.ticketSite.isEmpty)
+                      _affiliateTable(),
                     Padding(
                       padding: const EdgeInsets.only(top: 50.0, bottom: 50),
                       child: Divider(
@@ -2058,7 +1834,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
               if (isGhanaian)
                 GestureDetector(
                   onTap: () {
-                    _showBottomSheetRefund(true);
+                    _showBottomSheetRefund(true, false);
                   },
                   child: Center(
                     child: Text(

@@ -84,29 +84,8 @@ class _EventRoomScreenState extends State<EventRoomScreen>
           .doc(widget.ticketId.eventId),
       {'isSeen': true},
     );
-
-    // batch.update(
-    //   usersAuthorRef
-
-    //       .doc(widget.userId)
-    //       .collection('new_chats')
-    //       .doc(widget.currentUserId),
-    //   {'seen': true},
-    // );
-
     batch.commit();
   }
-
-  // _setMessageCount() async {
-  //   DatabaseService.numChatRoomMessage(widget.room.linkedEventId)
-  //       .listen((messageCount) {
-  //     if (mounted) {
-  //       setState(() {
-  //         _messageCount = messageCount;
-  //       });
-  //     }
-  //   });
-  // }
 
   void _onAskTextChanged() {
     if (_messageController.text.isNotEmpty) {
@@ -122,7 +101,6 @@ class _EventRoomScreenState extends State<EventRoomScreen>
     _isTypingNotifier.dispose();
     _slideController.dispose();
     _hideButtonController.dispose();
-
     super.dispose();
   }
 
@@ -150,16 +128,7 @@ class _EventRoomScreenState extends State<EventRoomScreen>
       // isEvent ?
       _provider.setMessageImage(file);
       _focusNode.requestFocus();
-      //  : _provider.setPostImage(file);
     }
-
-    // if (file != null && mounted) {
-    //   setState(() {
-    //     Provider.of<UserData>(context, listen: false)
-    //         .setMessageImage(file as File?);
-    //     _focusNode.requestFocus();
-    //   });
-    // }
   }
 
   Future<File> _cropImage(File imageFile) async {
@@ -630,21 +599,11 @@ class _EventRoomScreenState extends State<EventRoomScreen>
     );
   }
 
-
-
-
   @override
   Widget build(BuildContext context) {
     var _provider = Provider.of<UserData>(context, listen: false);
     final double width = MediaQuery.of(context).size.width;
-    // Color _palleteColor = widget.palette == null
-    //     ? Colors.blue
-    //     : widget.palette.dominantColor == null
-    //         ? Colors.blue
-    //         : widget.palette.dominantColor!.color;
-
-
- Color _palleteColor =
+    Color _palleteColor =
         Utils.getPaletteDominantColor(widget.palette, Colors.blue);
     return Scaffold(
       backgroundColor: Colors.transparent,

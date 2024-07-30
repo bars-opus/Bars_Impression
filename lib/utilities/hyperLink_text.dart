@@ -101,13 +101,9 @@ class _HyperLinkTextState extends State<HyperLinkText> {
   static const String profainPattern =
       "(fuck|shit|pussy|dick|asshole|asshole|asshole|asshole|bitch|bastard|cunt|butthole|sex|porn|dick|bugger|twat|butt|idiot|fool|jerk|Cumbubble|kill|rape|killer|rapist|muderer)";
   static const String urlPattern = 'https?:/\/\\S+';
-
   static const String nameMention = (r"\@(\w+)");
-
   static const String emailPattern = r'\S+@\S+';
-
   static const String phonePattern = r'[\d-]{9,}';
-
   final RegExp linkRegExp = RegExp(
       '($urlPattern)|($emailPattern)|($phonePattern)|($profainPattern)|($nameMention)',
       caseSensitive: false);
@@ -141,17 +137,7 @@ class _HyperLinkTextState extends State<HyperLinkText> {
                         contentType: 'Link'),
                   ),
                 )
-              // : 
-              // type.startsWith('nameMention')
-              //     ? Navigator.push(
-              //         context,
-              //         MaterialPageRoute(
-              //           builder: (_) => TaggedUser(
-              //             userId: linkToOpen,
-              //             currentUserId: '',
-              //           ),
-              //         ),
-              //       )
+             
                   : type.startsWith('verified')
                       ? Navigator.push(
                           context,

@@ -38,9 +38,6 @@ class _SearchTicketState extends State<SearchTicket> {
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
-    final double width = size.width;
-    final double height = size.height;
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColorLight,
       body: GestureDetector(

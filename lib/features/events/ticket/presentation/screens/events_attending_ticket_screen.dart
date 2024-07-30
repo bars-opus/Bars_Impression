@@ -470,381 +470,7 @@ class _EventsAttendingTicketScreenState
     );
   }
 
-// If the user has just purchased a ticket (justPurchased.startsWith('New')),
-// the _ticketSummaryInfo widget is displayed. If the user has already purchased a
-// ticket (justPurchased.startsWith('Already')), a message is displayed stating that they've already purchased a ticket.
-// The _ticketSummaryInfo() is a method that returns a widget displaying the summary
-//information when a user purchases a ticket. It contains:
-// Congratulations message: It displays a congratulations message with a shaking celebration icon.
-// User-specific message: If the user data is available, it displays a personalized message
-//thanking the user for purchasing the ticket and welcoming them as an attendee to the event.
-// Attendee experience info: This section displays information about the attendee's experience,
-// calendar and schedules, and the event room.
-// Visual styling: Like the previous widget, it is styled using a BoxDecoration with a light primary color background and a box shadow.
-
-  // _ticketSummaryInfo() {
-  //   final width = MediaQuery.of(context).size.width;
-  //   var _provider = Provider.of<UserData>(context, listen: false);
-
-  //   return new Material(
-  //     color: Colors.transparent,
-  //     child: Padding(
-  //       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-  //       child: Container(
-  //         width: width,
-  //         decoration: BoxDecoration(
-  //             color: Theme.of(context).primaryColorLight,
-  //             boxShadow: [
-  //               BoxShadow(
-  //                 color: Colors.black26,
-  //                 offset: Offset(10, 10),
-  //                 blurRadius: 10.0,
-  //                 spreadRadius: 4.0,
-  //               )
-  //             ]),
-  //         child: Padding(
-  //           padding: const EdgeInsets.all(20.0),
-  //           child: Column(
-  //             children: [
-  //               const SizedBox(
-  //                 height: 50,
-  //               ),
-  //               ShakeTransition(
-  //                 duration: const Duration(seconds: 2),
-  //                 child: Icon(
-  //                   Icons.celebration_outlined,
-  //                   size: 50,
-  //                   color: Colors.grey,
-  //                 ),
-  //               ),
-  //               Text(
-  //                 'Congratulations',
-  //                 style: TextStyle(
-  //                   fontSize:
-  //                       ResponsiveHelper.responsiveFontSize(context, 30.0),
-  //                   color: Theme.of(context).secondaryHeaderColor,
-  //                 ),
-  //               ),
-  //               const SizedBox(
-  //                 height: 30,
-  //               ),
-  //               Divider(
-  //                 color: Colors.grey,
-  //               ),
-  //               const SizedBox(
-  //                 height: 30,
-  //               ),
-  //               if (_provider.user != null)
-  //                 RichText(
-  //                   textScaleFactor: MediaQuery.of(context).textScaleFactor,
-  //                   text: TextSpan(
-  //                     children: [
-  //                       TextSpan(
-  //                         text: 'Dear  ${_provider.user!.userName} \n',
-  //                         style: Theme.of(context).textTheme.bodyMedium,
-  //                       ),
-  //                       TextSpan(
-  //                         text:
-  //                             'Thank you for purchasing the tickets to attend ${widget.event.title}. We are delighted to officially welcome you as an attendee to this event. Enjoy and have a fantastic time!',
-  //                         style: Theme.of(context).textTheme.bodyMedium,
-  //                       ),
-  //                     ],
-  //                   ),
-  //                 ),
-  //               const SizedBox(
-  //                 height: 40,
-  //               ),
-  //               RichText(
-  //                 textScaleFactor: MediaQuery.of(context).textScaleFactor,
-  //                 text: TextSpan(
-  //                   children: [
-  //                     TextSpan(
-  //                       text: 'Your Attendee\nExperience',
-  //                       style: TextStyle(
-  //                         fontSize: ResponsiveHelper.responsiveFontSize(
-  //                             context, 20.0),
-  //                         fontWeight: FontWeight.bold,
-  //                         color: Theme.of(context).secondaryHeaderColor,
-  //                       ),
-  //                     ),
-  //                     TextSpan(
-  //                       text:
-  //                           '\nWe prioritize providing an exceptional attendee experience that will enhance your participation in this event. We are thrilled to support you throughout your attendance. As an attendee, you have access to a comprehensive set of resources to assist you in attending and networking with other participants',
-  //                       style: Theme.of(context).textTheme.bodyMedium,
-  //                     ),
-  //                     TextSpan(
-  //                       text: '\n\nCalendar and schdeules.',
-  //                       style: Theme.of(context).textTheme.bodyLarge,
-  //                     ),
-  //                     TextSpan(
-  //                       text:
-  //                           '\nYou can find this feature as the fourth icon named "Tickets" on the navigation bar of your home screen when you first launch the app. It allows you to stay organized by keeping track of the dates of your events. This page also conveniently displays your tickets for upcoming events, ensuring easy access',
-  //                       style: Theme.of(context).textTheme.bodyMedium,
-  //                     ),
-  //                     TextSpan(
-  //                       text: '\n\nEvent Room',
-  //                       style: Theme.of(context).textTheme.bodyLarge,
-  //                     ),
-  //                     TextSpan(
-  //                       text:
-  //                           '\nAn event room fosters networking and interaction among attendees of a specific event. You can find this feature as the fifth icon named "Chats" on the navigation bar of your home screen when you first launch the app. The event room is located on the second tab of the chat page, labeled "Rooms". It creates a dedicated group for all event attendees to chat and connect with each other.',
-  //                       style: Theme.of(context).textTheme.bodyMedium,
-  //                     ),
-  //                     TextSpan(
-  //                       text: '\n\nReminders',
-  //                       style: Theme.of(context).textTheme.bodyLarge,
-  //                     ),
-  //                     TextSpan(
-  //                       text:
-  //                           '\nSeven days prior to the event, we will send you daily reminders to ensure that you don\'t forget about your upcoming event.',
-  //                       style: Theme.of(context).textTheme.bodyMedium,
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ),
-  //               const SizedBox(
-  //                 height: 50,
-  //               )
-  //             ],
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // Method to create event
-  // _submitRequeste() async {
-  //   if (!_isLoading) {
-  //     _isLoading = true;
-  //     try {
-  //       RefundModel refund = await _createRefund();
-
-  //       _isLoading = false;
-  //       // if (mounted) {
-  //       //   _navigateToPage(
-  //       //       context,
-  //       //       EventEnlargedScreen(
-  //       //         justCreated: true,
-  //       //         currentUserId: _provider.currentUserId!,
-  //       //         event: event,
-  //       //         type: event.type,
-  //       //         palette: _paletteGenerator,
-  //       //       ));
-
-  //       mySnackBar(context, 'Your refund request was successful.');
-  //       // }
-  //     } catch (e) {
-  //       // _handleError(e, false);
-  //       _isLoading = false;
-  //       _showBottomSheetErrorMessage();
-  //     }
-  //   }
-  // }
-
-  // Future<RefundModel> _createRefund() async {
-  //   var _provider = Provider.of<UserData>(context, listen: false);
-
-  //   // Calculate the total cost of the order
-
-  //   String commonId = Uuid().v4();
-
-  //   RefundModel refund = RefundModel(
-  //     id: commonId,
-  //     eventId: widget.event.id,
-  //     timestamp: Timestamp.fromDate(DateTime.now()),
-  //     userRequestId: _provider.user!.userId!,
-  //     approvedTimestamp: Timestamp.fromDate(DateTime.now()),
-  //     reason: '',
-  //     orderId: widget.ticketOrder.orderId,
-  //     city: _provider.userLocationPreference!.city!,
-  //     idempotencyKey: '',
-  //     status: 'pending',
-  //     transactionId: widget.ticketOrder.transactionId,
-  //     eventAuthorId: widget.event.authorId,
-  //     eventTitle: widget.event.title,
-  //     amount: widget.ticketOrder.total,
-  //     expectedDate: '',
-  //   );
-
-  //   await DatabaseService.requestRefund(widget.event, refund, _provider.user!);
-
-  //   return refund;
-  // }
-
-  // void _showBottomSheetConfirmRefund(BuildContext context) {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     isScrollControlled: true,
-  //     backgroundColor: Colors.transparent,
-  //     builder: (BuildContext context) {
-  //       return ConfirmationPrompt(
-  //         buttonText: widget.event.isFree || widget.ticketOrder.tickets.isEmpty
-  //             ? 'Cancel attendance'
-  //             : 'Refund request confirmation',
-  //         onPressed: () async {
-  //           Navigator.pop(context);
-  //           _submitRequeste();
-  //         },
-  //         title: widget.event.isFree || widget.ticketOrder.tickets.isEmpty
-  //             ? 'Are you sure you cancel attendance?'
-  //             : 'Are you sure you want to request for a refund?',
-  //         subTitle:
-  //             'Please be informed that your ticket for this event would be revoked and you would lose access to this event\'s room.',
-  //       );
-  //     },
-  //   );
-  // }
-
-  // void _showBottomSheetRefund() {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     isScrollControlled: true,
-  //     backgroundColor: Colors.transparent,
-  //     builder: (BuildContext context) {
-  //       return StatefulBuilder(
-  //           builder: (BuildContext context, StateSetter setState) {
-  //         return Container(
-  //           height: ResponsiveHelper.responsiveFontSize(context, 650),
-  //           decoration: BoxDecoration(
-  //               color: Theme.of(context).primaryColorLight,
-  //               borderRadius: BorderRadius.circular(30)),
-  //           child: Padding(
-  //             padding: const EdgeInsets.all(20.0),
-  //             child: ListView(
-  //               children: [
-  //                 // const SizedBox(
-  //                 //   height: 30,
-  //                 // ),
-  //                 Row(
-  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                   children: [
-  //                     TicketPurchasingIcon(
-  //                       title: '',
-  //                     ),
-  //                     MiniCircularProgressButton(
-  //                         color: Colors.blue,
-  //                         text: 'Continue',
-  //                         onPressed: () async {
-  //                           Navigator.pop(context);
-  //                           _showBottomRefundForm();
-  //                           // if (mounted) {
-  //                           //   setState(() {
-  //                           //     _checkingTicketAvailability = true;
-  //                           //   });
-  //                           // }
-  //                           // await _attendMethod();
-  //                           // if (mounted) {
-  //                           //   setState(() {
-  //                           //     _checkingTicketAvailability = false;
-  //                           //   });
-  //                           // }
-  //                         })
-  //                   ],
-  //                 ),
-  //                 const SizedBox(height: 40),
-  //                 // RichText(
-  //                 //   textScaleFactor: MediaQuery.of(context).textScaleFactor,
-  //                 //   text: TextSpan(
-  //                 //     children: [
-  //                 //       TextSpan(
-  //                 //         text: 'Refund',
-  //                 //         style: Theme.of(context).textTheme.titleMedium,
-  //                 //       ),
-  //                 //       TextSpan(
-  //                 //         text: "\n\n${widget.event.termsAndConditions}",
-  //                 //         style: Theme.of(context).textTheme.bodyMedium,
-  //                 //       ),
-  //                 //     ],
-  //                 //   ),
-  //                 // ),
-  //                 RichText(
-  //                   textScaleFactor: MediaQuery.of(context).textScaleFactor,
-  //                   text: TextSpan(
-  //                     children: [
-  //                       TextSpan(
-  //                         text: 'Refund',
-  //                         style: Theme.of(context).textTheme.titleLarge,
-  //                       ),
-  //                       TextSpan(
-  //                         text:
-  //                             "\n\nThank you for using Bars Impression to purchase tickets for events. We aim to provide a seamless ticketing experience for our users. In the event that you need to request a refund for a purchased ticket, please review our refund policy outlined below.",
-  //                         style: Theme.of(context).textTheme.bodyMedium,
-  //                       ),
-  //                       TextSpan(
-  //                         text: "\n\nRefund Amount.",
-  //                         style: Theme.of(context).textTheme.bodyLarge,
-  //                       ),
-  //                       TextSpan(
-  //                         text:
-  //                             "\nPlease note that we offer a partial refund policy.",
-  //                         style: Theme.of(context).textTheme.bodyMedium,
-  //                       ),
-  //                       TextSpan(
-  //                         text:
-  //                             "\n - We will refund 70 percent of the ticket purchase price.",
-  //                         style: Theme.of(context).textTheme.bodyMedium,
-  //                       ),
-  //                       TextSpan(
-  //                         text:
-  //                             "\n - The remaining 30 percent will be retained as a non-refundable fee to cover administrative and processing costs associated with ticket sales and refunds.",
-  //                         style: Theme.of(context).textTheme.bodyMedium,
-  //                       ),
-  //                       TextSpan(
-  //                         text: "\n\nRefund Timeframe.",
-  //                         style: Theme.of(context).textTheme.bodyLarge,
-  //                       ),
-  //                       TextSpan(
-  //                         text:
-  //                             "\n - The time it takes to process a refund may vary depending on your original payment method and financial institution.",
-  //                         style: Theme.of(context).textTheme.bodyMedium,
-  //                       ),
-  //                       TextSpan(
-  //                         text:
-  //                             "\n - Please allow 24hrs for the refund to be processed and reflected in your account",
-  //                         style: Theme.of(context).textTheme.bodyMedium,
-  //                       ),
-  //                       TextSpan(
-  //                         text: "\n\nNon-Refundable Circumstances.",
-  //                         style: Theme.of(context).textTheme.bodyLarge,
-  //                       ),
-  //                       TextSpan(
-  //                         text:
-  //                             "\nRefunds will not be provided under the following circumstances:",
-  //                         style: Theme.of(context).textTheme.bodyMedium,
-  //                       ),
-  //                       TextSpan(
-  //                         text: "\n - The event has already taken place.",
-  //                         style: Theme.of(context).textTheme.bodyMedium,
-  //                       ),
-  //                       TextSpan(
-  //                         text:
-  //                             "\n - The refund request is made after the specified deadline.",
-  //                         style: Theme.of(context).textTheme.bodyMedium,
-  //                       ),
-  //                       TextSpan(
-  //                         text: "\n\nChanges to the Refund Policy.",
-  //                         style: Theme.of(context).textTheme.bodyLarge,
-  //                       ),
-  //                       TextSpan(
-  //                         text:
-  //                             "\nBars Impression reserves the right to modify or update the refund policy at any time. Any changes will be effective immediately upon posting the revised policy within the app",
-  //                         style: Theme.of(context).textTheme.bodyMedium,
-  //                       ),
-  //                     ],
-  //                   ),
-  //                 ),
-  //                 const SizedBox(height: 60),
-  //               ],
-  //             ),
-  //           ),
-  //         );
-  //       });
-  //     },
-  //   );
-  // }
   // This button leads to the ProfileScreen of the event's organizer.
-
   _organizerButton() {
     return EventBottomButton(
       buttonText: 'View organizer',
@@ -860,23 +486,8 @@ class _EventsAttendingTicketScreenState
     );
   }
 
-  // This button leads to the ProfileScreen of the event's organizer.
-
-  // _refundButton() {
-  //   return EventBottomButton(
-  //     buttonColor: Colors.red,
-  //     buttonText: widget.event.isFree ? 'Cancel attendance' : 'Request refund',
-  //     onPressed: () {
-  //       widget.event.isFree || widget.ticketOrder.tickets.isEmpty
-  //           ? _showBottomRefundForm()
-  //           : _showBottomSheetRefund();
-  //     },
-  //   );
-  // }
-
   //  This button leads to either the event's location on a map or the event's virtual venue,
   //  depending on whether the event is virtual or not.
-
   _locationButton() {
     return EventBottomButton(
       buttonText: widget.event.isVirtual ? 'Host link' : 'Event location',
@@ -896,7 +507,6 @@ class _EventsAttendingTicketScreenState
 
 // If the ticketOrder indicates the user is invited to the event,
 //  a button is displayed that leads to the EventInvitePage.
-
   _invitationButton() {
     return Stack(
       alignment: FractionalOffset.center,
@@ -906,13 +516,10 @@ class _EventsAttendingTicketScreenState
           onPressed: () async {
             if (_isLoading) return;
             _isLoading = true;
-            // try {
             InviteModel? invite = await DatabaseService.getEventIviteWithId(
                 widget.currentUserId, widget.ticketOrder.eventId);
-
             TicketOrderModel? _ticket = await DatabaseService.getTicketWithId(
                 widget.event.id, widget.currentUserId);
-
             if (invite != null) {
               _navigateToPage(
                   context,
@@ -926,11 +533,7 @@ class _EventsAttendingTicketScreenState
             } else {
               _showBottomSheetErrorMessage();
             }
-            // } catch (e) {
-            //   _showBottomSheetErrorMessage();
-            // } finally {
             _isLoading = false;
-            // }
           },
         ),
         _isLoading
@@ -948,7 +551,6 @@ class _EventsAttendingTicketScreenState
   }
 
   // This button leads to the EventRoomPage which displays the event room details.
-
   _eventRoomButton() {
     return Stack(
       alignment: FractionalOffset.center,
@@ -961,10 +563,8 @@ class _EventsAttendingTicketScreenState
             try {
               EventRoom? room = await DatabaseService.getEventRoomWithId(
                   widget.ticketOrder.eventId);
-
               TicketIdModel? ticketId = await DatabaseService.getTicketIdWithId(
                   widget.event.id, widget.currentUserId);
-
               if (room != null) {
                 _navigateToPage(
                     context,
@@ -1000,7 +600,6 @@ class _EventsAttendingTicketScreenState
 
   // full-screen image for the event, with a Hero widget
   //to create an animation when transitioning between pages.
-
   _backgroundEventImage() {
     return Container(
       height: double.infinity,
@@ -1026,18 +625,6 @@ class _EventsAttendingTicketScreenState
     );
   }
 
-  // _alreadyPurchasedTicket() {
-  //   return Padding(
-  //       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
-  //       child: Text(
-  //         'You have already purchased a ticket for this event. Please note that only one ticket per event is allowed',
-  //         style: TextStyle(
-  //           color: Colors.white,
-  //           fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-  //         ),
-  //       ));
-  // }
-
   _ticket() {
     final List<String> currencyPartition =
         widget.event.rate.trim().replaceAll('\n', ' ').split("|");
@@ -1047,19 +634,10 @@ class _EventsAttendingTicketScreenState
         const SizedBox(
           height: 40,
         ),
-
-        // widget.justPurchased.startsWith('New')
-        //     ? _ticketSummaryInfo()
-        //     : widget.justPurchased.startsWith('Already')
-        //         ? _alreadyPurchasedTicket()
-        //         : SizedBox.shrink(),
-
         const SizedBox(
           height: 40,
         ),
-
         TicketEnlargedWidget(
-          // event: widget.event,
           palette: widget.palette,
           ticketOrder: widget.ticketOrder,
           hasEnded: _eventHasEnded,
@@ -1068,10 +646,10 @@ class _EventsAttendingTicketScreenState
               : currencyPartition.length > 0
                   ? currencyPartition[1].trim()
                   : '',
-          event: widget.event, ticket: widget.ticket,
+          event: widget.event,
+          ticket: widget.ticket,
           currentUserId: widget.currentUserId,
         ),
-        // _ticketdisplay(),
         const SizedBox(
           height: 10,
         ),
@@ -1083,17 +661,10 @@ class _EventsAttendingTicketScreenState
         _locationButton(),
         _eventRoomButton(),
         _organizerButton(),
-        // const SizedBox(
-        //   height: 10,
-        // ),
-
         if (widget.currentUserId != widget.event.authorId)
-          // if (!_eventHasEnded) _refundButton(),
-
           const SizedBox(
             height: 100,
           ),
-
         const SizedBox(
           height: 100,
         ),
@@ -1156,7 +727,6 @@ class _EventsAttendingTicketScreenState
               top: ResponsiveHelper.responsiveHeight(context, 120)),
           child: _seeAllSchedules
               ? ShakeTransition(
-                  // axis: Axis.vertical,
                   curve: Curves.linearToEaseOut,
                   offset: -100,
                   duration: const Duration(seconds: 1),
@@ -1177,15 +747,6 @@ class _EventsAttendingTicketScreenState
                   eventOrganiserId: widget.event.authorId,
                   currentUserId: widget.currentUserId,
                 ),
-
-          // ListView.builder(
-          //   itemCount: scheduleOptions.length,
-          //   itemBuilder: (BuildContext context, int index) {
-          //     Schedule schedule = scheduleOptions[index];
-
-          //     return ScheduleWidget(schedule: schedule);
-          //   },
-          // ),
         ),
         Positioned(
           top: 200,
@@ -1234,63 +795,6 @@ class _EventsAttendingTicketScreenState
         ),
       ],
     );
-
-    // ListView(
-    //   // physics: NeverScrollableScrollPhysics(),
-    //   children: [
-    //     const SizedBox(
-    //       height: 80,
-    //     ),
-    //     Text(
-    //       'Program\nLineup',
-    //       style: TextStyle(
-    //         fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
-    //         //  24.0,
-    //         fontWeight: FontWeight.bold,
-    //         color: Colors.white,
-    //       ),
-    //     ),
-    //     const SizedBox(
-    //       height: 10,
-    //     ),
-    //     Container(
-    //       height: 700,
-    //       width: 500,
-    //       child: ListView.builder(
-    //         itemCount: scheduleOptions.length,
-    //         itemBuilder: (BuildContext context, int index) {
-    //           Schedule schedule = scheduleOptions[index];
-
-    //           return ScheduleWidget(schedule: schedule);
-    //         },
-    //       ),
-    //     ),
-    //     // _eventInfoDisplay(),
-    //     // const SizedBox(
-    //     //   height: 30,
-    //     // ),
-    //     // if (widget.ticketOrder.isInvited) _invitationButton(),
-    //     // _locationButton(),
-    //     // _eventRoomButton(),
-    //     // _organizerButton(),
-    //     // const SizedBox(
-    //     //   height: 10,
-    //     // ),
-    //     // if (!_eventHasEnded) _refundButton(),
-    //     // const SizedBox(
-    //     //   height: 100,
-    //     // ),
-    //     IconButton(
-    //       icon: Icon(Icons.close),
-    //       iconSize: 30.0,
-    //       color: Colors.white,
-    //       onPressed: () => Navigator.pop(context),
-    //     ),
-    //     const SizedBox(
-    //       height: 100,
-    //     ),
-    //   ],
-    // );
   }
 
   _indicator(int index) {
@@ -1300,7 +804,6 @@ class _EventsAttendingTicketScreenState
       width: _index == index ? 20 : 50,
       decoration: BoxDecoration(
           color: Colors.transparent,
-          // shape: BoxShape.circle,
           border: Border.all(width: 2, color: Colors.white)),
     );
   }
@@ -1349,7 +852,6 @@ class _EventsAttendingTicketScreenState
               padding:
                   const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
               child: PageView(
-                //  controller: _pageController,
                 onPageChanged: (int index) {
                   setState(() {
                     _index = index;

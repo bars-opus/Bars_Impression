@@ -5,11 +5,8 @@ class CreateEventDoc extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var _provider = Provider.of<UserData>(context, listen: false);
-    // var _userLocation = _provider.userLocationPreference;
     var featureStyleBig = TextStyle(
       color: Theme.of(context).secondaryHeaderColor,
-      // fontWeight: FontWeight.bold,
       fontSize: ResponsiveHelper.responsiveFontSize(context, 18),
     );
     var moreStyle = TextStyle(
@@ -24,13 +21,9 @@ class CreateEventDoc extends StatelessWidget {
         padding: const EdgeInsets.all(20.0),
         child: ListView(
           children: [
-            // const SizedBox(
-            //   height: 30,
-            // ),
             TicketPurchasingIcon(
               title: '',
             ),
-
             Center(
               child: Text(
                 "\nA new venue,\nA new canvas.    ",
@@ -61,12 +54,10 @@ class CreateEventDoc extends StatelessWidget {
             SizedBox(
               height: 40,
             ),
-
             Text(
               '\nIn all aspects, \nYou are covered.',
               style: Theme.of(context).textTheme.titleLarge,
             ),
-
             GestureDetector(
               onTap: () async {
                 if (!await launchUrl(
@@ -95,7 +86,6 @@ class CreateEventDoc extends StatelessWidget {
                 ),
               ),
             ),
-
             GestureDetector(
               onTap: () async {
                 if (!await launchUrl(

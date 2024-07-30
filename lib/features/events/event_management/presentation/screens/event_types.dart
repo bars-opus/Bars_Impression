@@ -101,13 +101,11 @@ class _EventTypesState extends State<EventTypes>
 
       _provider.setLoadingThisWeekEvent(true);
     });
-    // _setUpFeedFollowingCount();
   }
 
   //  These functions get the count of events from the Firestore database.
   //  The count is fetched based on the event types and date. If the event types are not specified,
   //  it fetches all events. The _setUpCountSortNumberOfDays() function additionally sorts the events by a specific number of days.
-
   _setUpCount() {
     widget.liveCity.isNotEmpty
         ? _setUpLiveLocationFeedCount()
@@ -157,13 +155,11 @@ class _EventTypesState extends State<EventTypes>
   // _setUpFeed(), _setUpFeedLive(), _setUpFeedSeeMore(): These functions are setting up the feed of events.
   // They call the _setupEvents function with different parameters, determining the type of events to fetch -- either all events,
   // events from a specific city, or events from a specific country.
-
   _setUpFeed() {
     var _userLocationSettings =
         Provider.of<UserData>(context, listen: false).userLocationPreference;
 //
 //chage greater than start date for event feedcount
-//
     String? city = _userLocationSettings!.city;
     bool? isAll = false;
     String? country = _userLocationSettings.country;

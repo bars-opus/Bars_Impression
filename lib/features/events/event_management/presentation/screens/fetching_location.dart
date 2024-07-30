@@ -92,23 +92,12 @@ class _FetchingLocationState extends State<FetchingLocation> {
                   context,
                   DiscoverUser(
                     currentUserId: widget.currentUserId,
-                    // userLocationSettings:
-                    //     _provider.userLocationPreference!,
                     isLiveLocation: true,
                     liveCity: _city,
                     liveCountry: _userCountry,
                     liveLocationIntialPage: 0,
                     isWelcome: false,
-                    // sortNumberOfDays: 0,
                   ),
-                  // DiscoverUser(
-                  //   currentUserId: widget.currentUserId,
-                  //   isWelcome: false,
-                  //   isLiveLocation: true,
-                  //   liveCity: _city,
-                  //   liveCountry: _userCountry,
-                  //   liveLocationIntialPage: widget.liveLocationIntialPage,
-                  // )
                 );
         }
       }

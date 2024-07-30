@@ -9,26 +9,8 @@ class UnderlinedTextField extends StatelessWidget {
   final bool isNumber;
   final bool autofocus;
 
-  // String initialValue = '';
-  // String labelText = '';
-  // String hintText = '';
-
-  // final bool enableBorder;
-  // final Function(String) onSavedText;
-  // final Function onValidateText;
-  // final bool autofocus;
-  // final bool isNumber;
-
   UnderlinedTextField(
       {
-      // required this.onSavedText,
-      // required this.onValidateText,
-      // required this.initialValue,
-      // required this.hintText,
-      // required this.labelText,
-      // required this.enableBorder,
-      // this.autofocus = false,
-      // this.isNumber = false,
       required this.labelText,
       required this.hintText,
       this.isNumber = false,

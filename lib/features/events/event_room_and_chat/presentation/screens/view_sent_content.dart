@@ -1,18 +1,14 @@
 import 'package:bars/utilities/exports.dart';
-import 'package:flutter/scheduler.dart';
 
 class ViewSentContent extends StatefulWidget {
   final String eventAuthorId;
-
   final String contentId;
   final String contentType;
-  // final String affiliateId;
 
   ViewSentContent({
     required this.contentType,
     required this.contentId,
     required this.eventAuthorId,
-    // required this.affiliateId ,
   });
   @override
   _ViewSentContentState createState() => _ViewSentContentState();
@@ -172,35 +168,6 @@ class _ViewSentContentState extends State<ViewSentContent> {
                             userPortfolio: null,
                             userId: widget.contentId,
                           );
-
-                          //  FutureBuilder<PaletteGenerator>(
-                          //   future: _generatePalette(_event),
-                          //   builder: (BuildContext context,
-                          //       AsyncSnapshot<PaletteGenerator> paletteSnapshot) {
-                          //     if (!paletteSnapshot.hasData) {
-                          //       return Container(
-                          //         width: width,
-                          //         height: height,
-                          //         color: Colors.black,
-                          //         child: Center(
-                          //           child: CircularProgressIndicator(
-                          //             color: Colors.blue,
-                          //           ),
-                          //         ),
-                          //       );
-                          //     }
-
-                          //     PaletteGenerator _palette = paletteSnapshot.data!;
-
-                          //     return EventInviteScreen(
-                          //       currentUserId: _provider.currentUserId!,
-                          //       event: _event,
-                          //       invite: _invite,
-                          //       palette: _palette,
-                          //       ticketOrder: _ticket,
-                          //     );
-                          //   },
-                          // );
                         },
                       )
                     : widget.contentType.startsWith('eventRoom')
@@ -213,7 +180,6 @@ class _ViewSentContentState extends State<ViewSentContent> {
                             ]),
                             builder: (BuildContext context,
                                 AsyncSnapshot<List<dynamic>> snapshot) {
-                              // print('id        ' + widget.contentId);
                               if (!snapshot.hasData ||
                                   snapshot.data![0] == null ||
                                   snapshot.data![1] == null) {
@@ -248,12 +214,8 @@ class _ViewSentContentState extends State<ViewSentContent> {
                                       ),
                                     );
                                   }
-
                                   PaletteGenerator _palette =
                                       paletteSnapshot.data!;
-
-                                  // TicketIdModel? ticketId = snapshot.data![1];
-
                                   return EventRoomScreen(
                                     currentUserId: _provider.currentUserId!,
                                     room: _eventRoom,
@@ -276,9 +238,7 @@ class _ViewSentContentState extends State<ViewSentContent> {
                                 ]),
                                 builder: (BuildContext context,
                                     AsyncSnapshot<List<dynamic>> snapshot) {
-                                  // print('eventId        ' + widget.contentId);
-                                  // print('eventAuthorId     ' +
-                                  // widget.eventAuthorId);
+                                 
                                   if (!snapshot.hasData ||
                                       snapshot.data![0] == null ||
                                       snapshot.data![1] == null) {
@@ -316,12 +276,8 @@ class _ViewSentContentState extends State<ViewSentContent> {
                                           ),
                                         );
                                       }
-
                                       PaletteGenerator _palette =
                                           paletteSnapshot.data!;
-
-                                      // TicketIdModel? ticketId = snapshot.data![1];
-
                                       return PurchasedAttendingTicketScreen(
                                         ticketOrder: _ticketOrder,
                                         event: event,

@@ -2,7 +2,7 @@ import 'package:bars/utilities/exports.dart';
 
 class ExpandEventBarcodeScreen extends StatelessWidget {
   final Event event;
-  bool justCreated;
+ final bool justCreated;
 
   ExpandEventBarcodeScreen({
     required this.event,

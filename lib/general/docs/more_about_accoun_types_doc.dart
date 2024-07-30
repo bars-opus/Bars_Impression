@@ -18,29 +18,10 @@ class MoreAboutAccountTypes extends StatelessWidget {
       padding: const EdgeInsets.all(20.0),
       child: ListView(
         children: [
-          // const SizedBox(
-          //   height: 30,
-          // ),
           TicketPurchasingIcon(
             title: '',
           ),
-
           const SizedBox(height: 40),
-          // RichText(
-          //   textScaleFactor: MediaQuery.of(context).textScaleFactor,
-          //   text: TextSpan(
-          //     children: [
-          //       TextSpan(
-          //         text: 'Refund',
-          //         style: Theme.of(context).textTheme.titleMedium,
-          //       ),
-          //       TextSpan(
-          //         text: "\n\n${widget.event.termsAndConditions}",
-          //         style: Theme.of(context).textTheme.bodyMedium,
-          //       ),
-          //     ],
-          //   ),
-          // ),
           GestureDetector(
             onTap: () async {
               if (!await launchUrl(

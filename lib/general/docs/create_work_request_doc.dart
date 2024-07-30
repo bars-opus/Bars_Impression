@@ -15,10 +15,8 @@ class CreateWorkRequestDoc extends StatelessWidget {
   Widget build(BuildContext context) {
     var _provider = Provider.of<UserData>(context, listen: false);
     var _user = _provider.user;
-    // var _userLocation = _provider.userLocationPreference;
     var featureStyleBig = TextStyle(
       color: Theme.of(context).secondaryHeaderColor,
-      // fontWeight: FontWeight.bold,
       fontSize: ResponsiveHelper.responsiveFontSize(context, 18),
     );
 
@@ -30,13 +28,9 @@ class CreateWorkRequestDoc extends StatelessWidget {
         padding: const EdgeInsets.all(20.0),
         child: ListView(
           children: [
-            // const SizedBox(
-            //   height: 30,
-            // ),
             TicketPurchasingIcon(
               title: '',
             ),
-
             Center(
               child: Text(
                 "\nBe creative\nwith creatives.    ",
@@ -73,7 +67,6 @@ class CreateWorkRequestDoc extends StatelessWidget {
               '\nOnce again,\nIn all aspects, \nYou are covered.',
               style: Theme.of(context).textTheme.titleLarge,
             ),
-
             RichText(
               textScaleFactor: MediaQuery.of(context).textScaleFactor,
               text: TextSpan(
@@ -107,7 +100,6 @@ class CreateWorkRequestDoc extends StatelessWidget {
             SizedBox(
               height: 10,
             ),
-
             RichText(
               textScaleFactor: MediaQuery.of(context).textScaleFactor,
               text: TextSpan(

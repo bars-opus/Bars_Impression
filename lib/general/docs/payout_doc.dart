@@ -6,10 +6,13 @@ class PayoutDoc extends StatelessWidget {
 
   final bool isRequesting;
   final bool isFreeEvent;
+  final bool isCashPayment;
+
   const PayoutDoc(
       {super.key,
       required this.eventTitle,
       required this.isFreeEvent,
+      required this.isCashPayment,
       this.eventClossinDay,
       required this.isRequesting});
 
@@ -29,6 +32,7 @@ class PayoutDoc extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(children: [
+      
       isRequesting
           ? RichText(
               textScaleFactor: MediaQuery.of(context).textScaleFactor,
@@ -64,10 +68,10 @@ class PayoutDoc extends StatelessWidget {
                     text: '\nTicket Sales Payouts',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  isFreeEvent
+                  isFreeEvent || isCashPayment
                       ? TextSpan(
                           text:
-                              '\n\nTicket sales payouts is where you request for your ticket sales funds.\n\nThis is only available for events that offer paid tickets and not free events. ',
+                              '\n\nTicket sales payouts is where you request for your ticket sales funds.\n\nThis is only available for events that offer paid tickets through Bars Impression(not support for payment through other website or cash-payment)  and not free events. ',
                           style: Theme.of(context).textTheme.bodyMedium,
                         )
                       : TextSpan(

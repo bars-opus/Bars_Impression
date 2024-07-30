@@ -2,10 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class TextModerator {
-  // Your Perspective API key - store it securely!
-
-  // TextModerator(this.apiKey);
-
   Future<Map<String, dynamic>?> moderateText(String text) async {
     final String apiKey = 'AIzaSyBSKY9WsjiLuCprwn9Ay-VaE226lbtJAfw';
 

@@ -74,11 +74,7 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
 //create payout
   Future<AffiliatePayoutModel> _createPayoutRequst() async {
     var _provider = Provider.of<UserData>(context, listen: false);
-
-    // Calculate the total cost of the order
-
     String commonId = Uuid().v4();
-
     AffiliatePayoutModel payout = AffiliatePayoutModel(
       id: commonId,
       eventId: widget.affiliate.eventId,
@@ -124,12 +120,7 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
         setState(() {
           _isLoading = false;
         });
-
-        // mySnackBar(context, "Payout requested successfully");
-
-        // }
       } catch (e) {
-        // _handleError(e, false);
         setState(() {
           _isLoading = false;
         });
@@ -158,54 +149,6 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
       },
     );
   }
-
-  // void _showBottomSheetRequestPayouts(bool isRequesting) {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     isScrollControlled: true,
-  //     backgroundColor: Colors.transparent,
-  //     builder: (BuildContext context) {
-  //       return StatefulBuilder(
-  //           builder: (BuildContext context, StateSetter setState) {
-  //         return Container(
-  //           height: ResponsiveHelper.responsiveHeight(context, 700),
-  //           decoration: BoxDecoration(
-  //               color: Theme.of(context).cardColor,
-  //               borderRadius: BorderRadius.circular(30)),
-  //           child: Padding(
-  //             padding: const EdgeInsets.all(20.0),
-  //             child: ListView(
-  //               children: [
-  //                 TicketPurchasingIcon(
-  //                   title: '',
-  //                 ),
-  //                 // const SizedBox(height: 40),
-  //                 if (isRequesting)
-  //                   Align(
-  //                     alignment: Alignment.centerRight,
-  //                     child: MiniCircularProgressButton(
-  //                       onPressed: () {
-  //                         Navigator.pop(context);
-  //                         _showBottomSheetConfirmPayout();
-  //                       },
-  //                       text: "Continue",
-  //                       color: Colors.blue,
-  //                     ),
-  //                   ),
-  //                 PayoutDoc(
-  //                   eventTitle: widget.affiliate.eventTitle,
-  //                   isRequesting: true,
-  //                   isFreeEvent: false,
-  //                 ),
-  //                 const SizedBox(height: 60),
-  //               ],
-  //             ),
-  //           ),
-  //         );
-  //       });
-  //     },
-  //   );
-  // }
 
   _acceptAffiliateInvite(
     bool isAccepted,
@@ -263,11 +206,11 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
           eventId: widget.affiliate.eventId,
           answer: isAccepted ? 'Accepted' : 'Rejected',
           currentUser: _user!,
+          affiliateInviteeId: widget.affiliate.eventAuthorId,
         );
 
     try {
       await retry(() => sendInvites(), retries: 3);
-
       List<TicketPurchasedModel> pasTicket = [];
       if (isAccepted) {
         TicketPurchasedModel order = TicketPurchasedModel(
@@ -285,7 +228,6 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
           transactionId: '',
           lastTimeScanned: Timestamp.fromDate(DateTime.now()),
         );
-
         pasTicket.add(order);
 
         try {
@@ -453,13 +395,18 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
     UserData _provider = Provider.of<UserData>(context, listen: false);
     var _userLocation = _provider.userLocationPreference;
 
-    final List<String> currencyPartition = _provider.currency.isEmpty
-        ? ' Ghana Cedi | GHS'.trim().replaceAll('\n', ' ').split("|")
-        : _provider.currency.trim().replaceAll('\n', ' ').split("|");
+    // final List<String> currencyPartition = _provider.currency.isEmpty
+    //     ? ' Ghana Cedi | GHS'.trim().replaceAll('\n', ' ').split("|")
+    //     : _provider.currency.trim().replaceAll('\n', ' ').split("|");
 
-    // Check for the country being Ghana or the currency code being GHS
-    bool isGhanaOrCurrencyGHS = _userLocation!.country == 'Ghana' &&
-        currencyPartition[1].trim() == 'GHS';
+    // // Check for the country being Ghana or the currency code being GHS
+    // bool isGhanaOrCurrencyGHS = _userLocation!.country == 'Ghana' &&
+    //     currencyPartition[1].trim() == 'GHS';
+
+    // bool isGhanaOrCurrencyGHS = Utils.isGhanaOrCurrencyGHS(_userLocation!.country, _currency);
+
+    bool isGhanaOrCurrencyGHS = IsGhanain.isGhanaOrCurrencyGHS(
+        _userLocation!.country!, _userLocation.currency!);
 
     // Check if the subaccount and transfer recipient IDs are empty
     bool shouldNavigate = _userLocation.subaccountId!.isEmpty ||
@@ -506,21 +453,6 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
       label: lable,
       value: value,
     );
-
-    // ShakeTransition(
-    //   // axis: Axis.vertical,
-    //   curve: Curves.linearToEaseOut,
-    //   offset: -140,
-    //   duration: const Duration(seconds: 2),
-    //   child: Padding(
-    //     padding: const EdgeInsets.symmetric(vertical: 5.0),
-    //     child: SalesReceiptWidget(
-    //       isRefunded: false,
-    //       lable: lable,
-    //       value: value,
-    //     ),
-    //   ),
-    // );
   }
 
   _acceptRejectButton(
@@ -994,7 +926,6 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
                   icon: Icon(
                     Icons.delete_forever_outlined,
                     color: Colors.red,
-                    // size: ResponsiveHelper.responsiveFontSize(context, 20),
                   )),
             ],
           ),

@@ -14,8 +14,12 @@ class DatabaseService {
         usersLocationSettingsRef.doc(signedInHandler.uid);
     DocumentReference userGeneralSettingsRef =
         usersGeneralSettingsRef.doc(signedInHandler.uid);
+
     DocumentReference usersProfessionalRef =
         userProfessionalRef.doc(signedInHandler.uid);
+
+    DocumentReference usersRatingdocRef =
+        usersRatingRef.doc(signedInHandler.uid);
 
     DocumentReference followerRef = followersRef
         .doc(signedInHandler.uid)
@@ -105,6 +109,16 @@ class DatabaseService {
       'hideAdvice': false,
       'improvemenSuggestion': '',
       'showOnExplorePage': true,
+      'transferRecepientId': '',
+    });
+
+    batch.set(usersRatingdocRef, {
+      'userId': signedInHandler.uid,
+      'oneStar': 0,
+      'twoStar': 0,
+      'threeStar': 0,
+      'fourStar': 0,
+      'fiveStar': 0,
     });
 
     // Commit the batch
@@ -1515,10 +1529,6 @@ class DatabaseService {
     // }
   }
 
-
-
-
-
   static Future<int> numUnAnsweredInvites(
     String currentUserId,
   ) async {
@@ -1737,6 +1747,24 @@ class DatabaseService {
         .delete();
   }
 
+  static deleteCrativeBookingData(BookingModel booking) {
+    // Add the complaint request to the appropriate collection
+    newBookingsReceivedRef
+        .doc(booking.creativeId)
+        .collection('bookings')
+        .doc(booking.id)
+        .delete();
+  }
+
+  static deleteClientBookingData(BookingModel booking) {
+    // Add the complaint request to the appropriate collection
+    newBookingsSentRef
+        .doc(booking.clientId)
+        .collection('bookings')
+        .doc(booking.id)
+        .delete();
+  }
+
   static Future<bool> isAffiliatePayoutAvailable({
     required String userId,
     required String eventId,
@@ -1838,6 +1866,26 @@ class DatabaseService {
         .doc(currentUserId)
         .collection('payoutRequests')
         .doc(payout.eventId)
+        .delete();
+  }
+
+  static deleteDonarData(String donationId, String currentUserId) {
+    // Add the complaint request to the appropriate collection
+
+    newUserDonationsRef
+        .doc(currentUserId)
+        .collection('donations')
+        .doc(donationId)
+        .delete();
+  }
+
+  static deleteDonarReceiverData(String donationId, String currentUserId) {
+    // Add the complaint request to the appropriate collection
+
+    newDonationToCreativesRef
+        .doc(currentUserId)
+        .collection('donations')
+        .doc(donationId)
         .delete();
   }
 
@@ -2912,6 +2960,260 @@ class DatabaseService {
     // });
   }
 
+  static Future<void> createReview({
+    required ReviewModel rating,
+    required AccountHolderAuthor currentUser,
+  }) async {
+    // Initialize a WriteBatch
+    Map<String, dynamic> bookingData = rating.toJson();
+
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    // References to the affiliate documents
+    final bookingReceivedDocRef = newReviewReceivedRef
+        .doc(rating.reviewingId)
+        .collection('reviews')
+        .doc(rating.bookingId);
+// f2427095-a9ec-40b2-8fc3-82bcec946740
+    final bookingsSentDocRef = newReviewMadeRef
+        .doc(rating.revierwerId)
+        .collection('reviews')
+        .doc(rating.bookingId);
+
+    // Set the affiliate data in the batch
+    batch.set(bookingReceivedDocRef, bookingData);
+    batch.set(bookingsSentDocRef, bookingData);
+
+    DocumentReference activityDocRef = activitiesRef
+        .doc(rating.reviewingId)
+        .collection('userActivities')
+        .doc();
+
+    // Create a new document reference for the activity within the userActivities collection
+
+    // batch.update(usersRatingDocRef, ratingData);
+    await updateUserRating(
+      rating: rating.rating,
+      reviewingId: rating.revierwerId,
+      batch: batch,
+    );
+
+    // Add the activity creation to the batch
+    batch.set(activityDocRef, {
+      'helperFielId': rating.revierwerId,
+      'authorId': currentUser.userId,
+      'postId': rating.bookingId,
+      'seen': false,
+      'type': 'review',
+      'postImageUrl': '',
+      'comment': 'New review ',
+      'timestamp':
+          FieldValue.serverTimestamp(), // Use server timestamp for consistency
+      'authorProfileImageUrl': currentUser
+          .profileImageUrl, // Assuming there's a profileImageUrl field
+      'authorName': currentUser.userName,
+      'authorProfileHandle': '',
+      'authorVerification': currentUser.verified,
+    });
+
+    // Commit the batch write
+    await batch.commit();
+  }
+
+  static Future<void> updateUserRating(
+      {required String reviewingId,
+      required int rating,
+      required WriteBatch batch}) async {
+    DocumentReference usersRatingDocRef = usersRatingRef.doc(reviewingId);
+
+    Map<String, dynamic> updateData;
+
+    // Determine which star field to increment based on the rating
+    switch (rating) {
+      case 1:
+        updateData = {'oneStar': FieldValue.increment(1)};
+        break;
+      case 2:
+        updateData = {'twoStar': FieldValue.increment(1)};
+        break;
+      case 3:
+        updateData = {'threeStar': FieldValue.increment(1)};
+        break;
+      case 4:
+        updateData = {'fourStar': FieldValue.increment(1)};
+        break;
+      case 5:
+        updateData = {'fiveStar': FieldValue.increment(1)};
+        break;
+      default:
+        throw ArgumentError('Invalid rating value: $rating');
+    }
+
+    batch.update(usersRatingDocRef, updateData);
+  }
+
+  static Future<BookingModel?> getBookingMade(
+      String userId, String bookId) async {
+    try {
+      DocumentSnapshot userDocSnapshot = await newBookingsSentRef
+          .doc(userId)
+          .collection('bookings')
+          .doc(bookId)
+          .get();
+
+      if (userDocSnapshot.exists) {
+        return BookingModel.fromDoc(userDocSnapshot);
+      } else {
+        return null; // return null if document does not exist
+      }
+    } catch (e) {
+      print(e);
+      return null; // return null if an error occurs
+    }
+  }
+
+  static Future<BookingModel?> getUserBooking(
+      String userId, String bookId) async {
+    try {
+      DocumentSnapshot userDocSnapshot = await newBookingsReceivedRef
+          .doc(userId)
+          .collection('bookings')
+          .doc(bookId)
+          .get();
+
+      if (userDocSnapshot.exists) {
+        return BookingModel.fromDoc(userDocSnapshot);
+      } else {
+        return null; // return null if document does not exist
+      }
+    } catch (e) {
+      print(e);
+      return null; // return null if an error occurs
+    }
+  }
+
+  static Future<void> createBookingRequest({
+    required BookingModel booking,
+    required AccountHolderAuthor currentUser,
+  }) async {
+    // Initialize a WriteBatch
+    Map<String, dynamic> bookingData = booking.toJson();
+
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    // References to the affiliate documents
+    final bookingReceivedDocRef = newBookingsReceivedRef
+        .doc(booking.creativeId)
+        .collection('bookings')
+        .doc(booking.id);
+// f2427095-a9ec-40b2-8fc3-82bcec946740
+    final bookingsSentDocRef = newBookingsSentRef
+        .doc(booking.clientId)
+        .collection('bookings')
+        .doc(booking.id);
+
+    // Set the affiliate data in the batch
+    batch.set(bookingReceivedDocRef, bookingData);
+    batch.set(bookingsSentDocRef, bookingData);
+
+    // Create a new document reference for the activity within the userActivities collection
+    DocumentReference activityDocRef = activitiesRef
+        .doc(booking.creativeId)
+        .collection('userActivities')
+        .doc(); // Create a new document reference with a generated ID
+
+    // Add the activity creation to the batch
+    batch.set(activityDocRef, {
+      'helperFielId': booking.clientId,
+      'authorId': currentUser.userId,
+      'postId': booking.id,
+      'seen': false,
+      'type': 'bookingReceived',
+      'postImageUrl': '',
+      'comment': 'Congratulation\nNew booking deal',
+      'timestamp':
+          FieldValue.serverTimestamp(), // Use server timestamp for consistency
+      'authorProfileImageUrl': currentUser
+          .profileImageUrl, // Assuming there's a profileImageUrl field
+      'authorName': currentUser.userName,
+      'authorProfileHandle': '',
+      'authorVerification': currentUser.verified,
+    });
+
+    // Commit the batch write
+    await batch.commit();
+  }
+
+  static answerBookingInviteBatch({
+    // required WriteBatch batch,
+    required String answer,
+    required bool isAnswer,
+    required AccountHolderAuthor currentUser,
+    required BookingModel booking,
+  }) async {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    DocumentReference newBookingsReceivedDocRef = newBookingsReceivedRef
+        .doc(booking.creativeId)
+        .collection('bookings')
+        .doc(booking.id);
+    isAnswer
+        ? batch.update(newBookingsReceivedDocRef, {
+            'answer': answer,
+            // 'affiliateLink': affiliateLink,
+          })
+        : batch.update(newBookingsReceivedDocRef, {
+            'isdownPaymentMade': true,
+            // 'affiliateLink': affiliateLink,
+          });
+
+    DocumentReference newBookingsSentDocRef = newBookingsSentRef
+        .doc(booking.clientId)
+        .collection('bookings')
+        .doc(booking.id);
+    isAnswer
+        ? batch.update(newBookingsSentDocRef, {
+            'answer': answer,
+            // 'affiliateLink': affiliateLink,
+          })
+        : batch.update(newBookingsSentDocRef, {
+            'isdownPaymentMade': true,
+            // 'affiliateLink': affiliateLink,
+          });
+    if (answer == 'Rejected') return;
+// Create a new document reference for the activity within the userActivities collection
+    DocumentReference activityDocRef = isAnswer
+        ? activitiesRef.doc(booking.clientId).collection('userActivities').doc()
+        : activitiesRef
+            .doc(booking.creativeId)
+            .collection('userActivities')
+            .doc(); // Create a new document reference with a generated ID
+
+    // Add the activity creation to the batch
+    batch.set(activityDocRef, {
+      'helperFielId': currentUser.userId,
+      'authorId': currentUser.userId,
+      'postId': booking.id,
+      'seen': false,
+      'type': isAnswer ? 'bookingMade' : 'bookingReceived',
+      'postImageUrl': '',
+      'comment': isAnswer
+          ? 'Congratulation\nBooking deal accepted'
+          : '30% downpayment made',
+      'timestamp':
+          FieldValue.serverTimestamp(), // Use server timestamp for consistency
+      'authorProfileImageUrl': currentUser
+          .profileImageUrl, // Assuming there's a profileImageUrl field
+      'authorName': currentUser.userName,
+      'authorProfileHandle': '',
+      'authorVerification': currentUser.verified,
+    });
+
+    await batch.commit();
+    // return batch.commit().then((value) => {}).catchError((error) {
+    //   throw error; // Re-throw the error
+    // });
+  }
+
   static Future<void> createAffiliate({
     required Event event,
     required List<AccountHolderAuthor> users,
@@ -3093,6 +3395,7 @@ class DatabaseService {
   static answeAffiliatetInviteBatch({
     required WriteBatch batch,
     required String eventId,
+    required String affiliateInviteeId,
     required String answer,
     required AccountHolderAuthor currentUser,
     required String affiliateLink,
@@ -3116,9 +3419,29 @@ class DatabaseService {
       'affiliateLink': affiliateLink,
     });
 
-    // return batch.commit().then((value) => {}).catchError((error) {
-    //   throw error; // Re-throw the error
-    // });
+    // Create a new document reference for the activity within the userActivities collection
+    DocumentReference activityDocRef = activitiesRef
+        .doc(affiliateInviteeId)
+        .collection('userActivities')
+        .doc(); // Create a new document reference with a generated ID
+
+    // Add the activity creation to the batch
+    batch.set(activityDocRef, {
+      'helperFielId': affiliateInviteeId,
+      'authorId': currentUser.userId,
+      'postId': eventId,
+      'seen': false,
+      'type': 'booking',
+      'postImageUrl': '',
+      'comment': 'Congratulation\nBooking deal accepted',
+      'timestamp':
+          FieldValue.serverTimestamp(), // Use server timestamp for consistency
+      'authorProfileImageUrl': currentUser
+          .profileImageUrl, // Assuming there's a profileImageUrl field
+      'authorName': currentUser.userName,
+      'authorProfileHandle': '',
+      'authorVerification': currentUser.verified,
+    });
   }
 
 // https://links.barsopus.com/barsImpression/zDMc
@@ -3662,6 +3985,61 @@ class DatabaseService {
       'content': ask.content,
       'authorId': ask.authorId,
       'timestamp': ask.timestamp,
+    });
+  }
+
+  static void createDonationBatch({
+    required DonationModel donation,
+    // required TicketOrderModel ticketOrder,
+    required AccountHolderAuthor user,
+    required WriteBatch batch,
+
+    // required String eventAuthorId,
+    // required String purchaseReferenceId,
+  }) async {
+    final newDonationToCreativesDocRef = newDonationToCreativesRef
+        .doc(donation.receiverId)
+        // .collection('donars')
+        // .doc(donation.donerId)
+        .collection('donations')
+        .doc(donation.id);
+
+    final newUserDonationsDocRef = newUserDonationsRef
+        .doc(donation.donerId)
+        // .collection('receivers')
+        // .doc(donation.receiverId)
+        .collection('donations')
+        .doc(donation.id);
+    ;
+
+    Map<String, dynamic> donationData = donation.toJson();
+
+    batch.set(newDonationToCreativesDocRef, donationData);
+    batch.set(newUserDonationsDocRef, donationData);
+
+    // Create a new document reference for the activity within the userActivities collection
+    DocumentReference activityDocRef = activitiesRef
+        .doc(donation.receiverId)
+        .collection('userActivities')
+        .doc(); // Auto-generate a new document ID for the activity
+
+    // Add activity creation to the batch
+    batch.set(activityDocRef, {
+      'helperFielId': donation.receiverId,
+      'authorId': user.userId,
+      'postId': donation.receiverId,
+      'seen': false,
+      'type': 'donation',
+      'postImageUrl': '',
+      'comment':
+          'Donation of GHC ${donation.amount} received from ${user.userName}',
+      'timestamp':
+          FieldValue.serverTimestamp(), // Use server timestamp for consistency
+      'authorProfileImageUrl':
+          user.profileImageUrl, // Assuming there's a profileImageUrl field
+      'authorName': user.userName,
+      'authorProfileHandle': user.profileHandle,
+      'authorVerification': user.verified,
     });
   }
 

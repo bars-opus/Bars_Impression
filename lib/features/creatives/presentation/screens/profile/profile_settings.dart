@@ -1,3 +1,4 @@
+import 'package:bars/services/gemini_ai/generative_service.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:hive_flutter/hive_flutter.dart';
@@ -15,6 +16,7 @@ class ProfileSettings extends StatefulWidget {
 
 class _ProfileSettingsState extends State<ProfileSettings> {
   bool _isLoadingGeneralSettins = false;
+  bool _isLoading = false;
 
   void _showBottomSheetErrorMessage(String title, String error) {
     showModalBottomSheet(
@@ -35,12 +37,13 @@ class _ProfileSettingsState extends State<ProfileSettings> {
   }
 
   static final _auth = FirebaseAuth.instance;
-  void _logOutUser(
-    BuildContext context,
-  ) async {
+  void _logOutUser() async {
     var _provider = Provider.of<UserData>(context, listen: false);
     _provider.currentUserId = '';
     try {
+      setState(() {
+        _isLoading = true;
+      });
       // Helper function to clear a box
       Future<void> _clearBox<T>(String boxName) async {
         Box<T> box;
@@ -65,17 +68,24 @@ class _ProfileSettingsState extends State<ProfileSettings> {
           'accountLocationPreference');
       await AffiliateManager.clearAllEventAffiliates();
       await _auth.signOut();
-      _provider.setUser(null);
       _provider.setUserGeneralSettings(null);
       _provider.setUserLocationPreference(null);
+      _provider.setIsLoading(false);
+      _provider.setUser(null);
 
       HapticFeedback.lightImpact();
-      mySnackBar(context, 'Logged Out');
-      // Navigator.pushReplacementNamed(context, WelcomeScreen.id);
+      setState(() {
+        _isLoading = false;
+      });
+      // // Navigator.pushReplacementNamed(context, WelcomeScreen.id);
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => WelcomeScreen()),
           (Route<dynamic> route) => false);
+      mySnackBar(context, 'Logged Out');
     } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
       String error = e.toString();
       String result = error.contains(']')
           ? error.substring(error.lastIndexOf(']') + 1)
@@ -96,7 +106,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
     }
   }
 
-  void _showBottomSheetLogOut(BuildContext context) {
+  void _showBottomSheetLogOut() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -105,7 +115,9 @@ class _ProfileSettingsState extends State<ProfileSettings> {
         return ConfirmationPrompt(
           buttonText: 'Log Out',
           onPressed: () {
-            _logOutUser(context);
+            Navigator.pop(context);
+
+            _logOutUser();
           },
           title: 'Are you sure you want to log out of this account?',
           subTitle: '',
@@ -394,8 +406,21 @@ class _ProfileSettingsState extends State<ProfileSettings> {
     );
   }
 
+  final _googleGenerativeAIService = GoogleGenerativeAIService();
+  String _generatedResponse = '';
+
+  Future<void> _generateResponse(String prompt) async {
+    final response = await _googleGenerativeAIService.generateResponse(prompt);
+    setState(() {
+      _generatedResponse = response!;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    var _userLocation = _provider.userLocationPreference;
+
     return EditProfileScaffold(
       title: 'Account Settings',
       widget: Column(
@@ -410,6 +435,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 IntroInfo(
+                  leadingIcon: Icons.notifications_active_outlined,
                   titleColor: Theme.of(context).secondaryHeaderColor,
                   title: 'Notification settings',
                   onPressed: () async {
@@ -448,17 +474,18 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                   color: Colors.grey,
                 ),
                 IntroInfo(
+                  leadingIcon: Icons.calendar_month_outlined,
                   titleColor: Theme.of(context).secondaryHeaderColor,
-                  title: 'Refunds',
+                  title: 'Booking',
                   onPressed: () {
                     _navigateToPage(
                       context,
-                      UserRefunds(
+                      UserBooking(
                         currentUserId: widget.user.userId!,
                       ),
                     );
                   },
-                  subTitle: "Refund for tickets.",
+                  subTitle: "Your booking information.",
                   icon: Icons.arrow_forward_ios_outlined,
                 ),
                 Divider(
@@ -466,6 +493,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                   color: Colors.grey,
                 ),
                 IntroInfo(
+                  leadingIcon: MdiIcons.transfer,
                   titleColor: Theme.of(context).secondaryHeaderColor,
                   title: 'Payouts',
                   onPressed: () {
@@ -484,6 +512,26 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                   color: Colors.grey,
                 ),
                 IntroInfo(
+                  leadingIcon: Icons.request_quote_outlined,
+                  titleColor: Theme.of(context).secondaryHeaderColor,
+                  title: 'Refunds',
+                  onPressed: () {
+                    _navigateToPage(
+                      context,
+                      UserRefunds(
+                        currentUserId: widget.user.userId!,
+                      ),
+                    );
+                  },
+                  subTitle: "Refund for tickets.",
+                  icon: Icons.arrow_forward_ios_outlined,
+                ),
+                Divider(
+                  thickness: .2,
+                  color: Colors.grey,
+                ),
+                IntroInfo(
+                  leadingIcon: Icons.attach_money,
                   titleColor: Theme.of(context).secondaryHeaderColor,
                   title: 'Affiliates',
                   onPressed: () {
@@ -501,29 +549,50 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                   subTitle: "Your affiliate marketing.",
                   icon: Icons.arrow_forward_ios_outlined,
                 ),
-                // Divider(
-                //   color: Colors.grey,
-                // ),
-                // IntroInfo(
-                //   titleColor: Theme.of(context).secondaryHeaderColor,
-                //   title: 'Update Payout',
-                //   onPressed: () {
-                //     _navigateToPage(
-                //       context,
-                //       CreateSubaccountForm(
-                //         isEditing: true,
-                //       ),
-                //     );
-                //   },
-                //   subTitle:
-                //       "Update payout information for receiving event ticket sales.",
-                //   icon: Icons.arrow_forward_ios_outlined,
-                // ),
                 Divider(
                   thickness: .2,
                   color: Colors.grey,
                 ),
                 IntroInfo(
+                  leadingIcon: MdiIcons.giftOutline,
+                  titleColor: Theme.of(context).secondaryHeaderColor,
+                  title: 'Donations',
+                  onPressed: () {
+                    _navigateToPage(
+                      context,
+                      UserDonations(
+                        currentUserId: widget.user.userId!,
+                      ),
+                    );
+                  },
+                  subTitle: "Donations received and donations made.",
+                  icon: Icons.arrow_forward_ios_outlined,
+                ),
+                Divider(
+                  thickness: .2,
+                  color: Colors.grey,
+                ),
+                IntroInfo(
+                  leadingIcon: Icons.star_border_outlined,
+                  titleColor: Theme.of(context).secondaryHeaderColor,
+                  title: 'Reviews',
+                  onPressed: () {
+                    _navigateToPage(
+                      context,
+                      UserReviews(
+                        currentUserId: widget.user.userId!,
+                      ),
+                    );
+                  },
+                  subTitle: "Reviews received and reviews made.",
+                  icon: Icons.arrow_forward_ios_outlined,
+                ),
+                Divider(
+                  thickness: .2,
+                  color: Colors.grey,
+                ),
+                IntroInfo(
+                  leadingIcon: Icons.block,
                   titleColor: Theme.of(context).secondaryHeaderColor,
                   title: 'Blocked Accounts',
                   onPressed: () {
@@ -540,6 +609,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                   color: Colors.grey,
                 ),
                 IntroInfo(
+                  leadingIcon: Icons.bug_report_outlined,
                   titleColor: Theme.of(context).secondaryHeaderColor,
                   title: 'Complaints',
                   onPressed: () {
@@ -558,6 +628,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                   color: Colors.grey,
                 ),
                 IntroInfo(
+                  leadingIcon: Icons.delete_outlined,
                   titleColor: Theme.of(context).secondaryHeaderColor,
                   title: 'Delete Account',
                   onPressed: () {
@@ -568,7 +639,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                         ));
                   },
                   subTitle: "Delete your account",
-                  icon: Icons.delete_outline,
+                  icon: Icons.arrow_forward_ios_outlined,
                 ),
               ],
             ),
@@ -617,23 +688,37 @@ class _ProfileSettingsState extends State<ProfileSettings> {
               ],
             ),
           ),
+          ElevatedButton(
+            onPressed: () => _generateResponse(
+                'What would be the wather conditon on july 21 in Tema Ghana'),
+            child: Text('Generate Response'),
+          ),
+          SizedBox(height: 16.0),
+          if (_generatedResponse.isNotEmpty)
+            Text(
+              'Generated Response:\n$_generatedResponse',
+              style: TextStyle(fontSize: 16.0),
+            ),
           _divider(),
           const SizedBox(height: 30),
-          _accountRegistryInfo(),
-          Align(
-            alignment: Alignment.center,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 60.0, bottom: 40),
-              child: BlueOutlineButton(
-                buttonText: 'Log Out',
-                onPressed: () {
-                  _showBottomSheetLogOut(
-                    context,
-                  );
-                },
-              ),
-            ),
-          ),
+          if (_userLocation != null) _accountRegistryInfo(),
+          _isLoading
+              ? CircularProgress(
+                  isMini: true,
+                  indicatorColor: Colors.blue,
+                )
+              : Align(
+                  alignment: Alignment.center,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 60.0, bottom: 40),
+                    child: BlueOutlineButton(
+                      buttonText: 'Log Out',
+                      onPressed: () {
+                        _showBottomSheetLogOut();
+                      },
+                    ),
+                  ),
+                ),
           const SizedBox(height: 40),
           IconButton(
             icon: Icon(Icons.close),
@@ -697,12 +782,6 @@ class _ProfileSettingsState extends State<ProfileSettings> {
               if (!await launchUrl(Uri.parse('https://www.barsopus.com/'))) {
                 throw 'Could not launch link';
               }
-              // _navigateToPage(
-              //     context,
-              //     MyWebView(
-              //       url: 'https://www.barsopus.com/',
-              //       title: '',
-              //     ));
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,

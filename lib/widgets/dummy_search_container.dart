@@ -29,48 +29,7 @@ class DummySearchContainer extends StatelessWidget {
                 'Search',
                 style: Theme.of(context).textTheme.bodySmall,
               )
-              // TextField(
-              //   keyboardAppearance: MediaQuery.of(context).platformBrightness,
-              //   autofocus: autoFocus,
-              //   onTap: onTap,
-              //   focusNode: focusNode,
-              //   style: TextStyle(
-              //       color: Theme.of(context).secondaryHeaderColor,
-              //       fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-              //       fontWeight: FontWeight.normal),
-              //   cursorColor: Colors.blue,
-              //   controller: controller,
-              //   onChanged: onChanged,
-              //   decoration: InputDecoration(
-              //     contentPadding: EdgeInsets.symmetric(
-              //       horizontal: ResponsiveHelper.responsiveHeight(context, 10),
-              //       vertical: focusNode.hasFocus
-              //           ? ResponsiveHelper.responsiveHeight(context, 20)
-              //           : ResponsiveHelper.responsiveHeight(context, 2),
-              //     ),
-              //     border: InputBorder.none,
-              //     hintText: hintText,
-              //     prefixIcon: controller.text.length > 0
-              //         ? null
-              //         : Icon(
-              //             Icons.search,
-              //             size: ResponsiveHelper.responsiveHeight(context, 20),
-              //             color: Theme.of(context).secondaryHeaderColor,
-              //           ),
-              //     hintStyle: Theme.of(context).textTheme.bodySmall,
-              //     suffixIcon: controller.text.length > 0
-              //         ? IconButton(
-              //             icon: Icon(
-              //               Icons.clear,
-              //               size: ResponsiveHelper.responsiveHeight(context, 15),
-              //               color: Theme.of(context).secondaryHeaderColor,
-              //             ),
-              //             onPressed: onClearText,
-              //           )
-              //         : null,
-              //   ),
-
-              // ),
+             
             ],
           ),
         ),

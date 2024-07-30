@@ -4,14 +4,12 @@ class SearchUserTile extends StatelessWidget {
   final String profileImageUrl;
   final String userName;
   final String profileHandle;
-  // final String company;
   final String bio;
   final bool verified;
   final VoidCallback onPressed;
 
   SearchUserTile(
       {required this.bio,
-      // required this.company,
       required this.userName,
       required this.profileImageUrl,
       required this.profileHandle,
@@ -37,35 +35,6 @@ class SearchUserTile extends StatelessWidget {
         name: userName.toUpperCase().trim().replaceAll('\n', ' '),
         verified: verified,
       ),
-
-      // Align(
-      //   alignment: Alignment.topLeft,
-      //   child: Stack(
-      //     alignment: Alignment.bottomRight,
-      //     children: [
-      //       Padding(
-      //         padding: const EdgeInsets.only(right: 12.0),
-      //         child: Text(userName,
-      //             style: TextStyle(
-      //               fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-      //               fontWeight: FontWeight.bold,
-      //               color: Theme.of(context).secondaryHeaderColor,
-      //             )),
-      //       ),
-      //       verified
-      //           ? const SizedBox.shrink()
-      //           : Positioned(
-      //               top: 3,
-      //               right: 0,
-      //               child: Icon(
-      //                 MdiIcons.checkboxMarkedCircle,
-      //                 size: 11,
-      //                 color: Colors.blue,
-      //               ),
-      //             ),
-      //     ],
-      //   ),
-      // ),
       subtitle: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,7 +86,8 @@ class SearchUserTile extends StatelessWidget {
           SizedBox(
             height: 20.0,
           ),
-          Divider( thickness: .2,
+          Divider(
+            thickness: .2,
             color: Colors.grey[350],
           )
         ],

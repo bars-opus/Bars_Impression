@@ -25,11 +25,12 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _setUpactivityCount();
       _configureNotification();
       initDynamicLinks();
+      // _new();
+      // _updateFields();
     });
     // if (Platform.isIOS) showAnalytics();
   }
@@ -495,37 +496,82 @@ class HomeScreenState extends State<HomeScreen> {
   _updateFields() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference userProfessionalCollection =
-        firestore.collection('user_location_settings');
+        firestore.collection('user_professsional');
 
     // Start a new batch
     WriteBatch batch = firestore.batch();
 
     QuerySnapshot querySnapshot = await userProfessionalCollection.get();
-    querySnapshot.docs.forEach((doc) {
+    for (var doc in querySnapshot.docs) {
       Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
 
       // Only proceed if data is not null
       if (data != null) {
-        // Check if "subaccount_id" field exists
-        if (data.containsKey('subaccount_id')) {
-          // Get the value of "subaccount_id"
-          String? subaccountId = data['subaccount_id'];
+        // Check if "id" field exists
+        if (data.containsKey('id')) {
+          // Get the value of "id"
+          String? newuserId = data['id'];
 
-          // Remove the old "subaccount_id" field
-          data.remove('subaccount_id');
+          // Remove the old "id" field
+          data.remove('id');
 
-          // Set the new "subaccountId" field with the value
-          data['subaccountId'] = subaccountId;
+          // Set the new "userId" field with the value
+          data['userId'] = newuserId;
 
           // Add the updated data to the batch
           batch.set(doc.reference, data);
+        } else if (data.containsKey('userId')) {
+          // Skip the document if "id" field doesn't exist but "userId" field does
+          print(
+              'Skipping document: ${doc.id} because "id" field doesn\'t exist but "userId" field does.');
+          continue;
+        } else {
+          // Skip the document if neither "id" nor "userId" field exists
+          print(
+              'Skipping document: ${doc.id} because neither "id" nor "userId" field exists.');
+          continue;
         }
       }
-    });
+    }
 
     // Commit the batch
     await batch.commit();
   }
+
+  // _updateFields() async {
+  //   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  //   CollectionReference userProfessionalCollection =
+  //       firestore.collection('user_professsional');
+
+  //   // Start a new batch
+  //   WriteBatch batch = firestore.batch();
+
+  //   QuerySnapshot querySnapshot = await userProfessionalCollection.get();
+  //   querySnapshot.docs.forEach((doc) {
+  //     Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
+
+  //     // Only proceed if data is not null
+  //     if (data != null) {
+  //       // Check if "subaccount_id" field exists
+  //       if (data.containsKey('id')) {
+  //         // Get the value of "subaccount_id"
+  //         String? newuserId = data['id'];
+
+  //         // Remove the old "subaccount_id" field
+  //         data.remove('id');
+
+  //         // Set the new "newuserId" field with the value
+  //         data['userId'] = newuserId;
+
+  //         // Add the updated data to the batch
+  //         batch.set(doc.reference, data);
+  //       }
+  //     }
+  //   });
+
+  //   // Commit the batch
+  //   await batch.commit();
+  // }
 
   _deleteFields() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -1927,51 +1973,53 @@ class HomeScreenState extends State<HomeScreen> {
   //   await batch.commit();
   // }
 
-  // _new() async {
-  //   // try {
-  //   final _firestore = FirebaseFirestore.instance;
-  //   CollectionReference targetRef = _firestore.collection('user_professsional');
-  //   CollectionReference sourceRef = _firestore.collection('users');
+  _new2() async {
+    // try {
+    final _firestore = FirebaseFirestore.instance;
+    CollectionReference targetRef = _firestore.collection('user_professsional');
+    CollectionReference sourceRef =
+        _firestore.collection('user_location_settings');
 
-  //   // Get documents from target collection
-  //   QuerySnapshot targetSnapshot = await targetRef.get();
+    // Get documents from target collection
+    QuerySnapshot targetSnapshot = await targetRef.get();
 
-  //   // Initialize Firestore batch
-  //   WriteBatch batch = _firestore.batch();
+    // Initialize Firestore batch
+    WriteBatch batch = _firestore.batch();
 
-  //   for (var targetDoc in targetSnapshot.docs) {
-  //     DocumentReference sourceDocRef = sourceRef.doc(targetDoc.id);
+    for (var targetDoc in targetSnapshot.docs) {
+      DocumentReference sourceDocRef = sourceRef.doc(targetDoc.id);
 
-  //     // Check if a document with the same ID exists in the source collection
-  //     DocumentSnapshot sourceDoc = await sourceDocRef.get();
-  //     if (sourceDoc.exists) {
-  //       Map<String, dynamic>? data = sourceDoc.data() as Map<String, dynamic>?;
-  //       if (data != null) {
-  //         // print('Data for document ${sourceDoc.id}: $data'); // ADD THIS LINE
+      // Check if a document with the same ID exists in the source collection
+      DocumentSnapshot sourceDoc = await sourceDocRef.get();
+      if (sourceDoc.exists) {
+        Map<String, dynamic>? data = sourceDoc.data() as Map<String, dynamic>?;
+        if (data != null) {
+          // print('Data for document ${sourceDoc.id}: $data'); // ADD THIS LINE
 
-  //         var someFields = {
-  //           'continent':
-  //               data.containsKey('continent') ? data['continent'] : null,
-  //           'city': data.containsKey('city') ? data['city'] : null,
-  //           'country': data.containsKey('country') ? data['country'] : null,
-  //           // 'verified': false,
-  //         };
+          var someFields = {
+            'transferRecepientId': data.containsKey('transferRecepientId')
+                ? data['transferRecepientId']
+                : null,
+            // 'city': data.containsKey('city') ? data['city'] : null,
+            // 'country': data.containsKey('country') ? data['country'] : null,
+            // 'verified': false,
+          };
 
-  //         print('Fields to be copied: $someFields'); // ADD THIS LINE
+          print('Fields to be copied: $someFields'); // ADD THIS LINE
 
-  //         // Write the new map to the target document
-  //         batch.set(targetDoc.reference, someFields, SetOptions(merge: true));
-  //       } else {
-  //         print('No data for document ${sourceDoc.id}'); // ADD THIS LINE
-  //       }
-  //     } else {
-  //       print(
-  //           'No document with ID ${targetDoc.id} in source collection'); // ADD THIS LINE
-  //     }
-  //   }
+          // Write the new map to the target document
+          batch.set(targetDoc.reference, someFields, SetOptions(merge: true));
+        } else {
+          print('No data for document ${sourceDoc.id}'); // ADD THIS LINE
+        }
+      } else {
+        print(
+            'No document with ID ${targetDoc.id} in source collection'); // ADD THIS LINE
+      }
+    }
 
-  //   await batch.commit();
-  // }
+    await batch.commit();
+  }
 
   // _eventCopy() async {
   //   final _firestore = FirebaseFirestore.instance;
@@ -2179,39 +2227,39 @@ class HomeScreenState extends State<HomeScreen> {
 //   }
 
 // // This code helps to duplicate specific fields of collections in firebase
-  // _new() async {
-  //   try {
-  //     final _firestore = FirebaseFirestore.instance;
-  //        CollectionReference targetRef =
-  //         _firestore.collection('user_professsional');
-  //     CollectionReference sourceRef =  _firestore.collection('users');
+  _new() async {
+    try {
+      final _firestore = FirebaseFirestore.instance;
+      CollectionReference targetRef = _firestore.collection('new_userRating');
+      CollectionReference sourceRef =
+          _firestore.collection('user_professsional');
 
-  //     // Get documents from source collection
-  //     QuerySnapshot querySnapshot = await sourceRef.get();
+      // Get documents from source collection
+      QuerySnapshot querySnapshot = await sourceRef.get();
 
-  //     // Initialize Firestore batch
-  //     WriteBatch batch = _firestore.batch();
+      // Initialize Firestore batch
+      WriteBatch batch = _firestore.batch();
 
-  //     querySnapshot.docs.forEach((doc) {
-  //       // Create a new map that only contains the fields you're interested in
-  //       var someFields = {
+      querySnapshot.docs.forEach((doc) {
+        // Create a new map that only contains the fields you're interested in
+        var someFields = {
+          ' userId': doc.id,
+          'oneStar': 0,
+          'twoStar': 0,
+          'threeStar': 0,
+          'fourStar': 0,
+          'fiveStar': 0,
+        };
 
-  //         'userName': doc.userName,
-  //         'profileImageUrl':  doc.profileImageUrl,
-  //         'profileHandle':  doc.profileHandle,
-  //          'verified':  doc.verified,
+        // Write the new map to the target document
+        batch.set(targetRef.doc(doc.id), someFields);
+      });
 
-  //       };
-
-  //       // Write the new map to the target document
-  //     batch.set(targetRef.doc(doc.id), someFields);
-  //     });
-
-  //     await batch.commit();
-  //   } catch (e) {
-  //     print(e.toString());
-  //   }
-  // }
+      await batch.commit();
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 
   _setUpactivityCount() {
     var _provider = Provider.of<UserData>(context, listen: false);
