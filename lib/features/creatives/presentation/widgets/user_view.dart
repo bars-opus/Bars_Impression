@@ -301,10 +301,10 @@ class _UserViewState extends State<UserView> {
                         GestureDetector(
                           onTap: () {
                             HapticFeedback.mediumImpact();
-                            _showBottomSheetBookingCalendar();
+                            _showBottomSheetBookMe(context);
                           },
                           child: Icon(
-                            Icons.calendar_month,
+                            Icons.mail,
                             size:
                                 ResponsiveHelper.responsiveHeight(context, 25),
                             color: Colors.blue,

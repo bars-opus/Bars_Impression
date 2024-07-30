@@ -1590,29 +1590,28 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                                   },
                                 );
                               }
-                            : _noResources
+                            :
+                            // _noResources
+                            //     ? () {
+                            //         _showBottomSheetRequestPayouts(false);
+                            //       }
+                            //     :
+                            _showFunds && _expectedPeople > 1 && _eventHasEnded
                                 ? () {
-                                    _showBottomSheetRequestPayouts(false);
+                                    _showBottomSheetRequestPayouts(true);
                                   }
-                                : _showFunds &&
-                                        _expectedPeople > 1 &&
-                                        _eventHasEnded
+                                : !_eventHasEnded
                                     ? () {
-                                        _showBottomSheetRequestPayouts(true);
+                                        _showBottomSheetRequestPayouts(false);
                                       }
-                                    : !_eventHasEnded
+                                    : totalSales == 0
                                         ? () {
+                                            _showBottomSheetNoSalesPayouts();
+                                          }
+                                        : () {
                                             _showBottomSheetRequestPayouts(
                                                 false);
-                                          }
-                                        : totalSales == 0
-                                            ? () {
-                                                _showBottomSheetNoSalesPayouts();
-                                              }
-                                            : () {
-                                                _showBottomSheetRequestPayouts(
-                                                    false);
-                                              },
+                                          },
                         'Create affiliate', () {
                       widget.event.isFree ||
                               widget.event.isCashPayment ||

@@ -19,7 +19,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  final int _updateAppVersion = Platform.isIOS ? 25 : 25;
+  final int _updateAppVersion = Platform.isIOS ? 26 : 26;
   String notificationMsg = '';
 
   @override
@@ -29,7 +29,7 @@ class HomeScreenState extends State<HomeScreen> {
       _setUpactivityCount();
       _configureNotification();
       initDynamicLinks();
-      // _new();
+      // _new2();
       // _updateFields();
     });
     // if (Platform.isIOS) showAnalytics();

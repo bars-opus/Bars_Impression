@@ -62,8 +62,8 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
     _overViewController.addListener(_onAskTextChanged);
     _setupIsBlockedUser();
     _setupIsBlocking();
-    _setUpReviews();
-    _fetchRating();
+    // _setUpReviews();
+    // _fetchRating();
     var _provider = Provider.of<UserData>(context, listen: false);
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -1585,74 +1585,78 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
           if (!_isBlockingUser && !_isBlockedUser)
             _messageButton(
               _isCurrentUser
-                  ? currentUserGhanaOrCurrencyGHS
-                      ? 'Booking manager'
-                      : 'Booking contact'
+                  ?
+                  // currentUserGhanaOrCurrencyGHS
+                  //     ? 'Booking manager'
+                  //     :
+                  'Booking contact'
                   : 'Book ${widget.userPortfolio.userName}',
-              _isCurrentUser
-                  ? () {
-                      currentUserGhanaOrCurrencyGHS
-                          ? isPayOutSetUp
-                              ? _showBottomSheetBookingCalendar(false)
-                              : _showBottomSheetManagerDonationDoc(
-                                  false, true, () {})
-                          : currentUserPayoutInfo.country!.isEmpty
-                              ? _showBottomSheetNoCurrency(false)
-                              : currentUserPayoutInfo.country == 'Ghana' &&
-                                      currentUserPayoutInfo.currency!.isEmpty
-                                  ? _showBottomSheetNoCurrency(true)
-                                  : _showBottomSheetBookMe();
-                    }
-                  : () {
-                      creativeIsGhanaOrCurrencyGHS &&
-                              currentUserGhanaOrCurrencyGHS &&
-                              currentUserPayoutInfo.currency!.isNotEmpty
-                          ? _showBottomSheetBookingCalendar(false)
-                          : currentUserPayoutInfo.country == 'Ghana' &&
-                                  currentUserPayoutInfo.currency!.isEmpty
-                              ? _showBottomSheetNoCurrency(true)
-                              : _showBottomSheetBookMe();
+              // _isCurrentUser
+              // ?
+              () {
+                _showBottomSheetBookMe();
+                //     currentUserGhanaOrCurrencyGHS
+                //         ? isPayOutSetUp
+                //             ? _showBottomSheetBookingCalendar(false)
+                //             : _showBottomSheetManagerDonationDoc(
+                //                 false, true, () {})
+                //         : currentUserPayoutInfo.country!.isEmpty
+                //             ? _showBottomSheetNoCurrency(false)
+                //             : currentUserPayoutInfo.country == 'Ghana' &&
+                //                     currentUserPayoutInfo.currency!.isEmpty
+                //                 ? _showBottomSheetNoCurrency(true)
+                //                 : _showBottomSheetBookMe();
+                //   }
+                // : () {
+                //     creativeIsGhanaOrCurrencyGHS &&
+                //             currentUserGhanaOrCurrencyGHS &&
+                //             currentUserPayoutInfo.currency!.isNotEmpty
+                //         ? _showBottomSheetBookingCalendar(false)
+                //         : currentUserPayoutInfo.country == 'Ghana' &&
+                //                 currentUserPayoutInfo.currency!.isEmpty
+                //             ? _showBottomSheetNoCurrency(true)
+                //             : _showBottomSheetBookMe();
 
-                      ;
-                    },
+                //     ;
+              },
               true,
             ),
           const SizedBox(
             height: 20,
           ),
-          if (creativeIsGhanaOrCurrencyGHS)
-            if (currentUserPayoutInfo.country == 'Ghana')
-              _isCurrentUser
-                  ? _donationButton(
-                      "See donations",
-                      Icons.payment,
-                      Colors.green[800] ?? Colors.green,
-                      () {
-                        isPayOutSetUp
-                            ? _navigateToPage(
-                                context,
-                                UserDonations(
-                                  currentUserId: widget.currentUserId,
-                                ),
-                              )
-                            : currentUserPayoutInfo.currency!.isEmpty
-                                ? _showBottomSheetNoCurrency(true)
-                                : _showBottomSheetManagerDonationDoc(
-                                    true, true, () {});
-                      },
-                      false,
-                    )
-                  : _donationButton(
-                      'Donate',
-                      Icons.payment,
-                      Colors.green[800] ?? Colors.green,
-                      () {
-                        currentUserPayoutInfo.currency!.isEmpty
-                            ? _showCurrencyPicker()
-                            : _showBottomSheetDonate();
-                      },
-                      false,
-                    ),
+          // if (creativeIsGhanaOrCurrencyGHS)
+          //   if (currentUserPayoutInfo.country == 'Ghana')
+          //     _isCurrentUser
+          //         ? _donationButton(
+          //             "See donations",
+          //             Icons.payment,
+          //             Colors.green[800] ?? Colors.green,
+          //             () {
+          //               isPayOutSetUp
+          //                   ? _navigateToPage(
+          //                       context,
+          //                       UserDonations(
+          //                         currentUserId: widget.currentUserId,
+          //                       ),
+          //                     )
+          //                   : currentUserPayoutInfo.currency!.isEmpty
+          //                       ? _showBottomSheetNoCurrency(true)
+          //                       : _showBottomSheetManagerDonationDoc(
+          //                           true, true, () {});
+          //             },
+          //             false,
+          //           )
+          //         : _donationButton(
+          //             'Donate',
+          //             Icons.payment,
+          //             Colors.green[800] ?? Colors.green,
+          //             () {
+          //               currentUserPayoutInfo.currency!.isEmpty
+          //                   ? _showCurrencyPicker()
+          //                   : _showBottomSheetDonate();
+          //             },
+          //             false,
+          //           ),
           if (currentUserPayoutInfo.city!.isEmpty)
             _donationButton(
               'To be discoverd, enter you city',
@@ -1691,10 +1695,10 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                 maxLines: 5,
                 overflow: TextOverflow.ellipsis,
               )),
-          Divider(
-            thickness: .2,
-            height: 50,
-          ),
+          // Divider(
+          //   thickness: .2,
+          //   height: 50,
+          // ),
         ],
       ),
     );
@@ -1854,61 +1858,61 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
             children: [
               const SizedBox(height: 40),
               _bookingAndDonateButtons(),
-              Container(
-                color: Theme.of(context).cardColor,
-                height: ResponsiveHelper.responsiveHeight(context, 150),
-                width: double.infinity,
-                child: Center(
-                  child: SingleChildScrollView(
-                    physics: const NeverScrollableScrollPhysics(),
-                    child: RatingAggregateWidget(
-                      isCurrentUser: _isCurrentUser,
-                      starCounts: _userRatings == null
-                          ? {
-                              5: 0,
-                              4: 0,
-                              3: 0,
-                              2: 0,
-                              1: 0,
-                            }
-                          : {
-                              5: _userRatings!.fiveStar,
-                              4: _userRatings!.fourStar,
-                              3: _userRatings!.threeStar,
-                              2: _userRatings!.twoStar,
-                              1: _userRatings!.oneStar,
-                            },
-                    ),
-                  ),
-                ),
-              ),
-              _divider('Reviews', 'review',
-                  _provider.company.length >= 4 ? true : false),
-              if (!_isFecthingRatings) _buildDisplayReviewGrid(context),
+              // Container(
+              //   color: Theme.of(context).cardColor,
+              //   height: ResponsiveHelper.responsiveHeight(context, 150),
+              //   width: double.infinity,
+              //   child: Center(
+              //     child: SingleChildScrollView(
+              //       physics: const NeverScrollableScrollPhysics(),
+              //       child: RatingAggregateWidget(
+              //         isCurrentUser: _isCurrentUser,
+              //         starCounts: _userRatings == null
+              //             ? {
+              //                 5: 0,
+              //                 4: 0,
+              //                 3: 0,
+              //                 2: 0,
+              //                 1: 0,
+              //               }
+              //             : {
+              //                 5: _userRatings!.fiveStar,
+              //                 4: _userRatings!.fourStar,
+              //                 3: _userRatings!.threeStar,
+              //                 2: _userRatings!.twoStar,
+              //                 1: _userRatings!.oneStar,
+              //               },
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              // _divider('Reviews', 'review',
+              //     _provider.company.length >= 4 ? true : false),
+              // if (!_isFecthingRatings) _buildDisplayReviewGrid(context),
               _divider('Price list', 'price',
                   _provider.priceRate.length >= 2 ? false : false),
-              if (_provider.bookingPriceRate != null && !_isCurrentUser)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "${_provider.currency} ${_provider.bookingPriceRate!.price.toString()}",
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 30.0, right: 10),
-                        child: MiniCircularProgressButton(
-                            color: Colors.blue,
-                            text: 'Book',
-                            onPressed: () {
-                              _showBottomSheetBookingCalendar(true);
-                            }),
-                      ),
-                    ),
-                  ],
-                ),
+              // if (_provider.bookingPriceRate != null && !_isCurrentUser)
+              //   Row(
+              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //     children: [
+              //       Text(
+              //         "${_provider.currency} ${_provider.bookingPriceRate!.price.toString()}",
+              //         style: Theme.of(context).textTheme.titleLarge,
+              //       ),
+              //       Align(
+              //         alignment: Alignment.bottomRight,
+              //         child: Padding(
+              //           padding: const EdgeInsets.only(bottom: 30.0, right: 10),
+              //           child: MiniCircularProgressButton(
+              //               color: Colors.blue,
+              //               text: 'Book',
+              //               onPressed: () {
+              //                 _showBottomSheetBookingCalendar(true);
+              //               }),
+              //         ),
+              //       ),
+              //     ],
+              //   ),
               PriceRateWidget(
                 edit: false,
                 prices: _provider.priceRate,

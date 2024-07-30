@@ -2579,8 +2579,9 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                 const SizedBox(
                   height: 30,
                 ),
-                ContentFieldWhite(
-                  autofocus: false,
+                ContentFieldBlack(
+                  onlyBlack: false,
+                  // autofocus: false,
                   labelText: 'Program title',
                   hintText: 'Schedule(Program) title',
                   initialValue: _provider.punchline,
@@ -2592,12 +2593,19 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                     return null;
                   },
                 ),
+
+
+                
+
+
+
+
                 // _ticketFiled(
                 //   false,
                 //   false,
                 //   'Program title',
                 //   'Schedule(Program) title',
-                // _scheduleTitleController,
+                //   _scheduleTitleController,
                 //   TextInputType.text,
                 //   (value) {
                 //     if (value == null || value.isEmpty) {
