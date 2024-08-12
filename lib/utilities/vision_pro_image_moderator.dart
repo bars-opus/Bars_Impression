@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:io';
+import 'package:bars/utilities/secrets.dart';
 
 class VisionApiHelper {
   Future<Map<String, dynamic>?> safeSearchDetect(String imagePath) async {
-    final String apiKey = 'AIzaSyBSKY9WsjiLuCprwn9Ay-VaE226lbtJAfw';
+    final String apiKey = visionHelperApiKey.VISIONHELPERPAPI_KEY;
     final Uri endpoint = Uri.parse(
         'https://vision.googleapis.com/v1/images:annotate?key=$apiKey');
 

@@ -27,6 +27,7 @@ class CommentContentField extends StatelessWidget {
         child: ListTile(
           title: TextField(
             autofocus: autofocus,
+            cursorColor: Colors.blue,
             controller: controller,
             keyboardAppearance: MediaQuery.of(context).platformBrightness,
             textCapitalization: TextCapitalization.sentences,

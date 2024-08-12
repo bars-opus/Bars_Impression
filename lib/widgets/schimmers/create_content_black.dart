@@ -26,14 +26,18 @@ class ContentFieldBlack extends StatelessWidget {
           child: TextFormField(
             keyboardType: TextInputType.multiline,
             maxLines: null,
+            cursorColor: Colors.blue,
             textCapitalization: TextCapitalization.sentences,
             keyboardAppearance: MediaQuery.of(context).platformBrightness,
             initialValue: initialValue,
             style: TextStyle(
                 fontSize: ResponsiveHelper.responsiveFontSize(context, 16.0),
-                color: onlyBlack? Colors.black: Theme.of(context).secondaryHeaderColor,
+                color: onlyBlack
+                    ? Colors.black
+                    : Theme.of(context).secondaryHeaderColor,
                 fontWeight: FontWeight.normal),
             decoration: InputDecoration(
+                focusColor: Colors.blue,
                 hintText: hintText,
                 hintStyle: TextStyle(
                     fontSize:
@@ -43,6 +47,11 @@ class ContentFieldBlack extends StatelessWidget {
                 labelStyle: TextStyle(
                   fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
                   color: Colors.grey,
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.blue,
+                  ),
                 ),
                 enabledBorder: new UnderlineInputBorder(
                     borderSide: new BorderSide(color: Colors.grey))),

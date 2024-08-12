@@ -13,7 +13,7 @@ class WelcomeInfo extends StatelessWidget {
     required this.title,
     required this.icon,
     required this.showMore,
-     required this.moreOnpressed,
+    required this.moreOnpressed,
   });
 
   @override
@@ -30,11 +30,10 @@ class WelcomeInfo extends StatelessWidget {
         ),
         Container(
           width: width,
-          child: GestureDetector
-          
-          (
-onTap:  moreOnpressed,            child: RichText(
-              textScaleFactor: MediaQuery.of(context).textScaleFactor,
+          child: GestureDetector(
+            onTap: moreOnpressed,
+            child: RichText(
+              textScaler: MediaQuery.of(context).textScaler,
               text: TextSpan(
                 children: [
                   TextSpan(
@@ -70,6 +69,7 @@ onTap:  moreOnpressed,            child: RichText(
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 30.0),
           child: Divider(
+            thickness: .2,
             color: Colors.grey,
           ),
         ),

@@ -2,13 +2,13 @@ import 'package:bars/utilities/exports.dart';
 
 class TicketGoupWidget extends StatefulWidget {
   final List<TicketModel> groupTickets;
-  // final VoidCallback onPressed;
   final bool isEditing;
   final bool onInvite;
   final bool isFree;
   final String currency;
   final String eventId;
   final String eventAuthorId;
+  final bool onCalendatSchedule;
 
   const TicketGoupWidget({
     super.key,
@@ -19,6 +19,7 @@ class TicketGoupWidget extends StatefulWidget {
     required this.isFree,
     required this.eventId,
     required this.eventAuthorId,
+    this.onCalendatSchedule = false,
   });
 
   @override
@@ -122,15 +123,11 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
         List<Widget> groupWidgets = groups.entries.map((groupEntry) {
           String groupName = groupEntry.key;
           List<TicketModel> tickets = groupEntry.value;
-
           List<Widget> ticketWidgets = tickets.map((ticket) {
             bool isSelected = selectedTickets[ticket.id] ?? false;
             Color textColor = isSelected ? Colors.white : Colors.black;
             int availableSlot = ticket.maxOder - ticket.salesCount;
             // bool checkingTicketAvailability = false;
-
-            // ... your ListTile or other widget for each ticket ...
-            // Placeholder for ticket widget
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 0),
               child: Container(
@@ -155,26 +152,28 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SalesReceiptWidget(
-                                isTicket: true,
-                                color: Colors.black,
-                                width: 100,
-                                isRefunded: false,
-                                lable: 'Type',
-                                value: ticket.type.toUpperCase(),
-                              ),
-                              SalesReceiptWidget(
-                                isTicket: true,
-                                color: Colors.black,
-                                width: 100,
-                                isRefunded: false,
-                                lable: 'Acess level',
-                                value: ticket.accessLevel,
-                              ),
+                              if (ticket.type.isNotEmpty)
+                                SalesReceiptWidget(
+                                  isTicket: true,
+                                  text2Ccolor: Colors.black,
+                                  width: 100,
+                                  isRefunded: false,
+                                  lable: 'Type',
+                                  value: ticket.type.toUpperCase(),
+                                ),
+                              if (ticket.accessLevel.isNotEmpty)
+                                SalesReceiptWidget(
+                                  isTicket: true,
+                                  text2Ccolor: Colors.black,
+                                  width: 100,
+                                  isRefunded: false,
+                                  lable: 'Benefits',
+                                  value: ticket.accessLevel,
+                                ),
                               if (ticket.maxOder != 0)
                                 SalesReceiptWidget(
                                   isTicket: true,
-                                  color: Colors.black,
+                                  text2Ccolor: Colors.black,
                                   width: 100,
                                   isRefunded: false,
                                   lable: 'Max order',
@@ -183,100 +182,12 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
                               if (ticket.maxOder != 0)
                                 SalesReceiptWidget(
                                   isTicket: true,
-                                  color: Colors.black,
+                                  text2Ccolor: Colors.black,
                                   width: 100,
                                   isRefunded: false,
                                   lable: 'Available slot',
                                   value: availableSlot.toString(),
                                 ),
-                              // RichText(
-                              //   textScaleFactor:
-                              //       MediaQuery.of(context).textScaleFactor,
-                              //   text: TextSpan(
-                              //     children: [
-                              //       TextSpan(
-                              //         children: [
-                              //           TextSpan(
-                              //             text: "Type:                 ",
-                              //             style: TextStyle(
-                              //               fontSize: ResponsiveHelper
-                              //                   .responsiveFontSize(
-                              //                       context, 14.0),
-                              //               color: textColor,
-                              //             ),
-                              //           ),
-                              //           TextSpan(
-                              //             text: ticket.type.toUpperCase(),
-                              //             style: TextStyle(
-                              //               fontSize: ResponsiveHelper
-                              //                   .responsiveFontSize(
-                              //                       context, 16.0),
-                              //               fontWeight: FontWeight.bold,
-                              //               color: textColor,
-                              //             ),
-                              //           )
-                              //         ],
-                              //       ),
-                              //       TextSpan(
-                              //         text: "\nAcess level:      ",
-                              //         style: TextStyle(
-                              //           fontSize:
-                              //               ResponsiveHelper.responsiveFontSize(
-                              //                   context, 14.0),
-                              //           color: textColor,
-                              //         ),
-                              //       ),
-                              //       TextSpan(
-                              //           text: ticket.accessLevel,
-                              //           style: TextStyle(
-                              //             fontSize: ResponsiveHelper
-                              //                 .responsiveFontSize(
-                              //                     context, 16.0),
-                              //             color: textColor,
-                              //           )),
-                              //       if (ticket.maxOder != 0)
-                              //         TextSpan(
-                              //           text: "\nMax order:        ",
-                              //           style: TextStyle(
-                              //             fontSize: ResponsiveHelper
-                              //                 .responsiveFontSize(
-                              //                     context, 14.0),
-                              //             color: textColor,
-                              //           ),
-                              //         ),
-                              //       if (ticket.maxOder != 0)
-                              //         TextSpan(
-                              //             text: ticket.maxOder.toString(),
-                              //             style: TextStyle(
-                              //               fontSize: ResponsiveHelper
-                              //                   .responsiveFontSize(
-                              //                       context, 16.0),
-                              //               color: textColor,
-                              //             )),
-                              //       if (ticket.maxOder != 0)
-                              //         TextSpan(
-                              //           text: "\nAvailable slot:   ",
-                              //           style: TextStyle(
-                              //             fontSize: ResponsiveHelper
-                              //                 .responsiveFontSize(
-                              //                     context, 14.0),
-                              //             color: textColor,
-                              //           ),
-                              //         ),
-                              //       if (ticket.maxOder != 0)
-                              //         TextSpan(
-                              //             text: availableSlot.toString(),
-                              //             style: TextStyle(
-                              //               fontSize: ResponsiveHelper
-                              //                   .responsiveFontSize(
-                              //                       context, 16.0),
-                              //               color: textColor,
-                              //             ))
-                              //     ],
-                              //   ),
-                              //   overflow: TextOverflow.ellipsis,
-                              // ),
-                              // Divider()
                             ],
                           ),
                         ),
@@ -319,6 +230,7 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
                                                     context, 10.0),
                                             child: CircularProgressIndicator(
                                               strokeWidth: 3,
+                                              color: Colors.blue,
                                             ),
                                           )
                                         : Checkbox(
@@ -373,14 +285,14 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
                               ),
                       ],
                     ),
-                    // trailing:
-                    // ),
                   )),
             );
           }).toList();
 
           return ExpansionTile(
             initiallyExpanded: true,
+            iconColor: Colors.grey,
+            collapsedIconColor: Colors.blue,
             title: Text(
               groupName.toUpperCase(),
               style: TextStyle(
@@ -401,7 +313,6 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
                 width: ResponsiveHelper.responsiveFontSize(context, 200),
                 child: Text(
                   MyDateFormat.toDate(date),
-                  // DateFormat('yyyy-MM-dd').format(date),
                   style: TextStyle(
                       color: widget.isEditing || widget.onInvite
                           ? Colors.white
@@ -421,7 +332,9 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
             SizedBox(
               height: widget.isEditing ? 10 : 30,
             ),
-            Divider(),
+            Divider(
+              thickness: .2,
+            ),
             SizedBox(
               height: widget.isEditing ? 10 : 30,
             ),
@@ -431,168 +344,3 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
     );
   }
 }
-
-// class TicketGoupWidget extends StatelessWidget {
-//   final List<TicketModel> groupTickets;
-//   final VoidCallback onPressed;
-
-//   const TicketGoupWidget({
-//     super.key,
-//     required this.groupTickets,
-//     required this.onPressed,
-//   });
-
-//   _removeTicket(TicketModel removingticket) async {
-//     groupTickets.removeWhere((ticket) => ticket.price == removingticket.price);
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     List<TicketModel> tickets = groupTickets;
-//     Map<String, List<TicketModel>> ticketsByGroup = {};
-//     for (TicketModel ticket in tickets) {
-//       if (!ticketsByGroup.containsKey(ticket.group)) {
-//         ticketsByGroup[ticket.group] = [];
-//       }
-//       ticketsByGroup[ticket.group]!.add(ticket);
-// //     }
-//     return ListView.builder(
-//       physics: const NeverScrollableScrollPhysics(),
-//       itemCount: ticketsByGroup.length,
-//       itemBuilder: (BuildContext context, int groupIndex) {
-//         // Get the group name and tickets for the current index
-//         String groupName = ticketsByGroup.keys.elementAt(groupIndex);
-//         List<TicketModel> groupTickets =
-//             ticketsByGroup.values.elementAt(groupIndex);
-
-//         // Create a sublist of widgets for each ticket in the group
-//         List<Widget> ticketWidgets = groupTickets
-//             .map((ticket) => Padding(
-//                   padding: const EdgeInsets.only(top: 10.0),
-//                   child: ListTile(
-//                     onTap: () {
-//                       onPressed();
-//                     },
-
-//                     title: RichText(
-//                       textScaleFactor: MediaQuery.of(context).textScaleFactor,
-//                       text: TextSpan(
-//                         children: [
-//                           TextSpan(
-//                             text: "Type:              ",
-//                             style: TextStyle(
-//                               fontSize: ResponsiveHelper.responsiveFontSize(
-//                                   context, 14.0),
-//                               color: Colors.black,
-//                             ),
-//                           ),
-//                           TextSpan(
-//                             text: ticket.type.toUpperCase(),
-//                             style: TextStyle(
-//                               fontSize: ResponsiveHelper.responsiveFontSize(
-//                                   context, 18.0),
-//                               color: Colors.black,
-//                             ),
-//                           )
-//                         ],
-//                       ),
-//                       overflow: TextOverflow.ellipsis,
-//                     ),
-
-//                     //  Text(
-//                     //   ticket.type,
-//                     //   style: Theme.of(context).textTheme.bodyMedium,
-//                     // ),
-//                     subtitle: Column(
-//                       mainAxisAlignment: MainAxisAlignment.start,
-//                       crossAxisAlignment: CrossAxisAlignment.start,
-//                       children: [
-//                         RichText(
-//                           textScaleFactor:
-//                               MediaQuery.of(context).textScaleFactor,
-//                           text: TextSpan(
-//                             children: [
-//                               TextSpan(
-//                                 text: "Acess level:   ",
-//                                 style: TextStyle(
-//                                   fontSize: ResponsiveHelper.responsiveFontSize(
-//                                       context, 14.0),
-//                                   color: Colors.black,
-//                                 ),
-//                               ),
-//                               TextSpan(
-//                                   text: ticket.accessLevel,
-//                                   style: TextStyle(
-//                                     fontSize:
-//                                         ResponsiveHelper.responsiveFontSize(
-//                                             context, 16.0),
-//                                     color: Colors.black,
-//                                   ))
-//                             ],
-//                           ),
-//                           overflow: TextOverflow.ellipsis,
-//                         ),
-//                         Divider()
-//                       ],
-//                     ),
-//                     trailing: Column(
-//                       children: [
-//                         Text(
-//                           '\$${ticket.price}',
-//                           style: TextStyle(
-//                               fontSize: ResponsiveHelper.responsiveFontSize(
-//                                   context, 18.0),
-//                               color: Colors.black,
-//                               fontWeight: FontWeight.bold),
-//                         ),
-//                         GestureDetector(
-//                             onTap: () => _removeTicket(ticket),
-//                             child: Icon(
-//                               Icons.remove,
-//                               color: Colors.red,
-//                             )),
-//                       ],
-//                     ),
-//                   ),
-//                 ))
-//             .toList();
-
-//         // Return a Card widget for the group, containing a ListView of the tickets
-// return Padding(
-//   padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0),
-//   child: Container(
-//     decoration: BoxDecoration(
-//       color: Theme.of(context).primaryColorLight,
-//       borderRadius: BorderRadius.circular(5),
-//     ),
-//     child: Column(
-//       children: <Widget>[
-//         ListTile(
-//           title: Text(
-//             groupName.toUpperCase(),
-//             style: Theme.of(context).textTheme.displayMedium,
-//           ),
-//         ),
-//         Container(
-//           decoration: BoxDecoration(
-//               color: Colors.blue[50],
-//               borderRadius: BorderRadius.only(
-//                   bottomRight: Radius.circular(5.0),
-//                   bottomLeft: Radius.circular(5.0))),
-//           child: ListView.builder(
-//             physics: const NeverScrollableScrollPhysics(),
-//             shrinkWrap: true,
-//             itemCount: ticketWidgets.length,
-//             itemBuilder: (BuildContext context, int ticketIndex) {
-//               return ticketWidgets[ticketIndex];
-//             },
-//           ),
-//         ),
-//       ],
-//     ),
-//   ),
-// );
-//       },
-//     );
-//   }
-// }

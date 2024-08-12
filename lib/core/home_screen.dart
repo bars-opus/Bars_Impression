@@ -1,10 +1,8 @@
-import 'dart:math';
-
 // import 'package:app_tracking_transparency/app_tracking_transparency.dart';
-import 'package:bars/general/pages/chats/chats.dart';
+import 'package:bars/features/events/event_room_and_chat/presentation/screens/chats.dart';
+import 'package:bars/features/gemini_ai/presentation/widgets/hope_action.dart';
 
 import 'package:bars/utilities/exports.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
@@ -21,17 +19,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  final int _updateAppVersion = Platform.isIOS ? 21 : 21;
+  final int _updateAppVersion = Platform.isIOS ? 26 : 26;
   String notificationMsg = '';
+  bool _isFecthing = true;
 
   @override
   void initState() {
     super.initState();
-
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _setUpactivityCount();
       _configureNotification();
       initDynamicLinks();
+      _setBrandTarget();
+      // _new();
+      // _updateFields();
     });
     // if (Platform.isIOS) showAnalytics();
   }
@@ -129,7 +130,8 @@ class HomeScreenState extends State<HomeScreen> {
   //             ),
   //             const SizedBox(height: 20),
   //             RichText(
-  //               textScaleFactor: MediaQuery.of(context).textScaleFactor,
+  //                              textScaler: MediaQuery.of(context).textScaler,
+
   //               text: TextSpan(
   //                 children: [
   //                   TextSpan(
@@ -497,37 +499,82 @@ class HomeScreenState extends State<HomeScreen> {
   _updateFields() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference userProfessionalCollection =
-        firestore.collection('user_location_settings');
+        firestore.collection('user_professsional');
 
     // Start a new batch
     WriteBatch batch = firestore.batch();
 
     QuerySnapshot querySnapshot = await userProfessionalCollection.get();
-    querySnapshot.docs.forEach((doc) {
+    for (var doc in querySnapshot.docs) {
       Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
 
       // Only proceed if data is not null
       if (data != null) {
-        // Check if "subaccount_id" field exists
-        if (data.containsKey('subaccount_id')) {
-          // Get the value of "subaccount_id"
-          String? subaccountId = data['subaccount_id'];
+        // Check if "id" field exists
+        if (data.containsKey('id')) {
+          // Get the value of "id"
+          String? newuserId = data['id'];
 
-          // Remove the old "subaccount_id" field
-          data.remove('subaccount_id');
+          // Remove the old "id" field
+          data.remove('id');
 
-          // Set the new "subaccountId" field with the value
-          data['subaccountId'] = subaccountId;
+          // Set the new "userId" field with the value
+          data['userId'] = newuserId;
 
           // Add the updated data to the batch
           batch.set(doc.reference, data);
+        } else if (data.containsKey('userId')) {
+          // Skip the document if "id" field doesn't exist but "userId" field does
+          print(
+              'Skipping document: ${doc.id} because "id" field doesn\'t exist but "userId" field does.');
+          continue;
+        } else {
+          // Skip the document if neither "id" nor "userId" field exists
+          print(
+              'Skipping document: ${doc.id} because neither "id" nor "userId" field exists.');
+          continue;
         }
       }
-    });
+    }
 
     // Commit the batch
     await batch.commit();
   }
+
+  // _updateFields() async {
+  //   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  //   CollectionReference userProfessionalCollection =
+  //       firestore.collection('user_professsional');
+
+  //   // Start a new batch
+  //   WriteBatch batch = firestore.batch();
+
+  //   QuerySnapshot querySnapshot = await userProfessionalCollection.get();
+  //   querySnapshot.docs.forEach((doc) {
+  //     Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
+
+  //     // Only proceed if data is not null
+  //     if (data != null) {
+  //       // Check if "subaccount_id" field exists
+  //       if (data.containsKey('id')) {
+  //         // Get the value of "subaccount_id"
+  //         String? newuserId = data['id'];
+
+  //         // Remove the old "subaccount_id" field
+  //         data.remove('id');
+
+  //         // Set the new "newuserId" field with the value
+  //         data['userId'] = newuserId;
+
+  //         // Add the updated data to the batch
+  //         batch.set(doc.reference, data);
+  //       }
+  //     }
+  //   });
+
+  //   // Commit the batch
+  //   await batch.commit();
+  // }
 
   _deleteFields() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -1929,51 +1976,53 @@ class HomeScreenState extends State<HomeScreen> {
   //   await batch.commit();
   // }
 
-  // _new() async {
-  //   // try {
-  //   final _firestore = FirebaseFirestore.instance;
-  //   CollectionReference targetRef = _firestore.collection('user_professsional');
-  //   CollectionReference sourceRef = _firestore.collection('users');
+  _new2() async {
+    // try {
+    final _firestore = FirebaseFirestore.instance;
+    CollectionReference targetRef = _firestore.collection('user_professsional');
+    CollectionReference sourceRef =
+        _firestore.collection('user_location_settings');
 
-  //   // Get documents from target collection
-  //   QuerySnapshot targetSnapshot = await targetRef.get();
+    // Get documents from target collection
+    QuerySnapshot targetSnapshot = await targetRef.get();
 
-  //   // Initialize Firestore batch
-  //   WriteBatch batch = _firestore.batch();
+    // Initialize Firestore batch
+    WriteBatch batch = _firestore.batch();
 
-  //   for (var targetDoc in targetSnapshot.docs) {
-  //     DocumentReference sourceDocRef = sourceRef.doc(targetDoc.id);
+    for (var targetDoc in targetSnapshot.docs) {
+      DocumentReference sourceDocRef = sourceRef.doc(targetDoc.id);
 
-  //     // Check if a document with the same ID exists in the source collection
-  //     DocumentSnapshot sourceDoc = await sourceDocRef.get();
-  //     if (sourceDoc.exists) {
-  //       Map<String, dynamic>? data = sourceDoc.data() as Map<String, dynamic>?;
-  //       if (data != null) {
-  //         // print('Data for document ${sourceDoc.id}: $data'); // ADD THIS LINE
+      // Check if a document with the same ID exists in the source collection
+      DocumentSnapshot sourceDoc = await sourceDocRef.get();
+      if (sourceDoc.exists) {
+        Map<String, dynamic>? data = sourceDoc.data() as Map<String, dynamic>?;
+        if (data != null) {
+          // print('Data for document ${sourceDoc.id}: $data'); // ADD THIS LINE
 
-  //         var someFields = {
-  //           'continent':
-  //               data.containsKey('continent') ? data['continent'] : null,
-  //           'city': data.containsKey('city') ? data['city'] : null,
-  //           'country': data.containsKey('country') ? data['country'] : null,
-  //           // 'verified': false,
-  //         };
+          var someFields = {
+            'transferRecepientId': data.containsKey('transferRecepientId')
+                ? data['transferRecepientId']
+                : null,
+            // 'city': data.containsKey('city') ? data['city'] : null,
+            // 'country': data.containsKey('country') ? data['country'] : null,
+            // 'verified': false,
+          };
 
-  //         print('Fields to be copied: $someFields'); // ADD THIS LINE
+          print('Fields to be copied: $someFields'); // ADD THIS LINE
 
-  //         // Write the new map to the target document
-  //         batch.set(targetDoc.reference, someFields, SetOptions(merge: true));
-  //       } else {
-  //         print('No data for document ${sourceDoc.id}'); // ADD THIS LINE
-  //       }
-  //     } else {
-  //       print(
-  //           'No document with ID ${targetDoc.id} in source collection'); // ADD THIS LINE
-  //     }
-  //   }
+          // Write the new map to the target document
+          batch.set(targetDoc.reference, someFields, SetOptions(merge: true));
+        } else {
+          print('No data for document ${sourceDoc.id}'); // ADD THIS LINE
+        }
+      } else {
+        print(
+            'No document with ID ${targetDoc.id} in source collection'); // ADD THIS LINE
+      }
+    }
 
-  //   await batch.commit();
-  // }
+    await batch.commit();
+  }
 
   // _eventCopy() async {
   //   final _firestore = FirebaseFirestore.instance;
@@ -2181,39 +2230,69 @@ class HomeScreenState extends State<HomeScreen> {
 //   }
 
 // // This code helps to duplicate specific fields of collections in firebase
-  // _new() async {
-  //   try {
-  //     final _firestore = FirebaseFirestore.instance;
-  //        CollectionReference targetRef =
-  //         _firestore.collection('user_professsional');
-  //     CollectionReference sourceRef =  _firestore.collection('users');
+  _new() async {
+    try {
+      final _firestore = FirebaseFirestore.instance;
+      CollectionReference targetRef = _firestore.collection('new_userRating');
+      CollectionReference sourceRef =
+          _firestore.collection('user_professsional');
 
-  //     // Get documents from source collection
-  //     QuerySnapshot querySnapshot = await sourceRef.get();
+      // Get documents from source collection
+      QuerySnapshot querySnapshot = await sourceRef.get();
 
-  //     // Initialize Firestore batch
-  //     WriteBatch batch = _firestore.batch();
+      // Initialize Firestore batch
+      WriteBatch batch = _firestore.batch();
 
-  //     querySnapshot.docs.forEach((doc) {
-  //       // Create a new map that only contains the fields you're interested in
-  //       var someFields = {
+      querySnapshot.docs.forEach((doc) {
+        // Create a new map that only contains the fields you're interested in
+        var someFields = {
+          ' userId': doc.id,
+          'oneStar': 0,
+          'twoStar': 0,
+          'threeStar': 0,
+          'fourStar': 0,
+          'fiveStar': 0,
+        };
 
-  //         'userName': doc.userName,
-  //         'profileImageUrl':  doc.profileImageUrl,
-  //         'profileHandle':  doc.profileHandle,
-  //          'verified':  doc.verified,
+        // Write the new map to the target document
+        batch.set(targetRef.doc(doc.id), someFields);
+      });
 
-  //       };
+      await batch.commit();
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 
-  //       // Write the new map to the target document
-  //     batch.set(targetRef.doc(doc.id), someFields);
-  //     });
+  Future<void> _setBrandTarget() async {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    _provider.setFlorenceActive(false);
 
-  //     await batch.commit();
-  //   } catch (e) {
-  //     print(e.toString());
-  //   }
-  // }
+    // Fetch the user data using whatever method you need
+    var userSnapshot =
+        await new_userBrandIfoRef.doc(_provider.currentUserId).get();
+
+    // Check if the snapshot contains data and if the user has a private account
+    if (userSnapshot.exists) {
+      CreativeBrandTargetModel user =
+          CreativeBrandTargetModel.fromDoc(userSnapshot);
+
+      // Set state with the new user data to update the UI
+      if (mounted) {
+        setState(() {
+          _provider.setBrandTarget(user);
+          _isFecthing = false;
+        });
+      }
+    } else {
+      // Handle the case where the user data does not exist
+      if (mounted) {
+        setState(() {
+          _isFecthing = false;
+        });
+      }
+    }
+  }
 
   _setUpactivityCount() {
     var _provider = Provider.of<UserData>(context, listen: false);
@@ -2233,8 +2312,8 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  final FlutterLocalNotificationsPlugin _notificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  // final FlutterLocalNotificationsPlugin _notificationsPlugin =
+  //     FlutterLocalNotificationsPlugin();
 
   Future<void> _configureNotification() async {
     final String? currentUserId =
@@ -2251,11 +2330,9 @@ class HomeScreenState extends State<HomeScreen> {
       } catch (e) {}
       try {
         FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
-          if (newToken != null) {
-            usersGeneralSettingsRef
-                .doc(currentUserId)
-                .update({'androidNotificationToken': newToken});
-          }
+          usersGeneralSettingsRef
+              .doc(currentUserId)
+              .update({'androidNotificationToken': newToken});
         });
 
         final authorizationStatus =
@@ -2396,6 +2473,7 @@ class HomeScreenState extends State<HomeScreen> {
                                 contentId: contentId,
                                 contentType: 'message',
                                 eventAuthorId: '',
+                                // affiliateId: '',
                               ),
                             )
                           : contentType.endsWith('eventRoom')
@@ -2405,6 +2483,7 @@ class HomeScreenState extends State<HomeScreen> {
                                     contentId: contentId,
                                     contentType: 'eventRoom',
                                     eventAuthorId: '',
+                                    // affiliateId: '',
                                   ),
                                 )
                               : contentType.endsWith('eventDeleted')
@@ -2414,6 +2493,7 @@ class HomeScreenState extends State<HomeScreen> {
                                         contentId: contentId,
                                         contentType: 'eventDeleted',
                                         eventAuthorId: '',
+                                        // affiliateId: '',
                                       ),
                                     )
                                   : contentType.endsWith('refundProcessed')
@@ -2423,6 +2503,7 @@ class HomeScreenState extends State<HomeScreen> {
                                             contentId: contentId,
                                             contentType: 'refundProcessed',
                                             eventAuthorId: eventAuthorId!,
+                                            // affiliateId: '',
                                           ),
                                         )
                                       : _navigateToPage(
@@ -2449,6 +2530,7 @@ class HomeScreenState extends State<HomeScreen> {
                                                                             'inviteRecieved')
                                                                     ? 'InviteRecieved'
                                                                     : '',
+                                            // affiliateId: '',
                                             eventAuthorId: eventAuthorId!,
                                           ),
                                         );
@@ -2477,25 +2559,35 @@ class HomeScreenState extends State<HomeScreen> {
 
   Future<void> _handleDynamicLink(
       PendingDynamicLinkData? dynamicLinkData) async {
+    final _provider = Provider.of<UserData>(context, listen: false);
+
     final Uri? link = dynamicLinkData?.link;
     if (link != null && link.path.isNotEmpty) {
       // Normalize the path by removing the leading slash if it exists
       final String normalizedPath =
           link.path.startsWith('/') ? link.path.substring(1) : link.path;
       final List<String> parts = normalizedPath.split("_");
+      await AffiliateManager.saveEventAffiliateId(
+          parts[1], parts.length > 3 ? parts[3].trim() : '');
+
       if (parts.length >= 2) {
-        print(link);
-        // print(parts[1]);
-        // print(parts[0]);
-        // print(parts[2]);
+        print('link     ' + link.toString());
+        print(parts[1]);
+        print(parts[0]);
+        print(parts[2]);
+        // print(parts.length > 3 ? 'vvvvv' + parts[3].trim() : 'zzzzz');
+        //  await _provider.setMarketedAffiliateId(
+        //     parts.length > 3 ? parts[3].trim() : '',
+        //   );
+
+        // print(parts[3]);
 
         // Handle the dynamic link based on its type
         if (parts[0].endsWith('user')) {
           _navigateToPage(
             context,
             ProfileScreen(
-              currentUserId:
-                  Provider.of<UserData>(context, listen: false).currentUserId!,
+              currentUserId: _provider.currentUserId!,
               userId: parts[1],
               user: null,
             ),
@@ -2511,6 +2603,7 @@ class HomeScreenState extends State<HomeScreen> {
                       ? 'Event'
                       : '',
               eventAuthorId: parts[2].trim(),
+              // affiliateId: parts.length > 3 ? parts[3].trim() : '',
             ),
           );
         }
@@ -2609,6 +2702,8 @@ class _HomeMobileState extends State<HomeMobile>
   late PageController _pageController;
   int _version = 0;
   bool _showInfo = false;
+  int _affiliateCount = 0;
+
   // int _inviteCount = -1;
 
   List<InviteModel> _inviteList = [];
@@ -2619,21 +2714,35 @@ class _HomeMobileState extends State<HomeMobile>
     _pageController = PageController(
       initialPage: _currentTab,
     );
+    _pageController.addListener(() {
+      // Check if the scroll position indicates that the page has finished scrolling
+      if ((_pageController.position.pixels %
+              _pageController.position.viewportDimension) ==
+          0) {
+        triggerHapticFeedback(); // Trigger haptic feedback when the page finishes scrolling
+      }
+    });
+
     // _setUpInvitsCount();
 
-    int? version = Platform.isIOS
-        ? widget.updateApp.updateVersionIos
-        : widget.updateApp.updateVersionAndroid;
-    _version = version!;
     SchedulerBinding.instance.addPostFrameCallback((_) async {
+      int? version = Platform.isIOS
+          ? widget.updateApp.updateVersionIos
+          : widget.updateApp.updateVersionAndroid;
+      _version = version!;
       await _setUpInvites();
+      await _setAffiliateCount();
+
       _setShowDelayInfo();
     });
   }
 
+  void triggerHapticFeedback() {
+    HapticFeedback.lightImpact(); // Use the desired haptic feedback method
+  }
   // _setUpInvitsCount() async {
-  //   final String currentUserId =
-  //       Provider.of<UserData>(context, listen: false).currentUserId!;
+  // final String currentUserId =
+  //     Provider.of<UserData>(context, listen: false).currentUserId!;
   //   int feedCount = await DatabaseService.numUnAnsweredInvites(currentUserId);
   //   if (mounted) {
   //     setState(() {
@@ -2647,6 +2756,20 @@ class _HomeMobileState extends State<HomeMobile>
 
 // Define a constant for how many documents to fetch at a time
   static const int inviteLimit = 2;
+
+  _setAffiliateCount() async {
+    final String currentUserId =
+        Provider.of<UserData>(context, listen: false).currentUserId!;
+    DatabaseService.numUerAffiliates(
+      currentUserId,
+    ).listen((affiliateCount) {
+      if (mounted) {
+        setState(() {
+          _affiliateCount = affiliateCount;
+        });
+      }
+    });
+  }
 
   _setUpInvites() async {
     final currentDate = DateTime(now.year, now.month, now.day);
@@ -2838,13 +2961,7 @@ class _HomeMobileState extends State<HomeMobile>
                       )
                     ],
                   ),
-                  child:
-
-                      // user.disabledAccount!
-                      //     ? ReActivateAccount(user: user)
-                      //     :
-
-                      Stack(
+                  child: Stack(
                     alignment: FractionalOffset.center,
                     children: [
                       SizedBox(
@@ -2858,9 +2975,7 @@ class _HomeMobileState extends State<HomeMobile>
                               currentUserId: currentUserId,
                               userId: '',
                             ),
-                            // FeedScreenSliver(
-                            //   currentUserId: currentUserId,
-                            // ),
+
                             DiscoverEventScreen(
                               currentUserId: currentUserId,
                               userLocationSettings: userLocationSettings,
@@ -2885,14 +3000,7 @@ class _HomeMobileState extends State<HomeMobile>
                               currentUserId: currentUserId,
                               userId: '',
                             ),
-                            // DiscoverUser(
-                            //   currentUserId: currentUserId,
-                            //   isWelcome: false,
-                            //   isLiveLocation: false,
-                            //   liveCity: '',
-                            //   liveCountry: '',
-                            //   liveLocationIntialPage: 0,
-                            // ),
+                           
                             ProfileScreen(
                               currentUserId: currentUserId,
                               userId: currentUserId,
@@ -2903,6 +3011,7 @@ class _HomeMobileState extends State<HomeMobile>
                             setState(() {
                               _currentTab = index;
                             });
+
                           },
                         ),
                       ),
@@ -2922,16 +3031,21 @@ class _HomeMobileState extends State<HomeMobile>
                               );
                             },
                           )),
+                      Positioned(
+                          bottom: widget.updateAppVersion < _version ? 90 : 7,
+                          child: MiniAffiliateNote(
+                            updateNote:
+                                'Congratulations, you have one or more affiliate deals.',
+                            showinfo: _affiliateCount > 0 ? true : false,
+                            displayMiniUpdate:
+                                widget.updateApp.displayMiniUpdate!,
+                          )),
                       Positioned(bottom: 7, child: NoConnection()),
-
-                      // Positioned(bottom: 30, child: _createAnimator()),
                     ],
                   ),
                 ),
                 bottomNavigationBar:
-                    //  user.disabledAccount!
-                    //     ? const SizedBox.shrink()
-                    //     :
+                   
                     _currentTab == 0
                         ? const SizedBox.shrink()
                         : Wrap(
@@ -2939,10 +3053,6 @@ class _HomeMobileState extends State<HomeMobile>
                               BottomNavigationBar(
                                 type: BottomNavigationBarType.fixed,
                                 backgroundColor:
-                                    // _currentTab == 1
-                                    //     ? Colors.black
-                                    //     :
-
                                     Theme.of(context).primaryColorLight,
                                 currentIndex: _currentTab - 1,
                                 onTap: (int index) {
@@ -2968,14 +3078,8 @@ class _HomeMobileState extends State<HomeMobile>
                                       context, 10.0),
                                 ),
                                 unselectedItemColor: Colors.grey,
-                                //     // _currentTab == 1
-                                //     //     ? Colors.white
-                                //     //     :
 
                                 selectedItemColor:
-                                    //     // _currentTab == 1
-                                    //     //     ? Colors.white
-                                    //     //     :
                                     Theme.of(context).secondaryHeaderColor,
 
                                 items: [
@@ -3012,7 +3116,6 @@ class _HomeMobileState extends State<HomeMobile>
                           ),
               ),
               dontShowInvite
-                  // _inviteCount.isNegative
                   ? const SizedBox.shrink()
                   : Container(
                       height: height,
@@ -3177,7 +3280,76 @@ class _HomeMobileState extends State<HomeMobile>
                             child: Container()),
                       ),
                     )
-                  : const SizedBox.shrink()
+                  : const SizedBox.shrink(),
+              if (_provider.florenceActive)
+                HopeActions(
+                    showAffiliateNote: _inviteList.length > 0,
+                    updateApp: widget.updateApp,
+                    showUpdate: widget.updateAppVersion < _version),
+              Positioned(
+                bottom: 1,
+                child: GestureDetector(
+                  onTap: () async {
+                    HapticFeedback.mediumImpact();
+                    _provider.setFlorenceActive(
+                        _provider.florenceActive ? false : true);
+                    _provider.setInt2(0);
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                        bottom: ResponsiveHelper.responsiveHeight(
+                            context,
+                            _provider.int2 == 3
+                                ? 50
+                                : _inviteList.length < 1
+                                    ? 100
+                                    : 70)),
+                    child: AnimatedContainer(
+                      curve: Curves.easeInOut,
+                      duration: Duration(milliseconds: 800),
+                      height: _provider.showEventTab && _provider.showUsersTab
+                          ? 40
+                          : 0,
+                      width: _provider.showEventTab && _provider.showUsersTab
+                          ? 40
+                          : 0,
+                      // padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _provider.int2 == 3
+                            ? Theme.of(context)
+                                .secondaryHeaderColor
+                                .withOpacity(.6)
+                            : _provider.florenceActive
+                                ? Colors.transparent
+                                : Theme.of(context).primaryColor,
+                      ),
+                      child: Center(
+                        child: Hero(
+                            tag: 'florence',
+                            child: _provider.florenceActive
+                                ? Icon(
+                                    Icons.close,
+                                    color: _provider.int2 == 3
+                                        ? Theme.of(context)
+                                            .primaryColorLight
+                                            .withOpacity(.6)
+                                        : _provider.florenceActive
+                                            ? Colors.white
+                                            : Colors.black,
+                                    size: _provider.florenceActive ? 30 : 20,
+                                  )
+                                : AnimatedCircle(
+                                    size: 25,
+                                    stroke: 2,
+                                    animateSize: false,
+                                    animateShape: false,
+                                  )),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           );
   }

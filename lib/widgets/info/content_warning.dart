@@ -92,7 +92,7 @@ class ContentWarning extends StatelessWidget {
                   ),
                   SizedBox(
                     width: 100,
-                    child: Divider(
+                    child: Divider( thickness: .2,
                       color: Colors.white,
                     ),
                   ),

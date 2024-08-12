@@ -1,13 +1,11 @@
 import 'dart:convert';
 
-import 'package:bars/features/events/services/paystack_ticket_payment.dart';
 import 'package:bars/features/events/services/paystack_ticket_payment_mobile_money.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:bars/widgets/general_widget/ticket_group_widget.dart';
 import 'package:bars/widgets/general_widget/ticket_purchase_summary_widget.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
 
@@ -19,13 +17,17 @@ class TicketGroup extends StatefulWidget {
   final String currentUserId;
   final String inviteReply;
   final bool onInvite;
+  final bool onCalendatSchedule;
+  // final String marketedAffiliateId;
 
   TicketGroup({
     required this.groupTickets,
     required this.event,
     required this.currentUserId,
     required this.inviteReply,
+    // required this.marketedAffiliateId ,
     this.onInvite = false,
+    this.onCalendatSchedule = false,
   });
 
   @override
@@ -116,11 +118,6 @@ class _TicketGroupState extends State<TicketGroup> {
         ? await loadTickets()
         : _provider.ticketList;
 
-    // if (purchasintgTickets != null &&
-    //     purchasintgTickets is TicketPurchasedModel) {
-    //   _finalTicket.add(purchasintgTickets);
-    // }
-
     Future<T> retry<T>(Future<T> Function() function, {int retries = 3}) async {
       Duration delay =
           const Duration(milliseconds: 100); // Start with a short delay
@@ -154,14 +151,6 @@ class _TicketGroupState extends State<TicketGroup> {
         if (!existingOrder) {
           String commonId = Uuid().v4();
 
-          // Future<void> sendInvites() =>
-          //     DatabaseService.answerEventInviteTransaction(
-          //       transaction: transaction,
-          //       event: widget.event!,
-          //       answer: widget.inviteReply,
-          //       currentUser: _user!,
-          //     );
-
           Future<TicketOrderModel> createTicketOrder() => _createTicketOrder(
                 transactionId,
                 transaction,
@@ -172,9 +161,7 @@ class _TicketGroupState extends State<TicketGroup> {
                 paymentProvider,
               );
 
-          // if (widget.inviteReply.isNotEmpty) {
-          //   await retry(() => sendInvites(), retries: 3);
-          // }
+         
 
           TicketOrderModel order =
               await retry(() => createTicketOrder(), retries: 3);
@@ -191,6 +178,8 @@ class _TicketGroupState extends State<TicketGroup> {
 
           // Navigator.pop(context);
           await removeTickets();
+
+          ;
           Navigator.pop(context);
           PaletteGenerator _paletteGenerator =
               await PaletteGenerator.fromImageProvider(
@@ -249,7 +238,13 @@ class _TicketGroupState extends State<TicketGroup> {
     isPaymentVerified,
     paymentProvider,
   ) async {
-    var _user = Provider.of<UserData>(context, listen: false).user;
+    var _provider = Provider.of<UserData>(context, listen: false);
+    var _user = _provider.user;
+    String? affiliateId = await AffiliateManager.getAffiliateIdForEvent(
+      widget.event!.id,
+    );
+
+    // String _marketAffiliateId = _provider.marketedAffiliateId;
 
     double total = _finalTicket.fold(0, (acc, ticket) => acc + ticket.price);
 
@@ -304,16 +299,21 @@ class _TicketGroupState extends State<TicketGroup> {
     // widget.event!.ticketOrder.add(order);
 
     await DatabaseService.purchaseTicketTransaction(
-        transaction: transaction,
-        ticketOrder: order,
-        user: _user!,
-        purchaseReferenceId: purchaseReferenceId,
-        eventAuthorId: widget.event!.authorId,
-        isEventFree: widget.event!.isFree,
-        isEventPrivate: widget.event!.isPrivate,
-        purchasedTicketIds: ticketIds,
-        dontUpdateTicketSales: dontUpdateTicketSales,
-        inviteReply: widget.inviteReply);
+      transaction: transaction,
+      ticketOrder: order,
+      user: _user!,
+      purchaseReferenceId: purchaseReferenceId,
+      eventAuthorId: widget.event!.authorId,
+      isEventFree: widget.event!.isFree,
+      isEventPrivate: widget.event!.isPrivate,
+      purchasedTicketIds: ticketIds,
+      dontUpdateTicketSales: dontUpdateTicketSales,
+      inviteReply: widget.inviteReply,
+      marketAffiliateId: affiliateId == null ? '' : affiliateId,
+      isEventAffiliated: widget.event!.isAffiliateEnabled,
+    );
+    if (affiliateId != null)
+      await AffiliateManager.clearEventAffiliateId(widget.event!.id);
 
     return order;
   }
@@ -375,35 +375,6 @@ class _TicketGroupState extends State<TicketGroup> {
     });
   }
 
-  // _payForTicket() async {
-  //   HapticFeedback.lightImpact();
-  //   Navigator.pop(context);
-
-  //   // MakePayment makePayment = MakePayment(
-  //   //   context: context,
-  //   //   price: totalPrice.toInt(),
-  //   //   email: FirebaseAuth.instance.currentUser!.email!,
-  //   //   event: widget.event!,
-  //   //   subaccountId: widget.event!.subaccountId,
-  //   // );
-  //   // PaymentResult paymentResult = await makePayment.chargeCardAndMakePayMent();
-
-  //   final HttpsCallable callable = FirebaseFunctions.instance
-  //       .httpsCallable('initiatePaystackMobileMoneyPayment');
-  //   int amount = 5;
-  //   // Call the function to initiate the payment
-  //   final HttpsCallableResult result = await callable.call(<String, dynamic>{
-  //     'email': FirebaseAuth.instance.currentUser!.email!,
-  //     'amount': amount * 100, // Assuming this is the correct amount in kobo
-  //   });
-
-  //   // Extract the authorization URL from the results
-  //   final String authorizationUrl = result.data['authorizationUrl'];
-  //   final String reference = result.data['reference'];
-
-  //   // Navigate to the payment screen with the authorization URL
-  //   await navigateToPaymentScreen(context, authorizationUrl, reference);
-  // }
 
   static int getWeekOfMonth(DateTime dateTime) {
     int daysInWeek = 7;
@@ -431,7 +402,7 @@ class _TicketGroupState extends State<TicketGroup> {
       'email': email,
       'amount': amount * 100, // Assuming this is the correct amount in kobo
       'subaccount': widget.event!.subaccountId,
-      'bearer': describeEnum(Bearer.SubAccount),
+      'bearer': 'split',
       'callback_url': widget.event!.dynamicLink,
       'reference': _getReference(),
     });
@@ -503,6 +474,7 @@ class _TicketGroupState extends State<TicketGroup> {
       try {
         final verificationResult = await callable.call(<String, dynamic>{
           'reference': reference,
+          'isEvent': true,
           //  paymentResult.reference,
           'eventId': widget.event!.id,
           'amount': totalPrice.toInt() * 100,
@@ -515,6 +487,8 @@ class _TicketGroupState extends State<TicketGroup> {
         if (verificationResult.data['success']) {
           Navigator.pop(context);
           Navigator.pop(context);
+          //affiliate check and update would happen here..
+
           await _processingToGenerate(
               verificationResult, paymentResult, true, 'Paystack');
         } else {
@@ -563,8 +537,11 @@ class _TicketGroupState extends State<TicketGroup> {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return ConfirmationPrompt(
-          height:
-              widget.event!.isFree || widget.event!.isCashPayment ? 300 : 350,
+          height: widget.event!.isFree
+              ? 300
+              : widget.event!.isCashPayment
+                  ? 400
+                  : 380,
           buttonText: widget.event!.isFree || widget.event!.isCashPayment
               ? 'Generate Ticket'
               : 'Purchase Ticket',
@@ -601,7 +578,7 @@ class _TicketGroupState extends State<TicketGroup> {
           subTitle: widget.event!.termsAndConditions.isNotEmpty
               ? 'By purchasing or generating a ticket to this event, you have accepted the terms and conditions that govern this event as provided by the event organizer.'
               : widget.event!.isCashPayment
-                  ? 'The payment method for this ticket is cash. Therefore, you will be required to pay for the ticket at the event venue. For further clarification or more information, please contact the event organizer'
+                  ? 'The payment method for this ticket is cash in hand. Therefore, you will be required to pay for the tickets you generate here at the event venue. For further clarification or more information, please contact the event organizer'
                   : widget.event!.isFree
                       ? ''
                       : 'Please avoid interrupting any processing, loading, or countdown indicators during the payment process. Kindly wait for the process to finish on its own.',
@@ -610,48 +587,6 @@ class _TicketGroupState extends State<TicketGroup> {
     );
   }
 
-  void _showBottomTicketSite(
-    BuildContext context,
-    String link,
-  ) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return Container(
-          height: ResponsiveHelper.responsiveHeight(context, 600),
-          decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(30)),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: DisclaimerWidget(
-                  title: 'Ticket Site',
-                  subTitle:
-                      'You will be redirected to a website provided by the event organizer, where you can continue with the ticket purchasing process. Please note that Bars Impression assumes no liability or responsibility for the information, views, or opinions presented on that platform.',
-                  icon: Icons.link,
-                ),
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              BottomModalSheetButtonBlue(
-                buttonText: 'Access ticket site',
-                onPressed: () async {
-                  if (!await launchUrl(Uri.parse(link))) {
-                    throw 'Could not launch link';
-                  }
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   _eventOnTicketAndPurchaseButton() {
     return Column(
@@ -664,7 +599,6 @@ class _TicketGroupState extends State<TicketGroup> {
             padding: const EdgeInsets.all(8.0),
             child: EventOnTicketWidget(
               event: widget.event!,
-              // finalPurchasintgTicket: finalPurchasintgTicket,
               currentUserId: widget.currentUserId,
             ),
           ),
@@ -672,35 +606,26 @@ class _TicketGroupState extends State<TicketGroup> {
         const SizedBox(
           height: 20,
         ),
-        Divider(),
+        Divider(
+          thickness: .2,
+        ),
         const SizedBox(
           height: 40,
         ),
         Center(
-          child: widget.event!.ticketSite.isNotEmpty
-              ? AlwaysWhiteButton(
-                  buttonText: 'Go to ticket site',
-                  onPressed: () {
-                    _showBottomTicketSite(context, widget.event!.ticketSite);
-
-                    // Navigator.pop(context);
-                  },
-                  buttonColor: Colors.blue,
-                )
-              : AlwaysWhiteButton(
-                  buttonText: widget.event!.isFree
-                      ? 'Generate free ticket'
-                      : widget.event!.isCashPayment
-                          ? 'Generate ticket'
-                          : 'Purchase ticket',
-                  onPressed: () {
-                    // Navigator.pop(context);
-                    _showBottomConfirmTicketAddOrder(
-                      context,
-                    );
-                  },
-                  buttonColor: Colors.blue,
-                ),
+          child: AlwaysWhiteButton(
+            buttonText: widget.event!.isFree
+                ? 'Generate free ticket'
+                : widget.event!.isCashPayment
+                    ? 'Generate ticket'
+                    : 'Purchase ticket',
+            onPressed: () {
+              _showBottomConfirmTicketAddOrder(
+                context,
+              );
+            },
+            buttonColor: Colors.blue,
+          ),
         ),
       ],
     );
@@ -724,7 +649,6 @@ class _TicketGroupState extends State<TicketGroup> {
       builder: (BuildContext context) {
         return Container(
           height: ResponsiveHelper.responsiveHeight(context, 670),
-          // MediaQuery.of(context).size.height.toDouble() / 1.2 - 30,
           decoration: BoxDecoration(
               color: Theme.of(context).primaryColor,
               borderRadius: BorderRadius.circular(30)),
@@ -740,15 +664,14 @@ class _TicketGroupState extends State<TicketGroup> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TicketPurchasingIcon(
-                      // icon: Icons.payment,
                       title: 'Payment.',
                     ),
                     Padding(
                       padding: const EdgeInsets.only(right: 20.0),
-                      child: Center(
+                      child: ShakeTransition(
+                        axis: Axis.vertical,
                         child: RichText(
-                          textScaleFactor:
-                              MediaQuery.of(context).textScaleFactor,
+                          textScaler: MediaQuery.of(context).textScaler,
                           text: TextSpan(
                             children: [
                               TextSpan(
@@ -777,11 +700,13 @@ class _TicketGroupState extends State<TicketGroup> {
                 const SizedBox(
                   height: 10,
                 ),
-                Divider(),
+                Divider(
+                  thickness: .2,
+                ),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(
@@ -807,7 +732,9 @@ class _TicketGroupState extends State<TicketGroup> {
                     textAlign: TextAlign.start,
                   ),
                 ),
-                Divider(),
+                Divider(
+                  thickness: .2,
+                ),
                 const SizedBox(
                   height: 20,
                 ),
@@ -819,13 +746,6 @@ class _TicketGroupState extends State<TicketGroup> {
       },
     );
   }
-
-  // Future<void> saveTickets(List<TicketModel> tickets) async {
-  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   String serializedData =
-  //       jsonEncode(tickets.map((ticket) => ticket.toJson()).toList());
-  //   await prefs.setString('savedTickets', serializedData);
-  // }
 
   Future<void> saveTickets(List<TicketModel> tickets) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -839,30 +759,245 @@ class _TicketGroupState extends State<TicketGroup> {
     }
   }
 
+  bool _checkingTicketAvailability = false;
+
+  _attendMethod() async {
+    HapticFeedback.lightImpact();
+    if (mounted) {
+      setState(() {
+        _checkingTicketAvailability = true;
+      });
+    }
+
+    TicketOrderModel? _ticket = await DatabaseService.getTicketWithId(
+        widget.event!.id, widget.currentUserId);
+
+    if (_ticket != null) {
+      PaletteGenerator _paletteGenerator =
+          await PaletteGenerator.fromImageProvider(
+        CachedNetworkImageProvider(widget.event!.imageUrl),
+        size: Size(1110, 150),
+        maximumColorCount: 20,
+      );
+
+      _navigateToPage(
+        context,
+        PurchasedAttendingTicketScreen(
+          ticketOrder: _ticket,
+          event: widget.event!,
+          currentUserId: widget.currentUserId,
+          justPurchased: 'Already',
+          palette: _paletteGenerator,
+        ),
+      );
+      if (mounted) {
+        setState(() {
+          _checkingTicketAvailability = false;
+        });
+      }
+    } else {
+      if (mounted) {
+        setState(() {
+          _checkingTicketAvailability = false;
+        });
+        _showBottomFinalPurhcaseSummary(context);
+      }
+    }
+  }
+
+  _validateAttempt() async {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    var _usercountry = _provider.userLocationPreference!.country;
+
+    bool isGhanaian = _usercountry == 'Ghana' ||
+        _provider.userLocationPreference!.currency == 'Ghana Cedi | GHS';
+
+    if (!isGhanaian) {
+      _showBottomSheetErrorMessage(
+        context,
+        'This event is currently unavailable in $_usercountry.',
+      );
+    } else if (widget.event!.termsAndConditions.isNotEmpty) {
+      _showBottomSheetTermsAndConditions();
+    } else {
+      if (widget.event!.ticketSite.isNotEmpty) {
+        _showBottomSheetExternalLink();
+      } else {
+        var connectivityResult = await Connectivity().checkConnectivity();
+        if (connectivityResult == ConnectivityResult.none) {
+          _showBottomSheetErrorMessage(context,
+              'No internet connection available. Please connect to the internet and try again.');
+          return;
+        } else {
+          _attendMethod();
+        }
+      }
+    }
+  }
+
+  void _showBottomSheetExternalLink() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+            height: ResponsiveHelper.responsiveHeight(context, 550),
+            decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(30)),
+            child: WebDisclaimer(
+              link: widget.event!.ticketSite,
+              contentType: 'Event ticket',
+              icon: Icons.link,
+            ));
+      },
+    );
+  }
+
+  _ticketLoadingIndicator() {
+    return SizedBox(
+      height: ResponsiveHelper.responsiveHeight(context, 10.0),
+      width: ResponsiveHelper.responsiveHeight(context, 10.0),
+      child: CircularProgressIndicator(
+        strokeWidth: 3,
+        color: Colors.blue,
+      ),
+    );
+  }
+
+  void _showBottomSheetTermsAndConditions() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Container(
+            height: MediaQuery.of(context).size.height.toDouble() / 1.2,
+            decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(30)),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: ListView(
+                children: [
+           
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TicketPurchasingIcon(
+                        title: '',
+                      ),
+                      _checkingTicketAvailability
+                          ? _ticketLoadingIndicator()
+                          : MiniCircularProgressButton(
+                              color: Colors.blue,
+                              text: 'Accept',
+                              onPressed: widget.event!.ticketSite.isNotEmpty
+                                  ? () {
+                                      Navigator.pop(context);
+                                      _showBottomSheetExternalLink();
+                                    }
+                                  : () async {
+                                      if (mounted) {
+                                        setState(() {
+                                          _checkingTicketAvailability = true;
+                                        });
+                                      }
+                                      await _attendMethod();
+                                      if (mounted) {
+                                        setState(() {
+                                          _checkingTicketAvailability = false;
+                                        });
+                                      }
+                                    })
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  RichText(
+                    textScaler: MediaQuery.of(context).textScaler,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Terms and Conditions',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        TextSpan(
+                          text: "\n\n${widget.event!.termsAndConditions}",
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+      },
+    );
+  }
+
+
+  void _showBottomEditLocation(
+    BuildContext context,
+  ) {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    var _userLocation = _provider.userLocationPreference;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return ConfirmationPrompt(
+          height: 400,
+          buttonText: 'set up city',
+          onPressed: () async {
+            Navigator.pop(context);
+            _navigateToPage(
+                context,
+                EditProfileSelectLocation(
+                  user: _userLocation!,
+                  notFromEditProfile: true,
+                ));
+          },
+          title: 'Set up your city',
+          subTitle:
+              'To proceed with purchasing a ticket, we kindly ask you to provide your country information. This allows us to handle ticket processing appropriately, as the process may vary depending on different countries. Please note that specifying your city is sufficient, and there is no need to provide your precise location or community details.',
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     var _provider = Provider.of<UserData>(
       context,
     );
+    var _usercountry = _provider.userLocationPreference!.country;
 
     return Stack(
       children: [
         Container(
-            height: width * width,
-            // color: Colors.red,
+            height: ResponsiveHelper.responsiveHeight(
+                context,
+                widget.event == null || !widget.event!.isFree
+                    ? widget.groupTickets.length * 500
+                    : widget.groupTickets.length * 300),
+          
             width: width,
             child:
-                // widget.event != null && widget.event!.isFree
-                //     ? _eventOnTicketAndPurchaseButton()
-                //     :
-
+             
                 AnimatedPadding(
               curve: Curves.easeOutBack,
               duration: const Duration(milliseconds: 500),
               padding: EdgeInsets.only(
                   top: _provider.ticketList.isEmpty ? 0.0 : 50.0),
               child: TicketGoupWidget(
+                onCalendatSchedule: widget.onCalendatSchedule,
                 onInvite: widget.onInvite,
                 groupTickets: widget.groupTickets,
                 isEditing: widget.event == null ? true : false,
@@ -880,28 +1015,20 @@ class _TicketGroupState extends State<TicketGroup> {
           Positioned(
               right: 30,
               top: 10,
-              child: MiniCircularProgressButton(
-                text: 'Continue',
-                onPressed: () async {
-                  _showBottomFinalPurhcaseSummary(
-                    context,
-                  );
-                  try {
-                    await removeTickets();
-                    await saveTickets(_provider.ticketList);
-                    // Proceed with navigation or next steps
-                  } catch (e) {
-                    print("Failed to save tickets: $e");
-                    _provider.ticketList.clear();
-                    Navigator.pop(context);
-                    _showBottomSheetErrorMessage(
-                        context, "Error preparing tickets. Please try again.");
-                    return;
-                  }
-                  // saveTickets(_provider.ticketList);
-                },
-                color: Colors.blue,
-              ))
+              child: _checkingTicketAvailability
+                  ? _ticketLoadingIndicator()
+                  : MiniCircularProgressButton(
+                      text: 'Continue',
+                      onPressed: _usercountry!.isEmpty
+                          ? () {
+                              widget.event!.isFree
+                                  ? _attendMethod()
+                                  : _showBottomEditLocation(context);
+                            }
+                          : _validateAttempt,
+
+                      color: Colors.blue,
+                    ))
       ],
     );
   }

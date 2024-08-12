@@ -1,8 +1,7 @@
 import 'package:bars/utilities/exports.dart';
 
 class TicketPurchaseSummaryWidget extends StatelessWidget {
-  // Assuming `finalPurchasingTicketList` is a list of tickets you want to display.
-  // final List<TicketModel> finalPurchasingTicketList;
+
 
   TicketPurchaseSummaryWidget({Key? key}) : super(key: key);
 
@@ -15,7 +14,6 @@ class TicketPurchaseSummaryWidget extends StatelessWidget {
         _provider.ticketList.map((finalPurchasintgTicket) {
       return Column(
         children: <Widget>[
-          
           TicketInfo(
             // event: widget.event!,
             label: 'Category',
@@ -43,7 +41,7 @@ class TicketPurchaseSummaryWidget extends StatelessWidget {
             value: finalPurchasintgTicket.price.toString(),
           ),
           // Add a divider or padding if necessary
-          Divider(),
+          Divider( thickness: .2,),
         ],
       );
     }).toList();

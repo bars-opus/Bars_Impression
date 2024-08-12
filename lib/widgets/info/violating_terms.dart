@@ -85,7 +85,7 @@ class _ViolatingTermsState extends State<ViolatingTerms> {
               SizedBox(
                 height: 30,
               ),
-              Divider(),
+              Divider( thickness: .2,),
               SizedBox(
                 height: 30,
               ),

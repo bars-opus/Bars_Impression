@@ -8,7 +8,6 @@ class UserListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
     return Material(
       color: Colors.transparent,
       child: Padding(
@@ -41,18 +40,18 @@ class UserListTile extends StatelessWidget {
                         color: Theme.of(context).secondaryHeaderColor,
                       )),
                 ),
-                user.verified!
-                    ? const SizedBox.shrink()
-                    : Positioned(
-                        top: 3,
-                        right: 0,
-                        child: Icon(
-                          MdiIcons.checkboxMarkedCircle,
-                          size:
-                              ResponsiveHelper.responsiveHeight(context, 12.0),
-                          color: Colors.blue,
-                        ),
-                      ),
+                // user.verified
+                //     ? const SizedBox.shrink()
+                //     : Positioned(
+                //         top: 3,
+                //         right: 0,
+                //         child: Icon(
+                //           MdiIcons.checkboxMarkedCircle,
+                //           size:
+                //               ResponsiveHelper.responsiveHeight(context, 12.0),
+                //           color: Colors.blue,
+                //         ),
+                //       ),
               ],
             ),
           ),
@@ -93,6 +92,7 @@ class UserListTile extends StatelessWidget {
                 height: 10.0,
               ),
               Divider(
+                thickness: .2,
                 color: Colors.grey[350],
               )
             ],

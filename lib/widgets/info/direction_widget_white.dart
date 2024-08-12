@@ -42,7 +42,7 @@ class DirectionWidgetWhite extends StatelessWidget {
                 text,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize:   ResponsiveHelper.responsiveFontSize(context,fontSize!), 
+                  fontSize:   ResponsiveHelper.responsiveFontSize(context,fontSize), 
                   fontWeight: fontWeight,
                 ),
               ),

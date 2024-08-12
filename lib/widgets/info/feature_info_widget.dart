@@ -19,8 +19,14 @@ class FeatureInfoWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
-            height: ResponsiveHelper.responsiveHeight(context, 25,),
-            width: ResponsiveHelper.responsiveHeight(context, 25,),
+            height: ResponsiveHelper.responsiveHeight(
+              context,
+              25,
+            ),
+            width: ResponsiveHelper.responsiveHeight(
+              context,
+              25,
+            ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(50),
               color: Theme.of(context).secondaryHeaderColor,
@@ -29,7 +35,10 @@ class FeatureInfoWidget extends StatelessWidget {
               child: Text(
                 number,
                 style: TextStyle(
-                  fontSize:  ResponsiveHelper.responsiveFontSize(context, 14,),
+                  fontSize: ResponsiveHelper.responsiveFontSize(
+                    context,
+                    14,
+                  ),
                   color: Theme.of(context).secondaryHeaderColor,
                 ),
               ),
@@ -38,19 +47,25 @@ class FeatureInfoWidget extends StatelessWidget {
           Container(
             width: width - 80,
             child: RichText(
-              textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              textScaler: MediaQuery.of(context).textScaler,
               text: TextSpan(
                 children: [
                   TextSpan(
                       text: title + '\n',
                       style: TextStyle(
-                        fontSize:  ResponsiveHelper.responsiveFontSize(context, 26,),
+                        fontSize: ResponsiveHelper.responsiveFontSize(
+                          context,
+                          26,
+                        ),
                         color: Theme.of(context).secondaryHeaderColor,
                       )),
                   TextSpan(
                     text: subTitle,
                     style: TextStyle(
-                      fontSize:  ResponsiveHelper.responsiveFontSize(context, 12,),
+                      fontSize: ResponsiveHelper.responsiveFontSize(
+                        context,
+                        12,
+                      ),
                       color: Theme.of(context).secondaryHeaderColor,
                     ),
                   ),

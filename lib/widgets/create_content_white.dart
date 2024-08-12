@@ -25,6 +25,7 @@ class ContentFieldWhite extends StatelessWidget {
         padding: const EdgeInsets.all(5.0),
         child: Container(
           child: TextFormField(
+            cursorColor: Colors.blue,
             autofocus: autofocus,
             keyboardType: TextInputType.multiline,
             maxLines: null,
@@ -34,6 +35,12 @@ class ContentFieldWhite extends StatelessWidget {
               color: Colors.white,
             ),
             decoration: InputDecoration(
+                focusColor: Colors.blue,
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.blue,
+                  ),
+                ),
                 hintText: hintText,
                 hintStyle: TextStyle(
                     fontSize:

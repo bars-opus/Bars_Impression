@@ -18,7 +18,6 @@ class BottomModalSheetButton extends StatelessWidget {
         child: TextButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).cardColor,
-            // elevation: 20.0,
             foregroundColor: Colors.blue,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(5.0),
@@ -35,25 +34,5 @@ class BottomModalSheetButton extends StatelessWidget {
         ),
       ),
     );
-
-    // Padding(
-    //   padding: const EdgeInsets.symmetric(vertical: 2),
-    //   child: GestureDetector(
-    //     onTap: onPressed,
-    //     child: Container(
-    //       width: width.toDouble(),
-    //       decoration: BoxDecoration(
-    //           // color: Colors.white,
-    //           color: Theme.of(context).cardColor,
-    //           borderRadius: BorderRadius.circular(
-    //               // bottomLeft: Radius.circular(10.0),
-    //               5)),
-    //       height: 50.0,
-    //       child: Center(
-    //         child: child,
-    //       ),
-    //     ),
-    //   ),
-    // );
   }
 }

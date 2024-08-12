@@ -66,7 +66,6 @@ class CategoryContainer extends StatelessWidget {
                       )
                     : null,
                 title: RichText(
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
                   text: TextSpan(
                     children: [
                       TextSpan(
@@ -78,7 +77,7 @@ class CategoryContainer extends StatelessWidget {
                         style: Theme.of(context).textTheme.bodyMedium,
                       )
                     ],
-                  ),
+                  ), textScaler: TextScaler.linear(MediaQuery.of(context).textScaleFactor),
                 ),
               ),
             ),

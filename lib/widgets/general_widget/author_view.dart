@@ -51,7 +51,7 @@ class Authorview extends StatelessWidget {
             fontSize: ResponsiveHelper.responsiveFontSize(context, 14),
           ),
           overflow: TextOverflow.ellipsis,
-          textScaleFactor: MediaQuery.of(context).textScaleFactor,
+          textScaler: MediaQuery.of(context).textScaler,
         ),
       ),
     );
@@ -121,7 +121,7 @@ class Authorview extends StatelessWidget {
                   verified: verified,
                 ),
                 RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(children: [
                       TextSpan(
                           text: profileHandle,
@@ -154,10 +154,17 @@ class Authorview extends StatelessWidget {
                 Material(
                   color: Colors.transparent,
                   child: report.isNotEmpty
-                      ? BarsTextStrikeThrough(
-                          fontSize:
-                              ResponsiveHelper.responsiveFontSize(context, 12),
-                          text: content,
+                      ? Text(
+                          content,
+                          style: TextStyle(
+                            fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 12),
+                            color: Colors.grey,
+                            decorationColor: Colors.grey,
+                            decorationStyle: TextDecorationStyle.solid,
+                            decoration: TextDecoration.lineThrough,
+                          ),
+                          maxLines: 5,
                         )
                       : HyperLinkText(
                           from: from,
@@ -179,8 +186,7 @@ class Authorview extends StatelessWidget {
                       GestureDetector(
                         onTap: onPressedReply,
                         child: RichText(
-                            textScaleFactor:
-                                MediaQuery.of(context).textScaleFactor,
+                            textScaler: MediaQuery.of(context).textScaler,
                             text: TextSpan(children: [
                               TextSpan(
                                 text: 'Reply: ',

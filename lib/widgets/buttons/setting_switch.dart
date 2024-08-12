@@ -25,7 +25,7 @@ class SettingSwitch extends StatelessWidget {
         // color: Colors.red,
         // width: ResponsiveHelper.responsiveHeight(context, 200.0),
         child: RichText(
-          textScaleFactor: MediaQuery.of(context).textScaleFactor,
+          textScaler: MediaQuery.of(context).textScaler,
           text: TextSpan(
             children: [
               TextSpan(

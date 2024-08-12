@@ -3,18 +3,17 @@ import 'package:flutter/material.dart';
 
 class LoadingChats extends StatelessWidget {
   final bool deleted;
-  // final String userId;
   final VoidCallback onPressed;
 
   const LoadingChats(
       {super.key,
       required this.deleted,
-      // required this.userId,
       required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
     return Material(
+      color: Colors.transparent,
       child: ListTile(
           leading: CircleAvatar(
             radius: 20.0,

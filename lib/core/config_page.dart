@@ -27,7 +27,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         primaryColorLight: Color(0xFF343434),
         secondaryHeaderColor: Colors.white,
         primaryColor: Color(0xFF2a2a2a),
-        primaryColorDark: Colors.grey[800],
+        primaryColorDark: Colors.grey[400],
         indicatorColor: Colors.blue[700],
         cardColor: Color(0xFF424242),
         unselectedWidgetColor: Color(0xFFd7d6d6),
@@ -82,7 +82,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         primaryColorLight: Colors.white,
         secondaryHeaderColor: Colors.black,
         primaryColor: Colors.grey[300],
-        primaryColorDark: Colors.grey,
+        primaryColorDark: Colors.grey[200],
         indicatorColor: Colors.blue[50],
         cardColor: Color(0xFFe3e3e3),
         unselectedWidgetColor: Color(0xFF5c5c5c),
@@ -212,16 +212,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 if (_provider.userLocationPreference == null ||
                     _provider.userLocationPreference != _setting) {
                   _provider.setUserLocationPreference(_setting!);
-                  print("cccc" +
-                      _provider.userLocationPreference!.transferRecepientId
-                          .toString());
                 }
                 if (!_provider.isLoading) {
                   _provider.setIsLoading(false);
                 }
               });
-              // print('Username: ${_user!.userName} 1111');
-              // print('Profile Handle: ${_user.profileHandle} 1111');
 
               /// Then return the appropriate widget
               return _user!.userName == null ||
@@ -245,7 +240,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       _showBottomSheetErrorMessage(snapshot.error.toString());
                     });
-                    // Consider showing an error widget immediately rather than returning an empty Container.
+                    // Show an error widget immediately rather than returning an empty Container.
                     return _showBottomSheetErrorMessage(snapshot.error
                         .toString()); // Replace with your actual error widget.
                   }
@@ -277,9 +272,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                       _provider.setUserLocationPreference(_setting);
                       accountLocationPreferenceBox.put(
                           _setting.userId, _setting);
-                      // print("hgjhg" +
-                      //     _provider.userLocationPreference!.transferRecepientId
-                      //         .toString());
                     }
                   });
 
@@ -295,166 +287,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                       : HomeScreen();
                 },
               );
-              //  FutureBuilder(
-              //     future: Future.wait<dynamic>([
-              //       DatabaseService.getUserWithId(snapshot.data!.uid),
-              //       DatabaseService.getUserLocationSettingWithId(
-              //           snapshot.data!.uid),
-              //     ]),
-              //     builder: (BuildContext context,
-              //         AsyncSnapshot<List<dynamic>> snapshot) {
-              //       // Check if there's an error and display it
-              //       if (snapshot.hasError) {
-              //         Future.delayed(Duration.zero, () {
-              //           _showBottomSheetErrorMessage(snapshot.error!);
-              //         });
-              //       }
-
-              //       // If the futures have not completed yet, display a loading indicator
-              //       if (!snapshot.hasData) {
-              //         return PostSchimmerSkeleton();
-              //       }
-
-              //       // Check if the futures returned null, and if so, return AuthCreateUserCredentials()
-              //       if (snapshot.data![0] == null ||
-              //           snapshot.data![1] == null) {
-              //         return AuthCreateUserCredentials();
-              //       }
-
-              //       // If the futures returned valid data, continue as normal
-              //       AccountHolderAuthor _user =
-              //           snapshot.data![0] as AccountHolderAuthor;
-              //       UserSettingsLoadingPreferenceModel _setting =
-              //           snapshot.data![1] as UserSettingsLoadingPreferenceModel;
-
-              //       SchedulerBinding.instance.addPostFrameCallback((_) {
-              //         if (_provider.user == null || _provider.user != _user) {
-              //           _provider.setUser(_user);
-              //           accountAuthorbox.put(_user.userId, _user);
-              //         }
-              //         if (_provider.userLocationPreference == null ||
-              //             _provider.userLocationPreference != _setting) {
-              //           _provider.setUserLocationPreference(_setting);
-
-              //           accountLocationPreferenceBox.put(
-              //               _setting.userId, _setting);
-              //         }
-              //         if (!_provider.isLoading) {
-              //           _provider.setIsLoading(false);
-              //         }
-              //       });
-
-              //       if (_user.userName == null ||
-              //           _user.userName!.isEmpty ||
-              //           _user.profileHandle == null ||
-              //           _user.profileHandle!.isEmpty) {
-              //         return AuthCreateUserCredentials();
-              //       } else {
-              //         return _user.disabledAccount!
-              //             ? ReActivateAccount(user: _user)
-              //             : HomeScreen();
-              //       }
-              //     });
             }
           } else {
             return Intro();
           }
         });
-  }
-
-  // Widget _getScreenId() {
-  //   final accountAuthorbox = Hive.box<AccountHolderAuthor>('currentUser');
-  //   final accountLocationPreferenceBox =
-  //       Hive.box<UserSettingsLoadingPreferenceModel>(
-  //           'accountLocationPreference');
-
-  //   return StreamBuilder<User?>(
-  //       stream: FirebaseAuth.instance.authStateChanges(),
-  //       builder: (context, AsyncSnapshot<User?> snapshot) {
-  //         if (snapshot.hasError) {
-  //           return _showBottomSheetErrorMessage(snapshot.error!);
-  //         }
-  //         if (snapshot.hasData) {
-  //           var _provider = Provider.of<UserData>(context);
-  //           _provider.currentUserId = snapshot.data!.uid;
-
-  //           // if (accountAuthorbox.isNotEmpty &&
-  //           //     accountLocationPreferenceBox.isNotEmpty) {
-  //           //   AccountHolderAuthor? _user = accountAuthorbox.getAt(0);
-  //           //   UserSettingsLoadingPreferenceModel? _setting =
-  //           //       accountLocationPreferenceBox.getAt(0);
-
-  //           //   if (_user != null && _setting != null) {
-  //           //     _updateProvider(_provider, _user, _setting);
-  //           //   }
-
-  //           //   return _user != null &&
-  //           //           !_user.userName!.isEmpty &&
-  //           //           !_user.profileHandle!.isEmpty
-  //           //       ? HomeScreen()
-  //           //       : AuthCreateUserCredentials();
-  //           // } else
-
-  //           {
-  //             return FutureBuilder(
-  //                 future: Future.wait<dynamic>([
-  //                   DatabaseService.getUserWithId(snapshot.data!.uid),
-  //                   DatabaseService.getUserLocationSettingWithId(
-  //                       snapshot.data!.uid),
-  //                 ]),
-  //                 builder: (BuildContext context,
-  //                     AsyncSnapshot<List<dynamic>> snapshot) {
-  //                   if (snapshot.hasError) {
-  //                     Future.delayed(Duration.zero, () {
-  //                       _showBottomSheetErrorMessage(snapshot.error!);
-  //                     });
-  //                   }
-
-  //                   if (snapshot.data![0] == null ||
-  //                       snapshot.data![1] == null) {
-  //                     // return AuthCreateUserCredentials();
-  //                   }
-
-  //                   AccountHolderAuthor _user =
-  //                       snapshot.data![0] as AccountHolderAuthor;
-  //                   UserSettingsLoadingPreferenceModel _setting =
-  //                       snapshot.data![1] as UserSettingsLoadingPreferenceModel;
-
-  //                   _updateProvider(_provider, _user, _setting);
-
-  //                   accountAuthorbox.put(_user.userId, _user);
-  //                   accountLocationPreferenceBox.put(_setting.userId, _setting);
-
-  //                   return
-
-  //                       // _user.userName!.isNotEmpty &&
-  //                       //         _user.profileHandle!.isNotEmpty
-  //                       //     ?
-
-  //                       HomeScreen();
-  //                   // : AuthCreateUserCredentials();
-  //                 });
-  //           }
-  //         } else {
-  //           return Intro();
-  //         }
-  //       });
-  // }
-
-  void _updateProvider(UserData _provider, AccountHolderAuthor _user,
-      UserSettingsLoadingPreferenceModel _setting) {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      if (_provider.user == null || _provider.user != _user) {
-        _provider.setUser(_user);
-      }
-      if (_provider.userLocationPreference == null ||
-          _provider.userLocationPreference != _setting) {
-        _provider.setUserLocationPreference(_setting);
-      }
-      if (!_provider.isLoading) {
-        _provider.setIsLoading(false);
-      }
-    });
   }
 
   @override
@@ -475,7 +312,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           SignpsScreen.id: (context) => SignpsScreen(),
           HomeScreen.id: (context) => HomeScreen(),
           AcceptTerms.id: (context) => AcceptTerms(),
-          // StoreSearch.id: (context) => StoreSearch(),
           Intro.id: (context) => Intro(),
           Password.id: (context) => Password(),
         },

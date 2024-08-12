@@ -17,7 +17,9 @@ class BottomModelSheetListTileWidget extends StatelessWidget {
         ? Colors.blue
         : colorCode.startsWith('Red')
             ? Colors.red
-            : Theme.of(context).secondaryHeaderColor;
+            : colorCode.startsWith('Grey')
+                ? Colors.grey
+                : Theme.of(context).secondaryHeaderColor;
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -29,12 +31,15 @@ class BottomModelSheetListTileWidget extends StatelessWidget {
         const SizedBox(
           width: 20,
         ),
-        Text(
-          text,
-          style: TextStyle(
-              color: newColor,
-              fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-              fontWeight: FontWeight.normal),
+        Expanded(
+          child: Text(
+            text,
+            style: TextStyle(
+                color: newColor,
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+                fontWeight: FontWeight.normal),
+            // overflow: TextOverflow.ellipsis,
+          ),
         ),
       ],
     );

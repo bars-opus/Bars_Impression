@@ -94,6 +94,7 @@ class _RefundWidgetState extends State<RefundWidget> {
               currentUserId: widget.currentUserId,
               event: event,
               type: event.type,
+              showPrivateEvent: true,
             ));
           } else {
             _showBottomSheetErrorMessage('Failed to fetch event.');
@@ -108,22 +109,38 @@ class _RefundWidgetState extends State<RefundWidget> {
         padding: const EdgeInsets.only(left: 20.0, top: 20, bottom: 20),
         child: Column(
           children: [
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 20.0, top: 10),
+                child: Icon(
+                  Icons.check_circle_outline_outlined,
+                  size: ResponsiveHelper.responsiveHeight(context, 50.0),
+                  color: Colors.green,
+                ),
+              ),
+            ),
             _payoutWidget(
               'Status',
               widget.currentRefund.status,
             ),
-            Divider(),
+            Divider(
+              thickness: .2,
+            ),
             _payoutWidget(
               'Amount',
               widget.currentRefund.amount.toString(),
             ),
-            Divider(),
+            Divider(
+              thickness: .2,
+            ),
             _payoutWidget(
               'Request \ntime',
               MyDateFormat.toTime(
                   widget.currentRefund.approvedTimestamp.toDate()),
             ),
-            Divider(),
+            Divider(
+              thickness: .2,
+            ),
 
             _payoutWidget(
               'Request \ndate',
@@ -139,52 +156,17 @@ class _RefundWidgetState extends State<RefundWidget> {
                   widget.currentRefund.expectedDate,
                 )),
               ),
-            Divider(),
+            Divider(
+              thickness: .2,
+            ),
             _payoutWidget(
               'Request\nReason',
               widget.currentRefund.reason,
             ),
-            // SalesReceiptWidget(
-            //   color: widget.currentRefund.status == 'pending'
-            //       ? Colors.red
-            //       : Colors.blue,
-            //   isRefunded: false,
-            //   lable: 'Status',
-            //   value: widget.currentRefund.status,
-            // ),
-            // Divider(),
-            // SalesReceiptWidget(
-            //   isRefunded: false,
-            //   lable: 'Amount',
-            //   value: widget.currentRefund.amount.toString(),
-            // ),
-            // Divider(),
-            // SalesReceiptWidget(
-            //   isRefunded: false,
-            //   lable: 'Processed \ntime',
-            //   value: MyDateFormat.toTime(
-            //       widget.currentRefund.approvedTimestamp.toDate()),
-            // ),
-            // Divider(),
-            // SalesReceiptWidget(
-            //   isRefunded: false,
-            //   lable: 'Processed \ndate',
-            //   value: MyDateFormat.toDate(
-            //       widget.currentRefund.approvedTimestamp.toDate()),
-            // ),
-            // Divider(),
-            // SalesReceiptWidget(
-            //   isRefunded: false,
-            //   lable: 'Expected \ndate',
-            //   value: widget.currentRefund.expectedDate,
-            // ),
-            // Divider(),
-            // SalesReceiptWidget(
-            //   isRefunded: false,
-            //   lable: 'Reason',
-            //   value: widget.currentRefund.reason,
-            // ),
-            Divider(),
+           
+            Divider(
+              thickness: .2,
+            ),
             const SizedBox(
               height: 10,
             ),
@@ -195,9 +177,10 @@ class _RefundWidgetState extends State<RefundWidget> {
                 icon: Icon(
                   Icons.delete_forever_outlined,
                   color: Colors.red,
-                  // size: ResponsiveHelper.responsiveFontSize(context, 20),
                 )),
-            Divider(),
+            Divider(
+              thickness: .2,
+            ),
           ],
         ),
       ),

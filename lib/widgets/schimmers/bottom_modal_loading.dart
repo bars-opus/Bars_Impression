@@ -24,7 +24,7 @@ class BottomModalLoading extends StatelessWidget {
           children: [
             CircularProgress(isMini: true),
             RichText(
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                textScaler: MediaQuery.of(context).textScaler,
                 text: TextSpan(children: [
                   TextSpan(
                     text: 'Please ',

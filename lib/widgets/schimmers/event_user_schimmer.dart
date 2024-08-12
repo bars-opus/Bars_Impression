@@ -59,7 +59,9 @@ class EventAndUserScimmer extends StatelessWidget {
                           const SizedBox(
                             height: 20,
                           ),
-                          Divider(),
+                          Divider(
+                            thickness: .2,
+                          ),
                           Padding(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 8.0,
@@ -78,8 +80,8 @@ class EventAndUserScimmer extends StatelessWidget {
                                     height: 30,
                                   ),
                                   RichText(
-                                    textScaleFactor:
-                                        MediaQuery.of(context).textScaleFactor,
+                                    textScaler:
+                                        MediaQuery.of(context).textScaler,
                                     text: TextSpan(
                                       children: [
                                         TextSpan(

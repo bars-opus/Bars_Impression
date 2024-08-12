@@ -36,7 +36,8 @@ exports.createSubaccount = functions.https.onCall(async (data, context) => {
 
     subaccountCode = paystackResponse.data.data.subaccount_code;
 
-    const recipientResponse = await createTransferRecipient(data, PAYSTACK_SECRET_KEY);
+    const recipientResponse = 
+    await createTransferRecipient(data, PAYSTACK_SECRET_KEY);
     return { subaccount_id: subaccountCode, recipient_code: recipientResponse };
 
   } catch (error) {
@@ -46,6 +47,7 @@ exports.createSubaccount = functions.https.onCall(async (data, context) => {
     // If subaccount creation was successful but transfer recipient creation failed,
     // attempt to delete the subaccount to maintain system consistency.
     if (subaccountCode) {
+ 
       try {
         await axios.delete(`https://api.paystack.co/subaccount/${subaccountCode}`, {
           headers: {
@@ -55,20 +57,20 @@ exports.createSubaccount = functions.https.onCall(async (data, context) => {
         });
         console.log(`Compensation transaction successful: Subaccount ${subaccountCode} deleted.`);
       } catch (compensationError) {
-        alertAdminSubAccountIdFFailure(data.userId, compensationError )
+        // alertAdminSubAccountIdFFailure(data.userId, compensationError )
         console.error('Compensation transaction failed:', compensationError);
         // Depending on your error handling policy, you might want to alert an admin here
       }
     }
 
     // After attempting compensation, rethrow an error to inform the caller that the overall operation failed.
-    alertAdminSubAccountIdFFailure(data.userId, error )
+    // alertAdminSubAccountIdFFailure(data.userId, error )
     throw new functions.https.HttpsError('unknown', 'Failed to create transfer recipient, compensation transaction attempted.', error);
   }
 });
 
 
-// // Helper function to create a transfer recipient
+// Helper function to create a transfer recipient
 async function createTransferRecipient(data, PAYSTACK_SECRET_KEY) {
 
   try {
@@ -77,7 +79,7 @@ async function createTransferRecipient(data, PAYSTACK_SECRET_KEY) {
       name: data.business_name,
       account_number: data.account_number,
       bank_code: data.bank_code,
-      currency: 'GHS',
+      currency: data.currency,
     }, {
       headers: {
         Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
@@ -105,118 +107,6 @@ async function createTransferRecipient(data, PAYSTACK_SECRET_KEY) {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-exports.updateSubaccount = functions.https.onCall(async (data, context) => {
-  const PAYSTACK_SECRET_KEY = functions.config().paystack.secret_key;
-  if (!context.auth) {
-    throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
-  }
-
-  let subaccountCode = null;
-
-  try {
-    const paystackResponse = await axios.put(`https://api.paystack.co/subaccount/${data.oldSubaccountId}`, {
-      business_name: data.business_name,
-      settlement_bank: data.bank_code,
-      account_number: data.account_number,
-      percentage_charge: data.percentage_charge
-    }, {
-      headers: {
-        Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!paystackResponse.data.status) {
-      throw new Error('Subaccount creation failed');
-    }
-
-    subaccountCode = paystackResponse.data.data.subaccount_code;
-
-    const recipientResponse = await updateTransferRecipient(data, PAYSTACK_SECRET_KEY);
-    return { subaccount_id: subaccountCode, recipient_code: recipientResponse };
-
-  } catch (error) {
-    alertAdminSubAccountIdFFailure(data.userId, error )
-    console.error('Error during subaccount creation or transfer recipient creation:', error);
-
-    // If subaccount creation was successful but transfer recipient creation failed,
-    // attempt to delete the subaccount to maintain system consistency.
-    if (subaccountCode) {
-      try {
-        await axios.delete(`https://api.paystack.co/subaccount/${subaccountCode}`, {
-          headers: {
-            Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        console.log(`Compensation transaction successful: Subaccount ${subaccountCode} deleted.`);
-      } catch (compensationError) {
-        alertAdminSubAccountIdFFailure(data.userId, compensationError )
-        console.error('Compensation transaction failed:', compensationError);
-        // Depending on your error handling policy, you might want to alert an admin here
-      }
-    }
-
-    // After attempting compensation, rethrow an error to inform the caller that the overall operation failed.
-    alertAdminSubAccountIdFFailure(data.userId, error )
-    throw new functions.https.HttpsError('unknown', 'Failed to create transfer recipient, compensation transaction attempted.', error);
-  }
-});
-
-
-// // Helper function to create a transfer recipient
-async function updateTransferRecipient(data, PAYSTACK_SECRET_KEY) {
-
-  try {
-    const response = await axios.put(`https://api.paystack.co/transferrecipient/${data.oldTransferRecepientId}`, {
-      // type: "ghipss", // Adjust type as per your requirements
-      name: data.business_name,
-      // account_number: data.account_number,
-      // bank_code: data.bank_code,
-      // currency: 'GHS',
-    }, {
-      headers: {
-        Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    // Check if the status is true and the data object contains the recipient_code
-    if (response.data.status ) {
-      return response.data.data.recipient_code;
-    } else {
-      // Provide more detailed error informationy
-      const message = response.data.message || 'Failed to create transfer recipient with Paystack';
-      alertAdminSubAccountIdFFailure(data.userId, message )
-      console.error(message);
-      throw new functions.https.HttpsError('unknown', message, response.data);
-    }
-  } catch (error) {
-    alertAdminSubAccountIdFFailure(data.userId, error.response ? error.response.data : error )
-    console.error('Error creating transfer recipient:', error.response ? error.response.data : error);
-    throw new functions.https.HttpsError(
-      'unknown',
-      'Error occurred while creating transfer recipient.',
-      error.response ? error.response.data : error.message
-    );
-  }
-}
-
-
-
 
 
 
@@ -273,45 +163,6 @@ function alertAdminSubAccountIdFFailure( userId,  response) {
 
 
 
-// exports.onInitiatePaystackPayment = functions.https.onCall(async (data, context) => {
-//   // Ensure the user is authenticated
-//   if (!context.auth) {
-//     throw new functions.https.HttpsError('unauthenticated', 'Only authenticated users can make payments.');
-//   }
-
-//   const { email, amount, currency, phone, provider } = data;
-//   const PAYSTACK_SECRET_KEY =functions.config().paystack.secret_key; // Set this in your Firebase config
-
-//   try {
-//     const response = await axios({
-//       method: 'post',
-//       url: 'https://api.paystack.co/transaction/initialize',
-//       headers: {
-//         Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-//         'Content-Type': 'application/json',
-//       },
-//       data: {
-//         email,
-//         amount: amount * 100, // Amount in kobo
-//         currency: 'GHS',
-//         mobile_money: {
-//           phone,
-//           provider,
-//         },
-//       },
-//     });
-
-//     return response.data.data; // Contains authorization_url and access_code
-//   } catch (error) {
-//     console.error(error);
-//     throw new functions.https.HttpsError('internal', 'Unable to initiate payment.');
-//   }
-// });
-
-
-
-
-
 exports.initiatePaystackMobileMoneyPayment = functions.https.onCall(async (data, context) => {
   // Ensure the user is authenticated
   if (!context.auth) {
@@ -353,9 +204,6 @@ exports.initiatePaystackMobileMoneyPayment = functions.https.onCall(async (data,
   }
 });
 
-
-
-
 exports.verifyPaystackPayment = functions.https.onCall(async (data, context) => {
   // Ensure the user is authenticated
   if (!context.auth) {
@@ -364,6 +212,7 @@ exports.verifyPaystackPayment = functions.https.onCall(async (data, context) => 
 
   const paymentReference = data.reference;
   const eventId = data.eventId;
+  const isEvent = data.isEvent || true;
   const expectedAmount = data.amount; // The expected amount in kobo.
   const PAYSTACK_SECRET_KEY =functions.config().paystack.secret_key; // Securely stored Paystack secret key
 
@@ -379,17 +228,15 @@ exports.verifyPaystackPayment = functions.https.onCall(async (data, context) => 
     // Verify the amount paid is what you expect
     if (paymentData.status === 'success' && parseInt(paymentData.amount) === expectedAmount) {
       // Payment is successful and the amount matches
-      // You can proceed to grant the service or update your database here
-      // ...
-
+    
       return { success: true, message: 'Payment verified successfully', transactionData: paymentData };
-    } else {  alertAdminPaymentVerificationFailure(eventId, paymentData, paymentReference )
+    } else {  alertAdminPaymentVerificationFailure(eventId, paymentData, isEvent, paymentReference )
       // Payment failed or the amount does not match
       return { success: false, message: 'Payment verification failed: Amount does not match or payment was unsuccessful.', transactionData: paymentData };
     }
   } catch (error) {
     // Handle errors
-    alertAdminPaymentVerificationFailure(eventId, error, paymentReference )
+    alertAdminPaymentVerificationFailure(eventId, error,isEvent, paymentReference )
     console.error('Payment verification error:', error);
     // Return a sanitized error message to the client
     throw new functions.https.HttpsError('unknown', 'Payment verification failed. Please try again later.');
@@ -398,10 +245,11 @@ exports.verifyPaystackPayment = functions.https.onCall(async (data, context) => 
 
 
 
-function  alertAdminPaymentVerificationFailure( eventId,  response, paymentReference) {
+function  alertAdminPaymentVerificationFailure( eventId,  response, isEvent, paymentReference) {
   const sanitizedResponse = sanitizeResponse(response);
   const logEntry = {
     timestamp: new Date(),
+    isEvent: isEvent,
     paymentReference: paymentReference,
            eventId: eventId,
         response: sanitizedResponse
@@ -413,45 +261,6 @@ function  alertAdminPaymentVerificationFailure( eventId,  response, paymentRefer
     .then(() => console.log('Logged failed with additional details'))
     .catch(error => console.error('Error logging failed:', error));
 }
-
-
-
-// function alertAdminPaymentVerificationFailure( eventId,  response) {
-//   const sanitizedResponse = sanitizeResponse(response);
-//   const logEntry = {
-//     timestamp: new Date(),
-//        transferRecepientId: eventId,
-//        eventId: eventId,
-//     response: sanitizedResponse
-//   };
-
-//   const db = admin.firestore();
-//   const documentPath = getDocumentPath();
-//   db.collection('ticket_payment_verification_error_logs').doc(documentPath).collection('logs').add(logEntry)
-//     .then(() => console.log('Logged error with additional details'))
-//     .catch(error => console.error('Error logging error:', error));
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -475,8 +284,6 @@ function isRetryableError(error) {
 }
 
 
-
-
 async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
   let retryCount = 0;
   let delay = 1000; // Initial delay in milliseconds (1 second)
@@ -491,7 +298,7 @@ async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
         source: "balance",
         amount: organizerShare,
         recipient: eventData.transferRecepientId,
-        reason:  `Payment to organizer for:  ${ eventData.eventTitle}`, 
+        reason:  `Payment for:  ${ eventData.eventTitle}`, 
       }, {
         headers: {
           'Authorization': `Bearer ${functions.config().paystack.secret_key}`,
@@ -503,7 +310,6 @@ async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
 
       if (response.status) {  
            // eslint-disable-next-line no-await-in-loop
-      
         return responseData;
       }else {
         // Handle known errors without retrying
@@ -538,19 +344,14 @@ async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
 }
 
 
-
-
-
-  exports.distributeEventFunds = functions.firestore
+  exports.distributeEventFundsWithAffiliate = functions.firestore
   .document('/allFundsPayoutRequest/{requestId}')
   .onCreate(async (snapshot, context) => {
-
-
     const db = admin.firestore();
     const eventDoc = snapshot.data();
     const eventId = eventDoc.eventId;
     const eventAuthorId = eventDoc.eventAuthorId;
-
+    const isPrivate = eventDoc.isPrivate;
     const idempotencyKey = eventId;
     const idempotencyDocRef = db.collection('fundsDistributedSuccessIdempotencyKeys').doc(idempotencyKey);
     const eventDocRef = snapshot.ref;
@@ -570,20 +371,20 @@ async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
         const response =  await createTransferWithRetry(db, snapshot);
         
         // await
-
-
         const userDocRef = db.collection('userPayoutRequests').doc(eventAuthorId).collection('payoutRequests').doc(eventId);
         const userEventDocRef = db.collection('new_events').doc(eventAuthorId).collection('userEvents').doc(eventId);
-        const allEventDocRef = db.collection('new_allEvents').doc(eventId);
+        const allEventDocRef = isPrivate? null : db.collection('new_allEvents').doc(eventId);
 
         const total =  response.data.amount;
         // response.data.total; // Assuming this is a number
-    
         // If the transfer is successful, mark the event as processed and store the idempotency key
         transaction.update(eventDocRef, { status: 'processed', idempotencyKey: idempotencyKey, total: total, });
         transaction.update(userDocRef, { status: 'processed', idempotencyKey: idempotencyKey, total: total, });
         transaction.update(userEventDocRef, { fundsDistributed: true, });
-        transaction.update(allEventDocRef, { fundsDistributed: true, });
+         // Update allEventDocRef only if it's not null
+         if (isPrivate === false) {
+          transaction.update(allEventDocRef, { fundsDistributed: true });
+        }
         // transaction.update(eventDocRef, { status: 'processed', idempotencyKey: idempotencyKey });
         transaction.set(idempotencyDocRef, {
           transferResponse: response, // Assume the API response has a data field
@@ -604,19 +405,8 @@ async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
       }
     } catch (error) {
       console.error(`Error processing fund distribution for event ${eventId}:`, error.message);
-      // if (error.response) {
-      //   // The request was made and the server responded with a status code
-      //   // that falls out of the range of 2xx
-      //   console.error("Data:", error.response.data);
-      //   console.error("Status:", error.response.status);
-      //   console.error("Headers:", error.response.headers);
-      // } else if (error.request) {
-      //   // The request was made but no response was received
-      //   console.error("Request:", error.request);
-      // } else {
-      //   // Something happened in setting up the request that triggered an Error
-      //   console.error("Error:", error.message);
-      // }
+ 
+    
       console.error("Config:", error.config);
     
       // Alert admin of error
@@ -626,264 +416,134 @@ async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
 
 
 
-// async function createTransferWithRetry(db, eventDoc, maxRetries = 3) {
-//   let retryCount = 0;
-//   let delay = 1000; // Initial delay in milliseconds (1 second)
-//   const eventData = eventDoc.data();
+  exports.distributeAffiliateFunds = functions.firestore
+  .document('/allFundsAffiliatePayoutRequest/{requestId}')
+  .onCreate(async (snapshot, context) => {
 
-//   while (retryCount < maxRetries) {
-//     try { 
-//          // eslint-disable-next-line no-await-in-loop
-//       const organizerShare = await calculateOrganizerShare(eventData);
-//    // eslint-disable-next-line no-await-in-loop
-//       const response = await axios.post('https://api.paystack.co/transfer', {
-//         source: "balance",
-//         amount: organizerShare,
-//         recipient: eventData.transferRecepientId,
-//         reason:  `Payment to organizer for:  ${ eventData.eventTitle}`, 
-//       }, {
-//         headers: {
-//           'Authorization': `Bearer ${functions.config().paystack.secret_key}`,
-//           'Content-Type': 'application/json'
-//         }
-//       });
+    const db = admin.firestore();
+    const affiliateDoc = snapshot.data();
+    const affiliateId = affiliateDoc.affiliateId;
+    const eventId = affiliateDoc.eventId;
+    const idempotencyKey = eventId;
+    const idempotencyDocRef = db.collection('fundsAffiliateDistributedSuccessIdempotencyKeys').doc(idempotencyKey);
+    const allAffiliateDocRef = snapshot.ref;
 
-//       // const responseData = response.data;
+    try {
+      // Start a transaction
+      await db.runTransaction(async (transaction) => {
+        // Check for idempotency inside the transaction
+        // eslint-disable-next-line no-await-in-loop
+        const idempotencyDoc = await transaction.get(idempotencyDocRef);
+        if (idempotencyDoc.exists) {
+          // Skip this event as it has already been processed
+          return;
+        }
 
-//       // response.status
-
-//       if (response.status) {
-//            // eslint-disable-next-line no-await-in-loop
-//         return response;
-//       }else {
-//         // Handle known errors without retrying
-//         if (response.message.includes("Transfer code is invalid")) {
-//           // eslint-disable-next-line no-await-in-loop
-//           await alertAdminDistributeFundsError(db,eventData.eventId, eventData.transferRecepientId, eventData.subaccountId, response.message ||"Transfer code is invalid" ,  eventData.eventAuthorId, );
-//           throw new Error(response.message);
-//         }
-//         // Throw a generic error to trigger a retry for other cases
-//         throw new Error('Transfer failed with a non-success status');
-//       }
-    
-//     } catch (error) {
-//       console.error(`Attempt ${retryCount + 1} for event ${eventDoc.id} failed:`, error);
-
-//       if (!isRetryableError(error)) {
-//            // eslint-disable-next-line no-await-in-loop
-//         await alertAdminDistributeFundsError(db,eventData.eventId, eventData.transferRecepientId, eventData.subaccountId, error.message || "Unknown error",  eventData.eventAuthorId, );
-//         throw error;
-//       }
-
-//       console.log(`Retryable error encountered for event ${eventData.id}. Will retry after ${delay}ms...`);
-//       // eslint-disable-next-line no-await-in-loop
-//       await new Promise(resolve => setTimeout(resolve, delay));
-//       retryCount++;
-//       delay *= 2;
-//     }
-//   }
-//   await alertAdminDistributeFundsError(db,eventData.eventId, eventData.transferRecepientId, eventData.subaccountId, 'All retries failed', eventData.eventAuthorId,);
-//      // eslint-disable-next-line no-await-in-loop
-//   throw new Error(`All ${maxRetries} retries failed for event ${eventDoc.eventId}`);
-// }
-
-
-
-
-
-//   exports.distributeEventFunds = functions.firestore
-//   .document('/allFundsPayoutRequest/{requestId}')
-//   .onCreate(async (snapshot, context) => {
-//     const db = admin.firestore();
-//     const eventDoc =snapshot;
-//     const eventData = eventDoc.data(); 
-//     const eventId = eventData.eventId;
-//     const transferRecipientId = eventData.transferRecepientId;
-//     const eventAuthorId = eventData.eventAuthorId;
-
-//     const idempotencyKey = `payout_${eventId}`;
-
-//     const idempotencyDocRef = db.collection('fundsDistributedSuccessIdempotencyKeys').doc(idempotencyKey);
-    // const userDocRef = db.collection('userPayoutRequests').doc(eventAuthorId).collection('payoutRequests').doc(eventId);
-    // const userEventDocRef = db.collection('new_events').doc(eventAuthorId).collection('userEvents').doc(eventId);
-    // const allEventDocRef = db.collection('new_allEvents').doc(eventId);
-//     const allRefundDocRef = snapshot.ref;
-//   // First, check if the payout has already been processed
-//   const idempotencyDocSnapshot = await idempotencyDocRef.get();
-//     if (idempotencyDocSnapshot.exists) {
-//       // eslint-disable-next-line no-await-in-loop
-//       alertAdminDistributeFundsError(db, eventId, transferRecipientId, eventData.subaccountId, 'funds are already processed', eventData.eventAuthorId);
-//      console.log(`Payout already processed for transaction ID: ${transferRecipientId}`);
-//      return;
-//    }
-
-//     try {
-//       // Start a transaction
-//       await db.runTransaction(async (transaction) => {
-//         // eslint-disable-next-line no-await-in-loop
-//         // const idempotencyDoc = await transaction.get(idempotencyDocRef);
-//         // if (idempotencyDoc.exists) {
-//         //   // Skip this event as it has already been processed
-//         //   return;
-//         // }  
-
-//         // Attempt to create the transfer with retries
-//        // eslint-disable-next-line no-await-in-loop
-//         const response = await createTransferWithRetry(db, eventDoc); 
-//         // await createTransferWithRetry(db, snapshot); 
-
-//         const  total =  response.data.amount;
-//           // response.data.amount/ 90;
-//         //  if(response.status)
-//         // {
-//         // If the transfer is successful, mark the event as processed and store the idempotency key
-        // transaction.update(allRefundDocRef, { status: 'processed', idempotencyKey: idempotencyKey, total: total, });
-        // transaction.update(userDocRef, { status: 'processed', idempotencyKey: idempotencyKey, total: total, });
-        // transaction.update(userEventDocRef, { fundsDistributed: true, });
-        // transaction.update(allEventDocRef, { fundsDistributed: true, });
-
-//         transaction.set(idempotencyDocRef, {
-//           transferResponse: response, // Assume the API response has a data field
-//           created: admin.firestore.FieldValue.serverTimestamp()
-//         });
- 
-//       // Alert admin of successful distribution
-//        alertAdminFundsDistributedSuccess(db, eventId, eventData.transferRecepientId, idempotencyKey, eventData.subaccountId, eventData.eventAuthorId);
-
-//        // Send notification if user has a token
-//        const userData = (await db.doc(`user_general_settings/${eventData.eventAuthorId}`).get()).data();
-//        if (userData && userData.androidNotificationToken) {
-//          // eslint-disable-next-line no-await-in-loop
-//          await sendFundDistributedNotification(userData.androidNotificationToken, eventData.eventAuthorId, eventId, eventData.eventAuthorId, eventData.eventTitle);
-//        } else {
-//          console.log(`No notification token for user ${eventData.eventAuthorId} or notifications are muted.`);
-//        }
-//       //   } else{
-//       //     console.error(`Error processing fund distribution for event ${eventId}:`, error);
-//       // // Alert admin of error
-//       //  alertAdminDistributeFundsError(db, eventId, eventData.transferRecepientId, eventData.subaccountId, error.message || "Unknown error", eventData.eventAuthorId);
-//       //   }
-//       });
-//     } catch (error) {
-//       console.error(`Error processing fund distribution for event ${eventId}:`, error.message || "Unknown error",);
-//       // Alert admin of error
-//        alertAdminDistributeFundsError(db, eventId, eventData.transferRecepientId, eventData.subaccountId,    error.message || "Unknown error", eventData.eventAuthorId);
-//     }
-//   });
-
-
-
-
-
-// exports.distributeEventFunds = functions.pubsub.schedule('every 5 minutes').onRun(async (context) => {
-//   const db = admin.firestore();
-  
-//   // Assume this is where you fetch events from Firestore
-//   const eventsSnapshot = await db.collection('allFundsPayoutRequest')
-//     // .where('clossingDay', '<=', admin.firestore.Timestamp.now())
-//     .where('status', '==', 'pending')
-//     .get();
-
-//   for (const eventDoc of eventsSnapshot.docs) {
-//     const eventData = eventDoc.data();
-//     const eventId = eventDoc.data().eventId;
-
-//     const idempotencyKey = `${eventId}_${new Date().toISOString().slice(0, 10)}`;
-  
-//     const idempotencyDocRef = db.collection('fundsDistributedSuccessIdempotencyKeys').doc(idempotencyKey);
-//     const eventDocRef = eventDoc.ref;
-  
-//     try {
-//       // Start a transaction
-//        // eslint-disable-next-line no-await-in-loop
-//       await db.runTransaction(async (transaction) => {
-//         // Check for idempotency inside the transaction
-//         const idempotencyDoc = await transaction.get(idempotencyDocRef);
-        // if (idempotencyDoc.exists) {
-        //   // Skip this event as it has already been processed
-        //   return;
-        // }
-  
-//         // Attempt to create the transfer with retries
-//          // eslint-disable-next-line no-await-in-loop
-//         // const response = await createTransferWithRetry(db, eventDoc);
-  
-//         // If the transfer is successful, mark the event as processed and store the idempotency key
-//         transaction.update(eventDocRef, { status: 'proccessed', idempotencyKey: idempotencyKey });
-//         transaction.set(idempotencyDocRef, {
-//           transferResponse: 'successful', // Assume the API response has a data field
-//           created: admin.firestore.FieldValue.serverTimestamp()
-//         });
-//       });
-
-//            // eslint-disable-next-line no-await-in-loop
-//            await alertAdminFundsDistributedSuccess(db, eventId, eventData.transferRecepientId,idempotencyKey, eventData.subaccountId,  eventData.eventAuthorId,);
+        // Attempt to create the transfer with retries
+        const response =  await createAffiliateTransferWithRetry(db, snapshot);
       
-//       const userId = eventData.eventAuthorId;
-//       const userRef = firestore.doc(`user_general_settings/${userId}`);
-//         // eslint-disable-next-line no-await-in-loop
-//       const userDoc = await userRef.get(); // eslint-disable-next-line no-await-in-loop
+        // await
+        const  eventAffiliateDocRef = db.collection('new_eventAffiliate').doc(eventId).collection('affiliateMarketers').doc(affiliateId);
+        const  userAffiliateRef = db.collection('userAffiliate').doc(affiliateId).collection('affiliateMarketers').doc(eventId);
+        const userAffiliateRequestRef = db.collection('userAffiliatePayoutRequests').doc(affiliateId).collection('payoutRequests').doc(eventId);
+        // const allEventDocRef = db.collection('new_allEvents').doc(eventId);
 
-//       if (!userDoc.exists) {
-//         console.log(`User settings not found for user ${userId}`);
-//         // continue;
-//       }
+        // If the transfer is successful, mark the event as processed and store the idempotency key
+        transaction.update(allAffiliateDocRef, { status: 'processed', idempotencyKey: idempotencyKey, });
+        transaction.update(userAffiliateRequestRef, { status: 'processed', idempotencyKey: idempotencyKey, });
 
-//       const userData = userDoc.data();
-//       const androidNotificationToken = userData.androidNotificationToken;
+        transaction.update(eventAffiliateDocRef, { payoutToAffiliates: true, });
+        transaction.update(userAffiliateRef, { payoutToAffiliates: true, });
+        // transaction.update(eventDocRef, { status: 'processed', idempotencyKey: idempotencyKey });
+        transaction.set(idempotencyDocRef, {
+          transferResponse:  response, // Assume the API response has a data field
+          created: admin.firestore.FieldValue.serverTimestamp()
+        });
+      });
 
-//       if (androidNotificationToken) {
-//         try {
-//             // eslint-disable-next-line no-await-in-loop
-//             await sendFundDistributedNotification(androidNotificationToken, userId, eventId, eventData.eventAuthorId, eventData.eventTitle); // eslint-disable-next-line no-await-in-loop
-//         } catch (error) {
-//           console.error(`Error sending  funds distributed notification:`, error);
-//         }
-//       } else {
-//         console.log(`No notification token for user ${userId} or notifications are muted.`);
-//       }
+      // Alert admin of successful distribution
+      alertAffiliateFundsDistributedSuccess(db, eventId, affiliateDoc.transferRecepientId, idempotencyKey, affiliateDoc.subaccountId, affiliateDoc.eventAuthorId);
+
+      // Send notification if user has a token
+      const userData = (await db.doc(`user_general_settings/${affiliateDoc.affiliateId}`).get()).data();
+      if (userData && userData.androidNotificationToken) {
+        // eslint-disable-next-line no-await-in-loop
+        await sendFundDistributedNotification(userData.androidNotificationToken, affiliateDoc.affiliateId, eventId, affiliateDoc.affiliateId, affiliateDoc.eventTitle);
+      } else {
+        console.log(`No notification token for user ${affiliateDoc.affiliateId} or notifications are muted.`);
+      }
+    } catch (error) {
+      console.error(`Error processing fund distribution for event ${eventId}:`, error.message);
+ 
     
+      console.error("Config:", error.config);
     
-//     } catch (error) {
-//       if (error.response && error.response.data) {
-//         transaction.update(eventDocRef, { status: 'error' });
-//         if (error.response) {
-//           // The request was made and the server responded with a status code
-//           // that falls out of the range of 2xx
-//           console.error(error.response.data);
-//           console.error(error.response.status);
-//           console.error(error.response.headers);
-//       }
-//         console.error(`Attempt ${retryCount + 1} for event ${eventId} failed:`, error.response.data);
+      // Alert admin of error
+      alertAffiliateDistributeFundsError(db, eventId, affiliateDoc.transferRecepientId, affiliateDoc.subaccountId, error.message, affiliateDoc.eventAuthorId);
+    }
+  });
+
+
+async function createAffiliateTransferWithRetry(db, affiliateDoc, maxRetries = 3) {
+  let retryCount = 0;
+  let delay = 1000; // Initial delay in milliseconds (1 second)
+  const affiliateData = affiliateDoc.data();
+
+  while (retryCount < maxRetries) {
+    try {
+         // eslint-disable-next-line no-await-in-loop
+      // const organizerShare = await calculateOrganizerShare(affiliateData);
+   // eslint-disable-next-line no-await-in-loop
+      const response = await axios.post('https://api.paystack.co/transfer', {
+        source: "balance",
+        amount: affiliateData.total * 100,
+        recipient: affiliateData.transferRecepientId,
+        reason:  `Payment to affiliate for:  ${ affiliateData.eventTitle}`, 
+      }, {
+        headers: {
+          'Authorization': `Bearer ${functions.config().paystack.secret_key}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const responseData = response.data;
+
+      if (response.status) {  
+           // eslint-disable-next-line no-await-in-loop
+      
+        return responseData;
+      }else {
+        // Handle known errors without retrying
+        if (responseData.message.includes("Transfer code is invalid")) {
+          // eslint-disable-next-line no-await-in-loop
+          await alertAffiliateDistributeFundsError(db,affiliateData.eventId, affiliateData.transferRecepientId, affiliateData.subaccountId, responseData.message ||"Transfer code is invalid" ,  affiliateData.affiliateId, );
+          throw new Error(responseData.message);
+        }
+        // Throw a generic error to trigger a retry for other cases
+        throw new Error('Transfer failed with a non-success status');
+      }
     
-//         if (error.response.data.code === 'insufficient_balance') {
-//           // Handle insufficient balance error specifically
-//             // eslint-disable-next-line no-await-in-loop
-//           await alertAdminDistributeFundsError(
-//             db, 
-//             eventId,
-//             eventData.transferRecepientId, 
-//             eventData.subaccountId, 
-//             "Insufficient balance for transfer", 
-//             eventData.eventAuthorId
-//           );
-//           // Break out of the loop since retrying won't resolve insufficient funds
-//           break;
-//         }
-//       } else {
-//         transaction.update(eventDocRef, { status: 'error' });
-//         // Handle other errors
-//            // If the transaction fails, log the error and alert the admin
-//       console.error(`Transaction failed for event ${eventId}:`, error);
-//       // eslint-disable-next-line no-await-in-loop
-//         await alertAdminDistributeFundsError(db, eventId, eventData.transferRecepientId, eventData.subaccountId, `Transaction failed for event:${ eventData.eventTitle} \n ${error}:`, eventData.eventAuthorId, );
-//         console.error(`Attempt ${retryCount + 1} for event ${eventDoc.id} failed with an unknown error:`, error);
-//       }
-     
-   
-//     }
-//   }
-// });
+    } catch (error) {
+      console.error(`Attempt ${retryCount + 1} for event ${eventDoc.id} failed:`, error);
+
+      if (!isRetryableError(error)) {
+           // eslint-disable-next-line no-await-in-loop
+        await alertAffiliateDistributeFundsError(db,affiliateData.eventId, affiliateData.transferRecepientId, affiliateData.subaccountId, error.message || "Unknown error",  affiliateData.affiliateId, );
+        throw error;
+      }
+
+      console.log(`Retryable error encountered for event ${eventDoc.id}. Will retry after ${delay}ms...`);
+      // eslint-disable-next-line no-await-in-loop
+      await new Promise(resolve => setTimeout(resolve, delay));
+      retryCount++;
+      delay *= 2;
+    }
+  }
+  await alertAffiliateDistributeFundsError(db,affiliateData.eventId, affiliateData.transferRecepientId, affiliateData.subaccountId, 'All retries failed', affiliateData.affiliateId,);
+     // eslint-disable-next-line no-await-in-loop
+  throw new Error(`All ${maxRetries} retries failed for event ${affiliateDoc.id}`);
+}
+
 
 function getDocumentPath() {
   const now = new Date();
@@ -931,6 +591,26 @@ async function sendFundDistributedNotification(androidNotificationToken, userId,
 
 
 
+
+  function alertAffiliateDistributeFundsError(db, eventId, transferRecepientId, subaccountId, response,  authorId) {
+    const sanitizedResponse = sanitizeResponse(response);
+    const logEntry = {
+      date: admin.firestore.FieldValue.serverTimestamp(),
+      eventId: eventId,
+      // error: errorMessage,
+      transferRecepientId: transferRecepientId,
+      subaccountId: subaccountId,
+      authorId: authorId,
+      response: sanitizedResponse
+    };
+  
+    const documentPath = getDocumentPath();
+    db.collection('fundAffiliateDistributionFailures').doc(documentPath).collection('logs').add(logEntry)
+      .then(() => console.log('Logged failed with additional details'))
+      .catch(error => console.error('Error logging failed:', error));
+  }
+
+
 function alertAdminDistributeFundsError(db, eventId, transferRecepientId, subaccountId, response,  authorId) {
   const sanitizedResponse = sanitizeResponse(response);
   const logEntry = {
@@ -972,6 +652,24 @@ function alertCalculateFundDistError(db, eventId, transactionId,  subaccountId,r
 
 
 
+function alertAffiliateFundsDistributedSuccess(db, eventId, transferRecepientId, idempotencyKey, subaccountId,  authorId, ) {
+  // const sanitizedResponse = sanitizeResponse(response);
+  const logEntry = {
+    date: admin.firestore.FieldValue.serverTimestamp(),
+    eventId: eventId,
+    transferRecepientId: transferRecepientId,
+    authorId: authorId,
+    subaccountId: subaccountId,
+    idempotencyKey: idempotencyKey
+  };
+
+  const documentPath = getDocumentPath();
+  db.collection('fundsAffiliatedDistributedSuccess').doc(documentPath).collection('logs').add(logEntry)
+    .then(() => console.log('Logged succesful with additional details'))
+    .catch(error => console.error('Error logging succesful:', error));
+}
+
+
 function alertAdminFundsDistributedSuccess(db, eventId, transferRecepientId, idempotencyKey, subaccountId,  authorId, ) {
   // const sanitizedResponse = sanitizeResponse(response);
   const logEntry = {
@@ -989,61 +687,6 @@ function alertAdminFundsDistributedSuccess(db, eventId, transferRecepientId, ide
     .catch(error => console.error('Error logging succesful:', error));
 }
 
-
-// // Example function to log success with more details
-// function alertAdminFundsDistributedSuccess(eventId, response) {
-//   const sanitizedResponse = sanitizeResponse(response);
-//   const logEntry = {
-//     timestamp: new Date(),
-//     eventId: eventId,
-//     status: 'Success',
-//     response: sanitizedResponse
-//   };
-
-//   const db = admin.firestore();
-//   const documentPath = getDocumentPath();
-//   db.collection('fundsDistributedSuccessLogs').doc(documentPath).collection('logs').add(logEntry)
-//     .then(() => console.log('Logged success with additional details'))
-//     .catch(error => console.error('Error logging success:', error));
-// }
-
-// // Example function to log error with more details
-// function alertAdminDistributeFundsError(eventId, transferRecepientId, error, response) {
-//   const sanitizedResponse = sanitizeResponse(response);
-//   const logEntry = {
-//     timestamp: new Date(),
-//     eventId: eventId,
-//     status: 'Error',
-//     transferRecepientId: transferRecepientId,
-//     error: error.toString(),
-//     response: sanitizedResponse
-//   };
-
-//   const db = admin.firestore();
-//   const documentPath = getDocumentPath();
-//   db.collection('fundDistributionErrorLogs').doc(documentPath).collection('logs').add(logEntry)
-//     .then(() => console.log('Logged error with additional details'))
-//     .catch(error => console.error('Error logging error:', error));
-// }
-
-// // Example function to log error with more details
-// function alertCalculateFundDistError(eventId, transferRecepientId, error, response) {
-//   const sanitizedResponse = sanitizeResponse(response);
-//   const logEntry = {
-//     timestamp: new Date(),
-//     eventId: eventId,
-//     status: 'Error',
-//     transferRecepientId: transferRecepientId,
-//     error: error.toString(),
-//     response: sanitizedResponse
-//   };
-
-//   const db = admin.firestore();
-//   const documentPath = getDocumentPath();
-//   db.collection('fundCalculateErrorLogs').doc(documentPath).collection('logs').add(logEntry)
-//     .then(() => console.log('Logged error with additional details'))
-//     .catch(error => console.error('Error logging error:', error));
-// }
 
 async function calculateOrganizerShare(eventData) {
   const db = admin.firestore();
@@ -1071,9 +714,17 @@ async function calculateOrganizerShare(eventData) {
     }
 
     // Compute the commission and organizer's share
+    // Get the total affiliate amount
+    const totalAffiliateAmount = eventData.totalAffiliateAmount || 0;
+
+    // Compute the net amount collected after subtracting affiliate payouts
+    const netAmountCollected = totalAmountCollected - totalAffiliateAmount;
+
+    // Compute the commission and organizer's share
     const commissionRate = 0.10;
-    const commission = totalAmountCollected * commissionRate;
-    const organizerShare = totalAmountCollected - commission;
+    const commission = netAmountCollected * commissionRate;
+    const organizerShare = netAmountCollected - commission;
+
 
     if (organizerShare < 0) {
       throw new Error('Calculated organizer share is negative, which is not possible.');
@@ -1097,69 +748,6 @@ async function calculateOrganizerShare(eventData) {
     throw error;
   }
 }
-
-// async function calculateOrganizerShare(eventData) {
-//   try {
-//     // Initialize a variable to hold the sum of all ticket totals
-//     let totalAmountCollected = 0;
-
-//     // Get a reference to the subcollection
-//     const ticketOrderCollection = admin.firestore()
-//       .collection('new_eventTicketOrder')
-//       .doc(eventData.id)
-//       .collection('ticketOrders');
-
-//     // Retrieve the snapshot
-//     const totalTicketSnapshot = await ticketOrderCollection.get();
-
-//     // Check if there are any ticket orders
-//     if (totalTicketSnapshot.empty) {
-//       console.log(`No ticket orders found for event: ${eventData.id}`);
-//       // Handle the scenario where there are no ticket orders, e.g., return 0 or throw an error
-//       return 0; // Assuming the organizer's share is zero if there are no ticket sales
-//     }
-
-//     // Loop through each document in the snapshot
-//     for (const eventDoc of totalTicketSnapshot.docs) {
-//       // Accumulate the total amount from each ticket order
-//       // Ensure that the total is a number and not undefined or null
-//       const ticketTotal = eventDoc.data().total;
-//       if (typeof ticketTotal === 'number') {
-//         totalAmountCollected += ticketTotal;
-//       } else {
-//         // Handle the scenario where ticket total is not a number
-        //  eslint-disable-next-line no-await-in-loop
-//         await alertCalculateFundDistError(db,  eventData.id, eventData.transferRecepientId, eventData.subaccountId, `Invalid ticket total for document: ${String(ticketTotal)}`,  eventData.authorId, );
-//         console.error(`Invalid ticket total for document: ${eventDoc.id}`);
-//         // Depending on your error handling strategy, you can throw an error or skip this ticket total
-//         // throw new Error(`Invalid ticket total for document: ${eventDoc.id}`);
-//       }
-//     }
-
-//     // Calculate your commission (10% of the total amount)
-//     const commissionRate = 0.10; // 10% commission rate
-//     const commission = totalAmountCollected * commissionRate;
-
-//     // The organizer's share is the remaining 90%
-//     const organizerShare = totalAmountCollected - commission;
-
-//     // Ensure the organizer's share is not negative
-//     if (organizerShare < 0) {
-//       throw new Error('Calculated organizer share is negative, which is not possible.');
-//     }
-
-//     // Return the organizer's share
-//     return Math.round(organizerShare * 100);
-
-//     // return organizerShare;
-
-//   } catch (error) {
-//     // Use eventData.id instead of eventDoc.id to avoid referencing an undefined variable
-//     await alertCalculateFundDistError(db,  eventData.id, eventData.transferRecepientId, eventData.subaccountId, `Error calculating organizer share: ${error.message.toString()}`, eventData.authorId, );
-//     console.error('Error calculating organizer share:', error);
-//     throw error;
-//   }
-// }
 
 
 
@@ -1198,7 +786,6 @@ function sanitizeResponse(response) {
   return clonedResponse;
 }
 
-  
 
 exports.scheduledRefundProcessor = functions.pubsub.schedule('every 24 hours').onRun(async (context) => {
    // eslint-disable-next-line no-await-in-loop
@@ -1267,9 +854,7 @@ const refundAmount = Math.floor(amountInKobo * refundRate);
     try {
        // eslint-disable-next-line no-await-in-loop
       const response =  await axios.post('https://api.paystack.co/refund', payload, { headers });
-      
-      // await axios.post('https://api.paystack.co/refund', payload, { headers });
-    
+          
       // response.data.status
       if ( response.data.status) {
          
@@ -1281,11 +866,7 @@ const refundAmount = Math.floor(amountInKobo * refundRate);
         await db.runTransaction(async (transaction) => {
 
           const transferUserId = refundData.userRequestId;
-          const userId = transferUserId;
-
-
-   
-        
+          const userId = transferUserId;      
           const refundRequestRef = refundRequestDoc.ref;
           const idempotencyDocRef = db.collection('refundSuccessIdempotencyKeys').doc(idempotencyKey);
           const eventDocRef = db.collection('new_eventTicketOrder').doc(refundData.eventId).collection('ticketOrders').doc(userId);
@@ -1331,13 +912,6 @@ const refundAmount = Math.floor(amountInKobo * refundRate);
             } else {
               console.log(`No notification token for user ${userId} or notifications are muted.`);
             }
-
-          // } else {
-          //      // eslint-disable-next-line no-await-in-loop
-          //   await alertAdminRefundFailure(db, eventId, transactionId, response.data, refundData.userRequestId, refundData.orderId,);
-          //   console.log(`Refund already processed for transaction ID: ${transactionId}`);
-          //   return;
-          // }
         });
          // eslint-disable-next-line no-await-in-loop
          await alertAdminRefundSuccess(db, eventId, transactionId, idempotencyKey, refundData.userRequestId, refundData.orderId,);
@@ -1420,11 +994,6 @@ async function sendRefundNotification(androidNotificationToken, userId, eventId,
   }
 
 
-  
-
-
-
-
 function alertAdminRefundFailure(db, eventId, transactionId, response, userRequestId, orderId) {
   const sanitizedResponse = sanitizeResponse(response);
   const logEntry = {
@@ -1442,7 +1011,6 @@ function alertAdminRefundFailure(db, eventId, transactionId, response, userReque
     .then(() => console.log('Logged failed with additional details'))
     .catch(error => console.error('Error logging failed:', error));
 }
-
 
 
 function alertAdminRefundSuccess(db, eventId, transactionId, idempotencyKey,  userRequestId, orderId ) {
@@ -1463,32 +1031,11 @@ function alertAdminRefundSuccess(db, eventId, transactionId, idempotencyKey,  us
 }
 
 
-// exports.scheduledRefundEventDeletedProcessor = functions.pubsub.schedule('every 24 hours').onRun(async (context) => {
-//   // eslint-disable-next-line no-await-in-loop
-//   const db = admin.firestore();
-
-//  const refundRequestsSnapshot = await db.collection('allRefundRequestsEventDeleted').where('status', '==', 'pending').get();
-
-//  for (const refundRequestDoc of refundRequestsSnapshot.docs) {
-//   const refundData = refundRequestDoc.data();
-
-//    try { // eslint-disable-next-line no-await-in-loop
-//      await processRefundEventDeleted(refundRequestDoc);
-//    } catch (error) {
-//      console.error(`Error processing refund for transaction ID: ${refundRequestDoc.id}`, error);
-//      // Handle the error appropriately, e.g., alert the admin
-//       // eslint-disable-next-line no-await-in-loop
-//      await alertAdminRefundFailure(db, refundRequestDoc.data().eventId, refundRequestDoc.data().transactionId, error.message, refundData.userRequestId, refundData.orderId,);
-//    }
-//  }
-// });
 
 exports.scheduledRefundEventDeletedProcessor = functions.pubsub.schedule('every 24 hours').onRun(async (context) => {
   // eslint-disable-next-line no-await-in-loop
   const db = admin.firestore();
-
  const refundRequestsSnapshot = await db.collection('allRefundRequestsEventDeleted').where('status', '==', 'pending').get();
-
  for (const refundRequestDoc of refundRequestsSnapshot.docs) {
 
  const refundData = refundRequestDoc.data();
@@ -1504,7 +1051,6 @@ exports.scheduledRefundEventDeletedProcessor = functions.pubsub.schedule('every 
 });
 
 
-
 async function processRefundEventDeleted(refundRequestDoc) {
   const db = admin.firestore();
 
@@ -1512,15 +1058,13 @@ async function processRefundEventDeleted(refundRequestDoc) {
   const transactionId = refundData.transactionId;
   // const transferUserId =   refundData.userRequestId;
   const eventId = refundData.eventId;
-  // Assuming refundData.amount is in Naira, convert to kobo
+  // Assuming refundData.amount is in Ghana cedis, convert to kobo
 const amountInKobo = refundData.amount * 100;
 // Calculate 80% of the original amount
-
 const refundAmount = Math.floor(amountInKobo);
   //  const commissionRate = refundData.amount * 0.20;
   // const refundAmount = Math.floor(commissionRate * 100); // 80% of the original amount
   const idempotencyKey = `refund_${transactionId}`;
-
 
   const idempotencyDocRef = db.collection('refundSuccessIdempotencyKeys').doc(idempotencyKey);
 
@@ -1552,14 +1096,11 @@ const refundAmount = Math.floor(amountInKobo);
     try {
        // eslint-disable-next-line no-await-in-loop
       const response =  await axios.post('https://api.paystack.co/refund', payload, { headers });
-      
-      // await axios.post('https://api.paystack.co/refund', payload, { headers });
-    
+          
       // response.data.status
       if ( response.data.status) {
          
         const   amount = response.data.data.amount/100;
-        // response.data.amount/100;
         const  expectedDate = response.data.data.expected_at;
         // response.data.expected_at;
          // eslint-disable-next-line no-await-in-loop
@@ -1568,31 +1109,19 @@ const refundAmount = Math.floor(amountInKobo);
           const transferUserId = refundData.userRequestId;
           const userId = transferUserId;
 
-
-   
-        
           const refundRequestRef = refundRequestDoc.ref;
           const idempotencyDocRef = db.collection('refundSuccessIdempotencyKeys').doc(idempotencyKey);
-          // const eventDocRef = db.collection('new_eventTicketOrder').doc(refundData.eventId).collection('ticketOrders').doc(userId);
           const userDocRef = db.collection('new_userTicketOrder').doc(userId).collection('ticketOrders').doc(refundData.eventId);
-          // const userTicketIdRef = db.collection('new_ticketId').doc(userId).collection('tickedIds').doc(refundData.eventId);
           const userRefundRequestRef = db.collection('userRefundRequests').doc(userId).collection('refundRequests').doc(refundData.eventId);
-          // const eventRefundRequestRef = db.collection('eventRefundRequests').doc(refundData.eventId).collection('refundRequests').doc(userId);
-          // const idempotencyDocSnapshot = await transaction.get(idempotencyDocRef);
-
           // if (!idempotencyDocSnapshot.exists) {
             transaction.update(refundRequestRef, { status: 'processed', idempotencyKey: idempotencyKey,  amount:  amount, expectedDate: expectedDate  });
-            // transaction.update(eventDocRef, { refundRequestStatus: 'processed', idempotencyKey: idempotencyKey  });
             transaction.update(userDocRef, { refundRequestStatus: 'processed', idempotencyKey: idempotencyKey  });
             transaction.update(userRefundRequestRef, { status: 'processed', idempotencyKey: idempotencyKey, amount:  amount, expectedDate: expectedDate  });
-            // transaction.update(eventRefundRequestRef, { status: 'processed', idempotencyKey: idempotencyKey, amount:  amount, expectedDate: expectedDate  });
-            // transaction.delete(userTicketIdRef);
             transaction.set(idempotencyDocRef, {
               refundResponse: response.data,
               // response.data,
               created: admin.firestore.FieldValue.serverTimestamp()
             });
-
            
             const userRef = firestore.doc(`user_general_settings/${userId}`);
               // eslint-disable-next-line no-await-in-loop
@@ -1616,13 +1145,6 @@ const refundAmount = Math.floor(amountInKobo);
             } else {
               console.log(`No notification token for user ${userId} or notifications are muted.`);
             }
-
-          // } else {
-          //      // eslint-disable-next-line no-await-in-loop
-          //   await alertAdminRefundFailure(db, eventId, transactionId, response.data, refundData.userRequestId, refundData.orderId,);
-          //   console.log(`Refund already processed for transaction ID: ${transactionId}`);
-          //   return;
-          // }
         });
          // eslint-disable-next-line no-await-in-loop
          await alertAdminRefundSuccess(db, eventId, transactionId, idempotencyKey, refundData.userRequestId, refundData.orderId,);
@@ -1666,224 +1188,6 @@ const refundAmount = Math.floor(amountInKobo);
     throw new Error(`All retry attempts failed for refund ${transactionId}`);
   }
 }
-
-
-
-
-
-// async function processRefundEventDeleted(refundRequestDoc) {
-//  const db = admin.firestore();
-
-//  const refundData = refundRequestDoc.data();
-//  const transactionId = refundData.transactionId;
-//  const eventId = refundData.eventId;
-// //  const userId = refundData.userRequestId;
-//  const refundAmount = Math.floor(refundData.amount * 100); 
-//  const idempotencyKey = `refund_${transactionId}`;
-
-
-//  const idempotencyDocRef = db.collection('refundSuccessIdempotencyKeys').doc(idempotencyKey);
-
-//  // First, check if the refund has already been processed
-//  const idempotencyDocSnapshot = await idempotencyDocRef.get();
-//  if (idempotencyDocSnapshot.exists) {
-//     // eslint-disable-next-line no-await-in-loop 
-//    await alertAdminRefundFailure(db, eventId, transactionId, response.data, refundData.userRequestId, refundData.orderId,);
-//    console.log(`Refund already processed for transaction ID: ${transactionId}`);
-//    return;
-//  }
-
-//  const payload = {
-//    transaction: transactionId,
-//    amount: refundAmount
-//  };
-
-//  const headers = {
-//    'Authorization': `Bearer ${functions.config().paystack.secret_key}`,
-//    'Content-Type': 'application/json'
-//  };
-
-//  let retryCount = 0;
-//  let delay = 1000; // 1 second initial delay
-//  const maxRetries = 3;
-//  const MAX_DELAY = 30000; // Maximum delay for exponential backoff, e.g., 30 seconds
-
-//  while (retryCount < maxRetries) {
-//    try {
-//       // eslint-disable-next-line no-await-in-loop
-//      const response = await axios.post('https://api.paystack.co/refund', payload, { headers });
-
-//      if (response.data.status) {
-//       const   amount = response.data.data.amount/100;
-//       // response.data.amount/100;
-//       const  expectedDate = response.data.data.expected_at;
-//       // response.data.expected_at;
-//        // eslint-disable-next-line no-await-in-loop
-//       await db.runTransaction(async (transaction) => {
-
-
-//         const transferUserId = refundData.userRequestId;
-
-//         const userId = transferUserId;
-
-//         const refundRequestRef = refundRequestDoc.ref;
-//         const idempotencyDocRef = db.collection('refundSuccessIdempotencyKeys').doc(idempotencyKey);
-//         const eventDocRef = db.collection('new_eventTicketOrder').doc(refundData.eventId).collection('ticketOrders').doc(userId);
-//         const userDocRef = db.collection('new_userTicketOrder').doc(userId).collection('ticketOrders').doc(refundData.eventId);
-       
-//         // const userTicketIdRef = db.collection('new_ticketId').doc(userId).collection('tickedIds').doc(refundData.eventId);
-//         const userRefundRequestRef = db.collection('userRefundRequests').doc(userId).collection('refundRequests').doc(refundData.eventId);
-//         // const eventRefundRequestRef = db.collection('eventRefundRequests').doc(refundData.eventId).collection('refundRequests').doc(userId);
-//         // const idempotencyDocSnapshot = await transaction.get(idempotencyDocRef);
-
-//         // if (!idempotencyDocSnapshot.exists) {
-//           transaction.update(refundRequestRef, { status: 'processed', idempotencyKey: idempotencyKey,  amount:  amount, expectedDate: expectedDate  });
-//           transaction.update(eventDocRef, { refundRequestStatus: 'processed', idempotencyKey: idempotencyKey  });
-//           transaction.update(userDocRef, { refundRequestStatus: 'processed', idempotencyKey: idempotencyKey  });
-//           transaction.update(userRefundRequestRef, { status: 'processed', idempotencyKey: idempotencyKey, amount:  amount, expectedDate: expectedDate  });
-//           // transaction.update(eventRefundRequestRef, { status: 'processed', idempotencyKey: idempotencyKey, amount:  amount, expectedDate: expectedDate  });
-//           // transaction.delete(userTicketIdRef);
-//           transaction.set(idempotencyDocRef, {
-//             refundResponse: response.data,
-//             // response.data,
-//             created: admin.firestore.FieldValue.serverTimestamp()
-//           });
-
-         
-//           const userRef = firestore.doc(`user_general_settings/${userId}`);
-//             // eslint-disable-next-line no-await-in-loop
-//           const userDoc = await userRef.get(); // eslint-disable-next-line no-await-in-loop
-
-//           if (!userDoc.exists) {
-//             console.log(`User settings not found for user ${userId}`);
-//             // continue;
-//           }
-
-//           const userData = userDoc.data();
-//           const androidNotificationToken = userData.androidNotificationToken;
-
-//           if (androidNotificationToken) {
-//             try {
-//                 // eslint-disable-next-line no-await-in-loop
-//               await sendRefundNotification(androidNotificationToken, userId, refundData.eventId, refundData.eventAuthorId, refundData.eventTitle ); // eslint-disable-next-line no-await-in-loop
-//             } catch (error) {
-//               console.error(`Error sending seding refund notification:`, error);
-//             }
-//           } else {
-//             console.log(`No notification token for user ${userId} or notifications are muted.`);
-//           }
-
-
-//        });
-//         // eslint-disable-next-line no-await-in-loop
-//         await alertAdminRefundSuccess(db, eventId, transactionId, idempotencyKey, refundData.userRequestId, refundData.orderId,);
-//         // await alertAdminRefundSuccess(db, eventId, transactionId, response.data, refundData.userRequestId, refundData.orderId,);
-//        console.log(`Refund processed for transaction ID: ${transactionId}`);
-//        return;
-//      } else {
-//         // eslint-disable-next-line no-await-in-loop
-//       await alertAdminRefundFailure(db, eventId, transactionId, response.data, refundData.userRequestId, refundData.orderId,); 
-//        throw new Error('Refund failed with a non-success status');
-//      }
-//    } catch (error) {
-//       // eslint-disable-next-line no-await-in-loop
-//     await alertAdminRefundFailure(db, eventId, transactionId,  error.message); 
-//      console.error(`Attempt ${retryCount + 1} for refund ${transactionId} failed:`, error, refundData.userRequestId, refundData.orderId,);
-
-//      if (!isRetryableError(error)) {
-//         // eslint-disable-next-line no-await-in-loop
-//        await refundRequestDoc.ref.update({ status: 'error' });
-//         // eslint-disable-next-line no-await-in-loop
-//          await alertAdminRefundFailure(db, eventId, transactionId, error.message, refundData.userRequestId, refundData.orderId,);
-//        throw error; // Non-retryable error, rethrow error
-//      }
-
-//      if (retryCount === maxRetries - 1) {
-//         // eslint-disable-next-line no-await-in-loop
-//        await alertAdminRefundFailure(db, eventId, transactionId, `Max retry attempts reached. Last error: ${error.message}`, refundData.userRequestId, refundData.orderId,);
-//      }
-
-//      // Exponential backoff with a maximum delay cap
-//      delay = Math.min(delay * 2, MAX_DELAY);
-//      console.log(`Retryable error encountered for refund ${transactionId}. Retrying after ${delay}ms...`);
-//       // eslint-disable-next-line no-await-in-loop
-//      await new Promise(resolve => setTimeout(resolve, delay));
-//      retryCount++;
-//    }
-//  }
-
-//  if (retryCount >= maxRetries) {
-//     // eslint-disable-next-line no-await-in-loop
-//    await refundRequestDoc.ref.update({ status: 'failed' });
-//     // eslint-disable-next-line no-await-in-loop
-//    await alertAdminRefundFailure(db, eventId, transactionId, 'All retry attempts failed', refundData.userRequestId, refundData.orderId,);
-//    throw new Error(`All retry attempts failed for refund ${transactionId}`);
-//  }
-// }
-
-
-
-
-
-        
-        // const refundRequestRef = refundRequestDoc.ref;
-        // const userRefundRequestRef = db.collection('userRefundRequests').doc(userId).collection('refundRequests').doc(refundData.eventId);
-        // const idempotencyDocRef = db.collection('refundSuccessIdempotencyKeys').doc(idempotencyKey);
-        // const eventDocRef = db.collection('new_eventTicketOrder').doc(refundData.eventId).collection('eventInvite').doc(userId);
-        // const userDocRef = db.collection('new_userTicketOrder').doc(userId).collection('eventInvite').doc(refundData.eventId);
-        // const userTicketIdRef = db.collection('new_ticketId').doc(userId).collection('tickedIds').doc(refundData.eventId);
-        
-        //  const idempotencyDocRef = db.collection('refundSuccessIdempotencyKeys').doc(idempotencyKey);
-        // //  const eventDocRef = db.collection('new_eventTicketOrder').doc(refundData.eventId).collection('eventInvite').doc(refundData.userRequestId);
-        //  const userDocRef = db.collection('new_userTicketOrder').doc(refundData.userRequestId).collection('eventInvite').doc(refundData.eventId);
-        //  const userTicketIdRef = db.collection('new_ticketId').doc(refundData.userRequestId).collection('eventInvite').doc(refundData.eventId);
-        //  const idempotencyDocSnapshot = await transaction.get(idempotencyDocRef);
-
-        //  if (!idempotencyDocSnapshot.exists) {
-          //             transaction.update(refundRequestRef, { status: 'processed', idempotencyKey: idempotencyKey,  amount:  amount, expectedDate: expectedDate  });
-          // //  transaction.update(refundRequestRef, { status: 'processed' });
-          //  transaction.update(eventDocRef, { refundRequestStatus: 'processed', idempotencyKey: idempotencyKey  });
-          //  transaction.update(userRefundRequestRef, { status: 'processed', idempotencyKey: idempotencyKey, amount:  amount, expectedDate: expectedDate  });
-
-          // //  transaction.update(eventDocRef, { refundRequestStatus: 'processed' });
-          //  transaction.update(userDocRef, { refundRequestStatus: 'processed', idempotencyKey: idempotencyKey });
-          //  transaction.delete(userTicketIdRef);
-          //  transaction.set(idempotencyDocRef, {
-          //    refundResponse: response.data,
-          //    created: admin.firestore.FieldValue.serverTimestamp()
-          //  });
-          // //  const userId = refundData.userRequestId;
-          //  const userRef = firestore.doc(`user_general_settings/${userId}`);
-          //    // eslint-disable-next-line no-await-in-loop
-          //  const userDoc = await userRef.get(); // eslint-disable-next-line no-await-in-loop
- 
-          //  if (!userDoc.exists) {
-          //    console.log(`User settings not found for user ${userId}`);
-          //    // continue;
-          //  }
- 
-          //  const userData = userDoc.data();
-          //  const androidNotificationToken = userData.androidNotificationToken;
- 
-          //  if (androidNotificationToken) {
-          //    try {
-          //        // eslint-disable-next-line no-await-in-loop
-          //      await sendRefundNotification(androidNotificationToken, userId, refundData.eventId, refundData.eventAuthorId, 'Refund processed for a deleted event.'); // eslint-disable-next-line no-await-in-loop
-          //    } catch (error) {
-          //      console.error(`Error sending seding refund notification:`, error);
-          //    }
-          //  } else {
-          //    console.log(`No notification token for user ${userId} or notifications are muted.`);
-          //  }
-        //  } else {  
-        //     // eslint-disable-next-line no-await-in-loop
-        //   await alertAdminRefundFailure(db, eventId, transactionId, response.data, refundData.userRequestId, refundData.orderId,); 
-        //    console.log(`Refund already processed for transaction ID: ${transactionId}`);
-        //    return;
-        //  }
-
-
-
 
 const BATCH_SIZE = 10; // Update this to your preferred batch size
 
@@ -2172,24 +1476,6 @@ exports.onFollowUser = functions.firestore
       }
     });
 
-  //   // forum+ForumFeed
-  //   const followedUserForumsRef = admin
-  //   .firestore()
-  //   .collection('forums')
-  //   .doc(userId)
-  //   .collection('userForums');
-  // const userForumFeedRef = admin
-  //   .firestore()
-  //   .collection('forumFeeds')
-  //   .doc(followerId)
-  //   .collection('userForumFeed');
-  // const followedUserForumsSnapshot = await followedUserForumsRef.get();
-  // followedUserForumsSnapshot.forEach(doc => {
-  //   if (doc.exists) {
-  //     userForumFeedRef.doc(doc.id).set(doc.data());
-  //   }
-  // });
-
    // event+EventFeed
    const followedUserEventsRef = admin
    .firestore()
@@ -2208,10 +1494,7 @@ exports.onFollowUser = functions.firestore
    }
  });
 
-
   });
-
-
 
 
 exports.onUnfollowUser = functions.firestore
@@ -2248,142 +1531,9 @@ userEventsSnapshot.forEach(doc => {
   if (doc.exists) {
     doc.ref.delete();
   }
-});
-
-    
+}); 
   });
 
-// exports.onUploadPost = functions.firestore
-//   .document('/posts/{userId}/userPosts/{postId}')
-//   .onCreate(async (snapshot, context) => {
-//     console.log(snapshot.data());
-//     const userId = context.params.userId;
-//     const postId = context.params.postId;
-//     const userFollowersRef = admin
-//       .firestore()
-//       .collection('followers')
-//       .doc(userId)
-//       .collection('userFollowers');
-//     const userFollowersSnapshot = await userFollowersRef.get();
-//     userFollowersSnapshot.forEach(doc => {
-//       admin
-//         .firestore()
-//         .collection('feeds')
-//         .doc(doc.id)
-//         .collection('userFeed')
-//         .doc(postId)
-//         .set(snapshot.data());
-//     });
-//     // admin.firestore().collection('allPosts')
-//     // .doc(postId)
-//     // .set(snapshot.data());
-//   });
-
-
- 
-
-//   exports.onDeleteFeedPost = functions.firestore
-//   .document('/posts/{userId}/userPosts/{postId}')
-// .onDelete(async (snapshot, context) => {
-//   const userId = context.params.userId;
-//   const postId = context.params.postId;
-//   console.log(snapshot.data());
-//   const userFollowersRef = admin
-//     .firestore()
-//     .collection('followers')
-//     .doc(userId)
-//     .collection('userFollowers');
-//   const userFollowersSnapshot = await userFollowersRef.get();
-//   userFollowersSnapshot.forEach(async userDoc => {
-//     const postRef = admin
-//       .firestore()
-//       .collection('feeds')
-//       .doc(userDoc.id)
-//       .collection('userFeed');
-//     const postDoc = await postRef.doc(postId).get();
-//     if (postDoc.exists) {
-//       postDoc.ref.delete();
-//     }
-//   })
-//   admin.firestore().collection('allPosts')
-//   .doc(postId).delete();
-// });
-
-
-  
-// exports.onUploadForum = functions.firestore
-// .document('/forums/{userId}/userForums/{forumId}')
-// .onCreate(async (snapshot, context) => {
-//   console.log(snapshot.data());
-//   const userId = context.params.userId;
-//   const forumId = context.params.forumId;
-//   const userFollowersRef = admin
-//     .firestore()
-//     .collection('followers')
-//     .doc(userId)
-//     .collection('userFollowers');
-//   const userFollowersSnapshot = await userFollowersRef.get();
-//   userFollowersSnapshot.forEach(doc => {
-//     admin
-//       .firestore()
-//       .collection('forumFeeds')
-//       .doc(doc.id)
-//       .collection('userForumFeed')
-//       .doc(forumId)
-//       .set(snapshot.data());
-//   });
-
-// });
-
-
-//   exports.onDeleteFeedForums = functions.firestore
-//   .document('/forums/{userId}/userForums/{forumId}')
-// .onDelete(async (snapshot, context) => {
-//   const userId = context.params.userId;
-//   const forumId = context.params.forumId;
-//   console.log(snapshot.data());
-//   const userFollowersRef = admin
-//     .firestore()
-//     .collection('followers')
-//     .doc(userId)
-//     .collection('userFollowers');
-//   const userFollowersSnapshot = await userFollowersRef.get();
-//   userFollowersSnapshot.forEach(async userDoc => {
-//     const forumRef = admin
-//       .firestore()
-//       .collection('forumFeeds')
-//       .doc(userDoc.id)
-//       .collection('userForumFeed')
-//     const forumDoc = await forumRef.doc(forumId).get();
-//     if (forumDoc.exists) {
-//       forumDoc.ref.delete();
-//     }
-//   })
-//   admin.firestore().collection('allForums')
-//   .doc(forumId).delete();
-// });
-
-
-// exports.onDeleteFeedThought = functions.firestore
-// .document('/thoughts/{forumId}/forumThoughts/{thoughtId}')
-// .onDelete(async (snapshot, context) => {
-// const forumId = context.params.forumId;
-// const thoughtId = context.params.thoughtId;
-// console.log(snapshot.data());
-// const thoghtsRef =  admin
-//     .firestore()
-//     .collection('replyThoughts')
-//     .doc(thoughtId)
-//     .collection('replyThoughts')
-//     const thoghtsSnapshot = await thoghtsRef.get();
-//     thoghtsSnapshot.forEach(async userDoc => {    
-//       if (userDoc.exists) {
-//         userDoc.ref.delete();
-//       }
-//     })
-  
-
-// });
 
 exports.onUploadEvent = functions.firestore
   .document('/new_events/{userId}/userEvents/{eventId}')
@@ -2417,130 +1567,6 @@ exports.onUploadEvent = functions.firestore
     }
     
   });
-
-
-
-// exports.onDeleteFeedEvent = functions.firestore
-//   .document('/new_events/{userId}/userEvents/{eventId}')
-//   .onDelete(async (snapshot, context) => {
-//     const userId = context.params.userId;
-//     const eventId = context.params.eventId;
-//     console.log(snapshot.data());
-//     const userFollowersRef = admin
-//       .firestore()
-//       .collection('new_followers')
-//       .doc(userId)
-//       .collection('userFollowers');
-//     const userFollowersSnapshot = await userFollowersRef.get();
-
-//     const batch = admin.firestore().batch();
-
-//     userFollowersSnapshot.forEach((doc) => {
-//       const followerId = doc.id;
-//       const eventFeedRef = admin
-//         .firestore()
-//         .collection('new_eventFeeds')
-//         .doc(followerId)
-//         .collection('userEventFeed')
-//         .doc(eventId);
-//       batch.delete(eventFeedRef);
-//     });
-
-
-    
-//     // Commit the batch operation to delete all follower documents
-//     await batch.commit();
-
-//     // Delete the event from the 'allEvents' collection
-//    admin.firestore().collection('new_events').doc(eventId).delete();
-//    admin.firestore().collection('new_eventChatRooms').doc(eventId).delete();
-//    admin.firestore().collection('new_eventTicketOrder').doc(eventId).collection('eventInvite').doc(userId).delete();
-//    admin.firestore().collection('new_eventChatRoomsConversation').doc(eventId).collection('roomChats').doc(userId).delete();
-//   });
-
-
-// exports.onDeleteFeedEvent = functions.firestore
-//   .document('/new_events/{userId}/userEvents/{eventId}')
-//   .onDelete(async (snapshot, context) => {
-//     const { userId, eventId } = context.params;
-
-//     // References to user followers
-//     const userFollowersRef = admin.firestore().collection('new_followers').doc(userId).collection('userFollowers');
-    
-//     // Delete related documents from userEventFeed of each follower
-//     const userFollowersSnapshot = await userFollowersRef.get();
-//     let batch = admin.firestore().batch();
-
-//     for (const doc of userFollowersSnapshot.docs) {
-//       if (batch._opCount >= 499) {
-//         // eslint-disable-next-line no-await-in-loop
-//         await batch.commit();
-//         batch = admin.firestore().batch();
-//       }
-//       const followerId = doc.id;
-//       const eventFeedRef = admin.firestore().collection('new_eventFeeds').doc(followerId).collection('userEventFeed').doc(eventId);
-//        // eslint-disable-next-line no-await-in-loop
-      
-//       batch.delete(eventFeedRef);
-      
-//     }
-
-//     const allEventRef = admin.firestore().collection('new_allEvents').doc(eventId);
-//     batch.delete(allEventRef);
-//     await batch.commit();
-
-  
-//     // Delete the eventChatRooms document
-//  // eslint-disable-next-line no-await-in-loop
-//     await admin.firestore().collection('new_eventChatRooms').doc(eventId).delete();
-
-//     // Delete all documents in ticketOrder subcollection
-//     const ticketOrdeRef = admin.firestore().collection('new_eventTicketOrder').doc(eventId).collection('eventInvite');
-//     // eslint-disable-next-line no-await-in-loop
-//     await deleteCollection(ticketOrdeRef);
-
-//     // Delete all documents in ticketOrde subcollection
-//     const eventInviteRef = admin.firestore().collection('new_sentEventInvite').doc(eventId).collection('eventInvite');
-//     await deleteCollection(eventInviteRef);
-
-
-//       // Delete all documents in ticketOrde subcollection
-//       const askRef = admin.firestore().collection('new_asks').doc(eventId).collection('eventAsks');
-//       // eslint-disable-next-line no-await-in-loop
-//       await deleteCollection(askRef);
-
-
-//     // Delete all documents in roomChats subcollection
-//     const roomChatsRef = admin.firestore().collection('new_eventChatRoomsConversation').doc(eventId).collection('roomChats');
-//     // eslint-disable-next-line no-await-in-loop
-//     await deleteCollection(roomChatsRef);
-//   });
-
-
-
-// // Helper function to delete all documents in a collection or subcollection
-// async function deleteCollection(collectionRef) {
-//   const snapshot = await collectionRef.get();
-
-//   if (snapshot.size === 0) {
-//     return;
-//   }
-
-//   // Delete documents in batches
-//   let batch = admin.firestore().batch();
-//   let count = 0;
-//   for (const doc of snapshot.docs) {
-//     batch.delete(doc.ref);
-//     count++;
-//     if (count % 499 === 0) {
-//       // eslint-disable-next-line no-await-in-loop
-//       await batch.commit();
-//       batch = admin.firestore().batch();
-//     }
-//   }
-
-//   await batch.commit();
-// }
 
 
 
@@ -2595,10 +1621,22 @@ exports.onDeleteFeedEvent = functions.firestore
      // eslint-disable-next-line no-await-in-loop
     await deleteCollection(eventInviteRef);
 
+     // Delete all documents in the sentEventInvite subcollection
+     const affiliateInviteRef = admin.firestore().collection('new_eventAffiliate').doc(eventId).collection('affiliateMarketers');
+     // eslint-disable-next-line no-await-in-loop
+    await deleteCollection(affiliateInviteRef);
+
     // Delete all documents in the asks subcollection
     const askRef = admin.firestore().collection('new_asks').doc(eventId).collection('eventAsks');
      // eslint-disable-next-line no-await-in-loop
     await deleteCollection(askRef);
+
+
+     // Delete all documents in the asks subcollection
+     const brandMatchingRef = admin.firestore().collection('new_event_brand_matching').doc(eventId).collection('brandMatching');
+     // eslint-disable-next-line no-await-in-loop
+    await deleteCollection(brandMatchingRef);
+
 
     // Delete all documents in the roomChats subcollection
     const roomChatsRef = admin.firestore().collection('new_eventChatRoomsConversation').doc(eventId).collection('roomChats');
@@ -2677,226 +1715,6 @@ async function deleteCollection(collectionRef) {
     await batch.commit();
   });
   
-
-
-// exports.onUploadEvent = functions.firestore
-// .document('/events/{userId}/userEvents/{eventId}')
-// .onCreate(async (snapshot, context) => {
-//   console.log(snapshot.data());
-//   const userId = context.params.userId;
-//   const eventId = context.params.eventId;
-//   const userFollowersRef = admin
-//     .firestore()
-//     .collection('followers')
-//     .doc(userId)
-//     .collection('userFollowers');
-//   const userFollowersSnapshot = await userFollowersRef.get();
-//   userFollowersSnapshot.forEach(doc => {
-//     admin
-//       .firestore()
-//       .collection('new_eventFeeds')
-//       .doc(doc.id)
-//       .collection('userEventFeed')
-//       .doc(eventId)
-//       .set(snapshot.data());
-//   });
- 
-// });
-
-
-
-
-//   exports.onDeleteFeedEvent = functions.firestore
-//   .document('/events/{userId}/userEvents/{eventId}')
-// .onDelete(async (snapshot, context) => {
-//   const userId = context.params.userId;
-//   const eventId = context.params.eventId;
-//   console.log(snapshot.data());
-//   const userFollowersRef = admin
-//     .firestore()
-//     .collection('followers')
-//     .doc(userId)
-//     .collection('userFollowers');
-//   const userFollowersSnapshot = await userFollowersRef.get();
-//   userFollowersSnapshot.forEach(async userDoc => {
-//     const eventRef = admin
-//       .firestore()
-//       .collection('new_eventFeeds')
-//       .doc(userDoc.id)
-//       .collection('userEventFeed')
-//     const eventDoc = await eventRef.doc(eventId).get();
-//     if (eventDoc.exists) {
-//       eventDoc.ref.delete();
-//     }
-//   })
-//   admin.firestore().collection('allEvents')
-//   .doc(eventId).delete();
-  
-// });
-
-// exports.onUpdatePost = functions.firestore
-// .document('/posts/{userId}/userPosts/{postId}')
-// .onUpdate(async (snapshot, context) => {
-//   const userId = context.params.userId;
-//   const postId = context.params.postId;
-//   const newPostData = snapshot.after.data();
-//   console.log(newPostData);
-//   const userFollowersRef = admin
-//     .firestore()
-//     .collection('followers')
-//     .doc(userId)
-//     .collection('userFollowers');
-//   const userFollowersSnapshot = await userFollowersRef.get();
-//   userFollowersSnapshot.forEach(async userDoc => {
-//     const postRef = admin
-//       .firestore()
-//       .collection('feeds')
-//       .doc(userDoc.id)
-//       .collection('userFeed');
-//     const postDoc = await postRef.doc(postId).get();
-//     if (postDoc.exists) {
-//       postDoc.ref.update(newPostData);
-//     }
-//   })
-
-//   const allPostsRef = admin
-//   .firestore()
-//   .collection('allPosts')
-//   const postDoc = await allPostsRef.doc(postId).get();
-//   if (postDoc.exists) {
-//     postDoc.ref.update(newPostData);
-//   }
-// });
-
-
-
-// exports.onUpdateForum = functions.firestore
-// .document('/forums/{userId}/userForums/{forumId}')
-// .onUpdate(async (snapshot, context) => {
-//   const userId = context.params.userId;
-//   const forumId = context.params.forumId;
-//   const newForumData = snapshot.after.data();
-//   console.log(newForumData);
-//   const userFollowersRef = admin
-//     .firestore()
-//     .collection('followers')
-//     .doc(userId)
-//     .collection('userFollowers');
-//   const userFollowersSnapshot = await userFollowersRef.get();
-//   userFollowersSnapshot.forEach(async userDoc => {
-//     const forumRef = admin
-//       .firestore()
-//       .collection('forumFeeds')
-//       .doc(userDoc.id)
-//       .collection('userForumFeed');
-//     const forumDoc = await forumRef.doc(forumId).get();
-//     if (forumDoc.exists) {
-//       forumDoc.ref.update(newForumData);
-//     }
-//   })
-
-//   const allForumsRef = admin
-//   .firestore()
-//   .collection('allForums')
-//   const forumDoc = await allForumsRef.doc(forumId).get();
-//   if (forumDoc.exists) {
-//     forumDoc.ref.update(newForumData);
-//   }
-// });
-
-// exports.onUpdateEvent = functions.firestore
-// .document('/events/{userId}/userEvents/{eventId}')
-// .onUpdate(async (snapshot, context) => {
-//   const userId = context.params.userId;
-//   const eventId = context.params.eventId;
-//   const newEventData = snapshot.after.data();
-//   console.log(newEventData);
-//   const userFollowersRef = admin
-//     .firestore()
-//     .collection('followers')
-//     .doc(userId)
-//     .collection('userFollowers');
-//   const userFollowersSnapshot = await userFollowersRef.get();
-//   userFollowersSnapshot.forEach(async userDoc => {
-//     const eventRef = admin
-//       .firestore()
-//       .collection('new_eventFeeds')
-//       .doc(userDoc.id)
-//       .collection('userEventFeed');
-//     const eventDoc = await eventRef.doc(eventId).get();
-//     if (eventDoc.exists) {
-//       eventDoc.ref.update(newEventData);
-//     }
-//   })
-//  const allEventRef = admin
-//   .firestore()
-//   .collection('new_allEvents')
-//   const eventDoc = await allEventRef.doc(eventId).get();
-//   if (eventDoc.exists) {
-//     eventDoc.ref.update(newEventData);
-//   }
-  
-// });
-
-
-// exports.sendEventInLocationNotifications = 
-
-// functions.pubsub.schedule('every day 11:17').timeZone('GMT').onRun(async (context) => {
-//   // Fetch this week's events
-//   const now = admin.firestore.Timestamp.now();
-//   const oneWeekFromNow = admin.firestore.Timestamp.fromMillis(now.toMillis() + 7 * 24 * 60 * 60 * 1000);
-//   const eventsSnapshot = await firestore.collection('new_allEvents').where('startDate', '>=', now).where('startDate', '<=', oneWeekFromNow).get();
-//   const events = eventsSnapshot.docs.map(doc => doc.data());
-
-//   async function sendNotification(androidNotificationToken, event, user) {
-//     const message = {
-//       notification: {
-//         body: `New event at ${event.city}`,
-//         title: event.title
-//       },
-//       token: androidNotificationToken,
-//       data: {recipient: user.id},
-//     };
-
-//     return admin
-//       .messaging()
-//       .send(message)
-//       .then(response => {
-//         console.log('message sent', response);
-//         return response;
-//       }).catch(error =>{
-//         console.log('error sending message', error);
-//         throw error;
-//       });
-//   }
-
-//   const eventPromises = events.map(async (event) => {
-//     // Querying for users subscribed to the city of the event
-//     const userFollowersRef = admin
-//       .firestore()
-//       .collection('user_location_settings')
-//       .where('city', '==', event.city); // changed from events.city to event.city
-
-//     const usersSnapshot = await userFollowersRef.get();
-//     const users = usersSnapshot.docs.map(doc => doc.data());
-
-//     // Send notifications to users
-//     const userPromises = users.map((user) => {
-//       const androidNotificationToken = user.androidNotificationToken; // get the token from the user object
-
-//       if (androidNotificationToken) {
-//         return sendNotification(androidNotificationToken, event, user);
-//       } else {
-//         console.log(`No notification token for user: ${user.id}`); // Log the user ID for which token is not available
-//         return null;
-//       }
-//     });
-
-//     return Promise.all(userPromises);
-//   });
-
-//   await Promise.all(eventPromises);
-// });
 
 
 exports.onCreateNewActivity = functions.firestore
@@ -2992,32 +1810,6 @@ message.apns = apnsPayload;
  
 
 
-    // const message = {notification: {body: body, title: title},
-    //   data: {
-        // recipient: userId,
-        // contentType: createdActivityItem.type,
-        // contentId: createdActivityItem.postId,
-        // eventAuthorId: createdActivityItem.authorProfileHandle,
-    //     // title: title,
-    //     // body: body,
-    //   },
-    //   token: androidNotificationToken,
-    
-      // apns: {
-      //   payload: {
-      //     aps: {
-      //       sound: 'default',
-      //     },
-      //   },
-      // },
-    // };
-    
-    // const message = {
-    //   notification: {body: body, title: title},
-    //   token: androidNotificationToken,
-    //   data: {recipient: userId,   contentType: createdActivityItem.type,    contentId: createdActivityItem.postId,   },
-    // };
-
     try {
        const response = await admin
          .messaging()
@@ -3031,199 +1823,6 @@ message.apns = apnsPayload;
 });
 
 
-
-
-
-// exports.onCreateActivityNotification = functions.firestore
-// .document('/activities/{userId}/userActivities/{userActivitiesId}')
-// .onCreate(async (snapshot, context) => {
-//   console.log('activity notification created', snapshot.data());
-//   const userId = context.params.userId;
-//   const userActivitiesId = context.params.userActivitiesId;
-//   const createdActivityItem = snapshot.data();
-//   const usersRef = admin.firestore().doc(`users/${userId}`);
-//   const doc = await usersRef.get();
-//   const androidNotificationToken = doc.data().androidNotificationToken;
- 
-//   if(androidNotificationToken){
-//    sendNotification(androidNotificationToken, createdActivityItem )
-//   } else {
-//     console.log('no notification token');
-//   }
-//   function sendNotification(androidNotificationToken, userActivities)
-//  {
-//    let body;
-  //  switch (userActivities.comment){
-  //   case null:
-  //     body = `[ ${userActivities.authorName} ] Dope`
-  //     break;
-     
-  //     default: body = `[ ${userActivities.authorName} ] ${userActivities.comment} `
-  //  }
-//    let title;
-//    switch (userActivities.comment){
-//     case null:
-//       title = `New reaction`
-//       break;
-     
-//       default: title = `New punch vibe `
-//    }
-//    const message = {
-//     notification: {body: body, title: title},
-//     token: androidNotificationToken,
-//     data: {recipient: userId},
-//    };
-//     admin
-//    .messaging()
-//    .send(message)
-//    .then(response => {
-//      return console.log('message sent', response);
-//    }).catch(error =>{
-//     console.log('error sending message', error);
-//    })
-//  }
-
-// });
-
-
-
-// exports.onCreateActivityEventNotification = functions.firestore
-// .document('/activitiesEvent/{userId}/userActivitiesEvent/{userActivitiesEventId}')
-// .onCreate(async (snapshot, context) => {
-//   console.log('activity notification created', snapshot.data());
-//   const userId = context.params.userId;
-//   const userActivitiesEventId = context.params.userActivitiesEventId;
-//   const createdActivityItem = snapshot.data();
-//   const usersRef = admin.firestore().doc(`users/${userId}`);
-//   const doc = await usersRef.get();
-//   const androidNotificationToken = doc.data().androidNotificationToken;
- 
-//   if(androidNotificationToken){
-//    sendNotification(androidNotificationToken, createdActivityItem )
-//   } else {
-//     console.log('no notification token');
-//   }
-//   function sendNotification(androidNotificationToken, userActivitiesEvent)
-//  {
-
-//     let body;
-//     switch (userActivitiesEvent.invited){
-//      case true:
-//        body = ` ${userActivitiesEvent.eventInviteType} `
-//        break;
-      
-//        default: body = `[ ${userActivitiesEvent.authorName} ] ${userActivitiesEvent.ask} `
-//     }
-//     let title;
-//     switch (userActivitiesEvent.invited){
-//      case true:
-//        title = `New event invitation`
-//        break;
-      
-//        default: title =  `New event question  `
-//     }
-  
-//    const message = {
-//     notification: {body: body, title: title},
-//     token: androidNotificationToken,
-//     data: {recipient: userId},
-//    };
-//     admin
-//    .messaging()
-//    .send(message)
-//    .then(response => {
-//      return console.log('message sent', response);
-//    }).catch(error =>{
-//     console.log('error sending message', error);
-//    })
-//  }
-
-// });
-
-
-
-
-// exports.onCreateNewMessageActivity = functions.firestore
-// .document('/messages/{messageId}/conversation/{conversationId}')
-// .onCreate(async (snapshot, context) => {
-//   console.log('activity notification created', snapshot.data());
-//   const createdActivityItem = snapshot.data();
-//     const userId = createdActivityItem.receiverId;
-
-//   const usersRef = admin.firestore().doc(`user_general_settings/${userId}`);
-//   const usersSendersRef = admin.firestore().doc(`user_author/${createdActivityItem.senderId}`);
-//   const sender = await usersSendersRef.get();
-
-//   const userCollectionRef = admin.firestore().collection(`user_author/${createdActivityItem.receiverId}/new_chats/${createdActivityItem.senderId}`);
-//   const userNotification = await userCollectionRef.get();
-//   const userNotificationMute = await userNotification.data().muteMessage;
-
-//   const doc = await usersRef.get();
-//   const androidNotificationToken = doc.data().androidNotificationToken;
-//   let title;
-//   let body;
-
-//   if(androidNotificationToken){
-//     sendNotification(androidNotificationToken, createdActivityItem,  userNotificationMute)
-//   } else {
-//     console.log('no notification token');
-//   }
-
-//    async function sendNotification(androidNotificationToken, createdActivityItem,  userNotificationMute) {
-  
-//     title  =  `${sender.data().userName}  [ Message ]`;
-//     body  = createdActivityItem.content;
-
-
-//     let message = {
-//       notification: { body: body, title: title },
-//       data: {
-//           recipient: userId,
-//           contentType: 'message',
-//           contentId: createdActivityItem.senderId,
-//       },
-//       token: androidNotificationToken
-//   };
-
-//   // If notifications are not muted, add the APNS payload with default sound
-//   if (!userNotificationMute) {
-//       message.apns = {
-//           payload: {
-//               aps: {
-//                   sound: 'default', // Or specify your custom notification sound file
-//               },
-//           },
-//       };
-//   }
-
-//     // const message = {notification: {body: body, title: title},
-//     //   data: {
-//     //     recipient: userId,
-//     //     contentType: 'message',
-//     //     contentId: createdActivityItem.senderId,
-     
-//     //   },
-//     //   token: androidNotificationToken,
-//     //   apns: {
-//     //     payload: {
-//     //       aps: {
-//     //         sound: 'default',
-//     //       },
-//     //     },
-//     //   },
-//     // };
-    
-//     try {
-//        const response = await admin
-//          .messaging()
-//          .send(message);
-//        console.log('message sent', response);
-//      } catch (error) {
-//        console.log('error sending message', error);
-//        throw error;
-//      }
-//   }
-// });
 
 
 exports.onNewEventRoomMessage = functions.firestore
@@ -3292,23 +1891,6 @@ exports.onNewEventRoomMessage = functions.firestore
           };
       }
 
-        // const message = {
-        //     notification: {body: body, title: title},
-        //     data: {
-        //         recipient: String(userId),
-        //         contentType: 'eventRoom',
-        //         contentId: String(newMessage.senderId),
-        //     },
-        //     token: androidNotificationToken,
-        //     apns: {
-        //         payload: {
-        //             aps: {
-        //                 sound:userTicketNotificationMute == true? 'default' : '',
-        //             },
-        //         },
-        //     },
-        // };
-
         try {
             const response = await admin
             .messaging()
@@ -3320,207 +1902,4 @@ exports.onNewEventRoomMessage = functions.firestore
         }
     }
 });
-
-
-
-// exports.onNewEventRoomMessage = functions.firestore
-// .document('/new_eventChatRoomsConversation/{ticketId}/roomChats/{chatId}')
-// .onCreate(async (snapshot, context) => {
-//   console.log('New chat message created', snapshot.data());
-//   const newMessage = snapshot.data();
-//   const ticketId = context.params.ticketId;
-//   const usersSendersRef = admin.firestore().doc(`user_author/${newMessage.senderId}`);
-//   const sender = await usersSendersRef.get();
-
-
-//   const chatRoomUsersCollectionRef = admin.firestore().collection(`new_eventTicketOrder/${ticketId}/eventInvite`);
-// const chatRoomUsersSnapshot = await chatRoomUsersCollectionRef.get();
-
-// if (chatRoomUsersSnapshot.empty) {
-//   console.log('No users found for this ticket');
-//   return;
-// }
-
-// chatRoomUsersSnapshot.forEach(async doc => {
-//   const userId = doc.id; // assuming the document ID is the user ID
-//   const userRef = admin.firestore().doc(`user_general_settings/${userId}`);
-//   const userDoc = await userRef.get();
-//   const androidNotificationToken = userDoc.data().androidNotificationToken;
-
-//   if (androidNotificationToken) {
-//     await sendNotification(androidNotificationToken, newMessage, userId);
-//   } else {
-//     console.log(`No notification token for user ${userId}`);
-//   }
-// });
-
-//   async function sendNotification(androidNotificationToken, newMessage, userId) {
-//     const title = `${sender.data().userName} [ Event room ]`;
-//     const body = newMessage.content;
-
-//     const message = {
-//       notification: {body: body, title: title},
-//       data: {
-//         recipient: String(userId),
-//         contentType: 'eventRoom',
-//         contentId: String(newMessage.senderId),
-//       },
-//       token: androidNotificationToken,
-//       apns: {
-//         payload: {
-//           aps: {
-//             sound: 'default',
-//           },
-//         },
-//       },
-//     };
-
-//     try {
-//       const response = await admin
-//         .messaging()
-//         .send(message);
-//       console.log('message sent', response);
-//     } catch (error) {
-//       console.log('error sending message', error);
-//       throw error;
-//     }
-//   }
-// });
-
-
-
-// exports.onCreateChatMessage = functions.firestore
-// .document('/messages/{messageId}/conversation/{conversationId}')
-// .onCreate(async (snapshot, context) => {
-//   console.log('activity notification created', snapshot.data());
-//   const userId = context.params.userId;
-//   const chatActivitiesId = context.params.chatActivitiesId;
-//   const createdActivityItem = snapshot.data();
-//   const usersRef = admin.firestore().doc(`users/${userId}`);
-//   const doc = await usersRef.get();
-//   const androidNotificationToken = doc.data().androidNotificationToken;
- 
-//   if(androidNotificationToken){
-//    sendNotification(androidNotificationToken, createdActivityItem )
-//   } else {
-//     console.log('no notification token');
-//   }
-//   function sendNotification(androidNotificationToken, chatActivities)
-//  {
-
-//     let body;
-//     switch (chatActivities.liked){
-//      case true:
-//        body = `[ ${chatActivities.authorName}] like ${chatActivities.comment} `
-//        break;
-      
-//        default: body = `[ ${chatActivities.authorName}] ${chatActivities.comment} `
-//     }
-//     let title;
-//     switch (chatActivities.liked){
-//      case false:
-//        title =  `Message Like  `
-//        break;
-      
-//        default: title =  `New message  `
-//     }
-  
-//    const message = {
-//     notification: {body: body, title: title},
-//     token: androidNotificationToken,
-//     data: {recipient: userId},
-//    };
-//     admin
-//    .messaging()
-//    .send(message)
-//    .then(response => {
-//      return console.log('message sent', response);
-//    }).catch(error =>{
-//     console.log('error sending message', error);
-//    })
-//  }
-
-// });
-
-
-// exports.onCreateActivityFollowerNotification = functions.firestore
-// .document('/activitiesFollower/{userId}/activitiesFollower/{activitiesFollowerId}')
-// .onCreate(async (snapshot, context) => {
-//   console.log('activity notification created', snapshot.data());
-//   const userId = context.params.userId;
-//   const userActivitiesEventId = context.params.userActivitiesEventId;
-//   const createdActivityItem = snapshot.data();
-//   const usersRef = admin.firestore().doc(`users/${userId}`);
-//   const doc = await usersRef.get();
-//   const androidNotificationToken = doc.data().androidNotificationToken;
-
-
- 
-//   if(androidNotificationToken){
-//    sendNotification(androidNotificationToken, createdActivityItem )
-//   } else {
-//     console.log('no notification token');
-//   }
-//   function sendNotification(androidNotificationToken, activitiesFollower )
-//  {
-//     body = ` ${activitiesFollower.authorName} `
-//     title = `New follower  `
-  
-//    const message = {
-//     notification: {body: body, title: title},
-//     token: androidNotificationToken,
-//     data: {recipient: userId},
-//    };
-//     admin
-//    .messaging()
-//    .send(message)
-//    .then(response => {
-//      return console.log('message sent', response);
-//    }).catch(error =>{
-//     console.log('error sending message', error);
-//    })
-//  }
-
-// });
-
-
-
-
-// exports.onCreateActivityAdviceNotification = functions.firestore
-// .document('/activitiesAdvice/{userId}/userActivitiesAdvice/{userActivitiesAdviceId}')
-// .onCreate(async (snapshot, context) => {
-//   console.log('activity notification created', snapshot.data());
-//   const userId = context.params.userId;
-//   const userActivitiesAdviceId = context.params.userActivitiesAdviceId;
-//   const createdActivityItem = snapshot.data();
-//   const usersRef = admin.firestore().doc(`users/${userId}`);
-//   const doc = await usersRef.get();
-//   const androidNotificationToken = doc.data().androidNotificationToken;
- 
-//   if(androidNotificationToken){
-//    sendNotification(androidNotificationToken, createdActivityItem )
-//   } else {
-//     console.log('no notification token');
-//   }
-//   function sendNotification(androidNotificationToken, userActivitiesAdvice)
-//  {
-//     body = `[ ${userActivitiesAdvice.authorName} ] ${userActivitiesAdvice.advice} `
-//     title = `New advice  `
-  
-//    const message = {
-//     notification: {body: body, title: title},
-//     token: androidNotificationToken,
-//     data: {recipient: userId},
-//    };
-//     admin
-//    .messaging()
-//    .send(message)
-//    .then(response => {
-//      return console.log('message sent', response);
-//    }).catch(error =>{
-//     console.log('error sending message', error);
-//    })
-//  }
-
-// });
 

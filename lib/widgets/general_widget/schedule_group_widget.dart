@@ -1,8 +1,5 @@
 import 'package:bars/utilities/exports.dart';
 
-// import 'package:flutter/material.dart';
-// import 'package:intl/intl.dart';
-
 class ScheduleGroup extends StatelessWidget {
   final List<Schedule> schedules;
   final bool isEditing;
@@ -58,21 +55,6 @@ class ScheduleGroup extends StatelessWidget {
 
     final width = MediaQuery.of(context).size.width;
 
-    // If ticketEventDate is not null, filter the groupedSchedules
-    // if (ticketEventDate != null) {
-    //   DateTime ticketDate = ticketEventDate!.toDate();
-    //   DateTime ticketDateWithoutTime = DateTime(
-    //     ticketDate.year,
-    //     ticketDate.month,
-    //     ticketDate.day,
-    //   );
-    //   // Keep only the schedules for ticketEventDate
-
-    //   groupedSchedules = {
-    //     ticketDateWithoutTime: groupedSchedules[ticketDateWithoutTime] ?? []
-    //   };
-    // }
-
     if (ticketEventDate != null) {
       DateTime ticketDate = ticketEventDate!.toDate();
       DateTime ticketDateWithoutTime = DateTime(
@@ -105,7 +87,7 @@ class ScheduleGroup extends StatelessWidget {
                     ));
               },
               child: RichText(
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                textScaler: MediaQuery.of(context).textScaler,
                 text: TextSpan(
                   children: [
                     TextSpan(
@@ -160,33 +142,30 @@ class ScheduleGroup extends StatelessWidget {
                     ),
                     // Display the date
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 8.0,
-                      ),
-                      child: Container(
-                        width:
-                            ResponsiveHelper.responsiveFontSize(context, 200),
-                        child: Text(
-                          MyDateFormat.toDate(date),
-                          // DateFormat('yyyy-MM-dd').format(date),
-                          style: TextStyle(
-                              color: from.isEmpty
-                                  ? Colors.white
-                                  : Theme.of(context).secondaryHeaderColor,
-                              fontSize: from.isEmpty ? 20 : 16,
-                              fontWeight: FontWeight.bold),
-                        ),
+                      padding: EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: from.isEmpty ? 0 : 20),
+                      child: Text(
+                        MyDateFormat.toDate(date),
+                        // DateFormat('yyyy-MM-dd').format(date),
+                        style: TextStyle(
+                            color: from.isEmpty || from == 'Schedule'
+                                ? Colors.white
+                                : Theme.of(context).secondaryHeaderColor,
+                            fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 16),
+                            // from.isEmpty ? 20 : 20,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                     // Display the schedules for this date
                     ...dateSchedules.map((schedule) {
                       return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 4.0, horizontal: 16),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 4.0, horizontal: from.isEmpty ? 0 : 16),
                         child: Stack(
                           children: [
                             ScheduleWidget(
-                              from: 'EventEnlarged',
+                              from: 'Calendar',
                               schedule: schedule,
                               edit: isEditing,
                               currentUserId: _currentUserId!,
@@ -217,59 +196,3 @@ class ScheduleGroup extends StatelessWidget {
           );
   }
 }
-
-// class ScheduleGroup extends StatelessWidget {
-//   List<Schedule> schedules;
-
-//   ScheduleGroup({
-//     required this.schedules,
-//   });
-
-//   _removeShedule(Schedule removingShedule) {
-//     schedules.removeWhere((schedule) =>
-//         schedule.title == removingShedule.title &&
-//         schedule.startTime == removingShedule.startTime);
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // Sort the schedules by date in ascending order
-//     schedules.sort((a, b) => a.scheduleDate.compareTo(b.startTime));
-
-//     final width = MediaQuery.of(context).size.width;
-//     return Container(
-//       height: width * width,
-//       width: width - 40,
-//       child: ListView.builder(
-//         physics: const NeverScrollableScrollPhysics(),
-//         itemCount: schedules.length,
-//         itemBuilder: (BuildContext context, int index) {
-//           // Get the schedule for the current index
-//           Schedule schedule = schedules[index];
-
-//           // Return a ScheduleWidget for the schedule
-//           return Padding(
-//             padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-//             child: Stack(
-//               children: [
-//                 ScheduleWidget(
-//                   schedule: schedule,
-//                 ),
-//                 Positioned(
-//                     right: 10,
-//                     top: 10,
-//                     child: IconButton(
-//                       onPressed: () => _removeShedule(schedule),
-//                       icon: Icon(
-//                         Icons.remove,
-//                         color: Colors.red,
-//                       ),
-//                     ))
-//               ],
-//             ),
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }

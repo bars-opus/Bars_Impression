@@ -7,11 +7,13 @@ class DirectionWidget extends StatefulWidget {
   double? fontSize = 14;
   FontWeight fontWeight;
   double sizedBox;
+  final bool alwaysWhite;
 
   DirectionWidget(
       {required this.text,
       this.fontWeight = FontWeight.normal,
       this.sizedBox = 40,
+      this.alwaysWhite = false,
       required this.fontSize});
 
   @override
@@ -28,7 +30,7 @@ class _DirectionWidgetState extends State<DirectionWidget> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 20),
+            // SizedBox(height: 20),
             ShakeTransition(
               duration: Duration(milliseconds: 1500),
               curve: Curves.easeOutBack,
@@ -38,15 +40,20 @@ class _DirectionWidgetState extends State<DirectionWidget> {
                 width: width / 8,
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 20),
             ShakeTransition(
               duration: Duration(milliseconds: 1200),
               curve: Curves.easeOutBack,
               child: Text(
                 widget.text,
                 style: TextStyle(
-                  color: Theme.of(context).secondaryHeaderColor,
-                  fontSize:   ResponsiveHelper.responsiveFontSize(context, widget.fontSize!,), 
+                  color: widget.alwaysWhite
+                      ? Colors.white
+                      : Theme.of(context).secondaryHeaderColor,
+                  fontSize: ResponsiveHelper.responsiveFontSize(
+                    context,
+                    widget.fontSize!,
+                  ),
                   fontWeight: widget.fontWeight,
                 ),
               ),

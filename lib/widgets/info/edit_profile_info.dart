@@ -51,7 +51,7 @@ class EditProfileInfo extends StatelessWidget {
               editTitle,
               style: TextStyle(
                   color: color,
-                  fontSize: ResponsiveHelper.responsiveFontSize(context, 20.0),
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 18.0),
                   height: 1),
             ),
           ],

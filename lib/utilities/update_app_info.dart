@@ -18,7 +18,6 @@ class UpdateAppInfo extends StatefulWidget {
 class _UpdateAppInfoState extends State<UpdateAppInfo> {
   @override
   Widget build(BuildContext context) {
-    // final width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Color(0xFF1a1a1a),
       appBar: AppBar(

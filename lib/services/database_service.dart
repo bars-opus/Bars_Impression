@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:bars/utilities/exports.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
@@ -15,8 +14,12 @@ class DatabaseService {
         usersLocationSettingsRef.doc(signedInHandler.uid);
     DocumentReference userGeneralSettingsRef =
         usersGeneralSettingsRef.doc(signedInHandler.uid);
+
     DocumentReference usersProfessionalRef =
         userProfessionalRef.doc(signedInHandler.uid);
+
+    DocumentReference usersRatingdocRef =
+        usersRatingRef.doc(signedInHandler.uid);
 
     DocumentReference followerRef = followersRef
         .doc(signedInHandler.uid)
@@ -106,6 +109,16 @@ class DatabaseService {
       'hideAdvice': false,
       'improvemenSuggestion': '',
       'showOnExplorePage': true,
+      'transferRecepientId': '',
+    });
+
+    batch.set(usersRatingdocRef, {
+      'userId': signedInHandler.uid,
+      'oneStar': 0,
+      'twoStar': 0,
+      'threeStar': 0,
+      'fourStar': 0,
+      'fiveStar': 0,
     });
 
     // Commit the batch
@@ -168,6 +181,359 @@ class DatabaseService {
     return users;
   }
 
+  static void followUser(
+      {required String currentUserId,
+      required AccountHolderAuthor user,
+      required AccountHolderAuthor currentUser}) {
+    // Add use to current user's following collection
+    followingRef
+        .doc(currentUserId)
+        .collection('userFollowing')
+        .doc(user.userId)
+        .set({
+      'userId': user.userId,
+    });
+
+    //Add current user to user's followers collection
+    followersRef
+        .doc(user.userId)
+        .collection('userFollowers')
+        .doc(currentUserId)
+        .set({
+      'userId': currentUserId,
+    });
+
+    addActivityItem(
+      user: currentUser,
+      event: null,
+      comment: "Started following you",
+      followerUser: user,
+      post: null,
+      type: NotificationActivityType.follow,
+      advicedUserId: '',
+    );
+  }
+
+  static void unfollowUser(
+      {required String currentUserId, required String userId}) async {
+    // Remove user from current user's following collection
+    followingRef
+        .doc(currentUserId)
+        .collection('userFollowing')
+        .doc(userId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+
+    //Remove current user from user's followers collection
+    followersRef
+        .doc(userId)
+        .collection('userFollowers')
+        .doc(currentUserId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+  }
+
+  static void sendFollowRequest({
+    required String currentUserId,
+    required AccountHolderAuthor privateUser,
+    required AccountHolderAuthor currentUser,
+  }) {
+    // Create a follow request for the private user to accept or reject
+    followRequestsRef
+        .doc(privateUser.userId)
+        .collection('receivedFollowRequests')
+        .doc(currentUserId)
+        .set({
+      'userId': currentUserId,
+      'timestamp': FieldValue.serverTimestamp(), // To order requests
+    });
+
+    addActivityItem(
+      user: currentUser,
+      event: null,
+      comment: "Requested to follow you.",
+      followerUser: privateUser,
+      post: null,
+      type: NotificationActivityType.follow,
+      advicedUserId: '',
+    );
+  }
+
+  static acceptFollowRequest({
+    required String currentUserId,
+    required String requesterUserId,
+    required String activityId,
+    required AccountHolderAuthor currentUser,
+  }) async {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    DocumentReference followersDocRef = followersRef
+        .doc(currentUserId)
+        .collection('userFollowers')
+        .doc(requesterUserId);
+
+    DocumentReference followingDocRef = followingRef
+        .doc(requesterUserId)
+        .collection('userFollowing')
+        .doc(currentUserId);
+
+    DocumentReference followRequestDocRef = followRequestsRef
+        .doc(currentUserId)
+        .collection('receivedFollowRequests')
+        .doc(requesterUserId);
+
+    DocumentReference activityRef = activitiesRef
+        .doc(currentUserId)
+        .collection('userActivities')
+        .doc(activityId);
+
+    DocumentReference requesterRef = activitiesRef
+        .doc(requesterUserId)
+        .collection('userActivities')
+        .doc(activityId);
+
+    // Add the requester to current user's followers collection
+    batch.set(followersDocRef, {
+      'userId': requesterUserId,
+    });
+
+    // Add the current user to the requester's following collection
+    batch.set(followingDocRef, {
+      'userId': currentUserId,
+    });
+
+    // Delete the follow request
+    batch.delete(followRequestDocRef);
+    batch.delete(activityRef);
+
+    batch.set(requesterRef, {
+      'helperFielId': '',
+      'activityId': activityId,
+      'authorId': currentUser.userId,
+      'postId': currentUser.userId,
+      'seen': false,
+      'type':
+          'follow', // Assuming 'NotificationActivityType.follow' is the correct value
+      'postImageUrl': currentUser.profileImageUrl,
+      'comment': "Accepted your follow request.",
+      'timestamp': Timestamp.fromDate(DateTime.now()),
+      'authorProfileImageUrl': currentUser.profileImageUrl,
+      'authorName': currentUser.userName,
+      'authorProfileHandle': currentUser.profileHandle,
+      'authorVerification': currentUser.verified,
+    });
+
+    // Commit the batch
+    await batch.commit();
+  }
+
+  static void cancelFollowRequest({
+    required String currentUserId,
+    required String requesterUserId,
+  }) async {
+    // Simply delete the follow request
+    followRequestsRef
+        .doc(currentUserId)
+        .collection('receivedFollowRequests')
+        .doc(requesterUserId)
+        .delete();
+  }
+
+  static rejectFollowRequest({
+    required String currentUserId,
+    required String userId,
+    required String activityId,
+  }) async {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    DocumentReference followRequestDocRef = followRequestsRef
+        .doc(currentUserId)
+        .collection('receivedFollowRequests')
+        .doc(userId);
+
+    DocumentReference activityDocRef = activitiesRef
+        .doc(currentUserId)
+        .collection('userActivities')
+        .doc(activityId);
+
+    // Queue the deletion of the follow request
+    batch.delete(followRequestDocRef);
+
+    // Queue the deletion of the activity
+    batch.delete(activityDocRef);
+
+    // Commit the batch to atomically execute the delete operations
+    await batch.commit();
+  }
+
+  static Future<bool> isFollowingRequested(
+      {required String currentUserId, required String userId}) async {
+    DocumentSnapshot followingDoc = await followRequestsRef
+        .doc(userId)
+        .collection('receivedFollowRequests')
+        .doc(currentUserId)
+        .get();
+    return followingDoc.exists;
+  }
+
+  static Future<bool> isFollowingUser(
+      {required String currentUserId, required String userId}) async {
+    DocumentSnapshot followingDoc = await followersRef
+        .doc(userId)
+        .collection('userFollowers')
+        .doc(currentUserId)
+        .get();
+    return followingDoc.exists;
+  }
+
+  static Future<bool> isAFollowerUser(
+      {required String currentUserId, required String userId}) async {
+    DocumentSnapshot followingDoc = await followingRef
+        .doc(userId)
+        .collection('userFollowing')
+        .doc(currentUserId)
+        .get();
+    return followingDoc.exists;
+  }
+
+  static Future<int> numFollowing(String userId) async {
+    QuerySnapshot followingSnapshot =
+        await followingRef.doc(userId).collection('userFollowing').get();
+    return followingSnapshot.docs.length;
+  }
+
+  static Future<int> numFollowers(String userId) async {
+    QuerySnapshot followersSnapshot =
+        await followersRef.doc(userId).collection('userFollowers').get();
+    return followersSnapshot.docs.length - 1;
+  }
+
+  static void blockUser(
+      {required String currentUserId,
+      required AccountHolderAuthor user,
+      required String userId}) {
+    usersBlockedRef
+        .doc(currentUserId)
+        .collection('userBlocked')
+        .doc(userId)
+        .set({
+      'uid': userId,
+    });
+
+    userBlockingRef
+        .doc(userId)
+        .collection('userBlocking')
+        .doc(currentUserId)
+        .set({
+      'uid': currentUserId,
+    });
+  }
+
+  static Future<bool> isBlockedUser(
+      {required String currentUserId, required String userId}) async {
+    DocumentSnapshot followingDoc = await userBlockingRef
+        .doc(currentUserId)
+        .collection('userBlocking')
+        .doc(userId)
+        .get();
+    return followingDoc.exists;
+  }
+
+  static Future<bool> isBlokingUser(
+      {required String currentUserId, required String userId}) async {
+    DocumentSnapshot blockDoc = await usersBlockedRef
+        .doc(currentUserId)
+        .collection('userBlocked')
+        .doc(userId)
+        .get();
+    return blockDoc.exists;
+  }
+
+  static void unBlockUser(
+      {required String currentUserId, required String userId}) async {
+    // Remove user from current user's following collection
+    usersBlockedRef
+        .doc(currentUserId)
+        .collection('userBlocked')
+        .doc(userId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+
+    userBlockingRef
+        .doc(userId)
+        .collection('userBlocking')
+        .doc(currentUserId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+  }
+
+  static Future<AccountHolderAuthor> getUseractivityFollowers(
+      String userId, replyingMessage) async {
+    DocumentSnapshot userDocSnapshot = await usersAuthorRef
+        .doc(userId)
+        .collection('userFollowers')
+        .doc(userId)
+        .get();
+    return AccountHolderAuthor.fromDoc(userDocSnapshot);
+  }
+
+  static Future<List<Post>> getFeedPosts(String userId, int limit) async {
+    QuerySnapshot feedSnapShot = await feedsRef
+        .doc(userId)
+        .collection('userFeed')
+        .orderBy('timestamp', descending: true)
+        .limit(limit)
+        .get();
+    List<Post> posts =
+        feedSnapShot.docs.map((doc) => Post.fromDoc(doc)).toList();
+    return posts;
+  }
+
+  static Future<int> numUsersAll111() async {
+    QuerySnapshot feedSnapShot = await userProfessionalRef
+        // .where('profileHandle', isEqualTo: profileHandle)
+        // .where('showOnExplorePage', isEqualTo: true)
+        .get();
+    return feedSnapShot.docs.length;
+  }
+
+  static Future<int> numUsersAll(String profileHandle) async {
+    QuerySnapshot feedSnapShot = await userProfessionalRef
+        .where('profileHandle', isEqualTo: profileHandle)
+        // .where('showOnExplorePage', isEqualTo: true)
+        .get();
+    return feedSnapShot.docs.length - 1;
+  }
+
+  static Future<int> numusersLiveLocation(
+      String profileHandle, String liveCity, String liveCountry) async {
+    QuerySnapshot feedSnapShot = await userProfessionalRef
+        .where('profileHandle', isEqualTo: profileHandle)
+        .where('city', isEqualTo: liveCity)
+        .where('country', isEqualTo: liveCountry)
+        // .where('showOnExplorePage', isEqualTo: true)
+        .get();
+    return feedSnapShot.docs.length - 1;
+  }
+
+//Search.
+
   static Future<QuerySnapshot> serchTicket(String name, String currentUserId) {
     String trimedName = name.toUpperCase().trim();
     // String formattedName = trimedName.replaceAll(RegExp(r'[^\w\s#@]'), '');
@@ -186,25 +552,19 @@ class DatabaseService {
     return tickets;
   }
 
-  static Future<QuerySnapshot> searchEvent(String title) {
-    String trimedTitle = title.toUpperCase().trim();
+  static Future<List<DocumentSnapshot>> searchEvent(String title) async {
+    String trimmedTitle = title.toUpperCase().trim();
 
-    Future<QuerySnapshot> events = allEventsRef
+    QuerySnapshot querySnapshot = await allEventsRef
         .orderBy('title')
-        .startAt([trimedTitle])
-        // .where('title', isGreaterThanOrEqualTo: title)
+        .startAt([trimmedTitle])
         .limit(10)
         .get();
-    return events;
+
+    return querySnapshot.docs;
   }
 
-  static Future<QuerySnapshot> searchArtist(String name) {
-    Future<QuerySnapshot> users =
-        usersAuthorRef.where('userName', isEqualTo: name).get();
-
-    return users;
-  }
-
+//Chat and event room
   static void roomChatMessage({
     required EventRoomMessageModel message,
     required String eventId,
@@ -383,24 +743,11 @@ class DatabaseService {
       final conversationRef =
           messageRef.doc(uniqueChatId).collection('conversation');
 
-      // for (var user in users) {
-
-      //   final uniqueChatId = await usersAuthorRef
-      //       .doc(currentUserId)
-      //       .collection('new_chats')
-      //       .doc(user.userId)
-      //       .get()
-      //       .then((snapshot) => snapshot.data()?['messageId'] ?? '');
-
-      //   final conversationRef =
-      //       messageRef.doc(uniqueChatId).collection('conversation');
-
       final updatedSenderChat = {
         'lastMessage':
             message.content.isEmpty ? 'sent $contentSharing' : message.content,
         'mediaType': '',
         'seen': true,
-        // 'seen': currentUserId == message.senderId ? true : false,
         'newMessageTimestamp': FieldValue.serverTimestamp(),
         'clientTimestamp': Timestamp.fromDate(DateTime.now()),
       };
@@ -454,202 +801,6 @@ class DatabaseService {
     // Commit the batch
     return batch.commit();
   }
-
-//   static Future<void> shareBroadcastChatMessage({
-//     required ChatMessage message,
-//     // required String chatId,
-//     required String currentUserId,
-//     required String contentSharing,
-//     required List<AccountHolderAuthor> users,
-//   }) async {
-//     WriteBatch batch = FirebaseFirestore.instance.batch();
-
-//     for (var user in users) {
-
-//       final uniqueChatId = await usersAuthorRef
-//           .doc(currentUserId)
-//           .collection('new_chats')
-//           .doc(user.userId)
-//           .get()
-//           .then((snapshot) => snapshot.data()?['messageId'] ?? '');
-
-//       final conversationRef =
-//           messageRef.doc(uniqueChatId).collection('conversation');
-
-//       final updatedSenderChat = {
-//         'lastMessage':
-//             message.content.isEmpty ? 'sent $contentSharing' : message.content,
-//         'mediaType': '',
-//         'seen': true,
-//         // 'seen': currentUserId == message.senderId ? true : false,
-//         'newMessageTimestamp': FieldValue.serverTimestamp(),
-//         'clientTimestamp': Timestamp.fromDate(DateTime.now()),
-//       };
-
-//       final updatedReceiverChat = {
-//         'lastMessage': message.content.isEmpty
-//             ? 'received $contentSharing'
-//             : message.content,
-//         'mediaType': '',
-//         'seen': false,
-//         'newMessageTimestamp': FieldValue.serverTimestamp(),
-//         'clientTimestamp': Timestamp.fromDate(DateTime.now()),
-//       };
-
-//       // Add the message to the conversation collection
-//       batch.set(conversationRef.doc(), {
-//         'senderId': message.senderId,
-//         'receiverId': user.userId,
-//         'content': message.content,
-//         'timestamp': FieldValue.serverTimestamp(),
-//         'isRead': message.isRead,
-//         'isSent': message.isSent,
-//         'isLiked': message.isLiked,
-//         'sendContent':
-//             message.sendContent == null ? null : message.sendContent!.toMap(),
-//         'replyToMessage': message.replyToMessage == null
-//             ? null
-//             : message.replyToMessage!.toMap(),
-//         'attachments': message.attachments
-//             .map((attachments) => attachments.toJson())
-//             .toList(),
-//       });
-
-// // Add or update the chat in the sender's new_chats collection
-//       final senderChatRef = usersAuthorRef
-//           .doc(currentUserId)
-//           .collection('new_chats')
-//           .doc(user.userId); // Use user's id from the loop
-
-//       batch.update(senderChatRef, updatedSenderChat);
-
-//       // Add or update the chat in the receiver's new_chats collection
-//       final receiverChatRef = usersAuthorRef
-//           .doc(user.userId)
-//           .collection('new_chats')
-//           .doc(currentUserId);
-
-//       batch.update(receiverChatRef, updatedReceiverChat);
-//     }
-
-//     // Commit the batch
-//     return batch.commit();
-//   }
-
-// /
-// /
-// /
-// /
-// /
-// /
-// /
-// /
-// /
-
-// /
-// /
-// /
-// /
-// /
-// /
-//   static Future<void> shareBroadcastChatMessage({
-//     required ChatMessage message,
-//     required String chatId,
-//     required String currentUserId,
-//     required List<AccountHolderAuthor> users,
-//   }) async {
-//     String messageId = Uuid().v4();
-
-//     WriteBatch batch = FirebaseFirestore.instance.batch();
-
-//     for (var user in users) {
-//       // Create a unique chatId for each user
-//       final uniqueChatId = chatId.isEmpty ? messageId + user.userId! : chatId;
-
-//       final conversationRef =
-//           messageRef.doc(uniqueChatId).collection('conversation');
-
-//       final newChat = {
-//         'messageId': messageId,
-//         'lastMessage': message.content,
-//         'messageInitiator': message.senderId,
-//         'restrictChat': false,
-//         'muteMessage': false,
-//         'firstMessage': message.content,
-//         'mediaType': '',
-//         'timestamp': FieldValue.serverTimestamp(),
-//         'seen': chatId.isNotEmpty,
-//         'fromUserId': message.senderId,
-//         'toUserId': user.userId, // Use user's id from the loop
-//         'newMessageTimestamp': FieldValue.serverTimestamp(),
-
-//       };
-
-//       final updatedChat = {
-//         'lastMessage': message.content,
-//         'mediaType': '',
-//         'seen': true,
-//         'newMessageTimestamp': FieldValue.serverTimestamp(),
-//       };
-
-//       // Add the message to the conversation collection
-//       batch.set(conversationRef.doc(), {
-//         'senderId': message.senderId,
-//         'receiverId': user.userId,
-//         'content': message.content,
-//         'timestamp': FieldValue.serverTimestamp(),
-//         'isRead': message.isRead,
-//         'isSent': message.isSent,
-//         'isLiked': message.isLiked,
-//         'sendContent':
-//             message.sendContent == null ? null : message.sendContent!.toMap(),
-//         'replyToMessage': message.replyToMessage == null
-//             ? null
-//             : message.replyToMessage!.toMap(),
-//         'attachments': message.attachments
-//             .map((attachments) => attachments.toJson())
-//             .toList(),
-//       });
-
-// // Add or update the chat in the sender's new_chats collection
-//       final senderChatRef = usersAuthorRef
-//           .doc(message.senderId)
-//           .collection('new_chats')
-//           .doc(user.userId); // Use user's id from the loop
-
-//  chatId.isEmpty
-//         ? batch.set(senderChatRef, newChat)
-//         : batch.update(senderChatRef, updatedSenderChat);
-
-//     // Add or update the chat in the receiver's new_chats collection
-//     final receiverChatRef = usersAuthorRef
-//         .doc(message.receiverId)
-//         .collection('new_chats')
-//         .doc(message.senderId);
-//     // newChat['seen'] = false; // The receiver hasn't seen the message
-//     chatId.isEmpty
-//         ? batch.set(receiverChatRef, newChat)
-//         : batch.update(receiverChatRef, updatedReceiverChat);
-
-//       chatId.isEmpty
-//           ? batch.set(senderChatRef, newChat)
-//           : batch.update(senderChatRef, updatedChat);
-
-//       // Add or update the chat in the receiver's new_chats collection
-//       final receiverChatRef = usersAuthorRef
-//           .doc(user.userId) // Use user's id from the loop
-//           .collection('new_chats')
-//           .doc(message.senderId);
-
-//       newChat['seen'] = false; // The receiver hasn't seen the message
-//       chatId.isEmpty
-//           ? batch.set(receiverChatRef, newChat)
-//           : batch.update(receiverChatRef, updatedChat);
-//     }
-
-//     // Commit the batch
-//     return batch.commit();
-//   }
 
   static Future<void> firstChatMessage({
     required ChatMessage message,
@@ -908,7 +1059,9 @@ class DatabaseService {
     });
   }
 
-  static Future<void> createEvent(Event event) async {
+//Event
+
+  static Future<void> createEvent(Event event, String summary) async {
     // Create a toJson method inside Event class to serialize the object into a map
     Map<String, dynamic> eventData = event.toJson();
 
@@ -925,6 +1078,15 @@ class DatabaseService {
       DocumentReference allEventRef = allEventsRef.doc(event.id);
       // FirebaseFirestore.instance.collection('new_allEvents').doc(event.id);
       batch.set(allEventRef, eventData);
+
+      DocumentReference allEventsSummarydocRef =
+          allEventsSummaryRef.doc(event.id);
+      batch.set(
+          allEventsSummarydocRef,
+          ({
+            'summary': summary,
+            'eventId': event.id,
+          }));
     }
 
     // Add the event to 'eventsChatRoomsRef'
@@ -993,15 +1155,22 @@ class DatabaseService {
     // Commit the batch
     await batch.commit();
 
-    // Fetch users in the same city
+    // Commit the batch
+  }
+
+  static Future<void> createEventsNearBy({
+    required Event event,
+  }) async {
     if (!event.isPrivate) {
+      // Fetch users in the same city
       QuerySnapshot querySnapshot = await usersLocationSettingsRef
           .where('city', isEqualTo: event.city)
           .where('country', isEqualTo: event.country)
           .get();
 
-      // Prepare the batch for user activities
+      // Initialize variables for batch processing
       WriteBatch activitiesBatch = FirebaseFirestore.instance.batch();
+      int batchCounter = 0;
 
       // Loop over the users and create an activity document for each one
       for (var doc in querySnapshot.docs) {
@@ -1013,7 +1182,7 @@ class DatabaseService {
           DocumentReference userActivityRef =
               activitiesRef.doc(userId).collection('userActivities').doc();
           activitiesBatch.set(userActivityRef, {
-            'helperFielId': event.authorId,
+            'helperFieldId': event.authorId,
             'authorId': event.authorId,
             'postId': event.id,
             'seen': false,
@@ -1027,19 +1196,91 @@ class DatabaseService {
             'authorProfileHandle': event.authorId,
             'authorVerification': false
           });
+
+          batchCounter++;
+
+          // If batch limit is reached, commit the current batch and start a new one
+          if (batchCounter == 500) {
+            await activitiesBatch.commit();
+            activitiesBatch = FirebaseFirestore.instance.batch();
+            batchCounter = 0;
+          }
         }
       }
-      await activitiesBatch.commit();
-    }
 
-    // Commit the batch
+      // Commit any remaining operations in the final batch
+      if (batchCounter > 0) {
+        await activitiesBatch.commit();
+      }
+    }
   }
 
-  static Future<void> editEvent(Event event) async {
+  static Future<void> createOrganiserToAttendeesMarketingNotification({
+    required Event event,
+  }) async {
+    if (!event.isPrivate) {
+      // Fetch users in the same city
+      QuerySnapshot querySnapshot = await organiserAttendeeListRef
+          .doc(event.authorId)
+          .collection('OragnizerAttendees')
+          .get();
+
+      // Initialize variables for batch processing
+      WriteBatch activitiesBatch = FirebaseFirestore.instance.batch();
+      int batchCounter = 0;
+
+      // Loop over the users and create an activity document for each one
+      for (var doc in querySnapshot.docs) {
+        // Get the user's ID
+        String userId = doc.id;
+
+        // Create the activity document
+        if (userId != event.authorId) {
+          DocumentReference userActivityRef =
+              activitiesRef.doc(userId).collection('userActivities').doc();
+          activitiesBatch.set(userActivityRef, {
+            'helperFieldId': event.authorId,
+            'authorId': event.authorId,
+            'postId': event.id,
+            'seen': false,
+            'type': 'OrganiserToAttendeesMrk',
+            'postImageUrl': event.imageUrl,
+            'comment': MyDateFormat.toDate(event.startDate.toDate()) +
+                '\n${event.title}',
+            'timestamp': Timestamp.fromDate(DateTime.now()),
+            'authorProfileImageUrl': '',
+            'authorName': 'New event by ${event.authorName}\n${event.title}',
+            'authorProfileHandle': event.authorId,
+            'authorVerification': false
+          });
+
+          batchCounter++;
+
+          // If batch limit is reached, commit the current batch and start a new one
+          if (batchCounter == 500) {
+            await activitiesBatch.commit();
+            activitiesBatch = FirebaseFirestore.instance.batch();
+            batchCounter = 0;
+          }
+        }
+      }
+
+      // Commit any remaining operations in the final batch
+      if (batchCounter > 0) {
+        await activitiesBatch.commit();
+      }
+    }
+  }
+
+  static Future<void> editEvent(Event event, String aiAnalysis, String summary,
+      String aiMarketingAdvice) async {
     // Prepare the batch
     WriteBatch batch = FirebaseFirestore.instance.batch();
     Map<String, dynamic> eventData = {
       'title': event.title,
+      'overview': event.overview,
+      'aiAnalysis': aiAnalysis,
+      'aiMarketingAdvice': aiMarketingAdvice,
       'theme': event.theme,
       'startDate': event.startDate,
       'address': event.address,
@@ -1075,6 +1316,15 @@ class DatabaseService {
     if (!event.isPrivate) {
       DocumentReference allEventRef = allEventsRef.doc(event.id);
       batch.update(allEventRef, eventData);
+
+      DocumentReference allEventsSummarydocRef =
+          allEventsSummaryRef.doc(event.id);
+      batch.update(
+          allEventsSummarydocRef,
+          ({
+            'summary': summary,
+            // 'eventId': event.id,
+          }));
     }
 
     // Update the event in 'eventsChatRoomsRef'
@@ -1187,6 +1437,10 @@ class DatabaseService {
       DocumentReference allEventRef = allEventsRef.doc(event.id);
       batch.delete(allEventRef);
       batchSize++;
+
+      DocumentReference allEventSummaryRef = allEventsSummaryRef.doc(event.id);
+      batch.delete(allEventSummaryRef);
+      batchSize++;
     }
 
     DocumentReference chatRoomRef = eventsChatRoomsRef.doc(event.id);
@@ -1231,24 +1485,24 @@ class DatabaseService {
       }
     }
 
-    // Get all event invites and perform batch operations
-    QuerySnapshot eventInvitesSnapshot = await newEventTicketOrderRef
+    // // Get all event invites and perform batch operations
+    QuerySnapshot eventTicketOrderSnapshot = await newEventTicketOrderRef
         .doc(event.id)
         .collection('ticketOrders')
         .where('refundRequestStatus', isEqualTo: '')
         .get();
 
-    for (var doc in eventInvitesSnapshot.docs) {
+    for (var doc in eventTicketOrderSnapshot.docs) {
       String userId = doc.id;
       String commonId = Uuid().v4();
-      Map<String, dynamic> inviteData = doc.data() as Map<String, dynamic>;
+      Map<String, dynamic> ticketOrderData = doc.data() as Map<String, dynamic>;
 
-      String transactionId = inviteData['transactionId'] ?? '';
+      String transactionId = ticketOrderData['transactionId'] ?? '';
 
-      String orderId = inviteData['orderId'] ?? '';
+      String orderId = ticketOrderData['orderId'] ?? '';
 
-      DocumentReference inviteRef = doc.reference;
-      batch.delete(inviteRef);
+      DocumentReference ticketOderRef = doc.reference;
+      batch.delete(ticketOderRef);
       batchSize++;
 
       // // Update the event invites
@@ -1362,441 +1616,122 @@ class DatabaseService {
     // }
   }
 
-  // static Future<void> deleteEvent(
-  //     Event event, String reason, bool isCompleted) async {
-  //   FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-  //   await firestore.runTransaction((transaction) async {
-  //     // Reference to the event in 'eventsRef' to be deleted
-  //     DocumentReference eventRef =
-  //         eventsRef.doc(event.authorId).collection('userEvents').doc(event.id);
-  //     transaction.delete(eventRef);
-
-  //     if (!event.isPrivate) {
-  //       // Reference to the event in 'allEventsRef' to be deleted
-  //       DocumentReference allEventRef = allEventsRef.doc(event.id);
-  //       transaction.delete(allEventRef);
-  //     }
-
-  //     // Reference to the event's chat room in 'eventsChatRoomsRef' to be deleted
-  //     DocumentReference chatRoomRef = eventsChatRoomsRef.doc(event.id);
-  //     transaction.delete(chatRoomRef);
-
-  //     // Reference to the user's ticket ID in 'userTicketIdRef' to be deleted
-  //     DocumentReference userTicketIdDocRef = userTicketIdRef
-  //         .doc(event.authorId)
-  //         .collection('eventInvite')
-  //         .doc(event.id);
-  //     transaction.delete(userTicketIdDocRef);
-
-  //     // Move event data to a 'deletedEventsRef' for record-keeping
-  //     DocumentReference deletedEventRef = deletdEventsRef.doc(event.id);
-  //     transaction.set(deletedEventRef, event.toJson());
-
-  //     // Get all event invites and mark them as deleted
-  //     QuerySnapshot eventInvitesSnapshot = await newEventTicketOrderRef
-  //         .doc(event.id)
-  //         .collection('eventInvite')
-  //         .get();
-
-  //     for (var doc in eventInvitesSnapshot.docs) {
-  // String userId = doc.id;
-  // String commonId = Uuid().v4();
-  // Map<String, dynamic> inviteData = doc.data() as Map<String, dynamic>;
-
-  //       // Assuming 'transactionId' is a field in the invite document
-  // String transactionId = inviteData['transactionId'] ?? '';
-
-  // String orderId = inviteData['orderId'] ?? '';
-
-  // // Update the user's invites
-  // DocumentReference userInvitesRef = newUserTicketOrderRef
-  //     .doc(userId)
-  //     .collection('eventInvite')
-  //     .doc(event.id);
-  // transaction.update(
-  //   userInvitesRef,
-  //   {
-  // 'isDeleted': true,
-  // 'canlcellationReason': reason,
-  // 'eventAuthorId': event.authorId
-  //   },
-  // );
-
-  //       DocumentReference eventInvitesSnapshot = newEventTicketOrderRef
-  //           .doc(event.id)
-  //           .collection('eventInvite')
-  //           .doc(userId);
-
-  //       transaction.delete(
-  //         eventInvitesSnapshot,
-  //       );
-
-  // DocumentReference userTicketIdDocRef =
-  //     userTicketIdRef.doc(userId).collection('eventInvite').doc(event.id);
-
-  // transaction.delete(
-  //   userTicketIdDocRef,
-  // );
-
-  //       if (userId != event.authorId && !event.isFree && !isCompleted) {
-  // RefundModel refund = RefundModel(
-  //   id: commonId,
-  //   eventId: event.id,
-  //   status: 'pending',
-  //   timestamp: Timestamp.fromDate(DateTime.now()),
-  //   userRequestId: userId,
-  //   approvedTimestamp: Timestamp.fromDate(DateTime.now()),
-  //   reason: reason,
-  //   idempotencyKey: '',
-  //   city: '',
-  //   amount: 0,
-  //   expectedDate: '',
-  //   transactionId: transactionId,
-  //   orderId: orderId,
-  //   eventAuthorId: event.authorId,
-  //   eventTitle: event.title,
-  // );
-
-  // DocumentReference allRefundRequestRef = FirebaseFirestore.instance
-  //     .collection('allRefundRequestsEventDeleted')
-  //     .doc(refund.id);
-
-  // DocumentReference userRefundRequestRef = FirebaseFirestore.instance
-  //     .collection('userRefundRequests')
-  //     .doc(userId)
-  //     .collection('refundRequests')
-  //     .doc(refund.id);
-
-  // Map<String, dynamic> refundData = refund.toJson();
-
-  // transaction.set(allRefundRequestRef, refundData);
-
-  // transaction.set(userRefundRequestRef, refundData);
-  //       }
-  //       // // Update the event invites
-
-  //       // If user is not the author, add user activity for event deletion
-  //       if (userId != event.authorId && !isCompleted) {
-  //   DocumentReference userActivityRef =
-  //       activitiesRef.doc(userId).collection('userActivities').doc();
-  //   transaction.set(userActivityRef, {
-  //     'authorId': event.authorId,
-  //     'postId': event.authorId,
-  //     'seen': false,
-  //     'type': 'eventDeleted',
-  //     'postImageUrl': '',
-  //     'comment': event.title,
-  //     'timestamp': Timestamp.fromDate(DateTime.now()),
-  //     'authorProfileImageUrl': '',
-  //     'authorName': 'Event deleted',
-  //     'authorProfileHandle': '',
-  //     'authorVerification': false
-  //   });
-  // }
-  //     }
-
-  //     // Continue with the rest of the transaction as needed...
-  //   }).catchError((error) {
-  //     throw Exception('Transaction failed: $error');
-  //   });
-
-  //   // Delete the image from Firebase Storage if necessary
-  //   if (event.imageUrl.isNotEmpty) {
-  //     try {
-  //       await FirebaseStorage.instance.refFromURL(event.imageUrl).delete();
-  //     } catch (e) {
-  //       // Handle errors for Firebase Storage
-  //       throw e; // Rethrow the error to be handled further up if necessary
-  //     }
-  //   }
-  // }
-
-//   static Future<void> deleteEvent(Event event) async {
-//   FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-//   await firestore.runTransaction((transaction) async {
-//     // Reference to the event in 'eventsRef' to be deleted
-//     DocumentReference eventRef =
-//         eventsRef.doc(event.authorId).collection('userEvents').doc(event.id);
-//     transaction.delete(eventRef);
-
-//     // Reference to the event in 'allEventsRef' to be deleted
-//     DocumentReference allEventRef = allEventsRef.doc(event.id);
-//     transaction.delete(allEventRef);
-
-//     // Reference to the event's chat room in 'eventsChatRoomsRef' to be deleted
-//     DocumentReference chatRoomRef = eventsChatRoomsRef.doc(event.id);
-//     transaction.delete(chatRoomRef);
-
-//     // Reference to the user's ticket ID in 'userTicketIdRef' to be deleted
-//     DocumentReference userTicketIdDocRef = userTicketIdRef
-//         .doc(event.authorId)
-//         .collection('eventInvite')
-//         .doc(event.id);
-//     transaction.delete(userTicketIdDocRef);
-
-//     // Move event data to a 'deletedEventsRef' for record-keeping
-//     DocumentReference deletedEventRef = deletdEventsRef.doc(event.id);
-//     transaction.set(deletedEventRef, event.toJson());
-
-//     // Get all event invites and mark them as deleted
-//     QuerySnapshot eventInvitesSnapshot = await newEventTicketOrderRef
-//         .doc(event.id)
-//         .collection('eventInvite')
-//         .get();
-
-//     for (var doc in eventInvitesSnapshot.docs) {
-//       String userId = doc.id;
-
-//       // Update the user's invites
-//       DocumentReference userInvitesRef =
-//           userInviteRef.doc(userId).collection('eventInvite').doc(event.id);
-//       transaction.update(userInvitesRef, {'isDeleted': true});
-
-//       // Update the event invites
-//       DocumentReference newEventsTicketOrderRef = newEventTicketOrderRef
-//           .doc(event.id)
-//           .collection('eventInvite')
-//           .doc(userId);
-//       transaction.update(newEventsTicketOrderRef, {'isDeleted': true});
-
-//       // If user is not the author, add user activity for event deletion
-//       if (userId != event.authorId) {
-//         DocumentReference userActivityRef =
-//             activitiesRef.doc(userId).collection('userActivities').doc();
-//         transaction.set(userActivityRef, {
-//           'authorId': event.authorId,
-//           'postId': '',
-//           'seen': false,
-//           'type': 'eventDeleted',
-//           'postImageUrl': '',
-//           'comment': event.title,
-//           'timestamp': Timestamp.fromDate(DateTime.now()),
-//           'authorProfileImageUrl': '',
-//           'authorName': 'Event deleted',
-//           'authorProfileHandle': '',
-//           'authorVerification': false
-//         });
-//       }
-//     }
-
-//     // Continue with the rest of the transaction as needed...
-//   }).catchError((error) {
-//     throw Exception('Transaction failed: $error');
-//   });
-
-//   // Delete the image from Firebase Storage if necessary
-  // if (event.imageUrl.isNotEmpty) {
-  //   try {
-  //     await FirebaseStorage.instance.refFromURL(event.imageUrl).delete();
-  //   } catch (e) {
-  //     // Handle errors for Firebase Storage
-  //     throw e; // Rethrow the error to be handled further up if necessary
-  //   }
-  // }
-// }
-
-  // static Future<void> deleteEvent(Event event) async {
-  //   // Initialize the batch
-  //   WriteBatch batch = FirebaseFirestore.instance.batch();
-
-  //   // Reference to the event in 'eventsRef' to be deleted
-  //   DocumentReference eventRef =
-  //       eventsRef.doc(event.authorId).collection('userEvents').doc(event.id);
-  //   batch.delete(eventRef);
-
-  //   // Reference to the event in 'allEventsRef' to be deleted
-  //   DocumentReference allEventRef = allEventsRef.doc(event.id);
-  //   batch.delete(allEventRef);
-
-  //   // Reference to the event's chat room in 'eventsChatRoomsRef' to be deleted
-  //   DocumentReference chatRoomRef = eventsChatRoomsRef.doc(event.id);
-  //   batch.delete(chatRoomRef);
-
-  //   // Reference to the user's ticket ID in 'userTicketIdRef' to be deleted
-  //   DocumentReference userTicketIdDocRef = userTicketIdRef
-  //       .doc(event.authorId)
-  //       .collection('eventInvite')
-  //       .doc(event.id);
-  //   batch.delete(userTicketIdDocRef);
-
-  //   // References to the event invite documents in 'newEventTicketOrderRef' and 'userInviteRef' to be deleted
-  //   DocumentReference eventInviteDocRef = newEventTicketOrderRef
-  //       .doc(event.id)
-  //       .collection('eventInvite')
-  //       .doc(event.authorId);
-  //   DocumentReference userInviteDocRef = userInviteRef
-  //       .doc(event.authorId)
-  //       .collection('eventInvite')
-  //       .doc(event.id);
-
-  //   Map<String, dynamic> eventData = event.toJson();
-
-  //   DocumentReference deletdEventRef = deletdEventsRef.doc(event.id);
-  //   batch.set(deletdEventRef, eventData);
-
-  //   try {
-  //     // Commit the batch to perform the Firestore deletions
-  //     await batch.commit();
-
-  //     // Delete the image from Firebase Storage
-  //     if (event.imageUrl.isNotEmpty) {
-  //       await FirebaseStorage.instance.refFromURL(event.imageUrl).delete();
-  //     }
-  //   } catch (e) {
-  //     // Handle errors for both Firestore and Firebase Storage
-  //     throw e; // Rethrow the error to be handled further up if necessary
-  //   }
-
-  //   // Get all event invites and process them in batches
-  //   const int batchSize = 500; // Firestore limit is 500 operations per batch
-  //   int operationCount = 0;
-
-  //   Query query = newEventTicketOrderRef
-  //       .doc(event.id)
-  //       .collection('eventInvite')
-  //       .orderBy(FieldPath.documentId)
-  //       .limit(batchSize);
-
-  //   DocumentSnapshot? lastDoc;
-  //   do {
-  //     if (lastDoc != null) {
-  //       query = query.startAfterDocument(lastDoc);
-  //     }
-
-  //     QuerySnapshot querySnapshot = await query.get();
-
-  //     if (querySnapshot.docs.isEmpty) {
-  //       break;
-  //     }
-
-  //     for (var doc in querySnapshot.docs) {
-  //       String userId = doc.id;
-
-  //       // Update the user's invites
-  //       DocumentReference userInvitesRef =
-  //           userInviteRef.doc(userId).collection('eventInvite').doc(event.id);
-  //       batch.update(userInvitesRef, {
-  //         'isDeleted': true,
-  //       });
-
-  //       // Update the event invites
-  //       DocumentReference newEventsTicketOrderRef = newEventTicketOrderRef
-  //           .doc(event.id)
-  //           .collection('eventInvite')
-  //           .doc(userId);
-  //       batch.update(newEventsTicketOrderRef, {
-  //         'isDeleted': true,
-  //       });
-
-  //       operationCount += 2; // Two operations for each invite
-
-  //       // Check if user is the author and add user activity
-  //       if (userId != event.authorId) {
-  //         DocumentReference userActivityRef =
-  //             activitiesRef.doc(userId).collection('userActivities').doc();
-  //         batch.set(userActivityRef, {
-  //           'authorId': event.authorId,
-  //           'postId': '',
-  //           'seen': false,
-  //           'type': 'eventDeleted',
-  //           'postImageUrl': '',
-  //           'comment': event.title,
-  //           'timestamp': Timestamp.fromDate(DateTime.now()),
-  //           'authorProfileImageUrl': '',
-  //           'authorName': 'Event deleted',
-  //           'authorProfileHandle': '',
-  //           'authorVerification': false
-  //         });
-  //         operationCount++; // One operation for the user activity
-  //       }
-
-  //       // Commit batch if limit is reached and start a new batch
-  //       if (operationCount >= batchSize) {
-  //         await batch.commit();
-  //         batch = FirebaseFirestore.instance.batch();
-  //         operationCount = 0;
-  //       }
-  //     }
-
-  //     // Remember the last document processed
-  //     lastDoc = querySnapshot.docs.last;
-  //   } while (lastDoc != null);
-
-  //   // Commit any remaining operations in the final batch
-  //   if (operationCount > 0) {
-  //     await batch.commit();
-  //   }
-
-  //   batch.delete(eventInviteDocRef);
-  //   batch.delete(userInviteDocRef);
-
-  //   // Commit the batch to perform the deletions
-  //   await batch.commit();
-  // }
-
-  // Future<bool> validateTicket(String userOrderId, String entranceId) async {
-  //   print('userOrderId  ' + userOrderId);
-  //   print('entranceId ' + entranceId);
-  //   try {
-  //     // Start a Firestore transaction
-  //     return await FirebaseFirestore.instance
-  //         .runTransaction<bool>((transaction) async {
-  //       // Get the order document reference
-  //       DocumentReference orderDocRef = newEventTicketOrderRef
-  //           .doc(widget.event.id)
-  //           .collection('eventInvite')
-  //           .doc(userOrderId);
-
-  //       // Read the order document
-  //       DocumentSnapshot orderSnapshot = await transaction.get(orderDocRef);
-
-  //       if (!orderSnapshot.exists) {
-  //         // Order does not exist
-  //         return false;
-  //       }
-
-  //       // Deserialize the order document into TicketOrderModel using the fromDoc method
-  //       TicketOrderModel order = TicketOrderModel.fromDoc(orderSnapshot);
-
-  //       // Find the specific ticket to validate
-  //       for (var i = 0; i < order.tickets.length; i++) {
-  //         if (order.tickets[i].entranceId == entranceId) {
-  //           // Check the event date and validation status
-  //           DateTime eventDate = order.tickets[i].eventTicketDate.toDate();
-  //           DateTime today = DateTime.now();
-  //           bool isEventToday = eventDate.year == today.year &&
-  //               eventDate.month == today.month &&
-  //               eventDate.day == today.day;
-
-  //           if (!isEventToday || order.tickets[i].validated) {
-  //             // If the event date does not match or the ticket is already validated
-  //             return false;
-  //           }
-
-  //           // // Update the validated status of the ticket
-  //           // order.tickets[i] = order.tickets[i].copyWith(validated: true);
-
-  //           // Update the order document with the updated tickets list
-  //           transaction.update(orderDocRef, {
-  //             'tickets': order.tickets.map((ticket) => ticket.toJson()).toList()
-  //           });
-
-  //           // Ticket successfully validated
-  //           return true;
-  //         }
-  //       }
-
-  //       // Ticket not found
-  //       return false;
-  //     });
-  //   } catch (error) {
-  //     // Handle errors here
-  //     print(error); // Replace with proper error handling
-  //     return false;
-  //   }
-  // }
+  static Future<int> numUnAnsweredInvites(
+    String currentUserId,
+  ) async {
+    QuerySnapshot feedEventSnapShot = await userInvitesRef
+        .doc(currentUserId)
+        .collection('eventInvite')
+        .where('answer', isEqualTo: "")
+        // .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+        // .where('showOnExplorePage', isEqualTo: true)
+        .get();
+    return feedEventSnapShot.docs.length - 1;
+  }
+
+  static Future<int> numEventsTypes(
+      String eventType, DateTime currentDate) async {
+    QuerySnapshot feedEventSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
+        .where('type', isEqualTo: eventType)
+        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+        // .where('showOnExplorePage', isEqualTo: true)
+        .get();
+    return feedEventSnapShot.docs.length - 1;
+  }
+
+  static Future<int> numEventsAll(DateTime currentDate) async {
+    QuerySnapshot feedEventSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
+        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+        // .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+
+        // .where('type', isEqualTo: eventType)
+        // .where('showOnExplorePage', isEqualTo: true)
+        .get();
+    return feedEventSnapShot.docs.length - 1;
+  }
+
+  static Future<int> numEventsAllSortNumberOfDays(
+      DateTime currentDate, int sortNumberOfDays) async {
+    final sortDate = currentDate.add(Duration(days: sortNumberOfDays));
+    QuerySnapshot feedEventSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
+        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+        .where('clossingDay', isLessThanOrEqualTo: sortDate)
+        // .where('clossingDay', isLessThanOrEqualTo: endDate)
+        // .where('clossingDay', isLessThanOrEqualTo: endDate)
+
+        // .where('type', isEqualTo: eventType)
+        // .where('showOnExplorePage', isEqualTo: true)
+        .get();
+    return feedEventSnapShot.docs.length - 1;
+  }
+
+  static Future<int> numEventsTypesSortNumberOfDays(
+      String eventType, DateTime currentDate, int sortNumberOfDays) async {
+    final sortDate = currentDate.add(Duration(days: sortNumberOfDays));
+    QuerySnapshot feedEventSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
+        .where('type', isEqualTo: eventType)
+        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+        .where('clossingDay', isLessThanOrEqualTo: sortDate)
+        // .where('clossingDay', isLessThanOrEqualTo: endDate)
+        // .where('clossingDay', isLessThanOrEqualTo: endDate)
+        // .where('showOnExplorePage', isEqualTo: true)
+        .get();
+    return feedEventSnapShot.docs.length - 1;
+  }
+
+  static Future<int> numEventsAllLiveLocation(
+      String liveCity, String liveCountry, DateTime currentDate) async {
+    QuerySnapshot feedEventSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
+        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+        .where('city', isEqualTo: liveCity)
+        .where('country', isEqualTo: liveCountry)
+
+        // .where('type', isEqualTo: eventType)
+        // .where('showOnExplorePage', isEqualTo: true)
+        .get();
+    return feedEventSnapShot.docs.length - 1;
+  }
+
+  static Future<int> numEventsTypesLiveLocation(String eventType,
+      String liveCity, String liveCountry, DateTime currentDate) async {
+    QuerySnapshot feedEventSnapShot = await allEventsRef
+        .where('showOnExplorePage', isEqualTo: true)
+        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+        .where('type', isEqualTo: eventType)
+        .where('city', isEqualTo: liveCity)
+        .where('country', isEqualTo: liveCountry)
+        // .where('showOnExplorePage', isEqualTo: true)
+        .get();
+    return feedEventSnapShot.docs.length - 1;
+  }
+
+  static Future<int> numEventsFollowingAll(
+      DateTime currentDate, String userId) async {
+    QuerySnapshot feedEventSnapShot = await eventFeedsRef
+        .doc(userId)
+        .collection('userEventFeed')
+        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+        .get();
+    return feedEventSnapShot.docs.length - 1;
+  }
+
+  static Future<int> numEventsFollowing(
+      DateTime currentDate, String userId, String eventType) async {
+    QuerySnapshot feedEventSnapShot = await eventFeedsRef
+        .doc(userId)
+        .collection('userEventFeed')
+        .where('type', isEqualTo: eventType)
+        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
+        .get();
+    return feedEventSnapShot.docs.length - 1;
+  }
+
+//tickets
 
   static Future<void> requestRefund(
       Event event, RefundModel refund, AccountHolderAuthor currentUser) async {
@@ -1879,6 +1814,112 @@ class DatabaseService {
         .delete();
   }
 
+  static deleteAffiliateUsertData(AffiliateModel affiliate) {
+    // Add the complaint request to the appropriate collection
+
+    userAffiliateRef
+        .doc(affiliate.userId)
+        .collection('affiliateMarketers')
+        .doc(affiliate.eventId)
+        .delete();
+  }
+
+  static deleteAffiliatetEventData(AffiliateModel affiliate) {
+    // Add the complaint request to the appropriate collection
+
+    eventAffiliateRef
+        .doc(affiliate.eventId)
+        .collection('affiliateMarketers')
+        .doc(affiliate.userId)
+        .delete();
+  }
+
+  static deleteCrativeBookingData(BookingModel booking) {
+    // Add the complaint request to the appropriate collection
+    newBookingsReceivedRef
+        .doc(booking.creativeId)
+        .collection('bookings')
+        .doc(booking.id)
+        .delete();
+  }
+
+  static deleteClientBookingData(BookingModel booking) {
+    // Add the complaint request to the appropriate collection
+    newBookingsSentRef
+        .doc(booking.clientId)
+        .collection('bookings')
+        .doc(booking.id)
+        .delete();
+  }
+
+  static Future<bool> isAffiliatePayoutAvailable({
+    required String userId,
+    required String eventId,
+  }) async {
+    try {
+      DocumentReference payoutRequestDocRef = FirebaseFirestore.instance
+          .collection('userAffiliatePayoutRequests')
+          .doc(userId)
+          .collection('payoutRequests')
+          .doc(eventId);
+
+      DocumentSnapshot payoutRequestDoc = await payoutRequestDocRef.get();
+
+      return payoutRequestDoc.exists;
+    } catch (e) {
+      // Handle any errors that may occur during the operation
+      print('Error checking payout availability: $e');
+      return false;
+    }
+  }
+
+  static Future<void> requestAffiliatePayout(
+    AffiliatePayoutModel payout,
+  ) async {
+    // Create a toJson method inside Event class to serialize the object into a map
+    Map<String, dynamic> payoutData = payout.toJson();
+
+    // Prepare the batch
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    // Add the refund request to 'allRefundRequests' collection
+    DocumentReference allPayoutRequestRef = FirebaseFirestore.instance
+        .collection('allFundsAffiliatePayoutRequest')
+        .doc(payout.id);
+
+    DocumentReference userPayoutRequestRef = FirebaseFirestore.instance
+        .collection('userAffiliatePayoutRequests')
+        .doc(payout.affiliateId)
+        .collection('payoutRequests')
+        .doc(payout.eventId);
+
+    batch.set(allPayoutRequestRef, payoutData);
+    batch.set(userPayoutRequestRef, payoutData);
+
+    await batch.commit();
+  }
+
+  static Future<bool> isPayoutAvailable({
+    required String userId,
+    required String eventId,
+  }) async {
+    try {
+      DocumentReference payoutRequestDocRef = FirebaseFirestore.instance
+          .collection('userPayoutRequests')
+          .doc(userId)
+          .collection('payoutRequests')
+          .doc(eventId);
+
+      DocumentSnapshot payoutRequestDoc = await payoutRequestDocRef.get();
+
+      return payoutRequestDoc.exists;
+    } catch (e) {
+      // Handle any errors that may occur during the operation
+      print('Error checking payout availability: $e');
+      return false;
+    }
+  }
+
   static Future<void> requestPayout(Event event, EventPayoutModel payout,
       AccountHolderAuthor currentUser) async {
     // Create a toJson method inside Event class to serialize the object into a map
@@ -1901,21 +1942,6 @@ class DatabaseService {
     batch.set(allPayoutRequestRef, payoutData);
     batch.set(userPayoutRequestRef, payoutData);
 
-    // DocumentReference eventRef =
-    //     eventsRef.doc(event.authorId).collection('userEvents').doc(event.id);
-    // batch.update(eventRef, {
-    //   'fundsRequested': true,
-    // });
-    // if (!event.isPrivate) {
-    //   // Add the event to 'allEventsRef'
-    //   DocumentReference allEventRef = allEventsRef.doc(event.id);
-    //   // FirebaseFirestore.instance.collection('new_allEvents').doc(event.id);
-    //   batch.update(allEventRef, {
-    //     'fundsRequested': true,
-    //   });
-    // }
-
-    // Commit the batch
     await batch.commit();
   }
 
@@ -1927,6 +1953,26 @@ class DatabaseService {
         .doc(currentUserId)
         .collection('payoutRequests')
         .doc(payout.eventId)
+        .delete();
+  }
+
+  static deleteDonarData(String donationId, String currentUserId) {
+    // Add the complaint request to the appropriate collection
+
+    newUserDonationsRef
+        .doc(currentUserId)
+        .collection('donations')
+        .doc(donationId)
+        .delete();
+  }
+
+  static deleteDonarReceiverData(String donationId, String currentUserId) {
+    // Add the complaint request to the appropriate collection
+
+    newDonationToCreativesRef
+        .doc(currentUserId)
+        .collection('donations')
+        .doc(donationId)
         .delete();
   }
 
@@ -1951,6 +1997,51 @@ class DatabaseService {
     });
   }
 
+  static Future<RefundModel?> getRefundWithId(
+    String userId,
+    String eventId,
+  ) async {
+    try {
+      DocumentSnapshot userDocSnapshot = await userRefundRequestsRef
+          .doc(userId)
+          .collection('refundRequests')
+          .doc(eventId)
+          .get();
+
+      if (userDocSnapshot.exists) {
+        return RefundModel.fromDoc(userDocSnapshot);
+      } else {
+        return null; // return null if document does not exist
+      }
+    } catch (e) {
+      print(e);
+      return null; // return null if an error occurs
+    }
+  }
+
+  static Future<EventPayoutModel?> getUserPayoutWithId(
+    String userId,
+    String eventId,
+  ) async {
+    try {
+      DocumentSnapshot userDocSnapshot = await userPayoutRequestRef
+          .doc(userId)
+          .collection('payoutRequests')
+          .doc(eventId)
+          .get();
+
+      if (userDocSnapshot.exists) {
+        return EventPayoutModel.fromDoc(userDocSnapshot);
+      } else {
+        return null; // return null if document does not exist
+      }
+    } catch (e) {
+      print(e);
+      return null; // return null if an error occurs
+    }
+  }
+
+  //Database utility
   static createSuggestion(Suggestion suggestion) {
     suggestionsRef.add({
       'suggesttion': suggestion.suggesttion,
@@ -1998,50 +2089,6 @@ class DatabaseService {
 
       if (userDocSnapshot.exists) {
         return ComplaintIssueModel.fromDoc(userDocSnapshot);
-      } else {
-        return null; // return null if document does not exist
-      }
-    } catch (e) {
-      print(e);
-      return null; // return null if an error occurs
-    }
-  }
-
-  static Future<RefundModel?> getRefundWithId(
-    String userId,
-    String eventId,
-  ) async {
-    try {
-      DocumentSnapshot userDocSnapshot = await userRefundRequestsRef
-          .doc(userId)
-          .collection('refundRequests')
-          .doc(eventId)
-          .get();
-
-      if (userDocSnapshot.exists) {
-        return RefundModel.fromDoc(userDocSnapshot);
-      } else {
-        return null; // return null if document does not exist
-      }
-    } catch (e) {
-      print(e);
-      return null; // return null if an error occurs
-    }
-  }
-
-  static Future<EventPayoutModel?> getUserPayoutWithId(
-    String userId,
-    String eventId,
-  ) async {
-    try {
-      DocumentSnapshot userDocSnapshot = await userPayoutRequestRef
-          .doc(userId)
-          .collection('payoutRequests')
-          .doc(eventId)
-          .get();
-
-      if (userDocSnapshot.exists) {
-        return EventPayoutModel.fromDoc(userDocSnapshot);
       } else {
         return null; // return null if document does not exist
       }
@@ -2115,516 +2162,6 @@ class DatabaseService {
     int daysInWeek = 7;
     int daysPassed = dateTime.day + dateTime.weekday - 1;
     return ((daysPassed - 1) / daysInWeek).ceil();
-  }
-
-  static void followUser(
-      {required String currentUserId,
-      required AccountHolderAuthor user,
-      required AccountHolderAuthor currentUser}) {
-    // Add use to current user's following collection
-    followingRef
-        .doc(currentUserId)
-        .collection('userFollowing')
-        .doc(user.userId)
-        .set({
-      'userId': user.userId,
-    });
-
-    // addActivityFollowerItem(
-    //   currentUserId: currentUserId,
-    //   user: user,
-    //   currentUser: currentUser,
-    // );
-
-    //Add current user to user's followers collection
-    followersRef
-        .doc(user.userId)
-        .collection('userFollowers')
-        .doc(currentUserId)
-        .set({
-      'userId': currentUserId,
-    });
-
-    addActivityItem(
-      user: currentUser,
-      event: null,
-      comment: "Started following you",
-      followerUser: user,
-      post: null,
-      type: NotificationActivityType.follow,
-      advicedUserId: '',
-    );
-  }
-
-  static void unfollowUser(
-      {required String currentUserId, required String userId}) async {
-    // Remove user from current user's following collection
-    followingRef
-        .doc(currentUserId)
-        .collection('userFollowing')
-        .doc(userId)
-        .get()
-        .then((doc) {
-      if (doc.exists) {
-        doc.reference.delete();
-      }
-    });
-
-    //Remove current user from user's followers collection
-    followersRef
-        .doc(userId)
-        .collection('userFollowers')
-        .doc(currentUserId)
-        .get()
-        .then((doc) {
-      if (doc.exists) {
-        doc.reference.delete();
-      }
-    });
-  }
-
-  static void sendFollowRequest({
-    required String currentUserId,
-    required AccountHolderAuthor privateUser,
-    required AccountHolderAuthor currentUser,
-  }) {
-    // Create a follow request for the private user to accept or reject
-    followRequestsRef
-        .doc(privateUser.userId)
-        .collection('receivedFollowRequests')
-        .doc(currentUserId)
-        .set({
-      'userId': currentUserId,
-      'timestamp': FieldValue.serverTimestamp(), // To order requests
-    });
-
-    addActivityItem(
-      user: currentUser,
-      event: null,
-      comment: "Requested to follow you.",
-      followerUser: privateUser,
-      post: null,
-      type: NotificationActivityType.follow,
-      advicedUserId: '',
-    );
-  }
-
-  static acceptFollowRequest({
-    required String currentUserId,
-    required String requesterUserId,
-    required String activityId,
-    required AccountHolderAuthor currentUser,
-  }) async {
-    WriteBatch batch = FirebaseFirestore.instance.batch();
-
-    DocumentReference followersDocRef = followersRef
-        .doc(currentUserId)
-        .collection('userFollowers')
-        .doc(requesterUserId);
-
-    DocumentReference followingDocRef = followingRef
-        .doc(requesterUserId)
-        .collection('userFollowing')
-        .doc(currentUserId);
-
-    DocumentReference followRequestDocRef = followRequestsRef
-        .doc(currentUserId)
-        .collection('receivedFollowRequests')
-        .doc(requesterUserId);
-
-    DocumentReference activityRef = activitiesRef
-        .doc(currentUserId)
-        .collection('userActivities')
-        .doc(activityId);
-
-    DocumentReference requesterRef = activitiesRef
-        .doc(requesterUserId)
-        .collection('userActivities')
-        .doc(activityId);
-
-    // Add the requester to current user's followers collection
-    batch.set(followersDocRef, {
-      'userId': requesterUserId,
-    });
-
-    // Add the current user to the requester's following collection
-    batch.set(followingDocRef, {
-      'userId': currentUserId,
-    });
-
-    // Delete the follow request
-    batch.delete(followRequestDocRef);
-    batch.delete(activityRef);
-
-    batch.set(requesterRef, {
-      'helperFielId': '',
-      'activityId': activityId,
-      'authorId': currentUser.userId,
-      'postId': currentUser.userId,
-      'seen': false,
-      'type':
-          'follow', // Assuming 'NotificationActivityType.follow' is the correct value
-      'postImageUrl': currentUser.profileImageUrl,
-      'comment': "Accepted your follow request.",
-      'timestamp': Timestamp.fromDate(DateTime.now()),
-      'authorProfileImageUrl': currentUser.profileImageUrl,
-      'authorName': currentUser.userName,
-      'authorProfileHandle': currentUser.profileHandle,
-      'authorVerification': currentUser.verified,
-    });
-
-    // Commit the batch
-    await batch.commit();
-  }
-
-  // static void acceptFollowRequest({
-  //   required String currentUserId,
-  //   required String requesterUserId,
-  // }) async {
-  //   // Upon accepting, add the requester to current user's followers collection
-  //   followersRef
-  //       .doc(currentUserId)
-  //       .collection('userFollowers')
-  //       .doc(requesterUserId)
-  //       .set({
-  //     'userId': requesterUserId,
-  //   });
-
-  //   // Also add the current user to the requester's following collection
-  //   followingRef
-  //       .doc(requesterUserId)
-  //       .collection('userFollowing')
-  //       .doc(currentUserId)
-  //       .set({
-  //     'userId': currentUserId,
-  //   });
-
-  //   // Delete the follow request
-  //   followRequestsRef
-  //       .doc(currentUserId)
-  //       .collection('receivedFollowRequests')
-  //       .doc(requesterUserId)
-  //       .delete();
-  // }
-
-  static void cancelFollowRequest({
-    required String currentUserId,
-    required String requesterUserId,
-  }) async {
-    // Simply delete the follow request
-    followRequestsRef
-        .doc(currentUserId)
-        .collection('receivedFollowRequests')
-        .doc(requesterUserId)
-        .delete();
-  }
-
-  static rejectFollowRequest({
-    required String currentUserId,
-    required String userId,
-    required String activityId,
-  }) async {
-    WriteBatch batch = FirebaseFirestore.instance.batch();
-
-    DocumentReference followRequestDocRef = followRequestsRef
-        .doc(currentUserId)
-        .collection('receivedFollowRequests')
-        .doc(userId);
-
-    DocumentReference activityDocRef = activitiesRef
-        .doc(currentUserId)
-        .collection('userActivities')
-        .doc(activityId);
-
-    // Queue the deletion of the follow request
-    batch.delete(followRequestDocRef);
-
-    // Queue the deletion of the activity
-    batch.delete(activityDocRef);
-
-    // Commit the batch to atomically execute the delete operations
-    await batch.commit();
-  }
-
-  static Future<bool> isFollowingRequested(
-      {required String currentUserId, required String userId}) async {
-    DocumentSnapshot followingDoc = await followRequestsRef
-        .doc(userId)
-        .collection('receivedFollowRequests')
-        .doc(currentUserId)
-        .get();
-    return followingDoc.exists;
-  }
-
-  static Future<bool> isFollowingUser(
-      {required String currentUserId, required String userId}) async {
-    DocumentSnapshot followingDoc = await followersRef
-        .doc(userId)
-        .collection('userFollowers')
-        .doc(currentUserId)
-        .get();
-    return followingDoc.exists;
-  }
-
-  static Future<bool> isAFollowerUser(
-      {required String currentUserId, required String userId}) async {
-    DocumentSnapshot followingDoc = await followingRef
-        .doc(userId)
-        .collection('userFollowing')
-        .doc(currentUserId)
-        .get();
-    return followingDoc.exists;
-  }
-
-  static Future<int> numFollowing(String userId) async {
-    QuerySnapshot followingSnapshot =
-        await followingRef.doc(userId).collection('userFollowing').get();
-    return followingSnapshot.docs.length;
-  }
-
-  static Future<int> numFollowers(String userId) async {
-    QuerySnapshot followersSnapshot =
-        await followersRef.doc(userId).collection('userFollowers').get();
-    return followersSnapshot.docs.length - 1;
-  }
-
-  static void blockUser(
-      {required String currentUserId,
-      required AccountHolderAuthor user,
-      required String userId}) {
-    usersBlockedRef
-        .doc(currentUserId)
-        .collection('userBlocked')
-        .doc(userId)
-        .set({
-      'uid': userId,
-    });
-
-    userBlockingRef
-        .doc(userId)
-        .collection('userBlocking')
-        .doc(currentUserId)
-        .set({
-      'uid': currentUserId,
-    });
-  }
-
-  static Future<bool> isBlockedUser(
-      {required String currentUserId, required String userId}) async {
-    DocumentSnapshot followingDoc = await userBlockingRef
-        .doc(currentUserId)
-        .collection('userBlocking')
-        .doc(userId)
-        .get();
-    return followingDoc.exists;
-  }
-
-  static Future<bool> isBlokingUser(
-      {required String currentUserId, required String userId}) async {
-    DocumentSnapshot blockDoc = await usersBlockedRef
-        .doc(currentUserId)
-        .collection('userBlocked')
-        .doc(userId)
-        .get();
-    return blockDoc.exists;
-  }
-
-  static void unBlockUser(
-      {required String currentUserId, required String userId}) async {
-    // Remove user from current user's following collection
-    usersBlockedRef
-        .doc(currentUserId)
-        .collection('userBlocked')
-        .doc(userId)
-        .get()
-        .then((doc) {
-      if (doc.exists) {
-        doc.reference.delete();
-      }
-    });
-
-    userBlockingRef
-        .doc(userId)
-        .collection('userBlocking')
-        .doc(currentUserId)
-        .get()
-        .then((doc) {
-      if (doc.exists) {
-        doc.reference.delete();
-      }
-    });
-  }
-
-  static Future<AccountHolderAuthor> getUseractivityFollowers(
-      String userId, replyingMessage) async {
-    DocumentSnapshot userDocSnapshot = await usersAuthorRef
-        .doc(userId)
-        .collection('userFollowers')
-        .doc(userId)
-        .get();
-    return AccountHolderAuthor.fromDoc(userDocSnapshot);
-  }
-
-  static Future<List<Post>> getFeedPosts(String userId, int limit) async {
-    QuerySnapshot feedSnapShot = await feedsRef
-        .doc(userId)
-        .collection('userFeed')
-        .orderBy('timestamp', descending: true)
-        .limit(limit)
-        .get();
-    List<Post> posts =
-        feedSnapShot.docs.map((doc) => Post.fromDoc(doc)).toList();
-    return posts;
-  }
-
-  static Future<int> numUsersAll111() async {
-    QuerySnapshot feedSnapShot = await userProfessionalRef
-        // .where('profileHandle', isEqualTo: profileHandle)
-        // .where('showOnExplorePage', isEqualTo: true)
-        .get();
-    return feedSnapShot.docs.length;
-  }
-
-  static Future<int> numUsersAll(String profileHandle) async {
-    QuerySnapshot feedSnapShot = await userProfessionalRef
-        .where('profileHandle', isEqualTo: profileHandle)
-        // .where('showOnExplorePage', isEqualTo: true)
-        .get();
-    return feedSnapShot.docs.length - 1;
-  }
-
-  static Future<int> numusersLiveLocation(
-      String profileHandle, String liveCity, String liveCountry) async {
-    QuerySnapshot feedSnapShot = await userProfessionalRef
-        .where('profileHandle', isEqualTo: profileHandle)
-        .where('city', isEqualTo: liveCity)
-        .where('country', isEqualTo: liveCountry)
-        // .where('showOnExplorePage', isEqualTo: true)
-        .get();
-    return feedSnapShot.docs.length - 1;
-  }
-
-  static Future<int> numFeedPosts(String userId) async {
-    QuerySnapshot feedSnapShot =
-        await feedsRef.doc(userId).collection('userFeed').get();
-    return feedSnapShot.docs.length - 1;
-  }
-
-  static Future<int> numFeedEvents(String userId) async {
-    QuerySnapshot feedEventSnapShot =
-        await eventFeedsRef.doc(userId).collection('userEventFeed').get();
-    return feedEventSnapShot.docs.length - 1;
-  }
-
-  static Future<int> numUnAnsweredInvites(
-    String currentUserId,
-  ) async {
-    QuerySnapshot feedEventSnapShot = await userInvitesRef
-        .doc(currentUserId)
-        .collection('eventInvite')
-        .where('answer', isEqualTo: "")
-        // .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
-        // .where('showOnExplorePage', isEqualTo: true)
-        .get();
-    return feedEventSnapShot.docs.length - 1;
-  }
-
-  static Future<int> numEventsTypes(
-      String eventType, DateTime currentDate) async {
-    QuerySnapshot feedEventSnapShot = await allEventsRef
-        .where('showOnExplorePage', isEqualTo: true)
-        .where('type', isEqualTo: eventType)
-        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
-        // .where('showOnExplorePage', isEqualTo: true)
-        .get();
-    return feedEventSnapShot.docs.length - 1;
-  }
-
-  static Future<int> numEventsAll(DateTime currentDate) async {
-    QuerySnapshot feedEventSnapShot = await allEventsRef
-        .where('showOnExplorePage', isEqualTo: true)
-        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
-        // .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
-
-        // .where('type', isEqualTo: eventType)
-        // .where('showOnExplorePage', isEqualTo: true)
-        .get();
-    return feedEventSnapShot.docs.length - 1;
-  }
-
-  static Future<int> numEventsAllSortNumberOfDays(
-      DateTime currentDate, int sortNumberOfDays) async {
-    final endDate = currentDate.add(Duration(days: sortNumberOfDays));
-    QuerySnapshot feedEventSnapShot = await allEventsRef
-        .where('showOnExplorePage', isEqualTo: true)
-        .where('clossingDay', isLessThanOrEqualTo: endDate)
-        // .where('clossingDay', isLessThanOrEqualTo: endDate)
-
-        // .where('type', isEqualTo: eventType)
-        // .where('showOnExplorePage', isEqualTo: true)
-        .get();
-    return feedEventSnapShot.docs.length - 1;
-  }
-
-  static Future<int> numEventsTypesSortNumberOfDays(
-      String eventType, DateTime currentDate, int sortNumberOfDays) async {
-    final endDate = currentDate.add(Duration(days: sortNumberOfDays));
-    QuerySnapshot feedEventSnapShot = await allEventsRef
-        .where('showOnExplorePage', isEqualTo: true)
-        .where('type', isEqualTo: eventType)
-        .where('clossingDay', isLessThanOrEqualTo: endDate)
-        // .where('clossingDay', isLessThanOrEqualTo: endDate)
-        // .where('showOnExplorePage', isEqualTo: true)
-        .get();
-    return feedEventSnapShot.docs.length - 1;
-  }
-
-  static Future<int> numEventsAllLiveLocation(
-      String liveCity, String liveCountry, DateTime currentDate) async {
-    QuerySnapshot feedEventSnapShot = await allEventsRef
-        .where('showOnExplorePage', isEqualTo: true)
-        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
-        .where('city', isEqualTo: liveCity)
-        .where('country', isEqualTo: liveCountry)
-
-        // .where('type', isEqualTo: eventType)
-        // .where('showOnExplorePage', isEqualTo: true)
-        .get();
-    return feedEventSnapShot.docs.length - 1;
-  }
-
-  static Future<int> numEventsTypesLiveLocation(String eventType,
-      String liveCity, String liveCountry, DateTime currentDate) async {
-    QuerySnapshot feedEventSnapShot = await allEventsRef
-        .where('showOnExplorePage', isEqualTo: true)
-        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
-        .where('type', isEqualTo: eventType)
-        .where('city', isEqualTo: liveCity)
-        .where('country', isEqualTo: liveCountry)
-        // .where('showOnExplorePage', isEqualTo: true)
-        .get();
-    return feedEventSnapShot.docs.length - 1;
-  }
-
-  static Future<int> numEventsFollowingAll(
-      DateTime currentDate, String userId) async {
-    QuerySnapshot feedEventSnapShot = await eventFeedsRef
-        .doc(userId)
-        .collection('userEventFeed')
-        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
-        .get();
-    return feedEventSnapShot.docs.length - 1;
-  }
-
-  static Future<int> numEventsFollowing(
-      DateTime currentDate, String userId, String eventType) async {
-    QuerySnapshot feedEventSnapShot = await eventFeedsRef
-        .doc(userId)
-        .collection('userEventFeed')
-        .where('type', isEqualTo: eventType)
-        .where('clossingDay', isGreaterThanOrEqualTo: currentDate)
-        .get();
-    return feedEventSnapShot.docs.length - 1;
   }
 
   static Future<List<Post>> getUserPosts(String userId) async {
@@ -3045,34 +2582,6 @@ class DatabaseService {
         .map((documentSnapshot) => documentSnapshot.docs.length);
   }
 
-  static void deleteComment(
-      {required String currentUserId,
-      required Post post,
-      required Comment comment}) async {
-    commentsRef
-        .doc(post.id)
-        .collection('postComments')
-        .doc(comment.id)
-        .get()
-        .then((doc) {
-      if (doc.exists) {
-        doc.reference.delete();
-      }
-    });
-
-    QuerySnapshot commentsSnapShot = await commentsRef
-        .doc(post.id)
-        .collection('postComments')
-        .doc(comment.id)
-        .collection('replies')
-        .get();
-    commentsSnapShot.docs.forEach((doc) {
-      if (doc.exists) {
-        doc.reference.delete();
-      }
-    });
-  }
-
   static void deleteCommentsReply({
     required String commentId,
     required String replyId,
@@ -3286,6 +2795,50 @@ class DatabaseService {
     }).asStream();
   }
 
+  static Stream<int> numAffiliates(String eventId, String marketingType) {
+    if (eventId.isEmpty || eventId.trim() == '') {
+      print("Error: eventId is null or empty.");
+      // Return an empty stream or handle the error as appropriate for your app
+      return Stream.empty();
+    }
+    return eventAffiliateRef
+        .doc(eventId)
+        .collection('affiliateMarketers')
+        .where('marketingType', isEqualTo: marketingType)
+        .get()
+        .then((querySnapshot) {
+      if (querySnapshot.size > 0) {
+        return querySnapshot.size;
+      } else {
+        // Return an appropriate value or handle the error case when the collection doesn't exist
+        return 0;
+      }
+    }).asStream();
+  }
+
+  static Stream<int> numUerAffiliates(
+    String userId,
+  ) {
+    if (userId.isEmpty || userId.trim() == '') {
+      print("Error: userIdId is null or empty.");
+      // Return an empty stream or handle the error as appropriate for your app
+      return Stream.empty();
+    }
+    return userAffiliateRef
+        .doc(userId)
+        .collection('affiliateMarketers')
+        .where('answer', isEqualTo: '')
+        .get()
+        .then((querySnapshot) {
+      if (querySnapshot.size > 0) {
+        return querySnapshot.size;
+      } else {
+        // Return an appropriate value or handle the error case when the collection doesn't exist
+        return 0;
+      }
+    }).asStream();
+  }
+
   static Stream<int> numAllAnsweredEventInvites(String eventId, String answer) {
     // Check if eventId is null or empty
     if (eventId.isEmpty || eventId.trim() == '') {
@@ -3397,8 +2950,6 @@ class DatabaseService {
     QuerySnapshot feedSnapShot = await newUserTicketOrderRef
         .doc(userId)
         .collection('ticketOrders')
-        // .where('profileHandle', isEqualTo: profileHandle)
-        // .where('showOnExplorePage', isEqualTo: true)
         .get();
     return feedSnapShot.docs.length;
   }
@@ -3424,7 +2975,6 @@ class DatabaseService {
     required List<TicketModel> tickets,
   }) {
     // String commonId = Uuid().v4();
-
     newEventTicketOrderRef
         .doc(eventId)
         .collection('ticketOrders')
@@ -3476,10 +3026,531 @@ class DatabaseService {
     batch.update(userInviteRef, {
       'answer': answer,
     });
+  }
 
-    // return batch.commit().then((value) => {}).catchError((error) {
-    //   throw error; // Re-throw the error
-    // });
+  static Future<void> createReview({
+    required ReviewModel rating,
+    required AccountHolderAuthor currentUser,
+  }) async {
+    // Initialize a WriteBatch
+    Map<String, dynamic> bookingData = rating.toJson();
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    // References to the affiliate documents
+    final bookingReceivedDocRef = newReviewReceivedRef
+        .doc(rating.reviewingId)
+        .collection('reviews')
+        .doc(rating.bookingId);
+// f2427095-a9ec-40b2-8fc3-82bcec946740
+    final bookingsSentDocRef = newReviewMadeRef
+        .doc(rating.revierwerId)
+        .collection('reviews')
+        .doc(rating.bookingId);
+
+    // Set the affiliate data in the batch
+    batch.set(bookingReceivedDocRef, bookingData);
+    batch.set(bookingsSentDocRef, bookingData);
+
+    DocumentReference activityDocRef = activitiesRef
+        .doc(rating.reviewingId)
+        .collection('userActivities')
+        .doc();
+
+    // Create a new document reference for the activity within the userActivities collection
+    // batch.update(usersRatingDocRef, ratingData);
+    await updateUserRating(
+      rating: rating.rating,
+      reviewingId: rating.revierwerId,
+      batch: batch,
+    );
+
+    // Add the activity creation to the batch
+    batch.set(activityDocRef, {
+      'helperFielId': rating.revierwerId,
+      'authorId': currentUser.userId,
+      'postId': rating.bookingId,
+      'seen': false,
+      'type': 'review',
+      'postImageUrl': '',
+      'comment': 'New review ',
+      'timestamp':
+          FieldValue.serverTimestamp(), // Use server timestamp for consistency
+      'authorProfileImageUrl': currentUser
+          .profileImageUrl, // Assuming there's a profileImageUrl field
+      'authorName': currentUser.userName,
+      'authorProfileHandle': '',
+      'authorVerification': currentUser.verified,
+    });
+
+    // Commit the batch write
+    await batch.commit();
+  }
+
+  static Future<void> updateUserRating(
+      {required String reviewingId,
+      required int rating,
+      required WriteBatch batch}) async {
+    DocumentReference usersRatingDocRef = usersRatingRef.doc(reviewingId);
+
+    Map<String, dynamic> updateData;
+
+    // Determine which star field to increment based on the rating
+    switch (rating) {
+      case 1:
+        updateData = {'oneStar': FieldValue.increment(1)};
+        break;
+      case 2:
+        updateData = {'twoStar': FieldValue.increment(1)};
+        break;
+      case 3:
+        updateData = {'threeStar': FieldValue.increment(1)};
+        break;
+      case 4:
+        updateData = {'fourStar': FieldValue.increment(1)};
+        break;
+      case 5:
+        updateData = {'fiveStar': FieldValue.increment(1)};
+        break;
+      default:
+        throw ArgumentError('Invalid rating value: $rating');
+    }
+
+    batch.update(usersRatingDocRef, updateData);
+  }
+
+  static Future<BookingModel?> getBookingMade(
+      String userId, String bookId) async {
+    try {
+      DocumentSnapshot userDocSnapshot = await newBookingsSentRef
+          .doc(userId)
+          .collection('bookings')
+          .doc(bookId)
+          .get();
+
+      if (userDocSnapshot.exists) {
+        return BookingModel.fromDoc(userDocSnapshot);
+      } else {
+        return null; // return null if document does not exist
+      }
+    } catch (e) {
+      print(e);
+      return null; // return null if an error occurs
+    }
+  }
+
+  static Future<BookingModel?> getUserBooking(
+      String userId, String bookId) async {
+    try {
+      DocumentSnapshot userDocSnapshot = await newBookingsReceivedRef
+          .doc(userId)
+          .collection('bookings')
+          .doc(bookId)
+          .get();
+
+      if (userDocSnapshot.exists) {
+        return BookingModel.fromDoc(userDocSnapshot);
+      } else {
+        return null; // return null if document does not exist
+      }
+    } catch (e) {
+      print(e);
+      return null; // return null if an error occurs
+    }
+  }
+
+  static createBrandInfo(
+    CreativeBrandTargetModel brand,
+    AccountHolderAuthor currentUser,
+  ) async {
+    Map<String, dynamic> brandData = brand.toJson();
+
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    // References to the affiliate documents
+    final new_userBrandIfoDocRef = new_userBrandIfoRef.doc(brand.userId);
+    final newBrandMatchingDocRef = newBrandMatchingRef.doc(brand.userId);
+
+    final brandMatchingDocRef = newBrandMatchingDocRef;
+
+    final brandDocRef = new_userBrandIfoDocRef;
+
+    batch.set(brandDocRef, brandData);
+    batch.set(
+        brandMatchingDocRef,
+        ({
+          'userName': currentUser.userName!,
+          'profileImageUrl': currentUser.profileImageUrl!,
+          'profileHandle': currentUser.profileHandle!,
+          'verified': currentUser.verified!,
+          'matchReason': '',
+          'userId': brand.userId,
+          'skills': brand.skills,
+          'shortTermGoals': brand.shortTermGoals,
+          'longTermGoals': brand.longTermGoals,
+          'creativeSyle': brand.creativeStyle,
+          'inspirations': brand.inspiration,
+        }));
+    await batch.commit();
+  }
+
+  static Future<void> createBookingRequest({
+    required BookingModel booking,
+    required AccountHolderAuthor currentUser,
+  }) async {
+    // Initialize a WriteBatch
+    Map<String, dynamic> bookingData = booking.toJson();
+
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    // References to the affiliate documents
+    final bookingReceivedDocRef = newBookingsReceivedRef
+        .doc(booking.creativeId)
+        .collection('bookings')
+        .doc(booking.id);
+// f2427095-a9ec-40b2-8fc3-82bcec946740
+    final bookingsSentDocRef = newBookingsSentRef
+        .doc(booking.clientId)
+        .collection('bookings')
+        .doc(booking.id);
+
+    // Set the affiliate data in the batch
+    batch.set(bookingReceivedDocRef, bookingData);
+    batch.set(bookingsSentDocRef, bookingData);
+
+    // Create a new document reference for the activity within the userActivities collection
+    DocumentReference activityDocRef = activitiesRef
+        .doc(booking.creativeId)
+        .collection('userActivities')
+        .doc(); // Create a new document reference with a generated ID
+
+    // Add the activity creation to the batch
+    batch.set(activityDocRef, {
+      'helperFielId': booking.clientId,
+      'authorId': currentUser.userId,
+      'postId': booking.id,
+      'seen': false,
+      'type': 'bookingReceived',
+      'postImageUrl': '',
+      'comment': 'Congratulation\nNew booking deal',
+      'timestamp':
+          FieldValue.serverTimestamp(), // Use server timestamp for consistency
+      'authorProfileImageUrl': currentUser
+          .profileImageUrl, // Assuming there's a profileImageUrl field
+      'authorName': currentUser.userName,
+      'authorProfileHandle': '',
+      'authorVerification': currentUser.verified,
+    });
+
+    // Commit the batch write
+    await batch.commit();
+  }
+
+  static answerBookingInviteBatch({
+    // required WriteBatch batch,
+    required String answer,
+    required bool isAnswer,
+    required AccountHolderAuthor currentUser,
+    required BookingModel booking,
+  }) async {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    DocumentReference newBookingsReceivedDocRef = newBookingsReceivedRef
+        .doc(booking.creativeId)
+        .collection('bookings')
+        .doc(booking.id);
+    isAnswer
+        ? batch.update(newBookingsReceivedDocRef, {
+            'answer': answer,
+          })
+        : batch.update(newBookingsReceivedDocRef, {
+            'isdownPaymentMade': true,
+          });
+
+    DocumentReference newBookingsSentDocRef = newBookingsSentRef
+        .doc(booking.clientId)
+        .collection('bookings')
+        .doc(booking.id);
+    isAnswer
+        ? batch.update(newBookingsSentDocRef, {
+            'answer': answer,
+          })
+        : batch.update(newBookingsSentDocRef, {
+            'isdownPaymentMade': true,
+          });
+    if (answer == 'Rejected') return;
+// Create a new document reference for the activity within the userActivities collection
+    DocumentReference activityDocRef = isAnswer
+        ? activitiesRef.doc(booking.clientId).collection('userActivities').doc()
+        : activitiesRef
+            .doc(booking.creativeId)
+            .collection('userActivities')
+            .doc(); // Create a new document reference with a generated ID
+
+    // Add the activity creation to the batch
+    batch.set(activityDocRef, {
+      'helperFielId': currentUser.userId,
+      'authorId': currentUser.userId,
+      'postId': booking.id,
+      'seen': false,
+      'type': isAnswer ? 'bookingMade' : 'bookingReceived',
+      'postImageUrl': '',
+      'comment': isAnswer
+          ? 'Congratulation\nBooking deal accepted'
+          : '30% downpayment made',
+      'timestamp':
+          FieldValue.serverTimestamp(), // Use server timestamp for consistency
+      'authorProfileImageUrl': currentUser
+          .profileImageUrl, // Assuming there's a profileImageUrl field
+      'authorName': currentUser.userName,
+      'authorProfileHandle': '',
+      'authorVerification': currentUser.verified,
+    });
+
+    await batch.commit();
+  }
+
+  static Future<void> createAffiliate({
+    required Event event,
+    required List<AccountHolderAuthor> users,
+    required String inviteMessage,
+    required String termsAndCondition,
+    required double commission,
+    required String authorProfileImageUrl,
+  }) async {
+    // Initialize a WriteBatch
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    // Iterate through each user to create their affiliate entries
+    for (var user in users) {
+      String commonId = Uuid().v4();
+      // Create an AffiliateModel for the user
+      AffiliateModel affiliate = AffiliateModel(
+        id: commonId,
+        eventId: event.id,
+        userId: user.userId!,
+        affiliateLink: '', // This should be generated and set separately
+        userName: user.userName!,
+        commissionRate: commission,
+        affiliatePayoutDate: Timestamp.fromDate(DateTime.now()),
+        payoutToAffiliates: false,
+        timestamp: Timestamp.fromDate(DateTime.now()),
+        affiliateAmount: 0,
+        userProfileUrl: user.profileImageUrl!,
+        salesNumber: 0,
+        payoutToOrganizer: false,
+        marketingType: 'Invited',
+        eventImageUrl: event.imageUrl,
+        eventAuthorId: event.authorId,
+        eventClossingDay: event.clossingDay,
+        eventTitle: event.title,
+        answer: '',
+        message: inviteMessage,
+        termsAndCondition: termsAndCondition,
+      );
+
+      // Convert the affiliate model to a map
+      Map<String, dynamic> affiliateData = affiliate.toJson();
+      // References to the affiliate documents
+      final affiliateDocRef = eventAffiliateRef
+          .doc(event.id)
+          .collection('affiliateMarketers')
+          .doc(user.userId);
+      final userAffiliateDocRef = userAffiliateRef
+          .doc(user.userId)
+          .collection('affiliateMarketers')
+          .doc(event.id);
+
+      // Set the affiliate data in the batch
+      batch.set(affiliateDocRef, affiliateData);
+      batch.set(userAffiliateDocRef, affiliateData);
+
+      // Create a new document reference for the activity within the userActivities collection
+      DocumentReference activityDocRef = activitiesRef
+          .doc(user.userId)
+          .collection('userActivities')
+          .doc(); // Create a new document reference with a generated ID
+
+      // Add the activity creation to the batch
+      batch.set(activityDocRef, {
+        'helperFielId': event.authorId,
+        'authorId': event.authorId,
+        'postId': event.id,
+        'seen': false,
+        'type': 'affiliate',
+        'postImageUrl': event.imageUrl,
+        'comment': 'Congratulation\nNew affiliate deal',
+        'timestamp': FieldValue
+            .serverTimestamp(), // Use server timestamp for consistency
+        'authorProfileImageUrl':
+            authorProfileImageUrl, // Assuming there's a profileImageUrl field
+        'authorName': event.authorName,
+        'authorProfileHandle': '',
+        'authorVerification': false,
+      });
+    }
+    // Commit the batch write
+    await batch.commit();
+  }
+
+  static addAffiliatetPurchasedUserBatch({
+    required Transaction transaction,
+    required String eventId,
+    required String affiliateId,
+    required String userId,
+  }) async {
+    DocumentReference userInviteRef = userAffiliateBuyersRef
+        .doc(affiliateId)
+        .collection('buyers')
+        .doc(eventId);
+    transaction.set(userInviteRef, {
+      'userId': userId,
+    });
+  }
+
+  static updateAffiliatetPurchaseeBatch({
+    required Transaction transaction,
+    required String eventId,
+    required String affiliateId,
+    required String eventAuthorId,
+    required String eventImageUrl,
+    required String eventTitle,
+    required double commissionAmount,
+    required AccountHolderAuthor user,
+  }) async {
+    // WriteBatch batch = FirebaseFirestore.instance.batch();
+    DocumentReference newEventTicketOrderRef = eventAffiliateRef
+        .doc(eventId)
+        .collection('affiliateMarketers')
+        .doc(affiliateId);
+    transaction.update(newEventTicketOrderRef, {
+      'salesNumber': FieldValue.increment(1),
+      'affiliateAmount': FieldValue.increment(commissionAmount),
+      // FieldValue.increment(commissionAmount),
+    });
+
+    DocumentReference userInviteRef = userAffiliateRef
+        .doc(affiliateId)
+        .collection('affiliateMarketers')
+        .doc(eventId);
+    transaction.update(userInviteRef, {
+      'salesNumber': FieldValue.increment(1),
+      'affiliateAmount': FieldValue.increment(commissionAmount),
+      //  FieldValue.increment(commissionAmount),
+    });
+
+    // Now add the activity within the transaction
+    DocumentReference activityDocRef =
+        activitiesRef.doc(affiliateId).collection('userActivities').doc();
+
+    transaction.set(activityDocRef, {
+      'helperFielId': eventAuthorId,
+      'authorId': user.userId,
+      'postId': eventId,
+      'seen': false,
+      'type': 'ticketPurchased',
+      'postImageUrl': eventImageUrl,
+      'comment':
+          'Used your affiliate link to purchase a ticket for: \n${eventTitle}',
+      'timestamp': FieldValue.serverTimestamp(), // Use server timestamp
+      'authorProfileImageUrl': user.profileImageUrl,
+      'authorName': user.userName,
+      'authorProfileHandle': user.profileHandle,
+      'authorVerification': user.verified,
+    });
+  }
+
+  static updateAffiliatetEventOrganiserPayoutStatus({
+    required String eventId,
+    required String affiliateId,
+    required String eventAuthorId,
+  }) async {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    DocumentReference newEventAffiliateRef = eventAffiliateRef
+        .doc(eventId)
+        .collection('affiliateMarketers')
+        .doc(eventAuthorId);
+    batch.update(newEventAffiliateRef, {
+      'payoutToOrganizer': true,
+    });
+
+    DocumentReference usersAffiliateRef = userAffiliateRef
+        .doc(affiliateId)
+        .collection('affiliateMarketers')
+        .doc(eventId);
+    batch.update(usersAffiliateRef, {
+      'payoutToOrganizer': true,
+    });
+    await batch.commit();
+  }
+
+  static answeAffiliatetInviteBatch({
+    required WriteBatch batch,
+    required String eventId,
+    required String affiliateInviteeId,
+    required String answer,
+    required AccountHolderAuthor currentUser,
+    required String affiliateLink,
+  }) async {
+    // WriteBatch batch = FirebaseFirestore.instance.batch();
+    DocumentReference newEventTicketOrderRef = eventAffiliateRef
+        .doc(eventId)
+        .collection('affiliateMarketers')
+        .doc(currentUser.userId);
+    batch.update(newEventTicketOrderRef, {
+      'answer': answer,
+      'affiliateLink': affiliateLink,
+    });
+
+    DocumentReference userInviteRef = userAffiliateRef
+        .doc(currentUser.userId)
+        .collection('affiliateMarketers')
+        .doc(eventId);
+    batch.update(userInviteRef, {
+      'answer': answer,
+      'affiliateLink': affiliateLink,
+    });
+
+    // Create a new document reference for the activity within the userActivities collection
+    DocumentReference activityDocRef = activitiesRef
+        .doc(affiliateInviteeId)
+        .collection('userActivities')
+        .doc(); // Create a new document reference with a generated ID
+
+    // Add the activity creation to the batch
+    batch.set(activityDocRef, {
+      'helperFielId': affiliateInviteeId,
+      'authorId': currentUser.userId,
+      'postId': eventId,
+      'seen': false,
+      'type': 'booking',
+      'postImageUrl': '',
+      'comment': 'Congratulation\nBooking deal accepted',
+      'timestamp':
+          FieldValue.serverTimestamp(), // Use server timestamp for consistency
+      'authorProfileImageUrl': currentUser
+          .profileImageUrl, // Assuming there's a profileImageUrl field
+      'authorName': currentUser.userName,
+      'authorProfileHandle': '',
+      'authorVerification': currentUser.verified,
+    });
+  }
+
+  static Future<AffiliateModel?> getUserAffiliate(
+      String userId, String eventId) async {
+    try {
+      DocumentSnapshot userDocSnapshot = await userAffiliateRef
+          .doc(userId)
+          .collection('affiliateMarketers')
+          .doc(eventId)
+          .get();
+
+      if (userDocSnapshot.exists) {
+        return AffiliateModel.fromDoc(userDocSnapshot);
+      } else {
+        return null; // return null if document does not exist
+      }
+    } catch (e) {
+      print(e);
+      return null; // return null if an error occurs
+    }
   }
 
 // The DatabaseService.purchaseTicket method is responsible for storing the details
@@ -3550,6 +3621,56 @@ class DatabaseService {
     });
   }
 
+  static Future<void> addOrganizerToAttendeeMarketing({
+    required String userId,
+    required String eventAuthorId,
+  }) async {
+    // Check if the document already exists
+    DocumentSnapshot<Map<String, dynamic>> snapshot =
+        await organiserAttendeeListRef
+            .doc(eventAuthorId)
+            .collection('OragnizerAttendees')
+            .doc(userId)
+            .get();
+
+    if (!snapshot.exists) {
+      // Add user to current user's following collection
+      await organiserAttendeeListRef
+          .doc(eventAuthorId)
+          .collection('OragnizerAttendees')
+          .doc(userId)
+          .set({
+        'userId': userId,
+      });
+    } else {
+      // The document already exists, handle the case as needed
+      // For example, you can log a message or throw an exception
+    }
+  }
+
+  static Future<void> addEventAttendeeBrandMatching({
+    required String userId,
+    required String eventId,
+    final CreativeBrandTargetModel? brand,
+  }) async {
+    // Check if the document already exists
+    if (brand == null) return;
+    await newEventBrandMatchingRef
+        .doc(eventId)
+        .collection('brandMatching')
+        .doc(userId)
+        .set({
+      'userId': userId,
+      'skills': brand.skills,
+      'shortTermGoals': brand.shortTermGoals,
+      'longTermGoals': brand.longTermGoals,
+      'creativeSyle': brand.creativeStyle,
+      'inspirations': brand.inspiration,
+    });
+  }
+
+// The purchaseTicketTransaction function is responsible for handling the entire ticket purchase process,
+//including updating the affiliate sales and total affiliate amount.
   static Future<void> purchaseTicketTransaction({
     required Transaction transaction,
     required TicketOrderModel ticketOrder,
@@ -3561,13 +3682,15 @@ class DatabaseService {
     required List<String> purchasedTicketIds,
     required bool dontUpdateTicketSales,
     required String inviteReply,
+    required String marketAffiliateId,
+    required bool isEventAffiliated,
   }) async {
-    final eventInviteDocRef = newEventTicketOrderRef
+    final eventTicketDocRef = newEventTicketOrderRef
         .doc(ticketOrder.eventId)
         .collection('ticketOrders')
         .doc(ticketOrder.userOrderId);
 
-    final userInviteDocRef = newUserTicketOrderRef
+    final userTicketDocRef = newUserTicketOrderRef
         .doc(ticketOrder.userOrderId)
         .collection('ticketOrders')
         .doc(ticketOrder.eventId);
@@ -3599,8 +3722,8 @@ class DatabaseService {
 
     Map<String, dynamic> ticketOrderData = ticketOrder.toJson();
 
-    transaction.set(eventInviteDocRef, ticketOrderData);
-    transaction.set(userInviteDocRef, ticketOrderData);
+    transaction.set(eventTicketDocRef, ticketOrderData);
+    transaction.set(userTicketDocRef, ticketOrderData);
 
     // Add userTicketIdRef to the transaction
     final userTicketIdDocRef = userTicketIdRef
@@ -3632,18 +3755,38 @@ class DatabaseService {
     }
 
     if (inviteReply.isNotEmpty)
-      answerEventInviteTransaction(
+      await answerEventInviteTransaction(
         transaction: transaction,
         answer: inviteReply,
         eventInviteRef: eventInviteRef,
         userInviteRef: userInviteRef,
       );
 
+    // if (marketAffiliateId.isNotEmpty)
+    //   updateAffiliatetPurchaseeBatch(
+    //     transaction: transaction,
+    //     eventId: ticketOrder.eventId,
+    //     affiliateId: marketAffiliateId,
+    //   );
+
+    if (marketAffiliateId.isNotEmpty && isEventAffiliated)
+      await updateEventAffiliateTotalSales(
+        transaction: transaction,
+        eventRef: eventRef,
+        allEventRef: allEventRef,
+        ticketTotal: ticketOrder.total,
+        marketAffiliateId: marketAffiliateId,
+        eventId: ticketOrder.eventId,
+        buyerUserId: ticketOrder.userOrderId,
+        user: user,
+        eventAuthorId: ticketOrder.eventAuthorId,
+        eventTitle: ticketOrder.eventTitle,
+        eventImageUrl: ticketOrder.eventImageUrl,
+      );
+
     // Now add the activity within the transaction
-    DocumentReference activityDocRef = activitiesRef
-        .doc(eventAuthorId)
-        .collection('userActivities')
-        .doc(); // Create a new document reference with a generated ID
+    DocumentReference activityDocRef =
+        activitiesRef.doc(eventAuthorId).collection('userActivities').doc();
 
     transaction.set(activityDocRef, {
       'helperFielId': eventAuthorId,
@@ -3653,14 +3796,66 @@ class DatabaseService {
       'type': 'ticketPurchased',
       'postImageUrl': ticketOrder.eventImageUrl,
       'comment': isEventFree
-          ? 'Generated a ticket for: \n${ticketOrder.eventTitle}'
-          : 'Purchased a ticket for: \n${ticketOrder.eventTitle}',
+          ? 'Generated a ticket for: ${ticketOrder.eventTitle}'
+          : 'Purchased a ticket for: ${ticketOrder.eventTitle}',
       'timestamp': FieldValue.serverTimestamp(), // Use server timestamp
       'authorProfileImageUrl': user.profileImageUrl,
       'authorName': user.userName,
       'authorProfileHandle': user.profileHandle,
       'authorVerification': user.verified,
     });
+  }
+
+// The updateEventAffiliateTotalSales function calculates
+//the commission and updates the totalAffiliateAmount field in the event document.
+  static updateEventAffiliateTotalSales({
+    required Transaction transaction,
+    required DocumentReference eventRef,
+    required DocumentReference? allEventRef,
+    required String marketAffiliateId,
+    required String eventId,
+    required double ticketTotal,
+    required String buyerUserId,
+    required AccountHolderAuthor user,
+    required String eventAuthorId,
+    required String eventTitle,
+    required String eventImageUrl,
+  }) async {
+    AffiliateModel? affiliate =
+        await getUserAffiliate(marketAffiliateId, eventId);
+
+    if (affiliate == null) return;
+    // print('vvvv ' + affiliate.eventTitle);
+    double commissionAmount = affiliate.commissionRate / 100;
+    final double commission = ticketTotal * commissionAmount;
+
+    // WriteBatch batch = FirebaseFirestore.instance.batch();
+    transaction.update(eventRef, {
+      'totalAffiliateAmount': commission,
+    });
+
+    if (allEventRef != null)
+      transaction.update(allEventRef, {
+        'totalAffiliateAmount': commission,
+      });
+
+    await updateAffiliatetPurchaseeBatch(
+      transaction: transaction,
+      eventId: eventId,
+      affiliateId: marketAffiliateId,
+      commissionAmount: commission,
+      user: user,
+      eventAuthorId: eventAuthorId,
+      eventImageUrl: eventImageUrl,
+      eventTitle: eventTitle,
+    );
+
+    await addAffiliatetPurchasedUserBatch(
+      transaction: transaction,
+      eventId: eventId,
+      affiliateId: marketAffiliateId,
+      userId: buyerUserId,
+    );
   }
 
   static Future<void> updateTicketSales(
@@ -3728,73 +3923,8 @@ class DatabaseService {
     }
   }
 
-  // Future<void> updateTicketSales(bool isEventPrivate, String eventId,
-  //     String authorId, List<String> purchasedTicketIds) async {
-  //   final FirebaseFirestore db = FirebaseFirestore.instance;
-
-  //   DocumentReference eventRef =
-  //       eventsRef.doc(authorId).collection('userEvents').doc(eventId);
-  //   DocumentReference? allEventRef =
-  //       isEventPrivate ? null : allEventsRef.doc(eventId);
-
-  //   return db.runTransaction((transaction) async {
-  //     DocumentSnapshot eventSnapshot = await transaction.get(eventRef);
-  //     DocumentSnapshot? allEventSnapshot =
-  //         allEventRef != null ? await transaction.get(allEventRef) : null;
-
-  //     // Explicitly cast the data to Map<String, dynamic>
-  //     Map<String, dynamic>? eventData =
-  //         eventSnapshot.data() as Map<String, dynamic>?;
-  //     Map<String, dynamic>? allEventData =
-  //         allEventSnapshot?.data() as Map<String, dynamic>?;
-
-  //     // Extract tickets, handling possible null data
-  //     List<TicketModel> ticketsFromUserEvents = eventData == null ||
-  //             eventData['ticket'] == null
-  //         ? []
-  //         : List<TicketModel>.from(eventData['ticket'].map(
-  //             (item) => TicketModel.fromJson(Map<String, dynamic>.from(item))));
-  //     List<TicketModel> ticketsFromAllEvents = allEventData == null ||
-  //             allEventData['ticket'] == null
-  //         ? []
-  //         : List<TicketModel>.from(allEventData['ticket'].map(
-  //             (item) => TicketModel.fromJson(Map<String, dynamic>.from(item))));
-
-  //     // Update the sales count and sold-out status for each ticket purchased
-  //     purchasedTicketIds.forEach((purchasedTicketId) {
-  //       ticketsFromUserEvents.forEach((ticket) {
-  //         if (ticket.id == purchasedTicketId) {
-  //           ticket.salesCount += 1;
-  //           ticket.isSoldOut = ticket.salesCount >= ticket.maxOder;
-  //         }
-  //       });
-
-  //       if (allEventRef != null) {
-  //         ticketsFromAllEvents.forEach((ticket) {
-  //           if (ticket.id == purchasedTicketId) {
-  //             ticket.salesCount += 1;
-  //             ticket.isSoldOut = ticket.salesCount >= ticket.maxOder;
-  //           }
-  //         });
-  //       }
-  //     });
-
-  //     // Serialize the updated tickets back to maps
-  //     List<Map<String, dynamic>> updatedTicketsUserEvents =
-  //         ticketsFromUserEvents.map((ticket) => ticket.toJson()).toList();
-  //     transaction.update(eventRef, {'ticket': updatedTicketsUserEvents});
-
-  //     if (allEventRef != null) {
-  //       List<Map<String, dynamic>> updatedTicketsAllEvents =
-  //           ticketsFromAllEvents.map((ticket) => ticket.toJson()).toList();
-  //       transaction.update(allEventRef, {'ticket': updatedTicketsAllEvents});
-  //     }
-  //   });
-  // }
-
   Future<bool> checkTicketAvailability(
       String authorId, String eventId, String ticketId) async {
-    // try {
     // Retrieve the event document from Firestore
     DocumentSnapshot eventSnapshot = await eventsRef
         .doc(authorId)
@@ -3817,51 +3947,7 @@ class DatabaseService {
     }
 
     return false; // Ticket not found or sold out
-    // } catch (e) {
-    //   print('Error checking ticket availability: $e');
-    //   return false; // In case of error, assume ticket is not available
-    // }
   }
-
-  // Future<bool> updateIsSoldAndTicketSalesCount(
-  //     String authorId, String eventId, String ticketId) async {
-  //   DocumentReference eventRef =
-  //       eventsRef.doc(authorId).collection('userEvents').doc(eventId);
-
-  //   return FirebaseFirestore.instance.runTransaction((transaction) async {
-  //     DocumentSnapshot eventSnapshot = await transaction.get(eventRef);
-
-  //     if (!eventSnapshot.exists) {
-  //       throw Exception("Event does not exist!");
-  //     }
-
-  //     Event event =
-  //         Event.fromJson(eventSnapshot.data() as Map<String, dynamic>);
-  //     int ticketIndex = event.ticket.indexWhere((t) => t.id == ticketId);
-  //     if (ticketIndex == -1) {
-  //       return false; // Ticket not found
-  //     }
-
-  //     TicketModel ticket = event.ticket[ticketIndex];
-  //     if (ticket.salesCount >= ticket.maxOder) {
-  //       return false; // Ticket sales have reached max order, cannot sell anymore
-  //     }
-
-  //     // Update the sales count and check if it reaches max order
-  //     ticket.salesCount += 1;
-  //     ticket.isSoldOut = ticket.salesCount >= ticket.maxOder;
-
-  //     // Update the event document with modified ticket
-  //     event.ticket[ticketIndex] = ticket;
-  //     transaction.update(
-  //         eventRef, {'ticket': event.ticket.map((t) => t.toJson()).toList()});
-
-  //     return true; // Ticket purchase successful
-  //   }).catchError((error) {
-  //     print("Failed to purchase ticket: $error");
-  //     return false;
-  //   });
-  // }
 
   static Future<void> deleteTicket({
     required TicketOrderModel ticketOrder,
@@ -3899,61 +3985,6 @@ class DatabaseService {
       }
     });
   }
-
-  // static void attendEvent({
-  //   required Event event,
-  //   required AccountHolderAuthor user,
-  //   required String requestNumber,
-  //   required String message,
-  //   required Timestamp eventDate,
-  //   required String currentUserId,
-  // }) async {
-  //   String commonId = Uuid().v4();
-
-  //   await newEventTicketOrderRef
-  //       .doc(event.id)
-  //       .collection('eventInvite')
-  //       .doc(user.userId)
-  //       .set({
-  //     'orderId': commonId,
-  //     'eventId': event.id,
-  //     'commonId': commonId,
-  //     'validated': false,
-  //     'timestamp': Timestamp.fromDate(DateTime.now()),
-  //     'eventTimestamp': eventDate,
-  //     'entranceId': '0909',
-  //     'eventImageUrl': event.imageUrl,
-  //     'invitatonMessage': '',
-  //     'invitedById': '',
-  //     'isInvited': false,
-  //     'orderNumber': '909',
-  //     'tickets': [],
-  //     'total': 09,
-  //     'userOderId': commonId,
-  //   });
-
-  //   await userInviteRef
-  //       .doc(user.userId)
-  //       .collection('eventInvite')
-  //       .doc(event.id)
-  //       .set({
-  //     'orderId': commonId,
-  //     'eventId': event.id,
-  //     'commonId': commonId,
-  //     'validated': false,
-  //     'timestamp': Timestamp.fromDate(DateTime.now()),
-  //     'eventTimestamp': eventDate,
-  //     'entranceId': '0909',
-  //     'eventImageUrl': event.imageUrl,
-  //     'invitatonMessage': '',
-  //     'invitedById': '',
-  //     'isInvited': false,
-  //     'orderNumber': '909',
-  //     'tickets': [],
-  //     'total': 09,
-  //     'userOderId': commonId,
-  //   });
-  // }
 
   static Future<void> answerEventInviteTransaction({
     required Transaction transaction,
@@ -4003,42 +4034,13 @@ class DatabaseService {
           .doc(event.id)
           .collection('eventInvite')
           .doc(user.userId);
-      batch.set(newEventTicketOrderRef, inviteData
-
-          //  {
-          //   'eventId': event.id,
-          //   'inviteeId': user.userId,
-          //   'inviterId': currentUser.userId,
-          //   'inviterMessage': message,
-          //   'isTicketPass': isTicketPass,
-          //   'generatedMessage': generatedMessage,
-          //   'answer': '',
-          //   'eventTitle': event.title.toUpperCase(),
-          //   'timestamp': FieldValue.serverTimestamp(),
-          //   'eventTimestamp': event.startDate,
-          // }
-
-          );
+      batch.set(newEventTicketOrderRef, inviteData);
 
       DocumentReference userInviteRef = userInvitesRef
           .doc(user.userId)
           .collection('eventInvite')
           .doc(event.id);
-      batch.set(userInviteRef, inviteData
-          //  {
-          //   'eventId': event.id,
-          //   'inviteeId': user.userId,
-          //   'inviterId': currentUser.userId,
-          //   'inviterMessage': message,
-          //   'isTicketPass': isTicketPass,
-          //   'generatedMessage': generatedMessage,
-          //   'answer': '',
-          //   'eventTitle': event.title.toUpperCase(),
-          //   'timestamp': FieldValue.serverTimestamp(),
-          //   'eventTimestamp': event.startDate,
-          // }
-
-          );
+      batch.set(userInviteRef, inviteData);
 
       // This should also be included in the batch operation
       DocumentReference userActivityRef = activitiesRef
@@ -4067,70 +4069,6 @@ class DatabaseService {
       throw error; // Re-throw the error
     });
   }
-
-  // static sendEventInvite({
-  //   required Event event,
-  //   required List<AccountHolderAuthor> users,
-  //   required String message,
-  //   required String generatedMessage,
-  //   required AccountHolderAuthor currentUser,
-  //   required bool isTicketPass,
-  // }) {
-  //   WriteBatch batch = FirebaseFirestore.instance.batch();
-
-  //   for (var user in users) {
-  //     // String commonId = Uuid().v4();
-  //     DocumentReference newEventTicketOrderRef = sentEventIviteRef
-  //         .doc(event.id)
-  //         .collection('eventInvite')
-  //         .doc(user.userId);
-  //     batch.set(newEventTicketOrderRef, {
-  //       'eventId': event.id,
-  //       'inviteeId': user.userId,
-  //       'inviterId': currentUser.userId,
-  //       'inviterMessage': message,
-  //       'isTicketPass': isTicketPass,
-  //       'generatedMessage': generatedMessage,
-  //       'answer': '',
-  //       'timestamp': FieldValue.serverTimestamp(),
-  //       'eventTimestamp': event.startDate,
-  //     });
-
-  //     DocumentReference userInviteRef = userInvitesRef
-  //         .doc(user.userId)
-  //         .collection('eventInvite')
-  //         .doc(event.id);
-  //     batch.set(userInviteRef, {
-  //       'eventId': event.id,
-  //       'inviteeId': user.userId,
-  //       'inviterId': currentUser.userId,
-  //       'inviterMessage': message,
-  //       'isTicketPass': isTicketPass,
-  //       'generatedMessage': generatedMessage,
-  //       'answer': '',
-  //       'timestamp': FieldValue.serverTimestamp(),
-  //       'eventTimestamp': event.startDate,
-  //     });
-
-  //     activitiesRef.doc(user.userId).collection('userActivities').add({
-  //       'authorId': event.authorId,
-  //       'postId': event.id,
-  //       'seen': false,
-  //       'type': 'inviteRecieved',
-  //       'postImageUrl': event.imageUrl,
-  //       'comment': MyDateFormat.toDate(event.startDate.toDate()) +
-  //           '\n${message.isEmpty ? generatedMessage : message}',
-  //       'timestamp': Timestamp.fromDate(DateTime.now()),
-  //       'authorProfileImageUrl': '',
-  //       'authorName': 'Cordially Invited',
-  //       'authorProfileHandle': event.authorId,
-  //       'authorVerification': user.verified,
-  //     });
-  //     return batch.commit().then((value) => {}).catchError((error) {
-  //       throw error; // Re-throw the error
-  //     });
-  //   }
-  // }
 
   static void askAboutEvent(
       {required String currentUserId,
@@ -4181,6 +4119,61 @@ class DatabaseService {
       'content': ask.content,
       'authorId': ask.authorId,
       'timestamp': ask.timestamp,
+    });
+  }
+
+  static void createDonationBatch({
+    required DonationModel donation,
+    // required TicketOrderModel ticketOrder,
+    required AccountHolderAuthor user,
+    required WriteBatch batch,
+
+    // required String eventAuthorId,
+    // required String purchaseReferenceId,
+  }) async {
+    final newDonationToCreativesDocRef = newDonationToCreativesRef
+        .doc(donation.receiverId)
+        // .collection('donars')
+        // .doc(donation.donerId)
+        .collection('donations')
+        .doc(donation.id);
+
+    final newUserDonationsDocRef = newUserDonationsRef
+        .doc(donation.donerId)
+        // .collection('receivers')
+        // .doc(donation.receiverId)
+        .collection('donations')
+        .doc(donation.id);
+    ;
+
+    Map<String, dynamic> donationData = donation.toJson();
+
+    batch.set(newDonationToCreativesDocRef, donationData);
+    batch.set(newUserDonationsDocRef, donationData);
+
+    // Create a new document reference for the activity within the userActivities collection
+    DocumentReference activityDocRef = activitiesRef
+        .doc(donation.receiverId)
+        .collection('userActivities')
+        .doc(); // Auto-generate a new document ID for the activity
+
+    // Add activity creation to the batch
+    batch.set(activityDocRef, {
+      'helperFielId': donation.receiverId,
+      'authorId': user.userId,
+      'postId': donation.receiverId,
+      'seen': false,
+      'type': 'donation',
+      'postImageUrl': '',
+      'comment':
+          'Donation of GHC ${donation.amount} received from ${user.userName}',
+      'timestamp':
+          FieldValue.serverTimestamp(), // Use server timestamp for consistency
+      'authorProfileImageUrl':
+          user.profileImageUrl, // Assuming there's a profileImageUrl field
+      'authorName': user.userName,
+      'authorProfileHandle': user.profileHandle,
+      'authorVerification': user.verified,
     });
   }
 

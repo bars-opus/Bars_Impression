@@ -31,6 +31,11 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
           _isRefunded ? TextDecoration.lineThrough : TextDecoration.none,
     );
 
+    var _textStyle3 = TextStyle(
+      fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+      color: Colors.red,
+    );
+
     String orderUmberSubstring =
         Utils.safeSubstring(ticketOrder.orderNumber, 0, 4);
 
@@ -45,11 +50,6 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
         event.rate.trim().replaceAll('\n', '').split("|");
 
     Color _palleteColor = Utils.getPaletteVibrantColor(palette, Colors.blue);
-    // Color _palleteColor = palette == null
-    //     ? Colors.blue
-    //     : palette.vibrantColor == null
-    //         ? Colors.blue
-    //         : palette.vibrantColor!.color;
 
     // Create a list of TicketInfo widgets from the ticket list
     List<Widget> purchaseTicket =
@@ -137,7 +137,7 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
                     ),
                     Expanded(
                       child: RichText(
-                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                        textScaler: MediaQuery.of(context).textScaler,
                         text: TextSpan(
                           children: [
                             if (finalPurchasintgTicket
@@ -145,31 +145,28 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
                                 finalPurchasintgTicket.transactionId.length > 4)
                               TextSpan(
                                 text: transactionIdSubstring,
-
-                                //  finalPurchasintgTicket.transactionId
-                                //     .substring(0, 4)
-                                //     .toUpperCase(),
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
-
                             if (event.isFree)
                               TextSpan(
                                 text: 'Free',
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
-
                             if (ticketOrder.isInvited && ticketOrder.total == 0)
                               TextSpan(
                                 text: finalPurchasintgTicket.type,
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
-
                             TextSpan(
                               text:
-                                  "\n${MyDateFormat.toDate(finalPurchasintgTicket.eventTicketDate.toDate()).toString()}",
+                                  "\n${MyDateFormat.toDate(finalPurchasintgTicket.eventTicketDate.toDate()).toString()}\n",
                               style: _textStyle2,
                             ),
-
+                            if (event.isCashPayment)
+                              TextSpan(
+                                text: 'Cash in-hand payment',
+                                style: _textStyle3,
+                              ),
                             if (finalPurchasintgTicket.validated)
                               TextSpan(
                                 text: "\nvalidated",
@@ -179,22 +176,6 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
                                   color: Colors.blue,
                                 ),
                               ),
-                            // TextSpan(
-                            //   text: "\nEnd date:    ",
-                            //   style: _textStyle,
-                            // ),
-                            // TextSpan(
-                            //   text: _clossingDay,
-                            //   style: _textStyle2,
-                            // ),
-                            // TextSpan(
-                            //   text: "\nVenue:        ",
-                            //   style: _textStyle,
-                            // ),
-                            // TextSpan(
-                            //   text: event.venue,
-                            //   style: _textStyle2,
-                            // ),
                           ],
                         ),
                         textAlign: TextAlign.start,
@@ -204,6 +185,7 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
                 ),
                 Divider(
                   color: Colors.grey,
+                  thickness: .3,
                 ),
                 Padding(
                   padding: const EdgeInsets.only(
@@ -215,9 +197,7 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
                       SalesReceiptWidget(
                           isRefunded: _isRefunded,
                           lable: 'Order number',
-                          value: orderUmberSubstring
-                          // ticketOrder.orderNumber.substring(0, 4),
-                          ),
+                          value: orderUmberSubstring),
                       SalesReceiptWidget(
                         isRefunded: _isRefunded,
                         lable: 'Ticket group',
@@ -266,15 +246,3 @@ class PurchaseTicketSummaryWidget extends StatelessWidget {
     );
   }
 }
-
-
-
-
-// function getFirestorePath(baseCollection) {
-  // const now = new Date();
-  // const year = now.getFullYear().toString();
-  // const month = now.toLocaleString('default', { month: 'long' });
-  // const weekOfMonth = `week${Math.ceil(now.getDate() / 7)}`;
-  // const path = `${baseCollection}/${year}/${month}/${weekOfMonth}`;
-  // return path;
-// }
