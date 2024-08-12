@@ -1805,6 +1805,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
+<<<<<<< Updated upstream
   web:
     dependency: transitive
     description:
@@ -1813,6 +1814,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.5.1"
+=======
+>>>>>>> Stashed changes
   web_socket_channel:
     dependency: transitive
     description:
@@ -1886,5 +1889,10 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
+<<<<<<< Updated upstream
   dart: ">=3.3.0 <4.0.0"
   flutter: ">=3.19.0"
+=======
+  dart: ">=3.2.0-0 <4.0.0"
+  flutter: ">=3.13.0"
+>>>>>>> Stashed changes
