@@ -208,7 +208,6 @@ export 'package:bars/widgets/schimmers/ticket_info.dart';
 export 'package:qr_flutter/qr_flutter.dart';
 export 'package:bars/utilities/my_snackbar.dart';
 export 'package:bars/features/events/event_management/presentation/widgets/tagged_user_widget.dart';
-export 'package:bars/utilities/paystack_key.dart';
 export 'package:bars/widgets/display_create_image.dart';
 export 'package:bars/widgets/buttons/event_bottom_bottun.dart';
 export 'package:bars/features/creatives/models/portfolio_collaboration_model.dart';

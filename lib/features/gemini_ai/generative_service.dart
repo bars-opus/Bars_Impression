@@ -2,7 +2,7 @@
 // It can generate text responses based on a prompt and optionally include an image
 
 import 'dart:typed_data';
-import 'package:bars/features/gemini_ai/gemini_api_key.dart';
+import 'package:bars/utilities/secrets.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
 class GoogleGenerativeAIService {

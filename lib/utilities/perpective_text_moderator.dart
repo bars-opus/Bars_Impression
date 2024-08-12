@@ -1,9 +1,10 @@
 import 'dart:convert';
+import 'package:bars/utilities/secrets.dart';
 import 'package:http/http.dart' as http;
 
 class TextModerator {
   Future<Map<String, dynamic>?> moderateText(String text) async {
-    final String apiKey = 'AIzaSyBSKY9WsjiLuCprwn9Ay-VaE226lbtJAfw';
+    final String apiKey = visionHelperApiKey.VISIONHELPERPAPI_KEY;
 
     final Uri endpoint = Uri.parse(
         'https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=$apiKey');

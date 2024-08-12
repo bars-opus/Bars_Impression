@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:bars/utilities/secrets.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:hive/hive.dart';
@@ -181,135 +182,6 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
     }
   }
 
-  // void _submitFormEdit(BuildContext context) async {
-  //   FirebaseFunctions functions = FirebaseFunctions.instance;
-  //   var createSubaccountCallable = functions.httpsCallable(
-  //     'updateSubaccount',
-  //   );
-
-  //   var _user =
-  //       Provider.of<UserData>(context, listen: false).userLocationPreference;
-
-  //   if (_formKey.currentState!.validate() && !_isLoading) {
-  //     _formKey.currentState!.save();
-
-  //     if (mounted) {
-  //       setState(() {
-  //         _isLoading = true;
-  //       });
-  //     }
-
-  //     final bankCode = _selectedBankCode;
-
-  //     if (bankCode == null || bankCode.isEmpty) {
-  //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //         content: Text('Please select a bank'),
-  //       ));
-  //       return;
-  //     }
-
-  //     print(_user!.subaccountId.toString() +
-  //         '    ' +
-  //         _user.transferRecepientId.toString());
-  //     // Ensure you collect the percentage charge properly
-  //     final percentageCharge = 10; // Replace with your method/logic
-
-  //     final subaccountData = {
-  //       'business_name': _bussinessNameController.text.trim(),
-  //       'bank_code': bankCode,
-  //       'account_number': _accountNumber.text.trim(),
-  //       'percentage_charge': percentageCharge,
-  //       'currency': _user.currency,
-  //       'userId': _user.userId,
-  //       'oldSubaccountId': _user.subaccountId,
-  //       'oldTransferRecepientId': _user.transferRecepientId,
-  //     };
-
-  //     try {
-  //       final HttpsCallableResult<dynamic> result =
-  //           await createSubaccountCallable.call(
-  //         subaccountData,
-  //       );
-
-  //       // print('Full result data: ${result.data}');
-
-  //       var subaccountId = result.data['subaccount_id'];
-  //       var transferRecepient = result.data['recipient_code'];
-
-  //       print('Result data: $result.data');
-  //       print('Result data: $result');
-
-  //       if (subaccountId != null && _user != null) {
-  //         try {
-  //           await usersLocationSettingsRef.doc(_user.userId).update({
-  //             'subaccountId': subaccountId.toString(),
-  //             'transferRecepientId': transferRecepient.toString(),
-  //           });
-
-  //           Navigator.pop(context);
-  //           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //             content: Text('Payout account updated.'),
-  //           ));
-  //           _updateAuthorHive(
-  //               subaccountId.toString(), transferRecepient.toString());
-  //         } catch (e) {
-  //           if (mounted) {
-  //             setState(() {
-  //               _isLoading = false;
-  //             });
-  //           }
-  //           // print(e);
-
-  //           // Log the error or use a debugger to inspect the error
-  //           // print('Error updating Firestore with subaccount ID: $e');
-  //           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //             content: Text('Failed to update payout account'),
-  //           ));
-  //         }
-  //       } else {
-  //         if (mounted) {
-  //           setState(() {
-  //             _isLoading = false;
-  //           });
-  //         }
-
-  //         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //           content: Text('Received invalid subaccount data'),
-  //         ));
-  //       }
-  //       if (mounted) {
-  //         setState(() {
-  //           _isLoading = false;
-  //         });
-  //       }
-  //     } on FirebaseFunctionsException catch (e) {
-  //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //         content: Text('Failed to create subaccount: ${e.message}'),
-  //       ));
-  //       if (mounted) {
-  //         setState(() {
-  //           _isLoading = false;
-  //         });
-  //       }
-  //     } catch (e) {
-  //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //         content: Text('An unexpected error occurred'),
-  //       ));
-  //       if (mounted) {
-  //         setState(() {
-  //           _isLoading = false;
-  //         });
-  //       }
-  //     } finally {
-  //       // Use finally to ensure _isLoading is set to false in both success and error scenarios
-  //       if (mounted) {
-  //         setState(() {
-  //           _isLoading = false;
-  //         });
-  //       }
-  //     }
-  //   }
-  // }
 
   _updateAuthorHive(
     String subacccountId,
@@ -385,70 +257,10 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
       throw Exception('Failed to load banks from Paystack');
     }
   }
-  // Future<List<dynamic>> getBankList() async {
-  //   var _country = Provider.of<UserData>(context, listen: false)
-  //       .userLocationPreference!
-  //       .country;
-
-  //   const String url = 'https://api.paystack.co/bank';
-  //   const String paystackApiKey =
-  //       PayStackKey.PAYSTACK_KEY; // Replace with your actual key
-
-  //   final response = await http.get(
-  //     Uri.parse(url).replace(queryParameters: {'country': _country}),
-  //     headers: {
-  //       'Authorization': 'Bearer $paystackApiKey',
-  //       'Content-Type': 'application/json',
-  //     },
-  //   );
-
-  //   if (response.statusCode == 200) {
-  //     final List banks = json.decode(response.body)['data'];
-  //     return banks;
-  //   } else {
-  //     throw Exception('Failed to load banks from Paystack');
-  //   }
-  // }
-
-  // _saveButotn(VoidCallback onPressed, String text) {
-  //   return AnimatedContainer(
-  //     duration: const Duration(milliseconds: 700),
-  //     width: double.infinity,
-  //     height: 35,
-  //     child: ElevatedButton(
-  //       style: ElevatedButton.styleFrom(
-  //         backgroundColor: Colors.blue,
-  //         elevation: 0.0,
-  //         foregroundColor: Colors.white,
-  //         shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(10.0),
-  //         ),
-  //       ),
-  //       onPressed: onPressed,
-  //       child: Padding(
-  //         padding: EdgeInsets.all(
-  //           ResponsiveHelper.responsiveFontSize(context, 8.0),
-  //         ),
-  //         child: Text(
-  //           text,
-  //           style: TextStyle(
-  //             color: Colors.white,
-  //             fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-  //             fontWeight: FontWeight.bold,
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
+  
 
   _selectBank() {
-    //  Theme.of(context).textTheme.titleSmall;
-    // var labelStyle = TextStyle(
-    //     color: Colors.white,
-    //     fontSize: ResponsiveHelper.responsiveFontSize(context, 14));
-    // Theme.of(context).textTheme.bodyMedium;
-
+    
     return ShakeTransition(
       curve: Curves.easeOutBack,
       duration: const Duration(seconds: 2),

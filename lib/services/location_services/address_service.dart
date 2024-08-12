@@ -1,11 +1,12 @@
 // This method uses the Google Maps Places Autocomplete API to fetch a list of address suggestions
 
 import 'package:bars/features/events/event_management/models/address_search_model.dart';
+import 'package:bars/utilities/secrets.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
 class AddressService {
-  final String apiKey = 'AIzaSyBzHyTS-J9Ge8ohh8A1fZANeLqQbGHcGQY';
+  final String apiKey = GooglemapApiKey.GOOGLEMAPAPI_KEY;
 
   Future<List<AddressSearch>> getAutocomplete(String search) async {
     // based on the provided search string. It returns a list of AddressSearch objects.
