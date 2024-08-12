@@ -592,7 +592,7 @@ class _EditProfileProfessionalState extends State<EditProfileProfessional> {
     var _provider = Provider.of<UserData>(
       context,
     );
-    final width = MediaQuery.of(context).size.width;
+    // final width = MediaQuery.of(context).size.width;
 
     if (from.startsWith('one')) {
       if (_provider.professionalImages.isNotEmpty) {

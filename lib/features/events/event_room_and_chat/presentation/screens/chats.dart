@@ -28,12 +28,9 @@ class Chats extends StatefulWidget {
 class _ChatsState extends State<Chats>
     with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late ScrollController _hideButtonController;
-  late ScrollController _scrollController;
-
   late TabController _tabController;
   TextEditingController _searchController = TextEditingController();
   String query = "";
-  final FocusNode _focusNode = FocusNode();
   late ConnectivityResult _connectivityStatus = ConnectivityResult.none;
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<ConnectivityResult>? _connectivitySubscription;
@@ -54,10 +51,8 @@ class _ChatsState extends State<Chats>
     });
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
-    // _hideButtonController = new ScrollController();
     _tabController = TabController(length: 2, initialIndex: 0, vsync: this);
     _hideButtonController = ScrollController();
-    _scrollController = ScrollController();
   }
 
   @override
@@ -131,17 +126,6 @@ class _ChatsState extends State<Chats>
         ),
       ),
     );
-  }
-
-// These methods are responsible for clearing the search field.
-  _clearSearch() {
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => _searchController.clear());
-  }
-
-  _cancelSearch() {
-    FocusScope.of(context).unfocus();
-    _clearSearch();
   }
 
   void _navigateToPage(BuildContext context, Widget page) {
@@ -247,8 +231,6 @@ class _ChatsState extends State<Chats>
             ),
           )
         : CustomScrollView(
-            // controller: _hideButtonController,
-            // physics: const NeverScrollableScrollPhysics(),
             slivers: [
               SliverList(
                 delegate: SliverChildBuilderDelegate(
@@ -374,9 +356,7 @@ class _ChatsState extends State<Chats>
         Chat updatedChat = Chat.fromDoc(snapshot);
         _updateHiveChat(chatsBox, updatedChat);
 
-        // chatsBox.put(chatId, updatedChat);
       }
-      //handle document deletiion
 
       else {
         // Chat document has been deleted, remove it from Hive
@@ -452,7 +432,6 @@ class _ChatsState extends State<Chats>
             Chat chat = Chat.fromDoc(doc);
 
             // Check if the chat is already in the box and if it has changed
-            // Check if the chat is already in the box and if it has changed
             var existingChat = chatsBox.get(chat.id);
             if (existingChat == null || !areChatsEqual(existingChat, chat)) {
               // Only update the box if the chat is new or has changed
@@ -469,7 +448,6 @@ class _ChatsState extends State<Chats>
 
           // Fetch chats from Hive directly
           // List<Chat> retrievedChats = chatsBox.values.toList();
-
           List<Chat> retrievedChats = chatsBox.values.toList();
           retrievedChats.sort((Chat a, Chat b) {
             // Attempt to use the timestamp if available
@@ -528,8 +506,6 @@ class _ChatsState extends State<Chats>
                       child: _loadingSkeleton(true, chat.id),
                     );
                   }
-                  // limitRooms(); // Ensure these functions are defined and manage your data as expected
-                  // limitTicketIds(); // Ensure these functions are defined and manage your data as expected
                   return ValueListenableBuilder(
                     valueListenable: chatsBox.listenable(),
                     builder: (context, Box<Chat> box, _) {
@@ -559,22 +535,6 @@ class _ChatsState extends State<Chats>
     );
   }
 
-  // Future<void> deleteConversation(String chatId) async {
-  //   try {
-  //     // Attempt to delete all messages in the conversation from Firestore.
-  //     final CollectionReference chatRef =
-  //         messageRef.doc(chatId).collection('conversation');
-  //     final QuerySnapshot chatSnapshot = await chatRef.get();
-  //     for (var doc in chatSnapshot.docs) {
-  //       await doc.reference.delete();
-  //     }
-  //     // Consider some feedback mechanism or state update here after successful deletion
-  //   } catch (e) {
-  //     // Handle errors for Firestore operations.
-  //     print('Error deleting conversation from Firestore: $e');
-  //     // Consider some user feedback mechanism here in case of failure
-  //   }
-  // }
 
   Future<void> deleteConversation(String chatId) async {
     try {
@@ -585,7 +545,6 @@ class _ChatsState extends State<Chats>
 
       // Create a list of Futures for deletion operations.
       List<Future<void>> deletionFutures = [];
-
       for (var doc in chatSnapshot.docs) {
         // If the document has attachments, schedule them for deletion.
         if (doc['attachments'] != null) {
@@ -623,7 +582,6 @@ class _ChatsState extends State<Chats>
     Chat? chat =
         await DatabaseService.getChatMesssage(widget.currentUserId, userId);
     await deleteConversation(chat.messageId);
-  
     DocumentSnapshot doc = await usersAuthorRef
         .doc(widget.currentUserId)
         .collection('new_chats')
@@ -637,36 +595,11 @@ class _ChatsState extends State<Chats>
     final chatsBox = Hive.box<Chat>('chats');
     await chatsBox
         .delete(chat.id); // use the chat ID as the key to delete the chat
-
     // Provide feedback to the user
     mySnackBar(context, 'Chat deleted successfully');
-
-    // Consider additional UI updates or navigation aftxer deleting the chat.
-    // For example, you might need to update the UI to reflect the chat has been deleted.
     setState(() {
-      // Your logic to update the UI after deleting the chat
     });
   }
-
-  // _deleteChat(String userId) async {
-  //   Chat? chat =
-  //       await DatabaseService.getChatMesssage(widget.currentUserId, userId);
-  //   if (chat != null) {
-  //     await deleteConversation(chat.messageId);
-  //   }
-
-  //   DocumentSnapshot doc = await usersAuthorRef
-  //       .doc(widget.currentUserId)
-  //       .collection('new_chats')
-  //       .doc(userId)
-  //       .get();
-  //   if (doc.exists) {
-  //     await doc.reference.delete();
-  //   }
-
-  //   mySnackBar(context, 'Chat deleted successfully');
-  //   // Consider additional UI updates or navigation after deleting the chat.
-  // }
 
   void _showBottomSheetDeledDeletedChatUser(
       BuildContext context, String userId) {
@@ -682,7 +615,6 @@ class _ChatsState extends State<Chats>
             try {
               // Call recursive function to delete documents in chunks
               await _deleteChat(userId);
-              // _activities.clear();
             } catch (e) {
               _showBottomSheetErrorMessage('Error deleting chat ');
             }
@@ -755,7 +687,6 @@ class _ChatsState extends State<Chats>
           // Document does not exist, remove the entry from the Hive box
           ticketIdsBox.delete(ticketIdKey);
         }
-      
       } catch (e) {
         print("Error updating Hive box for $ticketIdKey: $e");
       }
@@ -1024,15 +955,13 @@ class GetAuthor extends StatefulWidget {
 
 class _GetAuthorState extends State<GetAuthor>
     with AutomaticKeepAliveClientMixin {
-  Object? _error;
-
 
   bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-   
+
     return Display(
       connectivityStatus: widget.connectivityStatus,
       author: widget.author,
@@ -1045,7 +974,6 @@ class _GetAuthorState extends State<GetAuthor>
       ticketId: widget.ticketId,
     );
   }
-
 }
 
 class Display extends StatefulWidget {
@@ -1192,7 +1120,7 @@ class _DisplayState extends State<Display> {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-            height: ResponsiveHelper.responsiveFontSize(context, 500),
+            height: ResponsiveHelper.responsiveFontSize(context, 550),
             decoration: BoxDecoration(
                 color: Theme.of(context).primaryColorLight,
                 borderRadius: BorderRadius.circular(30)),
@@ -1218,7 +1146,7 @@ class _DisplayState extends State<Display> {
                   ),
                 ),
                 Container(
-                  height: ResponsiveHelper.responsiveFontSize(context, 380),
+                  height: ResponsiveHelper.responsiveFontSize(context, 450),
                   child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 30.0, vertical: 2),
@@ -1261,7 +1189,7 @@ class _DisplayState extends State<Display> {
                                   currentUserId: _provider.currentUserId!,
                                   event: event,
                                   type: event.type,
-                                   showPrivateEvent: true,
+                                  showPrivateEvent: true,
                                 ));
                               } else {
                                 _showBottomSheetErrorMessage();
@@ -1280,20 +1208,13 @@ class _DisplayState extends State<Display> {
                           onPressed: () async {
                             _isLoading = true;
                             try {
-                              // Event? event =
-                              //     await DatabaseService.getUserEventWithId(
-                              //   widget.room!.linkedEventId,
-                              // );
-
-                              // if (event != null) {
+                             
                               _navigateToPage(ProfileScreen(
                                 currentUserId: _provider.currentUserId!,
                                 userId: widget.room!.eventAuthorId,
                                 user: null,
                               ));
-                              // } else {
-                              //   _showBottomSheetErrorMessage();
-                              // }
+                            
                             } catch (e) {
                               _showBottomSheetErrorMessage();
                             } finally {
@@ -1317,6 +1238,25 @@ class _DisplayState extends State<Display> {
                             ));
                           },
                           text: 'Report',
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        NotificationSortButton(
+                          isMini: true,
+                          icon: FontAwesomeIcons.m,
+                          onPressed: () {
+                            _navigateToPage(
+                              _provider.brandTarget == null
+                                  ? HopeIntroductionScreen(
+                                      isIntro: true,
+                                    )
+                                  : UserBrandMatching(
+                                      eventId: widget.room!.id,
+                                    ),
+                            );
+                          },
+                          title: 'See brand style matching',
                         ),
                       ])),
                 ),
@@ -1370,7 +1310,6 @@ class _DisplayState extends State<Display> {
   }
 
   void _showBottomSheetChatMore(BuildContext context) {
-    var _provider = Provider.of<UserData>(context, listen: false);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1426,7 +1365,7 @@ class _DisplayState extends State<Display> {
               widget.isEventRoom ? 'Report room' : 'Report chat',
               style: TextStyle(color: Colors.black),
               overflow: TextOverflow.ellipsis,
-              textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              textScaler: MediaQuery.of(context).textScaler,
             ),
           ),
           onPressed: widget.isEventRoom

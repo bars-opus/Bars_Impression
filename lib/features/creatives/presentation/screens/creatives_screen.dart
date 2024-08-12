@@ -9,7 +9,6 @@ import 'package:bars/utilities/exports.dart';
 class CreativesScreen extends StatefulWidget {
   static final id = 'CreativesScreen';
   final String currentUserId;
-  // final String exploreLocation;
   final String profileHandle;
   final int pageIndex;
   final UserSettingsLoadingPreferenceModel userLocationSettings;
@@ -20,7 +19,6 @@ class CreativesScreen extends StatefulWidget {
 
   CreativesScreen({
     required this.currentUserId,
-    // required this.exploreLocation,
     required this.profileHandle,
     required this.pageIndex,
     required this.userLocationSettings,
@@ -43,15 +41,8 @@ class _CreativesScreenState extends State<CreativesScreen>
   final _usersCountrySnapshot = <DocumentSnapshot>[];
   final _usersContinentSnapshot = <DocumentSnapshot>[];
   final _usersAllSnapshot = <DocumentSnapshot>[];
-  List<Post> _posts = [];
-  final _postSnapshot = <DocumentSnapshot>[];
-
   int limit = 10;
-
-  bool _hasNext = true;
-  // bool _isFectchingUser = false;
   late ScrollController _hideButtonController;
-  // String _subtitle = '';
   int _feedCount = 0;
 
   @override
@@ -115,16 +106,11 @@ class _CreativesScreenState extends State<CreativesScreen>
   }
 
   _setUpFeedLive() {
-    //   liveCity: widget.liveCity, liveCountry: widget.liveCountry
-    // String? city = widget.userLocationSettings.city;
-    // String? country = widget.userLocationSettings.country;
     _setupUsers(
         city: widget.liveCity,
         country: widget.liveCountry,
         isAll: true,
         from: 'City');
-
-    // _setupEvents(); // For all
   }
 
   _setUpFeedSeeMore() {
@@ -139,7 +125,6 @@ class _CreativesScreenState extends State<CreativesScreen>
                 continent: continent,
                 isAll: true,
                 from: 'Continent'); // For country
-    // _setupEvents(); // For all
   }
 
   @override
@@ -149,9 +134,7 @@ class _CreativesScreenState extends State<CreativesScreen>
   }
 
   Set<String> addedUserIds = Set<String>();
-
   Set<String> addedCityCountryUserIds = Set<String>();
-  // Set<String> addedCountryUserIds = Set<String>();
 
   Future<List<UserProfessionalModel>> _setupUsers({
     String? city,
@@ -458,16 +441,7 @@ class _CreativesScreenState extends State<CreativesScreen>
   Future<void> _refresh() async {
     addedCityCountryUserIds.clear();
     addedUserIds.clear();
-
     _setUp();
-    // _setupUsers(
-    //     city: widget.userLocationSettings.city, country: widget.userLocationSettings.country); // For city
-
-    // _setupUsers(country: widget.userLocationSettings.country); // For country
-    // _setupUsers(continent: widget.userLocationSettings.continent); // For country
-    // _setupUsers();
-
-    // _setupPosts();
   }
 
   _userFan(UserProfessionalModel user) {
@@ -499,7 +473,7 @@ class _CreativesScreenState extends State<CreativesScreen>
                 verified: user.verified,
               ),
               RichText(
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  textScaler: MediaQuery.of(context).textScaler,
                   text: TextSpan(children: [
                     TextSpan(
                         text: user.profileHandle,

@@ -1,4 +1,6 @@
+import 'package:bars/features/gemini_ai/presentation/screens/dress_code_analyzer.dart';
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
 
 class EventsAttendingTicketScreen extends StatefulWidget {
@@ -27,19 +29,26 @@ class _EventsAttendingTicketScreenState
     extends State<EventsAttendingTicketScreen> {
   bool _isLoading = false;
 
-  int _index = 0;
+  int _index = 1;
 
   int _expectedAttendees = 0;
   bool _eventHasEnded = false;
 
   bool _seeAllSchedules = false;
+  late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
     // _generatePalette();
+    _pageController = PageController(
+      initialPage: 1,
+    );
     _setUpEventExpectedAttendees();
     _countDown();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      Provider.of<UserData>(context, listen: false).setInt1(1);
+    });
   }
 
   void _countDown() async {
@@ -94,7 +103,7 @@ class _EventsAttendingTicketScreenState
   void _navigateToPage(BuildContext context, Widget page) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => page),
+      MaterialPageRoute(builder: (context) => page),
     );
   }
 
@@ -109,261 +118,6 @@ class _EventsAttendingTicketScreenState
 // It includes elements such as the event date, generated message, and check-in number.
 // The date is displayed in a large font, and the generated message and check-in instructions are presented in smaller fonts.
 // The ShakeTransition widget wraps the date, which makes the date shake for 2 seconds, providing a special visual effect.
-
-  _ticketdisplay() {
-    // Color _palleteColor = widget.palette == null
-    //     ? Colors.grey
-    //     : widget.palette.vibrantColor == null
-    //         ? Colors.grey
-    //         : widget.palette.vibrantColor!.color;
-
-    // final width = MediaQuery.of(context).size.width;
-    // var _textStyle2 = Theme.of(context).textTheme.bodyMedium;
-    // var _textStyle = TextStyle(
-    //   fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-    //   color: Colors.grey,
-    // );
-
-    // List<TicketModel> tickets = widget.ticketOrder.tickets;
-    // return new Material(
-    //   color: Colors.transparent,
-    //   child: Padding(
-    //     padding: const EdgeInsets.symmetric(horizontal: 20.0),
-    //     child: Container(
-    //       width: width,
-    //       decoration: BoxDecoration(
-    //           color: Theme.of(context).primaryColorLight,
-    //           boxShadow: [
-    //             BoxShadow(
-    //               color: Colors.black26,
-    //               offset: Offset(10, 10),
-    //               blurRadius: 10.0,
-    //               spreadRadius: 4.0,
-    //             )
-    //           ]),
-    //       child: Column(
-    //         children: [
-    //           if (!widget.ticketOrder.validated)
-    //             const SizedBox(
-    //               height: 70,
-    //             ),
-    //           if (widget.ticketOrder.validated)
-    //             Padding(
-    //               padding:
-    //                   const EdgeInsets.only(right: 30.0, top: 40, bottom: 30),
-    //               child: Align(
-    //                 alignment: Alignment.centerRight,
-    //                 child: Icon(
-    //                   Icons.check_circle,
-    //                   color: Colors.blue,
-    //                   size: 20.0,
-    //                 ),
-    //               ),
-    //             ),
-    //           if (widget.ticketOrder.isInvited)
-    //             Icon(
-    //               FontAwesomeIcons.idBadge,
-    //               color: Theme.of(context).secondaryHeaderColor,
-    //               size: 30.0,
-    //             ),
-    //           if (widget.ticketOrder.isInvited)
-    //             const SizedBox(
-    //               height: 10,
-    //             ),
-    //           if (widget.ticketOrder.isInvited)
-    //             Text(
-    //               'CORDIALLY\nINVITED',
-    //               style: Theme.of(context).textTheme.bodySmall,
-    //               textAlign: TextAlign.center,
-    //             ),
-    //           if (widget.ticketOrder.isInvited)
-    //             const SizedBox(
-    //               height: 30,
-    //             ),
-    //           ShakeTransition(
-    //             duration: const Duration(seconds: 2),
-    //             child: Padding(
-    //                 padding: const EdgeInsets.symmetric(
-    //                     vertical: 10.0, horizontal: 10),
-    //                 child: Padding(
-    //                   padding: const EdgeInsets.all(15.0),
-    //                   child: QrImageView(
-    //                     version: QrVersions.auto,
-    //                     foregroundColor: widget.ticketOrder.validated
-    //                         ? _palleteColor
-    //                         : Colors.grey,
-    //                     backgroundColor: Colors.transparent,
-    //                     data: widget.ticketOrder.entranceId,
-    //                     size: width / 2,
-    //                   ),
-    //                 )),
-    //           ),
-    //           Padding(
-    //             padding: const EdgeInsets.only(
-    //               top: 30.0,
-    //             ),
-    //             child: Text(
-    //               widget.ticketOrder.orderNumber.substring(0, 4),
-    //               style: TextStyle(
-    //                   fontSize:
-    //                       ResponsiveHelper.responsiveFontSize(context, 30.0),
-    //                   color: Colors.grey),
-    //               textAlign: TextAlign.center,
-    //             ),
-    //           ),
-    //           Padding(
-    //             padding: const EdgeInsets.only(top: 70.0, bottom: 30),
-    //             child: Divider(
-    //               color: Colors.grey,
-    //             ),
-    //           ),
-    //           Container(
-    //             width: width,
-    //             child: Padding(
-    //               padding: const EdgeInsets.only(left: 12.0, right: 12),
-    //               child: RichText(
-    //                 textScaleFactor: MediaQuery.of(context).textScaleFactor,
-    //                 text: TextSpan(
-    //                   children: [
-    //                     TextSpan(
-    //                         text: 'Check-in number:   ', style: _textStyle),
-    //                     TextSpan(
-    //                       text: widget.ticketOrder.entranceId,
-    //                       style: _textStyle2,
-    //                     ),
-    //                     TextSpan(
-    //                         text: '\nInvited:                     ',
-    //                         style: _textStyle),
-    //                     TextSpan(
-    //                       text: widget.ticketOrder.isInvited.toString(),
-    //                       style: _textStyle2,
-    //                     ),
-    //                   ],
-    //                 ),
-    //               ),
-    //             ),
-    //           ),
-    //           Padding(
-    //             padding: const EdgeInsets.only(top: 30.0, bottom: 30),
-    //             child: Divider(
-    //               color: Colors.grey,
-    //             ),
-    //           ),
-    //           ...tickets
-    //               .map((ticket) => Container(
-    //                     width: width,
-    //                     child: Padding(
-    //                       padding: const EdgeInsets.only(
-    //                         left: 12.0,
-    //                         right: 12,
-    //                       ),
-    //                       child: RichText(
-    //                         textScaleFactor:
-    //                             MediaQuery.of(context).textScaleFactor,
-    //                         text: TextSpan(
-    //                           children: [
-    //                             TextSpan(
-    //                               text: 'Sales Receipt',
-    //                               style: Theme.of(context).textTheme.bodyLarge,
-    //                             ),
-    //                             TextSpan(
-    //                               text: '\n\nOrder number:        ',
-    //                               style: _textStyle,
-    //                             ),
-    //                             TextSpan(
-    //                               text: widget.ticketOrder.orderNumber
-    //                                   .substring(0, 4),
-    //                               style: _textStyle2,
-    //                             ),
-    //                             if (ticket.type.isNotEmpty)
-    //                               TextSpan(
-    //                                 text: '\nTicket type:             ',
-    //                                 style: _textStyle,
-    //                               ),
-    //                             if (ticket.type.isNotEmpty)
-    //                               TextSpan(
-    //                                 text: ticket.type,
-    //                                 style: _textStyle2,
-    //                               ),
-    //                             if (ticket.group.isNotEmpty)
-    //                               TextSpan(
-    //                                 text: '\nTicket group:           ',
-    //                                 style: _textStyle,
-    //                               ),
-    //                             if (ticket.group.isNotEmpty)
-    //                               TextSpan(
-    //                                 text: ticket.group,
-    //                                 style: _textStyle2,
-    //                               ),
-    //                             if (ticket.accessLevel.isNotEmpty)
-    //                               TextSpan(
-    //                                 text: '\nAccess level:           ',
-    //                                 style: _textStyle,
-    //                               ),
-    //                             if (ticket.accessLevel.isNotEmpty)
-    //                               TextSpan(
-    //                                 text: ticket.accessLevel + 'ppp',
-    //                                 style: _textStyle2,
-    //                               ),
-    //                             TextSpan(
-    //                               text: '\nPurchased time:     ',
-    //                               style: _textStyle,
-    //                             ),
-    //                             TextSpan(
-    //                               text: MyDateFormat.toTime(
-    //                                   widget.ticketOrder.timestamp!.toDate()),
-    //                               style: _textStyle2,
-    //                             ),
-    //                             TextSpan(
-    //                               text: '\nPurchased date:     ',
-    //                               style: _textStyle,
-    //                             ),
-    //                             TextSpan(
-    //                               text: MyDateFormat.toDate(
-    //                                   widget.ticketOrder.timestamp!.toDate()),
-    //                               style: _textStyle2,
-    //                             ),
-    //                             TextSpan(
-    //                               text: '\nTotal:                       ',
-    //                               style: _textStyle,
-    //                             ),
-    //                             TextSpan(
-    //                               text: ticket.price.toString(),
-    //                               style: _textStyle2,
-    //                             ),
-    //                           ],
-    //                         ),
-    //                       ),
-    //                     ),
-    //                   ))
-    //               .toList(),
-    //           Padding(
-    //             padding: const EdgeInsets.only(top: 30.0, bottom: 30),
-    //             child: Divider(
-    //               color: Colors.grey,
-    //             ),
-    //           ),
-    //           Padding(
-    //             padding: const EdgeInsets.only(left: 12.0, right: 12),
-    //             child: Text(
-    //               'Your check-in number, also known as your attendee number, is ${widget.ticketOrder.orderNumber}. This number will be validated at the entrance of this event before you can enter. Once this ticket has been validated, the color of the barcode on the ticket will change, and a blue verified badge is placed at the top right corner of the ticket.  Enjoy attending this event and have a great time!',
-    //               style: TextStyle(
-    //                 color: Theme.of(context).secondaryHeaderColor,
-    //                 fontSize:
-    //                     ResponsiveHelper.responsiveFontSize(context, 12.0),
-    //               ),
-    //               textAlign: TextAlign.center,
-    //             ),
-    //           ),
-    //           const SizedBox(
-    //             height: 50,
-    //           )
-    //         ],
-    //       ),
-    //     ),
-    //   ),
-    // );
-  }
 
   // This function generates a widget that displays information about the event.
   //  It includes the event details, a divider line, and a section that shows the number of people attending the event.
@@ -426,7 +180,7 @@ class _EventsAttendingTicketScreenState
                   child: Padding(
                     padding: const EdgeInsets.only(left: 12.0, right: 12),
                     child: RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      textScaler: MediaQuery.of(context).textScaler,
                       text: TextSpan(
                         children: [
                           TextSpan(
@@ -486,20 +240,151 @@ class _EventsAttendingTicketScreenState
     );
   }
 
+  void _showBottomSheetHope() {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          height: ResponsiveHelper.responsiveHeight(context, 450),
+          decoration: BoxDecoration(
+              color: Theme.of(context).primaryColorLight,
+              borderRadius: BorderRadius.circular(30)),
+          padding: const EdgeInsets.all(
+            20.0,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              AnimatedCircle(
+                size: 50,
+                stroke: 2,
+                animateSize: true,
+                animateShape: true,
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Text(
+                'Hi ${_provider.user!.userName}, How can i assist you with ${widget.event.title}?',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              BottomModelSheetListTileActionWidget(
+                colorCode: '',
+                icon: Icons.note_alt_outlined,
+                onPressed: () {
+                  _pageController.animateToPage(
+                    0,
+                    duration: Duration(milliseconds: 800),
+                    curve: Curves.easeInOut,
+                  );
+                },
+                text: 'Analysis and guide',
+              ),
+
+              //  under implementation
+              // BottomModelSheetListTileActionWidget(
+              //   colorCode: '',
+              //   icon: Icons.search,
+              //   onPressed: () {},
+              //   text: 'Look for attendee',
+              // ),
+              BottomModelSheetListTileActionWidget(
+                colorCode: '',
+                icon: Icons.person_outline,
+                onPressed: () {
+                  _navigateToPage(
+                    context,
+                    _provider.brandTarget == null
+                        ? HopeIntroductionScreen(
+                            isIntro: true,
+                          )
+                        : UserBrandMatching(
+                            eventId: widget.event.id,
+                          ),
+                  );
+                },
+                text: 'Brand matching',
+              ),
+              BottomModelSheetListTileActionWidget(
+                colorCode: '',
+                icon: MdiIcons.dresserOutline,
+                onPressed: () {
+                  _navigateToPage(
+                    context,
+                    DressCodeAnalyzer(
+                      event: widget.event,
+
+                      // eventId: widget.event.id,
+                    ),
+                  );
+                },
+                text: 'Let\s choose a dress',
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  _brandMatchButton() {
+    return GestureDetector(
+      onTap: () {
+        _showBottomSheetHope();
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20.0,
+        ),
+        child: Container(
+          margin: EdgeInsets.only(top: 10),
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColorLight,
+            borderRadius: BorderRadius.circular(5.0),
+          ),
+          padding: EdgeInsets.all(
+            ResponsiveHelper.responsiveHeight(context, 8.0),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedCircle(
+                size: 15,
+                stroke: 2,
+                animateShape: true,
+              ),
+              const SizedBox(
+                width: 30,
+              ),
+              Text(
+                'Brand matching',
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   //  This button leads to either the event's location on a map or the event's virtual venue,
   //  depending on whether the event is virtual or not.
   _locationButton() {
     return EventBottomButton(
       buttonText: widget.event.isVirtual ? 'Host link' : 'Event location',
       onPressed: () {
-        // widget.event.isVirtual
-        //     ? _navigateToPage(
-        //         context,
-        //         MyWebView(
-        //           title: '',
-        //           url: widget.event.virtualVenue,
-        //         ))
-        // :
         _launchMap();
       },
     );
@@ -654,6 +539,7 @@ class _EventsAttendingTicketScreenState
           height: 10,
         ),
         _eventInfoDisplay(),
+        _brandMatchButton(),
         const SizedBox(
           height: 30,
         ),
@@ -764,7 +650,6 @@ class _EventsAttendingTicketScreenState
                     style: TextStyle(
                       fontSize:
                           ResponsiveHelper.responsiveFontSize(context, 14.0),
-                      //  24.0,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -782,7 +667,6 @@ class _EventsAttendingTicketScreenState
                       style: TextStyle(
                         fontSize:
                             ResponsiveHelper.responsiveFontSize(context, 14.0),
-                        //  24.0,
                         fontWeight: FontWeight.bold,
                         color: Colors.blue,
                       ),
@@ -797,11 +681,115 @@ class _EventsAttendingTicketScreenState
     );
   }
 
+  void _showBottomSheetAnalysisConsideration() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Stack(
+            children: [
+              Container(
+                height: ResponsiveHelper.responsiveHeight(context, 300),
+                // padding: const EdgeInsets.only(top: 50.0),
+                decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColorLight,
+                    borderRadius: BorderRadius.circular(30)),
+                padding: const EdgeInsets.all(20.0),
+                child: ListView(children: [
+                  TicketPurchasingIcon(
+                    title: '',
+                  ),
+                  const SizedBox(height: 10),
+                  Center(
+                    child: AnimatedCircle(
+                      // animateShape: true,
+                      size: 50,
+                      stroke: 3,
+                      animateSize: true,
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  Text(
+                    'To derive at this analysis, the following event information was considered. Event title, event theme, event date, event location, event dresscode ',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ]),
+              ),
+            ],
+          );
+        });
+      },
+    );
+  }
+
+  _insight(BuildContext context) {
+    return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
+        margin: const EdgeInsets.only(
+            left: 20.0, right: 20.0, bottom: 20, top: 195),
+        //  width: width,
+        height: double.infinity,
+        decoration: BoxDecoration(
+            color: Theme.of(context).primaryColorLight,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                offset: Offset(10, 10),
+                blurRadius: 10.0,
+                spreadRadius: 4.0,
+              )
+            ]),
+        child: MediaQuery.removePadding(
+            context: context,
+            removeTop: true,
+            child: ListView(children: [
+              Center(
+                child: AnimatedCircle(
+                  // animateShape: true,
+                  size: 50,
+                  stroke: 3,
+                  animateSize: true,
+                ),
+              ),
+              const SizedBox(height: 40),
+              MarkdownBody(
+                data: widget.event.aiAnalysis,
+                styleSheet: MarkdownStyleSheet(
+                  h1: Theme.of(context).textTheme.titleLarge,
+                  h2: Theme.of(context).textTheme.titleMedium,
+                  p: Theme.of(context).textTheme.bodyMedium,
+                  listBullet: Theme.of(context).textTheme.bodySmall,
+                ),
+              ),
+              const SizedBox(height: 40),
+              GestureDetector(
+                onTap: () {
+                  _showBottomSheetAnalysisConsideration();
+                },
+                child: Text(
+                  'This information is an analysis I made of the event, based on the event details provided by the event organizer. This analysis was not directly written by the organizer, but is intended to help potential attendees understand the concept of the event more.',
+                  style: TextStyle(
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 14.0),
+                    color: Colors.blue,
+                  ),
+                ),
+              ),
+            ])));
+  }
+
   _indicator(int index) {
+    var _provider = Provider.of<UserData>(
+      context,
+    );
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 500),
-      height: _index == index ? 2 : 5,
-      width: _index == index ? 20 : 50,
+      height: _provider.int1 == index ? 2 : 5,
+      width: _provider.int1 == index ? 20 : 50,
       decoration: BoxDecoration(
           color: Colors.transparent,
           border: Border.all(width: 2, color: Colors.white)),
@@ -810,6 +798,8 @@ class _EventsAttendingTicketScreenState
 
   @override
   Widget build(BuildContext context) {
+    var _provider = Provider.of<UserData>(context, listen: false);
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
@@ -840,11 +830,15 @@ class _EventsAttendingTicketScreenState
               top: 120,
               child: Row(
                 children: [
+                  _indicator(0),
+                  const SizedBox(
+                    width: 5,
+                  ),
                   _indicator(1),
                   const SizedBox(
                     width: 5,
                   ),
-                  _indicator(0),
+                  _indicator(2),
                 ],
               ),
             ),
@@ -852,12 +846,17 @@ class _EventsAttendingTicketScreenState
               padding:
                   const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
               child: PageView(
+                controller: _pageController,
                 onPageChanged: (int index) {
-                  setState(() {
-                    _index = index;
-                  });
+                  _pageController.animateToPage(
+                    index,
+                    duration: Duration(milliseconds: 500),
+                    curve: Curves.easeInOut,
+                  );
+                  _provider.setInt1(index);
                 },
                 children: [
+                  _insight(context),
                   _ticket(),
                   _programLineup(),
                 ],

@@ -172,16 +172,6 @@ class _TicketAndCalendarFeedScreenState
     final tomorrow = today.add(Duration(days: 1));
 
     // Function to determine the sort weight, considering only the date part
-    // int sortWeight(DateTime eventDate) {
-    //   final eventDay = DateTime(eventDate.year, eventDate.month, eventDate.day);
-    //   if (eventDay.isAtSameMomentAs(today)) {
-    //     return 0; // Today's events
-    //   } else if (eventDay.isAtSameMomentAs(tomorrow)) {
-    //     return 1; // Tomorrow's events
-    //   } else {
-    //     return 2; // Future events
-    //   }
-    // }
 
     int sortWeight(DateTime eventDate) {
       final eventDay = DateTime(eventDate.year, eventDate.month, eventDate.day);
@@ -508,7 +498,7 @@ class _TicketAndCalendarFeedScreenState
                 _showBottomSheetExpandCalendar(context);
               },
               child: RichText(
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                textScaler: MediaQuery.of(context).textScaler,
                 text: TextSpan(
                   children: [
                     TextSpan(

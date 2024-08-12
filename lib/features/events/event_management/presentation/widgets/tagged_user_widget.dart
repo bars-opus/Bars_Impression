@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:bars/utilities/exports.dart';
 
 class TaggedUsersWidget extends StatefulWidget {
-  List<TaggedEventPeopleModel> taggedPeopleOption;
+ final List<TaggedEventPeopleModel> taggedPeopleOption;
 
   TaggedUsersWidget({required this.taggedPeopleOption});
 

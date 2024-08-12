@@ -955,7 +955,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
                       _showBottomSheetBookMe();
                     },
                     child: RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      textScaler: MediaQuery.of(context).textScaler,
                       text: TextSpan(
                         children: [
                           TextSpan(
@@ -1330,7 +1330,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: _isAuthor
                   ? RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      textScaler: MediaQuery.of(context).textScaler,
                       text: TextSpan(
                         children: [
                           TextSpan(
@@ -1409,7 +1409,7 @@ class _BookingCalendarState extends State<BookingCalendar> {
                         _showBottomSheetManagerDonationDoc();
                       },
                       child: RichText(
-                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                        textScaler: MediaQuery.of(context).textScaler,
                         text: TextSpan(
                           children: [
                             TextSpan(

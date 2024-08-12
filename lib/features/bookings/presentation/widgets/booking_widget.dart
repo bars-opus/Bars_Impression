@@ -21,8 +21,8 @@ class BookingWidget extends StatefulWidget {
 class _BookingWidgetStateState extends State<BookingWidget>
     with TickerProviderStateMixin {
   bool _isLoadingSubmit = false;
-  bool _isLoading = false;
-  bool _hasOrganiserBeingPaid = false;
+  // bool _isLoading = false;
+  // bool _hasOrganiserBeingPaid = false;
   bool _eventHasEnded = false;
   bool _isAnswered = false;
   bool _downPayment = false;
@@ -31,7 +31,7 @@ class _BookingWidgetStateState extends State<BookingWidget>
   final _commentController = TextEditingController();
   ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
 
-  final Color _eventColorMain = Color(0xFF036147);
+  // final Color _eventColorMain = Color(0xFF036147);
 
   int _index = 0;
 
@@ -304,8 +304,7 @@ class _BookingWidgetStateState extends State<BookingWidget>
   }
 
   void _showBottomSheetComfirmDelete(BuildContext context) {
-    bool _isCreative =
-        widget.booking.creativeId == widget.currentUserId;
+    bool _isCreative = widget.booking.creativeId == widget.currentUserId;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -399,7 +398,7 @@ class _BookingWidgetStateState extends State<BookingWidget>
                       ),
                     ),
                   RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(
@@ -440,7 +439,7 @@ class _BookingWidgetStateState extends State<BookingWidget>
                     title: '',
                   ),
                   RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(
@@ -621,8 +620,7 @@ class _BookingWidgetStateState extends State<BookingWidget>
   }
 
   _rateAndReviewInfo(BuildContext context) {
-    bool _isAuthor =
-        widget.booking.creativeId == widget.currentUserId;
+    bool _isAuthor = widget.booking.creativeId == widget.currentUserId;
     String _scannerText =
         'validate the creative\'s arrival and departure times.This scanning ensures accurate tracking of the creative\'s attendance for the scheduled booking. Please make use of the scanner when the creative arrives and departs to complete the booking process. If the arrival and departure times are not validated, the payment button will not be activated to process the final payment.';
 
@@ -764,8 +762,7 @@ class _BookingWidgetStateState extends State<BookingWidget>
   }
 
   _bookingPriceRateInfo() {
-    bool _isAuthor =
-        widget.currentUserId == widget.booking.creativeId;
+    bool _isAuthor = widget.currentUserId == widget.booking.creativeId;
 
     var _blueStyle = TextStyle(
         fontSize: ResponsiveHelper.responsiveFontSize(context, 12),
@@ -971,8 +968,8 @@ class _BookingWidgetStateState extends State<BookingWidget>
     Map<String, int> duration = TimeDuration.calculateDuration(
         widget.booking.startTime.toDate(), widget.booking.endTime.toDate());
 
-    bool _isAuthor =
-        widget.currentUserId == widget.booking.creativeId;
+    // bool _isAuthor =
+    //     widget.currentUserId == widget.booking.creativeId;
 
     // Extract hours and minutes from the duration map
     //  int days = duration['days']!;
@@ -1095,8 +1092,7 @@ class _BookingWidgetStateState extends State<BookingWidget>
 
   @override
   Widget build(BuildContext context) {
-    bool _isAuthor =
-        widget.currentUserId == widget.booking.creativeId;
+    bool _isAuthor = widget.currentUserId == widget.booking.creativeId;
     return Material(
       color: Colors.transparent,
       child: Container(

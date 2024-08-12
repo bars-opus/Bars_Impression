@@ -32,10 +32,9 @@ class PayoutDoc extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(children: [
-      
       isRequesting
           ? RichText(
-              textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              textScaler: MediaQuery.of(context).textScaler,
               text: TextSpan(
                 children: [
                   TextSpan(
@@ -61,7 +60,7 @@ class PayoutDoc extends StatelessWidget {
               ),
             )
           : RichText(
-              textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              textScaler: MediaQuery.of(context).textScaler,
               text: TextSpan(
                 children: [
                   TextSpan(
@@ -89,7 +88,7 @@ class PayoutDoc extends StatelessWidget {
             _sendMail('support@barsopus.com', context);
           },
           child: RichText(
-            textScaleFactor: MediaQuery.of(context).textScaleFactor,
+            textScaler: MediaQuery.of(context).textScaler,
             text: TextSpan(
               children: [
                 TextSpan(

@@ -25,9 +25,9 @@ class DiscographyWidget extends StatefulWidget {
 
 class _DiscographyWidgetState extends State<DiscographyWidget> {
   bool _isLoading = false;
-  List<WorkRequestOrOfferModel> _userWorkRequest = [];
+  // List<WorkRequestOrOfferModel> _userWorkRequest = [];
   List<ReviewModel> _reviewList = [];
-  DocumentSnapshot? _lastInviteDocument;
+  // DocumentSnapshot? _lastInviteDocument;
   List<String> selectedTypes = [];
   bool _isBlockedUser = false;
   bool _isBlockingUser = false;
@@ -106,7 +106,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
     List<ReviewModel> affiliate =
         quey.docs.map((doc) => ReviewModel.fromDoc(doc)).toList();
     if (quey.docs.isNotEmpty) {
-      _lastInviteDocument = quey.docs.last;
+      // _lastInviteDocument = quey.docs.last;
     }
     if (mounted) {
       setState(() {
@@ -315,7 +315,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
     if (mounted) {
       setState(() {
         // _hasNext = false;
-        _userWorkRequest = posts;
+        // _userWorkRequest = posts;
       });
     }
   }
@@ -534,7 +534,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                 ),
                 const SizedBox(height: 20),
                 RichText(
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  textScaler: MediaQuery.of(context).textScaler,
                   text: TextSpan(
                     children: [
                       TextSpan(
@@ -920,8 +920,7 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
                           height: 50,
                         ),
                         RichText(
-                          textScaleFactor:
-                              MediaQuery.of(context).textScaleFactor,
+                          textScaler: MediaQuery.of(context).textScaler,
                           text: TextSpan(
                             children: [
                               TextSpan(
@@ -1276,8 +1275,8 @@ class _DiscographyWidgetState extends State<DiscographyWidget> {
   }
 
   _buildReview(BuildContext context, ReviewModel review, bool fullWidth) {
-    var _currentUserId =
-        Provider.of<UserData>(context, listen: false).currentUserId;
+    // var _currentUserId =
+    //     Provider.of<UserData>(context, listen: false).currentUserId;
 
     return ReviewWidget(
       review: review,

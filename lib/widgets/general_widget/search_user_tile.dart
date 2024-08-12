@@ -18,81 +18,88 @@ class SearchUserTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: profileImageUrl.isEmpty
-          ? Icon(
-              Icons.account_circle,
-              size: ResponsiveHelper.responsiveHeight(context, 60.0),
-              color: Colors.grey,
-            )
-          : CircleAvatar(
-              radius: ResponsiveHelper.responsiveHeight(context, 25.0),
-              backgroundColor: Theme.of(context).secondaryHeaderColor,
-              backgroundImage: CachedNetworkImageProvider(profileImageUrl),
-            ),
-      title: NameText(
-        fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-        name: userName.toUpperCase().trim().replaceAll('\n', ' '),
-        verified: verified,
+    return Container(
+      margin: const EdgeInsets.only(bottom: 1),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Theme.of(context).primaryColorLight,
       ),
-      subtitle: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(bottom: 2.0),
-                child: Container(
-                  color: Colors.purple,
-                  height: 1.0,
-                  width: 25.0,
-                ),
+      child: ListTile(
+        leading: profileImageUrl.isEmpty
+            ? Icon(
+                Icons.account_circle,
+                size: ResponsiveHelper.responsiveHeight(context, 60.0),
+                color: Colors.grey,
+              )
+            : CircleAvatar(
+                radius: ResponsiveHelper.responsiveHeight(context, 25.0),
+                backgroundColor: Theme.of(context).secondaryHeaderColor,
+                backgroundImage: CachedNetworkImageProvider(profileImageUrl),
               ),
-            ],
-          ),
-          Text(profileHandle,
-              style: TextStyle(
-                fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-                color: Colors.blue,
-              )),
-          RichText(
-            textScaleFactor: MediaQuery.of(context).textScaleFactor,
-            maxLines: 3,
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: "Bio:  ",
-                  style: TextStyle(
-                    fontSize:
-                        ResponsiveHelper.responsiveFontSize(context, 10.0),
-                    color: Colors.grey,
-                  ),
-                ),
-                TextSpan(
-                  text: bio,
-                  style: TextStyle(
-                    fontSize:
-                        ResponsiveHelper.responsiveFontSize(context, 12.0),
-                    color: Theme.of(context).secondaryHeaderColor,
+        title: NameText(
+          fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+          name: userName.toUpperCase().trim().replaceAll('\n', ' '),
+          verified: verified,
+        ),
+        subtitle: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 2.0),
+                  child: Container(
+                    color: Colors.purple,
+                    height: 1.0,
+                    width: 25.0,
                   ),
                 ),
               ],
             ),
-            overflow: TextOverflow.ellipsis,
-          ),
-          SizedBox(
-            height: 20.0,
-          ),
-          Divider(
-            thickness: .2,
-            color: Colors.grey[350],
-          )
-        ],
+            Text(profileHandle,
+                style: TextStyle(
+                  fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
+                  color: Colors.blue,
+                )),
+            RichText(
+              textScaler: MediaQuery.of(context).textScaler,
+              maxLines: 3,
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: "Bio:  ",
+                    style: TextStyle(
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 10.0),
+                      color: Colors.grey,
+                    ),
+                  ),
+                  TextSpan(
+                    text: bio,
+                    style: TextStyle(
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 12.0),
+                      color: Theme.of(context).secondaryHeaderColor,
+                    ),
+                  ),
+                ],
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+            SizedBox(
+              height: 20.0,
+            ),
+            Divider(
+              thickness: .2,
+              color: Colors.grey[350],
+            )
+          ],
+        ),
+        onTap: onPressed,
       ),
-      onTap: onPressed,
     );
   }
 }

@@ -1,6 +1,5 @@
 import 'package:bars/utilities/exports.dart';
 
-
 class ScheduleGroup extends StatelessWidget {
   final List<Schedule> schedules;
   final bool isEditing;
@@ -56,7 +55,6 @@ class ScheduleGroup extends StatelessWidget {
 
     final width = MediaQuery.of(context).size.width;
 
-
     if (ticketEventDate != null) {
       DateTime ticketDate = ticketEventDate!.toDate();
       DateTime ticketDateWithoutTime = DateTime(
@@ -89,7 +87,7 @@ class ScheduleGroup extends StatelessWidget {
                     ));
               },
               child: RichText(
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                textScaler: MediaQuery.of(context).textScaler,
                 text: TextSpan(
                   children: [
                     TextSpan(

@@ -2,8 +2,8 @@ import 'package:bars/utilities/exports.dart';
 
 class OnCalendarEventList extends StatelessWidget {
   final List<Event> events;
-  List<Event> eventList;
-  List<DocumentSnapshot> eventSnapshot;
+ final List<Event> eventList;
+ final List<DocumentSnapshot> eventSnapshot;
   final String currentUserId;
 
   OnCalendarEventList({

@@ -6,7 +6,6 @@ import 'package:bars/widgets/general_widget/ticket_group_widget.dart';
 import 'package:bars/widgets/general_widget/ticket_purchase_summary_widget.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
 
@@ -119,11 +118,6 @@ class _TicketGroupState extends State<TicketGroup> {
         ? await loadTickets()
         : _provider.ticketList;
 
-    // if (purchasintgTickets != null &&
-    //     purchasintgTickets is TicketPurchasedModel) {
-    //   _finalTicket.add(purchasintgTickets);
-    // }
-
     Future<T> retry<T>(Future<T> Function() function, {int retries = 3}) async {
       Duration delay =
           const Duration(milliseconds: 100); // Start with a short delay
@@ -157,14 +151,6 @@ class _TicketGroupState extends State<TicketGroup> {
         if (!existingOrder) {
           String commonId = Uuid().v4();
 
-          // Future<void> sendInvites() =>
-          //     DatabaseService.answerEventInviteTransaction(
-          //       transaction: transaction,
-          //       event: widget.event!,
-          //       answer: widget.inviteReply,
-          //       currentUser: _user!,
-          //     );
-
           Future<TicketOrderModel> createTicketOrder() => _createTicketOrder(
                 transactionId,
                 transaction,
@@ -175,9 +161,7 @@ class _TicketGroupState extends State<TicketGroup> {
                 paymentProvider,
               );
 
-          // if (widget.inviteReply.isNotEmpty) {
-          //   await retry(() => sendInvites(), retries: 3);
-          // }
+         
 
           TicketOrderModel order =
               await retry(() => createTicketOrder(), retries: 3);
@@ -391,35 +375,6 @@ class _TicketGroupState extends State<TicketGroup> {
     });
   }
 
-  // _payForTicket() async {
-  //   HapticFeedback.lightImpact();
-  //   Navigator.pop(context);
-
-  //   // MakePayment makePayment = MakePayment(
-  //   //   context: context,
-  //   //   price: totalPrice.toInt(),
-  //   //   email: FirebaseAuth.instance.currentUser!.email!,
-  //   //   event: widget.event!,
-  //   //   subaccountId: widget.event!.subaccountId,
-  //   // );
-  //   // PaymentResult paymentResult = await makePayment.chargeCardAndMakePayMent();
-
-  //   final HttpsCallable callable = FirebaseFunctions.instance
-  //       .httpsCallable('initiatePaystackMobileMoneyPayment');
-  //   int amount = 5;
-  //   // Call the function to initiate the payment
-  //   final HttpsCallableResult result = await callable.call(<String, dynamic>{
-  //     'email': FirebaseAuth.instance.currentUser!.email!,
-  //     'amount': amount * 100, // Assuming this is the correct amount in kobo
-  //   });
-
-  //   // Extract the authorization URL from the results
-  //   final String authorizationUrl = result.data['authorizationUrl'];
-  //   final String reference = result.data['reference'];
-
-  //   // Navigate to the payment screen with the authorization URL
-  //   await navigateToPaymentScreen(context, authorizationUrl, reference);
-  // }
 
   static int getWeekOfMonth(DateTime dateTime) {
     int daysInWeek = 7;
@@ -632,48 +587,6 @@ class _TicketGroupState extends State<TicketGroup> {
     );
   }
 
-  void _showBottomTicketSite(
-    BuildContext context,
-    String link,
-  ) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return Container(
-          height: ResponsiveHelper.responsiveHeight(context, 600),
-          decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(30)),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: DisclaimerWidget(
-                  title: 'Ticket Site',
-                  subTitle:
-                      'You will be redirected to a website provided by the event organizer, where you can continue with the ticket purchasing process. Please note that Bars Impression assumes no liability or responsibility for the information, views, or opinions presented on that platform.',
-                  icon: Icons.link,
-                ),
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              BottomModalSheetButtonBlue(
-                buttonText: 'Access ticket site',
-                onPressed: () async {
-                  if (!await launchUrl(Uri.parse(link))) {
-                    throw 'Could not launch link';
-                  }
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   _eventOnTicketAndPurchaseButton() {
     return Column(
@@ -686,7 +599,6 @@ class _TicketGroupState extends State<TicketGroup> {
             padding: const EdgeInsets.all(8.0),
             child: EventOnTicketWidget(
               event: widget.event!,
-              // finalPurchasintgTicket: finalPurchasintgTicket,
               currentUserId: widget.currentUserId,
             ),
           ),
@@ -708,7 +620,6 @@ class _TicketGroupState extends State<TicketGroup> {
                     ? 'Generate ticket'
                     : 'Purchase ticket',
             onPressed: () {
-              // Navigator.pop(context);
               _showBottomConfirmTicketAddOrder(
                 context,
               );
@@ -738,7 +649,6 @@ class _TicketGroupState extends State<TicketGroup> {
       builder: (BuildContext context) {
         return Container(
           height: ResponsiveHelper.responsiveHeight(context, 670),
-          // MediaQuery.of(context).size.height.toDouble() / 1.2 - 30,
           decoration: BoxDecoration(
               color: Theme.of(context).primaryColor,
               borderRadius: BorderRadius.circular(30)),
@@ -754,7 +664,6 @@ class _TicketGroupState extends State<TicketGroup> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TicketPurchasingIcon(
-                      // icon: Icons.payment,
                       title: 'Payment.',
                     ),
                     Padding(
@@ -762,8 +671,7 @@ class _TicketGroupState extends State<TicketGroup> {
                       child: ShakeTransition(
                         axis: Axis.vertical,
                         child: RichText(
-                          textScaleFactor:
-                              MediaQuery.of(context).textScaleFactor,
+                          textScaler: MediaQuery.of(context).textScaler,
                           text: TextSpan(
                             children: [
                               TextSpan(
@@ -789,7 +697,6 @@ class _TicketGroupState extends State<TicketGroup> {
                   height: 40,
                 ),
                 TicketPurchaseSummaryWidget(),
-                // TicketPurchaseSummaryWidget(),
                 const SizedBox(
                   height: 10,
                 ),
@@ -799,7 +706,7 @@ class _TicketGroupState extends State<TicketGroup> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(
@@ -918,7 +825,6 @@ class _TicketGroupState extends State<TicketGroup> {
       } else {
         var connectivityResult = await Connectivity().checkConnectivity();
         if (connectivityResult == ConnectivityResult.none) {
-          // No internet connection
           _showBottomSheetErrorMessage(context,
               'No internet connection available. Please connect to the internet and try again.');
           return;
@@ -977,9 +883,7 @@ class _TicketGroupState extends State<TicketGroup> {
               padding: const EdgeInsets.all(20.0),
               child: ListView(
                 children: [
-                  // const SizedBox(
-                  //   height: 30,
-                  // ),
+           
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -1013,7 +917,7 @@ class _TicketGroupState extends State<TicketGroup> {
                   ),
                   const SizedBox(height: 20),
                   RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(
@@ -1036,23 +940,6 @@ class _TicketGroupState extends State<TicketGroup> {
     );
   }
 
-  // void _showBottomSheetErrorMessage(String title, String subTitle) {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     isScrollControlled: true,
-  //     backgroundColor: Colors.transparent,
-  //     builder: (BuildContext context) {
-  //       return DisplayErrorHandler(
-  //         buttonText: 'Ok',
-  //         onPressed: () async {
-  //           Navigator.pop(context);
-  //         },
-  //         title: title,
-  //         subTitle: subTitle,
-  //       );
-  //     },
-  //   );
-  // }
 
   void _showBottomEditLocation(
     BuildContext context,
@@ -1100,16 +987,10 @@ class _TicketGroupState extends State<TicketGroup> {
                 widget.event == null || !widget.event!.isFree
                     ? widget.groupTickets.length * 500
                     : widget.groupTickets.length * 300),
-            // widget.groupTickets.length *,
-
-            // width * width,
-            // color: Colors.red,
+          
             width: width,
             child:
-                // widget.event != null && widget.event!.isFree
-                //     ? _eventOnTicketAndPurchaseButton()
-                //     :
-
+             
                 AnimatedPadding(
               curve: Curves.easeOutBack,
               duration: const Duration(milliseconds: 500),
@@ -1146,24 +1027,6 @@ class _TicketGroupState extends State<TicketGroup> {
                             }
                           : _validateAttempt,
 
-                      //  () async {
-                      //   _showBottomFinalPurhcaseSummary(
-                      //     context,
-                      //   );
-                      //   try {
-                      //     await removeTickets();
-                      //     await saveTickets(_provider.ticketList);
-                      //     // Proceed with navigation or next steps
-                      //   } catch (e) {
-                      //     print("Failed to save tickets: $e");
-                      //     _provider.ticketList.clear();
-                      //     Navigator.pop(context);
-                      //     _showBottomSheetErrorMessage(
-                      //         context, "Error preparing tickets. Please try again.");
-                      //     return;
-                      //   }
-
-                      // },
                       color: Colors.blue,
                     ))
       ],

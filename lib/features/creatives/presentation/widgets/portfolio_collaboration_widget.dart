@@ -1,7 +1,7 @@
 import 'package:bars/utilities/exports.dart';
 
 class PortfolioCollaborationWidget extends StatelessWidget {
-  List<PortfolioCollaborationModel> collaborations;
+  final List<PortfolioCollaborationModel> collaborations;
   final bool seeMore;
   final bool edit;
 

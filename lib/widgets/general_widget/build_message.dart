@@ -84,7 +84,7 @@ class _SlidableMessageState extends State<SlidableMessage>
           text,
           style: TextStyle(color: Colors.black),
           overflow: TextOverflow.ellipsis,
-          textScaleFactor: MediaQuery.of(context).textScaleFactor,
+          textScaler: MediaQuery.of(context).textScaler,
         ),
       ),
     );
@@ -241,7 +241,7 @@ class _SlidableMessageState extends State<SlidableMessage>
                         ),
                       )),
               title: RichText(
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                textScaler: MediaQuery.of(context).textScaler,
                 text: TextSpan(
                   children: [
                     TextSpan(

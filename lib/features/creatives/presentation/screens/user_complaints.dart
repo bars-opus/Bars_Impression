@@ -16,11 +16,11 @@ class _UserComplaintsState extends State<UserComplaints>
   List<ComplaintIssueModel> _complaintList = [];
 
   DocumentSnapshot? _lastInviteDocument;
-  DocumentSnapshot? _lastFiletedActivityDocument;
+  // DocumentSnapshot? _lastFiletedActivityDocument;
 
   int limit = 5;
   bool _hasNext = true;
-  String _isSortedBy = '';
+  // String _isSortedBy = '';
 
   bool _isLoading = true;
 
@@ -194,12 +194,12 @@ class _UserComplaintsState extends State<UserComplaints>
     return deleteActivityDocsInBatches();
   }
 
-  void _navigateToPage(Widget page) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => page),
-    );
-  }
+  // void _navigateToPage(Widget page) {
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(builder: (_) => page),
+  //   );
+  // }
 
   _buildActivityBuilder(
     List<ComplaintIssueModel> _complaintList,

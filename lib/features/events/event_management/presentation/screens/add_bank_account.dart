@@ -592,8 +592,7 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
     double _progress =
         _pageController2.hasClients ? _pageController2.page ?? 0 : 0;
 
-    var _user =
-        Provider.of<UserData>(context, listen: false).userLocationPreference;
+
 
     return Scaffold(
       backgroundColor: Color(0xFF1a1a1a),
@@ -673,7 +672,7 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
                         ),
                       ),
                       RichText(
-                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                        textScaler: MediaQuery.of(context).textScaler,
                         text: TextSpan(
                           children: [
                             // TextSpan(
@@ -729,8 +728,7 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
                           }
                         },
                         child: RichText(
-                          textScaleFactor:
-                              MediaQuery.of(context).textScaleFactor,
+                          textScaler: MediaQuery.of(context).textScaler,
                           text: TextSpan(
                             children: [
                               TextSpan(
@@ -763,8 +761,7 @@ class _CreateSubaccountFormState extends State<CreateSubaccountForm> {
                           _sendMail('support@barsopus.com', context);
                         },
                         child: RichText(
-                          textScaleFactor:
-                              MediaQuery.of(context).textScaleFactor,
+                          textScaler: MediaQuery.of(context).textScaler,
                           text: TextSpan(
                             children: [
                               TextSpan(

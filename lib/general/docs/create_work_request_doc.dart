@@ -68,7 +68,7 @@ class CreateWorkRequestDoc extends StatelessWidget {
               style: Theme.of(context).textTheme.titleLarge,
             ),
             RichText(
-              textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              textScaler: MediaQuery.of(context).textScaler,
               text: TextSpan(
                 children: [
                   TextSpan(
@@ -101,7 +101,7 @@ class CreateWorkRequestDoc extends StatelessWidget {
               height: 10,
             ),
             RichText(
-              textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              textScaler: MediaQuery.of(context).textScaler,
               text: TextSpan(
                 children: [
                   TextSpan(

@@ -24,7 +24,8 @@ class _AuthCreateUserCredentialsState extends State<AuthCreateUserCredentials> {
     final signedInHandler = FirebaseAuth.instance.currentUser!;
     // ignore: unnecessary_null_comparison
     if (signedInHandler != null) {
-      mySnackBar(context, 'Registering account\nPlease wait...');
+      // ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      // mySnackBar(context, 'Registering account\nPlease wait...');
 
       try {
         await DatabaseService.createUserProfileInFirestore(signedInHandler,
@@ -33,6 +34,9 @@ class _AuthCreateUserCredentialsState extends State<AuthCreateUserCredentials> {
             signedInHandler.uid;
 
         Provider.of<UserData>(context, listen: false).setShowUsersTab(true);
+
+        // // Ensure SnackBar is dismissed before navigating
+
         await Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => SetUpBrand()),
             (Route<dynamic> route) => false);

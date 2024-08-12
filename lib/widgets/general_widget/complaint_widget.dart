@@ -76,7 +76,7 @@ class ComplaintWidget extends StatelessWidget {
             children: [
               Expanded(
                 child: RichText(
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  textScaler: MediaQuery.of(context).textScaler,
                   text: TextSpan(
                     children: [
                       TextSpan(
@@ -136,7 +136,9 @@ class ComplaintWidget extends StatelessWidget {
           const SizedBox(
             height: 10,
           ),
-          Divider( thickness: .2,)
+          Divider(
+            thickness: .2,
+          )
         ],
       ),
     );

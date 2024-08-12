@@ -15,60 +15,7 @@ class PayoutWidget extends StatefulWidget {
 }
 
 class _PayoutWidgetState extends State<PayoutWidget> {
-  bool _isLoading = false;
-
-  void _showBottomSheetComfirmDelete(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return ConfirmationPrompt(
-          buttonText: 'Delete',
-          onPressed: () async {
-            Navigator.pop(context);
-            try {
-              // Call recursive function to delete documents in chunks
-              await DatabaseService.deletePayoutData(
-                  widget.payout, widget.currentUserId);
-              mySnackBar(context, 'Payout data deleted successfully');
-              Navigator.pop(context);
-            } catch (e) {
-              _showBottomSheetErrorMessage('Error deleting payout data');
-            }
-          },
-          title: 'Are you sure you want to delete this payout data?',
-          subTitle: '',
-        );
-      },
-    );
-  }
-
-  void _showBottomSheetErrorMessage(String errorTitle) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return DisplayErrorHandler(
-          buttonText: 'Ok',
-          onPressed: () async {
-            Navigator.pop(context);
-          },
-          title: errorTitle,
-          subTitle: 'Check your internet connection and try again.',
-        );
-      },
-    );
-  }
-
-  void _navigateToPage(Widget page) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => page),
-    );
-  }
-
+  
   _payoutWidget(String lable, String value) {
     return PayoutDataWidget(
       label: lable,

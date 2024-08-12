@@ -1,8 +1,8 @@
 // import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:bars/features/events/event_room_and_chat/presentation/screens/chats.dart';
+import 'package:bars/features/gemini_ai/presentation/widgets/hope_action.dart';
 
 import 'package:bars/utilities/exports.dart';
-import 'package:bars/widgets/info/mini_affiliate_note.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
@@ -19,8 +19,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  final int _updateAppVersion = Platform.isIOS ? 25 : 25;
+  final int _updateAppVersion = Platform.isIOS ? 26 : 26;
   String notificationMsg = '';
+  bool _isFecthing = true;
 
   @override
   void initState() {
@@ -29,6 +30,7 @@ class HomeScreenState extends State<HomeScreen> {
       _setUpactivityCount();
       _configureNotification();
       initDynamicLinks();
+      _setBrandTarget();
       // _new();
       // _updateFields();
     });
@@ -128,7 +130,8 @@ class HomeScreenState extends State<HomeScreen> {
   //             ),
   //             const SizedBox(height: 20),
   //             RichText(
-  //               textScaleFactor: MediaQuery.of(context).textScaleFactor,
+  //                              textScaler: MediaQuery.of(context).textScaler,
+
   //               text: TextSpan(
   //                 children: [
   //                   TextSpan(
@@ -2261,6 +2264,36 @@ class HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _setBrandTarget() async {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    _provider.setFlorenceActive(false);
+
+    // Fetch the user data using whatever method you need
+    var userSnapshot =
+        await new_userBrandIfoRef.doc(_provider.currentUserId).get();
+
+    // Check if the snapshot contains data and if the user has a private account
+    if (userSnapshot.exists) {
+      CreativeBrandTargetModel user =
+          CreativeBrandTargetModel.fromDoc(userSnapshot);
+
+      // Set state with the new user data to update the UI
+      if (mounted) {
+        setState(() {
+          _provider.setBrandTarget(user);
+          _isFecthing = false;
+        });
+      }
+    } else {
+      // Handle the case where the user data does not exist
+      if (mounted) {
+        setState(() {
+          _isFecthing = false;
+        });
+      }
+    }
+  }
+
   _setUpactivityCount() {
     var _provider = Provider.of<UserData>(context, listen: false);
 
@@ -2279,8 +2312,8 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  final FlutterLocalNotificationsPlugin _notificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  // final FlutterLocalNotificationsPlugin _notificationsPlugin =
+  //     FlutterLocalNotificationsPlugin();
 
   Future<void> _configureNotification() async {
     final String? currentUserId =
@@ -2692,15 +2725,16 @@ class _HomeMobileState extends State<HomeMobile>
 
     // _setUpInvitsCount();
 
-    int? version = Platform.isIOS
-        ? widget.updateApp.updateVersionIos
-        : widget.updateApp.updateVersionAndroid;
-    _version = version!;
     SchedulerBinding.instance.addPostFrameCallback((_) async {
+      int? version = Platform.isIOS
+          ? widget.updateApp.updateVersionIos
+          : widget.updateApp.updateVersionAndroid;
+      _version = version!;
       await _setUpInvites();
+      await _setAffiliateCount();
+
       _setShowDelayInfo();
     });
-    _setAffiliateCount();
   }
 
   void triggerHapticFeedback() {
@@ -2927,13 +2961,7 @@ class _HomeMobileState extends State<HomeMobile>
                       )
                     ],
                   ),
-                  child:
-
-                      // user.disabledAccount!
-                      //     ? ReActivateAccount(user: user)
-                      //     :
-
-                      Stack(
+                  child: Stack(
                     alignment: FractionalOffset.center,
                     children: [
                       SizedBox(
@@ -2947,9 +2975,7 @@ class _HomeMobileState extends State<HomeMobile>
                               currentUserId: currentUserId,
                               userId: '',
                             ),
-                            // FeedScreenSliver(
-                            //   currentUserId: currentUserId,
-                            // ),
+
                             DiscoverEventScreen(
                               currentUserId: currentUserId,
                               userLocationSettings: userLocationSettings,
@@ -2974,14 +3000,7 @@ class _HomeMobileState extends State<HomeMobile>
                               currentUserId: currentUserId,
                               userId: '',
                             ),
-                            // DiscoverUser(
-                            //   currentUserId: currentUserId,
-                            //   isWelcome: false,
-                            //   isLiveLocation: false,
-                            //   liveCity: '',
-                            //   liveCountry: '',
-                            //   liveLocationIntialPage: 0,
-                            // ),
+                           
                             ProfileScreen(
                               currentUserId: currentUserId,
                               userId: currentUserId,
@@ -2993,7 +3012,6 @@ class _HomeMobileState extends State<HomeMobile>
                               _currentTab = index;
                             });
 
-                            // HapticFeedback.mediumImpact();
                           },
                         ),
                       ),
@@ -3021,27 +3039,13 @@ class _HomeMobileState extends State<HomeMobile>
                             showinfo: _affiliateCount > 0 ? true : false,
                             displayMiniUpdate:
                                 widget.updateApp.displayMiniUpdate!,
-                            // onPressed: () {
-                            //   _navigateToPage(
-                            //     UserAffilate(
-                            //       currentUserId: _provider.currentUserId!,
-                            //       eventId: '',
-                            //       marketingType: '',
-                            //       isUser: true,
-                            //     ),
-                            //   );
-                            // },
                           )),
                       Positioned(bottom: 7, child: NoConnection()),
-
-                      // Positioned(bottom: 30, child: _createAnimator()),
                     ],
                   ),
                 ),
                 bottomNavigationBar:
-                    //  user.disabledAccount!
-                    //     ? const SizedBox.shrink()
-                    //     :
+                   
                     _currentTab == 0
                         ? const SizedBox.shrink()
                         : Wrap(
@@ -3049,10 +3053,6 @@ class _HomeMobileState extends State<HomeMobile>
                               BottomNavigationBar(
                                 type: BottomNavigationBarType.fixed,
                                 backgroundColor:
-                                    // _currentTab == 1
-                                    //     ? Colors.black
-                                    //     :
-
                                     Theme.of(context).primaryColorLight,
                                 currentIndex: _currentTab - 1,
                                 onTap: (int index) {
@@ -3078,14 +3078,8 @@ class _HomeMobileState extends State<HomeMobile>
                                       context, 10.0),
                                 ),
                                 unselectedItemColor: Colors.grey,
-                                //     // _currentTab == 1
-                                //     //     ? Colors.white
-                                //     //     :
 
                                 selectedItemColor:
-                                    //     // _currentTab == 1
-                                    //     //     ? Colors.white
-                                    //     //     :
                                     Theme.of(context).secondaryHeaderColor,
 
                                 items: [
@@ -3122,7 +3116,6 @@ class _HomeMobileState extends State<HomeMobile>
                           ),
               ),
               dontShowInvite
-                  // _inviteCount.isNegative
                   ? const SizedBox.shrink()
                   : Container(
                       height: height,
@@ -3287,7 +3280,76 @@ class _HomeMobileState extends State<HomeMobile>
                             child: Container()),
                       ),
                     )
-                  : const SizedBox.shrink()
+                  : const SizedBox.shrink(),
+              if (_provider.florenceActive)
+                HopeActions(
+                    showAffiliateNote: _inviteList.length > 0,
+                    updateApp: widget.updateApp,
+                    showUpdate: widget.updateAppVersion < _version),
+              Positioned(
+                bottom: 1,
+                child: GestureDetector(
+                  onTap: () async {
+                    HapticFeedback.mediumImpact();
+                    _provider.setFlorenceActive(
+                        _provider.florenceActive ? false : true);
+                    _provider.setInt2(0);
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                        bottom: ResponsiveHelper.responsiveHeight(
+                            context,
+                            _provider.int2 == 3
+                                ? 50
+                                : _inviteList.length < 1
+                                    ? 100
+                                    : 70)),
+                    child: AnimatedContainer(
+                      curve: Curves.easeInOut,
+                      duration: Duration(milliseconds: 800),
+                      height: _provider.showEventTab && _provider.showUsersTab
+                          ? 40
+                          : 0,
+                      width: _provider.showEventTab && _provider.showUsersTab
+                          ? 40
+                          : 0,
+                      // padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _provider.int2 == 3
+                            ? Theme.of(context)
+                                .secondaryHeaderColor
+                                .withOpacity(.6)
+                            : _provider.florenceActive
+                                ? Colors.transparent
+                                : Theme.of(context).primaryColor,
+                      ),
+                      child: Center(
+                        child: Hero(
+                            tag: 'florence',
+                            child: _provider.florenceActive
+                                ? Icon(
+                                    Icons.close,
+                                    color: _provider.int2 == 3
+                                        ? Theme.of(context)
+                                            .primaryColorLight
+                                            .withOpacity(.6)
+                                        : _provider.florenceActive
+                                            ? Colors.white
+                                            : Colors.black,
+                                    size: _provider.florenceActive ? 30 : 20,
+                                  )
+                                : AnimatedCircle(
+                                    size: 25,
+                                    stroke: 2,
+                                    animateSize: false,
+                                    animateShape: false,
+                                  )),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           );
   }

@@ -22,16 +22,16 @@ class ReportContentSubmission extends StatefulWidget {
 }
 
 class _ReportContentSubmissionState extends State<ReportContentSubmission> {
-  bool _isLoading = false;
+  // bool _isLoading = false;
   // final _formKey = GlobalKey<FormState>();
   String _comment = '';
 
   _submit() async {
     // if (_formKey.currentState!.validate() && !_isLoading) {
     //   _formKey.currentState?.save();
-    setState(() {
-      _isLoading = true;
-    });
+    // setState(() {
+    //   _isLoading = true;
+    // });
 
     ReportContents reportContent = ReportContents(
       reportType: widget.reportType,
@@ -57,9 +57,9 @@ class _ReportContentSubmissionState extends State<ReportContentSubmission> {
           : error;
       mySnackBar(context, 'Request Failed\n$result.toString(),');
     }
-    setState(() {
-      _isLoading = false;
-    });
+    // setState(() {
+    //   _isLoading = false;
+    // });
     // }
   }
 

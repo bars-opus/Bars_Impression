@@ -83,7 +83,7 @@ class EventDateInfo extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(
                       vertical: 10.0, horizontal: 20),
                   child: RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(
@@ -126,7 +126,6 @@ class EventDateInfo extends StatelessWidget {
             ]),
           ],
         ),
-       
       ],
     );
   }

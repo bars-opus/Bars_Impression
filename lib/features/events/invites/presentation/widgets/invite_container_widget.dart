@@ -117,7 +117,7 @@ class _InviteContainerWidgetState extends State<InviteContainerWidget> {
                       height: 10,
                     ),
                     RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      textScaler: MediaQuery.of(context).textScaler,
                       text: TextSpan(
                         children: [
                           TextSpan(
@@ -267,7 +267,7 @@ class _InviteContainerWidgetState extends State<InviteContainerWidget> {
                   ],
                 ),
                 RichText(
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  textScaler: MediaQuery.of(context).textScaler,
                   text: TextSpan(
                     children: [
                       TextSpan(

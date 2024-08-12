@@ -310,7 +310,7 @@ class _EventBottomModalSheetActionsState
   //                 ),
   //                 const SizedBox(height: 20),
   //                 RichText(
-  //                   textScaleFactor: MediaQuery.of(context).textScaleFactor,
+  //                   textScaler: MediaQuery.of(context).textScaler,
   //                   text: TextSpan(
   //                     children: [
   //                       TextSpan(
@@ -402,6 +402,117 @@ class _EventBottomModalSheetActionsState
             ));
       },
     );
+  }
+
+  void _showBottomSheetAnalysisConsideration() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Stack(
+            children: [
+              Container(
+                height: ResponsiveHelper.responsiveHeight(context, 300),
+                // padding: const EdgeInsets.only(top: 50.0),
+                decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColorLight,
+                    borderRadius: BorderRadius.circular(30)),
+                padding: const EdgeInsets.all(20.0),
+                child: ListView(children: [
+                  TicketPurchasingIcon(
+                    title: '',
+                  ),
+                  const SizedBox(height: 10),
+                  Center(
+                    child: AnimatedCircle(
+                      // animateShape: true,
+                      size: 50,
+                      stroke: 3,
+                      animateSize: true,
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  Text(
+                    'To derive at this analysis, the following event information was considered. Event title, event theme, event date, event, location, event dresscode ',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ]),
+              ),
+            ],
+          );
+        });
+      },
+    );
+  }
+
+  _showBottomSheetBrandInsight(BuildContext context) {
+    bool _isAuthor = widget.currentUserId == widget.event.authorId;
+
+    return showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext context) {
+          return Container(
+              height: ResponsiveHelper.responsiveHeight(context, 700),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColorLight,
+                  borderRadius: BorderRadius.circular(30)),
+              padding: const EdgeInsets.all(20.0),
+              child: MediaQuery.removePadding(
+                  context: context,
+                  removeTop: true,
+                  child: ListView(children: [
+                    TicketPurchasingIcon(
+                      title: '',
+                    ),
+                    const SizedBox(height: 10),
+                    Center(
+                      child: AnimatedCircle(
+                        // animateShape: true,
+                        size: 50,
+                        stroke: 3,
+                        animateSize: true,
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    // if (!widget.event.isPrivate)
+                    MarkdownBody(
+                      data: _isAuthor
+                          ? widget.event.aiMarketingAdvice
+                          : widget.event.aiAnalysis,
+                      styleSheet: MarkdownStyleSheet(
+                        h1: Theme.of(context).textTheme.titleLarge,
+                        h2: Theme.of(context).textTheme.titleMedium,
+                        p: Theme.of(context).textTheme.bodyMedium,
+                        listBullet: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    if (widget.event.isPrivate && _isAuthor)
+                      Text(
+                        'No marketing insight for private event',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    // if (!widget.event.isPrivate && !_isAuthor)
+                    GestureDetector(
+                      onTap: () {
+                        _showBottomSheetAnalysisConsideration();
+                      },
+                      child: Text(
+                        'This information is an analysis I made of the event, based on the event details provided by the event organizer. This analysis was not directly written by the organizer, but is intended to help potential attendees understand the concept of the event more.',
+                        style: TextStyle(
+                          fontSize: ResponsiveHelper.responsiveFontSize(
+                              context, 14.0),
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ),
+                  ])));
+        });
   }
 
   @override
@@ -579,38 +690,85 @@ class _EventBottomModalSheetActionsState
             const SizedBox(
               height: 10,
             ),
-            BottomModelSheetListTileActionWidget(
-              colorCode: '',
-              icon: Icons.location_on_outlined,
-              onPressed: () {
-                _launchMap();
-              },
-              text: 'Location',
+            // BottomModelSheetListTileActionWidget(
+            //   colorCode: '',
+            //   icon: Icons.location_on_outlined,
+            //   onPressed: () {
+            //     _launchMap();
+            //   },
+            //   text: 'Location',
+            // ),
+            // _isAuthor
+            //     ? SizedBox.shrink()
+            //     : BottomModelSheetListTileActionWidget(
+            //         colorCode: '',
+            //         icon: Icons.account_circle_outlined,
+            //         onPressed: () {
+            // _navigateToPage(
+            //     context,
+            //     ProfileScreen(
+            //       user: null,
+            //       currentUserId: widget.currentUserId,
+            //       userId: widget.event.authorId,
+            //     ));
+            //         },
+            //         text: 'See publisher',
+            //       ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                BottomModelSheetIconActionWidget(
+                  icon: Icons.location_on_outlined,
+                  onPressed: () {
+                    _launchMap();
+                  },
+                  text: 'Location',
+                ),
+                BottomModelSheetIconActionWidget(
+                  icon: Icons.circle_outlined,
+                  onPressed: () {
+                    _showBottomSheetBrandInsight(context);
+                  },
+                  text: 'Analysis & guide',
+                ),
+              ],
             ),
-            _isAuthor
-                ? SizedBox.shrink()
-                : BottomModelSheetListTileActionWidget(
-                    colorCode: '',
-                    icon: Icons.account_circle_outlined,
-                    onPressed: () {
-                      _navigateToPage(
-                          context,
-                          ProfileScreen(
-                            user: null,
-                            currentUserId: widget.currentUserId,
-                            userId: widget.event.authorId,
-                          ));
-                    },
-                    text: 'See publisher',
-                  ),
-            BottomModelSheetListTileActionWidget(
-              colorCode: '',
-              icon: Icons.call_outlined,
-              onPressed: () {
-                _showBottomSheetContactOrganizer(context);
-              },
-              text: 'Call organizer',
+            const SizedBox(
+              height: 10,
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                BottomModelSheetIconActionWidget(
+                  icon: Icons.call_outlined,
+                  onPressed: () {
+                    _showBottomSheetContactOrganizer(context);
+                  },
+                  text: 'Call organizer',
+                ),
+                BottomModelSheetIconActionWidget(
+                  icon: Icons.handshake_outlined,
+                  onPressed: () {
+                    _navigateToPage(
+                        context,
+                        ProfileScreen(
+                          user: null,
+                          currentUserId: widget.currentUserId,
+                          userId: widget.event.authorId,
+                        ));
+                  },
+                  text: 'See publisher',
+                ),
+              ],
+            ),
+            // BottomModelSheetListTileActionWidget(
+            //   colorCode: '',
+            //   icon: Icons.call_outlined,
+            //   onPressed: () {
+            //     _showBottomSheetContactOrganizer(context);
+            //   },
+            //   text: 'Call organizer',
+            // ),
             const SizedBox(
               height: 10,
             ),

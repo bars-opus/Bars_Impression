@@ -27,10 +27,10 @@ class _UpdateInfoMiniState extends State<UpdateInfoMini> {
         curve: Curves.easeInOut,
         duration: Duration(milliseconds: 800),
         height:
-            widget.displayMiniUpdate && widget.showinfo && _showinfo ? 80 : 0.0,
+            widget.displayMiniUpdate && widget.showinfo && _showinfo ? 90 : 0.0,
         width: width,
         decoration: BoxDecoration(
-            color: Colors.grey[300], borderRadius: BorderRadius.circular(10)),
+            color: Colors.white, borderRadius: BorderRadius.circular(10)),
         child: ListTile(
           leading: Padding(
             padding: const EdgeInsets.only(top: 8.0),
@@ -52,7 +52,7 @@ class _UpdateInfoMiniState extends State<UpdateInfoMini> {
             icon: Icon(Icons.close),
             iconSize: ResponsiveHelper.responsiveHeight(
               context,
-              25,
+              20,
             ),
             color: Colors.black,
             onPressed: () {
@@ -63,7 +63,7 @@ class _UpdateInfoMiniState extends State<UpdateInfoMini> {
               }
             },
           ),
-          title: Text('Update is available',
+          title: Text('update is available',
               style: TextStyle(
                 fontSize: ResponsiveHelper.responsiveFontSize(
                   context,
@@ -85,7 +85,7 @@ class _UpdateInfoMiniState extends State<UpdateInfoMini> {
                   ),
                 ),
                 TextSpan(
-                  text: ' Tap here to update.',
+                  text: '\nTap here to update.',
                   style: TextStyle(
                     fontSize:
                         ResponsiveHelper.responsiveFontSize(context, 11.0),
@@ -94,7 +94,7 @@ class _UpdateInfoMiniState extends State<UpdateInfoMini> {
                 ),
               ],
             ),
-            maxLines: 2,
+            maxLines: 3,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.start,
             textScaler: TextScaler.linear(

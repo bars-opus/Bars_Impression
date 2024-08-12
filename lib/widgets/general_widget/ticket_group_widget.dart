@@ -123,15 +123,11 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
         List<Widget> groupWidgets = groups.entries.map((groupEntry) {
           String groupName = groupEntry.key;
           List<TicketModel> tickets = groupEntry.value;
-
           List<Widget> ticketWidgets = tickets.map((ticket) {
             bool isSelected = selectedTickets[ticket.id] ?? false;
             Color textColor = isSelected ? Colors.white : Colors.black;
             int availableSlot = ticket.maxOder - ticket.salesCount;
             // bool checkingTicketAvailability = false;
-
-            // ... your ListTile or other widget for each ticket ...
-            // Placeholder for ticket widget
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 0),
               child: Container(
@@ -192,7 +188,6 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
                                   lable: 'Available slot',
                                   value: availableSlot.toString(),
                                 ),
-                             
                             ],
                           ),
                         ),
@@ -290,7 +285,6 @@ class _TicketGoupWidgetState extends State<TicketGoupWidget> {
                               ),
                       ],
                     ),
-                   
                   )),
             );
           }).toList();

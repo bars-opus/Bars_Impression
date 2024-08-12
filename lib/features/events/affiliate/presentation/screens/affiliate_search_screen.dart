@@ -182,7 +182,7 @@ class _AffiliateSearchScreenState extends State<AffiliateSearchScreen>
                 ),
               ),
               RichText(
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  textScaler: MediaQuery.of(context).textScaler,
                   text: TextSpan(children: [
                     TextSpan(
                       text: 'Please ',
@@ -587,7 +587,7 @@ class _AffiliateSearchScreenState extends State<AffiliateSearchScreen>
                               }),
                         ),
                   title: RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(

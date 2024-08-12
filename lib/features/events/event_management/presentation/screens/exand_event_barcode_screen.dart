@@ -2,7 +2,7 @@ import 'package:bars/utilities/exports.dart';
 
 class ExpandEventBarcodeScreen extends StatelessWidget {
   final Event event;
- final bool justCreated;
+  final bool justCreated;
 
   ExpandEventBarcodeScreen({
     required this.event,
@@ -77,7 +77,7 @@ class ExpandEventBarcodeScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: RichText(
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  textScaler: MediaQuery.of(context).textScaler,
                   text: TextSpan(
                     children: [
                       TextSpan(

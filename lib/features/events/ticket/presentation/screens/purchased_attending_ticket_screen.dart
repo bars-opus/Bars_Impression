@@ -30,7 +30,7 @@ class _PurchasedAttendingTicketScreenState
     extends State<PurchasedAttendingTicketScreen> {
   bool _isLoading = false;
 
-  int _index = 0;
+  // int _index = 0;
 
   int _expectedAttendees = 0;
   bool _eventHasStarted = false;
@@ -49,6 +49,21 @@ class _PurchasedAttendingTicketScreenState
     _setUpEventExpectedAttendees();
     _countDown();
     if (widget.ticketOrder.refundRequestStatus.isNotEmpty) _getRefund();
+    if (widget.justPurchased.startsWith('New') ||
+        widget.justPurchased.startsWith('Affiliate'))
+      _addAttendeeToOrganizerMrk(widget.event);
+  }
+
+  _addAttendeeToOrganizerMrk(event) async {
+    var _provider = Provider.of<UserData>(context, listen: false);
+    try {
+      if (!widget.event.isPrivate)
+        await DatabaseService.addOrganizerToAttendeeMarketing(
+            userId: widget.currentUserId, eventAuthorId: widget.event.authorId);
+      if (_provider.brandTarget != null)
+        await DatabaseService.addEventAttendeeBrandMatching(
+            userId: widget.currentUserId, eventId: widget.event.id);
+    } catch (e) {}
   }
 
   _getRefund() async {
@@ -199,7 +214,7 @@ class _PurchasedAttendingTicketScreenState
                   child: Padding(
                     padding: const EdgeInsets.only(left: 12.0, right: 12),
                     child: RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      textScaler: MediaQuery.of(context).textScaler,
                       text: TextSpan(
                         children: [
                           TextSpan(
@@ -329,7 +344,7 @@ class _PurchasedAttendingTicketScreenState
                 ),
                 if (_provider.user != null)
                   RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(
@@ -428,7 +443,7 @@ class _PurchasedAttendingTicketScreenState
                   height: 40,
                 ),
                 RichText(
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  textScaler: MediaQuery.of(context).textScaler,
                   text: TextSpan(
                     children: [
                       TextSpan(
@@ -459,7 +474,7 @@ class _PurchasedAttendingTicketScreenState
                     );
                   },
                   child: RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(
@@ -488,7 +503,7 @@ class _PurchasedAttendingTicketScreenState
                     _toRoom();
                   },
                   child: RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(
@@ -513,7 +528,7 @@ class _PurchasedAttendingTicketScreenState
                   ),
                 ),
                 RichText(
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  textScaler: MediaQuery.of(context).textScaler,
                   text: TextSpan(
                     children: [
                       TextSpan(
@@ -529,7 +544,7 @@ class _PurchasedAttendingTicketScreenState
                   ),
                 ),
                 RichText(
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  textScaler: MediaQuery.of(context).textScaler,
                   text: TextSpan(
                     children: [
                       TextSpan(
@@ -717,7 +732,7 @@ class _PurchasedAttendingTicketScreenState
   }
 
   void _showBottomRefundForm() {
-    var _size = MediaQuery.of(context).size;
+    // var _size = MediaQuery.of(context).size;
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -835,14 +850,7 @@ class _PurchasedAttendingTicketScreenState
     return EventBottomButton(
       buttonText: widget.event.isVirtual ? 'Host link' : 'Event location',
       onPressed: () {
-        // widget.event.isVirtual
-        //     ? _navigateToPage(
-        //         context,
-        //         MyWebView(
-        //           title: '',
-        //           url: widget.event.virtualVenue,
-        //         ))
-        //     :
+       
         _launchMap();
       },
     );
@@ -1013,7 +1021,7 @@ class _PurchasedAttendingTicketScreenState
                   ),
                   const SizedBox(height: 40),
                   RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(
@@ -1049,7 +1057,7 @@ class _PurchasedAttendingTicketScreenState
                       _showBottomSheetRefund(false);
                     },
                     child: RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      textScaler: MediaQuery.of(context).textScaler,
                       text: TextSpan(
                         children: [
                           TextSpan(
@@ -1082,7 +1090,7 @@ class _PurchasedAttendingTicketScreenState
                       }
                     },
                     child: RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      textScaler: MediaQuery.of(context).textScaler,
                       text: TextSpan(
                         children: [
                           TextSpan(
@@ -1103,7 +1111,7 @@ class _PurchasedAttendingTicketScreenState
                       _sendMail('support@barsopus.com', context);
                     },
                     child: RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      textScaler: MediaQuery.of(context).textScaler,
                       text: TextSpan(
                         children: [
                           TextSpan(
@@ -1242,7 +1250,7 @@ class _PurchasedAttendingTicketScreenState
                       ]),
                   // width: width,
                   child: RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(

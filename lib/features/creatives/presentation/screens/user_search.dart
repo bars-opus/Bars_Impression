@@ -2,15 +2,27 @@ import 'package:bars/utilities/exports.dart';
 
 class UserSearch extends StatefulWidget {
   static final id = 'UserSearch';
-  final Future<QuerySnapshot>? users;
+  final bool fromFlorence;
 
-  UserSearch({required this.users});
+  final Future<QuerySnapshot>? users;
+  UserSearch({required this.users, this.fromFlorence = false});
 
   @override
   _UserSearchState createState() => _UserSearchState();
 }
 
 class _UserSearchState extends State<UserSearch> {
+  Future<List<AccountHolderAuthor>> getUsers() async {
+    QuerySnapshot<Object?> querySnapshot = await widget.users!;
+    // print(widget.users.);
+    if (querySnapshot.docs.isEmpty) {
+      return [];
+    }
+    return querySnapshot.docs.map((doc) {
+      return AccountHolderAuthor.fromDoc(doc);
+    }).toList();
+  }
+
   _buildUserTile(AccountHolderAuthor user) {
     return SearchUserTile(
         userName: user.userName!.toUpperCase(),
@@ -34,70 +46,29 @@ class _UserSearchState extends State<UserSearch> {
 
   @override
   Widget build(BuildContext context) {
+    // print(widget.users);
     final theme = Theme.of(context);
-
-    return Scaffold(
-      backgroundColor: theme.primaryColorLight,
-      body: SafeArea(
-        child: Container(
-            color: theme.primaryColorLight,
-            child: widget.users == null
-                ? Center(
-                    child: NoContents(
-                        title: "Searh for users. ",
-                        subTitle:
-                            'Enter username, \ndon\'t enter a user\'s nickname.',
-                        icon: Icons.search))
-                : FutureBuilder<QuerySnapshot>(
-                    future: widget.users,
-                    builder: (BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (!snapshot.hasData) {
-                        return SearchUserSchimmer();
-                      }
-                      if (snapshot.data!.docs.length == 0) {
-                        return Center(
-                          child: RichText(
-                              textScaleFactor:
-                                  MediaQuery.of(context).textScaleFactor,
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                      text: "No users found. ",
-                                      style: TextStyle(
-                                          fontSize: ResponsiveHelper
-                                              .responsiveFontSize(context, 20),
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.blueGrey)),
-                                  TextSpan(
-                                      text: '\nCheck username and try again.'),
-                                ],
-                                style:
-                                    TextStyle(fontSize: ResponsiveHelper.responsiveFontSize(
-                                context, 14), color: Colors.grey),
-                              )),
-                        );
-                      }
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 30.0),
-                        child: CustomScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            slivers: [
-                              SliverList(
-                                delegate: SliverChildBuilderDelegate(
-                                  (context, index) {
-                                    AccountHolderAuthor? user =
-                                        AccountHolderAuthor.fromDoc(
-                                            snapshot.data!.docs[index]);
-                                    return _buildUserTile(user);
-                                  },
-                                  childCount: snapshot.data!.docs.length,
-                                ),
-                              ),
-                            ]),
-                      );
-                    })),
-      ),
+//The search here is the new feature under implementation
+    return Center(
+      child: RichText(
+          textScaler: MediaQuery.of(context).textScaler,
+          text: TextSpan(
+            children: [
+              TextSpan(
+                  text: "Feature Comming soon. ",
+                  style: TextStyle(
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 20),
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blueGrey)),
+              TextSpan(
+                  text:
+                      '\nThis feature is under implementation and would be ready in few day.'),
+            ],
+            style: TextStyle(
+                fontSize: ResponsiveHelper.responsiveFontSize(context, 14),
+                color: Colors.grey),
+          )),
     );
   }
 }

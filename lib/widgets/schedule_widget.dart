@@ -144,7 +144,8 @@ class ScheduleWidget extends StatelessWidget {
                                 var person = schedule.people[index];
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 20.0, vertical: 5),
+                                    horizontal: 10.0,
+                                  ),
                                   child: ScheduleBuildPeople(
                                     currentUserId: currentUserId,
                                     edit: edit,

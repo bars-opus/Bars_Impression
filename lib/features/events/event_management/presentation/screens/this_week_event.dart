@@ -332,7 +332,7 @@ class _ThisWeekEventState extends State<ThisWeekEvent> {
     var _provider = Provider.of<UserData>(context, listen: false);
 
     bool isAuthor = _provider.currentUserId == widget.event.authorId;
-    var _usercountry = _provider.userLocationPreference!.country;
+    // var _usercountry = _provider.userLocationPreference!.country;
     String startDate = MyDateFormat.toDate(widget.event.startDate.toDate());
     String _startDate = startDate.substring(0, startDate.length - 5);
     List<TicketModel> tickets = widget.event.ticket;

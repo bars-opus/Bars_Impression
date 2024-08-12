@@ -9,6 +9,7 @@ class LoginField extends StatelessWidget {
   final TextEditingController controller;
   final Function onValidateText;
   final bool obscureText;
+  final Color? inputColor;
 
   LoginField({
     required this.onValidateText,
@@ -19,6 +20,8 @@ class LoginField extends StatelessWidget {
     this.suffixIcon,
     this.notLogin = false,
     this.obscureText = false,
+        this.inputColor ,
+
   });
 
   @override
@@ -26,7 +29,7 @@ class LoginField extends StatelessWidget {
     return TextFormField(
       obscureText: obscureText,
       style: TextStyle(
-        color: notLogin ? Theme.of(context).secondaryHeaderColor : Colors.white,
+        color: inputColor != null? inputColor: notLogin ? Theme.of(context).secondaryHeaderColor : Colors.white,
         fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
       ),
       autofocus: notLogin ? true : false,

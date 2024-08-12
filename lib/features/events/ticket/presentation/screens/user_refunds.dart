@@ -16,11 +16,11 @@ class _UserRefundsState extends State<UserRefunds>
   List<RefundModel> _refundList = [];
 
   DocumentSnapshot? _lastInviteDocument;
-  DocumentSnapshot? _lastFiletedActivityDocument;
+  // DocumentSnapshot? _lastFiletedActivityDocument;
 
   int limit = 5;
   bool _hasNext = true;
-  String _isSortedBy = '';
+  // String _isSortedBy = '';
 
   bool _isLoading = true;
   bool _isDeleting = false;

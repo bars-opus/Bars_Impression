@@ -80,12 +80,13 @@ class UsernameService {
           Navigator.pop(context);
           Navigator.pop(context);
         } else {
-          if(pageController != null)
-          pageController.animateToPage(
-           2,
-            duration: Duration(milliseconds: 800),
-            curve: Curves.easeInOut,
-          );
+          _provider.setInt2(2);
+          if (pageController != null)
+            pageController.animateToPage(
+              1,
+              duration: Duration(milliseconds: 800),
+              curve: Curves.easeInOut,
+            );
         }
       });
       _provider.setIsLoading(false);
@@ -95,8 +96,12 @@ class UsernameService {
     }
   }
 
-  Future<void> validateTextToxicity(BuildContext context, String changeUserName,
-      TextEditingController controller, bool isSetUp, PageController? pageController) async {
+  Future<void> validateTextToxicity(
+      BuildContext context,
+      String changeUserName,
+      TextEditingController controller,
+      bool isSetUp,
+      PageController? pageController) async {
     var _provider = Provider.of<UserData>(context, listen: false);
     _provider.setIsLoading(true);
 

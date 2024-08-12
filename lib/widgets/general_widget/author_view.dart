@@ -51,7 +51,7 @@ class Authorview extends StatelessWidget {
             fontSize: ResponsiveHelper.responsiveFontSize(context, 14),
           ),
           overflow: TextOverflow.ellipsis,
-          textScaleFactor: MediaQuery.of(context).textScaleFactor,
+          textScaler: MediaQuery.of(context).textScaler,
         ),
       ),
     );
@@ -121,7 +121,7 @@ class Authorview extends StatelessWidget {
                   verified: verified,
                 ),
                 RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(children: [
                       TextSpan(
                           text: profileHandle,
@@ -166,7 +166,6 @@ class Authorview extends StatelessWidget {
                           ),
                           maxLines: 5,
                         )
-
                       : HyperLinkText(
                           from: from,
                           text: content,
@@ -187,8 +186,7 @@ class Authorview extends StatelessWidget {
                       GestureDetector(
                         onTap: onPressedReply,
                         child: RichText(
-                            textScaleFactor:
-                                MediaQuery.of(context).textScaleFactor,
+                            textScaler: MediaQuery.of(context).textScaler,
                             text: TextSpan(children: [
                               TextSpan(
                                 text: 'Reply: ',

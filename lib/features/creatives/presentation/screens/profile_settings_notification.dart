@@ -22,9 +22,9 @@ class _ProfileSettingsNotificationState
   bool _privateAccount = false;
   bool _disableEventSuggestionNotification = false;
   bool _muteEventSuggestionNotification = false;
-  bool _disableNewCreativeNotifications = false;
-  bool _disableWorkVacancyNotifications = false;
-  bool _muteWorkVacancyNotifications = false;
+  // bool _disableNewCreativeNotifications = false;
+  // bool _disableWorkVacancyNotifications = false;
+  // bool _muteWorkVacancyNotifications = false;
 
   @override
   void initState() {
@@ -39,12 +39,12 @@ class _ProfileSettingsNotificationState
         widget.userGeneralSettings.disableEventSuggestionNotification!;
     _muteEventSuggestionNotification =
         widget.userGeneralSettings.muteEventSuggestionNotification!;
-    _disableNewCreativeNotifications =
-        widget.userGeneralSettings.disableNewCreativeNotifications;
-    _disableWorkVacancyNotifications =
-        widget.userGeneralSettings.disableWorkVacancyNotifications;
-    _muteWorkVacancyNotifications =
-        widget.userGeneralSettings.muteWorkVacancyNotifications;
+    // _disableNewCreativeNotifications =
+    //     widget.userGeneralSettings.disableNewCreativeNotifications;
+    // _disableWorkVacancyNotifications =
+    //     widget.userGeneralSettings.disableWorkVacancyNotifications;
+    // _muteWorkVacancyNotifications =
+    //     widget.userGeneralSettings.muteWorkVacancyNotifications;
   }
 
   _divider() {

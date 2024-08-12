@@ -6,7 +6,10 @@ class UserHeaderListTileWidget extends StatelessWidget {
   final VoidCallback onPressed;
 
   UserHeaderListTileWidget(
-      {super.key, required this.user, this.trailing = const SizedBox.shrink(), required this.onPressed});
+      {super.key,
+      required this.user,
+      this.trailing = const SizedBox.shrink(),
+      required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +35,7 @@ class UserHeaderListTileWidget extends StatelessWidget {
               ),
             ),
       title: RichText(
-        textScaleFactor: MediaQuery.of(context).textScaleFactor,
+        textScaler: MediaQuery.of(context).textScaler,
         text: TextSpan(
           children: [
             TextSpan(

@@ -7,13 +7,6 @@ class MoreAboutAccountTypes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void _navigateToPage(BuildContext context, Widget page) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => page),
-      );
-    }
-
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: ListView(
@@ -30,7 +23,7 @@ class MoreAboutAccountTypes extends StatelessWidget {
               }
             },
             child: RichText(
-              textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              textScaler: MediaQuery.of(context).textScaler,
               text: TextSpan(children: [
                 TextSpan(
                   text: 'Account types.',

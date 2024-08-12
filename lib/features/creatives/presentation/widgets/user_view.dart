@@ -184,7 +184,7 @@ class _UserViewState extends State<UserView> {
                         overflow: TextOverflow.ellipsis,
                       ),
                       RichText(
-                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                        textScaler: MediaQuery.of(context).textScaler,
                         text: TextSpan(
                           children: [
                             TextSpan(text: "Skills: ", style: textStyle),
@@ -199,7 +199,7 @@ class _UserViewState extends State<UserView> {
                         overflow: TextOverflow.ellipsis,
                       ),
                       RichText(
-                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                        textScaler: MediaQuery.of(context).textScaler,
                         text: TextSpan(
                           children: [
                             TextSpan(
@@ -215,7 +215,7 @@ class _UserViewState extends State<UserView> {
                         overflow: TextOverflow.ellipsis,
                       ),
                       RichText(
-                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                        textScaler: MediaQuery.of(context).textScaler,
                         text: TextSpan(
                           children: [
                             TextSpan(text: "Performance: ", style: textStyle),
@@ -230,7 +230,7 @@ class _UserViewState extends State<UserView> {
                         overflow: TextOverflow.ellipsis,
                       ),
                       RichText(
-                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                        textScaler: MediaQuery.of(context).textScaler,
                         text: TextSpan(
                           children: [
                             TextSpan(text: "Location: ", style: textStyle),

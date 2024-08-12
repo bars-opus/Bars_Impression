@@ -1,10 +1,7 @@
 import 'dart:ui';
 import 'package:bars/features/creatives/presentation/screens/no_followers.dart';
 import 'package:bars/utilities/exports.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
-
 import 'package:intl/intl.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -23,57 +20,33 @@ class _ProfileScreenState extends State<ProfileScreen>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   bool _isFollowing = false;
   bool _isFollowerResquested = false;
-
   bool _isFecthing = true;
-
   bool _isAFollower = false;
   bool _isBlockedUser = false;
   bool _isBlockingUser = false;
   int _followerCount = 0;
   int _followingCount = 0;
   int pointCoint = 0;
-
   bool _isLoading = false;
   bool _userNotFound = false;
   bool _isLoadingChat = false;
-
   bool _isLoadingEvents = true;
-
-  late ConnectivityResult _connectivityStatus = ConnectivityResult.none;
-  final Connectivity _connectivity = Connectivity();
-  StreamSubscription<ConnectivityResult>? _connectivitySubscription;
-
   late ScrollController _hideButtonController;
-
   List<Event> _eventsList = [];
   AccountHolderAuthor? _profileUser;
-
   double coseTope = 10;
-  bool _showInfo = false;
   late TabController _tabController;
-  bool _showSwipe = false;
   List<InviteModel> _inviteList = [];
   int limit = 5;
   int currentTab = 0;
-  bool _isLoadingGeneralSettins = false;
-
   bool _hasNext = true;
-
-  // DocumentSnapshot? _lastInviteDocument;
   late final _lastInviteDocument = <DocumentSnapshot>[];
-
   late final _lastEventDocument = <DocumentSnapshot>[];
-
-  // DocumentSnapshot? _lastEventDocument;
 
   @override
   void initState() {
     super.initState();
-    _initConnectivity();
-    _connectivitySubscription =
-        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
     widget.userId.isEmpty ? _nothing() : _setUp();
-
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
       setState(() {
@@ -110,27 +83,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   void dispose() {
     _tabController.dispose();
     _hideButtonController.dispose();
-
-    _connectivitySubscription?.cancel();
     super.dispose();
-  }
-
-  Future<void> _initConnectivity() async {
-    ConnectivityResult status;
-    try {
-      status = await _connectivity.checkConnectivity();
-    } catch (e) {
-      print("Error checking connectivity: $e");
-      status = ConnectivityResult.none;
-    }
-    if (!mounted) {
-      return Future.value(null);
-    }
-    return _updateConnectionStatus(status);
-  }
-
-  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
-    setState(() => _connectivityStatus = result);
   }
 
   _nothing() {}
@@ -138,16 +91,13 @@ class _ProfileScreenState extends State<ProfileScreen>
   Future<void> _fetchAndSetupUser() async {
     // Fetch the user data using whatever method you need
     var userSnapshot = await usersAuthorRef.doc(widget.userId).get();
-
     // Check if the snapshot contains data and if the user has a private account
     if (userSnapshot.exists) {
       AccountHolderAuthor user = AccountHolderAuthor.fromDoc(userSnapshot);
-
       // If the user has a private account, setup the follow request check
       if (user.privateAccount!) {
         await _setupIsFollowRequest();
       }
-
       // Set state with the new user data to update the UI
       if (mounted) {
         setState(() {
@@ -248,36 +198,6 @@ class _ProfileScreenState extends State<ProfileScreen>
     }
   }
 
-  // _setUpEvents() async {
-  //   try {
-  // QuerySnapshot eventFeedSnapShot = await eventsRef
-  //     .doc(widget.userId)
-  //     .collection('userEvents')
-  //         .orderBy('timestamp', descending: true)
-  //         .limit(10)
-  //         .get();
-  //     List<Event> eventList =
-  //         eventFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
-  //     if (eventFeedSnapShot.docs.isNotEmpty) {
-  //       _lastEventDocument = eventFeedSnapShot.docs.last;
-  //     }
-  //     if (mounted) {
-  //       setState(() {
-  //         _eventsList = eventList;
-  //         _isLoadingEvents = false;
-  //       });
-  //     }
-  //     if (eventFeedSnapShot.docs.length < 10) {
-  //       _hasNext = false; // No more documents to load
-  //     }
-
-  //     return eventList;
-  //   } catch (e) {
-  //     print('Error fetching initial invites: $e');
-  //     return [];
-  //   }
-  // }
-
   Stream<List<Event>> getUserEventsStream(String userId) {
     return eventsRef
         .doc(userId)
@@ -304,7 +224,6 @@ class _ProfileScreenState extends State<ProfileScreen>
 
       List<Event> events =
           postFeedSnapShot.docs.map((doc) => Event.fromDoc(doc)).toList();
-      // print('new event lenght  ' + events.length.toString());
 
       List<Event> moreEvents = [];
 
@@ -316,25 +235,16 @@ class _ProfileScreenState extends State<ProfileScreen>
       }
 
       _lastEventDocument.addAll(postFeedSnapShot.docs);
-      // if (moreEvents.isNotEmpty) {
-      //   _lastEventDocument.addAll(postFeedSnapShot.docs);
-      // }
-      // _lastEventDocument = postFeedSnapShot.docs.last;
-      // }
+
       if (mounted) {
         setState(() {
           _eventsList.addAll(moreEvents);
-          // print('event lenght  ' + _eventsList.length.toString());
-          // print('more lenght  ' + moreEvents.length.toString());
-          // print('after lenght  ' + _eventsList.length.toString());
 
           _hasNext = postFeedSnapShot.docs.length == limit;
         });
       }
       return _hasNext;
     } catch (e) {
-      print('Error fetching initial invites: $e');
-      // Handle the error appropriately.
       return [];
     }
   }
@@ -345,7 +255,6 @@ class _ProfileScreenState extends State<ProfileScreen>
           ? await userInvitesRef
               .doc(widget.userId)
               .collection('eventInvite')
-              // .where('eventTimestamp', isGreaterThanOrEqualTo: currentDate)
               .orderBy('eventTimestamp', descending: true)
               .limit(10)
               .get()
@@ -353,15 +262,12 @@ class _ProfileScreenState extends State<ProfileScreen>
               .doc(widget.userId)
               .collection('eventInvite')
               .where('answer', isEqualTo: 'Accepted')
-              // .where('eventTimestamp', isGreaterThanOrEqualTo: currentDate)
-              // .orderBy('eventTimestamp', descending: true)
               .limit(1)
               .get();
       List<InviteModel> ticketOrder = ticketOrderSnapShot.docs
           .map((doc) => InviteModel.fromDoc(doc))
           .toList();
       if (ticketOrderSnapShot.docs.isNotEmpty) {
-        // _lastInviteDocument = ticketOrderSnapShot.docs.last;
         _lastInviteDocument.addAll(ticketOrderSnapShot.docs);
       }
       if (mounted) {
@@ -376,8 +282,6 @@ class _ProfileScreenState extends State<ProfileScreen>
 
       return ticketOrder;
     } catch (e) {
-      print('Error fetching initial invites: $e');
-      // Handle the error appropriately.
       return [];
     }
   }
@@ -397,7 +301,6 @@ class _ProfileScreenState extends State<ProfileScreen>
               .doc(widget.userId)
               .collection('eventInvite')
               .where('answer', isEqualTo: 'Accepted')
-              // .orderBy('eventTimestamp', descending: true)
               .startAfterDocument(_lastInviteDocument.last)
               .limit(limit);
 
@@ -414,10 +317,8 @@ class _ProfileScreenState extends State<ProfileScreen>
         }
       }
 
-      // _lastInviteDocument = postFeedSnapShot.docs.last;
-
       _lastInviteDocument.addAll(postFeedSnapShot.docs);
-      // }
+
       if (mounted) {
         setState(() {
           _inviteList.addAll(moreInvites);
@@ -426,8 +327,6 @@ class _ProfileScreenState extends State<ProfileScreen>
       }
       return _hasNext;
     } catch (e) {
-      // Handle the error
-      print('Error fetching more user activities: $e');
       _hasNext = false;
       return _hasNext;
     }
@@ -437,7 +336,6 @@ class _ProfileScreenState extends State<ProfileScreen>
     HapticFeedback.heavyImpact();
     if (_isFollowing) {
       _showBottomSheetUnfollow(context, user, 'unfollow');
-      // _showSelectImageDialog2(user, 'unfollow');
     } else {
       _followUser(user);
     }
@@ -447,7 +345,6 @@ class _ProfileScreenState extends State<ProfileScreen>
     HapticFeedback.heavyImpact();
     if (_isFollowerResquested) {
       _showBottomSheetUnfollow(context, user, 'cancelFollowRequest');
-      // _showSelectImageDialog2(user, 'unfollow');
     } else {
       _followUser(user);
     }
@@ -456,12 +353,8 @@ class _ProfileScreenState extends State<ProfileScreen>
   _blockOrUnBlock(AccountHolderAuthor user) {
     if (_isBlockingUser) {
       _showBottomSheetUnfollow(context, user, 'unBlock');
-
-      // _showSelectImageDialog2(user, 'unBlock');
     } else {
       _showBottomSheetUnfollow(context, user, 'block');
-
-      // _showSelectImageDialog2(user, 'block');
     }
   }
 
@@ -489,7 +382,6 @@ class _ProfileScreenState extends State<ProfileScreen>
     DatabaseService.cancelFollowRequest(
       currentUserId: user.userId!,
       requesterUserId: widget.currentUserId,
-      // userId: widget.userId,
     );
     if (mounted) {
       setState(() {
@@ -560,9 +452,9 @@ class _ProfileScreenState extends State<ProfileScreen>
   _followUser(AccountHolderAuthor user) async {
     user.privateAccount!
         ? DatabaseService.sendFollowRequest(
-            currentUserId: widget.currentUserId, privateUser: user,
+            currentUserId: widget.currentUserId,
+            privateUser: user,
             currentUser: Provider.of<UserData>(context, listen: false).user!,
-            // Provider.of<UserData>(context, listen: false).user!,
           )
         : DatabaseService.followUser(
             currentUserId: widget.currentUserId,
@@ -869,8 +761,6 @@ class _ProfileScreenState extends State<ProfileScreen>
           onPressed: () async {
             Navigator.pop(context);
             try {
-              // Call recursive function to delete documents in chunks
-
               WriteBatch batch = FirebaseFirestore.instance.batch();
 
               batch.update(
@@ -888,9 +778,7 @@ class _ProfileScreenState extends State<ProfileScreen>
               );
               try {
                 batch.commit();
-              } catch (error) {
-                // Handle the error appropriately
-              }
+              } catch (error) {}
 
               // // _refundList.clear();
             } catch (e) {
@@ -1124,8 +1012,6 @@ class _ProfileScreenState extends State<ProfileScreen>
               const SizedBox(
                 height: 10,
               ),
-              // if (!user.privateAccount! && _isFollowing)
-
               user.privateAccount!
                   ? _isFollowing
                       ? _buildStatistics(user)
@@ -1187,35 +1073,6 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
-  // _buildEvent() {
-  //   return CustomScrollView(
-  //     slivers: [
-  //       SliverList(
-  //         delegate: SliverChildBuilderDelegate(
-  //           (context, index) {
-  //             Event event = _eventsList[index];
-  //             return Padding(
-  //                 padding: const EdgeInsets.symmetric(vertical: 2.0),
-  //                 child: EventDisplayWidget(
-  //                   currentUserId: widget.currentUserId,
-  //                   eventList: _eventsList,
-  //                   event: event,
-  //                   pageIndex: 0,
-  //                   eventSnapshot: [],
-  //                   eventPagesOnly: true,
-  //                   liveCity: '',
-  //                   liveCountry: '',
-  //                   isFrom: '',
-  //                   sortNumberOfDays: 0,
-  //                 ));
-  //           },
-  //           childCount: _eventsList.length,
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
-
   _buildInvite() {
     return CustomScrollView(
       slivers: [
@@ -1271,7 +1128,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   ),
                   const SizedBox(height: 20),
                   RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(
@@ -1355,7 +1212,6 @@ class _ProfileScreenState extends State<ProfileScreen>
               List<Event> events =
                   snapshot.data!.docs.map((doc) => Event.fromDoc(doc)).toList();
 
-              // Check if the events list has changed
               if (!const DeepCollectionEquality().equals(_eventsList, events)) {
                 _eventsList = events;
                 _lastEventDocument.clear();
@@ -1369,194 +1225,6 @@ class _ProfileScreenState extends State<ProfileScreen>
       ],
     );
   }
-  // _eventDisplay(bool _isAuthor, String userName) {
-  //   return Column(
-  //     children: [
-  //       Expanded(
-  //           child: StreamBuilder<QuerySnapshot>(
-  //         stream: eventsRef
-  //             .doc(widget.userId)
-  //             .collection('userEvents')
-  //             .orderBy('timestamp', descending: true)
-  //             .limit(10)
-  //             .snapshots(),
-  //         builder: (context, snapshot) {
-  //           if (!snapshot.hasData) {
-  //             return _loaindSchimmer();
-  //           }
-
-  //           if (snapshot.data!.docs.isEmpty) {
-  //             return Center(
-  //               child: NoContents(
-  //                 icon: null,
-  //                 title: 'No events',
-  //                 subTitle: _isAuthor
-  //                     ? 'The events you create would appear here.'
-  //                     : '$userName hasn\'t created any events yet',
-  //               ),
-  //             );
-  //           }
-
-  //           // Only update the initial load
-  //           // if (_eventsList.isEmpty) {
-  //           //   _eventsList =
-  //           //       snapshot.data!.docs.map((doc) => Event.fromDoc(doc)).toList();
-  //           //   _lastEventDocument.addAll((snapshot.data!.docs));
-  //           //   // _lastEventDocument = snapshot.data!.docs;
-  //           // }
-
-  //           return _buildEventList();
-  //         },
-  //       )
-
-  //           // StreamBuilder<QuerySnapshot>(
-  //           //   stream: eventsRef
-  //           //       .doc(widget.userId)
-  //           //       .collection('userEvents')
-  //           //       .orderBy('timestamp', descending: true)
-  //           //       .limit(1)
-  //           //       .snapshots(),
-  //           //   builder:
-  //           //       (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-  //           //     if (!snapshot.hasData) {
-  //           //       return Container(
-  //           //         height: ResponsiveHelper.responsiveHeight(context, 630),
-  //           //         child: Center(
-  //           //           child: CircularProgressIndicator(
-  //           //             color: Colors.blue,
-  //           //           ),
-  //           //         ),
-  //           //       );
-  //           //     }
-
-  //           //     if (snapshot.data!.docs.isEmpty) {
-  //           //       return Container(
-  //           //         height: ResponsiveHelper.responsiveHeight(context, 630),
-  //           //         child: Center(
-  //           //           child: NoContents(
-  //           //             icon: null,
-  //           //             title: 'No events',
-  //           //             subTitle: _isAuthor
-  //           //                 ? 'The events you create would appear here.'
-  //           //                 : '$userName hasn\'t created any events yet',
-  //           //           ),
-  //           //         ),
-  //           //       );
-  //           //     }
-
-  //           // _eventsList =
-  //           //         snapshot.data!.docs.map((doc) => Event.fromDoc(doc)).toList();
-
-  //           //     if (_eventsList.isNotEmpty) {
-  //           //       _lastEventDocument.addAll((snapshot.data!.docs));
-  //           //       // _lastEventDocument = snapshot.data!.docs.last;
-  //           //     }
-
-  //           //     return CustomScrollView(
-  //           //       slivers: [
-  //           //         SliverList(
-  //           //           delegate: SliverChildBuilderDelegate(
-  //           //             (context, index) {
-  //           //               Event event = _eventsList[index];
-  //           //               return Padding(
-  //           //                 padding: const EdgeInsets.symmetric(vertical: 2.0),
-  //           //                 child: EventDisplayWidget(
-  //           //                   currentUserId: widget.currentUserId,
-  //           //                   eventList: _eventsList,
-  //           //                   event: event,
-  //           //                   pageIndex: 0,
-  //           //                   eventSnapshot: [],
-  //           //                   eventPagesOnly: true,
-  //           //                   liveCity: '',
-  //           //                   liveCountry: '',
-  //           //                   isFrom: '',
-  //           //                   sortNumberOfDays: 0,
-  //           //                 ),
-  //           //               );
-  //           //             },
-  //           //             childCount: _eventsList.length,
-  //           //           ),
-  //           //         ),
-  //           //       ],
-  //           //     );
-  //           //   },
-  //           // ),
-  //           ),
-  //     ],
-  //   );
-  // }
-  // _eventDisplay(bool _isAuthor, String userName) {
-  //   return Column(
-  //     children: [
-  //       Expanded(
-  //         child: StreamBuilder(
-  //           stream: eventsRef
-  //               .doc(widget.userId)
-  //               .collection('userEvents')
-  //               .orderBy('timestamp', descending: true)
-  //               .limit(10)
-  //               .snapshots(),
-  //           builder: (BuildContext context, AsyncSnapshot snapshot) {
-  //             if (!snapshot.hasData) {
-  //               return Container(
-  //                 height: ResponsiveHelper.responsiveHeight(context, 630),
-  //                 child: Center(
-  //                     child: CircularProgressIndicator(
-  //                   color: Colors.blue,
-  //                 )),
-  //               );
-  //             }
-  //             return snapshot.data.docs.length == 0
-  //                 ? Container(
-  //                     height: ResponsiveHelper.responsiveHeight(context, 630),
-  //                     child: Center(
-  //                       child: NoContents(
-  //                         icon: null,
-  //                         title: 'No events',
-  //                         subTitle: _isAuthor
-  //                             ? 'The events you create would appear here.'
-  //                             : '$userName hasn\'t created any events yet',
-  //                       ),
-  //                     ),
-  //                   )
-  //                 : CustomScrollView(
-  //                     slivers: [
-  //                       SliverList(
-  //                         delegate: SliverChildBuilderDelegate(
-  //                           (context, index) {
-  //                             _eventsList = snapshot.data!;
-  //                             if (_eventsList.isNotEmpty) {
-  //                               _lastEventDocument = snapshot.data!.last;
-  //                             }
-  //                             Event event = _eventsList[index];
-  //                             return Padding(
-  //                                 padding:
-  //                                     const EdgeInsets.symmetric(vertical: 2.0),
-  //                                 child: EventDisplayWidget(
-  //                                   currentUserId: widget.currentUserId,
-  //                                   eventList: _eventsList,
-  //                                   event: event,
-  //                                   pageIndex: 0,
-  //                                   eventSnapshot: [],
-  //                                   eventPagesOnly: true,
-  //                                   liveCity: '',
-  //                                   liveCountry: '',
-  //                                   isFrom: '',
-  //                                   sortNumberOfDays: 0,
-  //                                 ));
-  //                           },
-  //                           childCount: _eventsList.length,
-  //                         ),
-  //                       ),
-  //                     ],
-  //                   );
-  //           },
-  //         ),
-  //       ),
-
-  //     ],
-  //   );
-  // }
 
   _inviteDisplay(bool _isAuthor, String userName) {
     return Material(
@@ -1857,7 +1525,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                           ),
                         ),
                   title: RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(
@@ -2013,7 +1681,6 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   _displayScaffold() {
     AccountHolderAuthor user = widget.user!;
-
     return _isBlockedUser || user.disabledAccount!
         ? UserNotFound(
             userName: user.userName!,
@@ -2075,75 +1742,6 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   _fetchedUser() {
-    // FutureBuilder(
-    //     future: usersAuthorRef.doc(widget.userId).get(),
-    //     builder: (BuildContext context, AsyncSnapshot snapshot) {
-    //       if (!snapshot.hasData) {
-    //         return Container(
-    //           color: Color(0xFF1a1a1a),
-    //           child: Center(
-    //             child: Column(
-    //               mainAxisAlignment: MainAxisAlignment.center,
-    //               children: <Widget>[
-    //                 SizedBox(
-    //                   height: 250,
-    //                   width: 250,
-    //                   child: CircularProgressIndicator(
-    //                     backgroundColor: Colors.transparent,
-    //                     valueColor: new AlwaysStoppedAnimation<Color>(
-    //                       Colors.grey,
-    //                     ),
-    //                     strokeWidth: 1,
-    //                   ),
-    //                 ),
-    //                 SizedBox(
-    //                   height: 5.0,
-    //                 ),
-    //                 Shimmer.fromColors(
-    //                   period: Duration(milliseconds: 1000),
-    //                   baseColor: Colors.grey[300]!,
-    //                   highlightColor: Colors.white,
-    //                   child: RichText(
-    //                       text: TextSpan(
-    //                     children: [
-    //                       TextSpan(
-    //                           text: "Loading ",
-    //                           style: TextStyle(
-    //                               fontSize: ResponsiveHelper.responsiveHeight(
-    //                                   context, 16.0),
-    //                               fontWeight: FontWeight.bold,
-    //                               color: Colors.blueGrey)),
-    //                       TextSpan(text: 'Profile\nPlease Wait... '),
-    //                     ],
-    //                     style: TextStyle(
-    //                         fontSize: ResponsiveHelper.responsiveHeight(
-    //                             context, 16.0),
-    //                         fontWeight: FontWeight.bold,
-    //                         color: Colors.grey),
-    //                   )),
-    //                 ),
-    //               ],
-    //             ),
-    //           ),
-    //         );
-    //       }
-    //       if (!snapshot.data!.exists) {
-    //         return UserNotFound(userName: 'User');
-    //       }
-
-    //       AccountHolderAuthor user = AccountHolderAuthor.fromDoc(snapshot.data);
-    //       // if (user.privateAccount!) _setupIsFollowRequest();
-
-    //       return _isBlockedUser || user.disabledAccount!
-    //           ? UserNotFound(
-    //               userName: user.userName!,
-    //             )
-    //           : user.reportConfirmed!
-    //               ? UserBanned(
-    //                   userName: user.userName!,
-    //                 )
-    //               : _scaffold(context, user);
-    //     });
     if (_isFecthing) {
       return mainProfileLoadingIdicator();
     } else if (_userNotFound) {

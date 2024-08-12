@@ -42,9 +42,7 @@ class UserData extends ChangeNotifier {
   late bool _isVirtual;
   late bool _isFree;
   late bool _isCashPayment;
-
   late bool _isExternalTicketPayment;
-
   late Timestamp _sheduleTimestamp;
   late bool _couldntDecodeCity;
   List<Schedule> _schedule = [];
@@ -56,6 +54,7 @@ class UserData extends ChangeNotifier {
   late AccountHolderAuthor? _user;
   late UserSettingsLoadingPreferenceModel? _userLocationPreference;
   late UserSettingsGeneralModel? _userGeneraSentence;
+  late CreativeBrandTargetModel? _brandTarget;
   late String _bio;
   late String _name;
   late String _password;
@@ -106,6 +105,8 @@ class UserData extends ChangeNotifier {
   List<AddressSearch>? addressSearchResults;
   late String _latLng;
   late int _int1;
+  late int _int2;
+  late int _int3;
   late int _creatIconIndex;
   late bool _creatIconIsSelected;
   List<TaggedEventPeopleModel> _taggedEventPeople = [];
@@ -133,6 +134,8 @@ class UserData extends ChangeNotifier {
   late File? _professionalImageFile1;
   late File? _professionalImageFile2;
   late File? _professionalImageFile3;
+  late bool _florenceActive;
+  late String _florenceActionChoice;
 
   UserData() {
     _title = '';
@@ -171,6 +174,7 @@ class UserData extends ChangeNotifier {
     _noBooking = false;
     _termAndConditions = '';
     _email = '';
+    _florenceActionChoice = '';
     _profrilehandle = '';
     _ticketNames = '';
     _startDate = Timestamp.fromDate(DateTime.now());
@@ -184,14 +188,18 @@ class UserData extends ChangeNotifier {
     _messageAuthorId = '';
     _searchInput = '';
     _int1 = 0;
+    _int2 = 0;
+    _int3 = 0;
     _activityCount = 0;
     _availableDynamicLink = '';
     _user = null;
     _userGeneraSentence = null;
     _userLocationPreference = null;
+    _brandTarget = null;
     _messageCount = 0;
     _showEventTab = true;
     _showUsersTab = true;
+    _florenceActive = false;
     _isPrivate = false;
     _isAffiliateEnabled = false;
     _isAffiliateExclusive = false;
@@ -257,7 +265,6 @@ class UserData extends ChangeNotifier {
     _postStoreSearchSnapShot = null;
     _enlargeStartBarcode = false;
     _enlargeEndBarcode = false;
-
     _event = [];
     _dynamicLink = null;
   }
@@ -300,6 +307,7 @@ class UserData extends ChangeNotifier {
   bool get noBooking => _noBooking;
   String get termAndConditions => _termAndConditions;
   String get email => _email;
+  String get florenceActionChoice => _florenceActionChoice;
   String get profrilehandle => _profrilehandle;
   String get overview => _overview;
   String get imageUrl => _imageUrl;
@@ -311,6 +319,8 @@ class UserData extends ChangeNotifier {
   String get messageAuthorId => _messageAuthorId;
   String get searchInput => _searchInput;
   int get int1 => _int1;
+  int get int2 => _int2;
+  int get int3 => _int3;
   int get activityCount => _activityCount;
   String get availableDynamicLink => _availableDynamicLink;
   double get workRequestPrice => _workRequestPrice;
@@ -320,6 +330,7 @@ class UserData extends ChangeNotifier {
   bool get workRequestisEvent => _workRequestisEvent;
   bool get showEventTab => _showEventTab;
   bool get showUsersTab => _showUsersTab;
+  bool get florenceActive => _florenceActive;
   bool get isPrivate => _isPrivate;
   bool get isAffiliateEnabled => _isAffiliateEnabled;
   bool get isAffiliateExclusive => _isAffiliateExclusive;
@@ -346,7 +357,6 @@ class UserData extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get enlargeStartBarcode => _enlargeStartBarcode;
   bool get enlargeEndBarcode => _enlargeEndBarcode;
-
   File? get postImage => _postImage;
   File? get messageImage => _messageImage;
   PriceModel? get bookingPriceRate => _bookingPriceRate;
@@ -360,6 +370,7 @@ class UserData extends ChangeNotifier {
   UserSettingsGeneralModel? get userGeneraSentenceser => _userGeneraSentence;
   UserSettingsLoadingPreferenceModel? get userLocationPreference =>
       _userLocationPreference;
+  CreativeBrandTargetModel? get brandTarget => _brandTarget;
   int get messageCount => _messageCount;
   List? get message => _message;
   List<Schedule> get schedule => _schedule;
@@ -597,6 +608,11 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setFlorenceActionChoice(String florenceActionChoice) {
+    _florenceActionChoice = florenceActionChoice;
+    notifyListeners();
+  }
+
   void setProfileHandle(String profrilehandle) {
     _profrilehandle = profrilehandle;
     notifyListeners();
@@ -639,6 +655,16 @@ class UserData extends ChangeNotifier {
 
   void setInt1(int int1) {
     _int1 = int1;
+    notifyListeners();
+  }
+
+  void setInt2(int int2) {
+    _int2 = int2;
+    notifyListeners();
+  }
+
+  void setInt3(int int3) {
+    _int3 = int3;
     notifyListeners();
   }
 
@@ -695,6 +721,11 @@ class UserData extends ChangeNotifier {
   void setUserLocationPreference(
       UserSettingsLoadingPreferenceModel? userLocationPreference) {
     _userLocationPreference = userLocationPreference;
+    notifyListeners();
+  }
+
+  void setBrandTarget(CreativeBrandTargetModel? brandTarget) {
+    _brandTarget = brandTarget;
     notifyListeners();
   }
 
@@ -1002,6 +1033,12 @@ class UserData extends ChangeNotifier {
     _showUsersTab = showUsersTab;
     notifyListeners();
   }
+
+  void setFlorenceActive(bool florenceActive) {
+    _florenceActive = florenceActive;
+    notifyListeners();
+  }
+
 
   void setchatMessage(List message) async {
     _message = message;

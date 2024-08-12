@@ -3,6 +3,7 @@ import 'package:bars/utilities/exports.dart';
 class Event {
   String id;
   final String title;
+  final String overview;
   final String theme;
   final Timestamp startDate;
   final String address;
@@ -31,7 +32,6 @@ class Event {
   final String blurHash;
   final String ticketSite;
   final String improvemenSuggestion;
-
   final Timestamp clossingDay;
   final bool isVirtual;
   final bool isFree;
@@ -41,12 +41,17 @@ class Event {
   final bool showOnExplorePage;
   final bool fundsDistributed;
   final String dynamicLink;
+
   final String subaccountId;
   final String transferRecepientId;
   final bool isAffiliateEnabled;
   final bool isAffiliateExclusive;
   final double totalAffiliateAmount;
+
   final String latLng;
+  final String aiAnalysis;
+    final String aiMarketingAdvice;
+
 
   Event({
     required this.id,
@@ -55,6 +60,7 @@ class Event {
     required this.startDate,
     required this.address,
     required this.imageUrl,
+    required this.overview,
     this.schedule = const [],
     this.ticket = const [],
     this.taggedPeople = const [],
@@ -94,12 +100,17 @@ class Event {
     required this.isAffiliateExclusive,
     required this.totalAffiliateAmount,
     required this.latLng,
+    required this.aiAnalysis,
+    required this.aiMarketingAdvice
+,
   });
 
   factory Event.fromDoc(DocumentSnapshot doc) {
     return Event(
       id: doc.id,
+      
       title: doc['title'] ?? '',
+       overview: doc['overview'] ?? '',
       theme: doc['theme'] ?? '',
       dynamicLink: doc['dynamicLink'] ?? '',
       subaccountId: doc['subaccountId'] ?? '',
@@ -155,6 +166,10 @@ class Event {
       authorName: doc['authorName'] ?? '',
       totalAffiliateAmount: doc['totalAffiliateAmount'].toDouble(),
       latLng: doc['latLng'] ?? '',
+      aiAnalysis: doc['aiAnalysis'] ?? '',
+
+ aiMarketingAdvice: doc['aiMarketingAdvice'] ?? '',
+      
     );
   }
 
@@ -162,6 +177,8 @@ class Event {
     return Event(
       id: map['id'] ?? '',
       title: map['title'] ?? '',
+ overview: map['overview'] ?? '',
+      
       subaccountId: map['subaccountId'] ?? '',
       theme: map['theme'] ?? '',
       dynamicLink: map['dynamicLink'] ?? '',
@@ -223,6 +240,9 @@ class Event {
       transferRecepientId: map['transferRecepientId'] ?? '',
       totalAffiliateAmount: (map['totalAffiliateAmount'] as num).toDouble(),
       latLng: map['latLng'] ?? '',
+      aiAnalysis: map['aiAnalysis'] ?? '',
+aiMarketingAdvice: map['aiMarketingAdvice'] ?? '',
+      
     );
   }
 
@@ -230,6 +250,7 @@ class Event {
     return {
       'id': id,
       'title': title,
+      'overview': overview,
       'theme': theme,
       'subaccountId': subaccountId,
       'startDate': startDate,
@@ -274,6 +295,8 @@ class Event {
       'transferRecepientId': transferRecepientId,
       'totalAffiliateAmount': totalAffiliateAmount,
       'latLng': latLng,
+      'aiAnalysis': aiAnalysis,
+      'aiMarketingAdvice':aiMarketingAdvice,
     };
   }
 }

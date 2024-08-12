@@ -188,7 +188,7 @@ class _EventAttendeesInvitedScreeenState
                             CachedNetworkImageProvider(user.profileImageUrl!),
                       ),
                 title: RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(children: [
                       TextSpan(
                         text: user.userName,
@@ -203,7 +203,8 @@ class _EventAttendeesInvitedScreeenState
                           )),
                     ])),
                 subtitle: Divider(
-                  color: Colors.grey, thickness: .3,
+                  color: Colors.grey,
+                  thickness: .3,
                 ),
               );
             }));

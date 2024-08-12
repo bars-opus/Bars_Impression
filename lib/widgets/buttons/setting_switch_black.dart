@@ -21,7 +21,7 @@ class SettingSwitchBlack extends StatelessWidget {
       Expanded(
         child: Container(
           child: RichText(
-            textScaleFactor: MediaQuery.of(context).textScaleFactor,
+            textScaler: MediaQuery.of(context).textScaler,
             text: TextSpan(
               children: [
                 TextSpan(

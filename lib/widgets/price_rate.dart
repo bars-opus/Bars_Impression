@@ -20,108 +20,13 @@ class PriceRateWidget extends StatefulWidget {
 class _PriceRateWidgetState extends State<PriceRateWidget> {
   int _selectedIndex = 0;
 
-  int _index = 0;
 
-  PageController _pageController = PageController(
-    initialPage: 0,
-  );
 
   _removePortfolio(PriceModel potfolio) {
     widget.prices.removeWhere((newPrice) =>
         newPrice.name == potfolio.name && newPrice.price == potfolio.price);
   }
 
-  // _rateWidget(BuildContext context, PriceModel price) {
-
-  //   return Padding(
-  //     padding: const EdgeInsets.only(bottom: 2.0),
-  //     child: Container(
-  //       color: Theme.of(context).cardColor,
-  //       child: Padding(
-  //         padding: const EdgeInsets.symmetric(vertical: 10.0),
-  //         child: ListTile(
-  //           trailing: widget.edit
-  //               ? IconButton(
-  //                   onPressed: () => _removePortfolio(price),
-  //                   icon: Icon(
-  //                     size: ResponsiveHelper.responsiveHeight(context, 25.0),
-  //                     Icons.remove,
-  //                     color: Colors.red,
-  //                   ),
-  //                 )
-  //               : null,
-  //           title: RichText(
-  //               textScaleFactor: MediaQuery.of(context).textScaleFactor,
-  //               text: TextSpan(children: [
-  //                 if (currencyPartition.isNotEmpty &&
-  //                     currencyPartition.length > 1)
-  //                   TextSpan(
-  //                     text:
-  //                         '${currencyPartition.isEmpty ? '' : currencyPartition.length > 0 ? currencyPartition[1] : ''} ${price.price.toString()}',
-  //                     style: TextStyle(
-  //                       fontSize:
-  //                           ResponsiveHelper.responsiveFontSize(context, 18.0),
-  //                       color: Theme.of(context).secondaryHeaderColor,
-  //                       fontWeight: FontWeight.bold,
-  //                     ),
-  //                   ),
-  //                 TextSpan(
-  //                   text: "\n${price.name}",
-  //                   style: TextStyle(
-  //                     fontSize:
-  //                         ResponsiveHelper.responsiveFontSize(context, 12.0),
-  //                     color: Colors.blue,
-  //                     // fontWeight: FontWeight.bold,
-  //                   ),
-  //                 ),
-  //                 TextSpan(
-  //                   text: "\n${price.value}",
-  //                   style: TextStyle(
-  //                     fontSize:
-  //                         ResponsiveHelper.responsiveFontSize(context, 12.0),
-  //                     color: Theme.of(context).secondaryHeaderColor,
-  //                     // fontWeight: FontWeight.bold,
-  //                   ),
-  //                 )
-  //               ])),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // _professionalImageContainer(PriceModel price) {
-  //   return Container(
-  //       width: ResponsiveHelper.responsiveWidth(context, 200),
-  //       height: ResponsiveHelper.responsiveWidth(context, 500),
-  //       decoration: BoxDecoration(
-  //         borderRadius: BorderRadius.circular(30),
-  //         // image: DecorationImage(
-  //         //   image: CachedNetworkImageProvider(imageUrl),
-  //         //   fit: BoxFit.cover,
-  //         // ),
-  //       ),
-  //       child: Column(
-  //         children: [
-  //           RichText(
-  //             textScaleFactor: MediaQuery.of(context).textScaleFactor,
-  //             text: TextSpan(
-  //               children: [
-  //                 TextSpan(
-  //                   text: '\nTicket Sales Payouts',
-  //                   style: Theme.of(context).textTheme.titleLarge,
-  //                 ),
-  //                 TextSpan(
-  //                   text:
-  //                       '\n\nYour ticket sales funds will be made available a You will be able to request a payout of those funds at that time if you sell any tickets. ',
-  //                   style: Theme.of(context).textTheme.bodyMedium,
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         ],
-  //       ));
-  // }
 
   void selectItem(int index) {
     setState(() {

@@ -100,7 +100,7 @@ class EventBuilderWidget extends StatelessWidget {
           children: [
             ListTile(
               title: RichText(
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                textScaler: MediaQuery.of(context).textScaler,
                 text: TextSpan(
                   children: [
                     TextSpan(
@@ -270,7 +270,7 @@ class EventBuilderWidget extends StatelessWidget {
             : Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: RichText(
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  textScaler: MediaQuery.of(context).textScaler,
                   text: TextSpan(
                     children: [
                       TextSpan(

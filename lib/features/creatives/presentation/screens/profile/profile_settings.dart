@@ -1,4 +1,3 @@
-import 'package:bars/services/gemini_ai/generative_service.dart';
 import 'package:bars/utilities/exports.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:hive_flutter/hive_flutter.dart';
@@ -142,7 +141,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
         children: [
           Column(children: <Widget>[
             RichText(
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                textScaler: MediaQuery.of(context).textScaler,
                 text: TextSpan(
                   children: [
                     TextSpan(
@@ -406,15 +405,15 @@ class _ProfileSettingsState extends State<ProfileSettings> {
     );
   }
 
-  final _googleGenerativeAIService = GoogleGenerativeAIService();
-  String _generatedResponse = '';
+  // final _googleGenerativeAIService = GoogleGenerativeAIService();
+  // String _generatedResponse = '';
 
-  Future<void> _generateResponse(String prompt) async {
-    final response = await _googleGenerativeAIService.generateResponse(prompt);
-    setState(() {
-      _generatedResponse = response!;
-    });
-  }
+  // Future<void> _generateResponse(String prompt) async {
+  //   final response = await _googleGenerativeAIService.generateResponse(prompt);
+  //   setState(() {
+  //     _generatedResponse = response!;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -688,17 +687,17 @@ class _ProfileSettingsState extends State<ProfileSettings> {
               ],
             ),
           ),
-          ElevatedButton(
-            onPressed: () => _generateResponse(
-                'What would be the wather conditon on july 21 in Tema Ghana'),
-            child: Text('Generate Response'),
-          ),
-          SizedBox(height: 16.0),
-          if (_generatedResponse.isNotEmpty)
-            Text(
-              'Generated Response:\n$_generatedResponse',
-              style: TextStyle(fontSize: 16.0),
-            ),
+          // ElevatedButton(
+          //   onPressed: () => _generateResponse(
+          //       'What would be the wather conditon on july 21 in Tema Ghana'),
+          //   child: Text('Generate Response'),
+          // ),
+          // SizedBox(height: 16.0),
+          // if (_generatedResponse.isNotEmpty)
+          //   Text(
+          //     'Generated Response:\n$_generatedResponse',
+          //     style: TextStyle(fontSize: 16.0),
+          //   ),
           _divider(),
           const SizedBox(height: 30),
           if (_userLocation != null) _accountRegistryInfo(),

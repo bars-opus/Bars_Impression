@@ -61,7 +61,7 @@ class TicketOrderModel {
       transactionId: data['transactionId'] ?? '',
       eventId: data['eventId'] ?? '',
       canlcellationReason: data['canlcellationReason'] ?? '',
-      eventAuthorId: data['eventAuthorId'],
+      eventAuthorId: data['eventAuthorId'] ?? '',
 
       timestamp:
           data['timestamp'] as Timestamp? ?? Timestamp.fromDate(DateTime.now()),

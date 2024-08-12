@@ -89,7 +89,7 @@ class _CountdownTimerState extends State<CountdownTimer> {
         _countDownToStartingDate == 'Tomorrow';
     return widget.split.startsWith('Multiple')
         ? RichText(
-            textScaleFactor: MediaQuery.of(context).textScaleFactor,
+            textScaler: MediaQuery.of(context).textScaler,
             text: TextSpan(children: [
               TextSpan(
                 text: '$_countDownToStartingDate',

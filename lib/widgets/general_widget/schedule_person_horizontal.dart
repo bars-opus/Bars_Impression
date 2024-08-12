@@ -19,35 +19,6 @@ class ShedulePeopleHorizontal extends StatelessWidget {
       this.isSponsor,
       required this.currentUserId});
 
-  // _buildDisplayPortfolioGrid(
-  //   BuildContext context,
-  // ) {
-  //   final width = MediaQuery.of(context).size.width;
-  //   List<Widget> tiles = [];
-  //   schedulepeople.forEach((people) => tiles.add(ScheduleBuildPeople(
-  //         currentUserId: currentUserId,
-  //         edit: edit,
-  //         from: from,
-  //         width: width,
-  //         fullWidth: false,
-  //         person: people,
-  //       )));
-
-  //   return Container(
-  //     height: ResponsiveHelper.responsiveHeight(context, 120),
-  //     child: GridView.count(
-  //       physics: AlwaysScrollableScrollPhysics(),
-  //       scrollDirection: Axis.horizontal,
-  //       crossAxisCount: 2, // Items down the screen
-  //       mainAxisSpacing: 2.0,
-  //       crossAxisSpacing: 2.0,
-  //       childAspectRatio:
-  //           0.3, // Adjust this to change the vertical size, smaller number means smaller height
-  //       children: tiles,
-  //     ),
-  //   );
-  // }
-
 // To display the people tagged in a post as performers, crew, sponsors or partners
   void _showBottomSheetTaggedPeople(
     BuildContext context,

@@ -485,6 +485,17 @@ class _DeleteAccountState extends State<DeleteAccount> {
       await doc.reference.delete();
     }
 
+    // Delete user newEvents
+    final CollectionReference newOrgAttendees = FirebaseFirestore.instance
+        .collection('new_organizer_attendees')
+        .doc(currentUserId)
+        .collection('OragnizerAttendees');
+    final QuerySnapshot newnewOrgAttendeesSnapshot =
+        await newOrgAttendees.get();
+    for (var doc in newnewOrgAttendeesSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
     // Delete user userName
     await FirebaseFirestore.instance
         .collection('usernames')
@@ -512,6 +523,18 @@ class _DeleteAccountState extends State<DeleteAccount> {
     // Delete user ratings
     await FirebaseFirestore.instance
         .collection('new_userRating')
+        .doc(currentUserId)
+        .delete();
+
+    // Delete user brand target
+    await FirebaseFirestore.instance
+        .collection('new_userBrandIfo')
+        .doc(currentUserId)
+        .delete();
+
+    // Delete user brand matching
+    await FirebaseFirestore.instance
+        .collection('new_brand_matching')
         .doc(currentUserId)
         .delete();
 

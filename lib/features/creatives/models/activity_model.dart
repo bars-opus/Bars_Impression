@@ -9,7 +9,6 @@ enum NotificationActivityType {
   inviteRecieved,
   ticketPurchased,
   follow,
-  // followRequest,
   eventUpdate,
   eventReminder,
   refundRequested,

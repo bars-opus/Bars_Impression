@@ -79,118 +79,96 @@ class _ScheduleBuildPeopleState extends State<ScheduleBuildPeople> {
     String profileImageUrl = widget.person.profileImageUrl == null
         ? ''
         : widget.person.profileImageUrl;
-    return Padding(
-      padding: widget.fullWidth
-          ? EdgeInsets.only(top: 5.0, left: 10, right: 10)
-          : EdgeInsets.all(0),
-      child: GestureDetector(
-        onTap: () {
-          widget.person.externalProfileLink!.isEmpty
-              ? _navigateToPage(
-                  context,
-                  ProfileScreen(
-                    currentUserId: widget.currentUserId,
-                    userId: widget.person.internalProfileLink!,
-                    user: null,
-                  ))
-              : _showBottomSheetWork(context, widget.person.name,
-                  widget.person.externalProfileLink!);
-        },
-        child: Container(
-          decoration: BoxDecoration(
-              color: widget.from.startsWith('list')
-                  ? Theme.of(context).primaryColor
-                  : Theme.of(context).primaryColorLight,
-              borderRadius: BorderRadius.circular(5)),
-          width: widget.fullWidth ? widget.width : widget.width / 2,
-          height: widget.from == 'list' ? 80 : null,
-          margin: EdgeInsets.all(1.0),
-          child: Padding(
-            padding: widget.fullWidth
-                ? EdgeInsets.all(10.0)
-                : EdgeInsets.only(bottom: 2.0),
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: ResponsiveHelper.responsiveHeight(
-                  context,
-                  5,
-                ),
-              ),
-              child: Row(
-                children: [
-                  profileImageUrl.isEmpty
-                      ? Icon(
-                          Icons.account_circle,
-                          size:
-                              ResponsiveHelper.responsiveHeight(context, 40.0),
-                          color: Colors.grey,
-                        )
-                      : CircleAvatar(
-                          radius:
-                              ResponsiveHelper.responsiveHeight(context, 18.0),
-                          backgroundColor: Colors.blue,
-                          backgroundImage:
-                              CachedNetworkImageProvider(profileImageUrl),
-                        ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                    child: RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: widget.person.name,
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                          if (widget.from != 'Calendar')
-                            if (widget.from != 'list')
-                              if (!widget.edit)
-                                if (widget.person.role != null)
-                                  TextSpan(
-                                    text: "\n${widget.person.role}",
-                                    style: TextStyle(
-                                        color: Colors.blue,
-                                        fontSize:
-                                            ResponsiveHelper.responsiveFontSize(
-                                                context, 12)),
-                                  ),
-                        ],
-                      ),
-                      maxLines: widget.fullWidth ? null : 2,
-                      overflow: widget.fullWidth
-                          ? TextOverflow.visible
-                          : TextOverflow.ellipsis,
-                    ),
-                  ),
-                  Container(
-                    height: ResponsiveHelper.responsiveHeight(
-                      context,
-                      40,
-                    ),
-                    width: ResponsiveHelper.responsiveHeight(
-                      context,
-                      30,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 20.0),
-                      child: Icon(
-                        widget.person.externalProfileLink!.isEmpty
-                            ? Icons.arrow_forward_ios_rounded
-                            : Icons.link,
-                        size: ResponsiveHelper.responsiveHeight(
-                          context,
-                          20,
-                        ),
-                        color: Colors.blue,
-                      ),
-                    ),
+    return GestureDetector(
+      onTap: () {
+        widget.person.externalProfileLink!.isEmpty
+            ? _navigateToPage(
+                context,
+                ProfileScreen(
+                  currentUserId: widget.currentUserId,
+                  userId: widget.person.internalProfileLink!,
+                  user: null,
+                ))
+            : _showBottomSheetWork(context, widget.person.name,
+                widget.person.externalProfileLink!);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+            color: Theme.of(context).primaryColorLight,
+            borderRadius: BorderRadius.circular(20)),
+        width: widget.fullWidth ? widget.width : widget.width / 2,
+        height: ResponsiveHelper.responsiveHeight(context, 60),
+        margin: EdgeInsets.all(1.0),
+        padding: EdgeInsets.only(left: 10.0),
+        child: Row(
+          children: [
+            profileImageUrl.isEmpty
+                ? Icon(
+                    Icons.account_circle,
+                    size: ResponsiveHelper.responsiveHeight(context, 40.0),
+                    color: Colors.grey,
                   )
-                ],
+                : CircleAvatar(
+                    radius: ResponsiveHelper.responsiveHeight(context, 18.0),
+                    backgroundColor: Colors.blue,
+                    backgroundImage:
+                        CachedNetworkImageProvider(profileImageUrl),
+                  ),
+            SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: RichText(
+                textScaler: MediaQuery.of(context).textScaler,
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: widget.person.name,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    if (widget.from != 'Calendar')
+                      if (widget.from != 'list')
+                        if (!widget.edit)
+                          if (widget.person.role != null)
+                            TextSpan(
+                              text: "\n${widget.person.role}",
+                              style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: ResponsiveHelper.responsiveFontSize(
+                                      context, 12)),
+                            ),
+                  ],
+                ),
+                maxLines: widget.fullWidth ? null : 2,
+                overflow: widget.fullWidth
+                    ? TextOverflow.visible
+                    : TextOverflow.ellipsis,
               ),
             ),
-          ),
+            Container(
+              height: ResponsiveHelper.responsiveHeight(
+                context,
+                40,
+              ),
+              width: ResponsiveHelper.responsiveHeight(
+                context,
+                30,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(right: 20.0),
+                child: Icon(
+                  widget.person.externalProfileLink!.isEmpty
+                      ? Icons.arrow_forward_ios_rounded
+                      : Icons.link,
+                  size: ResponsiveHelper.responsiveHeight(
+                    context,
+                    20,
+                  ),
+                  color: Colors.blue,
+                ),
+              ),
+            )
+          ],
         ),
       ),
     );

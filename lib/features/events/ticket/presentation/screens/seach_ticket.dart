@@ -97,8 +97,7 @@ class _SearchTicketState extends State<SearchTicket> {
                                   context, 250)),
                           child: Center(
                             child: RichText(
-                                textScaleFactor:
-                                    MediaQuery.of(context).textScaleFactor,
+                                textScaler: MediaQuery.of(context).textScaler,
                                 text: TextSpan(
                                   children: [
                                     TextSpan(

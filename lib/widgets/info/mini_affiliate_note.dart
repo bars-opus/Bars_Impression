@@ -35,11 +35,12 @@ class _MiniAffiliateNoteState extends State<MiniAffiliateNote> {
     return AnimatedContainer(
         curve: Curves.easeInOut,
         duration: Duration(milliseconds: 800),
-        height:
-            widget.displayMiniUpdate && widget.showinfo && _showinfo ? 80 : 0.0,
+        height: widget.displayMiniUpdate && widget.showinfo && _showinfo
+            ? 100
+            : 0.0,
         width: width,
         decoration: BoxDecoration(
-            color: Colors.grey[300], borderRadius: BorderRadius.circular(10)),
+            color: Colors.white, borderRadius: BorderRadius.circular(10)),
         child: ListTile(
             leading: Padding(
               padding: const EdgeInsets.only(top: 8.0),
@@ -57,7 +58,7 @@ class _MiniAffiliateNoteState extends State<MiniAffiliateNote> {
               icon: Icon(Icons.close),
               iconSize: ResponsiveHelper.responsiveHeight(
                 context,
-                25,
+                20,
               ),
               color: Colors.black,
               onPressed: () {
@@ -90,7 +91,7 @@ class _MiniAffiliateNoteState extends State<MiniAffiliateNote> {
                     ),
                   ),
                   TextSpan(
-                    text: ' Tap here to see.',
+                    text: '\nTap here to see.',
                     style: TextStyle(
                       fontSize:
                           ResponsiveHelper.responsiveFontSize(context, 11.0),
@@ -99,7 +100,7 @@ class _MiniAffiliateNoteState extends State<MiniAffiliateNote> {
                   ),
                 ],
               ),
-              maxLines: 2,
+              maxLines: 3,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.start,
               textScaler: TextScaler.linear(
@@ -116,7 +117,8 @@ class _MiniAffiliateNoteState extends State<MiniAffiliateNote> {
                   currentUserId: _provider.currentUserId!,
                   eventId: '',
                   marketingType: '',
-                  isUser: true, fromActivity: false,
+                  isUser: true,
+                  fromActivity: false,
                 ),
               );
             }));

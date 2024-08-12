@@ -15,7 +15,7 @@ class _SearchState extends State<Search>
   final _physycsNotifier = ValueNotifier<bool>(false);
   ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
   Future<QuerySnapshot>? _users;
-  Future<QuerySnapshot>? _event;
+   Future<List<DocumentSnapshot>>?   _event;
   final FocusNode _focusNode = FocusNode();
 
   @override

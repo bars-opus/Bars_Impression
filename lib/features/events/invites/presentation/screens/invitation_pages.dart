@@ -15,10 +15,10 @@ class _InvitationPagesState extends State<InvitationPages>
     with AutomaticKeepAliveClientMixin {
   List<InviteModel> _inviteList = [];
   DocumentSnapshot? _lastInviteDocument;
-  DocumentSnapshot? _lastFiletedActivityDocument;
+  // DocumentSnapshot? _lastFiletedActivityDocument;
   int limit = 5;
   bool _hasNext = true;
-  String _isSortedBy = '';
+  // String _isSortedBy = '';
   bool _isLoading = true;
   final now = DateTime.now();
   late ScrollController _hideButtonController;

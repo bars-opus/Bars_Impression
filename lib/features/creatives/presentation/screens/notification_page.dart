@@ -1,6 +1,4 @@
-import 'package:bars/features/creatives/presentation/widgets/acitvity_widget.dart';
 import 'package:bars/utilities/exports.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class NotificationPage extends StatefulWidget {
@@ -255,22 +253,10 @@ class _NotificationPageState extends State<NotificationPage>
         children: [
           Padding(
             padding: const EdgeInsets.all(5.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Icon(
-                  size: ResponsiveHelper.responsiveFontSize(context, 20.0),
-                  icon,
-                  color: Colors.blue,
-                ),
-                const SizedBox(
-                  width: 30,
-                ),
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ],
+            child: NotificationSortButton(
+              icon: icon,
+              onPressed: onPressed,
+              title: title,
             ),
           ),
           Divider(
@@ -283,7 +269,7 @@ class _NotificationPageState extends State<NotificationPage>
   }
 
   void _showBottomSheetSortNotifications(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+    // final width = MediaQuery.of(context).size.width;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,

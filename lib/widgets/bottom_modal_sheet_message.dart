@@ -305,10 +305,9 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
                 Uri.parse('https://www.barsopus.com/terms-of-use'))) {
               throw 'Could not launch link';
             }
-            
           },
           child: RichText(
-            textScaleFactor: MediaQuery.of(context).textScaleFactor,
+            textScaler: MediaQuery.of(context).textScaler,
             text: TextSpan(
               children: [
                 TextSpan(
@@ -626,13 +625,9 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
               : Container(
                   margin: EdgeInsets.symmetric(horizontal: 4.0),
                   child: CircularButton(
-                      color: readyToSend
-                          ? Colors.blue
-                          : Colors.transparent,
+                      color: readyToSend ? Colors.blue : Colors.transparent,
                       icon: Icon(Icons.send,
-                          color: readyToSend
-                              ? Colors.white
-                              : Colors.grey),
+                          color: readyToSend ? Colors.white : Colors.grey),
                       onPressed: onSend),
                 ),
         ),
@@ -682,7 +677,7 @@ class _BottomModalSheetMessageState extends State<BottomModalSheetMessage>
           title: _provider.replyChatMessage == null
               ? SizedBox()
               : RichText(
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  textScaler: MediaQuery.of(context).textScaler,
                   text: TextSpan(
                     children: [
                       TextSpan(

@@ -66,7 +66,7 @@ class CreateEventDoc extends StatelessWidget {
                 }
               },
               child: RichText(
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                textScaler: MediaQuery.of(context).textScaler,
                 text: TextSpan(
                   children: [
                     TextSpan(
@@ -94,7 +94,7 @@ class CreateEventDoc extends StatelessWidget {
                 }
               },
               child: RichText(
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                textScaler: MediaQuery.of(context).textScaler,
                 text: TextSpan(
                   children: [
                     TextSpan(
@@ -136,7 +136,7 @@ class CreateEventDoc extends StatelessWidget {
               height: 40,
             ),
             RichText(
-              textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              textScaler: MediaQuery.of(context).textScaler,
               text: TextSpan(
                 children: [
                   TextSpan(
@@ -168,7 +168,7 @@ class CreateEventDoc extends StatelessWidget {
                 }
               },
               child: RichText(
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                textScaler: MediaQuery.of(context).textScaler,
                 text: TextSpan(
                   children: [
                     TextSpan(
@@ -189,7 +189,7 @@ class CreateEventDoc extends StatelessWidget {
               ),
             ),
             RichText(
-              textScaleFactor: MediaQuery.of(context).textScaleFactor,
+              textScaler: MediaQuery.of(context).textScaler,
               text: TextSpan(
                 children: [
                   TextSpan(

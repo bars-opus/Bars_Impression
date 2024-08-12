@@ -29,15 +29,9 @@ class inviteDoc extends StatelessWidget {
               ),
             ),
           const SizedBox(height: 40),
-          GestureDetector(
-            onTap: () async {
-              // if (!await launchUrl(
-              //     Uri.parse('https://www.barsopus.com/refund-policy'))) {
-              //   throw 'Could not launch ';
-              // }
-            },
-            child: RichText(
-              textScaleFactor: MediaQuery.of(context).textScaleFactor,
+         
+           RichText(
+              textScaler: MediaQuery.of(context).textScaler,
               text: TextSpan(
                 children: [
                   TextSpan(
@@ -70,7 +64,7 @@ class inviteDoc extends StatelessWidget {
                 ],
               ),
             ),
-          ),
+        
           const SizedBox(height: 60),
         ],
       ),

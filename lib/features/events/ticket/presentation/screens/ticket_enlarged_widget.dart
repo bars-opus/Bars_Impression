@@ -579,8 +579,7 @@ class _TicketEnlargedWidgetState extends State<TicketEnlargedWidget> {
                               ));
                         },
                         child: RichText(
-                          textScaleFactor:
-                              MediaQuery.of(context).textScaleFactor,
+                          textScaler: MediaQuery.of(context).textScaler,
                           text: TextSpan(
                             children: [
                               if (widget.ticket.entranceId.isNotEmpty)

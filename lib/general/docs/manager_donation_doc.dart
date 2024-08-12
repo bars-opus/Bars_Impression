@@ -38,7 +38,7 @@ class ManagerDonationDoc extends StatelessWidget {
           const SizedBox(height: 40),
           isDonation
               ? RichText(
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  textScaler: MediaQuery.of(context).textScaler,
                   text: TextSpan(
                     children: [
                       TextSpan(
@@ -137,7 +137,7 @@ class ManagerDonationDoc extends StatelessWidget {
                 )
               : isCurrentUser
                   ? RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      textScaler: MediaQuery.of(context).textScaler,
                       text: TextSpan(
                         children: [
                           TextSpan(
@@ -227,7 +227,7 @@ class ManagerDonationDoc extends StatelessWidget {
                       ),
                     )
                   : RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      textScaler: MediaQuery.of(context).textScaler,
                       text: TextSpan(
                         children: [
                           TextSpan(
@@ -305,7 +305,7 @@ class ManagerDonationDoc extends StatelessWidget {
             ),
           if (isCurrentUser)
             RichText(
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                textScaler: MediaQuery.of(context).textScaler,
                 text: TextSpan(children: [
                   TextSpan(
                     text: "\nAdd payout account.",

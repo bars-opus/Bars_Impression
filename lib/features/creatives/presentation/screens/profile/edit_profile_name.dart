@@ -1,6 +1,6 @@
 import 'package:bars/utilities/exports.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:hive/hive.dart';
+// import 'package:hive/hive.dart';
 
 class EditProfileName extends StatefulWidget {
   final AccountHolderAuthor user;

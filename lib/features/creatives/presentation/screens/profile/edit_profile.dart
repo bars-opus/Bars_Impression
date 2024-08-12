@@ -13,12 +13,10 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
-
   File? _profileImage;
   String _name = '';
   String _userName = '';
   String _bio = '';
-  String _profileHandle = '';
   bool _isLoading = false;
   bool _isLoadingBooking = false;
 
@@ -28,7 +26,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _name = widget.user.name!;
     _userName = widget.user.userName!;
     _bio = widget.user.bio!;
-    _profileHandle = widget.user.profileHandle!;
   }
 
   _handleImageFromGallery() async {
@@ -41,8 +38,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _provider.setIsLoading(true);
       bool isHarmful = await HarmfulContentChecker.checkForHarmfulContent(
           context, file as File);
-
-      // final isHarmful = await _checkForHarmfulContent(context, file as File);
 
       if (isHarmful) {
         mySnackBarModeration(context,
@@ -64,14 +59,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       mySnackBar(context,
           'An error occured\nCheck your internet connection and try again.');
     }
-
-    // if (file != null) {
-    // if (mounted) {
-    //   setState(() {
-    //     _profileImage = file as File;
-    //   });
-    // }
-    // }
   }
 
   Future<File> _cropImage(File imageFile) async {
@@ -86,9 +73,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (_profileImage == null) {
       if (widget.user.profileImageUrl!.isEmpty) {
         return AssetImage(
-          // ConfigBloc().darkModeOn
-          //     ? 'assets/images/user_placeholder.png'
-          //     :
           'assets/images/user_placeholder2.png',
         );
       } else {
@@ -205,104 +189,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     accountAuthorbox.put(updatedAccountAuthor.userId, updatedAccountAuthor);
   }
 
-  void _showBottomSheetVerficationNeutralized(
-      BuildContext context, String from) {
-    final width = MediaQuery.of(context).size.width;
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return Container(
-          height: MediaQuery.of(context).size.height.toDouble() / 1.5,
-          decoration: BoxDecoration(
-              color: Colors.blue, borderRadius: BorderRadius.circular(30)),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              const SizedBox(
-                height: 20.0,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: DisclaimerWidgetOnColor(
-                  onColoredBackground: true,
-                  title: 'Verified\nStatus',
-                  subTitle:
-                      'Changes made to an account by the owner may result in loss of Verified status. User-made changes include, but are not limited to \n\n1. If you change your username (${widget.user.userName})\n2. If you change your account type (${widget.user.profileHandle})\n3. If your account becomes inactive or incomplete ',
-                  icon: Icons.verified_outlined,
-                ),
-              ),
-              const SizedBox(
-                height: 40,
-              ),
-              Container(
-                width: width.toDouble() - 40,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).primaryColorLight,
-                    elevation: 10.0,
-                    foregroundColor: Colors.blue,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    from.startsWith('userName')
-                        ? _navigateToPage(
-                            context,
-                            EditProfileName(
-                              user: widget.user,
-                            ),
-                          )
-                        : from.startsWith('accountType')
-                            ? _navigateToPage(
-                                context,
-                                EditProfileHandle(
-                                  user: widget.user,
-                                ),
-                              )
-                            : () {};
-                  },
-                  child: Text(
-                    from.startsWith('userName')
-                        ? 'Change username'
-                        : from.startsWith('accountType')
-                            ? 'Select account type'
-                            : '',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontSize:
-                          ResponsiveHelper.responsiveFontSize(context, 14),
-                    ),
-                  ),
-                ),
-              )
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  _editPageOptions(String title, IconData icon, VoidCallback onPressed) {
-    return Padding(
-      padding: const EdgeInsets.all(3.0),
-      child: UserWebsite(
-          containerColor: Colors.transparent,
-          iconSize: 20,
-          padding: 5,
-          raduis: 10,
-          title: title,
-          icon: icon,
-          textColor: Theme.of(context).secondaryHeaderColor,
-          iconColor: Theme.of(context).secondaryHeaderColor,
-          onPressed: onPressed),
-    );
-  }
-
   void _navigateToPage(BuildContext context, Widget page) {
     Navigator.push(
       context,
@@ -327,43 +213,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       },
     );
   }
-
-  // _userNameInfo() {
-  //   final double width = MediaQuery.of(context).size.width;
-  //   return Column(
-  //     mainAxisAlignment: MainAxisAlignment.center,
-  //     crossAxisAlignment: CrossAxisAlignment.center,
-  //     children: <Widget>[
-  //       new Material(
-  //         color: Colors.transparent,
-  //         child: Text(
-  //           _userName.toUpperCase(),
-  //           style: Theme.of(context).textTheme.titleMedium,
-  //           textAlign: TextAlign.center,
-  //         ),
-  //       ),
-  //       new Material(
-  //         color: Colors.transparent,
-  //         child: Text(
-  //           _name,
-  //           style: Theme.of(context).textTheme.bodyMedium,
-  //           textAlign: TextAlign.center,
-  //         ),
-  //       ),
-  //       new Material(
-  //         color: Colors.transparent,
-  //         child: Text(
-  //           _profileHandle,
-  //           style: TextStyle(
-  //             color: Colors.blueGrey,
-  //             fontSize: width > 600 ? 16 : 14.0,
-  //             fontWeight: FontWeight.bold,
-  //           ),
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
 
   _changeUserNameField() {
     return Column(
@@ -419,29 +268,55 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  _loadingPortfolio() {
-    return ListTile(
-      leading: SizedBox(
-        height: 15,
-        width: 15,
-        child: CircularProgressIndicator(
-          strokeWidth: 3,
-          color: Colors.blue,
+  _loadingPortfolio(bool isBooking, VoidCallback onPressed) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            isBooking
+                ? SizedBox(
+                    height: 15,
+                    width: 15,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 3,
+                      color: Colors.blue,
+                    ),
+                  )
+                : AnimatedCircle(
+                    size: 15,
+                    stroke: 2,
+                    animateShape: true,
+                  ),
+            const SizedBox(
+              width: 14,
+            ),
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: RichText(
+                  textScaler: MediaQuery.of(context).textScaler,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: isBooking ? ' Booking portfolio' : 'Brand target',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                  textAlign: TextAlign.start,
+                ),
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios_outlined,
+              color: Theme.of(context).secondaryHeaderColor,
+              size: ResponsiveHelper.responsiveFontSize(context, 15),
+            ),
+          ],
         ),
-      ),
-      title: Text(
-        ' Booking portfolio',
-        style: TextStyle(
-          color: Theme.of(context).secondaryHeaderColor,
-          fontWeight: FontWeight.normal,
-          fontSize: ResponsiveHelper.responsiveFontSize(context, 14.0),
-        ),
-        overflow: TextOverflow.ellipsis,
-      ),
-      trailing: Icon(
-        Icons.arrow_forward_ios_outlined,
-        color: Theme.of(context).secondaryHeaderColor,
-        size: ResponsiveHelper.responsiveFontSize(context, 20),
       ),
     );
   }
@@ -539,7 +414,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
         _divider,
         _isLoadingBooking
-            ? _loadingPortfolio()
+            ? _loadingPortfolio(true, () {})
             : IntroInfo(
                 leadingIcon: Icons.work_outline_sharp,
                 titleColor: Theme.of(context).secondaryHeaderColor,
@@ -580,6 +455,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 icon: Icons.arrow_forward_ios_outlined,
               ),
         _divider,
+        _loadingPortfolio(
+          false,
+          () {
+            _navigateToPage(
+                context,
+                HopeIntroductionScreen(
+                  isIntro: false,
+                ));
+          },
+        ),
+        _divider,
         IntroInfo(
           leadingIcon: Icons.settings_outlined,
           titleColor: Theme.of(context).secondaryHeaderColor,
@@ -596,85 +482,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           icon: Icons.arrow_forward_ios_outlined,
         ),
         _divider,
-        // _divider,
-        // _editPageOptions(' Select an Account Type', Icons.person, () {
-        // _navigateToPage(
-        //   context,
-        //   EditProfileHandle(
-        //     user: widget.user,
-        //   ),
-        // );
-        // }),
-        // _editPageOptions(' Choose your location', MdiIcons.mapMarker, () {
-        //   _navigateToPage(
-        //     context,
-        // EditProfileSelectLocation(
-        //   user: _user,
-        //     ),
-        //   );
-        // }),
-        // _isLoadingBooking
-        //     ? ListTile(
-        //         leading: SizedBox(
-        //           height: 15,
-        //           width: 15,
-        //           child: CircularProgressIndicator(
-        //             strokeWidth: 3,
-        //             color: Colors.blue,
-        //           ),
-        //         ),
-        //         title: Text(
-        //           ' Booking portfolio',
-        //           style: TextStyle(
-        //             color: Theme.of(context).secondaryHeaderColor,
-        //             fontWeight: FontWeight.normal,
-        //             fontSize:
-        //                 ResponsiveHelper.responsiveFontSize(context, 14.0),
-        //           ),
-        //           overflow: TextOverflow.ellipsis,
-        //         ),
-        //         trailing: Icon(
-        //           Icons.arrow_forward_ios_outlined,
-        //           color: Colors.grey,
-        //           size: ResponsiveHelper.responsiveFontSize(context, 20),
-        //         ),
-        //       )
-        //     : _editPageOptions(' Booking portfolio', MdiIcons.briefcaseEdit,
-        //   () async {
-        //   if (_isLoadingBooking) return;
-        //   _isLoadingBooking = true;
-
-        //   try {
-        //     UserProfessionalModel? user =
-        //         await DatabaseService.getUserProfessionalWithId(
-        //       widget.user.userId!,
-        //     );
-
-        //     if (user != null) {
-        //       _navigateToPage(
-        //         context,
-        //         EditProfileProfessional(
-        //           user: user,
-        //         ),
-        //       );
-        //     } else {
-        //       _showBottomSheetErrorMessage(
-        //           'Failed to fetch booking data.');
-        //     }
-        //   } catch (e) {
-        //     _showBottomSheetErrorMessage('Failed to fetch booking data.');
-        //   } finally {
-        //     _isLoadingBooking = false;
-        //   }
-        // }),
-        // _editPageOptions('Account settings', Icons.settings, () async {
-        //   _navigateToPage(
-        //     context,
-        // ProfileSettings(
-        //   user: widget.user,
-        //     ),
-        //   );
-        // }),
       ],
     );
   }

@@ -212,16 +212,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 if (_provider.userLocationPreference == null ||
                     _provider.userLocationPreference != _setting) {
                   _provider.setUserLocationPreference(_setting!);
-                  print("cccc" +
-                      _provider.userLocationPreference!.transferRecepientId
-                          .toString());
                 }
                 if (!_provider.isLoading) {
                   _provider.setIsLoading(false);
                 }
               });
-              // print('Username: ${_user!.userName} 1111');
-              // print('Profile Handle: ${_user.profileHandle} 1111');
 
               /// Then return the appropriate widget
               return _user!.userName == null ||
@@ -245,7 +240,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       _showBottomSheetErrorMessage(snapshot.error.toString());
                     });
-                    // Consider showing an error widget immediately rather than returning an empty Container.
+                    // Show an error widget immediately rather than returning an empty Container.
                     return _showBottomSheetErrorMessage(snapshot.error
                         .toString()); // Replace with your actual error widget.
                   }
@@ -277,9 +272,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                       _provider.setUserLocationPreference(_setting);
                       accountLocationPreferenceBox.put(
                           _setting.userId, _setting);
-                      // print("hgjhg" +
-                      //     _provider.userLocationPreference!.transferRecepientId
-                      //         .toString());
                     }
                   });
 
@@ -295,14 +287,12 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                       : HomeScreen();
                 },
               );
-             
             }
           } else {
             return Intro();
           }
         });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -322,7 +312,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           SignpsScreen.id: (context) => SignpsScreen(),
           HomeScreen.id: (context) => HomeScreen(),
           AcceptTerms.id: (context) => AcceptTerms(),
-          // StoreSearch.id: (context) => StoreSearch(),
           Intro.id: (context) => Intro(),
           Password.id: (context) => Password(),
         },

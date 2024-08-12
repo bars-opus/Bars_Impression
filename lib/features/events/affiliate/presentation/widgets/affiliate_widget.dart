@@ -490,7 +490,7 @@ class _AffiliatetStateState extends State<AffiliateWidget> {
                   ),
                   const SizedBox(height: 40),
                   RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(

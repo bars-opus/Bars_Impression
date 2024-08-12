@@ -60,7 +60,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
   final _ticketTypeController = TextEditingController();
   final _tagNameController = TextEditingController();
   final _priceController = TextEditingController();
-  final _scheduleTitleController = TextEditingController();
+  // final _scheduleTitleController = TextEditingController();
   final _schedulePerfomerController = TextEditingController();
 
   final _contactController = TextEditingController();
@@ -73,6 +73,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
   final _cancellationRasonController = TextEditingController();
 
   final _debouncer = Debouncer(milliseconds: 500);
+  final _googleGenerativeAIService = GoogleGenerativeAIService();
 
 // Focus nodes
   final FocusNode _addressSearchfocusNode = FocusNode();
@@ -100,6 +101,65 @@ class _CreateEventScreenState extends State<CreateEventScreen>
         _pageController.initialPage,
       );
     });
+  }
+
+// Function to get summarize event using Gemini API
+
+  Future<String> summarizeEvent(Event event) async {
+    final prompt =
+        'Summarize the following event details:\n\nTitle: ${event.title}\nOverview: ${event.overview}\nTheme: ${event.theme}\nCity: ${event.city}\nDate: ${event.startDate.toDate().toString()}\n\nSummary:';
+    final response = await _googleGenerativeAIService.generateResponse(prompt);
+    print(response);
+    return response!.trim();
+  }
+
+// Function to get similarity score using Gemini API
+  Future<String> gettInsight(
+      {required String eventTitle,
+      required String eventTheme,
+      required String eventDressCode,
+      required String eventAdress,
+      required String eventCity,
+      required Timestamp eventStartDate,
+      required bool isInsight}) async {
+    final prompt = isInsight
+        ? """
+Analyze the following information about this event and give an in-depth insight based on the instructions provided.
+Ensure the content is structured with clear headings, bullet points, and paragraphs for readability, use # to start a Heading, * to Start a body and +to start a bullete.
+1. Analyze the event title: '${eventTitle}' and event theme: '${eventTheme}'. Provide insights on these details to help potential attendees understand the event better.
+2. Advise on the appropriate attire for both male and female attendees for this event. If there is a dress code specified by the event organizer, dress code: '${eventDressCode}', use it as a hint.
+3. Analyze the event's date: '${MyDateFormat.toDate(eventStartDate.toDate())}' and location: '${eventAdress}'. Based on historical weather data, predict the likely weather conditions and suggest suitable attire.
+5. What networking opportunities are available at the event? Offer advice on how attendees can make the most of these opportunities.
+6. What are the logistical details such as parking, transportation, and accessibility? Provide tips to help attendees navigate these aspects smoothly.
+7. Are there any health and safety guidelines or measures that attendees should be aware of? Provide an overview and advice on how to comply with these measures.
+8. What are some general etiquette or behavioral expectations for this event? Offer guidance to ensure attendees conduct themselves appropriately.
+9. What should attendees bring with them to the event (e.g., business cards, notebooks, water bottles)? Provide a checklist of essentials.
+10. Are there any special considerations, such as dietary restrictions or accessibility needs, that attendees should plan for?
+Please provide detailed and actionable insights for potential attendees.
+"""
+        : """
+Analyze the following event information and develop in-depth marketing strategies for the organizer. Structure the content with clear headings, bullet points, and paragraphs for readability. Use # for headings, * for body text, and + for bullet points.
+1. Event Branding: Analyze the event title: '${eventTitle}' and theme: '${eventTheme}'. Provide insights on branding, tone, color schemes, and other elements to consider. Do not include a logo. .
+2. Event Timing and Location: Evaluate the event's date: '${MyDateFormat.toDate(eventStartDate.toDate())}', city: '${eventCity}', and address: '${eventAdress}'. Offer insights on marketing campaigns.
+3. Target Audience: Identify the types of attendees the event should expect.
+4. How might the target audience to perceive the event? What emotions or thoughts should the event work evoke? give examples with applicable.
+5. What key values or messages should the event communicate? give examples with applicable.
+6. Which channels should be used to promote the event, give examples.
+7. Networking Opportunities: Discuss available networking opportunities and how organizers can leverage them to attract more attendees.
+8. Logistical Considerations: Detail logistical aspects such as parking, transportation, and accessibility, with tips for organizers.
+9. Health and Safety: Outline any health and safety guidelines organizers should be aware of, with advice on compliance.
+10. Event Etiquette: Provide guidance on general etiquette and behavioral expectations for the event.
+11. Special Considerations: Address special considerations like dietary restrictions and accessibility needs.
+Please deliver detailed and actionable insights to assist organizers in marketing, planning, and executing a successful event.
+""";
+
+    // final response = await _model.generateContent([Content.text(prompt)]);
+    final response = await _googleGenerativeAIService.generateResponse(prompt);
+
+    final _insighText = response!.trim();
+    print(_insighText);
+
+    return _insighText;
   }
 
   List<String> sponsorOrPartner = [
@@ -410,6 +470,27 @@ class _CreateEventScreenState extends State<CreateEventScreen>
         _provider.theme,
         'https://www.barsopus.com/event_${commonId}_${_provider.currentUserId}');
 
+    String insight = await gettInsight(
+        eventTitle: _provider.title,
+        eventTheme: _provider.theme,
+        eventDressCode: _provider.dressCode,
+        eventAdress: _provider.address,
+        eventCity: _provider.city,
+        eventStartDate: _provider.startDate,
+        isInsight: true);
+
+    // if (!_provider.isPrivate)
+    String aiMarketingAdvice = _provider.isPrivate
+        ? ''
+        : await gettInsight(
+            eventTitle: _provider.title,
+            eventTheme: _provider.theme,
+            eventDressCode: _provider.dressCode,
+            eventAdress: _provider.address,
+            eventCity: _provider.city,
+            eventStartDate: _provider.startDate,
+            isInsight: false);
+
     Event event = Event(
       blurHash: blurHash,
       imageUrl: imageUrl,
@@ -465,9 +546,12 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       isAffiliateExclusive: _provider.isAffiliateExclusive,
       totalAffiliateAmount: 0,
       latLng: _provider.latLng,
+      aiAnalysis: insight,
+      overview: _provider.overview,
+      aiMarketingAdvice: aiMarketingAdvice,
     );
-
-    await DatabaseService.createEvent(event);
+    String summary = await summarizeEvent(event);
+    await DatabaseService.createEvent(event, summary);
 
     return event;
   }
@@ -477,6 +561,8 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     animateToPage(1);
 
     Event event = Event(
+      aiAnalysis: '',
+      //  widget.event!.aiAnalysis,
       blurHash: widget.event!.blurHash,
       imageUrl: widget.event!.imageUrl,
       // offers: [],
@@ -524,11 +610,32 @@ class _CreateEventScreenState extends State<CreateEventScreen>
       isAffiliateEnabled: _provider.isAffiliateEnabled,
       isAffiliateExclusive: _provider.isAffiliateExclusive,
       totalAffiliateAmount: 0,
-      latLng: _provider.latLng,
+      latLng: _provider.latLng, overview: _provider.overview,
+      aiMarketingAdvice: '',
     );
+    String insight = await gettInsight(
+        eventTitle: event.title,
+        eventTheme: event.theme,
+        eventDressCode: event.dressCode,
+        eventAdress: event.address,
+        eventCity: event.city,
+        eventStartDate: event.startDate,
+        isInsight: true);
+    String aiMarketingAdvice = _provider.isPrivate
+        ? ''
+        : await gettInsight(
+            eventTitle: event.title,
+            eventTheme: event.theme,
+            eventDressCode: event.dressCode,
+            eventAdress: event.address,
+            eventCity: event.city,
+            eventStartDate: event.startDate,
+            isInsight: false);
+    String summary = await summarizeEvent(event);
 
     try {
-      await DatabaseService.editEvent(event);
+      await DatabaseService.editEvent(
+          event, insight, summary, aiMarketingAdvice);
       _setNull(_provider);
       mySnackBar(context, 'Saved succesfully');
       return event;
@@ -810,7 +917,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
     String processNumber,
     String processTitle,
   ) {
-    final width = MediaQuery.of(context).size.width;
+    // final width = MediaQuery.of(context).size.width;
     return Align(
       alignment: Alignment.centerLeft,
       child: SizedBox(
@@ -919,8 +1026,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                           ),
                           const SizedBox(height: 20),
                           RichText(
-                            textScaleFactor:
-                                MediaQuery.of(context).textScaleFactor,
+                            textScaler: MediaQuery.of(context).textScaler,
                             text: TextSpan(
                               children: [
                                 TextSpan(
@@ -974,7 +1080,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                   ),
                   const SizedBox(height: 40),
                   RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(
@@ -2477,7 +2583,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
 
   Widget _buildEventInformationText(String title, String value) {
     return RichText(
-      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+      textScaler: MediaQuery.of(context).textScaler,
       text: TextSpan(
         children: [
           TextSpan(
@@ -2543,143 +2649,148 @@ class _CreateEventScreenState extends State<CreateEventScreen>
         );
         List<DateTime> dateList = getDatesInRange(
             _provider.startDate.toDate(), _provider.clossingDay.toDate());
-        return Container(
-          height: ResponsiveHelper.responsiveHeight(context, 650),
-          decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(30)),
-          padding: const EdgeInsets.symmetric(horizontal: 12.0),
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: ListView(
-              // mainAxisAlignment: MainAxisAlignment.start,
-              // crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(
-                  height: 10,
-                ),
-                TicketPurchasingIcon(
-                  title: '',
-                ),
-                _provider.punchline.isEmpty ||
-                        _provider.schedulePerson.isEmpty ||
-                        !_provider.endTimeSelected ||
-                        !_provider.startTimeSelected
-                    ? SizedBox.shrink()
-                    : Align(
-                        alignment: Alignment.centerRight,
-                        child: MiniCircularProgressButton(
-                          color: Colors.blue,
-                          text: '  Add ',
-                          onPressed: () {
-                            _addSchedule();
-                          },
+        return GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: Container(
+            height: ResponsiveHelper.responsiveHeight(context, 650),
+            decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(30)),
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              body: ListView(
+                // mainAxisAlignment: MainAxisAlignment.start,
+                // crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  TicketPurchasingIcon(
+                    title: '',
+                  ),
+                  _provider.punchline.isEmpty ||
+                          _provider.schedulePerson.isEmpty ||
+                          !_provider.endTimeSelected ||
+                          !_provider.startTimeSelected
+                      ? SizedBox.shrink()
+                      : Align(
+                          alignment: Alignment.centerRight,
+                          child: MiniCircularProgressButton(
+                            color: Colors.blue,
+                            text: '  Add ',
+                            onPressed: () {
+                              _addSchedule();
+                            },
+                          ),
                         ),
-                      ),
-                const SizedBox(
-                  height: 30,
-                ),
-                ContentFieldWhite(
-                  autofocus: false,
-                  labelText: 'Program title',
-                  hintText: 'Schedule(Program) title',
-                  initialValue: _provider.punchline,
-                  onSavedText: (input) => _provider.setPunchline(input),
-                  onValidateText: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Program title cannot be empty';
-                    }
-                    return null;
-                  },
-                ),
-                // _ticketFiled(
-                //   false,
-                //   false,
-                //   'Program title',
-                //   'Schedule(Program) title',
-                // _scheduleTitleController,
-                //   TextInputType.text,
-                //   (value) {
-                //     if (value == null || value.isEmpty) {
-                //       return 'Program title cannot be empty';
-                //     }
-                //     return null;
-                //   },
-                // ),
-                _sheduleDivider(
-                    'Enter the title of the program segment (e.g., \'opening prayer\') '),
-                const SizedBox(
-                  height: 30,
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColorLight,
-                      borderRadius: BorderRadius.circular(30)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        if (dateList.length > 1)
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  ContentFieldBlack(
+                    onlyBlack: false,
+                    labelText: 'Program title',
+                    hintText: 'Schedule(Program) title',
+                    initialValue: _provider.punchline,
+                    onSavedText: (input) => _provider.setPunchline(input),
+                    onValidateText: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Program title cannot be empty';
+                      }
+                      return null;
+                    },
+                  ),
+                  // _ticketFiled(
+                  //   false,
+                  //   false,
+                  //   'Program title',
+                  //   'Schedule(Program) title',
+                  // _scheduleTitleController,
+                  //   TextInputType.text,
+                  //   (value) {
+                  //     if (value == null || value.isEmpty) {
+                  //       return 'Program title cannot be empty';
+                  //     }
+                  //     return null;
+                  //   },
+                  // ),
+                  _sheduleDivider(
+                      'Enter the title of the program segment (e.g., \'opening prayer\') '),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColorLight,
+                        borderRadius: BorderRadius.circular(30)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const SizedBox(
+                            height: 30,
+                          ),
+                          if (dateList.length > 1)
+                            _sheduleDivider(
+                                'Choose the date for which you want to create a program lineup.'),
+                          if (_provider.endDateSelected) _dateRange(),
+                          const SizedBox(
+                            height: 20,
+                          ),
                           _sheduleDivider(
-                              'Choose the date for which you want to create a program lineup.'),
-                        if (_provider.endDateSelected) _dateRange(),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        _sheduleDivider(
-                            'Select the start and end time to indicate the duration for this program on the schedule'),
-                        DatePicker(
-                          onStartDateChanged: (DateTime newDate) {
-                            _scheduleStartTime = newDate;
-                          },
-                          onStartTimeChanged: (DateTime newDate) {
-                            _scheduleStartTime = newDate;
-                          },
-                          onEndDateChanged: (DateTime newDate) {
-                            _scheduleEndTime = newDate;
-                          },
-                          onEndTimeChanged: (DateTime newDate) {
-                            _scheduleEndTime = newDate;
-                          },
-                          date: false,
-                          onlyWhite: false,
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                      ],
+                              'Select the start and end time to indicate the duration for this program on the schedule'),
+                          DatePicker(
+                            onStartDateChanged: (DateTime newDate) {
+                              _scheduleStartTime = newDate;
+                            },
+                            onStartTimeChanged: (DateTime newDate) {
+                              _scheduleStartTime = newDate;
+                            },
+                            onEndDateChanged: (DateTime newDate) {
+                              _scheduleEndTime = newDate;
+                            },
+                            onEndTimeChanged: (DateTime newDate) {
+                              _scheduleEndTime = newDate;
+                            },
+                            date: false,
+                            onlyWhite: false,
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(
-                  height: 50,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                  child: PickOptionWidget(
-                      color: Theme.of(context).primaryColorLight,
-                      dropDown: true,
-                      title: 'Add speaker or performer',
-                      onPressed: () {
-                        _showBottomTaggedPeople(true);
-                      }),
-                ),
-                _sheduleDivider(
-                    'Add the person or people performing or participating in this program. You can either provide their names from Bars Impression or include a link to their profiles on other platforms.'),
-                Padding(
-                  padding:
-                      const EdgeInsets.only(bottom: 10.0, left: 10, right: 10),
-                  child: SchedulePeopleGroup(
-                    canBeEdited: true,
-                    groupTaggedEventPeopleGroup: _provider.schedulePerson,
+                  const SizedBox(
+                    height: 50,
                   ),
-                ),
-              ],
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: PickOptionWidget(
+                        color: Theme.of(context).primaryColorLight,
+                        dropDown: true,
+                        title: 'Add speaker or performer',
+                        onPressed: () {
+                          _showBottomTaggedPeople(true);
+                        }),
+                  ),
+                  _sheduleDivider(
+                      'Add the person or people performing or participating in this program. You can either provide their names from Bars Impression or include a link to their profiles on other platforms.'),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        bottom: 10.0, left: 10, right: 10),
+                    child: SchedulePeopleGroup(
+                      canBeEdited: true,
+                      groupTaggedEventPeopleGroup: _provider.schedulePerson,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -3275,6 +3386,15 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                         : null,
                   ),
                   ContentFieldBlack(
+                    labelText: 'Overview',
+                    hintText: "Indepth Description of the event",
+                    initialValue: _provider.overview.toString(),
+                    onSavedText: (input) => _provider.setOverview(input),
+                    onValidateText: (input) => input.trim().length < 50
+                        ? "Overview is too short( > 10 characters)"
+                        : null,
+                  ),
+                  ContentFieldBlack(
                     labelText: "Dress code for the event",
                     hintText: 'Dress code',
                     initialValue: _provider.dressCode,
@@ -3649,7 +3769,7 @@ class _CreateEventScreenState extends State<CreateEventScreen>
                 : SafeArea(
                     child: PageView(
                         controller: _pageController,
-                        physics: const NeverScrollableScrollPhysics(),
+                        physics: const AlwaysScrollableScrollPhysics(),
                         onPageChanged: (int index) {
                           _provider.setInt1(index);
                         },

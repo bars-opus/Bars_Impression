@@ -125,8 +125,6 @@ class _UserBottomModalSheetActionsState
     );
   }
 
-
-
   // _goToChurch(BuildContext context) async {
   @override
   Widget build(BuildContext context) {

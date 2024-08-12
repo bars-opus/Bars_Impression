@@ -1,7 +1,7 @@
 import 'package:bars/utilities/exports.dart';
 
 class PortfolioCompanyWidget extends StatelessWidget {
-  List<PortfolioCompanyModel> portfolios;
+  final List<PortfolioCompanyModel> portfolios;
   final bool seeMore;
   final bool edit;
 

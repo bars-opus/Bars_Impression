@@ -60,7 +60,7 @@ class AffiliateDoc extends StatelessWidget {
             },
             child: isOganiser
                 ? RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(
@@ -130,7 +130,7 @@ class AffiliateDoc extends StatelessWidget {
                     ),
                   )
                 : RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(
@@ -183,7 +183,7 @@ class AffiliateDoc extends StatelessWidget {
           ),
           const SizedBox(height: 60),
           RichText(
-            textScaleFactor: MediaQuery.of(context).textScaleFactor,
+            textScaler: MediaQuery.of(context).textScaler,
             text: TextSpan(
               children: [
                 TextSpan(

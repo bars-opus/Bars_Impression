@@ -30,7 +30,6 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
   final TextEditingController _adviceControler = TextEditingController();
   bool _isBlockedUser = false;
   bool _isBlockingUser = false;
-  int _userAdviceCount = 0;
   ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
 
   void initState() {
@@ -124,31 +123,25 @@ class _UserAdviceScreenState extends State<UserAdviceScreen> {
     );
   }
 
-  void _navigateToPage(BuildContext context, Widget page) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => page),
-    );
-  }
 
-  void _showBottomSheetEditAdvice(
-    UserAdvice userAdvice,
-  ) {
-    showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        builder: (BuildContext context) {
-          return EditCommentContent(
-            content: userAdvice.content,
-            newContentVaraible: '',
-            contentType: 'Advice',
-            onPressedDelete: () {},
-            onPressedSave: () {},
-            onSavedText: (String) {},
-          );
-        });
-  }
+  // void _showBottomSheetEditAdvice(
+  //   UserAdvice userAdvice,
+  // ) {
+  //   showModalBottomSheet(
+  //       context: context,
+  //       isScrollControlled: true,
+  //       backgroundColor: Colors.transparent,
+  //       builder: (BuildContext context) {
+  //         return EditCommentContent(
+  //           content: userAdvice.content,
+  //           newContentVaraible: '',
+  //           contentType: 'Advice',
+  //           onPressedDelete: () {},
+  //           onPressedSave: () {},
+  //           onSavedText: (String) {},
+  //         );
+  //       });
+  // }
 
   _buildAsk(
     UserAdvice userAdvice,

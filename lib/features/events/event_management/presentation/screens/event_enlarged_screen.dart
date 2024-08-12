@@ -1,5 +1,8 @@
 // import 'package:bars/utilities/dimensions.dart';
 import 'package:bars/utilities/exports.dart';
+import 'package:bars/widgets/animation/shake_transition.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -30,26 +33,16 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
     with AutomaticKeepAliveClientMixin {
   bool _displayImage = false;
   bool _displayReportWarning = false;
-  var _isVisible;
-  bool _heartAnim = false;
   bool _isBlockedUser = false;
-  late DateTime _date;
-  late DateTime _closingDate;
   bool _eventHasStarted = false;
   bool _eventHasEnded = false;
-  int _ticketSeat = 0;
   TextEditingController _askController = TextEditingController();
   ValueNotifier<bool> _isTypingNotifier = ValueNotifier<bool>(false);
   Timestamp _fristScheduleTime = Timestamp.now();
   double _fristTickePrice = 0;
-  TicketModel? _fristTicke;
-  int _selectedSeat = 0;
-  int _selectedRow = 0;
-  bool _isPlaying = true;
   bool _isLoadingDashboard = false;
   bool _isLoading = false;
   late ScrollController _hideButtonController;
-  bool _showInfo = false;
   int duratoinDuringStartingToEndingDate = 0;
   Color lightVibrantColor = Colors.white;
   late Color lightMutedColor;
@@ -61,26 +54,24 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
     _countDown();
     _displayReportWarning = widget.event.report.isNotEmpty;
     _setUpTicket();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      var _provider = Provider.of<UserData>(context, listen: false);
+
+      _provider.setIsLoading(
+        false,
+      );
+    });
     _askController.addListener(_onAskTextChanged);
     _hideButtonController = new ScrollController();
-    _hideButtonController.addListener(() {
-      if (_hideButtonController.position.userScrollDirection ==
-          ScrollDirection.reverse) {
-        if (mounted) {
-          setState(() {
-            _isVisible = false;
-          });
-        }
-      }
-      if (_hideButtonController.position.userScrollDirection ==
-          ScrollDirection.forward) {
-        if (mounted) {
-          setState(() {
-            _isVisible = true;
-          });
-        }
-      }
-    });
+    if (widget.justCreated) _createEventsNearBy(widget.event);
+  }
+
+  _createEventsNearBy(event) async {
+    try {
+      await DatabaseService.createOrganiserToAttendeesMarketingNotification(
+          event: event);
+      await DatabaseService.createEventsNearBy(event: event);
+    } catch (e) {}
   }
 
   @override
@@ -97,7 +88,6 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
         : widget.event.startDate.toDate();
 
     DateTime clossingDate = widget.event.clossingDay.toDate();
-    final toDaysDate = DateTime.now();
     Duration _duratoinDuringStartingToEndingDate =
         clossingDate.difference(eventDate);
     int duratoinDuringStartingToEnding =
@@ -217,7 +207,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
   }
 
   // display event dates and schedules on calendar
-  void _expandEventDetails() {
+  void _expandEventDetails(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -230,7 +220,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
               color: Theme.of(context).primaryColorLight,
               borderRadius: BorderRadius.circular(30),
             ),
-            child: _eventDetails());
+            child: _eventDetails(context));
       },
     );
   }
@@ -494,12 +484,49 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
     );
   }
 
-  _eventDetails() {
+//   final _googleGenerativeAIService = GoogleGenerativeAIService();
+
+// // Function to get similarity score using Gemini API
+//   Future<String> getSimilarityScore() async {
+//     final prompt = """
+// Analyze the following information about this event and give an in-depth insight based on the instructions provided.
+
+// 1. Analyze the event title: '${widget.event.title}' and event theme: '${widget.event.theme}'. Provide insights on these details to help potential attendees understand the event better.
+
+// 2. Advise on the appropriate attire for both male and female attendees for this event. If there is a dress code specified by the event organizer, dress code: '${widget.event.dressCode}', use it as a hint.
+
+// 3. Analyze the event's date: '${widget.event.startDate}' and location: '${widget.event.address}'. Based on historical weather data, predict the likely weather conditions and suggest suitable attire.
+
+// 5. What networking opportunities are available at the event? Offer advice on how attendees can make the most of these opportunities.
+
+// 6. What are the logistical details such as parking, transportation, and accessibility? Provide tips to help attendees navigate these aspects smoothly.
+
+// 7. Are there any health and safety guidelines or measures that attendees should be aware of? Provide an overview and advice on how to comply with these measures.
+
+// 8. What are some general etiquette or behavioral expectations for this event? Offer guidance to ensure attendees conduct themselves appropriately.
+
+// 9. What should attendees bring with them to the event (e.g., business cards, notebooks, water bottles)? Provide a checklist of essentials.
+
+// 10. Are there any special considerations, such as dietary restrictions or accessibility needs, that attendees should plan for?
+
+// Please provide detailed and actionable insights for potential attendees.
+// """;
+
+//     // final response = await _model.generateContent([Content.text(prompt)]);
+//     final response = await _googleGenerativeAIService.generateResponse(prompt);
+
+//     final _insighText = response!.trim();
+
+//     return _insighText;
+//   }
+
+  _eventDetails(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
+
     bool _isAuthor = widget.currentUserId == widget.event.authorId;
-    bool _showAffiliate = widget.event.isAffiliateEnabled &&
-        !widget.event.isAffiliateExclusive &&
-        !_isAuthor;
+    // bool _showAffiliate = widget.event.isAffiliateEnabled &&
+    //     !widget.event.isAffiliateExclusive &&
+    //     !_isAuthor;
 
     List<Schedule> scheduleOptions = [];
 
@@ -536,18 +563,34 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
         const SizedBox(
           height: 10,
         ),
-        Align(
-          alignment: Alignment.topLeft,
-          child: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(
-              Icons.close,
-              color: Theme.of(context).secondaryHeaderColor,
-              size: ResponsiveHelper.responsiveFontSize(context, 25),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(
+                Icons.close,
+                color: Theme.of(context).secondaryHeaderColor,
+                size: ResponsiveHelper.responsiveFontSize(context, 25),
+              ),
             ),
-          ),
+            if (widget.event.aiAnalysis.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0, right: 30),
+                child: GestureDetector(
+                  onTap: () {
+                    _showBottomSheetAnalysis();
+                  },
+                  child: AnimatedCircle(
+                    size: 20,
+                    stroke: 2,
+                    animateShape: true,
+                  ),
+                ),
+              )
+          ],
         ),
         const SizedBox(
           height: 30,
@@ -568,7 +611,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
             child: ShakeTransition(
               axis: Axis.vertical,
               child: RichText(
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                textScaler: MediaQuery.of(context).textScaler,
                 text: TextSpan(
                   children: [
                     TextSpan(
@@ -749,7 +792,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
         GestureDetector(
           onTap: _launchMap,
           child: RichText(
-            textScaleFactor: MediaQuery.of(context).textScaleFactor,
+            textScaler: MediaQuery.of(context).textScaler,
             text: TextSpan(
               children: [
                 TextSpan(
@@ -792,6 +835,16 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                 },
                 text: 'See full program lineup (Schedule)',
               ),
+              if (widget.event.aiAnalysis.isNotEmpty)
+                BottomModelSheetListTileActionWidget(
+                  colorCode: 'Blue',
+                  dontPop: true,
+                  icon: Icons.circle_outlined,
+                  onPressed: () {
+                    _showBottomSheetAnalysis();
+                  },
+                  text: 'Analysis and guide (florence)',
+                ),
               if (widget.event.previousEvent.isNotEmpty)
                 BottomModelSheetListTileActionWidget(
                   colorCode: 'Blue',
@@ -894,7 +947,6 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                           event: widget.event,
                           inviteReply: '',
                           onInvite: false,
-                          // marketedAffiliateId: widget.marketedAffiliateId,
                         ),
                       ),
               ],
@@ -1462,7 +1514,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                 ),
                 if (_provider.user != null)
                   RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(
@@ -1481,7 +1533,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                   height: 40,
                 ),
                 RichText(
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  textScaler: MediaQuery.of(context).textScaler,
                   text: TextSpan(
                     children: [
                       TextSpan(
@@ -1518,7 +1570,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                     );
                   },
                   child: RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(
@@ -1557,7 +1609,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                           : _generatePalette(true);
                     },
                     child: RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      textScaler: MediaQuery.of(context).textScaler,
                       text: TextSpan(
                         children: [
                           TextSpan(
@@ -1589,7 +1641,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                           : _generatePalette(false);
                     },
                     child: RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      textScaler: MediaQuery.of(context).textScaler,
                       text: TextSpan(
                         children: [
                           TextSpan(
@@ -1620,7 +1672,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                         _showBottomSheetRefund(false);
                       },
                       child: RichText(
-                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                        textScaler: MediaQuery.of(context).textScaler,
                         text: TextSpan(
                           children: [
                             TextSpan(
@@ -1646,7 +1698,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                     ),
                 if (!_noResources)
                   RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(
@@ -1744,6 +1796,81 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
     );
   }
 
+  _hopeSummaryInfo() {
+    final width = MediaQuery.of(context).size.width;
+
+    return new Material(
+      color: Colors.transparent,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: Container(
+          width: width,
+          decoration: BoxDecoration(
+              color: Theme.of(context).primaryColorLight,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  offset: Offset(10, 10),
+                  blurRadius: 10.0,
+                  spreadRadius: 4.0,
+                )
+              ]),
+          child: GestureDetector(
+            onTap: () {
+              _showBottomSheetAnalysis();
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Center(
+                    child: AnimatedCircle(
+                      size: 20,
+                      stroke: 2,
+                      animateShape: true,
+                    ),
+                  ),
+                  RichText(
+                    textScaler: MediaQuery.of(context).textScaler,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '\nHey',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        TextSpan(
+                          text:
+                              '\nI have generated some marketing ideas and insights you should consider',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        TextSpan(
+                          text: '\nSee insights.',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 12.0),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 50,
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   _barCode() {
     return Hero(
       tag: widget.event.id,
@@ -1793,7 +1920,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                   ),
                   const SizedBox(height: 40),
                   RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(
@@ -1823,19 +1950,131 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
     );
   }
 
-  _showDetails() {
+  void _showBottomSheetAnalysisConsideration() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Stack(
+            children: [
+              Container(
+                height: ResponsiveHelper.responsiveHeight(context, 300),
+                // padding: const EdgeInsets.only(top: 50.0),
+                decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColorLight,
+                    borderRadius: BorderRadius.circular(30)),
+                padding: const EdgeInsets.all(20.0),
+                child: ListView(children: [
+                  TicketPurchasingIcon(
+                    title: '',
+                  ),
+                  const SizedBox(height: 10),
+                  Center(
+                    child: AnimatedCircle(
+                      // animateShape: true,
+                      size: 50,
+                      stroke: 3,
+                      animateSize: true,
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  Text(
+                    'To derive at this analysis, the following event information was considered. Event title, event theme, event date, event location, event dresscode ',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ]),
+              ),
+            ],
+          );
+        });
+      },
+    );
+  }
+
+  void _showBottomSheetAnalysis() {
+    bool _isAuthor = widget.currentUserId == widget.event.authorId;
+    print(widget.event.aiAnalysis);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Container(
+            height: ResponsiveHelper.responsiveHeight(context, 700),
+            decoration: BoxDecoration(
+                color: Theme.of(context).primaryColorLight,
+                borderRadius: BorderRadius.circular(30)),
+            padding: const EdgeInsets.all(20.0),
+            child: ListView(children: [
+              TicketPurchasingIcon(
+                title: '',
+              ),
+              const SizedBox(height: 10),
+              Center(
+                child: AnimatedCircle(
+                  size: 50,
+                  stroke: 3,
+                  animateSize: true,
+                ),
+              ),
+              const SizedBox(height: 40),
+              // if (!widget.event.isPrivate)
+              MarkdownBody(
+                data: _isAuthor
+                    ? widget.event.aiMarketingAdvice
+                    : widget.event.aiAnalysis,
+                styleSheet: MarkdownStyleSheet(
+                  h1: Theme.of(context).textTheme.titleLarge,
+                  h2: Theme.of(context).textTheme.titleMedium,
+                  p: Theme.of(context).textTheme.bodyMedium,
+                  listBullet: Theme.of(context).textTheme.bodySmall,
+                ),
+              ),
+              const SizedBox(height: 40),
+              if (widget.event.isPrivate && _isAuthor)
+                Text(
+                  'No marketing insight for private event',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              // if (!widget.event.isPrivate && !_isAuthor)
+              GestureDetector(
+                onTap: () {
+                  _showBottomSheetAnalysisConsideration();
+                },
+                child: Text(
+                  'This information is an analysis I made of the event, based on the event details provided by the event organizer. This analysis was not directly written by the organizer, but is intended to help potential attendees understand the concept of the event more.',
+                  style: TextStyle(
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 14.0),
+                    color: Colors.blue,
+                  ),
+                ),
+              ),
+            ]),
+          );
+        });
+      },
+    );
+  }
+
+  _showDetails(BuildContext context) {
     bool _isAuthor = widget.currentUserId == widget.event.authorId;
     widget.showPrivateEvent
-        ? _expandEventDetails()
+        ? _expandEventDetails(context)
         : widget.event.isPrivate && !_isAuthor
             ? _showBottomSheetTicketDoc()
             : widget.event.isPrivate && _isAuthor
-                ? _expandEventDetails()
-                : _expandEventDetails();
+                ? _expandEventDetails(context)
+                : _expandEventDetails(context);
     ;
   }
 
-  _contentWidget() {
+  _contentWidget(BuildContext context) {
     bool _isAuthor = widget.currentUserId == widget.event.authorId;
     final List<String> datePartition = widget.event.startDate == null
         ? MyDateFormat.toDate(DateTime.now()).split(" ")
@@ -1863,11 +2102,6 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
       decoration:
           _eventHasEnded ? TextDecoration.lineThrough : TextDecoration.none,
     );
-
-    var _provider = Provider.of<UserData>(
-      context,
-    );
-    var _usercountry = _provider.userLocationPreference!.country;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -1988,10 +2222,10 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
               ),
             GestureDetector(
               onTap: () {
-                _showDetails();
+                _showDetails(context);
               },
               child: RichText(
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                textScaler: MediaQuery.of(context).textScaler,
                 text: TextSpan(
                   children: [
                     TextSpan(
@@ -2050,7 +2284,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
             ),
             GestureDetector(
               onTap: () {
-                _showDetails();
+                _showDetails(context);
               },
               child: Align(
                 alignment: Alignment.center,
@@ -2080,10 +2314,10 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
           children: [
             GestureDetector(
               onTap: () {
-                _showDetails();
+                _showDetails(context);
               },
               child: RichText(
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                textScaler: MediaQuery.of(context).textScaler,
                 text: TextSpan(
                   children: [
                     TextSpan(
@@ -2112,10 +2346,10 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
             ),
             GestureDetector(
               onTap: () {
-                _showDetails();
+                _showDetails(context);
               },
               child: RichText(
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                textScaler: MediaQuery.of(context).textScaler,
                 text: TextSpan(
                   children: [
                     TextSpan(
@@ -2245,7 +2479,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                     size: ResponsiveHelper.responsiveHeight(context, 30.0),
                   )
                 : RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(
@@ -2296,17 +2530,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
               color: Colors.white,
             ),
           ),
-        // if (!_isAuthor)
-        //   Text(
-        //     widget.event.type,
-        //     style: TextStyle(
-        //       fontWeight: FontWeight.bold,
-        //       fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-        //       color: Colors.white,
-        //       fontFamily: 'Bessita',
-        //     ),
-        //   ),
-        // if (!widget.event.isPrivate && !_isAuthor)
+
         if (widget.event.taggedPeople.isNotEmpty)
           ShedulePeopleHorizontal(
             event: widget.event,
@@ -2315,7 +2539,6 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
             schedulepeople: widget.event.taggedPeople,
             currentUserId: widget.currentUserId,
             fromDetails: false,
-            // isSponsor: false,
           ),
       ],
     );
@@ -2331,13 +2554,18 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
                     height: 80,
                   ),
                   _resourceSummaryInfo(),
-                  _contentWidget(),
+                  if (!widget.event.isPrivate)
+                    const SizedBox(
+                      height: 5,
+                    ),
+                  if (!widget.event.isPrivate) _hopeSummaryInfo(),
+                  _contentWidget(context),
                   const SizedBox(
                     height: 200,
                   ),
                 ],
               )
-            : _contentWidget());
+            : _contentWidget(context));
   }
 
   @override
@@ -2399,7 +2627,7 @@ class _EventEnlargedScreenState extends State<EventEnlargedScreen>
               onLongPress: _setImage,
               onTap: () {
                 () {
-                  _showDetails();
+                  _showDetails(context);
                 };
               },
               child: Container(

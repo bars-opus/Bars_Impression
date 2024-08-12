@@ -31,10 +31,10 @@ class _PerpectiveListViewState extends State<PerpectiveListView> {
   late PageController _pageController;
   late double _pagePercent;
   late int _currentIndex;
-  bool _ignorePointer = false;
-  Timer? _ignoreTimer;
-  DateTime? _lastScrollTime;
-  DateTime? _lastTapTime;
+  // bool _ignorePointer = false;
+  // Timer? _ignoreTimer;
+  // DateTime? _lastScrollTime;
+  // DateTime? _lastTapTime;
 
   @override
   void initState() {
@@ -63,14 +63,10 @@ class _PerpectiveListViewState extends State<PerpectiveListView> {
     setState(() {});
   }
 
- 
-
- 
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      final height = constraints.maxHeight;
       return Stack(
         children: [
           // Perspective items
@@ -98,30 +94,6 @@ class _PerpectiveListViewState extends State<PerpectiveListView> {
             },
           ),
 
-          // Positioned.fill(
-          //   top: height - widget.extentItem,
-          //   child: GestureDetector(
-          //     onTap: () {
-          //       // if (widget.onTapFrontItem != null) {
-          //       //   widget.onTapFrontItem(_currentIndex);
-
-          //       final ticket = widget.selectedEvents[_currentIndex];
-
-          //       //   print(ticket.eventTitle);
-          //       //   // Use the ticket ID in your callback
-          //       //   // widget.onTapFrontItem(ticket.orderId);
-          //       // }
-
-          //       //    widget.ticketOrder.isDeleted
-          //       // ?
-          //       //     _showBottomDeletedEvent(context)
-
-          //       // :
-          //       //
-          //       _navigateToTicketOrder(ticket);
-          //     },
-          //   ),
-          // )
         ],
       );
     });

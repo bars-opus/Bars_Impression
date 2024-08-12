@@ -1,4 +1,5 @@
 import 'package:bars/utilities/exports.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
@@ -354,7 +355,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
         child: RichText(
-          textScaleFactor: MediaQuery.of(context).textScaleFactor,
+          textScaler: MediaQuery.of(context).textScaler,
           text: TextSpan(
             children: [
               TextSpan(
@@ -791,7 +792,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                     title: '',
                   ),
                   RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(
@@ -1074,24 +1075,47 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                           title: '',
                         ),
                         // const SizedBox(height: 40),
-
-                        RichText(
-                          textScaleFactor:
-                              MediaQuery.of(context).textScaleFactor,
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: '\nNo Sales',
-                                style: Theme.of(context).textTheme.titleLarge,
+                        !_isEventSuccessful
+                            ? RichText(
+                                textScaler: MediaQuery.of(context).textScaler,
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: '\nNo enough evidence',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge,
+                                    ),
+                                    TextSpan(
+                                      text:
+                                          '\n\nUnfortunately, no ticket sales have been recorded for this event. As a result, there are no ticket sales payouts available at this time. The total sales amount remains at 0.00.',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium,
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : RichText(
+                                textScaler: MediaQuery.of(context).textScaler,
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: '\nNo Sales',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge,
+                                    ),
+                                    TextSpan(
+                                      text:
+                                          '\n\nUnfortunately, no ticket sales have been recorded for this event. As a result, there are no ticket sales payouts available at this time. The total sales amount remains at 0.00.',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium,
+                                    ),
+                                  ],
+                                ),
                               ),
-                              TextSpan(
-                                text:
-                                    '\n\nUnfortunately, no ticket sales have been recorded for this event. As a result, there are no ticket sales payouts available at this time. The total sales amount remains at 0.00.',
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                            ],
-                          ),
-                        ),
                         const SizedBox(height: 60),
                       ],
                     ),
@@ -1124,7 +1148,7 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                   ),
                   const SizedBox(height: 40),
                   RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(
@@ -1382,6 +1406,109 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
     );
   }
 
+  void _showBottomSheetAnalysisConsideration() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Stack(
+            children: [
+              Container(
+                height: ResponsiveHelper.responsiveHeight(context, 300),
+                // padding: const EdgeInsets.only(top: 50.0),
+                decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColorLight,
+                    borderRadius: BorderRadius.circular(30)),
+                padding: const EdgeInsets.all(20.0),
+                child: ListView(children: [
+                  TicketPurchasingIcon(
+                    title: '',
+                  ),
+                  const SizedBox(height: 10),
+                  Center(
+                    child: AnimatedCircle(
+                      // animateShape: true,
+                      size: 50,
+                      stroke: 3,
+                      animateSize: true,
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  Text(
+                    'To derive at this analysis, the following event information was considered. Event title, event theme, event date, event location, event dresscode ',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ]),
+              ),
+            ],
+          );
+        });
+      },
+    );
+  }
+
+  void _showBottomSheetMarketingAnalysis() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Container(
+            height: ResponsiveHelper.responsiveHeight(context, 700),
+            // padding: const EdgeInsets.only(top: 50.0),
+            decoration: BoxDecoration(
+                color: Theme.of(context).primaryColorLight,
+                borderRadius: BorderRadius.circular(30)),
+            padding: const EdgeInsets.all(20.0),
+            child: ListView(children: [
+              TicketPurchasingIcon(
+                title: '',
+              ),
+              const SizedBox(height: 10),
+              Center(
+                child: AnimatedCircle(
+                  // animateShape: true,
+                  size: 50,
+                  stroke: 3,
+                  animateSize: true,
+                ),
+              ),
+              const SizedBox(height: 40),
+              MarkdownBody(
+                data: widget.event.aiMarketingAdvice,
+                styleSheet: MarkdownStyleSheet(
+                  h1: Theme.of(context).textTheme.titleLarge,
+                  h2: Theme.of(context).textTheme.titleMedium,
+                  p: Theme.of(context).textTheme.bodyMedium,
+                  listBullet: Theme.of(context).textTheme.bodySmall,
+                ),
+              ),
+              const SizedBox(height: 40),
+              GestureDetector(
+                onTap: () {
+                  _showBottomSheetAnalysisConsideration();
+                },
+                child: Text(
+                  'This information is an analysis I made of the event, based on the event details provided by the event organizer. This analysis was not directly written by the organizer, but is intended to help potential attendees understand the concept of the event more.',
+                  style: TextStyle(
+                    fontSize:
+                        ResponsiveHelper.responsiveFontSize(context, 14.0),
+                    color: Colors.blue,
+                  ),
+                ),
+              ),
+            ]),
+          );
+        });
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var _provider = Provider.of<UserData>(context, listen: false);
@@ -1394,8 +1521,8 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
         !widget.event.isCashPayment &&
         widget.event.ticketSite.isEmpty;
 
-    bool _noResources = !widget.event.isFree ||
-        !widget.event.isCashPayment && widget.event.ticketSite.isNotEmpty;
+    // bool _noResources = !widget.event.isFree ||
+    //     !widget.event.isCashPayment && widget.event.ticketSite.isNotEmpty;
 
     return Scaffold(
       backgroundColor: _paletteDark,
@@ -1427,6 +1554,23 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
               _container(
                 Column(
                   children: [
+                    if (!widget.event.isPrivate)
+                      GestureDetector(
+                        onTap: () {
+                          _showBottomSheetMarketingAnalysis();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: AnimatedCircle(
+                              animateShape: true,
+                              size: 25,
+                              stroke: 3,
+                            ),
+                          ),
+                        ),
+                      ),
                     const SizedBox(
                       height: 60,
                     ),
@@ -1590,22 +1734,29 @@ class _EventDashboardScreenState extends State<EventDashboardScreen> {
                                   },
                                 );
                               }
-                            : _noResources
+                            :
+                            // _noResources
+                            //     ? () {
+                            //         _showBottomSheetRequestPayouts(false);
+                            //       }
+                            //     :
+                            _showFunds &&
+                                    _isEventSuccessful
+                                    // _expectedPeople > 1
+                                    &&
+                                    _eventHasEnded
                                 ? () {
-                                    _showBottomSheetRequestPayouts(false);
+                                    _showBottomSheetRequestPayouts(true);
                                   }
-                                : _showFunds &&
-                                        _expectedPeople > 1 &&
-                                        _eventHasEnded
+                                : !_eventHasEnded
                                     ? () {
-                                        _showBottomSheetRequestPayouts(true);
+                                        _showBottomSheetRequestPayouts(false);
                                       }
-                                    : !_eventHasEnded
+                                    : totalSales == 0
                                         ? () {
-                                            _showBottomSheetRequestPayouts(
-                                                false);
+                                            _showBottomSheetNoSalesPayouts();
                                           }
-                                        : totalSales == 0
+                                        : !_isEventSuccessful == 0
                                             ? () {
                                                 _showBottomSheetNoSalesPayouts();
                                               }

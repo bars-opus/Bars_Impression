@@ -48,7 +48,7 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
           text,
           style: TextStyle(color: Colors.black),
           overflow: TextOverflow.ellipsis,
-          textScaleFactor: MediaQuery.of(context).textScaleFactor,
+          textScaler: MediaQuery.of(context).textScaler,
         ),
       ),
     );
@@ -113,11 +113,10 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
     );
   }
 
-
   Widget _buildMessageTile(EventRoomMessageModel message,
       List<MessageAttachment> messageAttatchment) {
     final width = MediaQuery.of(context).size.width;
-     Color _palleteColor =
+    Color _palleteColor =
         Utils.getPaletteDominantColor(widget.palette, Colors.blue);
     Color dominantColor = _palleteColor;
     double luminance = dominantColor.computeLuminance();
@@ -166,7 +165,6 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: mainAxisAlignment,
                 children: [
-                 
                   isSent
                       ? const SizedBox.shrink()
                       : const SizedBox(
@@ -210,8 +208,8 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
                                                   ),
                                                 )),
                                     title: RichText(
-                                      textScaleFactor: MediaQuery.of(context)
-                                          .textScaleFactor,
+                                      textScaler:
+                                          MediaQuery.of(context).textScaler,
                                       text: TextSpan(
                                         children: [
                                           TextSpan(
@@ -257,8 +255,8 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
                                           fontWeight: FontWeight.normal),
                                     )
                                   : RichText(
-                                      textScaleFactor: MediaQuery.of(context)
-                                          .textScaleFactor,
+                                      textScaler:
+                                          MediaQuery.of(context).textScaler,
                                       text: TextSpan(children: [
                                         TextSpan(
                                           text: "${message.authorName}\n",
@@ -405,7 +403,6 @@ class _EventRoomMessageWIdgetState extends State<EventRoomMessageWidget>
                   onPressed: isAuthor
                       ? () {
                           deleteMessageAndAttachment(attatchments);
-                         
                         }
                       : () {
                           _navigateToPage(

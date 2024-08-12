@@ -25,9 +25,12 @@ final eventsChatRoomsRef = _firestore.collection('new_eventChatRooms');
 final eventsChatRoomsConverstionRef =
     _firestore.collection('new_eventChatRoomsConversation');
 final allEventsRef = _firestore.collection('new_allEvents');
+final allEventsSummaryRef = _firestore.collection('new_allEventsSummary');
 final eventFeedsRef = _firestore.collection('new_eventFeeds');
 final followersRef = _firestore.collection('new_followers');
 final followingRef = _firestore.collection('new_following');
+final organiserAttendeeListRef =
+    _firestore.collection('new_organizer_attendees');
 final followRequestsRef = _firestore.collection('new_followRequests');
 final feedsRef = _firestore.collection('feeds');
 final likesRef = _firestore.collection('likes');
@@ -47,6 +50,10 @@ final chatMessagesRef = _firestore.collection('chatMessages');
 final tokenRef = _firestore.collection('token');
 final newDonationToCreativesRef =
     _firestore.collection('new_donationToCreative');
+final newBrandMatchingRef = _firestore.collection('new_brand_matching');
+final new_userBrandIfoRef = _firestore.collection('new_userBrandIfo');
+final newEventBrandMatchingRef =
+    _firestore.collection('new_event_brand_matching');
 final newUserDonationsRef = _firestore.collection('new_userDonations');
 final newBookingsReceivedRef = _firestore.collection('new_userBookingReceived');
 final newBookingsSentRef = _firestore.collection('new_userBookingMade');

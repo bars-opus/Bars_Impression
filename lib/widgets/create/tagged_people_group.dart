@@ -94,7 +94,7 @@ class TaggedPeopleGroup extends StatelessWidget {
                         )));
       },
       title: RichText(
-        textScaleFactor: MediaQuery.of(context).textScaleFactor,
+        textScaler: MediaQuery.of(context).textScaler,
         text: TextSpan(
           children: [
             TextSpan(
@@ -113,7 +113,7 @@ class TaggedPeopleGroup extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           RichText(
-            textScaleFactor: MediaQuery.of(context).textScaleFactor,
+            textScaler: MediaQuery.of(context).textScaler,
             text: TextSpan(
               children: [
                 TextSpan(

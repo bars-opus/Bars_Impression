@@ -138,7 +138,7 @@ class _EventDeletedMessageWidgetState extends State<EventDeletedMessageWidget> {
                 height: 10,
               ),
               RichText(
-                textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                textScaler: MediaQuery.of(context).textScaler,
                 text: TextSpan(
                   children: [
                     TextSpan(
@@ -179,7 +179,7 @@ class _EventDeletedMessageWidgetState extends State<EventDeletedMessageWidget> {
                   );
                 },
                 child: RichText(
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  textScaler: MediaQuery.of(context).textScaler,
                   text: TextSpan(
                     children: [
                       TextSpan(
@@ -212,7 +212,7 @@ class _EventDeletedMessageWidgetState extends State<EventDeletedMessageWidget> {
                   _sendMail('support@barsopus.com', context);
                 },
                 child: RichText(
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                  textScaler: MediaQuery.of(context).textScaler,
                   text: TextSpan(
                     children: [
                       TextSpan(

@@ -356,7 +356,7 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
                 ShakeTransition(
                   duration: const Duration(seconds: 2),
                   child: RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(
                       children: [
                         TextSpan(
@@ -479,7 +479,7 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 12.0, right: 12),
                     child: RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      textScaler: MediaQuery.of(context).textScaler,
                       text: TextSpan(
                         children: [
                           TextSpan(
@@ -562,7 +562,6 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
       onPressed: onPressed,
       fullLength: fullLength,
     );
-
   }
 
 // This function generates a widget that tells the user they have already responded to the invitation.
@@ -602,6 +601,193 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
           color: Colors.transparent,
         ),
       ),
+    );
+  }
+
+  _hopeSummaryInfo() {
+    final width = MediaQuery.of(context).size.width;
+
+    return new Material(
+      color: Colors.transparent,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: Container(
+          width: width,
+          decoration: BoxDecoration(
+              color: Theme.of(context).primaryColorLight,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  offset: Offset(10, 10),
+                  blurRadius: 10.0,
+                  spreadRadius: 4.0,
+                )
+              ]),
+          child: GestureDetector(
+            onTap: () {
+              _showBottomSheetAnalysis();
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Center(
+                    child: AnimatedCircle(
+                      size: 20,
+                      stroke: 2,
+                      animateShape: true,
+                    ),
+                  ),
+                  RichText(
+                    textScaler: MediaQuery.of(context).textScaler,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '\nHey',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        TextSpan(
+                          text:
+                              '\nI have generated some marketing ideas and insights you should consider',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        TextSpan(
+                          text: '\nSee insights.',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: ResponsiveHelper.responsiveFontSize(
+                                context, 12.0),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 50,
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showBottomSheetAnalysisConsideration() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Stack(
+            children: [
+              Container(
+                height: ResponsiveHelper.responsiveHeight(context, 300),
+                // padding: const EdgeInsets.only(top: 50.0),
+                decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColorLight,
+                    borderRadius: BorderRadius.circular(30)),
+                padding: const EdgeInsets.all(20.0),
+                child: ListView(children: [
+                  TicketPurchasingIcon(
+                    title: '',
+                  ),
+                  const SizedBox(height: 10),
+                  Center(
+                    child: AnimatedCircle(
+                      // animateShape: true,
+                      size: 50,
+                      stroke: 3,
+                      animateSize: true,
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  Text(
+                    'To derive at this analysis, the following event information was considered. Event title, event theme, event date, event location, event dresscode ',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ]),
+              ),
+            ],
+          );
+        });
+      },
+    );
+  }
+
+  void _showBottomSheetAnalysis() {
+    bool _isAuthor = widget.currentUserId == widget.event.authorId;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Container(
+            height: ResponsiveHelper.responsiveHeight(context, 700),
+            decoration: BoxDecoration(
+                color: Theme.of(context).primaryColorLight,
+                borderRadius: BorderRadius.circular(30)),
+            padding: const EdgeInsets.all(20.0),
+            child: ListView(children: [
+              TicketPurchasingIcon(
+                title: '',
+              ),
+              const SizedBox(height: 10),
+              Center(
+                child: AnimatedCircle(
+                  size: 50,
+                  stroke: 3,
+                  animateSize: true,
+                ),
+              ),
+              const SizedBox(height: 40),
+              if (!widget.event.isPrivate)
+                MarkdownBody(
+                  data: _isAuthor
+                      ? widget.event.aiMarketingAdvice
+                      : widget.event.aiAnalysis,
+                  styleSheet: MarkdownStyleSheet(
+                    h1: Theme.of(context).textTheme.titleLarge,
+                    h2: Theme.of(context).textTheme.titleMedium,
+                    p: Theme.of(context).textTheme.bodyMedium,
+                    listBullet: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+              const SizedBox(height: 40),
+              if (!widget.event.isPrivate && _isAuthor)
+                Text(
+                  'No marketing insight for private event',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              if (!widget.event.isPrivate)
+                GestureDetector(
+                  onTap: () {
+                    _showBottomSheetAnalysisConsideration();
+                  },
+                  child: Text(
+                    'This information is an analysis I made of the event, based on the event details provided by the event organizer. This analysis was not directly written by the organizer, but is intended to help potential attendees understand the concept of the event more.',
+                    style: TextStyle(
+                      fontSize:
+                          ResponsiveHelper.responsiveFontSize(context, 14.0),
+                      color: Colors.blue,
+                    ),
+                  ),
+                ),
+            ]),
+          );
+        });
+      },
     );
   }
 
@@ -668,8 +854,7 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
                                     )
                                   ]),
                               child: RichText(
-                                textScaleFactor:
-                                    MediaQuery.of(context).textScaleFactor,
+                                textScaler: MediaQuery.of(context).textScaler,
                                 text: TextSpan(
                                   children: [
                                     TextSpan(
@@ -704,11 +889,14 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
                         ),
                       ],
                     ),
-                 
                   const SizedBox(
                     height: 10,
                   ),
                   _eventInfoDisplay(),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  if (widget.event.aiAnalysis.isNotEmpty) _hopeSummaryInfo(),
                   const SizedBox(
                     height: 10,
                   ),
@@ -716,7 +904,6 @@ class _EventInviteScreenState extends State<EventInviteScreen> {
                     buttonText:
                         widget.event.isVirtual ? 'Host link' : 'Event location',
                     onPressed: () {
-                     
                       _launchMap();
                     },
                   ),

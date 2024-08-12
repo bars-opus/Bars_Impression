@@ -42,13 +42,7 @@ class CreateInfoWidget extends StatelessWidget {
                   fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
                 ),
               ),
-              // TextSpan(
-              //   text: '...more',
-              //   style: TextStyle(
-              //     color: Colors.blue,
-              //     fontSize: ResponsiveHelper.responsiveFontSize(context, 12.0),
-              //   ),
-              // ),
+             
               TextSpan(
                 text: featureInfo,
                 style: TextStyle(

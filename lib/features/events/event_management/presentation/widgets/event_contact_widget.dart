@@ -13,18 +13,18 @@ class EventOrganizerContactWidget extends StatelessWidget {
     portfolios.removeWhere((schedule) => schedule == potfolio);
   }
 
-  Future<void> _sendMail(String email, BuildContext context) async {
-    String url = 'mailto:$email';
-    if (await canLaunchUrl(
-      Uri.parse(url),
-    )) {
-      await (launchUrl(
-        Uri.parse(url),
-      ));
-    } else {
-      mySnackBar(context, 'Could not launch mail');
-    }
-  }
+  // Future<void> _sendMail(String email, BuildContext context) async {
+  //   String url = 'mailto:$email';
+  //   if (await canLaunchUrl(
+  //     Uri.parse(url),
+  //   )) {
+  //     await (launchUrl(
+  //       Uri.parse(url),
+  //     ));
+  //   } else {
+  //     mySnackBar(context, 'Could not launch mail');
+  //   }
+  // }
 
   Future<void> _makePhoneCall(String phoneNumber, BuildContext context) async {
     String url = 'tel:$phoneNumber';
@@ -44,7 +44,7 @@ class EventOrganizerContactWidget extends StatelessWidget {
     double width,
     String portfolio,
   ) {
-    bool isEmail = portfolio.isEmpty ? false : true;
+    // bool isEmail = portfolio.isEmpty ? false : true;
     return GestureDetector(
       child: Padding(
         padding: EdgeInsets.only(bottom: 2.0),

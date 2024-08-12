@@ -443,7 +443,7 @@ class _GetAuthorState extends State<GetAuthor>
               ),
               Expanded(
                 child: RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(children: [
                       TextSpan(
                         text: widget.author.userName,

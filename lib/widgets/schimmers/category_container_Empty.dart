@@ -95,7 +95,7 @@ class CategoryContainerEmpty extends StatelessWidget {
                           fontWeight: FontWeight.bold),
                     )
                   : RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      textScaler: MediaQuery.of(context).textScaler,
                       text: TextSpan(
                         children: [
                           TextSpan(

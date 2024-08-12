@@ -23,7 +23,7 @@ class FocusedMenuAction extends StatelessWidget {
             color: Colors.black,
           ),
           overflow: TextOverflow.ellipsis,
-          textScaleFactor: MediaQuery.of(context).textScaleFactor,
+          textScaler: MediaQuery.of(context).textScaler,
         ),
       ),
     );

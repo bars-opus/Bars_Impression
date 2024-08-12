@@ -28,9 +28,9 @@ class _EventExpectedAttendeesScreenState
     with AutomaticKeepAliveClientMixin {
   List<TicketOrderModel> _inviteList = [];
   final _inviteSnapshot = <DocumentSnapshot>[];
-  bool _hasNext = true;
+  // bool _hasNext = true;
   bool _isLoading = true;
-  bool _isFectchingUser = false;
+  // bool _isFectchingUser = false;
   bool _showInfo = true;
   late ScrollController _hideButtonController;
 
@@ -97,7 +97,7 @@ class _EventExpectedAttendeesScreenState
       if (mounted) {
         print(users.length.toString());
         setState(() {
-          _hasNext = false;
+          // _hasNext = false;
           _inviteList = users;
           _isLoading = false;
         });
@@ -125,7 +125,7 @@ class _EventExpectedAttendeesScreenState
     if (mounted) {
       print(users.length.toString());
       setState(() {
-        _hasNext = false;
+        // _hasNext = false;
         _inviteList = users;
         _isLoading = false;
       });
@@ -177,7 +177,7 @@ class _EventExpectedAttendeesScreenState
                             CachedNetworkImageProvider(user.profileImageUrl!),
                       ),
                 title: RichText(
-                    textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                    textScaler: MediaQuery.of(context).textScaler,
                     text: TextSpan(children: [
                       TextSpan(
                         text: user.userName,

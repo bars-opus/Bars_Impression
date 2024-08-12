@@ -19,13 +19,13 @@ class _ProfileVerificationState extends State<ProfileVerification> {
   String _newsCoverage = '';
   String _govIdType = '';
   String _wikipedia = '';
-  String _website = '';
+  // String _website = '';
   String _socialMedia = '';
   String _otherLink = '';
   late PageController _pageController;
   int _index = 0;
 
-  bool _isLoading = false;
+  // bool _isLoading = false;
 
   @override
   void initState() {
@@ -38,23 +38,6 @@ class _ProfileVerificationState extends State<ProfileVerification> {
     });
   }
 
-  void _showBottomSheetErrorMessage() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return DisplayErrorHandler(
-          buttonText: 'Ok',
-          onPressed: () async {
-            Navigator.pop(context);
-          },
-          title: 'Request failed.',
-          subTitle: 'Please check your internet connection and try agian.',
-        );
-      },
-    );
-  }
 
   // _submit() async {
   //   if (!_isLoading) {
@@ -648,13 +631,13 @@ class _ProfileVerificationState extends State<ProfileVerification> {
   _setNull() {
     _otherLink = '';
     _govIdType = '';
-    _website = '';
+    // _website = '';
     _newsCoverage = '';
     _wikipedia = '';
     Provider.of<UserData>(context, listen: false).setImage(null);
     Provider.of<UserData>(context, listen: false).setImage(null);
     // Provider.of<UserData>(context, listen: false).setContact('');
-    _isLoading = false;
+    // _isLoading = false;
   }
 
   _setCode() {
